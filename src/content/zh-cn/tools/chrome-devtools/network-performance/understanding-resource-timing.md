@@ -1,78 +1,81 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:了解通过网络收集资源的阶段至关重要。这是解决加载问题的基础。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
-{# wf_published_on:2016-02-03 #}
-{# wf_updated_on:2016-02-03 #}
+{# wf_published_on: 2016-12-29 #} {# wf_updated_on: 2018-07-27 #} {# wf_blink_components: Platform>DevTools #}
 
-# 了解 Resource Timing {: .page-title }
+# Understanding Resource Timing {: .page-title }
 
 {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-了解通过网络收集资源的阶段至关重要。这是解决加载问题的基础。
+<aside class="note">
+  <b>Note:</b> This page is deprecated. At the top of each section, there's a
+  link to an up-to-date page where you can find similar information.
+</aside>
 
+It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
 ### TL;DR {: .hide-from-toc }
-- 了解 Resource Timing 的阶段。
-- 了解每个阶段向 Resource Timing API 提供的内容。
-- 了解时间线图表中不同的性能问题指示器，例如一系列透明栏或者大片的绿块。
 
+* Understand the phases of resource timing.
+* Know what each phase provides to the Resource Timing API.
+* Realize different indicators of performance problems in the timeline graph, such as series of transparent bars or large green chunks.
 
-所有网络请求都被视为资源。通过网络对它们进行检索时，资源具有不同生命周期，以 Resource Timing 表示。Network 面板使用与应用开发者所用相同的 [Resource Timing API](http://www.w3.org/TR/resource-timing)。
+All network requests are considered resources. As they are retrieved over the network, resources have distinct lifecycles expressed in terms of resource timing. The Network Panel uses the same [Resource Timing API](http://www.w3.org/TR/resource-timing) that is available to application developers.
 
+Note: when using the Resource Timing API with cross origin resources, make sure that all of the resources have CORS headers.
 
+The Resource Timing API provides a rich level of detail about each individual asset's time to be received. The primary phases of the request lifecycle are:
 
-请Note: 当使用具有跨源资源的 Resource Timing API 时，确保所有资源具有 CORS 标头。
+* Redirect 
+    * Immediately begins `startTime`.
+    * If a redirect is happening, `redirectStart` begins as well.
+    * If a redirect is occurring at the end of this phase then `redirectEnd` will be taken.
+* App Cache 
+    * If it’s application cache fulfilling the request, a `fetchStart` time will be taken.
+* DNS 
+    * `domainLookupStart` time is taken at the beginning of the DNS request.
+    * `domainLookupEnd` time is taken at the end of the DNS request.
+* TCP 
+    * `connectStart` is taken when initially connecting to the server.
+    * If TLS or SSL are in use then `secureConnectionStart` will start when the handshake begins for securing the connection.
+    * `connectEnd` is taken when the connection to the server is complete.
+* Request 
+    * `requestStart` is taken once the request for a resource has been sent to the server.
+* Response 
+    * `responseStart` is the time when the server initially responds to the request.
+    * `responseEnd` is the time when the request ends and the data is retrieved.
 
+![Resource Timing API diagram](imgs/resource-timing-api.png)
 
-Resource Timing API 提供了与接收各个资源的时间有关的大量详细信息。请求生命周期的主要阶段包括：
+## Viewing in DevTools
 
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See following sections for up-to-date
+  information:
+  <ul>
+    <li><a href="reference#timing-breakdown">View timing breakdown</a></li>
+    <li><a href="reference#timing">Timing tab</a></li>
+  </ul>
+</aside>
 
-* 重定向
-  * 立即开始 `startTime`。
-  * 如果正在发生重定向，`redirectStart` 也会开始。
-  * 如果重定向在本阶段末发生，将采集 `redirectEnd`。
-* 应用缓存
-  * 如果是应用缓存在实现请求，将采集 `fetchStart` 时间。
-* DNS
-  * `domainLookupStart` 时间在 DNS 请求开始时采集。
-  * `domainLookupEnd` 时间在 DNS 请求结束时采集。
-* TCP
-  * `connectStart` 在初始连接到服务器时采集。
-  * 如果正在使用 TLS 或 SSL，`secureConnectionStart` 将在握手（确保连接安全）开始时开始。
-  * `connectEnd` 将在到服务器的连接完成时采集。
-* 请求
-  * `requestStart` 会在对某个资源的请求被发送到服务器后立即采集。
-* 响应
-  * `responseStart` 是服务器初始响应请求的时间。
-  * `responseEnd` 是请求结束并且数据完成检索的时间。
+To view the full timing information for a given entry of the Network Panel you have three options.
 
-![Resource Timing API 示意图](imgs/resource-timing-api.png)
+1. Hover the timing graph under the timeline column. This will present a popup that shows the full timing data.
+2. Click on any entry and open the Timing tab of that entry.
+3. Use the Resource Timing API to retrieve the raw data from JavaScript.
 
-## 在 DevTools 中查看
-
-要查看 Network 面板中给定条目完整的耗时信息，您有三种选择。
-
-1. 将鼠标悬停到 Timeline 列下的耗时图表上。这将呈现一个显示完整耗时数据的弹出窗口。
-2. 点击任何条目并打开该条目的 Timing 标签。
-3. 使用 Resource Timing API 从 JavaScript 检索原始数据。
-
-![Resource Timing 信息](imgs/resource-timing-data.png)
-
-<figure>
-<figcaption>
+![Resource Timing Information](imgs/resource-timing-data.png)<figure> <figcaption>
 <p>
-  此代码可以在 DevTools 的 Console 中运行。
-  它将使用 Network Timing API 检索所有资源。
-  然后，它将通过查找是否存在名称中包含“style.css”的条目对条目进行过滤。
-  如果找到，将返回相应条目。
+  This code can be ran in the DevTools console.
+  It will use the network timing API to retrieve all resources.
+  Then it filters the entries looking for one with a name that contains "style.css".
+  If found it will be returned.
 </p>
 <code>
-  performance.getEntriesByType('resource').filter(item => item.name.includes("style.css"))</code>
+  performance.getEntriesByType('resource').filter(item => item.name.includes("style.css"))
+</code>
+</figcaption> 
 
-</figcaption>
-<img src="imgs/resource-timing-entry.png" alt="Resource Timing 条目">
-</figure>
+<img src="imgs/resource-timing-entry.png" alt="Resource Timing Entry" /> </figure> 
 
 <style>
 dt:before {
@@ -102,116 +105,105 @@ dt.content-download:before {
 
   <dt class="queued"><strong>Queuing</strong></dt>
   <dd>
-    如果某个请求正在排队，则指示：
+    A request being queued indicates that:
       <ul>
         <li>
-        请求已被渲染引擎推迟，因为该请求的优先级被视为低于关键资源（例如脚本/样式）的优先级。
-        图像经常发生这种情况。        </li>
+        The request was postponed by the rendering engine because it's considered lower priority than critical resources (such as scripts/styles).
+        This often happens with images.
+        </li>
         <li>
-        请求已被暂停，以等待将要释放的不可用 TCP 套接字。        </li>
+        The request was put on hold to wait for an unavailable TCP socket that's about to free up.
+        </li>
         <li>
-        请求已被暂停，因为在 HTTP 1 上，浏览器仅允许每个源拥有<a href="https://crbug.com/12066">六个 TCP 连接</a>。        </li>
+        The request was put on hold because the browser only allows <a href="https://crbug.com/12066">six TCP connections</a> per origin on HTTP 1.
+        </li>
         <li>
-        生成磁盘缓存条目所用的时间（通常非常迅速）        </li>
+        Time spent making disk cache entries (typically very quick.)
+        </li>
       </ul>
   </dd>
 
   <dt class="stalled"><strong> Stalled/Blocking</strong></dt>
   <dd>
-    请求等待发送所用的时间。
-    可以是等待 Queueing 中介绍的任何一个原因。
-    此外，此时间包含代理协商所用的任何时间。</dd>
-
+    Time the request spent waiting before it could be sent.
+    It can be waiting for any of the reasons described for Queueing.
+    Additionally, this time is inclusive of any time spent in proxy negotiation.
+  </dd>
 
   <dt class="proxy-negotiation"><strong> Proxy Negotiation</strong></dt>
-  <dd>与代理服务器连接协商所用的时间。</dd>
+  <dd>Time spent negotiating with a proxy server connection.</dd>
 
   <dt class="dns-lookup"><strong><abbr title="Domain Name System"> DNS</abbr> Lookup</strong></dt>
   <dd>
-    执行 DNS 查询所用的时间。
-    页面上的每一个新域都需要完整的往返才能执行 DNS 查询。</dd>
-
+    Time spent performing the DNS lookup.
+    Every new domain on a page requires a full roundtrip to do the DNS lookup.
+  </dd>
 
   <dt class="initial-connection"><strong> Initial Connection / Connecting</strong></dt>
-  <dd>建立连接所用的时间，包括 <abbr title="Transmission Control Protocol">TCP</abbr> 握手/重试和协商 <abbr title="Secure Sockets Layer">SSL</abbr> 的时间。</dd>
+  <dd>Time it took to establish a connection, including <abbr title="Transmission Control Protocol">TCP</abbr> handshakes/retries and negotiating a <abbr title="Secure Sockets Layer">SSL</abbr>.</dd>
 
   <dt class="ssl"><strong> SSL</strong></dt>
-  <dd>完成 SSL 握手所用的时间。</dd>
+  <dd>Time spent completing a SSL handshake.</dd>
 
   <dt class="request-sent"><strong> Request Sent / Sending</strong></dt>
   <dd>
-    发出网络请求所用的时间。
-    通常不到一毫秒。</dd>
-
+    Time spent issuing the network request.
+    Typically a fraction of a millisecond.
+  </dd>
 
   <dt class="ttfb"><strong> Waiting (<abbr title="Time To First Byte">TTFB</abbr>)</strong></dt>
   <dd>
-    等待初始响应所用的时间，也称为至第一字节的时间。
-    此时间将捕捉到服务器往返的延迟时间，以及等待服务器传送响应所用的时间。</dd>
-
+    Time spent waiting for the initial response, also known as the Time To First Byte.
+    This time captures the latency of a round trip to the server in addition to the time spent waiting for the server to deliver the response.
+  </dd>
 
   <dt class="content-download"><strong> Content Download / Downloading</strong></dt>
-  <dd>接收响应数据所用的时间。</dd>
+  <dd>Time spent receiving the response data.</dd>
 </dl>
 
+## Diagnosing Network Issues
 
-## 诊断网络问题
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See
+  <a href="issues">Network Issues Guide</a>
+  for up-to-date information.
+</aside>
 
-通过 Network 面板可以发现大量可能的问题。查找这些问题需要很好地了解客户端与服务器如何通信，以及协议施加的限制。
+There are numerous possible issues that can be uncovered through the Network Panel. Being able to find these requires a good understanding of how clients and servers communicate and the limitations imposed by the protocols.
 
+### Queued or Stalled series
 
-### 已被加入队列或已被停止的系列
+The most common issue seen is a series of items that are queued or stalled. This indicates that too many resources are being retrieved from a single domain. On HTTP 1.0/1.1 connections, Chrome enforces a maximum of six TCP connections per host. If you are requesting twelve items at once, the first six will begin and the last half will be queued. Once one of the original half is finished, the first item in the queue will begin its request process.
 
-最常见问题是一系列已被加入队列或已被停止的条目。这表明正在从单个网域检索太多的资源。在 HTTP 1.0/1.1 连接上，Chrome 会将每个主机强制设置为最多六个 TCP 连接。如果您一次请求十二个条目，前六个将开始，而后六个将被加入队列。最初的一半完成后，队列中的第一个条目将开始其请求流程。
+![Stalled series of requests](imgs/stalled-request-series.png)
 
+To fix this problem for traditional HTTP 1 traffic, you would need to implement [domain sharding](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/). That is making multiple subdomains on your application to serve resources from. Then split the resources being served evenly among the subdomains.
 
+The fix for HTTP 1 connections does **not** apply to HTTP 2 connections. In fact, it hurts them. If you have HTTP 2 deployed, don’t domain-shard your resources as it works against how HTTP 2 is engineered to operate. In HTTP 2, there is a single TCP connection to the server that acts as a multiplexed connection. This gets rid of the six connection limit of HTTP 1 and multiple resources can be transferred over the single connection simultaneously.
 
+### Slow Time to First Byte
 
+<small>AKA: lots of green</small>
 
-![被停止的请求系列](imgs/stalled-request-series.png)
+![High TTFB Indicator](imgs/indicator-of-high-ttfb.png)
 
-要为传统的 HTTP 1 流量解决此问题，您需要实现[域分片](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/)。也就是在您的应用上设置多个子域，以便提供资源。然后，在子域之间平均分配正在提供的资源。
+A slow time to first byte (TTFB) is recognized by a high waiting time. It is recommended that you have this [under 200ms](/speed/docs/insights/Server). A high TTFB reveals one of two primary issues. Either:
 
+1. Bad network conditions between client and server, or
+2. A slowly responding server application
 
+To address a high TTFB, first cut out as much network as possible. Ideally, host the application locally and see if there is still a big TTFB. If there is, then the application needs to be optimized for response speed. This could mean optimizing database queries, implementing a cache for certain portions of content, or modifying your web server configuration. There are many reasons a backend can be slow. You will need to do research into your software and figure out what is not meeting your performance budget.
 
-HTTP 1 连接的修复结果**不会**应用到 HTTP 2 连接上。事实上，前者的结果会影响后者。
-如果您部署了 HTTP 2，请不要对您的资源进行域分片，因为它与 HTTP 2 的操作方式相反。在 HTTP 2 中，到服务器的单个 TCP 连接作为多路复用连接。这消除了 HTTP 1 中的六个连接限制，并且可以通过单个连接同时传输多个资源。
+If the TTFB is low locally then the networks between your client and the server are the problem. The network traversal could be hindered by any number of things. There are a lot of points between clients and servers and each one has its own connection limitations and could cause a problem. The simplest method to test reducing this is to put your application on another host and see if the TTFB improves.
 
+### Hitting throughput capacity
 
+<small>AKA: lots of blue</small>
 
-### 至第一字节的漫长时间
+![Throughput capacity Indicator](imgs/indicator-of-large-content.png)
 
-<small>又称：大片绿色</small>
+If you see lots of time spent in the Content Download phases, then improving server response or concatenating won't help. The primary solution is to send fewer bytes.
 
-![长 TTFB 指示灯](imgs/indicator-of-high-ttfb.png)
+## Feedback {: #feedback }
 
-等待时间长表示至第一字节的时间 (TTFB) 漫长。建议将此值控制在 [200 毫秒以下](/speed/docs/insights/Server)。长 TTFB 会揭示两个主要问题之一。
-
-请执行以下任一操作：
-
-1. 客户端与服务器之间的网络条件较差，或者
-2.服务器应用的响应慢
-
-要解决长 TTFB，首先请尽可能缩减网络。理想的情况是将应用托管在本地，然后查看 TTFB 是否仍然很长。如果仍然很长，则需要优化应用的响应速度。可以是优化数据库查询、为特定部分的内容实现缓存，或者修改您的网络服务器配置。很多原因都可能导致后端缓慢。您需要调查您的软件并找出未满足您的性能预算的内容。
-
-
-
-
-
-
-如果本地托管后 TTFB 仍然漫长，那么问题出在您的客户端与服务器之间的网络上。很多事情都可以阻止网络遍历。客户端与服务器之间有许多点，每个点都有其自己的连接限制并可能引发问题。测试时间是否缩短的最简单方法是将您的应用置于其他主机上，并查看 TTFB 是否有所改善。
-
-
-
-
-### 达到吞吐量能力
-
-<small>又称：大片蓝色</small>
-
-![吞吐量能力指示符](imgs/indicator-of-large-content.png)
-
-如果您看到 Content Download 阶段花费了大量时间，则提高服务器响应或串联不会有任何帮助。首要的解决办法是减少发送的字节数。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

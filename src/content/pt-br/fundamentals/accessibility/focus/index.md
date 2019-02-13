@@ -1,138 +1,74 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Visão geral do foco na tela em acessibilidade
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Overview of screen focus in accessibility
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Introduction to Focus {: .page-title }
 
-# Introdução a Foco {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+In this lesson we'll talk about *focus* and how you can manage it in your application. Focus refers to which control on the screen (an input item such as a field, checkbox, button, or link) currently receives input from the keyboard, and from the clipboard when you paste content.
 
+This is a great place to start learning about accessibility because we all know how to use a keyboard, it's easy to relate to and test, and it benefits virtually all users.
 
+Users with motor impairments, which could be anything from permanent paralysis to a sprained wrist, may rely on a keyboard or switch device to navigate your page, so a good focus strategy is critical to providing a good experience for them.
 
-Nesta lição falaremos sobre *Foco* e como você pode controlá-lo em seu
-aplicativo. Foco refere-se a qual controle na tela (um item de interação, como um
-campo, caixa de seleção, botão ou link) recebe entrada do teclado no momento, e da
-área de transferência quando se cola conteúdo.
+And for the power users who know every keyboard shortcut on their machine, being able to quickly navigate your site with the keyboard alone will certainly make them more productive.
 
-Este é um ótimo ponto para começar a aprender sobre a acessibilidade, porque todos sabem
-como usar um teclado, é fácil de se identifica e de testar, e beneficia
-praticamente todos os usuários.
+Thus, a well implemented focus strategy ensures that everyone using your application has a better experience. We'll see in the upcoming lessons that the effort you put into focus is an important basis for supporting assistive technology users and, indeed, all users.
 
-Usuários com deficiências motoras, que podem ser qualquer coisa, de paralisia permanente
-a um pulso torcido, podem contar com um teclado ou dispositivo de switch
-para navegar na sua página, por isso uma boa estratégia de foco é fundamental
-para lhes proporcionar uma boa experiência.
+## What is focus?
 
-E, quanto aos usuários avançados que conhecem todos os atalhos de teclado em suas máquinas,
-e conseguem navegar rapidamente seu site pelo teclado isso certamente os
-tornará mais produtivos.
+Focus determines where keyboard events go in the page at any given moment. For instance, if you focus a text input field and begin typing, the input field receives the keyboard events and displays the characters you type. While it has focus, it will also receive pasted input from the clipboard.
 
-Assim, uma estratégia de foco bem implementada garante que todos que usam
-seu aplicativo tenham uma experiência melhor. Veremos, nas próximas lições, que
-o esforço dedicado ao foco é uma base importante para suportar usuários de
-tecnologia assistiva e, certamente, todos os usuários.
+![keyboard focus in a text field](imgs/keyboard-focus.png)
 
-## O que é foco?
+The currently focused item is often indicated by a *focus ring*, the style of which depends on both the browser and on any styling the page author has applied. Chrome, for instance, typically highlights focused elements with a blue border, whereas Firefox uses a dashed border.
 
-O foco determina para onde os eventos de teclado vão na página em um momento qualquer. Por
-exemplo, se você se focar um campo de entrada de texto e começar a digitar, o
-campo de entrada recebe os eventos de teclado e exibe os caracteres que você digita. Embora tenha o
-foco, ele também receberá entrada colada a partir da área de transferência.
+![sign up button](imgs/sign-up.png)
 
-![oco do teclado em um campo de texto](imgs/keyboard-focus.png)
+Some users operate their computer almost entirely with the keyboard or other input device. For those users, focus is critical; it's their primary means of reaching everything on the screen. For that reason, the Web AIM checklist states in section 2.1.1 that [all page functionality should be available using the keyboard](http://webaim.org/standards/wcag/checklist#sc2.1.1){: .external }, unless it's something you cannot do with a keyboard, such as freehand drawing.
 
-O item atualmente em foco frequentemente é indicado por um *anel de foco*, cujo
-estilo depende tanto do navegador e de qualquer estilo que o autor da página
-tenha aplicado. O Chrome, por exemplo, geralmente realça elementos focados com uma borda
-azul, enquanto o Firefox utiliza uma borda tracejada.
+As a user, you can control which element is currently focused using `Tab`, `Shift+Tab`, or the arrow keys. On Mac OSX this works a little differently: while Chrome always lets you navigate with `Tab`, you need to press `Option+Tab` to change focus in other browsers like Safari. (You can change this setting in the Keyboard section of System Preferences.)
 
-![botão sign up](imgs/sign-up.png)
+![keyboard preferences dialog](imgs/system-prefs2.png)
 
-Alguns usuários operam seus computadores quase que inteiramente com o teclado
-ou outro dispositivo de interação. Para esses usuários, o foco é crucial; pois é seu
-principal meio de alcançar tudo que há na tela. Por este motivo, a lista de verificação Web AIM afirma,
-na seção 2.1.1 que [todas as funcionalidades da página devem estar disponíveis usando
-o teclado](http://webaim.org/standards/wcag/checklist#sc2.1.1){: .external },
-a menos que seja algo impossível de se fazer com um teclado, como desenhar à mão livre.
+The order in which focus proceeds forward and backward through interactive elements via `Tab` is called, not surprisingly, the *tab order*. Ensuring that you design your page with a logical tab order is an important step that we'll cover later.
 
-Como usuário, você pode controlar qual elemento está atualmente focado usando `Tab`,
-`Shift+Tab` ou as teclas de seta. No Mac OSX isso funciona de forma um pouco diferente:
-enquanto o Chrome sempre permita a navegação com `Tab`, é preciso pressionar `Option+Tab`
-para alterar o foco em outros navegadores, como o Safari. (Você pode alterar essa configuração na seção
-Teclado das Preferências do Sistema).
+## What is focusable?
 
-![caixa de diálogo de preferências](imgs/system-prefs2.png)
+Built-in interactive HTML elements like text fields, buttons, and select lists are *implicitly focusable*, meaning they are automatically inserted into the tab order and have built-in keyboard event handling without developer intervention.
 
-A ordem em que o foco passa para a frente e para trás através de elementos
-interativos via `Tab` é chamada de *ordem de tab*. Certificar-se de
-projetar sua página com uma ordem lógica de tab é uma etapa importante da qual
-trataremos mais tarde.
+![implicitly focusable fields](imgs/implicitly-focused.png)
 
-## O que é focalizável?
+But not all elements are focusable; paragraphs, divs, and various other page elements are not focused as you tab through the page, and that's by design. There's generally no need to focus something if the user can't interact with it.
 
-Elementos HTML integrados interativos, como campos de texto, botões e listas de seleção
-são *implicitamente focalizáveis*, o que significa que eles são inseridos automaticamente na guia
-ordem e têm o manuseio integrado de eventos de teclado sem a intervenção do desenvolvedor.
+![not all elements are focusable](imgs/not-all-elements.png)
 
-![campos implicitamente focalizáveis](imgs/implicitly-focused.png)
+## Experiencing focus
 
-Porém, nem todos os elementos são focalizáveis; parágrafos, divs e vários outros 
-elementos de página não são focados conforme você tabula pela página, e isso
-é projetado assim. Geralmente não há necessidade de focar em alguma coisa, se o usuário não pode interagir com ela.
+Let's try some of the focus techniques we just discussed. Using Chrome, go to this [airline site mockup page](http://udacity.github.io/ud891/lesson2-focus/01-basic-form/){: .external } and search for a specific ticket **using only keyboard input**. The page doesn't accept mouse input, so you can't fudge the exercise (not that we don't trust you ;-).
 
-![nem todos os elementos são focalizáveis](imgs/not-all-elements.png)
+![airline site mockup](imgs/airlinesite2.png)
 
-## Experimentando o foco
+The ticket parameters you should specify are:
 
-Vamos experimentar algumas das técnicas de foco que acabamos de discutir. Usando o Chrome, vá para este
-[simulação de página
-de companhia aérea](http://udacity.github.io/ud891/lesson2-focus/01-basic-form/){: .external }
-e procure uma passagem específica **usando apenas interação pelo teclado**. A página não aceita
-interação por mouse, então você não pode trapacear no exercício (não pense que não confiamos em você
-;-).
+- one way
+- to Melbourne
+- leaving on 12 October 2017 (10/12/2017)
+- returning on 23 October 2017 (10/23/2017)
+- window seat
+- do not want to receive promotional offers
 
-![simulação de página de companhia aérea](imgs/airlinesite2.png)
+When you successfully complete the form with no input errors and activate the Search button, the form will simply clear and reset. Go ahead and complete the form, then come back.
 
-Os parâmetros da passagem que você deve especificar são:
+Let's examine how the form uses your keyboard input. Starting with your first few `Tab` presses, the browser highlights the navigation items for Flights, Hotels, and Rental Cars. As you continue to press `Tab` you proceed to the radiobutton group where you can choose from Round Trip, One Way, or Multi City using the arrow keys.
 
- - só ida
- - para Melbourne
- - partida em 12 de outubro de 2017 (12/10/2017)
- - retorno em 23 de outubro de 2017 (23/10/2017)
- - assento na janela
- - não desejo receber ofertas promocionais
+Continue through the name and address fields, filling in the required information. When you arrive at the destination select element, you can use the arrow keys to choose a city, or you can start typing to autocomplete the field. Similarly, in the date fields, you can use the arrow keys or just type a date.
 
-Quando você completar o formulário sem erros de interação e ativar o botão
-Search, o formulário simplesmente terá os dados apagados e será redefinido. Vá completar o formulário,
-e volte em seguida.
+Selecting a seat type also relies on the arrow keys, or you can type "w", "a", or "n" to jump to a seat option. Then you can disable the promotional offers default by pressing the spacebar while the checkbox is focused. Finally, focus the Search button and press `Enter` to submit the form.
 
-Vamos examinar como o formulário usa a interação de seu teclado. Começando com seus primeiros
-toques em `Tab`, o navegador destaca os itens de navegação para Voos,
-Hotéis e Locação de Veículos. À medida que continua a pressionar `Tab`, você avança para o
-grupo radiobutton, onde pode escolher entre Ida e Volta, Só Ida, ou
-Várias Cidades usando as teclas de seta.
+It's very handy to interact with a form using just the keyboard and to not have to switch to the mouse and back to complete a task. Because all of the elements used in the form are native HTML tags with implicit focus, the form works fine with the keyboard, and you don't have to write any code to add or manage focus behavior.
 
-Continue pelos campos de nome e endereço, preenchendo as informações
-necessárias. Quando chegar ao elemento de seleção de destino, você pode usar as
-teclas de seta para escolher uma cidade, ou pode começar a digitar para completar automaticamente o campo.
-Da mesma forma, nos campos de data, você pode usar as teclas de seta ou simplesmente digitar uma data.
+## Feedback {: #feedback }
 
-Selecionar um tipo de assento também requer as setas do teclado, ou você pode digitar "w", "a"
-ou "n" para saltar para uma opção de assento. Depois, você pode desativar as ofertas promocionais
-padrão pressionando a barra de espaço enquanto a caixa de seleção está focada. Finalmente, foque
-no botão Search e pressione `Enter` para enviar o formulário.
-
-É muito útil interagir com um formulário usando apenas o teclado e não ter que
-alternar para o mouse e voltar para completar uma tarefa. Como todos os elementos utilizados
-no formulário são tags HTML nativas com foco implícito, o formulário funciona bem
-com o teclado, e você não tem que escrever nenhum código para adicionar ou gerenciar
-o comportamento de foco.
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 최신 앱과 사이트에서 애니메이션과 그 사용에 대한 이해도를 높입니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 애니메이션 {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-애니메이션은 매력적인 웹 애플리케이션과 사이트를 만드는 주요 수단입니다. 사용자는 반응성이 뛰어난 대화형 사용자 인터페이스를 기대합니다. 하지만 인터페이스에 애니메이션을 적용하는 것은 그다지 간단하지 않습니다. 애니메이션의 적용 대상, 시간 및 느낌은 어떻게 하면 좋을까요?
-
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-* 애니메이션을 프로젝트에 생명력을 불어넣는 수단으로 사용하세요.
-* 애니메이션은 사용자 상호작용을 지원해야 합니다.
-* 각 속성의 비용은 다르므로 어떤 속성에 애니메이션을 적용할지 주의해서 결정하세요.
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-## 애니메이션을 적용할 적합한 항목 선택
+## Choose the right things to animate
 
-뛰어난 애니메이션은 사용자에게 즐거움을 선사하고 프로젝트에 대한 몰입도를 높여줍니다. 너비, 높이, 위치, 색 또는 배경 등 원하는 모든 것에 애니메이션을 적용할 수 있지만, 잠재적 성능 병목 현상과 애니메이션이 애플리케이션의 개성에 어떤 영향을 주게 될지 고려해야 합니다. 버벅거리거나 잘못 선택한 애니메이션은 사용자에게 거부감을 줄 수 있으므로, 애니메이션은 성능과 적합성을 모두 갖추어야 합니다.
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-## 애니메이션을 사용하여 상호작용 지원
+## Use animations to support interactions
 
-애니메이션을 만들 수 있다는 이유로 애니메이션을 적용하지 마세요. 사용자에게 방해가 되고 성가실 수 있습니다. 대신 효율적으로 배치된 애니메이션을 사용하여 사용자 상호작용을 _강화_하세요. 사용자가 메뉴 아이콘을 누르거나, 스와이프하여 탐색 창을 표시하거나, 버튼을 누르는 경우, 미묘한 후광이나 바운스 효과를 사용하여 상호작용을 승인하세요. 사용자의 활동을 불필요하게 방해하는 애니메이션을 피하세요.
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-## 비용이 많이 드는 애니메이션 속성 피하기
+## Avoid animating expensive properties
 
-잘못 배치된 애니메이션보다 나쁜 것은 페이지를 버벅거리게 만드는 애니메이션입니다. 이 애니메이션 유형은 사용자에게 좌절감과 불만을 주며 애니메이션이 아예 없기를 바랄 것입니다.
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-일부 속성은 다른 것보다 변경하는 데 더 많은 비용이 들고 따라서 버벅거리게 만듭니다. 예를 들어, 요소의 `box-shadow`를 변경하려면 가령 텍스트 색상을 변경하는 것보다 휠씬 비싼 페이트 작업이 필요합니다. 마찬가지로, 요소의 `width`를 변경하는 것은 대개 `transform`을 변경하는 것보다 휠씬 많은 비용이 듭니다.
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-[애니메이션 및 성능](animations-and-performance) 가이드에서 애니메이션의 성능 고려사항에 대해 많은 정보를 얻을 수 있지만, TL;DR을 원하면 변형 및 불투명도를 고수하고 `will-change`를 사용하세요. 주어진 속성 애니메이션에 의해 어떤 작업이 트리거되는지 정확히 알고 싶은 경우 [CSS 트리거](http://csstriggers.com)를 참조하세요.
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

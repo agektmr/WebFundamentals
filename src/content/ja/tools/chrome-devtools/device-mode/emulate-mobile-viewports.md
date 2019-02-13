@@ -1,222 +1,216 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools の Device Mode では、開発サイトがさまざまな端末で本番環境においてどのように表示されるかを再現できます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools' Device Mode lets you mimic how your development site will look in production on a range of devices. robots: noindex
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# レスポンシブな端末固有ビューポートのテスト {: .page-title }
+# Test Responsive and Device-specific Viewports {: .page-title }
 
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+<aside class="warning">
+  <b>This page is deprecated</b>. There are links to up-to-date documentation
+  throughout the page.
+</aside>
 
-アップデート版の Device Mode（Chrome 49 以降）は、モバイル ファーストになった DevTools において不可欠な部分であり、メインの DevTools バーを拡張するものです。
- ここでは、そのコントロールを使用して幅広い端末をシミュレートする方法やレスポンシブにする方法について説明します。
-
-
+The updated Device Mode (since Chrome 49) is an integral part of the now-mobile-first DevTools and extends the main DevTools bar. Learn how to use its controls to simulate a wide range of devices or go fully responsive.
 
 ### TL;DR {: .hide-from-toc }
-- Device Mode のスクリーン エミュレータを使用してサイトがレスポンシブであるかテストします。
-- 後で簡単にアクセスできるようにカスタム プリセットを保存します。
-- Device Mode は、実際の端末テストの代わりになるものではありません。 制限事項に注意してください。
 
+* Test your site's responsiveness using the Device Mode's screen emulator.
+* Save custom presets so you can easily access them later.
+* Device mode isn't a replacement for real device testing. Be aware of its limitations.
 
-## ビューポート コントロールの使用 {: #viewport-controls }
+## Using the viewport controls {: #viewport-controls }
 
-![Device Mode が有効](imgs/device-mode.png)
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#responsive">Response Viewport Mode</a>
+  and
+  <a href="/web/tools/chrome-devtools/device-mode/#device">Mobile Device Viewport Mode</a>.
+</aside>
 
-ビューポート コントロールを使用して、さまざまな端末でサイトがレスポンシブであるかテストできます。
- 2 つのモードがあります。
+![device mode enabled](imgs/device-mode.png)
 
-  1. **[Responsive]**。 左右の大きいハンドルを使用してビューポートを自由にリサイズできるようにします。 
-  2. **特定の端末**。 ビューポートを特定の端末の正確なビューポート サイズに固定し、特定の端末の特性をエミュレートします。
+The Viewport Controls allow you to test your site against a variety of devices, as well as fully responsively. It comes in two modes:
 
+1. **Responsive**. Makes the Viewport freely resizable via big handles on either side. 
+2. **Specific Device**. Locks the Viewport to the exact viewport size of a specific device and emulates certain device characteristics.
 
-## Responsive モード
+## Responsive mode
 
-既定の動作モードとして **[Responsive] モード**を使用することをおすすめします。 サイトやアプリの開発中にこのモードを使用し、ビューポートを頻繁にサイズ変更して、不明な端末タイプや将来の端末タイプにも適応するレスポンシブ デザインを作成します。
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#responsive">Response Viewport Mode</a>.
+</aside>
 
+We recommend using the **Responsive Mode** as your default work mode. Use it during active development of your site and app and resize the viewport often to create a freely responsive design that adapts to even unknown and future device types.
 
+To get the most out of the Responsive Mode, turn on the [Media Queries Bar](#media-queries).
 
-[Responsive] モードを最大限に活用するには、[メディアクエリ バー](#media-queries) を有効にします。
+### Customize the viewport size
 
-### ビューポート サイズのカスタマイズ
+Either drag the big resize handles on the viewport or click into the values in the menu bar for finer grained control.
 
-ビューポートの大きいサイズ変更ハンドルをドラッグするか、メニューバーの値をクリックしてより細かく設定します。
+## Device-specific mode
 
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#device">Mobile Device Viewport Mode</a>.
+</aside>
 
-## 端末固有モード
+Use the **Device-specific Mode** when you're nearing the end of active development and want to perfect how your site looks like on specific mobiles (e.g. a certain iPhone or Nexus).
 
-開発が終わりに近づき、特定のモバイル（特定の iPhone や Nexus など）でのサイトの表示を完成させるには、**端末固有モード**を
- 使用します。
+### Built-in device presets
 
-### 組み込みの端末プリセット
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#device">Mobile Device Viewport Mode</a>.
+</aside>
 
 <div class="wf-devtools-flex">
   <div>
-  <p>現在最もよく使用される端末が端末ドロップダウンに表示されます。 端末を選択すると、各プリセットによって以下のような特定の端末特性のエミュレーションが自動的に設定されます。</p>
-
+  <p>We've included the currently most popular devices in the device dropdown. After selecting 
+    a device, each preset automatically configures emulation of certain device characteristics:</p>
   <ul>
-    <li>正しい「User Agent（UA）」文字列を設定します。</li>
-    <li>端末の解像度と DPI（デバイス ピクセル比）を設定します。</li>
-    <li>タップイベントをエミュレートします（該当する場合）。</li>
-    <li>モバイル スクロールバーのオーバーレイと meta viewport をエミュレートします。</li>
-    <li>ビューポートが定義されていないページのテキストのサイズを自動的に設定します（大きくします）。</li>
+    <li>Sets the correct "User Agent" (UA) string.</li>
+    <li>Sets the device resolution and DPI (device pixel ratio).</li>
+    <li>Emulates touch events (if applicable).</li>
+    <li>Emulates mobile scrollbar overlays and meta viewport.</li>
+    <li>Autosizes (boosts) text for pages without a defined viewport.</li>
   </ul>
   </div>
   <div class="wf-devtools-flex-third">
-    <img src="imgs/select-device.png" alt="端末を選択">
+    <img src="imgs/select-device.png" alt="select a device">
   </div>
 </div>
 
-### カスタム端末プリセットの追加
+### Adding custom device presets
 
-Device Mode には、エミュレーション用にさまざまな端末が用意されています。 用意されていない特殊な端末やニッチ端末が見つかった場合は、カスタム端末を追加できます。
- 
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#custom">Add a custom mobile device</a>.
+</aside>
+
+Device Mode offers a wide array of devices for emulation. You can add a custom device if you find an edge-case or niche device that isn't covered.
 
 <div class="wf-devtools-flex">
   <div>
-  <p>カスタム端末を追加するには、次のようにします。</p>
+  <p>To add a custom device:</p>
   <ol>
-    <li>DevTools の [Settings] に移動します。</li>
-    <li>[<strong>Devices</strong>] タブをクリックします。</li>
-    <li>[<strong>Add custom device</strong>] をクリックします。</li>
-    <li>端末名、幅、高さ、デバイス ピクセル比、および User Agent 文字列を入力します。
-</li>
-     <li>[<strong>Add</strong>] をクリックします。</li>
+    <li>Go to DevTools Settings.</li>
+    <li>Click the <strong>Devices</strong> tab.</li>
+    <li>Click <strong>Add custom device</strong>.</li>
+    <li>Enter a device name, width, height, device pixel ratio, and 
+     user agent string.</li>
+     <li>Click <strong>Add</strong>.</li>
   </ol>
-  <p>カスタム端末が [<strong>Device</strong>] ドロップダウン メニューで利用できるようになります。</p>
+  <p>Your custom device is now available in the <strong>Device</strong> dropdown menu.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/custom-device.png" alt="端末を選択">
+    <img src="imgs/custom-device.png" alt="select a device">
   </div>
 </div>
 
-### 端末状態と画面の向き
+### Device states and orientation
 
-![画面の向きの切り替え](imgs/change-orientation.png)
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#orientation">Set orientation</a>.
+</aside>
 
-特定の端末をエミュレートする場合、Device Mode のツールバーに追加のコントロールが表示されます。このコントロールは、主に端末画面の向き（横向きと縦向き）を切り替えるために使用します。
+![toggle orientation](imgs/change-orientation.png)
 
+When emulating a specific device, the Device Mode toolbar shows an additional control that primarily serves as a way to toggle the orientation between landscape and portrait.
 
 <div class="wf-devtools-flex">
   <div>
-    <p>一部の端末では、コントロールによって実行されるのは画面の向きの切り替えだけではありません。 Nexus 5X など、サポートされている端末の場合は、次のような特定の端末状態をエミュレートできるドロップダウンが表示されます。
-</p>
-
+    <p>On selected devices, the control does more than just orientation toggling. For supported 
+      devices like the Nexus 5X, you'll get a dropdown that allows you to emulate certain device 
+      states, like:</p>
     <ul>
-      <li>既定のブラウザ UI</li>
-      <li>Chrome ナビゲーション バー付き</li>
-      <li>開いたキーボード</li>
+      <li>Default browser UI</li>
+      <li>With Chrome navigation bar</li>
+      <li>With opened keyboard</li>
     </ul>
   </div>
   <div class="wf-devtools-flex-third">
-    <img src="imgs/change-device-state.png" alt="端末 UI の変更">
+    <img src="imgs/change-device-state.png" alt="Change the Device UI">
   </div>
 </div>
 
-### ズームしてフィット  
+### Zoom to fit
 
 <div class="wf-devtools-flex">
   <div>
-  <p>ブラウザ ウィンドウで実際に使用できるスペースよりも解像度が高い端末のテストを行う場合があります。
- このような場合は、<strong>ズームしてフィット</strong> オプションが便利です。</p>
-
+  <p>Sometimes you'll want to test a device that has a resolution larger than the actual available 
+    space in your browser window. In these cases, the <strong>Zoom to Fit</strong> option comes in 
+    handy:</p>
   <ol>
     <li>
-      [<strong>Fit to Window</strong>] を選択すると、使用可能な最大スペースに合わせてズームレベルが自動的に設定されます。
-
+      <strong>Fit to Window</strong> will automatically set the zoom level to the maximum available 
+      space.
     </li>
     <li>
-      <strong>明示的なパーセンテージ</strong> は、画像の DPI をテストする場合などに役立ちます。
-
+      <strong>Explicit percentages</strong> are useful if you want to test DPI on images, 
+      for instance.
     </li>
   </ol>
   </div>
   <div class="wf-devtools-flex-third">
-    <img src="imgs/zoom-to-fit.png" alt="ズームしてフィット">
+    <img src="imgs/zoom-to-fit.png" alt="Zoom to Fit">
   </div>
 </div>
 
-## オプション コントロール（ タッチ、メディアクエリ、DPR など）
+## Optional controls (e.g. touch, media queries, DPR)
 
 <div class="wf-devtools-flex">
   <div>
-  <p>オプション コントロールを変更したり有効にしたりするには、端末ツールバーの右側にあるスリードットのアイコンをクリックします。
- 現在、次のオプションが含まれています。</p>
+  <p>Optional controls can be changed or enabled by clicking on the three little dots on the right 
+    side of the device toolbar. Current options include</p>
   <ul>
-    <li>ユーザー エージェント タイプ（UA とタップイベントのエミュレート）</li>
-    <li>デバイス ピクセル比</li>
-    <li>メディアクエリ</li>
-    <li>ルーラー</li>
-    <li>ネットワークの設定（UA、ネットワーク スロットリング）</li>
+    <li>User agent type (Emulates UA and touch events)</li>
+    <li>Device pixel ratio</li>
+    <li>Media Queries</li>
+    <li>Rulers</li>
+    <li>Configure Network (UA, Network Throttling)</li>
   </ul>
   </div>
   <div class="wf-devtools-flex-third">
-    <img src="imgs/device-mode-dotmenu.png" alt="Device Mode の設定">
+    <img src="imgs/device-mode-dotmenu.png" alt="Device Mode Settings">
   </div>
 </div>
 
-各オプションの詳細については、以下の説明をご覧ください。
+Read on to learn more about the specific options.
 
-### ユーザー エージェント タイプ
+### Device pixel ratio (DPR)
 
-**[User Agent Type]** つまり端末タイプを設定すると、端末のタイプを変更できます。
- 有効な値は次のとおりです。
+If you want to emulate a Retina device from a non-Retina machine or vice versa, adjust the **Device pixel ratio**. The **device pixel ratio** (DPR) is the ratio between logical pixels and physical pixels. Devices with Retina displays, such as the Nexus 6P, have higher pixel density than standard devices, which can affect the sharpness and size of visual content.
 
-  1. Mobile
-  2. Desktop
-  3. Desktop with touch
+Some examples of "Device Pixel Ratio" (DPR) sensitivity on the web are:
 
-この設定を変更すると、モバイル ビューポートとタップイベントのエミュレーションに影響があり、UA 文字列が変更されます。
- そのため、PC 用のレスポンシブなサイトを作成し、カーソルを合わせたときの効果をテストする場合は、[Responsive] モードで [Desktop] に切り替えます。
+* CSS media queries such as:
+    
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { ... }
 
+* CSS [image-set](http://dev.w3.org/csswg/css-images/#image-set-notation) rules.
 
-**ヒント**:[**Network conditions**][nc] ドロワーでユーザー エージェントを設定することもできます。
+* The [srcset](/web/fundamentals/design-and-ux/responsive/images#images-in-markup) attribute on images.
 
+* The `window.devicePixelRatio` property.
 
+If you have a native Retina display, you'll notice that low "Dots Per Inch" (DPI) assets look pixelated while higher-DPI assets are sharp. To simulate this effect on a standard display, set the DPR to 2 and scale the viewport by zooming. A 2x asset will continue to look sharp, while a 1x one will look pixelated.
 
-### デバイス ピクセル比（DPR）
+### Media queries {: #media-queries }
 
-Retina ではないマシンで Retina 端末（またはその逆）をエミュレートする場合は [**Device pixel ratio**] を調整します。
- **デバイス ピクセル比**（DPR）は、論理ピクセルと物理ピクセルの比です。
-Nexus 6P などの Retina ディスプレイ搭載端末では、標準の端末よりピクセル密度が高くなります。これは、ビジュアル コンテンツの鮮明さやサイズに影響する可能性があります。
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#queries">Show media queries</a>.
+</aside>
 
+[Media queries](/web/fundamentals/design-and-ux/responsive/#use-media-queries) are an essential part of responsive web design.To view the media query inspector, click **Show Media queries** in the three dot menu. The DevTools detect media queries in your stylesheets and display them as colored bars in the top ruler.
 
+![show media queries](imgs/show-media-queries.png)
 
-ウェブ上の「デバイス ピクセル比」（DPR）に影響されるものの例を次に示します。
+![media query inspector](imgs/media-query-inspector-ruler.png)
 
-* 次のような CSS メディアクエリ
-
-      @media (-webkit-min-device-pixel-ratio: 2), 
-             (min-resolution: 192dpi) { ... }
-
-* CSS [image-set](http://dev.w3.org/csswg/css-images/#image-set-notation) ルール。
-
-
-* 画像の [srcset](/web/fundamentals/design-and-ux/responsive/images#images-in-markup) 属性。
-
-
-* `window.devicePixelRatio` プロパティ。
-
-ネイティブ Retina ディスプレイでは、1 インチあたりのドット数（DPI）が低いと粗い表示になり、DPI アセットが高いほど鮮明になることがわかります。
- 標準ディスプレイでこの効果をシミュレートするには、DPR を 2 に設定し、ズームでビューポートのサイズを変更します。
- 2x のアセットは表示が鮮明で、1x のアセットは表示が粗くなります。
-
-
-### メディアクエリ  {: #media-queries }
-
-[メディアクエリ](/web/fundamentals/design-and-ux/responsive/#use-media-queries)は、レスポンシブ ウェブデザインに不可欠な要素です。メディアクエリ インスペクターを表示するには、スリードット メニューで [**Show Media queries**] をクリックします。
- DevTools によってスタイルシートのメディアクエリが検出され、一番上のルーラーに色付きのバーとして表示されます。
-
-
-![Show media queries](imgs/show-media-queries.png)
-
-![メディアクエリ インスペクター](imgs/media-query-inspector-ruler.png)
-
-メディアクエリは、次のように色分けされます。
+Media queries are color-coded as follows:
 
 <style>
   #colortable { width: 60%; border: none; } #colortable td { border: none; } 
@@ -229,75 +223,68 @@ Nexus 6P などの Retina ディスプレイ搭載端末では、標準の端末
   <tbody>
     <tr>
       <td class="max-width"></td>
-      <td>最大幅を対象とするクエリ。</td>
+      <td>Queries targeting a maximum width.</td>
     </tr>
     <tr>
       <td class="max-and-min"></td>
-      <td>範囲内の幅を対象とするクエリ。</td>
+      <td>Queries targeting widths within a range.</td>
     </tr>
     <tr>
       <td class="min-width"></td>
-      <td>最小幅を対象とするクエリ。</td>
+      <td>Queries targeting a minimum width.</td>
     </tr>
   </tbody>
 </table>
 
-#### メディアクエリの即時プレビュー
+#### Quickly preview a media query
 
-ビューポート サイズを調整して対象の画面サイズのスタイルをプレビューするには、メディアクエリ バーをクリックします。
+Click a media query bar to adjust the viewport size and preview styles for the targeted screen sizes.
 
+#### View associated CSS
 
-#### 関連する CSS の表示
+Right-click a bar to view where the media query is defined in CSS and jump to the definition in source code.
 
-メディアクエリが定義されている CSS 内の場所を表示し、ソースコード内の定義にジャンプするには、バーを右クリックします。
+![web fundamentals media queries view](imgs/reveal-source-code.png)
 
+### Rulers
 
-![Web Fundamentals のメディアクエリの表示](imgs/reveal-source-code.png)
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#rulers">Show rulers</a>.
+</aside>
 
-### ルーラー
+Toggle this option to show pixel-based rulers next to the viewport.
 
-ビューポートの横にピクセルベースのルーラーを表示するには、このオプションを切り替えます。
+### Configure network (UA, network throttling) {: #network }
 
-### ネットワークの設定（UA、ネットワーク スロットリング） {: #network }
+Selecting this option opens the [Network Conditions drawer](/web/tools/chrome-devtools/network-performance/reference#network-conditions), where you can change the following network behaviors:
 
-このオプションを選択すると、ネットワーク関連の次の動作を変更できるパネルが[Network Conditions ドロワー][nc]に表示されます。
+1. **Disk Cache**: Disable Disk Cache stops pages and their assets from being cached by the browser while the DevTools are open.
+2. **Network Throttling**: Simulate slow network connections.
+3. **User Agent**: Allows you to set a specific UA (User Agent) string override.
 
+## Limitations
 
-  1. **Disk Cache**:[Disk Cache] を無効にすると、DevTools が開いている間にページとそのアセットがブラウザによってキャッシュに保存されなくなります。
-  2. **Network Throttling**:低速ネットワーク接続をシミュレートします。
-  3. **User Agent**:特定の UA（User Agent）文字列のオーバーライドを設定できます。
+Device Mode has some limitations.
 
+* **Device hardware** 
+    * GPU and CPU behavior are not emulated.
+* **Browser UI** 
+    * System displays, such as the address bar, are not emulated.
+    * Native displays, such as `<select>` elements, are not emulated as a modal list.
+    * Some enhancements, such as number inputs opening a keypad, might vary from actual device behavior.
+* **Browser functionality** 
+    * WebGL operates in the emulator, but is not supported on iOS 7 devices.
+    * MathML is not supported in Chrome, but is supported on iOS 7 devices.
+    * [HLS playback](https://en.wikipedia.org/wiki/HTTP_Live_Streaming) (HTTP Live Streaming for video) is not supported while emulating, but is supported natively on Android Chrome and iOS.
+    * The [iOS 5 orientation zoom bug](https://github.com/scottjehl/device-bugs/issues/2) is not emulated.
+    * The line-height CSS property operates in the emulator, but is not supported in Opera Mini.
+    * CSS rule limits, such as those in [Internet Explorer](http://blogs.msdn.com/b/ieinternals/archive/2011/05/14/10164546.aspx), are not emulated.
+* **AppCache** 
+    * The emulator does not override the UA for AppCache [manifest files](https://code.google.com/p/chromium/issues/detail?id=334120) or [view source requests](https://code.google.com/p/chromium/issues/detail?id=119767).
 
-[nc]: /web/tools/chrome-devtools/network-performance/reference#network-conditions
+Despite these limitations, the Device Mode is robust enough for most tasks. When you need to test on a real device, you can use [Remote Debugging](/web/tools/chrome-devtools/debug/remote-debugging) for additional insight.
 
-## 制限事項
-
-Device Mode にはいくつかの制限事項があります。
-
-* **端末ハードウェア**
-    * GPU と CPU の動作はエミュレートされません。
-* **ブラウザ UI**
-    * アドレスバーなどのシステム表示はエミュレートされません。
-    `<select>` 要素などのネイティブ表示はモーダルリストとしてエミュレートされません。
-    * キーパッドを開く数字入力などの一部の機能強化は、実際の端末動作とは異なる場合があります。
-* **ブラウザ機能**
-    * WebGL はエミュレータで動作しますが、iOS 7 端末ではサポートされていません。
-    * MathML は Chrome でサポートされていませんが、iOS 7 端末ではサポートされています。
-    * [HLS 再生](https://en.wikipedia.org/wiki/HTTP_Live_Streaming) （ビデオの HTTP Live Streaming）
-		はエミュレート中はサポートされませんが、Android Chrome と iOS ではネイティブでサポートされています。
-    * [iOS 5 での画面の向きのズームバグ](https://github.com/scottjehl/device-bugs/issues/2)はエミュレートされません。		
-    * line-height CSS プロパティはエミュレータで動作しますが、Opera Mini ではサポートされていません。
-    * [Internet Explorer](http://blogs.msdn.com/b/ieinternals/archive/2011/05/14/10164546.aspx) に見られるような CSS ルールの制限は、エミュレートされません。
-* **AppCache**
-    * エミュレータは、AppCache [マニフェスト ファイル](https://code.google.com/p/chromium/issues/detail?id=334120) または[ソース表示リクエスト](https://code.google.com/p/chromium/issues/detail?id=119767)の <abbr title="User Agent">UA</abbr> をオーバーライドしません。
-		
-		
-
-これらの制限はありますが、Device Mode は十分に堅牢であり、ほとんどのタスクに対応できます。 
-実際の端末でテストする必要がある場合は、[リモート デバッグ](/web/tools/chrome-devtools/debug/remote-debugging)を使用してさらに詳しく分析できます。
-
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

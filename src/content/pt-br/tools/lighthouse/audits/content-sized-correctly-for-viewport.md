@@ -1,35 +1,26 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Conteúdo dimensionado corretamente para a janela de visualização".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Content Sized Correctly for Viewport" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# Conteúdo dimensionado corretamente para a janela de visualização  {: .page-title }
+# Content Sized Correctly for Viewport {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Esta auditoria verifica se a largura do conteúdo de uma página é igual
-à largura da janela de visualização. A largura do conteúdo menor ou maior que
-a da janela de visualização muitas vezes indica que a página não está otimizada para
-telas de dispositivos móveis.
+This audit checks that the width of the content on your page is equal to the width of the viewport. When content width is smaller or larger than viewport width, that's often a cue that the page is not optimized for mobile screens.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Esta auditoria é uma forma indireta de determinar se a página está otimizada para
-dispositivos móveis. Se o site não estiver otimizado e você quiser otimizá-lo, consulte
-[Princípios básicos do Web design responsivo](/web/fundamentals/design-and-ux/responsive/)
-para começar.
+This audit is a roundabout way of determining if your page is optimized for mobile devices. If your site is not optimized and you want it to be, then see [Responsive Web Design Basics](/web/fundamentals/design-and-ux/responsive/) to get started.
 
-Você poderá ignorar esta auditoria se:
+You can ignore this audit if:
 
-* O site não precisar ser otimizado para telas de dispositivos móveis.
-* A largura do conteúdo da página é intencionalmente menor ou maior que a
-  da janela de visualização.
+* Your site does not need to be optimized for mobile screens.
+* The content width of your page is intentionally smaller or larger than the viewport width.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-A auditoria será aprovada se `window.innerWidth === window.outerWidth`.
+The audit passes if `window.innerWidth === window.outerWidth`.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

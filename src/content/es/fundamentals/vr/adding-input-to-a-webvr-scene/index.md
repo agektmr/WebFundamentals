@@ -1,86 +1,85 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Aprende a usar la biblioteca Ray Input para agregar entrada a tu escena de WebVR.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Discover how to use the Ray Input library to add input to your WebVR scene.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# Agregar entrada a una escena de WebVR {: .page-title }
+# Adding Input to a WebVR Scene {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
+{% include "web/_shared/webxr-status.html" %}
 
-Warning: WebVR todavía es experimental y se encuentra sujeta a modificaciones.
+In the [Getting Started with WebVR section](../getting-started-with-webvr/) we looked at how to take a WebGL scene and add WebVR functionality to it. While that works, and you can look around the scene in VR, there’s so much more fun to be had when you can interact with entities in the scene.
 
-En la sección [Primeros pasos con WebVR](../getting-started-with-webvr/) analizamos cómo tomar una escena WebGL y agregarle la funcionalidad de WebVR. Aunque eso funciona, y puedes mirar dentro de la escena en RV, puede resultar mucho más divertido cuando puedes interactuar con entidades en la escena.
+![A ray beam showing input in a WebVR Scene](./img/ray-input.jpg)
 
-![Un haz de rayo que muestra la entrada en una escena de WebVR](./img/ray-input.jpg)
+With WebVR (and 3D in general) there can be a variety of inputs, and ideally speaking we want to not only account for all of them, but switch between them as the user’s context changes.
 
-En WebVR (y 3D en general) puede haber varios tipos de entradas, y lo ideal sería no solo representarlas a todas, sino también poder cambiar entre ellas según cambie el contexto del usuario.
+A quick survey of input types available today includes:
 
-Un sondeo rápido de los tipos de entradas que existen hoy incluye:
-
-<img class="attempt-right" src="../img/touch-input.png" alt="Ícono de entrada táctil">
+<img class="attempt-right" src="../img/touch-input.png" alt="Touch input icon" />
 
 * **Mouse.**
-* **Entrada táctil.**
-* **Acelerómetro y giroscopio.**
-* **Controladores sin grado de libertad** (como Cardboard). Estos son controladores que se encuentran completamente vinculados con la ventana de visualización, y con los cuales se supone que la interacción normalmente tiene origen en el centro de la ventana de visualización.
-* **Controladores con 3 grados de libertad** (como el controlador Daydream). Un controlador con 3 grados ofrece información de orientación, pero no de ubicación. Normalmente, se supone que la persona sostiene este tipo de controladores en la mano izquierda o derecha, y su posición en espacios 3D es estimada.
-* **Controladores con 6 grados de libertad** (como Oculus Rift o Vive). Todos los controladores con 6 grados de libertad ofrecerán tanto información de orientación como de ubicación. Normalmente, estos son los que tienen las mejores capacidades y precisión.
+* **Touch.**
+* **Accelerometer & Gyroscope.**
+* **Controllers with no degrees of freedom** (like Cardboard). These are controllers that are tied entirely to the viewport, and typically the interaction is assumed to originate in the center of the viewport.
+* **Controllers with 3 degrees of freedom** (like the Daydream Controller). A controller with 3 degrees provides orientation information, but not location information. Typically such controllers are assumed to be held in the person’s left or right hand, and their position in 3D space is estimated.
+* **Controllers with 6 degrees of freedom** (like the Oculus Rift or Vive). Any controller with 6 degrees of freedom will provide both orientation and location information. These are typically at the upper end of capabilities range, and have the best accuracy.
 
-En el futuro, con la maduración de WebVR, incluso podremos ver nuevos tipos de entrada, lo que significa que nuestro código necesita estar tan preparado para el futuro como sea posible. Sin embargo, escribir el código para poder adaptarse a todas las nuevas versiones de entradas puede resultar complicado y difícil de manejar. La biblioteca [Ray Input](https://github.com/borismus/ray-input) de Boris Smus ya ofrece un buen punto de partida. Admite la mayoría de tipos de entradas que se encuentran disponibles hoy, así que comenzaremos por ahí.
+In the future, as WebVR matures, we may even see new input types, which means our code needs to be as future-proof as possible. Writing code to handle all input permutations, however, can get complicated and unwieldy. The [Ray Input](https://github.com/borismus/ray-input) library by Boris Smus already provides a flying start, supporting the majority of input types available today, so we will start there.
 
-Comencemos desde nuestra escena anterior y [agreguemos controladores de entrada con Ray Input](https://googlechrome.github.io/samples/web-vr/basic-input/). Si quieres ver el código final, deberías consultar el [repositorio de ejemplos de Google Chrome](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/basic-input/).
+Starting from our previous scene, let’s [add input handlers with Ray Input](https://googlechrome.github.io/samples/web-vr/basic-input/). If you want to look at the final code you should check out the [Google Chrome samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/basic-input/).
 
-## Agrega la biblioteca Ray Input a la página
+## Add the Ray Input library to the page
 
-Para mayor simplicidad, podemos agregar Ray Input directamente con una etiqueta de secuencia de comandos:
+For simplicity’s sake, we can add Ray Input directly with a script tag:
 
     <!-- Must go after Three.js as it relies on its primitives -->
     <script src="third_party/ray.min.js"></script>
+    
 
-Si usas Ray Input como parte de un sistema de compilación mayor, también puedes importarla de esa forma. El [archivo README de Ray Input contiene más información](https://github.com/borismus/ray-input/blob/master/README.md), así que deberías consultarlo.
+If you’re using Ray Input as part of a bigger build system, you can import it that way, too. The [Ray Input README has more info](https://github.com/borismus/ray-input/blob/master/README.md), so you should check that out.
 
-## Obtén acceso a las entradas
+## Get access to inputs
 
-Luego de obtener acceso a cualquier pantalla de RV, podemos solicitar acceso a todas las entradas disponibles. A partir de allí, podemos agregar receptores de eventos, y actualizaremos la escena para dejar al estado predeterminado de nuestra caja como "deselected".
+After getting access to any VR Displays we can request access to any inputs that are available. From there we can add event listeners, and we’ll update the scene to default our box’s state as "deselected".
 
     this._getDisplays().then(_ => {
       // Get any available inputs.
       this._getInput();
       this._addInputEventListeners();
-
+    
       // Default the box to 'deselected'.
       this._onDeselected(this._box);
     });
+    
 
 Let’s take a look inside both the `_getInput` and `_addInputEventListeners` functions.
 
     _getInput () {
       this._rayInput = new RayInput.default(
           this._camera, this._renderer.domElement);
-
+    
       this._rayInput.setSize(this._renderer.getSize());
     }
+    
 
-La creación de una biblioteca Ray Input supone pasarle la cámara de Three.js desde la escena y un elemento al cual pueda unir mouse, entrada táctil y cualquier otro receptor de eventos que necesite. Si no pasas un elemento como el segundo parámetro, de manera predeterminada se unirá a `window`, lo que puede impedir que partes de tu interfaz de usuario (IU) reciban eventos de entrada.
+Creating a Ray Input involves passing it the Three.js camera from the scene, and an element onto which it can bind mouse, touch and any other event listeners it needs. If you don’t pass through an element as the second parameter it will default to binding to `window`, which may be prevent parts of your User Interface (‘UI’) from receiving input events!
 
-Otra acción necesaria es decirle qué tan grande debe ser el área con la que debe trabajar, lo que en la mayoría de los casos es el área del elemento de lienzo de WebGL.
+The other thing you need to do is tell it how big an area it needs to work with, which in most cases is the area of the WebGL canvas element.
 
-## Habilita la interactividad para entidades de escena
+## Enable interactivity for scene entities
 
-A continuación, debemos decirle a Ray Input qué rastrear y qué eventos nos interesa recibir.
+Next we need to tell Ray Input what to track, and what events we’re interested in receiving.
 
     _addInputEventListeners () {
       // Track the box for ray inputs.
       this._rayInput.add(this._box);
-
+    
       // Set up a bunch of event listeners.
       this._rayInput.on('rayover', this._onSelected);
       this._rayInput.on('rayout', this._onDeselected);
       this._rayInput.on('raydown', this._onSelected);
       this._rayInput.on('rayup', this._onDeselected);
     }
+    
 
 As you interact with the scene, whether by mouse, touch, or other controllers, these events will fire. In the scene we can make our box’s opacity change based on whether the user is pointing at it.
 
@@ -88,33 +87,35 @@ As you interact with the scene, whether by mouse, touch, or other controllers, t
       if (!optMesh) {
         return;
       }
-
+    
       optMesh.material.opacity = 1;
     }
-
+    
     _onDeselected (optMesh) {
       if (!optMesh) {
         return;
       }
-
+    
       optMesh.material.opacity = 0.5;
     }
+    
 
-Para que esto funcione, debemos asegurarnos de decirle a Three.js que el material de la caja debería admitir la transparencia.
+For this to work we’ll need to make sure that we tell Three.js that the box’s material should support transparency.
 
     this._box.material.transparent = true;
+    
 
-Eso debería cubrir las interacciones con mouse y táctiles. Veamos qué implica agregar un controlador con 3 grados de libertad, como el controlador Daydream.
+That should now cover mouse and touch interactions. Let’s see what’s involved with adding in a controller with 3 degrees of freedom, like the Daydream controller.
 
-## Habilita las extensiones de Gamepad API
+## Enable the Gamepad API extensions
 
-Existen dos consideraciones importantes para entender cómo usar la Gamepad API en WebVR hoy:
+There are two important notes to understand about using the Gamepad API in WebVR today:
 
-* En Chrome 56 necesitarás habilitar el indicador Gamepad Extensions en `chrome://flags`. Si tienes un [Origin Trial](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md), Gamepad Extensions ya estará habilitado junto con las WebVR API. **Necesitarás el que el indicador esté habilitado para el desarrollo local**.
+* In Chrome 56 you will need to enable the Gamepad Extensions flag in `chrome://flags`. If you have an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md) the Gamepad Extensions will already be enabled along with the WebVR APIs. **For local development you’ll need the flag enabled**.
 
-* La información de la pose para el controlador para juegos (que es como obtienes acceso a esos 3 grados de libertad) **solo se habilita luego de que el usuario presione un botón en su controlador de RV**.
+* Pose information for the gamepad (which is how you get access to those 3 degrees of freedom) are **only enabled once a user has pressed a button on their VR controller**.
 
-Ya que el usuario necesita interactuar antes de que podamos mostrarle un puntero en la escena, será necesario pedirle que presione un botón de su controlador. El mejor momento para hacer eso es luego de que comencemos a enviar la presentación a las gafas de realidad virtual (HMD).
+Because the user needs to interact before we can show them a pointer in the scene, we’ll need to ask them to press a button on their controller. The best time to do that is after we begin to present to the Head Mounted Display (‘HMD’).
 
     this._vr.display.requestPresent([{
       source: this._renderer.domElement
@@ -125,12 +126,13 @@ Ya que el usuario necesita interactuar antes de que podamos mostrarle un puntero
     .catch(e => {
       console.error(`Unable to init VR: ${e}`);
     });
+    
 
-Normalmente, pensarías usar elementos HTML para mostrar este tipo de información a los usuarios, pero las HDM muestran un contexto de WebGL (y nada más), por lo que debemos colocar el mensaje allí. Three.js tiene una [Sprite primitive](https://threejs.org/docs/#Reference/Objects/Sprite) que siempre mirará hacia la cámara (lo que comúnmente se llama "Billboarding"), y en la cual podemos dibujar una imagen.
+Typically you might expect to use HTML Elements to show such information to users, but the HMD is displaying a WebGL context (and nothing else), so we must draw the message there. Three.js has a [Sprite primitive](https://threejs.org/docs/#Reference/Objects/Sprite) which will always face towards the camera (typically called “Billboarding”), and into which we can draw an image.
 
-![Mensaje para presionar un botón que se muestra a los usuarios](./img/press-a-button.jpg)
+![Showing a "Press Button" message to users](./img/press-a-button.jpg)
 
-El código para hacer eso se ve similar al siguiente.
+The code to do that looks something like this.
 
     _showPressButtonModal () {
       // Get the message texture, but disable mipmapping so it doesn't look blurry.
@@ -138,23 +140,24 @@ El código para hacer eso se ve similar al siguiente.
       map.generateMipmaps = false;
       map.minFilter = THREE.LinearFilter;
       map.magFilter = THREE.LinearFilter;
-
+    
       // Create the sprite and place it into the scene.
       const material = new THREE.SpriteMaterial({
         map, color: 0xFFFFFF
       });
-
+    
       this._modal = new THREE.Sprite(material);
       this._modal.position.z = -4;
       this._modal.scale.x = 2;
       this._modal.scale.y = 2;
       this._scene.add(this._modal);
-
+    
       // Finally set a flag so we can pick this up in the _render function.
       this._isShowingPressButtonModal = true;
     }
+    
 
-Finalmente, en la función `_render` podemos ver interacciones y usar eso para esconder el modal. También necesitamos decirle a Ray Input cuándo actualizar, del mismo modo en que llamamos a `submitFrame()` en las HMD para que vacíe el lienzo.
+Finally in the `_render` function we can watch for interactions, and use that to hide the modal. We also need to tell Ray Input when to update, similarly to the way we call `submitFrame()` against the HMD to flush the canvas to it.
 
     _render () {
       if (this._rayInput) {
@@ -162,35 +165,37 @@ Finalmente, en la función `_render` podemos ver interacciones y usar eso para e
             this._rayInput.controller.wasGamepadPressed) {
           this._hidePressButtonModal();
         }
-
+    
         this._rayInput.update();
-
+    
       }
       …
     }
+    
 
-## Agrega la malla del puntero a la escena
+## Add the pointer mesh to the scene
 
-Además de permitir interacciones, es muy probable que queramos mostrar algo al usuario que indique hacia dónde apunta. Ray Input proporciona una malla que puedes agregar a tu escena para lograr justamente eso.
+As well as allowing interactions it’s highly likely that we will want to display something to the user that shows where they’re pointing. Ray Input provides a mesh that you can add to your scene to do just that.
 
     this._scene.add(this._rayInput.getMesh());
+    
 
-Con esto, obtenemos una retícula para las HMD sin libertad de movimiento en sus controladores (como Cardboard) y un rayo tipo haz para las que sí cuentan con libertad de movimiento. Para mouse y entrada táctil no se muestran retículas.
+With this we get a reticle for HMDs with no freedom of movement in their controller (like Cardboard), and a beam-like ray for those with freedom of movement. For mouse and touch there are no reticles shown.
 
-![Un haz de rayo que muestra la entrada en una escena de WebVR](./img/ray-input.jpg)
+![A ray beam showing input in a WebVR Scene](./img/ray-input.jpg)
 
-## Consideraciones finales
+## Closing thoughts
 
-Debes tener en cuenta algunos aspectos cuando agregas entradas a tus experiencias.
+There are some things to keep in mind as you add input to your experiences.
 
-* **Deberías adoptar las mejoras progresivas.** Ya que una persona podría pretender usar lo que creaste con cualquiera de las nuevas versiones de entradas de la lista, deberías esforzarte para planear tu IU de forma que pueda adaptarse correctamente entre distintos tipos. Donde sea posible, prueba varios dispositivos y entradas para maximizar lo que puedes abarcar.
+* **You should embrace Progressive Enhancement.** Since a person may come to what you’ve built with any particular permutation of inputs from the list you should endeavor to plan your UI such that it can adapt properly between types. Where you can, test a range of devices and inputs to maximize reach.
 
-* **Las entradas pueden no ser perfectamente precisas.** El controlador Daydream, en particular, tiene 3 niveles de libertad, pero opera en un espacio que admite 6. Eso significa que aunque su orientación es correcta, su posición en un espacio 3D debe suponerse. Para compensar esto, tal vez sea conveniente que agrandes los objetivos de la entrada y te asegures de tener los espacios adecuados para evitar confusiones.
+* **Inputs may not be perfectly accurate.** In particular a Daydream controller has 3 degrees of freedom, but it’s operating in a space which supports 6. That means that while its orientation is correct its position in 3D space has to be assumed. To account for this you may wish to make your input targets larger and ensure proper spacing to avoid confusion.
 
-Es vital agregar una entrada a tu escena para lograr una experiencia envolvente, y con [Ray Input](https://github.com/borismus/ray-input) es mucho más fácil comenzar.
+Adding input to your scene is vital to making an immersive experience, and with [Ray Input](https://github.com/borismus/ray-input) it’s much easier to get going.
 
-¡Cuéntanos cómo lo haces!
+Let us know how you get on!
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

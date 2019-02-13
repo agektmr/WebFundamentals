@@ -1,12 +1,8 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Referensi komprehensif fitur panel Jaringan Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: A comprehensive reference of Chrome DevTools Network panel features.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-08-23 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %} 
 
 <style>
 figcaption {
@@ -14,870 +10,708 @@ figcaption {
 }
 </style>
 
-[ui]: #ui-overview
-[requests]: #requests
-[overview]: #overview
+ 
 
-# Referensi Analisis Jaringan {: .page-title }
+# Network Analysis Reference {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Temukan cara baru untuk menganalisis bagaimana pemuatan halaman Anda dalam referensi
-komprehensif fitur analisis jaringan Chrome DevTools.
+Discover new ways to analyze how your page loads in this comprehensive reference of Chrome DevTools network analysis features.
 
-Note: Referensi ini berdasarkan Chrome 58. Jika Anda menggunakan Chrome versi lain
-, UI dan fitur DevTools mungkin berbeda. Periksa
-`chrome://help` untuk melihat versi Chrome mana yang Anda gunakan.
+Note: This reference is based on Chrome 58. If you use another version of Chrome, the UI and features of DevTools may be different. Check `chrome://help` to see what version of Chrome you're running.
 
-## Mencatat permintaan jaringan {: #record }
+## Record network requests {: #record }
 
-Secara default, DevTools mencatat semua permintaan jaringan di panel Jaringan,
-selama DevTools terbuka.
+By default, DevTools records all network requests in the Network panel, so long as DevTools is open.
 
 <figure>
-  <img src="imgs/network.png" alt="Panel Jaringan.">
+  <img src="imgs/network.png" alt="The Network panel.">
   <figcaption>
-    <b>Gambar 1</b>. Panel Jaringan
+    <b>Figure 1</b>. The Network panel
   </figcaption>
 </figure>
 
-### Berhenti mencatat pemintaan jaringan {: #stop-recording }
+### Stop recording network requests {: #stop-recording }
 
-Untuk berhenti mencatat pemintaan:
+To stop recording requests:
 
-* Klik **Stop recording network log** ![Berhenti mencatat log
-  jaringan](imgs/record-on.png){: .devtools-inline } di panel Jaringan. Panel Jaringan
-  berubah menjadi abu-abu yang menandakan bahwa DevTools tidak mencatat permintaan lagi.
-* Tekan <kbd>Command</kbd>+<kbd>E</kbd> (Mac) atau
-  <kbd>Control</kbd>+<kbd>E</kbd> (Windows, Linux) saat panel Jaringan
-  dalam fokus.
+* Click **Stop recording network log** ![Stop recording network
+log](imgs/record-on.png){: .devtools-inline } on the Network panel. It turns grey to indicate that DevTools is no longer recording requests.
+* Press <kbd>Command</kbd>+<kbd>E</kbd> (Mac) or <kbd>Control</kbd>+<kbd>E</kbd> (Windows, Linux) while the Network panel is in focus.
 
-### Menghapus permintaan {: #clear }
+### Clear requests {: #clear }
 
-Klik **Clear** ![Hapus][clear]{:.devtools-inline} di panel Jaringan
-untuk menghapus semua permintaan dari tabel Permintaan.
+Click **Clear** ![Clear](imgs/clear-requests.png){:.devtools-inline} on the Network panel to clear all requests from the Requests table.
 
 <figure>
-  <img src="imgs/clear.svg" alt="Tombol Hapus.">
+  <img src="imgs/clear.svg" alt="The Clear button.">
   <figcaption>
-    <b>Gambar 2</b>. Hapus, dikotaki warna biru
+    <b>Figure 2</b>. Clear, outlined in blue
   </figcaption>
 </figure>
 
-[clear]: imgs/clear-requests.png
+### Save requests across page loads {: #preserve-log }
 
-### Menyimpan permintaan di seluruh pemuatan halaman {: #preserve-log }
-
-Untuk menyimpan permintaan di seluruh pemuatan halaman, centang kotak centang **Preserve log**
-di panel Jaringan. DevTools menyimpan semua permintaan hingga Anda menonaktifkan
-**Preserve log**.
+To save requests across page loads, check the **Preserve log** checkbox on the Network panel. DevTools saves all requests until you disable **Preserve log**.
 
 <figure>
-  <img src="imgs/preserve-log.svg" alt="Kotak centang Preserve Log.">
+  <img src="imgs/preserve-log.svg" alt="The Preserve Log checkbox.">
   <figcaption>
-    <b>Gambar 3</b>. Kotak centang Preserve Log, dikotaki warna biru
+    <b>Figure 3</b>. The Preserve Log checkbox, outlined in blue
   </figcaption>
 </figure>
 
-### Mengambil screenshot selama pemuatan halaman {: #screenshots }
+### Capture screenshots during page load {: #screenshots }
 
-Ambil screenshot untuk menganalisis apa yang dilihat pengguna saat mereka menunggu halaman Anda
-memuat.
+Capture screenshots to analyze what users see as they wait for your page to load.
 
-Untuk mengaktifkan screenshot, klik **Capture screenshots** ![Ambil
-screenshot][capture]{: .devtools-inline } di panel Jaringan. Panel Jaringan berubah menjadi
-biru ketika diaktifkan.
+To enable screenshots, click **Capture screenshots** ![Capture
+screenshots](imgs/capture-screenshots.png){: .devtools-inline } on the Network panel. It turns blue when enabled.
 
-Muat ulang halaman saat panel Jaringan sedang fokus untuk mengambil screenshot.
+Reload the page while the Network panel is in focus to capture screenshots.
 
-Setelah gambar diambil, Anda dapat menindaklanjuti screenshot dengan cara berikut:
+Once captured, you can interact with screenshots in the following ways:
 
-* Arahkan kursor ke screenshot untuk melihat di titik mana screenshot itu
-  diambil. Garis berwarna kuning muncul pada panel Ringkasan.
-* Klik thumbnail screenshot untuk memfilter permintaan yang muncul
-  setelah screenshot diambil.
-* Klik dua kali pada thumbnail untuk memperbesar.
+* Hover over a screenshot to view the point at which that screenshot was captured. A yellow line appears on the Overview pane.
+* Click a screenshot's thumbnail to filter out any requests that occurred after the screenshot was captured.
+* Double-click a thumbnail to zoom in on it.
 
 <figure>
   <img src="imgs/screenshot-hover.png"
-       alt="Mengarahkan kursor ke screenshot.">
+       alt="Hovering over a screenshot.">
   <figcaption>
-    <b>Gambar 4</b>. Mengarahkan kursor ke screenshot. Garis vertikal berwarna kuning
-    dalam panel Ringkasan dan Waterfall menunjukkan waktu
-    screenshot diambil.
+    <b>Figure 4</b>. Hovering over a screenshot. The yellow, vertical line
+    in the Overview pane and the Waterfall represent the time at which the
+    screenshot was captured.
   </figcaption>
 </figure>
 
-[capture]: imgs/capture-screenshots.png
+### Replay XHR request {: #replay-xhr }
 
-### Mengulang permintaan XHR {: #replay-xhr }
-
-Untuk mengulang permintaan XHR, klik kanan permintaan di tabel Permintaan
-dan pilih **Replay XHR**.
+To replay an XHR request, right-click the request in the Requests table and select **Replay XHR**.
 
 <figure>
-  <img src="imgs/replay-xhr.png" alt="Memilih Replay XHR.">
+  <img src="imgs/replay-xhr.png" alt="Selecting Replay XHR.">
   <figcaption>
-    <b>Gambar 5</b>. Memilih Replay XHR
+    <b>Figure 5</b>. Selecting Replay XHR
   </figcaption>
 </figure>
 
-## Mengubah perilaku pemuatan
+## Change loading behavior
 
-### Mengemulasikan pengunjung kali pertama dengan menonaktifkan cache browser {: #disable-cache}
+### Emulate a first-time visitor by disabling the browser cache {: #disable-cache}
 
-Untuk mengemulasikan bagaimana pengalaman pengguna kali pertama di situs Anda, centang **Disable
-cache**. DevTools menonaktifkan cache browser. DevTools secara lebih akurat
-mengemulasi pengalaman pengguna kali pertama, karena permintaan dilayani dari
-cache browser pada kunjungan berulang.
+To emulate how a first-time user experiences your site, check the **Disable cache** checkbox. DevTools disables the browser cache. This more accurately emulates a first-time user's experience, because requests are served from the browser cache on repeat visits.
 
 <figure>
-  <img src="imgs/disable-cache.svg" alt="Kotak centang Nonaktifkan Cache.">
+  <img src="imgs/disable-cache.svg" alt="The Disable Cache checkbox.">
   <figcaption>
-    <b>Gambar 6</b>. Kotak centang Nonaktifkan Cache, dikotaki warna biru
+    <b>Figure 6</b>. The Disable Cache checkbox, outlined in blue
   </figcaption>
 </figure>
 
-#### Menonaktifkan cache browser dari panel samping Kondisi Jaringan {: #disable-cache-network-conditions }
+#### Disable the browser cache from the Network Conditions drawer {: #disable-cache-network-conditions }
 
-Jika Anda ingin menonaktifkan cache saat bekerja di panel DevTools lain, gunakan
-panel samping Kondisi Jaringan.
+If you want to disable the cache while working in other DevTools panels, use the Network Conditions drawer.
 
-1. Buka [panel samping Kondisi Jaringan](#network-conditions).
-1. Centang atau hapus centang kotak centang **Disable cache**.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Check or uncheck the **Disable cache** checkbox.
 
-### Menghapus cache browser secara manual {: #clear-cache}
+### Manually clear the browser cache {: #clear-cache}
 
-Untuk menghapus cache browser secara manual, klik kanan di mana saja
-di tabel Permintaan dan pilih **Clear Browser Cache**.
+To manually clear the browser cache at any time, right-click anywhere in the Requests table and select **Clear Browser Cache**.
 
 <figure>
   <img src="imgs/clear-browser-cache.png"
-       alt="Memilih Clear Browser Cache.">
+       alt="Selecting Clear Browser Cache.">
   <figcaption>
-    <b>Gambar 7</b>. Memilih Clear Browser Cache
+    <b>Figure 7</b>. Selecting Clear Browser Cache
   </figcaption>
 </figure>
 
-### Mengemulasi secara offline {: #offline }
+### Emulate offline {: #offline }
 
-Ada kelas baru aplikasi web, yang disebut [Progressive Web App][pwa], yang dapat
-berfungsi secara offline dengan bantuan [pekerja layanan][sw]. Saat membuat
-aplikasi semacam ini, sebaiknya Anda menyimulasikan perangkat yang
-tidak memiliki koneksi data sesegera mungkin.
+There's a new class of web apps, called [Progressive Web Apps](/web/progressive-web-apps/), which can function offline with the help of [service workers](/web/fundamentals/getting-started/primers/service-workers). When you're building this type of app, it's useful to be able to quickly simulate a device that has no data connection.
 
-Centang **Offline** untuk mensimulasikan pengalaman jaringan yang sepenuhnya
-offline.
+Check the **Offline** checkbox to simulate a completely offline network experience.
 
 <figure>
   <img src="imgs/offline.svg"
-       alt="Kotak centang Offline">
+       alt="The Offline checkbox">
   <figcaption>
-    <b>Gambar 8</b>. Kotak centang Offline, dikotaki warna biru
+    <b>Figure 8</b>. The Offline checkbox, outlined in blue
   </figcaption>
 </figure>
 
-[pwa]: /web/progressive-web-apps/
-[sw]: /web/fundamentals/getting-started/primers/service-workers
+### Emulate slow network connections {: #throttling }
 
-### Mengemulasi koneksi jaringan yang lambat {: #throttling }
-
-Mengemulasi 2G, 3G, dan kecepatan koneksi lainnya dari menu **Network Throttling**
-.
+Emulate 2G, 3G, and other connection speeds from the **Network Throttling** menu.
 
 <figure>
   <img src="imgs/network-panel-throttling-menu.svg"
-       alt="Menu Pembatasan Jaringan.">
+       alt="The Network Throttling menu.">
   <figcaption>
-    <b>Gambar 9</b>. Menu Pembatasan Jaringan, dikotaki warna biru
+    <b>Figure 9</b>. The Network Throttling menu, outlined in blue
   </figcaption>
 </figure>
 
-Anda dapat memilih dari berbagai preset, seperti 2G Bagus atau Reguler. Anda
-juga dapat menambahkan preset kustom Anda sendiri dengan membuka menu Pembatasan Jaringan
-dan memilih **Custom** > **Add**.
+You can select from a variety of presets, such as Regular or Good 2G. You can also add your own custom presets by opening the Network Throttling menu and selecting **Custom** > **Add**.
 
-DevTools menampilkan ikon peringatan di samping tab **Network** untuk
-memperingatkan bahwa pembatasan diaktifkan.
+DevTools displays a warning icon next to the **Network** tab to remind you that throttling is enabled.
 
-#### Mengemulasi koneksi jaringan yang lambat dari panel samping Kondisi Jaringan {: #throttling-network-conditions }
+#### Emulate slow network connections from the Network Conditions drawer {: #throttling-network-conditions }
 
-Jika Anda ingin membatasi koneksi jaringan saat bekerja di panel
-DevTools lainnya, gunakan panel samping Kondisi Jaringan.
+If you want to throttle the network connection while working in other DevTools panels, use the Network Conditions drawer.
 
-1. Buka [panel samping Kondisi Jaringan](#network-conditions).
-1. Pilih kecepatan koneksi yang Anda inginkan dari menu **Network Throttling**.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Select your desired connection speed from the **Network Throttling** menu.
 
-### Menghapus cookie browser secara manual {: #clear-cookies }
+### Manually clear browser cookies {: #clear-cookies }
 
-Jika ingin menghapus cookie browser secara manual, klik kanan di mana saja di
-tabel Permintaan dan pilih **Clear Browser Cookies**.
+To manually clear browser cookies at any time, right-click anywhere in the Requests table and select **Clear Browser Cookies**.
 
 <figure>
   <img src="imgs/clear-browser-cookies.png"
-       alt="Memilih Hapus Cookie Browser.">
+       alt="Selecting Clear Browser Cookies.">
   <figcaption>
-    <b>Gambar 10</b>. Memilih Hapus Cookie Browser
+    <b>Figure 10</b>. Selecting Clear Browser Cookies
   </figcaption>
 </figure>
 
-### Mengganti browser {: #user-agent }
+### Override the user agent {: #user-agent }
 
-Untuk mengganti browser secara manual:
+To manually override the user agent:
 
-1. Buka [panel samping Kondisi Jaringan](#network-conditions).
-1. Hapus centang **Select automatically**.
-1. Pilih opsi browser dari menu, atau masukkan browser kustom dalam
-   kotak teks.
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Uncheck **Select automatically**.
+3. Choose a user agent option from the menu, or enter a custom one in the text box.
 
-## Memfilter permintaan {: #filter }
+## Filter requests {: #filter }
 
-### Memfilter permintaan berdasarkan properti {: #filter-by-property }
+### Filter requests by properties {: #filter-by-property }
 
-Gunakan kotak teks **Filter** untuk memfilter permintaan berdasarkan properti, seperti
-domain atau ukuran permintaan.
+Use the **Filter** text box to filter requests by properties, such as the domain or size of the request.
 
-Jika Anda tidak dapat melihat kotak teks, panel Filter mungkin tersembunyi.
-Lihat [Menyembunyikan panel Filter](#hide-filters).
+If you can't see the text box, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
 <figure>
-  <img src="imgs/filter-text-box.svg" alt="Kotak teks Filter.">
+  <img src="imgs/filter-text-box.svg" alt="The Filters text box.">
   <figcaption>
-    <b>Gambar 11</b>. Kotak teks Filter, dikotaki warna biru
+    <b>Figure 11</b>. The Filters text box, outlined in blue
   </figcaption>
 </figure>
 
-Anda dapat menggunakan beberapa properti secara bersamaan dengan memisahkan setiap properti
-menggunakan spasi. Misalnya, `mime-type:image/gif larger-than:1K` menampilkan
-semua GIF yang lebih dari satu kilobyte. Filter multi-properti ini
-setara dengan operasi AND. Operasi OR saat ini
-tidak didukung.
+You can use multiple properties simultaneously by separating each property with a space. For example, `mime-type:image/gif larger-than:1K` displays all GIFs that are larger than one kilobyte. These multi-property filters are equivalent to AND operations. OR operations are currently not supported.
 
-Di bawah ini adalah daftar lengkap properti yang didukung.
+Below is a complete list of supported properties.
 
-* `domain`. Hanya menampilkan resource dari domain yang ditetapkan. Anda dapat menggunakan
-  karakter pengganti (`*`) untuk menyertakan beberapa domain. Misalnya, `*.com`
-  menampilkan resource dari semua nama domain yang berakhiran `.com`. DevTools
-  mengisi menu dropdown pelengkapan otomatis dengan semua domain
-  yang dijumpainya.
-* `has-response-header`. Menampilkan resource yang berisi header respons HTTP
-  yang sudah ditetapkan. DevTools mengisi menu dropdown pelengkapan otomatis dengan
-  semua header respons yang dijumpainya.
-* `is`. Gunakan `is:running` untuk menemukan resource `WebSocket`.
-* `larger-than`. Menampilkan resource yang lebih besar dari ukuran yang ditetapkan,
-  dalam byte. Menetapkan nilai `1000` adalah sama dengan menetapkan nilai `1k`.
-* `method`. Menampilkan resource yang diambil melalui jenis metode HTTP
-  yang ditetapkan. DevTools mengisi dropdown dengan semua metode HTTP
-  yang dijumpainya.
-* `mime-type`. Menampilkan resource jenis MIME yang sudah ditentukan. DevTools mengisi otomatis menu
-  dropdown dengan semua jenis MIME yang dijumpainya.
-* `mixed-content`. Menampilkan semua resource konten campuran (`mixed-content:all`) atau
-  hanya yang sedang ditampilkan (`mixed-content:displayed`).
-* `scheme`. Menampilkan resource yang diambil melalui HTTP yang tidak dilindungi (`scheme:http`)
-  atau HTTPS yang dilindungi (`scheme:https`).
-* `set-cookie-domain`. Menampilkan resource yang memiliki header `Set-Cookie`
-  dengan atribut `Domain` yang cocok dengan nilai yang ditetapkan. DevTools
-  mengisi pelengkapan otomatis dengan semua domain cookie yang
-  dijumpainya.
-* `set-cookie-name`. Menampilkan resource yang memiliki header `Set-Cookie`
-  dengan nama yang cocok dengan nilai yang ditetapkan. DevTools mengisi
-  pelengkapan otomatis dengan semua nama cookie yang dijumpainya.
-* `set-cookie-value`. Menampilkan resource yang memiliki header `Set-Cookie`
-  dengan nilai yang cocok dengan nilai yang ditetapkan. DevTools mengisi
-  pelengkapan otomatis dengan semua nilai cookie yang dijumpainya.
-* `status-code`. Hanya menampilkan resource yang kode status HTTP-nya cocok dengan kode
-  yang ditetapkan. DevTools mengisi menu dropdown pelengkapan otomatis dengan semua
- kode status yang dijumpainya.
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
-### Memfilter permintaan berdasarkan jenis {: #filter-by-type }
+### Filter requests by type {: #filter-by-type }
 
-Untuk memfilter permintaan berdasarkan jenis permintaan, klik tombol **XHR**, **JS**, **CSS**,
-**Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest**, atau
-**Other** (jenis lainnya yang tidak tercantum di sini) di panel Jaringan.
+To filter requests by request type, click the **XHR**, **JS**, **CSS**, **Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest**, or **Other** (any other type not listed here) buttons on the Network panel.
 
-Jika Anda tidak dapat melihat tombol-tombol ini, panel Filter mungkin tersembunyi.
-Lihat [Menyembunyikan panel Filter](#hide-filters).
+If you can't see these buttons, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
-Untuk mengaktifkan beberapa jenis filter secara bersamaan, tahan <kbd>Command</kbd>
-(Mac) atau <kbd>Control</kbd> (Windows, Linux) lalu klik.
+To enable multiple type filters simultaneously, hold <kbd>Command</kbd> (Mac) or <kbd>Control</kbd> (Windows, Linux) and then click.
 
 <figure>
   <img src="imgs/multi-type-filter.png"
-       alt="Menggunakan filter Jenis untuk menampilkan resource JS, CSS, dan Dok[umen]
-.">
+       alt="Using the Type filters to display JS, CSS, and Doc[ument]
+            resources.">
   <figcaption>
-    <b>Gambar 12</b>. Menggunakan filter Jenis untuk menampilkan resource JS, CSS, dan
-   Dok[umen].
+    <b>Figure 12</b>. Using the Type filters to display JS, CSS, and Doc[ument]
+    resources.
   </figcaption>
 </figure>
 
-### Memfilter permintaan berdasarkan waktu {: #filter-by-time }
+### Filter requests by time {: #filter-by-time }
 
-Klik dan seret ke kiri atau kanan pada panel Ringkasan untuk hanya menampilkan permintaan
-yang sedang aktif selama jangka waktu tersebut. Filter inklusif. Setiap permintaan
-yang aktif selama waktu yang disorot ditampilkan.
+Click and drag left or right on the Overview pane to only display requests that were active during that time frame. The filter is inclusive. Any request that was active during the highlighted time is shown.
 
 <figure>
   <img src="imgs/overview-filter.png"
-       alt="Memfilter permintaan apa pun yang tidak aktif sekitar 2500 milidetik.">
+       alt="Filtering out any requests that weren't active around 2500ms.">
   <figcaption>
-    <b>Gambar 13</b>. Memfilter permintaan apa pun yang tidak aktif sekitar
-    2500 milidetik
+    <b>Figure 13</b>. Filtering out any requests that weren't active around
+    2500ms
   </figcaption>
 </figure>
 
-### Menyembunyikan data URL
+### Hide data URLs
 
-[URL Data][data-uris] adalah file kecil yang disematkan ke dokumen lain. Permintaan
-yang Anda lihat di tabel Permintaan yang dimulai dengan
-`data:` adalah URL data.
+[Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) are small files embedded into other documents. Any request that you see in the Requests table that starts with `data:` is a data URL.
 
-Centang kotak centang **Hide data URLs** untuk menyembunyikan permintaan ini.
+Check the **Hide data URLs** checkbox to hide these requests.
 
 <figure>
-  <img src="imgs/hide-data-urls.svg" alt="Kotak centang Sembunyikan URL Data.">
+  <img src="imgs/hide-data-urls.svg" alt="The Hide Data URLs checkbox.">
   <figcaption>
-    <b>Gambar 14</b>. Kotak centang Sembunyikan URL Data
+    <b>Figure 14</b>. The Hide Data URLs checkbox
   </figcaption>
 </figure>
 
-[data-uris]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+## Sort requests
 
-## Mengurutkan permintaan
+By default, the requests in the Requests table are sorted by initiation time, but you can sort the table using other criteria.
 
-Secara default, permintaan di tabel Permintaan diurutkan berdasarkan waktu
-inisiasi, tetapi Anda dapat mengurutkan tabel menggunakan kriteria lain.
+### Sort by column {: #sort-by-column }
 
-### Mengurutkan berdasarkan kolom {: #sort-by-column }
+Click the header of any column in the Requests to sort requests by that column.
 
-Klik header dari kolom mana pun di Permintaan untuk mengurutkan permintaan berdasarkan kolom
-tersebut.
+### Sort by activity phase {: #sort-by-activity }
 
-### Mengurutkan berdasarkan fase aktivitas {: #sort-by-activity }
+To change how the Waterfall sorts requests, right-click the header of the Requests table, hover over **Waterfall**, and select one of the following options:
 
-Untuk mengubah bagaimana Waterfall mengurutkan permintaan, klik kanan pada header tabel
-Permintaan, arahkan kursor ke **Waterfall**, dan pilih salah satu dari opsi
-berikut:
+* **Start Time**. The first request that was initiated is at the top.
+* **Response Time**. The first request that started downloading is at the top.
+* **End Time**. The first request that finished is at the top.
+* **Total Duration**. The request with the shortest connection setup and request / response is at the top.
+* **Latency**. The request that waited the shortest time for a response is at the top.
 
-* **Start Time**. Permintaan pertama yang dimulai ada di bagian atas.
-* **Response Time**. Permintaan pertama yang mulai mendownload ada di bagian atas.
-* **End Time**. Permintaan pertama yang sudah selesai ada di bagian atas.
-* **Total Duration**. Permintaan dengan penyiapan koneksi terpendek dan
-  permintaan/respons ada di bagian atas.
-* **Latency**. Permintaan yang menunggu waktu tersingkat untuk respons
-  ada di bagian atas.
-
-Deskripsi ini mengasumsikan bahwa setiap opsi diberi peringkat dari yang terpendek
-ke yang terpanjang. Mengklik header kolom **Waterfall** akan membalik urutan.
+These descriptions assume that each respective option is ranked from shortest to longest. Clicking on the **Waterfall** column's header reverses the order.
 
 <figure>
   <img src="imgs/waterfall-total-duration.png"
-       alt="Mengurutkan Waterfall berdasarkan durasi total.">
+       alt="Sorting the Waterfall by total duration.">
   <figcaption>
-    <b>Gambar 15</b>. Mengurutkan Waterfall berdasarkan durasi total. Bagian
-    yang lebih terang dari setiap bilah adalah waktu yang dihabiskan menunggu. Bagian yang lebih gelap adalah waktu
-    yang dihabiskan untuk mendownload byte.
+    <b>Figure 15</b>. Sorting the Waterfall by total duration. The lighter
+    portion of each bar is time spent waiting. The darker portion is time
+    spent downloading bytes.
   </figcaption>
 </figure>
 
-## Menganalisis permintaan {: #analyze }
+## Analyze requests {: #analyze }
 
-Selama DevTools terbuka, DevTools mencatat semua permintaan di panel Jaringan.
-Gunakan panel Jaringan untuk menganalisis permintaan.
+So long as DevTools is open, it logs all requests in the Network panel. Use the Network panel to analyze requests.
 
-### Melihat log permintaan {: #requests }
+### View a log of requests {: #requests }
 
-Gunakan tabel Permintaan untuk melihat log dari semua permintaan yang dibuat ketika DevTools
-telah terbuka. Mengklik atau mengarahkan kursor ke permintaan akan memperlihatkan lebih banyak informasi
-tentang permintaan.
+Use the Requests table to view a log of all requests made while DevTools has been open. Clicking or hovering over requests reveals more information about them.
 
 <figure>
   <img src="imgs/requests-table.svg"
-       alt="Tabel Permintaan.">
+       alt="The Requests table.">
   <figcaption>
-    <b>Gambar 16</b>. Tabel Permintaan, dikotaki warna biru
+    <b>Figure 16</b>. The Requests table, outlined in blue
   </figcaption>
 </figure>
 
-Tabel Requests menampilkan kolom berikut secara default:
+The Requests table displays the following columns by default:
 
-* **Name**. Nama file resource, atau ID untuk resource tersebut.
-* **Status**. Kode status HTTP.
-* **Type**. Jenis MIME dari resource yang diminta.
-* **Initiator**. Objek atau proses berikut dapat memulai permintaan:
-    * **Parser**. Parser HTML Chrome.
-    * **Redirect**. Pengalihan HTTP.
-    * **Script**. Fungsi JavaScript.
-    * **Other**. Beberapa proses atau tindakan lain, seperti menavigasi ke halaman
-      melalui link atau memasukkan URL di kolom URL.
-* **Size**. Ukuran gabungan header respons
-  beserta isi respons, sebagaimana dikirimkan oleh server.
-* **Time**. Durasi total, dari permulaan permintaan ke
-  bagian akhir byte terakhir dalam respons.
-* [**Waterfall**](#waterfall). Perincian visual setiap aktivitas permintaan.
+* **Name**. The filename of, or an identifier for, the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The following objects or processes can initiate requests: 
+    * **Parser**. Chrome's HTML parser.
+    * **Redirect**. An HTTP redirect.
+    * **Script**. A JavaScript function.
+    * **Other**. Some other process or action, such as navigating to a page via a link or entering a URL in the address bar.
+* **Size**. The combined size of the response headers plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* [**Waterfall**](#waterfall). A visual breakdown of each request's activity.
 
-#### Menambahkan atau menghapus kolom {: #columns }
+#### Add or remove columns {: #columns }
 
-Klik kanan header tabel Permintaan dan pilih opsi
-untuk menyembunyikan atau menampilkannya. Opsi yang ditampilkan saat ini memiliki tanda centang di sebelahnya.
+Right-click the header of the Requests table and select an option to hide or show it. Currently displayed options have checkmarks next to them.
 
 <figure>
   <img src="imgs/add-column.png"
-       alt="Menambahkan kolom ke tabel Permintaan.">
+       alt="Adding a column to the Requests table.">
   <figcaption>
-    <b>Gambar 17</b>. Menambahkan kolom ke tabel Permintaan.
+    <b>Figure 17</b>. Adding a column to the Requests table.
   </figcaption>
 </figure>
 
-#### Menambahkan kolom khusus {: #custom-columns }
+#### Add custom columns {: #custom-columns }
 
-Untuk menambahkan kolom khusus ke tabel Permintaan, klik kanan header
-tabel Permintaan dan pilih **Response Headers** > **Manage Header Columns**.
+To add a custom column to the Requests table, right-click the header of the Requests table and select **Response Headers** > **Manage Header Columns**.
 
 <figure>
   <img src="imgs/custom-column.png"
-       alt="Menambahkan kolom khusus ke tabel Permintaan.">
+       alt="Adding a custom column to the Requests table.">
   <figcaption>
-    <b>Gambar 18</b>. Menambahkan kolom khusus ke tabel Permintaan.
+    <b>Figure 18</b>. Adding a custom column to the Requests table.
   </figcaption>
 </figure>
 
-### Melihat waktu permintaan yang saling terkait {: #waterfall }
+### View the timing of requests in relation to one another {: #waterfall }
 
-Gunakan Waterfall untuk melihat waktu permintaan yang saling terkait.
-Secara default, Waterfall diurutkan berdasarkan waktu mulai permintaan.
-Jadi, permintaan yang ada di sisi kiri dimulai lebih awal daripada permintaan yang
-ada di sisi kanan.
+Use the Waterfall to view the timing of requests in relation to one another. By default, the Waterfall is organized by the start time of the requests. So, requests that are farther to the left started earlier than those that are farther to the right.
 
-Lihat [Mengurutkan berdasarkan fase aktivitas](#sort-by-activity) untuk melihat beragam cara
-dalam mengurutkan Waterfall.
+See [Sort by activity phase](#sort-by-activity) to see the different ways that you can sort the Waterfall.
 
 <figure>
   <img src="imgs/waterfall.png"
-       alt="Kolom Waterfall panel Permintaan.">
+       alt="The Waterfall column of the Requests pane.">
   <figcaption>
-    <b>Gambar 19</b>. Kolom Waterfall panel Permintaan.
+    <b>Figure 19</b>. The Waterfall column of the Requests pane.
   </figcaption>
 </figure>
 
-### Menganalisis frame Koneksi WebSocket {: #frames }
+### Analyze the frames of a WebSocket Connection {: #frames }
 
-Untuk melihat frame koneksi WebSocket:
+To view the frames of a WebSocket connection:
 
-1. Klik URL koneksi WebSocket, di bawah kolom **Name**
-   tabel Permintaan.
-1. Klik tab **Frames**. Tabel menampilkan 100 frame terakhir.
+1. Click the URL of the WebSocket connection, under the **Name** column of the Requests table.
+2. Click the **Frames** tab. The table shows the last 100 frames.
 
-Untuk memuat ulang tabel, klik ulang nama koneksi WebSocket di bawah kolom
-**Name** pada tabel Permintaan.
+To refresh the table, re-click the name of the WebSocket connection under the **Name** column of the Requests table.
 
 <figure>
   <img src="imgs/frames.svg"
-       alt="Tab Frame.">
+       alt="The Frames tab.">
   <figcaption>
-    <b>Gambar 20</b>. Tab Frame, dikotaki warna biru
+    <b>Figure 20</b>. The Frames tab, outlined in blue
   </figcaption>
 </figure>
 
-Tabel berisi tiga kolom:
+The table contains three columns:
 
-* **Data**. Payload pesan. Jika berformat teks biasa, pesan
-  ditampilkan di sini. Untuk opcode biner, kolom ini menampilkan nama dan kode
-  opcode. Didukung opcode berikut: Frame Lanjutan,
-  Frame Biner, Frame Tutup Koneksi, Frame Ping, dan Frame Pong.
-* **Length**. Panjang payload pesan, dalam byte.
-* **Time**. Waktu ketika pesan itu diterima atau dikirim.
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this column displays the opcode's name and code. The following opcodes are supported: Continuation Frame, Binary Frame, Connection Close Frame, Ping Frame, and Pong Frame.
+* **Length**. The length of the message payload, in bytes.
+* **Time**. The time when the message was received or sent.
 
-Pesan diberi kode warna sesuai dengan jenisnya:
+Messages are color-coded according to their type:
 
-* Pesan teks keluar berwarna hijau terang.
-* Pesan teks masuk berwarna putih.
-* Opcode WebSocket berwarna kuning terang.
-* Error berwarna merah terang.
+* Outgoing text messages are light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-### Melihat pratinjau isi respons {: #preview }
+### View a preview of a response body {: #preview }
 
-Untuk melihat pratinjau isi respons:
+To view a preview of a response body:
 
-1. Klik URL permintaan, di bawah kolom **Name** pada tabel
-   Permintaan.
-1. Klik tab **Preview**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Preview** tab.
 
-Tab ini sangat berguna untuk melihat gambar.
+This tab is mostly useful for viewing images.
 
 <figure>
   <img src="imgs/preview.svg"
-       alt="Tab Pratinjau">
+       alt="The Preview tab.">
   <figcaption>
-    <b>Gambar 21</b>. Tab Pratinjau, dikotaki warna biru
+    <b>Figure 21</b>. The Preview tab, outlined in blue
   </figcaption>
 </figure>
 
-### Melihat isi respons {: #response }
+### View a response body {: #response }
 
-Untuk melihat isi respons ke permintaan:
+To view the response body to a request:
 
-1. Klik URL permintaan, di bawah kolom **Name** pada tabel
-   Permintaan.
-1. Klik tab **Response**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Response** tab.
 
 <figure>
   <img src="imgs/response.svg"
-       alt="Tab Respons.">
+       alt="The Response tab.">
   <figcaption>
-    <b>Gambar 22</b>. Tab Respons, dikotaki warna biru
+    <b>Figure 22</b>. The Response tab, outlined in blue
   </figcaption>
 </figure>
 
-### Melihat header HTTP {: #headers }
+### View HTTP headers {: #headers }
 
-Untuk melihat data header HTTP tentang permintaan:
+To view HTTP header data about a request:
 
-1. Klik URL permintaan, di bawah kolom **Name** pada tabel
-   Permintaan.
-1. Klik tab **Headers**.
+1. Click on the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Headers** tab.
 
 <figure>
   <img src="/web/tools/chrome-devtools/images/headers.svg"
-       alt="Tab Header.">
+       alt="The Headers tab.">
   <figcaption>
-    <b>Gambar 23</b>. Tab Header, dikotaki warna biru
+    <b>Figure 23</b>. The Headers tab, outlined in blue
   </figcaption>
 </figure>
 
-#### Melihat source header HTTP {: #header-source }
+#### View HTTP header source {: #header-source }
 
-Secara default, tab Header menampilkan nama header berdasarkan abjad. Untuk melihat nama header
-HTTP dalam urutan yang diterima:
+By default, the Headers tab shows header names alphabetically. To view the HTTP header names in the order they were received:
 
-1. Buka tab **Headers** untuk permintaan yang Anda minati. Baca
-   [Melihat header HTTP](#headers).
-1. Klik **view source**, di samping bagian **Request Header** atau **Response
-   Header**.
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Click **view source**, next to the **Request Header** or **Response Header** section.
 
-### Melihat parameter string kueri {: #query-string }
+### View query string parameters {: #query-string }
 
-Untuk melihat parameter string kueri URL dalam format yang bisa dibaca manusia:
+To view the query string parameters of a URL in a human-readable format:
 
-1. Buka tab **Headers** untuk permintaan yang Anda minati. Baca
-   [Melihat header HTTP](#headers).
-1. Buka bagian **Query String Parameters**.
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Go to the **Query String Parameters** section.
 
 <figure>
-  <img src="imgs/query-string.svg" alt="Bagian Parameter String Kueri.">
+  <img src="imgs/query-string.svg" alt="The Query String Parameters section.">
   <figcaption>
-    <b>Gambar 24</b>. Bagian Parameter String Kueri, dikotaki warna biru
+    <b>Figure 24</b>. The Query String Parameters section, outlined in blue
   </figcaption>
 </figure>
 
-#### Melihat sumber parameter string kueri {: #query-string-source }
+#### View query string parameters source {: #query-string-source }
 
-Untuk melihat sumber parameter string kueri permintaan:
+To view the query string parameter source of a request:
 
-1. Buka bagian Parameter String Kueri. Lihat [Melihat parameter
-   string kueri](#query-string).
-1. Klik **view source**.
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view source**.
 
-#### Melihat parameter string kueri yang dikodekan URL {: #query-string-encodings }
+#### View URL-encoded query string parameters {: #query-string-encodings }
 
-Untuk melihat parameter string kueri dalam format yang dapat dibaca manusia, tetapi dengan mempertahankan
-encoding:
+To view query string parameters in a human-readable format, but with encodings preserved:
 
-1. Buka bagian Parameter String Kueri. Lihat [Melihat parameter
-   string kueri](#query-string).
-1. Klik **view URL encoded**.
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view URL encoded**.
 
-### Melihat cookie {: #cookies }
+### View cookies {: #cookies }
 
-Untuk melihat cookie yang dikirim dalam header HTTP permintaan:
+To view the cookies sent in a request's HTTP header:
 
-1. Klik URL permintaan, di bawah kolom **Name**
-   pada tabel Permintaan.
-1. Klik tab **Cookies**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Cookies** tab.
 
-Baca [Kolom](/web/tools/chrome-devtools/manage-data/cookies#fields) untuk
-deskripsi setiap kolom.
+See [Fields](/web/tools/chrome-devtools/manage-data/cookies#fields) for a description of each of the columns.
 
 <figure>
   <img src="imgs/cookies.svg"
-       alt="Tab Cookie.">
+       alt="The Cookies tab.">
   <figcaption>
-    <b>Gambar 25</b>. Tab Cookie, dikotaki warna biru
+    <b>Figure 25</b>. The Cookies tab, outlined in blue
   </figcaption>
 </figure>
 
-### Melihat perincian waktu permintaan {: #timing }
+### View the timing breakdown of a request {: #timing }
 
-Untuk melihat perincian waktu permintaan:
+To view the timing breakdown of a request:
 
-1. Klik URL permintaan, di bawah kolom **Name** pada tabel
-   Permintaan.
-1. Klik tab **Timing**.
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Timing** tab.
 
-Lihat [Pratinjau perincian waktu](#timing-preview) untuk cara yang lebih cepat
-mengakses data ini.
+See [Preview a timing breakdown](#timing-preview) for a faster way to access this data.
 
-Lihat [Tahap perincian waktu dijelaskan](#timing-explanation) untuk informasi
-selengkapnya tentang setiap tahap yang Anda lihat di tab Waktu.
+See [Timing breakdown phases explained](#timing-explanation) for more information about each of the phases that you may see in the Timing tab.
 
 <figure>
-  <img src="imgs/timing.svg" alt="Tab Waktu.">
+  <img src="imgs/timing.svg" alt="The Timing tab.">
   <figcaption>
-    <b>Gambar 26</b>. Tab Waktu, dikotaki warna biru
+    <b>Figure 26</b>. The Timing tab, outlined in blue
   </figcaption>
 </figure>
 
-Berikut informasi selengkapnya tentang setiap tahap.
+Here's more information about each of the phases.
 
-Baca [Lihat perincian waktu](#timing-breakdown) untuk cara lain dalam mengakses
-tampilan ini.
+See [View timing breakdown](#timing-breakdown) for another way to access this view.
 
-#### Melihat pratinjau perincian waktu {: #timing-preview }
+#### Preview a timing breakdown {: #timing-preview }
 
-Untuk melihat pratinjau perincian waktu permintaan, arahkan kursor ke
-entri permintaan di kolom **Waterfall** pada tabel Permintaan.
+To view a preview of the timing breakdown of a request, hover over the request's entry in the **Waterfall** column of the Requests table.
 
-Baca [Melihat perincian waktu permintaan](#timing) untuk cara mengakses
-data ini tanpa harus mengarahkan kursor.
+See [View the timing breakdown of a request](#timing) for a way to access this data that does not require hovering.
 
 <figure>
   <img src="imgs/waterfall-hover.png"
-       alt="Melihat pratinjau perincian waktu permintaan.">
+       alt="Previewing the timing breakdown of a request.">
   <figcaption>
-    <b>Gambar 27</b>. Melihat pratinjau perincian waktu permintaan
+    <b>Figure 27</b>. Previewing the timing breakdown of a request
   </figcaption>
 </figure>
 
-#### Tahap perincian waktu dijelaskan {: #timing-explanation }
+#### Timing breakdown phases explained {: #timing-explanation }
 
-Berikut informasi selengkapnya tentang setiap tahap yang Anda lihat di tab
-Waktu:
+Here's more information about each of the phases you may see in the Timing tab:
 
-* **Queueing**. Browser mengantrekan permintaan ketika:
-    * Ada permintaan prioritas yang lebih tinggi.
-    * Sudah ada enam koneksi TCP yang terbuka untuk asal ini, yang merupakan
-      batasnya. Hanya berlaku untuk HTTP/1.0 dan HTTP/1.1.
-    * Browser secara singkat mengalokasikan ruang di cache disk
-* **Stalled**. Permintaan dapat terhenti karena salah satu alasan yang dijelaskan
-  di **Queueing**.
-* **DNS Lookup**. Browser mengatasi masalah alamat IP permintaan.
-* **Proxy negotiation**. Browser menegosiasikan permintaan dengan [server
-  proxy](https://en.wikipedia.org/wiki/Proxy_server).
-* **Request sent**. Permintaan sedang dikirim.
-* **ServiceWorker Preparation**. Browser sedang memulai pekerja layanan.
-* **Request to ServiceWorker**. Permintaan dikirim ke pekerja
-  layanan.
-* **Waiting (TTFB)**. Browser menunggu byte pertama dari respons.
-  TTFB adalah singkatan dari Time To First Byte. Waktu ini mencakup 1 kali round trip latensi
-  waktu yang diperlukan server untuk menyiapkan respons.
-* **Content Download**. Browser menerima respons.
-* **Receiving Push**. Browser menerima data untuk respons ini melalui HTTP/2
-  Server Push.
-* **Reading Push**. Browser membaca data lokal yang diterima sebelumnya.
+* **Queueing**. The browser queues requests when: 
+    * There are higher priority requests.
+    * There are already six TCP connections open for this origin, which is the limit. Applies to HTTP/1.0 and HTTP/1.1 only.
+    * The browser is briefly allocating space in the disk cache
+* **Stalled**. The request could be stalled for any of the reasons described in **Queueing**.
+* **DNS Lookup**. The browser is resolving the request's IP address.
+* **Proxy negotiation**. The browser is negotiating the request with a [proxy server](https://en.wikipedia.org/wiki/Proxy_server).
+* **Request sent**. The request is being sent.
+* **ServiceWorker Preparation**. The browser is starting up the service worker.
+* **Request to ServiceWorker**. The request is being sent to the service worker.
+* **Waiting (TTFB)**. The browser is waiting for the first byte of a response. TTFB stands for Time To First Byte. This timing includes 1 round trip of latency and the time the server took to prepare the response.
+* **Content Download**. The browser is receiving the response.
+* **Receiving Push**. The browser is receiving data for this response via HTTP/2 Server Push.
+* **Reading Push**. The browser is reading the local data previously received.
 
-### Melihat inisiator dan dependensi {: #initiators-dependencies }
+### View initiators and dependencies {: #initiators-dependencies }
 
-Untuk melihat inisiator dan dependensi suatu permintaan, tahan <kbd>Shift</kbd>
-dan arahkan kursor ke permintaan pada tabel Permintaan. DevTools inisiatior berwarna
-hijau, dan dependensi berwarna merah.
+To view the initiators and dependencies of a request, hold <kbd>Shift</kbd> and hover over the request in the Requests table. DevTools colors initiators green, and dependencies red.
 
 <figure>
   <img src="imgs/initiators-dependencies.png"
-       alt="Melihat inisiator dan dependensi permintaan.">
+       alt="Viewing the initiators and dependencies of a request.">
   <figcaption>
-    <b>Gambar 28</b>. Melihat inisiator dan dependensi permintaan
+    <b>Figure 28</b>. Viewing the initiators and dependencies of a request
   </figcaption>
 </figure>
 
-Ketika tabel Permintaan disusun secara kronologis, permintaan
-hijau pertama di atas permintaan yang Anda arahkan kursor Anda adalah inisiator
-dari dependensi. Jika ada permintaan hijau lain di atasnya, permintaan
-yang lebih tinggi adalah inisiator dari inisiator tersebut. Dan seterusnya.
+When the Requests table is ordered chronologically, the first green request above the request that you're hovering over is the initiator of the dependency. If there's another green request above that, that higher request is the initiator of the initiator. And so on.
 
-### Melihat peristiwa pemuatan {: #load }
+### View load events {: #load }
 
-DevTools menampilkan waktu peristiwa `DOMContentLoaded` dan `load` di
-beberapa tempat pada panel Jaringan. Peristiwa `DOMContentLoaded` berwarna
-biru, dan peristiwa `load` berwarna merah.
+DevTools displays the timing of the `DOMContentLoaded` and `load` events in multiple places on the Network panel. The `DOMContentLoaded` event is colored blue, and the `load` event is red.
 
 <figure>
   <img src="imgs/load-events.svg"
-       alt="Lokasi peristiwa DOMContentLoaded dan load pada panel Jaringan.">
+       alt="The locations of the DOMContentLoaded and load events on the Network panel.">
   <figcaption>
-    <b>Gambar 29</b>. Lokasi peristiwa <code>DOMContentLoaded</code> dan
-    <code>load</code> pada panel Jaringan
+    <b>Figure 29</b>. The locations of the <code>DOMContentLoaded</code> and
+    <code>load</code> events in the Network panel
   </figcaption>
 </figure>
 
-### Melihat jumlah total permintaan {: #total-number }
+### View the total number of requests {: #total-number }
 
-Jumlah total permintaan dicantumkan dalam panel Rangkuman, di bagian bawah
-panel Jaringan.
+The total number of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-Perhatian: Jumlah ini hanya melacak permintaan yang tercatat sejak DevTools
-dibuka. Jika permintaan lain dilakukan sebelum DevTools dibuka, permintaan
-tersebut tidak dihitung.
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-requests.svg"
-       alt="Jumlah total permintaan sejak DevTools dibuka">
+       alt="The total number of requests since DevTools was opened">
   <figcaption>
-    <b>Gambar 30</b>. Jumlah total permintaan sejak DevTools dibuka
+    <b>Figure 30</b>. The total number of requests since DevTools was opened
   </figcaption>
 </figure>
 
-### Melihat ukuran download total {: #total-size }
+### View the total download size {: #total-size }
 
-Ukuran download total permintaan dicantumkan dalam panel Ringkasan, di
-bagian bawah panel Jaringan.
+The total download size of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-Perhatian: Jumlah ini hanya melacak permintaan yang tercatat sejak DevTools
-dibuka. Jika permintaan lain dilakukan sebelum DevTools dibuka, permintaan
-tersebut tidak dihitung.
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-size.svg"
-       alt="Ukuran download total permintaan">
+       alt="The total download size of requests">
   <figcaption>
-    <b>Gambar 31</b>. Ukuran download total permintaan
+    <b>Figure 31</b>. The total download size of requests
   </figcaption>
 </figure>
 
-Baca [Lihat ukuran resource yang tidak terkompresi](#uncompressed) untuk mengetahui ukuran
-resource setelah browser membuka kompresinya.
+See [View the uncompressed size of a resource](#uncompressed) to see how large resources are after the browser uncompresses them.
 
-### Melihat pelacakan tumpukan yang menyebabkan permintaan {: #initiator-stack-trace }
+### View the stack trace that caused a request {: #initiator-stack-trace }
 
-Saat pernyataan JavaScript menyebabkan resource diminta, arahkan kursor ke kolom **Initiator**
-untuk melihat pelacakan tumpukan yang mengarah ke permintaan.
+When a JavaScript statement causes a resource to be requested, hover over the **Initiator** column to view the stack trace leading up to the request.
 
 <figure>
   <img src="imgs/initiator-stack.png"
-       alt="Pelacakan tumpukan mengarah ke permintaan resource">
+       alt="The stack trace leading up to a resource request">
   <figcaption>
-    <b>Gambar 32</b>. Pelacakan tumpukan mengarah ke permintaan resource
+    <b>Figure 32</b>. The stack trace leading up to a resource request
   </figcaption>
 </figure>
 
-### Melihat ukuran resource yang tidak terkompresi {: #uncompressed }
+### View the uncompressed size of a resource {: #uncompressed }
 
-Klik **Use Large Request Rows** ![Gunakan Baris Permintaan
-Besar](imgs/large-resource-rows-button.png){:.inline-icon} lalu lihat
-nilai terendah pada kolom **Size**.
+Click **Use Large Request Rows** ![Use Large Request
+Rows](imgs/large-resource-rows-button.png){:.inline-icon} and then look at the bottom value of the **Size** column.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="Contoh resource tidak terkompresi.">
+       alt="An example of uncompressed resources.">
   <figcaption>
-    <b>Gambar 33</b>. Ukuran terkompresi file <code>jquery-bundle.js</code>
-   yang dikirim melalui jaringan adalah <code>30.9 KB</code>, sedangkan ukuran yang tidak terkompresi adalah
+    <b>Figure 33</b>. The compressed size of the <code>jquery-bundle.js</code> file
+    that was sent over the network was <code>30.9 KB</code>, whereas the uncompressed size was
     <code>86.3 KB</code>
   </figcaption>
 </figure>
 
-## Mengekspor data permintaan {: #export }
+## Export requests data {: #export }
 
-### Menyimpan semua permintaan jaringan ke file HAR {: #save-as-har }
+### Save all network requests to a HAR file {: #save-as-har }
 
-Untuk menyimpan semua permintaan jaringan ke file HAR:
+To save all network requests to a HAR file:
 
-1. Klik kanan permintaan apa pun di tabel Permintaan.
-1. Pilih **Save as HAR with Content**. DevTools menyimpan semua permintaan yang telah dilakukan sejak Anda
-   membuka DevTools ke file HAR. Tidak ada cara untuk memfilter permintaan, atau hanya menyimpan satu
-   permintaan.
+1. Right-click any request in the Requests table.
+2. Select **Save as HAR with Content**. DevTools saves all requests that have occurred since you opened DevTools to the HAR file. There is no way to filter requests, or to save just a single request.
 
-Setelah Anda mendapatkan file HAR, Anda dapat mengimpornya kembali ke DevTools untuk dianalisis. Cukup
-seret dan lepas file HAR ke dalam tabel Permintaan. Lihat juga [HAR Analyzer][HAR
-Analyzer]{: .external }.
-
-[HAR Analyzer]: https://toolbox.googleapps.com/apps/har_analyzer/
+Once you've got a HAR file, you can import it back into DevTools for analysis. Just drag-and-drop the HAR file into the Requests table. See also [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/){: .external }.
 
 <figure>
   <img src="imgs/save-as-har.png"
-       alt="Memilih Simpan sebagai HAR dengan Konten.">
+       alt="Selecting Save as HAR with Content.">
   <figcaption>
-    <b>Gambar 34</b>. Memilih <b>Simpan sebagai HAR dengan Konten</b>.
+    <b>Figure 34</b>. Selecting <b>Save as HAR with Content</b>
   </figcaption>
 </figure>
 
-### Menyalin satu atau lebih permintaan ke papan klip {: #copy }
+### Copy one or more requests to the clipboard {: #copy }
 
-Di bawah kolom **Name** pada tabel Permintaan, klik kanan permintaan,
-arahkan kursor ke **Copy**, dan pilih salah satu dari opsi berikut:
+Under the **Name** column of the Requests table, right-click a request, hover over **Copy**, and select one of the following options:
 
-* **Copy Link Address**. Salin URL permintaan ke papan klip.
-* **Copy Response**. Salin isi respons ke papan klip.
-* **Copy as cURL**. Salin permintaan sebagai perintah cURL.
-* **Copy All as cURL**. Salin semua permintaan sebagai rangkaian perintah cURL.
-* **Copy All as HAR**. Salin semua permintaan sebagai data HAR.
+* **Copy Link Address**. Copy the request's URL to the clipboard.
+* **Copy Response**. Copy the response body to the clipboard.
+* **Copy as cURL**. Copy the request as a cURL command.
+* **Copy All as cURL**. Copy all requests as a chain of cURL commands.
+* **Copy All as HAR**. Copy all requests as HAR data.
 
 <figure>
-  <img src="imgs/copy.png" alt="Memilih Salin Respons.">
+  <img src="imgs/copy.png" alt="Selecting Copy Response.">
   <figcaption>
-    <b>Gambar 35</b>. Memilih Salin Respons
+    <b>Figure 35</b>. Selecting Copy Response
   </figcaption>
 </figure>
 
-## Mengubah tata letak panel Jaringan
+## Change the layout of the Network panel
 
-Luaskan atau ciutkan bagian dari UI panel Jaringan untuk fokus pada hal yang
-penting bagi Anda.
+Expand or collapse sections of the Network panel UI to focus on what's important to you.
 
-### Menyembunyikan panel Filter {: #hide-filters }
+### Hide the Filters pane {: #hide-filters }
 
-Secara default, DevTools menampilkan [panel Filter](#filters).
-Klik **Filter** ![Filter][filter]{: .devtools-inline } untuk menyembunyikannya.
+By default, DevTools shows the [Filters pane](#filters). Click **Filter** ![Filter](imgs/filters.png){: .devtools-inline } to hide it.
 
 <figure>
-  <img src="imgs/hide-filters.svg" alt="Tombol Sembunyikan Filter">
+  <img src="imgs/hide-filters.svg" alt="The Hide Filters button">
   <figcaption>
-    <b>Gambar 36</b>. Sembunyikan Filter, dikotaki warna biru
+    <b>Figure 36</b>. Hide Filters, outlined in blue
   </figcaption>
 </figure>
 
-[filter]: imgs/filters.png
+### Use large request rows {: #request-rows }
 
-### Menggunakan baris permintaan besar {: #request-rows }
-
-Gunakan baris besar ketika Anda ingin lebih banyak spasi kosong di tabel permintaan
-jaringan Anda. Beberapa kolom juga menyediakan lebih banyak informasi
-ketika menggunakan baris besar. Misalnya, nilai terendah dari kolom **Size**
-adalah ukuran permintaan yang tidak terkompresi.
+Use large rows when you want more whitespace in your network requests table. Some columns also provide a little more information when using large rows. For example, the bottom value of the **Size** column is the uncompressed size of a request.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="Contoh baris permintaan besar pada panel Permintaan.">
+       alt="An example of large request rows in the Requests pane.">
   <figcaption>
-    <b>Gambar 37</b>. Contoh baris permintaan besar pada panel Permintaan
+    <b>Figure 37</b>. An example of large request rows in the Requests pane
   </figcaption>
 </figure>
 
-Klik **Use large request rows** ![Gunakan baris permintaan
-besar][large]{:.devtools-inline} untuk mengaktifkan baris besar.
-
-[large]: imgs/large-resource-rows-button.png
+Click **Use large request rows** ![Use large request
+rows](imgs/large-resource-rows-button.png){:.devtools-inline} to enable large rows.
 
 <figure>
-  <img src="imgs/large-request-rows.svg" alt="Tombol Baris Permintaan Besar">
+  <img src="imgs/large-request-rows.svg" alt="The Large Request Rows button">
   <figcaption>
-    <b>Gambar 38</b>. Baris Permintaan Besar, dikotaki warna biru
+    <b>Figure 38</b>. Large Request Rows, outlined in blue
   </figcaption>
 </figure>
 
-### Menyembunyikan panel Ringkasan {: #hide-overview }
+### Hide the Overview pane {: #hide-overview }
 
-Secara default, DevTools menampilkan [panel Ringkasan](#overview).
-Klik **Hide overview** ![Sembunyikan ringkasan][hide]{:.devtools-inline} untuk menyembunyikannya.
+By default, DevTools shows the [Overview pane](#overview). Click **Hide overview** ![Hide overview](imgs/hide-overview.png){:.devtools-inline} to hide it.
 
 <figure>
-  <img src="imgs/hide-overview.svg" alt="Tombol Sembunyikan Ringkasan">
+  <img src="imgs/hide-overview.svg" alt="The Hide Overview button">
   <figcaption>
-    <b>Gambar 39</b>. Sembunyikan Ringkasan, dikotaki warna biru
+    <b>Figure 39</b>. Hide Overview, outlined in blue
   </figcaption>
 </figure>
 
-[hide]: imgs/hide-overview.png
-
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

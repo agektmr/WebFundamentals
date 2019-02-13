@@ -1,33 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Deberías auditar tus recursos periódicamente, para garantizar que cada recurso ayude a proporcionar una mejor experiencia del usuario.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should audit your resources periodically to ensure that each resource is helping deliver a better user experience.
 
-{# wf_updated_on: 2016-08-29 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Eliminación de descargas innecesarias {: .page-title }
+# Eliminating Unnecessary Downloads {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
 ### TL;DR {: .hide-from-toc }
-* Haz un inventario de tus propios recursos y los de terceros en tus páginas.
-* Mide el rendimiento de cada recurso: su valor y su rendimiento técnico.
-* Determina si los recursos proporcionan suficiente valor.
 
-Los recursos más rápidos y más optimizados son aquellos que no se envían. Debes eliminar los recursos innecesarios en tu app. Te recomendamos que cuestionar y volver a visitar periódicamente las suposiciones implícitas y explícitas con tu equipo. He aquí algunos ejemplos:
+* Inventory your own assets and third-party assets on your pages.
+* Measure the performance of each asset: its value and its technical performance.
+* Determine if the resources are providing sufficient value.
 
-* Siempre incluiste el recurso X en tus páginas; pero, ¿el valor que ofrece al usuario compensa el costo de su descarga y visualización? ¿Puedes calcular y probar su valor?
-* ¿El recurso (en especial si es de terceros) proporciona un rendimiento uniforme? ¿Se encuentra, o debe encontrarse, este en la ruta de acceso crítica? Si el recurso se encuentra en la ruta de acceso crítica, ¿podría ser un único punto de error para el sitio? Es decir, si el recurso no está disponible, ¿afectará el rendimiento y la experiencia del usuario en tus páginas?
-* ¿Tiene o necesita este recurso un SLA? ¿Sigue este recurso las prácticas recomendadas de rendimiento (compresión, almacenamiento en caché, etc.)?
+The fastest and best-optimized resource is a resource not sent. You should eliminate unnecessary resources from your application. It’s a good practice to question, and periodically revisit, the implicit and explicit assumptions with your team. Here are a few examples:
 
-Con frecuencia, las páginas contienen recursos que son innecesarios, o lo que es peor, afectan al rendimiento de la página sin brindar demasiado valor al visitante o al sitio en el que se alojan. Esto se aplica de la misma manera para recursos y widgets propios y de terceros:
+* You've always included resource X on your pages, but does the cost of downloading and displaying it offset the value it delivers to the user? Can you measure and prove its value?
+* Does the resource (especially if it's a third-party resource) deliver consistent performance? Is this resource in the critical path, or need to be? If the resource is in the critical path, could it be a single point of failure for the site? That is, if the resource is unavailable, does it affect performance and the user experience of your pages?
+* Does this resource need or have an SLA? Does this resource follow performance best practices: compression, caching, and so on?
 
-* Para el sitio A se decidió mostrar un carrusel de fotos en la página principal a fin de permitir que el visitante obtenga una vista previa de varias fotos con un clic rápido. Todas las fotos se cargan cuando se carga la página y el usuario pasa las fotos.
-    * ** Pregunta:** ¿mediste la cantidad de usuarios que visualizan varias fotos en el carrusel? Podrías generar una gran sobrecarga al descargar recursos que la mayoría de los visitantes nunca ven.
-* Para el sitio B se decidió instalar un widget de terceros a fin de mostrar contenido relacionado, mejorar la participación social o proporcionar algún otro servicio.
-    * **Pregunta:**¿realizaste un seguimiento de la cantidad de visitantes que usan el widget o hacen clic en el contenido proporcionado por este? ¿El atractivo generado por este widget es suficiente como para justificar su sobrecarga?
+Too often, pages contain resources that are unnecessary, or worse, that hinder page performance without delivering much value to the visitor or to the site they're hosted on. This applies equally to first-party and third-party resources and widgets:
 
-Determinar si se eliminan las descargas innecesarias por lo general requiere de mucho tiempo de análisis cuidadoso y mediciones. Para obtener mejores resultados, realiza un inventario y repasa periódicamente estas preguntas correspondientes a cada recurso en tus páginas.
+* Site A has decided to display a photo carousel on its homepage to allow the visitor to preview multiple photos with a quick click. All of the photos are loaded when the page is loaded, and the user advances through the photos. 
+    * **Question:** Have you measured how many users view multiple photos in the carousel? You might be incurring high overhead by downloading resources that most visitors never view.
+* Site B has decided to install a third-party widget to display related content, improve social engagement, or provide some other service. 
+    * **Question:** Have you tracked how many visitors use the widget or click-through on the content that the widget provides? Is the engagement that this widget generates enough to justify its overhead?
 
+Determining whether to eliminate unnecessary downloads often requires a lot of careful thinking and measurement. For best results, periodically inventory and revisit these questions for every asset on your pages.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

@@ -1,35 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: '스크립트에서 Date.now()를 사용하지 않는 사이트' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Date.now() In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# 스크립트에서 Date.now()를 사용하지 않는 사이트  {: .page-title }
+# Avoids Date.now() In Its Own Scripts {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-`Date.now()`로 시간을 측정하고 있다면 대신
-`performance.now()` 사용을 고려하세요. `performance.now()`는 타임스탬프 해상도가 높고
-수정되거나 수동으로 왜곡할 수 있는 시스템 시계와 관계없이 항상 일정한 속도로 증가합니다.
+If you're using `Date.now()` to measure time, consider using `performance.now()` instead. `performance.now()` provides a higher timestamp resolution, and always increases at a constant rate that is independent of the system clock, which can be adjusted or manually skewed.
 
+## Recommendations {: #recommendations }
 
-## 감사를 통과하는 방법 {: #how }
+In your report, Lighthouse lists every instance of `Date.now()` that it finds under **URLs**. Replace each of these calls with `performance.now()`.
 
-Lighthouse는 **URLs**에서 찾은 `Date.now()`의 모든 인스턴스를
-보고서에 나열합니다. 각각의 호출을 `performance.now()`로 교체합니다.
+See [`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) for more information on the API.
 
-API에 대한 자세한 내용은 [`performance.now()`][MDN]를 참조하세요.
+## More information {: #more-info }
 
-[MDN]: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+Lighthouse reports every instance of `Date.now()` that it finds from scripts that are on the same host as the page. Scripts from other hosts are excluded, because Lighthouse assumes that you don't have control over these scripts. So, there may be other scripts using `Date.now()` on your page, but these won't show up in your Lighthouse report.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse는 페이지와 같은 호스트에 있는 스크립트에서 찾은 모든 `Date.now()` 인스턴스를
-보고합니다. Lighthouse는 여러분이 다른 호스트의 스크립트를
-통제할 수 없다고 가정하기 때문에
-이는 제외합니다. 페이지에 `Date.now()`를 사용하는 다른 스크립트가 있더라도
-Lighthouse 보고서에는 나타나지 않습니다.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,74 +1,57 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Organize recursos por quadro, domínio, tipo ou outros critérios.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Organize resources by frame, domain, type, or other criteria.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Inspecionar recursos {: .page-title }
+# Inspect Resources {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Organize recursos por quadro, domínio, tipo ou outros
-critérios.
-
+Organize resources by frame, domain, type, or other criteria.
 
 ### TL;DR {: .hide-from-toc }
-- Use a seção <strong>Frames</strong> do painel <strong>Application</strong> para organizar recursos por quadro.
-- Você também pode visualizar recursos por quadro no painel <strong>Sources</strong> desativando a opção <strong>group by folder</strong>.
-- Para visualizar recursos por domínio e pasta, use o painel <strong>Sources</strong>.
-- Filtre recursos por nome ou outro critério no painel <strong>Network</strong>.
 
+* Use the **Frames** pane of the **Application** panel to organize resources by frame.
+* You can also view resources by frame from the **Sources** panel by disabling the **group by folder** option.
+* To view resources by domain and folder, use the **Sources** panel.
+* Filter resources by name or other criteria in the **Network** panel.
 
-## Organizar recursos por quadro {:#frames}
+## Organize resources by frame {:#frames}
 
-Use a seção **Frames** do painel **Application** para ver uma representação dos recursos da página
-organizada por quadros.
+Use the **Frames** pane on the **Application** panel for a frame-organized representation of your page's resources.
 
-![detalhe dos quadros][frames]
+![frames detail](/web/tools/chrome-devtools/manage-data/imgs/frames.png)
 
-* O nível superior (`top` na imagem acima) é o documento principal.
-* Abaixo dele (por exemplo, `widget2` na imagem acima) são subquadros do
-  documento principal. Expanda um desses subquadros para visualizar os recursos
-  que originaram esse quadro.
-* Abaixo dos subquadros ficam as imagens, scripts e outros recursos do
-  documento principal.
-* Por último, o próprio documento principal.
+* The top-level (`top` in the screenshot above) is the main document.
+* Below that (e.g. `widget2` in the screenshot above) are subframes of the main document. Expand one of these subframes to view the resources originating from that frame.
+* Below the subframes are the images, scripts, and other resources of the main document.
+* Last is the main document itself.
 
-Clique em um recurso para ver sua visualização.
+Click on a resource to view a preview of it.
 
-Clique com o botão direito em um recurso para vê-lo no painel **Network**, abri-lo em uma
-nova guia, copiar seu URL ou salvá-lo.
+Right-click on a resource to view it in the **Network** panel, open it in a new tab, copy its URL, or save it.
 
-![visualizar recurso][resource]
+![view resource](/web/tools/chrome-devtools/manage-data/imgs/resource.png)
 
-Você também pode visualizar recursos por quadro no painel **Sources** clicando
-no menu flutuante do navegador e desativando a opção **Group by folder**
-para interromper o agrupamento de recursos por pasta.
+You can also view resources by frame in the **Sources** panel, by clicking on the overflow menu in the navigator and disabling the **Group by folder** option to stop grouping resources by folder.
 
-![opção group by folder](imgs/group-by-folder.png)
+![group by folder option](imgs/group-by-folder.png)
 
-Os recursos serão listados apenas por quadro.
+The resources will be listed by frame only.
 
-![sem pastas](imgs/no-folders.png)
+![no folders](imgs/no-folders.png)
 
-[frames-pane]: /web/tools/chrome-devtools/manage-data/imgs/frames-pane.png
-[frames]: /web/tools/chrome-devtools/manage-data/imgs/frames.png
-[resource]: /web/tools/chrome-devtools/manage-data/imgs/resource.png
+## Organize resources by domain and folder {:#sources}
 
-## Organizar recursos por domínio e pasta {:#sources}
+To view resources organized by domain and directory, use the **Sources** panel.
 
-Para visualizar recursos organizados por domínio e diretório, use o painel
-**Sources**.
+![sources panel](imgs/sources.png)
 
-![painel sources](imgs/sources.png)
+## Filter resources by name, type, or other criteria {:#filter}
 
-## Filtrar recursos por nome, tipo ou outros critérios {:#filter}
-
-Use o painel **Network** para filtrar recursos por nome, tipo e uma grande variedade
-de outros critérios. Confira o guia abaixo para saber mais.
+Use the **Network** panel to filter resources by name, type, and a whole range of other criteria. Check out the guide below to learn more.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.filter #}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

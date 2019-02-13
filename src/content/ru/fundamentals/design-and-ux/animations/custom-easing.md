@@ -1,63 +1,68 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Сойдите с наезженной дороги и создайте абсолютно нестандартную анимацию для своего проекта
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Go offroad and create totally custom animations for your projects.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Изменение скорости при нестандартной анимации {: .page-title }
+# Custom Easing {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-
-Иногда не хочется использовать ключевые слова изменения скорости, имеющиеся в CSS, или же используется библиотека анимации на основе JavaScript. В обоих случаях, как правило, можно определить собственные кривые (или формулы), а это позволяет в значительной степени влиять на ощущение, которое будет создавать анимация в вашем проекте
+Sometimes you won't want to use the easing keywords that are included with CSS, or you will be using Web Animations or a JavaScript framework. In these cases, you can typically define your own curves (or equations), and this provides a lot of control over the feel of your project's animations.
 
 ### TL;DR {: .hide-from-toc }
-- Нестандартное изменение скорости позволяет добиться большей индивидуальности проектов.
-- Можно создавать кривые Безье третьего порядка, которые похожи на стандартные кривые анимации (замедления, ускорения и т. д.), но с другим акцентом.
-- Когда требуется в большей мере контролировать время и работу анимации (например, эластичные эффекты или отскоки), используйте JavaScript.
 
+* Custom easing allows you to give more personality to your projects.
+* You can create cubic Bézier curves that resemble the default animation curves (ease-out, ease-in, etc.), but with emphasis in different places.
+* Use JavaScript when you need more control over the animation timing and behavior, for example, elastic or bounce animations.
 
-Если анимация создается средствами CSS, то с помощью определения кривых Безье третьего порядка можно управлять ее привязкой ко времени. В действительности, ключевые слова `ease`, `ease-in`, `ease-out` и `linear` сопоставляются с заранее заданными кривыми Безье, о чем подробно говориться в статье [Определение переходов CSS](http://www.w3.org/TR/css3-transitions/).
+If you're animating with CSS, you'll find that you can define cubic Bézier curves to define the timing. In fact, the keywords `ease`, `ease-in`, `ease-out`, and `linear` map to predefined Bézier curves, which are detailed in the [CSS transitions specification](http://www.w3.org/TR/css3-transitions/) and the [Web Animations specification](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve).
 
-В CSS эти кривые Безье принимают четыре значения, или две пары чисел, при этом каждая пара описывает координаты X и Y контрольных точек кривой Безье третьего порядка.  Начальная точка кривой Безье имеет координаты (0, 0), а конечная ― координаты (1, 1). Вам же необходимо указать значения X и Y двух оставшихся контрольных точек. Значения X для этих двух контрольных точек должны находиться в диапазоне от 0 до 1, а значение Y каждой контрольной точки может выходить за пределы диапазона [0, 1], хотя в спецификации и нет четкого указания насколько!
+These Bézier curves take four values, or two pairs of numbers, with each pair describing the X and Y coordinates of a cubic Bézier curve’s control points. The starting point of the Bézier curve has a coordinate of (0, 0) and the end coordinate is (1, 1); you get to set the X and Y values of the two control points. The X values for the two control points must be between 0 and 1, and each control point’s Y value can exceed the [0, 1] limit, although the spec isn’t clear by how much.
 
-При изменении значений X и Y каждой контрольной точки образуется совершенно другая кривая и, соответственно, ваша анимация будет создавать совершенно иное ощущение. Например, если первая контрольная точка находится внизу справа, анимация будет медленной в начале. Если же она будет находиться вверху слева, начало будет быстрым. И наоборот, если вторая контрольная точка находится на сетке внизу справа, анимация будет быстрой в конце, а если вверху слева ― медленной.
+Changing the X and Y value of each control point gives you a vastly different curve, and therefore a vastly different feel to your animation. For example, if the first control point is in the lower right area, the animation will be slow to start. If it’s in the top left area, it’s going to be fast to start. Conversely, if the second control point is in the bottom right area of the grid, it’s going to be fast at the end; if it’s in the top left, it will be slow to end.
 
-Для сравнения, вот две кривые: стандартная кривая с ускорением и замедлением и нестандартная кривая:
+For comparison, here are two curves: a typical ease-in-out curve and a custom curve:
 
-<img src="images/ease-in-out-markers.png" style="display: inline; max-width: 300px" alt="Кривая анимации с ускорением и замедлением." />
-<img src="images/custom.png" style="display: inline; max-width: 300px" alt="Нестандартная кривая анимации." />
+<div class="attempt-left">
+  <figure>
+    <img src="images/ease-in-out-markers.png" alt="Ease-in-out animation curve." />
+  </figure>
+</div>
 
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html">См. описание анимации с нестандартным изменением скорости.</a>
+<div class="attempt-right">
+  <figure>
+    <img src="images/custom.png" alt="Custom animation curve." />
+  </figure>
+</div>
 
-Код CSS для нестандартной кривой:
+[See an animation with custom easing](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
 
+The CSS for the custom curve is:
 
     transition: transform 500ms cubic-bezier(0.465, 0.183, 0.153, 0.946);
     
 
-Первые два числа – это координаты X и Y первой контрольной точки, вторые два числа – это координаты X и Y второй контрольной точки.
+The first two numbers are the X and Y coordinates of the first control point, and the second two numbers are the X and Y coordinates of the second control point.
 
-Делать нестандартные кривые очень интересно, кроме того, вы получаете значительную степень контроля над тем ощущением, которое вызывает анимация. Например, говоря о приведенной выше кривой, можно отметить, что она похожа на классическую кривую ускорения-замедления, когда анимация имеет медленную скорость в начале и в конце, однако отрезок времени с медленной скоростью в начале укорочен, а в конце – продлен.
+Making a custom curve is a lot of fun, and it gives you significant control over the feel of the animation. For example, given the above curve, you can see that the curve resembles a classic ease-in-out curve, but with a shortened ease-in, or "getting started," portion, and an elongated slowdown at the end.
 
-Поэкспериментируйте с этим <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html">средством создания кривых анимации</a> и оцените, как используемая кривая влияет на ощущение, создаваемое анимацией.
+Experiment with this [animation curve tool](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external } and see how the curve affects the feel of an animation.
 
-## Использование JavaScript для большего контроля
+## Use JavaScript frameworks for more control
 
-Иногда нужен еще более высокий уровень контроля, чем тот, который обеспечивается кривой Безье третьего порядка. Скажем, вам может потребоваться реализовать эластичный отскок или остановить выполнение анимации. И того, и другого эффекта намного сложнее добиться с помощью CSS. В подобных случаях следует использовать библиотеки анимации JavaScript. Одной из лучших библиотек является [TweenMax от Greensock](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (или TweenLite, если вы не хотите ничего усложнять). Эта небольшая библиотека дает вам значительную степень контроля, кроме того это весьма тщательно подобранная база кодов.
+Sometimes you need even more control than a cubic Bézier curve can provide. If you wanted an elastic bounce feel, you might consider using a JavaScript framework, because this is a difficult effect to achieve with either CSS or Web Animations.
 
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html">См. анимацию с эластичным изменением скорости.</a>
+### TweenMax
 
-Чтобы применить нечто наподобие TweenMax, включите в страницу следующий скрипт:
+One powerful framework is [GreenSock’s TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (or TweenLite if you want to keep things really lightweight), because you get a lot of control from it in a small JavaScript library, and it’s a very mature codebase.
 
+[See an elastic ease animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
 
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+To use TweenMax, include this script in your page:
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     
 
-После этого можно будет вызывать TweenMax для вашего элемента и указывать, какие свойства вам нужны, а также любое требуемое изменение скорости. Есть множество вариантов изменения скорости, в приведенном далее коде используется эластичное замедление:
-
+After the script is in place, you can call TweenMax against your element and tell it which properties you’d like, along with any easing you’d like. There are many easing options that you can use; the code below uses an elastic ease-out:
 
     var box = document.getElementById('my-box');
     var animationDurationInSeconds = 1.5;
@@ -68,7 +73,8 @@ description: Сойдите с наезженной дороги и создай
     });
     
 
-В [документации по TweenMax](http://greensock.com/docs/#/HTML5/GSAP/TweenMax/) описаны все имеющиеся варианты, поэтому рекомендуем ее почитать.
+The [TweenMax documentation](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/) highlights all the options you have here, so it's well worth a read.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}

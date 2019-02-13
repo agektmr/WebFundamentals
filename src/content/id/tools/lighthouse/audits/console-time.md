@@ -1,47 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs Tidak Menggunakan console.time() Dalam Skripnya Sendiri".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids console.time() In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# Situs Tidak Menggunakan console.time() Dalam Skripnya Sendiri  {: .page-title }
+# Avoids console.time() In Its Own Scripts {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Jika Anda menggunakan `console.time()` untuk mengukur kinerja laman, pertimbangkan
-menggunakan User Timing API sebagai gantinya. Manfaat menyertakan:
+If you're using `console.time()` to measure your page's performance, consider using the User Timing API instead. Benefits include:
 
-* Stempel waktu resolusi tinggi.
-* Data pengaturan waktu yang dapat dieskpor.
-* Integrasi dengan Chrome DevTools Timeline. Bila fungsi User Timing
-  `performance.measure()` dipanggil selama perekaman Timeline, DevTools
-  secara otomatis menambahkan pengukuran ke hasil Timeline, seperti yang ditampilkan dalam label
-  `my custom measurement` pada tangkapan layar di bawah ini.
+* High-resolution timestamps.
+* Exportable timing data.
+* Integration with the Chrome DevTools Timeline. When the User Timing function `performance.measure()` is called during a Timeline recording, DevTools automatically adds the measurement to the Timeline's results, as shown in the `my custom measurement` label in the screenshot below.
 
-![Pengukuran User Timing di Chrome DevTools Timeline][timeline]
+![User Timing measurement in Chrome DevTools Timeline](/web/tools/lighthouse/images/user-timing-measurement-in-devtools.png)
 
-[timeline]: /web/tools/lighthouse/images/user-timing-measurement-in-devtools.png
+## Recommendations {: #recommendations }
 
-## Cara untuk lulus audit {: #how }
+In your report, Lighthouse lists every instance of `console.time()` that it finds under **URLs**. Replace each of these calls with `performance.mark()`. If you want to measure the time that has elapsed between two marks, use `performance.measure()`.
 
-Di laporan Anda, Lighthouse akan mencantumkan setiap instance `console.time()` yang ditemukannya
-pada **URL**. Ganti setiap panggilan ini dengan `performance.mark()`.
-Jika Anda ingin mengukur waktu yang telah ditempuh di antara dua tanda, gunakan
-`performance.measure()`.
+See [User Timing API: Understanding Your Web App](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) to learn how to use the API.
 
-Lihat [User Timing API: Memahami Aplikasi Web Anda][html5rocks]
-untuk mempelajari cara menggunakan API.
+## More information {: #more-info }
 
-[html5rocks]: https://www.html5rocks.com/en/tutorials/webperformance/usertiming/
+Lighthouse reports every instance of `console.time()` that it finds from scripts that are on the same host as the page. Scripts from other hosts are excluded, because Lighthouse assumes that you don't have control over these scripts. So, there may be other scripts using `console.time()` on your page, but these won't show up in your Lighthouse report.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse melaporkan setiap instance `console.time()` yang ditemukannya dari
-skrip yang berada pada host yang sama dengan laman tersebut. Skrip dari host lain
-tidak termasuk, karena Lighthouse beranggapan bahwa Anda tidak memiliki kontrol atas
-skrip ini. Jadi, mungkin ada skrip lain yang menggunakan `console.time()` pada laman Anda,
-namun itu tidak akan ditampilkan dalam laporan Lighthouse Anda.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

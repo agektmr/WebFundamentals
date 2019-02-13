@@ -1,144 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools で作成したものを永続化するよう設定します。永続化することにより、変更内容をすぐに確認したり、変更をディスクに保存できます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-{# wf_updated_on:2015-07-30 #}
-{# wf_published_on:2015-07-08 #}
+{# wf_updated_on: 2018-04-20 #} {# wf_published_on: 2015-07-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# DevTools ワークスペースによる永続化の設定 {: .page-title }
+# Set Up Persistence with DevTools Workspaces {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+Warning: This version of Workspaces is only available in Chrome 62 or lower. Check what version of Chrome you're running at `chrome://version`. See [Save Changes To Disk With Workspaces](/web/tools/chrome-devtools/workspaces/) to learn how to use the version of Workspaces that's available in Chrome 63 and later.
 
-Chrome DevTools で作成したものを永続化するよう設定します。永続化することにより、変更内容をすぐに確認したり、変更をディスクに保存できます。
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome DevTools により、ウェブページで要素やスタイルを変更できるようになり、変更点を即座に表示できるようになります。デフォルトでは、変更点を外部エディタに手動でコピーして貼り付けておかなければ、ブラウザを最新情報に更新すると、変更内容は失われます。
+Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
+Chrome DevTools lets you change elements and styles on a web page and see your changes immediately. By default, refresh the browser and the changes go away unless you've manually copied and pasted them to an external editor.
 
-
-
-ワークスペースを使用すると、Chrome DevTools を使いながら、このような変更点をディスクに永続化できます。ローカル ウェブサーバーのリソースをディスク上のファイルにマップして、ファイルに加えられた変更を、まるでサーバーから利用しているかのように表示できます。
-
-
-
-
+Workspaces lets you persist those changes to disk without having to leave Chrome DevTools. Map resources served from a local web server to files on a disk and view changes made to those files as if they were being served.
 
 ### TL;DR {: .hide-from-toc }
-- 変更点をローカル ファイルに手動でコピーする必要はありません。ワークスペースを使用して、DevTools で行った変更をローカル リソースに永続化します。
-- ブラウザに対してローカル ファイルをステージングします。ファイルを URL にマップします。
-- 永続化ワークスペースの設定後は、[Elements] パネルで行ったスタイルの変更が自動的に永続化されます。ただし、DOM への変更は永続化されません。代わりに、[Sources] パネルの要素の変更が永続化されます。
 
+* Don't manually copy changes to local files. Use workspaces to persist changes made in DevTools to your local resources.
+* Stage your local files to your browser. Map files to URLs.
+* Once persistent workspaces are set-up, style changes made in the Elements panel are persisted automatically; DOM changes aren't. Persist element changes in the Sources panel instead.
 
-## ワークスペースへのローカル ソースファイルの追加
+## Add local source files to workspace
 
-[Sources] パネルでローカルフォルダのソースファイルを編集可能にするには、以下の手順を実行します。
+To make a local folder's source files editable in the Sources panel:
 
-1. 左側のパネルを右クリックします。
-2. [**Add Folder to Workspace**] を選択します。
-3. マップするローカルフォルダの場所を選択します。
-4. [**Allow**] をクリックして、Chrome からフォルダへのアクセスを許可します。 
+1. Right-click in the left-side panel.
+2. Select **Add Folder to Workspace**.
+3. Choose location of local folder that you want to map.
+4. Click **Allow** to give Chrome access to the folder. 
 
-![ワークスペースへのフォルダの追加](imgs/addfolder.png)
+![Add Folder to Workspace](imgs/addfolder.png)
 
-通常、ローカルフォルダには、サイトのオリジナルのソースファイルが含まれます。これらのソースファイルは、サーバー側でサイトを設定するときに使用されます。こうしたオリジナルのファイルをワークスペースから変更しない場合は、このフォルダのコピーを作成し、コピーしたフォルダを代わりにワークスペース フォルダに指定します。
+Typically, the local folder contains the site's original source files that were used to populate the site on the server. If you do not want to change those original files via the workspace, make a copy of the folder and specify it as the workspace folder instead.
 
-## 永続化した変更のステージング
+## Stage persisted changes
 
-既に、ローカルフォルダをワークスペースにマップしました。しかし、ブラウザは依然としてネットワーク フォルダのコンテンツを利用しています。永続化した変更をブラウザで自動的にステージングするには、以下の手順を実行して、フォルダのローカルファイルを URL にマップします。
+You've already mapped your local folder to your workspace, but the browser is still serving the network folder contents. To automatically stage persistent changes in the browser, map local files in the folder to a URL:
 
+1. Right-click or Control+click on a file in the Sources left-side panel.
+2. Choose **Map to File System Resource**.
+3. Select the local file in the persistent workspace.
+4. Reload the page in Chrome.
 
+![Map file to URL](imgs/maptoresource.png)
 
+Thereafter, Chrome loads the mapped URL, displaying the workspace contents instead of the network contents. Work directly in the local files without having to repeatedly switch between Chrome and an external editor.
 
-1. [Sources] パネルの左側のパネルでファイルを右クリックするか、Ctrl キーを押しながらクリックします。
-2. [**Map to File System Resource**] を選択します。
-3. 永続化ワークスペースでローカルファイルを選択します。
-4. Chrome でページを再読み込みします。
+## Limitations
 
-![ファイルを URL にマップ](imgs/maptoresource.png)
+As powerful as Workspaces are, there are some limitations you should be aware of.
 
-その後、Chrome によってマップされた URL が読み込まれ、ネットワーク コンテンツの代わりにワークスペース コンテンツが表示されす。Chrome と外部エディタを何度も切り替える必要なく、ローカルファイルで直接作業します。
+* Only style changes in the Elements panel are persisted; changes to the DOM are not persisted.
 
+* Only styles defined in an external CSS file can be saved. Changes to `element.style` or to inline styles are not persisted. (If you have inline styles, they can be changed on the Sources panel.)
 
+* Style changes in the Elements panel are persisted immediately without an explicit save -- 
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac) -- if you have the CSS resource mapped to a local file.
 
+* If you are mapping files from a remote server instead of a local server, when you refresh the page, Chrome reloads the page from the remote server. Your changes still persist to disk and are reapplied if you continue editing in Workspaces.
 
+* You must use the full path to a mapped file in the browser. Even your index files must include .html in the URL, in order to see the staged version.
 
+## Local file management
 
-## 制限事項
+In addition to editing existing files, you can also add and delete files in the local mapped directory you’re using for Workspaces.
 
-ワークスペースは強力ですが、注意すべき制限事項もいくつかあります。
+### Add file
 
-* [Elements] パネルではスタイルの変更のみが永続化され、DOM に対する変更は永続化されません。
+To add a file:
 
-* 外部 CSS ファイルで定義されたスタイルのみ保存できます。`element.style` やインライン スタイルに対する変更は永続化されません（インライン スタイルを使用している場合は、[Sources] パネルで変更します）。
+1. Right-click a folder in the left Sources pane.
+2. Select **New File**.
+3. Type a name for the new file including its extension (e.g., `newscripts.js`) and press **Enter**; the file is added to the local folder.
 
-* CSS リソースをローカルファイルにマップしている場合、[Elements] パネルでのスタイルの変更は、<kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">S</kbd> または <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">S</kbd>（Mac）を使って明示的に保存しなくても、即座に永続化されます。
+### Delete file
 
+To delete a file:
 
-* ローカルサーバーではなくリモートサーバーからファイルをマップしている場合、ページを更新すると、Chrome によってリモートサーバーからページが再読み込みされます。変更はディスクに永続化され、ワークスペースで編集を続行する場合は再適用されます。
+1. Right-click on the file in the left Sources pane.
+2. Choose **Delete** and click **Yes** to confirm.
 
-* ブラウザではマップファイルへのフルパスを使用する必要があります。ステージングされたバージョンを表示するため、インデックス ファイルでも URL に .html を含める必要があります。
+### Back up a file
 
-## ローカルファイルの管理
+Before making substantial changes to a file, it's useful to duplicate the original for back-up purposes.
 
-ワークスペースで使用するマップ済みのローカル ディレクトリでは、既存のファイルの編集だけでなく、ファイルの追加や削除も可能です。
+To duplicate a file:
 
+1. Right-click on the file in the left Sources pane.
+2. Choose **Make a Copy...**.
+3. Type a name for the file including its extension (e.g., `mystyles-org.css`) and press **Enter**.
 
+### Refresh
 
-### ファイルの追加
+When you create or delete files directly in Workspaces, the Sources directory automatically refreshes to show the file changes. To force a refresh at any time, right-click a folder and choose **Refresh**.
 
-ファイルを追加するには、以下の手順を実行します。
+This is also useful if you change files that are concurrently open in an external editor and want the changes to show up in DevTools. Usually DevTools catches such changes automatically, but if you want to be certain, just refresh the folder as described above.
 
-1. [Sources] パネルの左側のペインでフォルダを右クリックします。
-2. [**New File**] を選択します。
-3. 新しいファイルの名前を拡張子を含めて入力（`newscripts.js` など）し、**Enter** キーを押します。ファイルがローカルフォルダに追加されます。
+### Search for files or text
 
-### ファイルの削除
+To search for a loaded file in DevTools, press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac) to open a search dialog. You can still do this in Workspaces, but the search is expanded to both the remote loaded files and the local files in your Workspace folder.
 
-ファイルを削除するには、以下の手順を実行します。
+To search for a string across files:
 
-1. [Sources] パネルの左側のペインでファイルを右クリックします。
-2. [**Delete**] を選択後、[**Yes**] をクリックして確認します。
+1. Open the search window: click the **Show Drawer** button ![Show drawer](imgs/show_drawer_button.png){:.inline} and then click the **Search**; or press
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac).
+2. Type a string into the search field and press **Enter**.
+3. If the string is a regular expression or needs to be case-insensitive, click the appropriate box.
 
-### ファイルのバックアップ
+![Search for string across files](imgs/searchacross.png)
 
-ファイルに大きな変更を加える前に、バックアップを目的としてオリジナルのファイルを複製しておくと役に立ちます。
-
-
-ファイルを複製するには、以下の手順を実行します。
-
-1. [Sources] パネルの左側のペインでファイルを右クリックします。
-2. [**Make a Copy**] を選択します。
-3. ファイルの名前を拡張子を含めて入力（`mystyles-org.css` など）し、**Enter** キーを押します。
-
-### 最新情報への更新
-
-ワークスペースでファイルの作成や削除を直接行うと、[Sources] ディレクトリが自動的に最新の情報に更新され、ファイルの変更内容が表示されます。任意のタイミングで強制的に最新情報に更新するには、フォルダを右クリックし、[**Refresh**] を選択します。
-
-
-
-これは、外部エディタでファイルを同時に開いて変更し、その変更内容を DevTools で表示する場合にも役立ちます。通常、DevTools ではこのような変更が自動的に把握されますが、確実に反映する場合は、前述の方法でフォルダを最新情報に更新します。
-
-### ファイルやテキストの検索
-
-DevTools で読み込んだファイルを検索するには、<kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">O</kbd> または <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">O</kbd>（Mac）を押して検索ダイアログを開きます。ワークスペースでもこの操作が可能ですが、ワークスペース フォルダへの読み込み済みのリモートファイルとローカルファイルに検索対象が拡張されます。
-
-
-
-
-
-
-複数のファイルに含まれる文字列を検索するには、以下の手順を実行します。
-
-1. 検索ウィンドウを開きます。[**Show Drawer**] ボタン ![ドロワーの表示](imgs/show_drawer_button.png){:.inline} をクリックして [**Search**] をクリックするか、<kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Shift</kbd>+<kbd class="kbd">F</kbd> または <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Opt</kbd>+<kbd class="kbd">F</kbd>（Mac）を押します。
-2. 検索フィールドに文字列を入力し、**Enter** キーを押します。
-3. 正規表現で検索する場合や、大文字と小文字を区別する場合は、該当するチェックボックスをオンにします。
-
-
-![複数のファイルで文字列を検索する](imgs/searchacross.png)
-
-検索結果は、ファイル名と、各ファイルで該当した件数として [Console] ドロワーに表示されます。**展開**ボタン ![展開](imgs/expand_button.png){:.inline} と**折りたたみ**ボタン ![折りたたみ](imgs/collapse_button.png){:.inline} を使用して、特定のファイルの結果を展開、または折りたたむことができます。
-
-
-
-{# wf_devsite_translation #}
+The search results are shown in the Console drawer, listed by file name, with the number of matches in each file indicated. Use the **Expand** ![Expand](imgs/expand_button.png){:.inline} and **Collapse** ![Collapse](imgs/collapse_button.png){:.inline} arrows to expand or collapse the results for a given file.

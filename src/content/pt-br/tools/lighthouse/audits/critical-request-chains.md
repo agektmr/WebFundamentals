@@ -1,34 +1,22 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Cadeias de solicitação críticas".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Critical Request Chains" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-06 #}
-{# wf_published_on: 2016-10-06 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-06 #} {# wf_blink_components: N/A #}
 
-# Cadeias de solicitação críticas  {: .page-title }
+# Critical Request Chains {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-A cadeia de solicitação crítica é um conceito da estratégia de otimização
-Caminho crítico de renderização (CRP). O CRP permite que o navegador carregue uma página com a maior rapidez possível,
-priorizando quais recursos são carregados e em que
-ordem isso ocorre.
+The Critical Request Chain is a concept from the Critical Rendering Path (CRP) optimization strategy. CRP enables the browser to load a page as quickly as possible by prioritizing which resources get loaded and the order in which they load.
 
-Consulte os documentos sobre [caminho crítico
-de renderização](/web/fundamentals/performance/critical-rendering-path/) para saber
-mais.
+Check out the [Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) docs to learn more.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-No momento, esta auditoria não está estruturada para "aprovação" ou "reprovação". As
-informações fornecidas por esta auditoria oferecem uma oportunidade para melhorar
-o desempenho do carregamento de páginas do aplicativo.
+This audit is currently not structured as something to "pass" or "fail". The information that this audit provides gives you an opportunity to improve the page load performance of your app.
 
-Na versão do Lighthouse como extensão do Chrome, o relatório gera um diagrama
-como este:
+In the Chrome Extension version of Lighthouse, your report generates a diagram like the following:
 
-<pre>
-Initial navigation
+<pre>Initial navigation
 |---lighthouse/ (developers.google.com)
     |---/css (fonts.googleapis.com) - 1058.34ms, 72.80KB
     |---css/devsite-googler-buttons.css (developers.google.com) - 1147.25ms, 70.77KB
@@ -39,36 +27,24 @@ Initial navigation
     |---MC30SXJEli4/photo.jpg (lh3.googleusercontent.com) - 3200.39ms, 73.59KB
 </pre>
 
-Esse diagrama representa as cadeias de solicitação críticas da página. O caminho de
-`lighthouse/` para `/css` é uma cadeia. O caminho de `lighthouse/` para
-`css/devsite-googler-buttons.css` é outra cadeia. E assim por diante. A pontuação
-superior da auditoria representa esse número de cadeias. Por exemplo, o diagrama
-acima teria uma "pontuação" de sete.
+This diagram represents the page's critical request chains. The path from `lighthouse/` to `/css` is one chain. The path from `lighthouse/` to `css/devsite-googler-buttons.css` is another chain. And so on. The top-most score of the audit represents this number of chains. For example, the diagram above would have a "score" of seven.
 
-Além disso, o diagrama detalha o tempo gasto e o número de bytes
-necessário para baixar cada recurso.
+The diagram also breaks down how much time was spent downloading each resource, and the number of bytes that was required to download each resource.
 
-Você pode usar esse diagrama para aprimorar o CRP com as seguintes ações:
+You can use this diagram to improve your CRP by:
 
-* Minimizar o número de recursos críticos, eliminando-os, retardando
-  seu download, marcando-os como async e assim por diante.
-* Otimizar o número de bytes críticos para reduzir o tempo de download (número
-  de idas e voltas).
-* Otimizar a ordem em que os recursos críticos restantes são carregados,
-  baixando todos os ativos críticos o mais cedo possível para reduzir o comprimento
-  do caminho crítico.
+* Minimizing the number of critical resources: eliminating them, deferring their download, marking them as async, and so on.
+* Optimizing the number of critical bytes to reduce the download time (number of roundtrips).
+* Optimizing the order in which the remaining critical resources are loaded: downloading all critical assets as early as possible to shorten the critical path length.
 
-A otimização de qualquer desses fatores resultará em um carregamento de página mais rápido.
+Optimizing any of these factors results in a faster page load.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-O Lighthouse usa a prioridade de rede como proxy para identificar recursos críticos
-bloqueadores de renderização. Consulte [Prioridades de agendamento de recursos
-do Chrome](https://docs.google.com/document/d/1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc)
-para obter mais informações sobre como o Chrome define essas prioridades.
+Lighthouse uses network priority as a proxy for identifying render-blocking critical resources. See [Chrome Resource Priorities and Scheduling](https://docs.google.com/document/d/1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc) for more information on how Chrome defines these priorities.
 
-Os dados sobre cadeias de solicitação críticas, tamanhos de recursos e tempo gasto no download
-de recursos são extraídos do Chrome Debugger Protocol.
+Data on critical request chains, resource sizes, and time spent downloading resources is extracted from the Chrome Debugger Protocol.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

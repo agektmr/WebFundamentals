@@ -1,150 +1,139 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Esta seção descreve termos comuns usados na análise de memória e aplica-se a diversas ferramentas de criação de perfis de memória para diferentes idiomas.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-{# wf_updated_on: 2015-05-18 #}
-{# wf_published_on: 2015-05-18 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-18 #} {# wf_blink_components: Platform>DevTools #}
 
-# Terminologia de memória {: .page-title }
+# Memory Terminology {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-Esta seção descreve termos comuns usados na análise de memória e aplica-se a diversas ferramentas de criação de perfis de memória para diferentes idiomas.
+This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-Os termos e noções descritos aqui são referentes ao
-[criador de perfis de pilha do Chrome DevTools](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots).
-Se você já trabalhou com Java, .NET ou outro criador de perfil de memória, isto será uma recapitulação.
+The terms and notions described here refer to the [Chrome DevTools Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). If you have ever worked with either the Java, .NET, or some other memory profiler, then this may be a refresher.
 
+## Object sizes
 
-## Tamanhos de objeto
+Think of memory as a graph with primitive types (like numbers and strings) and objects (associative arrays). It might visually be represented as a graph with a number of interconnected points as follows:
 
-Pense na memória como um gráfico com tipos primitivos (como números e strings) e objetos (matrizes associativas). Isso pode ser representado visualmente como um gráfico com diversos pontos interconectados, desta forma:
+![Visual representation of memory](imgs/thinkgraph.png)
 
-![Representação visual da memória](imgs/thinkgraph.png)
+An object can hold memory in two ways:
 
-Um objeto pode reter memória de duas formas:
+* Directly by the object itself.
 
-* Diretamente pelo próprio objeto.
+* Implicitly by holding references to other objects, and therefore preventing those objects from being automatically disposed by a garbage collector (**GC** for short).
 
-* Implicitamente, mantendo referências a outros objetos e, portanto, evitando que esses objetos sejam descartados automaticamente por um coletor de lixo (abreviando, **GC**).
+When working with the Heap Profiler in DevTools (a tool for investigating memory issues found under "Profiles"), you will likely find yourself looking at a few different columns of information. Two that stand out are **Shallow Size** and **Retained Size**, but what do these represent?
 
-Ao trabalhar com o criador de perfis de pilha no DevTools (uma ferramenta para investigar problemas de memória encontrada em "Profiles"), você provavelmente analisará algumas colunas de informações diferentes. Duas colunas importantes são <strong>Shallow Size</strong> e <strong>Retained Size</strong>. Mas, o que representam essas colunas?
+![Shallow and Retained Size](imgs/shallow-retained.png)
 
-![Shallow e Retained Size](imgs/shallow-retained.png)
+### Shallow size
 
-### Tamanho superficial
+This is the size of memory that is held by the object itself.
 
-Esse é o tamanho da memória retida pelo próprio objeto.
+Typical JavaScript objects have some memory reserved for their description and for storing immediate values. Usually, only arrays and strings can have a significant shallow size. However, strings and external arrays often have their main storage in renderer memory, exposing only a small wrapper object on the JavaScript heap.
 
-Objetos típicos do JavaScript têm alguma memória reservada para descrição e armazenamento de valores imediatos. Normalmente, somente matrizes e strings podem ter um shallow size (tamanho superficial). No entanto, a memória principal de strings e matrizes externas muitas vezes fica na memória do renderizador, expondo apenas um pequeno objeto agrupador na pilha do JavaScript.
+Renderer memory is all memory of the process where an inspected page is rendered: native memory + JS heap memory of the page + JS heap memory of all dedicated workers started by the page. Nevertheless, even a small object can hold a large amount of memory indirectly, by preventing other objects from being disposed of by the automatic garbage collection process.
 
-A memória do renderizador é toda a memória do processo em que uma página inspecionada é renderizada: memória nativa + memória da pilha JS da página + memória da pilha JS de todos os workers dedicados iniciados pela página. No entanto, mesmo um objeto pequeno pode manter indiretamente uma grande quantidade de memória, evitando que outros objetos sejam descartados pelo processo automático de coleta de lixo.
+### Retained size
 
-### Tamanho retido
+This is the size of memory that is freed once the object itself is deleted along with its dependent objects that were made unreachable from **GC roots**.
 
-É o tamanho da memória liberada quando o próprio objeto é excluído juntamente com seus objetos dependentes que foram tornados inacessíveis para as **raízes GC**.
+**GC roots** are made up of *handles* that are created (either local or global) when making a reference from native code to a JavaScript object outside of V8. All such handles can be found within a heap snapshot under **GC roots** > **Handle scope** and **GC roots** > **Global handles**. Describing the handles in this documentation without diving into details of the browser implementation may be confusing. Both GC roots and the handles are not something you need to worry about.
 
-As **raízes GC** são compostas por *identificadores* criados (localmente ou globalmente) ao fazer uma referência do código nativo para um objeto JavaScript fora do V8. Todos esses identificadores podem ser encontrados dentro de um resumo de pilha em **GC roots** > **Handle scope** e **GC roots** > **Global handles**. Descrever os identificadores nesta documentação sem entrar nos detalhes da implementação do navegador pode ser confuso. Você não precisa se preocupar com raízes GC e identificadores.
+There are lots of internal GC roots most of which are not interesting for the users. From the applications standpoint there are following kinds of roots:
 
-Existe muitas raízes GC internas e a maioria delas não é interessante para os usuários. A partir do ponto de vista dos aplicativos, há dois tipos de raiz:
+* Window global object (in each iframe). There is a distance field in the heap snapshots which is the number of property references on the shortest retaining path from the window.
 
-* Objeto global de janela (em cada iframe). Há um campo de distância nos resumos de pilha, que é o número de referências a propriedade no caminho de retenção mais curto da janela.
+* Document DOM tree consisting of all native DOM nodes reachable by traversing the document. Not all of them may have JS wrappers but if they have the wrappers will be alive while the document is alive.
 
-* A árvore do DOM de documentos consiste em todos os nós do DOM nativos acessíveis que passam pelo documento. Nem todos eles necessariamente têm agrupadores JS, mas, se tiverem, ficarão ativos enquanto o documento ficar.
+* Sometimes objects may be retained by debugger context and DevTools console (e.g. after console evaluation). Create heap snapshots with clear console and no active breakpoints in the debugger.
 
-* Às vezes, os objetos podem ser retidos pelo contexto do depurador e pelo console do DevTools (por exemplo, após avaliação do console). Crie instantâneos de pilha com console limpo e sem pontos de interrupção ativos no depurador.
+The memory graph starts with a root, which may be the `window` object of the browser or the `Global` object of a Node.js module. You don't control how this root object is GC'd.
 
-O gráfico de memória começa com uma raiz, que pode ser o objeto `window` do navegador ou o objeto `Global` de um módulo Node.js. Você não tem controle sobre a coleta de lixo desse objeto raiz.
+![Root object can't be controlled](imgs/dontcontrol.png)
 
-![Não é possível controlar o objeto raiz](imgs/dontcontrol.png)
+Whatever is not reachable from the root gets GC.
 
-Tudo que for inacessível da raiz estará sujeito à coleta de lixo.
+Note: Both the Shallow and Retained size columns represent data in bytes.
 
-Observação: as colunas Shallow e Retained size representam dados em bytes.
+## Objects retaining tree
 
-## Árvore de retenção de objetos
+The heap is a network of interconnected objects. In the mathematical world, this structure is called a *graph* or memory graph. A graph is constructed from *nodes* connected by means of *edges*, both of which are given labels.
 
-A pilha é uma rede de objetos interconectados. No mundo matemático, esta estrutura é chamada de *gráfico*, ou gráfico de memória. Um gráfico é construído com *nós* conectados por meio de *bordas* e ambos recebem rótulos.
+* **Nodes** (*or objects*) are labelled using the name of the *constructor* function that was used to build them.
+* **Edges** are labelled using the names of *properties*.
 
-* Os **nós** (*ou objetos*) são rotulados usando o nome da função do *construtor* que foi usada para criá-los.
-* As **bordas** são rotuladas usando os nomes das *propriedades*.
+Learn [how to record a profile using the Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). Some of the eye-catching things we can see in the Heap Profiler recording below include distance: the distance from the GC root. If almost all the objects of the same type are at the same distance, and a few are at a bigger distance, that's something worth investigating.
 
-Saiba [como gravar um perfil usando o criador de perfil de pilha](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots).
-Uma das coisas que mais chama a atenção
-na gravação do criador de perfil de pilha abaixo tem a ver com distância:
-a distância da raiz de GC.
-Se quase todos os objetos do mesmo tipo estiverem à mesma distância,
-e alguns a uma distância maior, vale a pena investigar isso.
+![Distance from root](imgs/root.png)
 
-![Distância da raiz](imgs/root.png)
+## Dominators
 
-## Dominadores
+Dominator objects are comprised of a tree structure because each object has exactly one dominator. A dominator of an object may lack direct references to an object it dominates; that is, the dominator's tree is not a spanning tree of the graph.
 
-Os objetos dominadores são compostos por uma estrutura de árvore porque cada objeto tem exatamente um dominador. Um dominador de um objeto pode não ter referências diretas a um objeto que domina. Ou seja, a árvore do dominador não é uma árvore abrangente do gráfico.
+In the diagram below:
 
-No diagrama abaixo:
+* Node 1 dominates node 2
+* Node 2 dominates nodes 3, 4 and 6
+* Node 3 dominates node 5
+* Node 5 dominates node 8
+* Node 6 dominates node 7
 
-* O nó 1 é o dominante do nó 2
-* O nó 2 é o dominante dos nós 3, 4 e 6
-* O nó 3 é o dominante do nó 5
-* O nó 5 é o dominante do nó 8
-* O nó 6 é o dominante do nó 7
+![Dominator tree structure](imgs/dominatorsspanning.png)
 
-![Estrutura de árvore do dominador](imgs/dominatorsspanning.png)
+In the example below, node `#3` is the dominator of `#10`, but `#7` also exists in every simple path from GC to `#10`. Therefore, an object B is a dominator of an object A if B exists in every simple path from the root to the object A.
 
-No exemplo abaixo, o nó `#3` é o dominador de `#10`, mas `#7` também existe em todos os caminhos simples de GC até `#10`. Portanto, um objeto B será um dominador de um objeto A se B existir em todos os caminhos simples da raiz para o objeto A.
+![Animated dominator illustration](imgs/dominators.gif)
 
-![Ilustração animada de um dominador](imgs/dominators.gif)
+## V8 specifics
 
-## Detalhes específicos do V8
+When profiling memory, it is helpful to understand why heap snapshots look a certain way. This section describes some memory-related topics specifically corresponding to the **V8 JavaScript virtual machine** (V8 VM or VM).
 
-Ao criar um perfil de memória, é útil compreender porque os instantâneos de pilha têm uma determinada aparência. Esta seção descreve alguns tópicos relacionados à memória, correspondentes especificamente à **máquina virtual V8 do JavaScript** (VM V8 ou VM).
+### JavaScript object representation
 
-### Representação de objetos do JavaScript
+There are three primitive types:
 
-Existem três tipos primitivos:
+* Numbers (e.g., 3.14159..)
+* Booleans (true or false)
+* Strings (e.g., 'Werner Heisenberg')
 
-* Números (por exemplo, 3,14159...)
-* Booleanos (verdadeiro ou falso)
-* Strings (por exemplo, 'Werner Heisenberg')
+They cannot reference other values and are always leafs or terminating nodes.
 
-Eles não podem fazer referência a outros valores e são sempre folhas ou nós de terminação.
+**Numbers** can be stored as either:
 
-Os **números** podem ser armazenados como:
+* an immediate 31-bit integer values called **small integers** (*SMIs*), or
+* heap objects, referred to as **heap numbers**. Heap numbers are used for storing values that do not fit into the SMI form, such as *doubles*, or when a value needs to be *boxed*, such as setting properties on it.
 
-* valores de um número inteiro de 31 bits imediato chamado de **números inteiros pequenos** (*SMIs*).
-* objetos de pilha, conhecidos como **números de pilha**. Os números de pilha são usados para armazenar valores que não se adequam a formulários SMI, como *duplos*, ou quando um valor precisa ser *demarcado*, como na definição de suas propriedades.
+**Strings** can be stored in either:
 
-As **strings** podem ser armazenadas:
+* the **VM heap**, or
+* externally in the **renderer’s memory**. A *wrapper object* is created and used for accessing external storage where, for example, script sources and other content that is received from the Web is stored, rather than copied onto the VM heap.
 
-* na **pilha da VM** ou
-* externamente na **memória do renderizador**. Um *objeto agrupador* é criado e usado para acessar armazenamento externo em que, por exemplo, origens de script e outros conteúdos recebidos da Web são armazenados, em vez de copiados para a pilha da VM.
+Memory for new JavaScript objects is allocated from a dedicated JavaScript heap (or **VM heap**). These objects are managed by V8's garbage collector and therefore, will stay alive as long as there is at least one strong reference to them.
 
-A memória de novos objetos JavaScript é alocada de uma pilha JavaScript dedicada (ou **pilha da VM**). Esses objetos são gerenciados pelo coletor de lixo do V8 e, portanto, permanecerão ativos enquanto houver pelo menos uma referência forte a eles.
+**Native objects** are everything else which is not in the JavaScript heap. Native object, in contrast to heap object, is not managed by the V8 garbage collector throughout its lifetime, and can only be accessed from JavaScript using its JavaScript wrapper object.
 
-Os **objetos nativos** são todo o resto que não está na pilha JavaScript. Objetos nativos, diferentemente de objetos de pilha, não são gerenciados pelo coletor de lixo do V8 durante o ciclo de vida, e só podem ser acessados pelo JavaScript usando seu objeto agrupador do JavaScript.
+**Cons string** is an object that consists of pairs of strings stored then joined, and is a result of concatenation. The joining of the *cons string* contents occurs only as needed. An example would be when a substring of a joined string needs to be constructed.
 
-Uma **cons string** é um objeto composto de pares de strings armazenados e, em seguida, unidos, e é resultado de concatenação. A união dos conteúdos de *cons string* ocorre somente quando necessário. Um exemplo seria quando uma substring de uma string unida precisa ser construída.
+For example, if you concatenate **a** and **b**, you get a string (a, b) which represents the result of concatenation. If you later concatenated **d** with that result, you get another cons string ((a, b), d).
 
-Por exemplo, se você concatenar **a** e **b**, terá uma string (a, b) que representa o resultado da concatenação. Se você concatenar posteriormente **d** com esse resultado, terá outra cons string ((a, b), d).
+**Arrays** - An Array is an Object with numeric keys. They are used extensively in the V8 VM for storing large amounts of data. Sets of key-value pairs used like dictionaries are backed up by arrays.
 
-**Matrizes** - uma matriz é um objeto com chaves numéricas. Elas são amplamente usadas na VM do V8 para armazenar grandes quantidades de dados. Os conjuntos de pares chave-valor usados como dicionários são baseados em matrizes.
+A typical JavaScript object can be one of two array types used for storing:
 
-Um objeto JavaScript típico pode ser um dos dois tipos de matriz usados para armazenamento:
+* named properties, and
+* numeric elements
 
-* propriedades nomeadas e
-* elementos numéricos
+In cases where there is a very small number of properties, they can be stored internally in the JavaScript object itself.
 
-Em casos em que há um número bem pequeno de propriedades, elas podem ser armazenadas internamente no próprio objeto JavaScript.
+**Map** - an object that describes the kind of object and its layout. For example, maps are used to describe implicit object hierarchies for [fast property access](/v8/design.html#prop_access).
 
-**Mapa** - um objeto que descreve o tipo de objeto e seu layout. Por exemplo, os mapas são usados para descrever hierarquias de objetos implícitos para oferecer [acesso rápido a propriedades](/v8/design.html#prop_access).
+### Object groups
 
-### Grupos de objetos
+Each native objects group is made up of objects that hold mutual references to each other. Consider, for example, a DOM subtree where every node has a link to its parent and links to the next child and next sibling, thus forming a connected graph. Note that native objects are not represented in the JavaScript heap — that's why they have zero size. Instead, wrapper objects are created.
 
-Cada grupo de objetos nativos é composto por objetos que mantêm referências mútuas entre si. Considere, por exemplo, uma subárvore do DOM em que cada nó tem uma ligação a seus parentes e conecta-se ao próximo secundário e próximo semelhante, formando, assim, um gráfico conectado. Observe que objetos nativos não são representados na pilha JavaScript — por isso têm tamanho zero. Em vez disso, são criados objetos agrupadores.
+Each wrapper object holds a reference to the corresponding native object, for redirecting commands to it. In its own turn, an object group holds wrapper objects. However, this doesn't create an uncollectable cycle, as GC is smart enough to release object groups whose wrappers are no longer referenced. But forgetting to release a single wrapper will hold the whole group and associated wrappers.
 
-Cada objeto agrupador mantém uma referência ao objeto nativo correspondente para redirecionar comandos a ele. Por definição, um grupo de objetos detém objetos de agrupador. No entanto, isso não cria um ciclo não coletável, já que o GC é inteligente o suficiente para liberar grupos de objetos cujos agrupadores não são mais referenciados. Mas esquecer de liberar um único agrupador reterá todo o grupo e todos os agrupadores associados.
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

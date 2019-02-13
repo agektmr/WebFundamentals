@@ -1,89 +1,62 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: En los dispositivos con capacidades de telefonía, permite que los usuarios se conecten directamente contigo con solo tocar un número de teléfono, un método conocido más comúnmente como “Clic para llamar”.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
-{# wf_updated_on: 2016-08-22 #}
-{# wf_published_on: 2014-06-17 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Input #}
 
-# Hacer clic para llamar {: .page-title }
+# Click to Call {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-En los dispositivos con capacidades de telefonía, permite que los usuarios se conecten
-directamente contigo con solo tocar un número de teléfono, un método conocido más comúnmente como “Clic para llamar”.
+On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
 ### TL;DR {: .hide-from-toc }
 
-* Agrupa todos los números de teléfono en hipervínculos con el esquema de <code>tel:</code>.
-* Usa siempre el formato de marcación internacional.
+* Wrap all phone numbers in hyperlinks with the `tel:` schema.
+* Always use the international dialing format.
 
+## Link telephone numbers for click to call
 
-## Vincula números de teléfono para clic para llamar
+While many modern mobile browsers automatically detect phone numbers and convert them to links, it’s a good idea to do this directly in your code. By manually tagging each phone number, you can ensure that phone numbers are always enabled for click to call and that they will be styled to match your site.
 
-Si bien muchos navegadores móviles modernos detectan automáticamente números de teléfono 
-y los convierten en vínculos, te recomendamos hacer esto directamente en tu código.
-Etiquetando manualmente cada número de teléfono, puedes asegurarte de que los números de teléfono estén siempre
-habilitados para la función “Clic para llamar” y que tengan un estilo que coincida con tu sitio.
-
-Para marcar un número de teléfono como un vínculo, usa el esquema `tel:`.  La sintaxis es 
-simple:
-
+To mark a phone number as a link, use the `tel:` scheme. The syntax is simple:
 
     NIST Telephone Time-of-Day Service 
-	<a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+    <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+    
 
-Tu navegador muestra esta sintaxis de la siguiente manera:
+Your browser displays this syntax as follows:
 
-NIST Telephone Time-of-Day Service <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+NIST Telephone Time-of-Day Service [+1 (303) 499-7111](tel:+1-303-499-7111)
 
 <div class="attempt-right">
   <figure>
     <img src="images/click-to-call_framed.jpg" >
-    <figcaption>Ejemplo de clic para llamar.</figcaption>
+    <figcaption>Click to call example</figcaption>
   </figure>
 </div>
 
-En la mayoría de los dispositivos con capacidades telefónicas, el usuario recibirá una
-confirmación antes de que se marque el número, a fin de garantizar que no se engañe a los usuarios
-para que realicen llamadas costosas a números de teléfono premium o de larga distancia.
-Si el dispositivo no admite llamadas telefónicas, a los usuarios se les mostrará un
-menú en el que podrán elegir cómo se debe usar el número en el navegador.
+On most devices with telephone capabilities, the user receives a confirmation before the number is dialed, to ensure that the user isn't being tricked into calling an expensive long distance or premium phone number. When the device doesn’t support phone calls, users may be presented with a menu allowing them to choose how the browser should handle the number.
 
-En los navegadores de escritorio que no sean compatibles con llamadas de voz, se abre la
-app de telefonía predeterminada en la computadora; por ejemplo, Google Voice o Microsoft
-Communicator.
+Desktop browsers that don’t support voice calls open the default telephony app on the computer; for example Google Voice or Microsoft Communicator.
 
-## Usa el formato de marcación internacional
+## Use the international dialing format
 
-Proporciona siempre el número de teléfono en formato de marcación internacional: 
-el signo más (`+`), el código de país, el código de área y el número.  Si bien no es absolutamente
-necesario, te recomendamos separar cada segmento del número con un
-guión (`-`) para facilitar la lectura y mejorar la detección automática.
+Always supply the phone number using the international dialing format: the plus sign (`+`), country code, area code, and number. While not absolutely necessary, it’s a good idea to separate each segment of the number with a hyphen (`-`) for easier reading and better auto-detection.
 
-El uso del formato de marcación internacional con guiones garantizará que se pueda realizar la llamada, independientemente del lugar
-desde el cual llame el usuario (ya sea desde unos cientos de metros o desde miles
-de kilómetros de distancia).
+Using a hyphenated international dialing format ensures that no matter where the user is calling from, whether a few hundred meters away or thousands of kilometers, their call will be connected.
 
-## Inhabilita la detección automática cuando sea necesario
+## Disable auto-detection when necessary
 
-Los navegadores móviles modernos detectan automáticamente los números de teléfono y habilitan la función
-“clic para llamar”. Mobile Safari convierte automáticamente los números de teléfono en vínculos
-con los estilos de hipervínculos asociados. Chrome para Android detecta automáticamente
-los números de teléfono y permite a los usuarios hacer clic para llamar, pero no los agrupa
-en hipervínculos ni aplica estilos especiales.
+Modern mobile browsers automatically detect phone numbers and enable click to call. Mobile Safari automatically converts phone numbers to links with the associated hyperlink styles. Chrome for Android automatically detects phone numbers and allows users to click to call, but does not wrap the phone numbers in hyperlinks or apply any special styles.
 
-Si no deseas que Mobile Safari detecte automáticamente los números de teléfono, agrega la
-siguiente metaetiqueta en la parte superior de la página:
-
+To prevent Mobile Safari from automatically detecting phone numbers, add the following meta tag to the top of the page:
 
     <meta name="format-detection" content="telephone=no">
+    
 
+## Other click to call features
 
-## Otras características de la función “Clic para llamar”
+In addition to the `tel:` schema, some modern browsers also support the `sms:` and `mms:` schemas, though support is not as consistent, and some features like setting the message body don't always work.
 
-Además del esquema `tel:`, algunos navegadores modernos también admiten los esquemas `sms:`
-y `mms:`, aunque la compatibilidad no es constante y algunas
-funciones, como la configuración del cuerpo del mensaje, no siempre funcionan. 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

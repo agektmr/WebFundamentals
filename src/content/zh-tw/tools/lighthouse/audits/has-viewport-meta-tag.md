@@ -1,43 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“HTML 具有視口元標記”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Has A &lt;meta name="viewport"&gt; Tag With width Or initial-scale" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# HTML 具有視口元標記 {: .page-title }
+# Has A Viewport Meta Tag With width Or initial-scale {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-如果沒有視口元標記，移動設備將以典型的桌面設備屏幕寬度渲染頁面，然後對頁面進行縮放以適合移動設備屏幕。
-通過設置視口，您可以控制視口的寬度和縮放比例。查看以下鏈接可瞭解詳情：
+Without a viewport meta tag, mobile devices render pages at typical desktop screen widths, and then scale the pages to fit the mobile screens. Setting the viewport enables you to control the width and scaling of the viewport. Check out the following links to learn more:
 
+* [Configure the Viewport](/speed/docs/insights/ConfigureViewport)
+* [Set the Viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)
 
+## Recommendations {: #recommendations }
 
-* [配置視口](/speed/docs/insights/ConfigureViewport)。
-* [設置視口](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)。
-
-## 如何通過此審查 {: #how }
-
-在 HTML 的 `<head>` 中添加一個視口 `<meta>` 標記。
+Add a viewport `<meta>` tag in the `<head>` of your HTML.
 
     <head>
       ...
       <meta name="viewport" content="width=device-width, initial-scale=1">
       ...
     </head>
+    
 
-`width=device-width` 鍵值對將視口寬度設置爲設備寬度。
-在訪問頁面時，`initial-scale=1` 鍵值對設置初始縮放級別。
+The `width=device-width` key-value pair sets the width of the viewport to the width of the device. The `initial-scale=1` key-value pair sets the initial zoom level when visiting the page.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse checks that there's a `<meta name="viewport">` tag in the `<head>` of the document. It also checks that the node contains a `content` attribute and that the value of this attribute contains the text `width=`. However, it does not check that `width` equals `device-width`. Lighthouse also does not check for a `initial-scale` key-value pair.
 
-Lighthouse 檢查文檔的 `<head>` 中是否有 `<meta name="viewport">` 標記。
-它也會檢查此節點是否包含 `content` 屬性，且該屬性值是否包含文本 `width=`。
-不過，它不會檢查 `width` 是否等於 `device-width`。
-Lighthouse 也不會檢查 `initial-scale` 鍵值對。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

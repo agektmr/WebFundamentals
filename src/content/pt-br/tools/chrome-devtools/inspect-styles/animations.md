@@ -1,160 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Inspecione e modifique animações com o Animation Inspector do Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
-{# wf_updated_on: 2016-05-02 #}
-{# wf_published_on: 2016-05-02 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2016-05-02 #} {# wf_blink_components: Platform>DevTools #}
 
-# Inspecionar animações {: .page-title }
+# Inspect animations {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Inspecione e modifique animações com o Animation Inspector
-do Chrome DevTools.
+Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
-![Animation Inspector](imgs/animation-inspector.png)
-
+![animation inspector](imgs/animation-inspector.png)
 
 ### TL;DR {: .hide-from-toc }
-- Capture animações abrindo o Animation Inspector. Ele detecta animações e as classifica em grupos automaticamente.
-- Inspecione animações desacelerando-as, reproduzindo-as ou visualizando o código-fonte.
-- Modifique animações alterando a sincronização, o atraso, a duração ou os deslocamentos do quadro-chave.
 
+* Capture animations by opening the Animation Inspector. It automatically detects animations and sorts them into groups.
+* Inspect animations by slowing them down, replaying them, or viewing their source code.
+* Modify animations by changing their timing, delay, duration, or keyframe offsets.
 
-## Visão geral {:#overview}
+## Overview {:#overview}
 
-O Animation Inspector do Chrome DevTools tem dois objetivos principais. 
+The Chrome DevTools Animation Inspector has two main purposes.
 
-* Inspecionar animações. Se quiser desacelerar, reproduzir ou inspecionar o 
-  código-fonte de um grupo de animações. 
-* Modificar animações. Se quiser modificar a sincronização, o atraso, a duração ou 
-  ajustes de quadro-chave de um grupo de animações. Edição de bézier e edição 
-  de quadro-chave ainda não são compatíveis. 
+* Inspecting animations. You want to slow down, replay, or inspect the source code for an animation group. 
+* Modifying animations. You want to modify the timing, delay, duration, or keyframe offsets of an animation group. Bezier editing and keyframe editing are currently not supported. 
 
-O Animation Inspector é compatível com animações CSS,
-transições CSS e animações Web. Animações `requestAnimationFrame` não
-são atualmente permitidas.
+The Animation Inspector supports CSS animations, CSS transitions, and web animations. `requestAnimationFrame` animations are currently not supported.
 
-### O que é um grupo de animações?
+### What's an animation group?
 
-Um grupo de animações é um conjunto de animações que 
-*parecem* ser relacionadas. Atualmente, a web não tem um conceito efetivo
-para grupo de animações, então os designers e desenvolvedores de animação precisam compor 
-e sincronizar animações individuais para que pareçam ter efeito visual 
-coerente. O Animation Inspector prevê quais animações são relacionadas com base 
-no tempo de início (excluindo atrasos e outros) e agrupa-as lado a lado.
-Em outras palavras, um conjunto de animações acionadas no mesmo bloco de script 
-são agrupadas, mas, se forem assíncronas, são agrupadas 
-separadamente. 
+An animation group is a group of animations that *appear* to be related to each other. Currently, the web has no real concept of a group animation, so motion designers and developers have to compose and time individual animations so that they appear to be one coherent visual effect. The Animation Inspector predicts which animations are related based on start time (excluding delays, and so on) and groups them all side-by-side. In other words, a set of animations all triggered in the same script block are grouped together, but if they're asynchronous then they're grouped separately.
 
-## Primeiros passos
+## Get started
 
-Há duas formas de abrir o Animation Inspector:
+There are two ways to open the Animation Inspector:
 
-* Acesse a seção **Styles** (no painel **Elements**) e pressione o botão 
-  **Animations** (![botão 
-animations](imgs/animations-button.png){:.inline}). 
-* Abra o menu de comando e digite `Drawer: Show Animations`. 
+* Go to the **Styles** pane (on the **Elements** panel) and press the **Animations** button (![animations 
+button](imgs/animations-button.png){:.inline}). 
+* Open the Command Menu and type `Drawer: Show Animations`. 
 
-O Animation Inspector abre em uma aba próxima a gaveta Console. Como ela
-é uma guia gaveta, você pode usá-la de qualquer painel do DevTools. 
+The Animation Inspector opens up as a tab next to the Console Drawer. Since it's a Drawer tab, you can use it from any DevTools panel.
 
-![Animation Inspector vazio](imgs/empty-ai.png)
+![Empty Animation Inspector](imgs/empty-ai.png)
 
-O Animation Inspector é organizado em quatro seções principais (ou painéis). Este
-guia se refere a cada painel da seguinte forma:
+The Animation Inspector is grouped into four main sections (or panes). This guide refers to each pane as follows:
 
-1. **Controls**. Aqui, você pode apagar todos os grupos de animações
-   capturados no momento ou alterar a velocidade do grupo de animações selecionado no momento.
-2. **Overview**. Selecione um Grupo de animações aqui para inspecionar 
-  e modificar no painel **Details**.
-3. **Timeline**. Pause e inicie uma animação aqui, ou siga direto para um ponto 
-  específico na animação.
-4. **Details**. Inspecione e modifique o
-   grupo de animações selecionado. 
+1. **Controls**. From here you can clear all currently captured Animation Groups, or change the speed of the currently selected Animation Group. 
+2. **Overview**. Select an Animation Group here to inspect and modify it in the **Details** pane.
+3. **Timeline**. Pause and start an animation from here, or jump to a specific point in the animation.
+4. **Details**. Inspect and modify the currently selected Animation Group. 
 
-![Animation Inspector anotado](imgs/annotated-animation-inspector.png)
+![annotation Animation Inspector](imgs/annotated-animation-inspector.png)
 
-Para capturar uma animação, basta executar a interação que aciona a
-animação com o Animation Inspector aberto. Se uma animação for acionada 
-no carregamento de uma página, você pode ajudar o Animation Inspector a detectar a animação 
-recarregando a página. 
+To capture an animation, just perform the interaction that triggers the animation while the Animation Inspector is open. If an animation is triggered on page load, you can help the Animation Inspector detect the animation by reloading the page.
 
 <video src="animations/capture-animations.mp4"
        autoplay loop muted controls></video>
 
-## Inspecionar animações {:#inspect}
+## Inspect animations {:#inspect}
 
-Depois de capturar uma animação, há algumas formas de reproduzi-la:
+Once you've captured an animation, there are a few ways to replay it:
 
-* Passe o cursor sobre a imagem em miniatura no painel **Overview** para visualizar uma prévia dela.
-* Selecione o Grupo de animação no painel **Overview** (para que ele seja exibido
-  no painel **Details**) e pressione o botão **replay**
-  (![botão replay](imgs/replay-button.png){:.inline}). A animação é
-  reproduzida na janela de visualização.
-  Clique nos botões **animation speed** (![botões animation 
-  speed](imgs/animation-speed-buttons.png){:.inline}) para alterar a velocidade 
-  da visualização do grupo de animações selecionado no momento. Você pode usar a barra 
-  vertical vermelha para alterar a posição atual. 
-* Clique e arraste a barra vertical vermelha para remover a animação da janela de visualização. 
+* Hover over its thumbnail in the **Overview** pane to view a preview of it.
+* Select the Animation Group from the **Overview** pane (so that it's displayed in the **Details** pane) and press the **replay** button (![replay button](imgs/replay-button.png){:.inline}). The animation is replayed in the viewport. Click on the **animation speed** buttons (![animation speed 
+buttons](imgs/animation-speed-buttons.png){:.inline}) to change the preview speed of the currently selected Animation Group. You can use the red vertical bar to change your current position. 
+* Click and drag the red vertical bar to scrub the viewport animation. 
 
-### Visualizar detalhes da animação
+### View animation details
 
-Depois de capturar um grupo de animações, clique nele no painel **Overview** para 
-visualizar seus detalhes. No painel **Details**, cada animação tem
-sua própria linha. 
+Once you've captured an Animation Group, click on it from the **Overview** pane to view its details. In the **Details** pane each individual animation gets its own row.
 
-![Detalhes do grupo de animações](imgs/animation-group-details.png)
+![animation group details](imgs/animation-group-details.png)
 
-Passe o cursor sobre uma animação para destacá-la na janela de visualização. Clique na animação
-para selecioná-la no painel **Elements**. 
+Hover over an animation to highlight it in the viewport. Click on the animation to select it in the **Elements** panel.
 
-![Passe o cursor sobre uma animação para destacá-la na 
-janela de visualização](imgs/highlight-animation.png)
+![hover over animation to highlight it in 
+viewport](imgs/highlight-animation.png)
 
-A seção mais escura à esquerda de uma animação é sua definição. A seção mais
-esmaecida à direita representa as iterações. Por exemplo, na captura 
-de tela abaixo, as seções 2 e 3 representam iterações da seção 1. 
+The leftmost, darker section of an animation is its definition. The right, more faded section represents iterations. For example, in the screenshot below, sections two and three represent iterations of section one.
 
-![Diagrama das iterações de uma animação](imgs/animation-iterations.png)
+![diagram of animation iterations](imgs/animation-iterations.png)
 
-Se dois elementos tiverem a mesma animação aplicada a eles, o Animation 
-Inspector atribui a mesma cor a eles. A cor em si é aleatória e não 
-tem significado.
-Por exemplo, na captura de tela abaixo, os dois elementos `div.eye.left::after` 
-e `div.eye.right::after` têm a mesma animação (`eyes`) aplicada a eles, 
-assim como os elementos `div.feet::before` e `div.feet::after`. 
+If two elements have the same animation applied to them, the Animation Inspector assigns them the same color. The color itself is random and has no significance. For example, in the screenshot below the two elements `div.eye.left::after` and `div.eye.right::after` have the same animation (`eyes`) applied to them, as do the `div.feet::before` and `div.feet::after` elements.
 
-![Animações com códigos de cor](imgs/color-coded-animations.png)
+![color-coded animations](imgs/color-coded-animations.png)
 
-## Modificar animações {:#modify}
+## Modify animations {:#modify}
 
-Há três maneiras para modificar uma animação com o Animation Inspector:
+There are three ways you can modify an animation with the Animation Inspector:
 
-* Duração da animação.
-* Sincronização de quadros-chave.
-* Atraso no horário de início.
+* Animation duration.
+* Keyframe timings.
+* Start time delay.
 
-Para esta seção, suponha que a captura de tela abaixo representa a animação
-original:
+For this section suppose that the screenshot below represents the original animation:
 
-![Animação original antes da modificação](imgs/modify-original.png)
+![original animation before modification](imgs/modify-original.png)
 
-Para alterar a duração de uma animação, clique e arraste o primeiro ou o último 
-círculo.
+To change the duration of an animation, click and drag the first or last circle.
 
-![Duração modificada](imgs/modify-duration.png)
+![modified duration](imgs/modify-duration.png)
 
-Se a animação definir qualquer regra de quadro-chave, elas serão representadas como
-círculos internos brancos. Clique e arraste um desses círculos para alterar os tempos do 
-quadro-chave.
+If the animation defines any keyframe rules, then these are represented as white inner circles. Click and drag one of these to change the timing of the keyframe.
 
-![Quadro-chave modificado](imgs/modify-keyframe.png)
+![modified keyframe](imgs/modify-keyframe.png)
 
-Para adicionar um atraso a uma animação, clique e arraste para qualquer lugar exceto os 
-círculos. 
+To add a delay to an animation, click and drag it anywhere except the circles.
 
-![Atraso modificado](imgs/modify-delay.png)
+![modified delay](imgs/modify-delay.png)
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

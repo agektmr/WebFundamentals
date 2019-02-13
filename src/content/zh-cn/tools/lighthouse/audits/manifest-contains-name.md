@@ -1,42 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“清单包含名称”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains name" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 清单包含名称 {: .page-title }
+# Manifest Contains name {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-网络应用清单的 `name` 属性是应用的用户可读名称，因为其作用是在用户的移动设备上显示。
+The `name` property of the Web App Manifest is a human-readable name of your application as it is intended to be displayed to the user's mobile device.
 
+If a `short_name` is not provided, then the `name` is the label that will be used on the mobile device's homescreen, next to your app's icon.
 
-如果未提供 `short_name`，则 `name` 将作为标签显示在移动设备主屏幕上的应用图标旁。
+## Recommendations {: #recommendations }
 
-
-## 如何通过此审查{: #how }
-
-在您的网络应用清单中添加一个 `name` 属性。
+Add a `name` property in your Web App Manifest.
 
     {
       ...
       "name": "Air Horner",
       ...
     }
+    
 
-Chrome 的[最大长度](https://developer.chrome.com/apps/manifest/name)为 45 个字符。
+Chrome's [maximum length](https://developer.chrome.com/apps/manifest/name) is 45 characters.
 
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-有关向您展示如何在应用中正确实现和测试“添加到主屏幕”支持的指南清单，请查看[清单是否存在](manifest-exists#how)。
+## More information {: #more-info }
 
+Lighthouse fetches the manifest and verifies that it has a `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 提取清单并验证它是否具有一个 `name` 属性。Lighthouse 提取的清单独立于 Chrome 当前在页面上使用的清单，这可能会产生不准确的结果。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

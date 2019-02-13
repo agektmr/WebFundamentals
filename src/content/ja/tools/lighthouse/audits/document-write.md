@@ -1,39 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「サイトで document.write() を使用しない」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids document.write()" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-#  サイトで document.write() を使用しない {: .page-title }
+# Avoids document.write() {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-2G、3G、低速 Wi-Fi など、低速のネットワークに接続している場合は、`document.write()`
-で動的に挿入された外部スクリプトによって、メインページのコンテンツ表示が数十秒単位で遅れる場合があります。
+For users on slow connections, such as 2G, 3G, or slow Wi-Fi, external scripts dynamically injected via `document.write()` can delay the display of main page content by tens of seconds.
 
+See [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write) to learn more.
 
-詳細は、[Intervening against `document.write()`][[blog] をご覧ください。
+## Recommendations {: #recommendations }
 
-[blog]: /web/updates/2016/08/removing-document-write
+In your report, Lighthouse lists out every call to `document.write()`. Review this list, and note any call that dynamically injects a script. If the script meets the criteria outlined in the introduction to [Intervening against `document.write()`](/web/updates/2016/08/removing-document-write), Chrome won't execute the injected script. These are the calls to `document.write()` that you want to change. See [How do I fix this?](/web/updates/2016/08/removing-document-write#how_do_i_fix_this) for possible solutions.
 
-##  監査に合格する方法 {: #how }
+## More information {: #more-info }
 
-Lighthouse のレポートには、`document.write()` への呼び出しがリストアップされます。
-このリストを確認して、動的にスクリプトを挿入している呼び出しに注意してください。
-スクリプトが
-[Intervening against `document.write()`][[blog] の導入部分に記載された条件に一致する場合は、挿入されたスクリプトが Chrome で実行されません。
-よって、これらの `document.write()` への呼び出しを変更する必要があります。
-解決策については、[How do I fix this?][fix] をご覧ください。 
+Lighthouse reports every instance of `document.write()` that it encounters. Note that Chrome's intervention against `document.write()` only applies to render-blocking, dynamically-injected scripts. Other uses of `document.write()` may be acceptable.
 
-[fix]: /web/updates/2016/08/removing-document-write#how_do_i_fix_this
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse では、検出された `document.write()` のインスタンスがすべて報告されます。
-なお、Chrome で `document.write()` が実行されなくなるのは、スクリプトがレンダリングをブロックする場合と動的に挿入された場合のみです。
-それ以外のケースでは、`document.write()` を使用できる場合もあります。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

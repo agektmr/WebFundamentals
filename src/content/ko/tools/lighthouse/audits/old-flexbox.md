@@ -1,39 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: '이전 CSS Flexbox를 사용하지 않는 사이트' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Old CSS Flexbox" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# 이전 CSS Flexbox를 사용하지 않는 사이트  {: .page-title }
+# Avoids Old CSS Flexbox {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-Flexbox의 오래된 2009년 사양은 지원이 중단되었고 최신 사양보다 2.3배
-속도가 느립니다. 자세한 내용은 [Flexbox 레이아웃은 느리지 않습니다][slow]를
-참조하세요.
+The old, 2009 specification for Flexbox is deprecated and is 2.3x slower than the latest specification. See [Flexbox Layout Isn't Slow](/web/updates/2013/10/Flexbox-layout-isn-t-slow) to learn more.
 
-[slow]: /web/updates/2013/10/Flexbox-layout-isn-t-slow
+Caution: Consider ignoring this audit if a large portion of your users use UCBrowser. See [googlechrome/lighthouse#1710](https://github.com/GoogleChrome/lighthouse/issues/1710#issuecomment-294470505).
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-Lighthouse는 **URLs**에 페이지의 스타일시트에서 찾은 모든 `display: box` 인스턴스를
-목록으로 표시합니다. 모든 인스턴스를 새로운 구문
-`display: flex`로 교체하세요.
+Under **URLs**, Lighthouse lists every instance of `display: box` that it found on your page's stylesheets. Replace every instance with the new syntax, `display: flex`.
 
-스타일시트가 `display: box`를 사용하고 있다면 다른 지원 중단된
-Flexbox 속성을 사용하고 있을 수 있습니다. 즉, `box`로 시작하는 모든 속성(
-예: `box-flex`)은 지원이 중단되었으므로 교체해야 합니다. 오래된 속성이 새로운 속성으로 매핑되는 정확한 방식에 대한 자세한 내용은 
-[CSS Flexbox 2009/2011 사양 구문 속성 매핑][map]을 참조하세요.
+If a stylesheet is using `display: box`, then it may be using other deprecated Flexbox properties. In short, every property that begins with `box`, such as `box-flex`, is deprecated and should be replaced. See [CSS Flexbox 2009/2011 Spec Syntax Property Mapping](https://wiki.csswg.org/spec/flexbox-2009-2011-spec-property-mapping) to see exactly how the old properties map to the new ones.
 
+Lighthouse also flags vendor prefix values, such as `display: -ms-flexbox`. Lighthouse flags these so that you know that you're sending more bytes in your CSS than needed. If you're using Autoprefixer, you can prevent it from printing out vendor prefixes by adding the following rule to your `package.json` config:
 
-[map]: https://wiki.csswg.org/spec/flexbox-2009-2011-spec-property-mapping
+    "browserslist": [
+      "last 2 versions",
+      "not ie <= 10",
+      "not ie_mob <= 10"
+    ]
+    
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse는 페이지에서 사용된 모든 스타일시트를 수집하고
-`display: box`를 사용하는지 검사합니다. Lighthouse는 스타일시트가 지원 중단된 다른 속성을 사용하는지는
-검사하지 않습니다.
+Lighthouse collects all of the stylesheets used on the page and checks if any of them uses `display: box`. Lighthouse does not check if the stylesheets use any other deprecated properties.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

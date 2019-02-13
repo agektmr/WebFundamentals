@@ -1,66 +1,47 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Modificando a ordem do DOM com tabindex
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Modifying the DOM order with tabindex
 
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Using tabindex {: .page-title }
 
-# Uso do tabindex {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+The default tab order provided by the DOM position of native elements is convenient, but there are times when you'll want to modify the tab order, and physically moving elements in the HTML isn't always an optimal, or even a feasible, solution. For these cases you can use the `tabindex` HTML attribute to explicitly set an element's tab position.
 
+`tabindex` can be applied to any element &mdash; although it is not necessarily useful on every element &mdash; and takes a range of integer values. Using `tabindex`, you can specify an explicit order for focusable page elements, insert an otherwise unfocusable element into the tab order, and remove elements from the tab order. For example:
 
-
-A ordem de guia padrão fornecida pela posição dos elementos nativos do
-DOM é conveniente, mas há momentos em que é melhor modificar a ordem de
-tabulação, e mover fisicamente elementos no HTML nem sempre é uma solução
-ideal, ou mesmo viável. Para esses casos, pode-se usar o atributo HTML `tabindex` para definir
-explicitamente a posição de tabulação de um elemento.
-
-`tabindex` pode ser aplicado a qualquer elemento &mdash; embora não seja
-necessariamente útil em cada elemento &mdash; e tem uma gama de valores inteiros. Usando
-`tabindex`, pode-se especificar uma ordem explícita para elementos de página
-focalizáveis, inserir um elemento que, de outra forma, não seria focalizável na
-ordem de tabulação, e remover elementos da ordem de tabulação. Por exemplo:
-
-`tabindex="0"`: Insere um elemento na ordem natural de tabulação. O elemento pode
-ser focalizado ao se pressionar a tecla `Tab`, e o elemento pode ser focado chamando-se
-seu método de `focus()`
+`tabindex="0"`: Inserts an element into the natural tab order. The element can be focused by pressing the `Tab` key, and the element can be focused by calling its `focus()` method
 
     <custom-button tabindex="0">Press Tab to Focus Me!</custom-button>
+    
 
 {% framebox height="60px" %}
+
 <style>
   custom-button {
     margin: 10px;
   }
 </style>
-<custom-button tabindex="0">Press Tab to Focus Me!</custom-button>
-{% endframebox %}
 
-`tabindex="-1"`: Remove um elemento da ordem natural de tabulação, mas o elemento
-ainda pode ser focado chamando seu método `focus()`
+<custom-button tabindex="0">Press Tab to Focus Me!</custom-button> {% endframebox %}
+
+`tabindex="-1"`: Removes an element from the natural tab order, but the element can still be focused by calling its `focus()` method
 
     <button id="foo" tabindex="-1">I'm not keyboard focusable</button>
     <button onclick="foo.focus();">Focus my sibling</button>
+    
 
 {% framebox height="80px" %}
 <button id="foo" tabindex="-1">I'm not keyboard focusable</button>
 <button onclick="foo.focus();">Focus my sibling</button>
 {% endframebox %}
 
-`tabindex="5"`: Qualquer tabindex maior que 0 passa o elemento para a frente
-na ordem natural de tabulação. Se houver vários elementos com um tabindex maior
-que 0, a ordem de tabulação começa partir do valor mais baixo que é maior
-que zero e vai subindo. Usar um tabindex maior que 0 é considerado
-um **anti-padrão**.
+`tabindex="5"`: Any tabindex greater than 0 jumps the element to the front of the natural tab order. If there are multiple elements with a tabindex greater than 0, the tab order starts from the lowest value that is greater than zero and works its way up. Using a tabindex greater than 0 is considered an **anti-pattern**.
 
-    <button>Eu deveria ser o primeiro</button>
-    <button>E eu deveria ser o segundo</button>
-    <button tabindex="5">Mas eu passei na frente!</button>
+    <button>I should be first</button>
+    <button>And I should be second</button>
+    <button tabindex="5">But I jumped to the front!</button>
+    
 
 {% framebox height="80px" %}
 <button>I should be first</button>
@@ -68,42 +49,21 @@ um **anti-padrão**.
 <button tabindex="5">But I jumped to the front!</button>
 {% endframebox %}
 
-Isso é particularmente verdadeiro para elementos não interativos, como
-cabeçalhos, imagens, ou títulos de artigo. Adicionar `tabindex` a esses tipos de elementos é contraproducente. Se
-possível, é melhor organizar seu código fonte, de modo que a sequência do DOM
-fornece uma ordem lógica de tabulação. Se você usar `tabindex`, limite-o a controles interativos
-personalizados como botões, abas, listas suspensas e campos de texto; ou seja,
-elementos que o  usuário pode esperar que forneçam interação.
+This is particularly true of non-input elements like headers, images, or article titles. Adding `tabindex` to those kinds of elements is counter-productive. If possible, it's best to arrange your source code so the DOM sequence provides a logical tab order. If you do use `tabindex`, restrict it to custom interactive controls like buttons, tabs, dropdowns, and text fields; that is, elements the user might expect to provide input to.
 
-Não se preocupe com que os usuários de leitores de tela deixem de perceber
-conteúdo importante por ele não ter um `tabindex`. Mesmo que o conteúdo seja muito importante, como uma imagem,
-se ele não for algo com que o usuário possa interagir, não há nenhuma razão
-para torná-lo focalizável. Usuários de leitores de tela ainda podem compreender o conteúdo da imagem, contanto
-que você forneça suporte adequado ao atributo `alt`, que será abordado em breve.
+Don't worry about screen reader users missing important content because it doesn't have a `tabindex`. Even if the content is very important, like an image, if it's not something the user can interact with, there's no reason to make it focusable. Screen reader users can still understand the content of the image so long as you provide proper `alt` attribute support, which we'll cover shortly.
 
-## Gerenciamento do foco no nível da página
+## Managing focus at the page level
 
-Aqui temos um cenário em que `tabindex` não é apenas útil, mas necessário. Você pode estar
-construindo uma única página robusta, com diferentes seções de
-conteúdo, nem todas as quais são visíveis simultaneamente. Neste tipo de página, clicar em um link de
-navegação pode alterar o conteúdo visível sem fazer uma atualização da página.
+Here's a scenario where `tabindex` is not only useful, but necessary. You might be building a robust single page with different content sections, not all of which are simultaneously visible. In this kind of page, clicking a navigation link might change the visible content without doing a page refresh.
 
-Quando isso acontece, você provavelmente identificaria a área de conteúdo selecionada,
-atribuiria um `tabindex` de -1 a ela para que não apareça na ordem
-natural de tabulação, e chamaria seu método de `focus`. Esta técnica, chamada *gerenciamento de foco*, mantém o
-contexto percebido pelo usuário em sincronia com o conteúdo visual do site.
+When this happens, you would probably identify the selected content area, give it a `tabindex` of -1 so that it doesn't appear in the natural tab order, and call its `focus` method. This technique, called *managing focus*, keeps the user's perceived context in sync with the site's visual content.
 
-## Gerenciamento do foco em componentes
+## Managing focus in components
 
-Gerenciar o foco quando se altera algo na página é importante, mas, às vezes,
-é preciso gerenciar o foco no nível de controle &mdash; por exemplo, se você estiver
-construindo um componente personalizado.
+Managing focus when you change something on the page is important, but sometimes you need to manage focus at the control level &mdash; for example, if you're building a custom component.
 
-Considere o elemento `select` nativo. Ele pode receber foco básico, mas,
-quando está lá, você pode usar as teclas de seta para expor a funcionalidade adicional
-(as opções selecionáveis). Se estivesse construindo um elemento `select` personalizado,
-seria desejável expor esses mesmos tipos de comportamentos de modo que usuários
-que se baseiam principalmente em teclado ainda possam interagir com o seu controle.
+Consider the native `select` element. It can receive basic focus but, once there, you can use the arrow keys to expose additional functionality (the selectable options). If you were building a custom `select` element, you would want to expose these same kinds of behaviors so that users who rely primarily on the keyboard could still interact with your control.
 
     <!-- Focus the element using Tab and use the up/down arrow keys to navigate -->
     <select>
@@ -111,6 +71,7 @@ que se baseiam principalmente em teclado ainda possam interagir com o seu contro
       <option>Window seat</option>
       <option>No preference</option>
     </select>
+    
 
 <select>
   <option>Aisle seat</option>
@@ -118,17 +79,9 @@ que se baseiam principalmente em teclado ainda possam interagir com o seu contro
   <option>No preference</option>
 </select>
 
-Saber quais comportamentos do teclado implementar pode ser difícil, mas há
-um documento útil que você pode consultar. O guia das
-[Práticas de autoria dos Aplicativos Ricos Acessíveis de Internet (ARIA)](https://www.w3.org/TR/wai-aria-practices/){: .external }
-lista os tipos de componentes e que tipos de ações do teclado que eles suportam.
-Abordaremos ARIA em maiores detalhes mais tarde, mas por agora usaremos o guia
-para nos ajudar a adicionar suporte de teclado a um novo componente.
+Knowing which keyboard behaviors to implement can be difficult, but there is a helpful document you can refer to. The [Accessible Rich Internet Applications (ARIA) Authoring Practices](https://www.w3.org/TR/wai-aria-practices/){: .external } guide lists types of components and what kinds of keyboard actions they support. We will cover ARIA in more detail later, but for now let's use the guide to help us add keyboard support to a new component.
 
-Talvez você esteja trabalhando em alguns novos [Elementos
-Personalizados](/web/fundamentals/getting-started/primers/customelements) que
-lembram um conjunto de botões de rádio, mas com sua visão única sobre
-aparência e comportamento.
+Perhaps you're working on some new [Custom Elements](/web/fundamentals/web-components/customelements) that resemble a set of radio buttons, but with your unique take on appearance and behavior.
 
     <radio-group>
       <radio-button>Water</radio-button>
@@ -137,21 +90,15 @@ aparência e comportamento.
       <radio-button>Cola</radio-button>
       <radio-button>Ginger Ale</radio-button>
     </radio-group>
+    
 
-Para determinar que tipo de suporte de teclado eles requerem, você verificaria o
-[Guia de Práticas de autoria do ARIA](https://www.w3.org/TR/wai-aria-practices/){: .external }.
-A seção 2 contém uma lista de padrões de design, e nessa lista há
-uma [tabela de características para grupos de rádio](https://www.w3.org/TR/wai-aria-practices/#radiobutton){: .external },
-o componente existente que mais se aproxima do seu novo elemento.
+To determine what kind of keyboard support they need, you would check the [ARIA Authoring Practices guide](https://www.w3.org/TR/wai-aria-practices/){: .external }. Section 2 contains a list of design patterns, and in that list is a [characteristics table for radio groups](https://www.w3.org/TR/wai-aria-practices/#radiobutton){: .external }, the existing component that most closely matches your new element.
 
-Como pode-se ver na tabela, um dos comportamentos mais comuns de teclado que
-deve ser suportado são as teclas de setas para cima/para baixo/esquerda/direita. Para adicionar esse comportamento ao novo
-componente, usaremos uma técnica chamada *tabindex itinerante*.
+As you can see in the table, one of the common keyboard behaviors that should be supported is the up/down/left/right arrow keys. To add this behavior to the new component, we'll use a technique called *roving tabindex*.
 
-![trecho da especificação W3C para botões de rádio](imgs/radio-button.png)
+![W3C spec excerpt for radio buttons](imgs/radio-button.png)
 
-O tabindex itinerante funciona definindo `tabindex` como -1 para todos os filhos, exceto aquele
-que está ativo atualmente.
+Roving tabindex works by setting `tabindex` to -1 for all children except the currently-active one.
 
     <radio-group>
       <radio-button tabindex="0">Water</radio-button>
@@ -160,11 +107,9 @@ que está ativo atualmente.
       <radio-button tabindex="-1">Cola</radio-button>
       <radio-button tabindex="-1">Ginger Ale</radio-button>
     </radio-group>
+    
 
-Em seguida, o componente usa um ouvinte de evento de teclado para determinar qual
-tecla o usuário pressiona; quando isso acontece, ele define o `tabindex` focado
-anteriormente do filho para -1, define o `tabindex` do filho a ser focado para 0,
-e chama o método de foco para ele.
+The component then uses a keyboard event listener to determine which key the user presses; when this happens, it sets the previously focused child's `tabindex` to -1, sets the to-be-focused child's `tabindex` to 0, and calls the focus method on it.
 
     <radio-group>
       // Assuming the user pressed the down arrow, we'll focus the next available child
@@ -174,15 +119,14 @@ e chama o método de foco para ele.
       <radio-button tabindex="-1">Cola</radio-button>
       <radio-button tabindex="-1">Ginger Ale</radio-button>
     </radio-group>
+    
 
-Quando o usuário alcança o último (ou primeiro, dependendo da direção em que
-o foco está sendo deslocado) filho, você fará uma volta e focará no primeiro
-(ou último) filho novamente.
+When the user reaches the last (or first, depending on the direction they're moving the focus) child, you will loop around and focus the first (or last) child again.
 
-Você pode experimentar o exemplo concluído abaixo. Inspecione o elemento no
-DevTools para observar o tabindex se deslocar de um rádio para o próximo.
+You can give the completed example a try down below. Inspect the element in the DevTools to observe the tabindex moving from one radio to the next.
 
 {% framebox height="130px" %}
+
 <style>
   .demo {
     margin-left: 80px;
@@ -232,7 +176,8 @@ DevTools para observar o tabindex se deslocar de um rádio para o próximo.
   </radio-group>
 </div>
 
-<script src="https://www.gstatic.com/devrel-devsite/v9dcc115658e2b070ea1ae9baed63d566/developers/js/custom-elements.min.js"></script>
+<script src="https://www.gstatic.com/devrel-devsite/v9dcc115658e2b070ea1ae9baed63d566/developers/js/custom-elements.min.js">
+</script>
 
 <script>
   class RadioButton extends HTMLElement {
@@ -343,72 +288,40 @@ DevTools para observar o tabindex se deslocar de um rádio para o próximo.
 
   window.customElements.define('radio-group', RadioGroup);
 </script>
+
 {% endframebox %}
 
-Você pode ver
-[a fonte completa para este elemento](https://gist.github.com/robdodson/85deb2f821f9beb2ed1ce049f6a6ed47){: .external }
-no GitHub.
+You can view [the complete source for this element](https://gist.github.com/robdodson/85deb2f821f9beb2ed1ce049f6a6ed47){: .external } over on GitHub.
 
-## Armadilhas modais e de teclado
+## Modals and keyboard traps
 
-Às vezes, quando está administrando o foco, você pode entrar em uma situação da
-qual não consegue sair. Considere um widget de preenchimento automático que tenta gerenciar foco e captura
-o comportamento de tabulação, mas impede o usuário de sair até que seja
-concluído. Isso é chamado de *armadilha de teclado*, e pode ser muito
-frustrante para o usuário. A seção 2.1.2 da lista de verificação do Web AIM
-aborda esta questão, afirmando que [o foco do teclado nunca deve ser bloqueado ou preso em um elemento de página específico](http://webaim.org/standards/wcag/checklist#sc2.1.2){: .external }.
-O usuário deve ser capaz de navegar para e de todos os elementos da página
-usando apenas o teclado.
+Sometimes when you're managing focus you can get into a situation you can't get out of. Consider an autocomplete widget that tries to manage focus and captures the tab behavior, but prevents the user from leaving it until it's complete. This is called a *keyboard trap*, and it can be very frustrating for the user. Section 2.1.2 of the Web AIM checklist addresses this issue, stating that [keyboard focus should never be locked or trapped at one particular page element](http://webaim.org/standards/wcag/checklist#sc2.1.2){: .external }. The user should be able to navigate to and from all page elements using only the keyboard.
 
-Estranhamente, há momentos em que este comportamento, na verdade, é
-desejável, como em uma janela modal. Normalmente, quando o modal é exibido, você não deseja que o usuário acesse
-o conteúdo por trás dele. Você pode adicionar uma sobreposição para cobrir a página visualmente,
-mas isso não impede que o foco do teclado deixe o modal acidentalmente.
+Oddly, there are times when this behavior is actually desirable, like in a modal window. Normally, when the modal is displayed, you don't want the user to access the content behind it. You might add an overlay to cover the page visually, but that doesn't stop keyboard focus from accidentally traveling outside the modal.
 
-![uma janela modal solicitando que o usuário salve seu trabalho](imgs/modal-example.png)
+![a modal window asking the user to save their work](imgs/modal-example.png)
 
-Em casos como este, você pode implementar uma armadilha de teclado
-temporária para garantir que foque na armadilha somente enquanto o modal
-é exibido e, em seguida, restaure o foco para o item focado anteriormente quando o modal está fechado.
+In instances like this you can implement a temporary keyboard trap to ensure that you trap focus only while the modal is displayed and then restore focus to the previously-focused item when the modal is closed.
 
-Existem algumas propostas sobre como facilitar isso para os desenvolvedores,
-incluindo o elemento `<dialog>`, mas eles ainda não têm suporte generalizado nos navegadores.
->
->Veja este [artigo MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog){: .external }
-para mais informações sobre `<dialog>`, e este
-[exemplo de modal](https://github.com/gdkraus/accessible-modal-dialog){: .external } para
-mais informações sobre janelas modais.
+> There are some proposals on how to make this easier for developers, including the `<dialog>` element, but they don't yet have widespread browser support.
+> 
+> See this [MDN article](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog){: .external } for more information on `<dialog>`, and this [modal example](https://github.com/gdkraus/accessible-modal-dialog){: .external } for more information on modal windows.
 
-Considere-se uma caixa de diálogo modal representada por um `div` que contém
-alguns elementos, e outra `div` que representa uma sobreposição de fundo. Vamos percorrer as etapas básicas
-necessárias para implementar uma armadilha de teclado temporária nesta situação.
+Consider a modal dialog represented by a `div` that contains a few elements, and another `div` that represents a background overlay. Let's walk through the basic steps needed to implement a temporary keyboard trap in this situation.
 
- 1. Usando `document.querySelector`, selecione os divs modal e sobreposição e
-    armazene suas referências.
- 1. Conforme o modal abre, armazene uma referência ao elemento que estava focado
-    quando o modal foi aberto, para que você possa retornar o foco para esse elemento.
- 1. Use um *ouvinte keydown* para pegar as teclas à medida que elas são
-    pressionadas enquanto o modal está aberto. Você também pode ouvir por um clique na sobreposição de fundo, e fechar o
-     modal se o usuário clicar nele.
- 1. Em seguida, obtenha a coleção de elementos focalizáveis dentro do modal. O primeiro
-    e o último elementos focalizáveis atuarão como "sentinelas" para que você saiba
-    quando fazer a volta do foco para a frente ou para trás a fim de ficar dentro do modal.
- 1. Exiba a janela modal e foque o primeiro elemento focalizável.
- 1. Conforme o usuário pressiona `Tab` ou `Shift+Tab`, mova o foco para a
-    frente ou para trás, fazendo a volta no último ou primeiro elemento, conforme apropriado.
- 1. Se o usuário pressionar `Esc`, feche o modal. Isto é muito útil, porque permite
-    que o usuário feche o modal sem ter de procurar um botão específico fechar
-    e beneficia até mesmo os usuários que estão usando mouse.
- 1. Quando o modal está fechado, oculte-o e à sobreposição de fundo, e restaure
-o foco para o elemento focado anteriormente que foi salvo antes.
+1. Using `document.querySelector`, select the modal and overlay divs and store their references.
+2. As the modal opens, store a reference to the element that was focused when the modal was opened so you can return focus to that element.
+3. Use a *keydown listener* to grab keys as they are pressed while the modal is open. You could also listen for a click on the background overlay, and close the modal if the user clicks it.
+4. Next, get the collection of focusable elements within the modal. The first and last focusable elements will act as "sentinels" to let you know when to loop focus forward or backward to stay inside the modal.
+5. Display the modal window and focus the first focusable element.
+6. As the user presses `Tab` or `Shift+Tab`, move focus forward or backward, looping at the last or first elements as appropriate.
+7. If the user presses `Esc`, close the modal. This is very helpful because it allows the user to close the modal without searching for a specific close button, and it benefits even users who are using a mouse.
+8. When the modal is closed, hide it and the background overlay, and restore focus to the previously-focused element saved earlier.
 
-Este procedimento fornece uma janela modal utilizável, não frustrante que
-todos podem usar eficazmente.
+This procedure gives you a usable, non-frustrating modal window that everyone can use effectively.
 
-Para mais detalhes, você pode examinar este [exemplo de código](https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/07-modals-and-keyboard-traps/solution){: .external },
-e ver um exemplo ativo de uma
-[página concluída](http://udacity.github.io/ud891/lesson2-focus/07-modals-and-keyboard-traps/solution/index.html){: .external }.
+For more details, you can examine this [sample code](https://github.com/udacity/ud891/blob/gh-pages/lesson2-focus/07-modals-and-keyboard-traps/solution){: .external }, and view a live example from a [completed page](http://udacity.github.io/ud891/lesson2-focus/07-modals-and-keyboard-traps/solution/index.html){: .external }.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

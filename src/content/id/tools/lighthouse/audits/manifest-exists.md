@@ -1,40 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk "Manifest Exists" audit Lighthouse.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Exists" Lighthouse audit.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# Manifest Exists  {: .page-title }
+# Manifest Exists {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Manifes Aplikasi Web adalah teknologi web yang memungkinkan Anda untuk menambahkan aplikasi web
-ke layar beranda pengguna. Fitur ini sering disebut sebagai "Add to
-Homescreen (A2HS)".
+The Web App Manifest is the web technology that enables you to add your web app to a user's homescreen. This feature is commonly referred to as "Add to Homescreen (A2HS)".
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Untuk panduan praktik langkah-demi-langkah tentang cara menambahkan dukungan A2HS di
-aplikasi yang sudah ada, lihat codelab berikut: [Menambahkan Aplikasi Web Anda ke
-Layar Utama Pengguna](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
+For a hands-on, step-by-step guide on adding A2HS support in an existing application, check out the following codelab: [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
-Untuk panduan terstruktur-bebas yang membahas lebih mendalam tentang Manifes
-Aplikasi Web, lihat [Meningkatkan Pengalaman Pengguna dengan Manifes
-Aplikasi Web](/web/fundamentals/web-app-manifest).
+For a more loosely-structured guide that goes into more depth about Web App Manifests, see [Improve User Experiences with a Web App Manifest](/web/fundamentals/web-app-manifest).
 
-Gunakan apa yang Anda pelajari dalam panduan ini untuk menambahkan dukungan A2HS dalam
-aplikasi web Anda sendiri.
+Use what you learn in these guides to add A2HS support in your own web app.
 
-Anda bisa mengemulasikan dan menguji kejadian A2HS di Chrome DevTools. Lihat bagian
-berikut Untuk bantuan selengkapnya: [Manifes
-Aplikasi Web](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest).
+You can emulate and test A2HS events in Chrome DevTools. See the following section for more help: [Web App Manifest](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse mengambil manifes dan memverifikasi bahwa itu memiliki data. Manifes yang diambil
-Lighthouse berbeda dari yang digunakan Chrome pada laman, yang
-mungkin bisa menyebabkan hasil yang tidak akurat.
+Lighthouse fetches the manifest and verifies that it has data. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

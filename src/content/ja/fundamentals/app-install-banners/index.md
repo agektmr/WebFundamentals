@@ -1,229 +1,194 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: アプリのインストール バナーには、ウェブアプリのインストール バナーとネイティブ アプリのインストール バナーの 2 種類があります。バナーを使えば、ブラウザから離れることなく、素早くシームレスにウェブアプリやネイティブアプリをホーム画面に追加することができます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Add to Home Screen gives you the ability to let users quickly and seamlessly add your web app to their home screens without leaving the browser.
 
-{# wf_updated_on:2017-09-27 #}
-{# wf_published_on:2014-12-16 #}
+{# wf_updated_on: 2018-10-23 #} {# wf_published_on: 2014-12-16 #} {# wf_blink_components: Platform>Apps>AppLauncher>Install #}
 
-# ウェブアプリのインストール バナー {: .page-title }
+# Add to Home Screen {: .page-title }
 
-{% include "web/_shared/contributors/mattgaunt.html" %}
-{% include "web/_shared/contributors/paulkinlan.html" %}
+{% include "web/_shared/contributors/petelepage.html" %}
 
-<div class="attempt-right">
-  <figure>
-    <img src="images/add-to-home-screen.gif" alt="ウェブアプリのインストール バナー">
-  </figure>
-</div>
+**Add to Home Screen**, sometimes referred to as the web app install prompt, makes it easy for users to install your Progressive Web App on their mobile or [desktop device](/web/progressive-web-apps/desktop). After the user accepts the prompt, your PWA will be added to their launcher, and it will run like any other installed app.
 
-アプリのインストール バナーには、**ウェブ**アプリのインストール バナーと[**ネイティブ**](native-app-install) アプリのインストール バナーの 2 種類があります。
-バナーを使えば、ブラウザから離れることなく、素早くシームレスにウェブアプリやネイティブアプリをホーム画面に追加できます。
+Chrome handles most of the heavy lifting for you:
 
-アプリのインストール バナーの追加は簡単で、煩雑な作業はほとんど Chrome が処理してくれます。
-アプリの詳細を記述したウェブアプリのマニフェスト ファイルをサイトに追加するだけです。
+* On mobile, Chrome will generate a [WebAPK](/web/fundamentals/integration/webapks), creating an even more integrated experience for your users.
+* On desktop, your app will installed, and run in an [app window](/web/progressive-web-apps/desktop#app-window).
 
+## What are the criteria? {: #criteria }
 
-そうすれば Chrome が一連の条件とアクセス頻度のヒューリスティックに基づいて、バナー表示のタイミングを自動的に判定します。
-以降のトピックで、さらに詳しく説明します。
+{% include "web/fundamentals/app-install-banners/_a2hs-criteria.html" %}
 
-注: ホーム画面への追加（Add to Homescreen、A2HS）は、ウェブアプリのインストール バナーの別名です。この 2 つの用語は同じです。
+Note: If the web app manifest includes `related_applications` and has `"prefer_related_applications": true`, the <a href="/web/fundamentals/app-install-banners/native">native app install prompt</a> will be shown instead.
 
-###  条件について
+## Show the Add to Home Screen dialog {: #trigger }
 
-Chrome は、アプリが次の条件を満たすと、自動的にバナーを表示します。
+<figure class="attempt-right">
+  <img src="images/a2hs-dialog-g.png" alt="Add to Home Screen dialog on Android">
+  <figcaption>Add to Home Screen dialog on Android</figcaption>
+</figure>
 
+In order to show the Add to Home Screen dialog, you need to:
 
-* 次の情報が記述された[ウェブアプリ マニフェスト](../web-app-manifest/) ファイルが存在する。
-    - `short_name`（ホーム画面で使用）
-    - `name`（バナーで使用）
-    - 192x192 の png アイコン（アイコンの宣言には MIME タイプ `image/png` の指定が必要）
-    - 読み込み先の `start_url`
-* サイトに [Service Worker](/web/fundamentals/getting-started/primers/service-workers) が登録されている。
-* [HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https) 経由で配信されている（Service Worker を使用するための要件）。
-* 2 回以上のアクセスがあり、そのアクセスに 5 分以上の間隔がある。
+1. Listen for the `beforeinstallprompt` event
+2. Notify the user your app can be installed with a button or other element that will generate a user gesture event.
+3. Show the prompt by calling `prompt()` on the saved `beforeinstallprompt` event.
 
-注: ウェブアプリのインストール バナーは、最先端のテクノロジーなので、アプリのインストール バナーを表示するための条件は、今後変更される可能性があります。ウェブアプリ インストール バナーの最新の条件については、[What, Exactly, Makes Something a Progressive Web App?](https://infrequently.org/2016/09/what-exactly-makes-something-a-progressive-web-app/) をご覧ください。
+<div class="clearfix"></div>
 
-###  アプリのインストール バナーのテスト{: #test }
+Note: Chrome 67 and earlier showed an "Add to home screen" banner. It was removed in Chrome 68.
 
-ウェブアプリ マニフェストをセットアップしたら、正しく定義されているかを検証してください。
-必要に応じて 2 つの方法から選択できます。1 つは手動、もう 1 つは自動です。
+### Listen for `beforeinstallprompt`
 
+If the add to home screen [criteria](#criteria) are met, Chrome will fire a `beforeinstallprompt` event, that you can use to indicate your app can be 'installed', and then prompt the user to install it.
 
-手動でアプリのインストール バナーをトリガーする方法は次のとおりです。
+When the `beforeinstallprompt` event has fired, save a reference to the event, and update your user interface to indicate that the user can add your app to their home screen.
 
-1. Chrome DevTools を開きます。
-2. [**Application**] パネルに移動します。
-3. [**Manifest**] タブに移動します。
-4. 以下のスクリーンショットで赤色にハイライト表示された [**Add to homescreen**] をクリックします。
-
-![DevTools の Add to homescreen ボタン](images/devtools-a2hs.png)
-
-詳細については、[ホーム画面への追加イベントのシミュレート](/web/tools/chrome-devtools/progressive-web-apps#add-to-homescreen)をご覧ください。
-
-
-
-アプリのインストール バナーの自動テストでは、Lighthouse を使用します。Lighthouse はウェブアプリの監査ツールで、
-Chrome 拡張機能または NPM モジュールとして実行できます。
-アプリをテストするには、監査する特定のページを Lighthouse に指定します。
-Lighthouse はそのページに対して一連の監査を実行し、ページの結果についてレポートを作成します。
-
-
-以下のスクリーンショットに示す 2 組の Lighthouse 監査では、アプリのインストール バナーを表示するためにページが合格しなければならないすべてのテストを表しています。
-
-
-![Lighthouse によるアプリのインストールの監査](images/lighthouse-a2hs.png)
-
-Lighthouse の使用を開始するには、[Lighthouse によるウェブアプリの監査](/web/tools/lighthouse/)をご覧ください。
-
-
-##  アプリのインストール バナー イベント
-
-Chrome はユーザーがアプリのインストール バナーにどう反応したのか、キャンセルまたは都合のいいタイミングまで先送りしたかまで特定できる、簡単な仕組みを提供しています。
-
-
-###  ユーザーがアプリをインストールしたのかを確認する
-
-`beforeinstallprompt` イベントは、ユーザーがプロンプトに応答したときに解決する `userChoice` という Promise を返します。
-この Promise は、`outcome` 属性に値 `dismissed` を設定したオブジェクトか、またはウェブページがホーム画面に追加された場合は `accepted` を設定したオブジェクトを返します。
-
-
-
-    window.addEventListener('beforeinstallprompt', function(e) {
-      // beforeinstallprompt Event fired
-      
-      // e.userChoice will return a Promise. 
-      // For more details read: https://developers.google.com/web/fundamentals/getting-started/primers/promises
-      e.userChoice.then(function(choiceResult) {
-        
-        console.log(choiceResult.outcome);
-        
-        if(choiceResult.outcome == 'dismissed') {
-          console.log('User cancelled home screen install');
-        }
-        else {
-          console.log('User added to home screen');
-        }
-      });
-    });
+    let deferredPrompt;
     
-
-この方法は、ユーザーがアプリのインストールを促すプロンプトにどう対応したのかを把握するのに便利です。
-
-
-
-###  プロンプトの先送りまたはキャンセル
-
-Chrome はプロンプトをトリガーするタイミングを管理しますが、一部のサイトではこのタイミングが最適ではない場合があります。
-このプロンプトを後でアプリを使用するときまで先送りするか、キャンセルすることができます。
- 
-
-Chrome がユーザーにアプリのインストールを促したときに、デフォルトの操作を阻止して、後でイベントを実行するように保存しておくことができます。
-その後、ユーザーがサイトを好意的に操作しているタイミングで、保存したイベントの `prompt()` をもう一度トリガーすることができます。
-
- 
-
-This causes Chrome to show the banner and all the Promise attributes 
-such as `userChoice` will be available to bind to so that you can understand 
-what action the user took.
-    
-    var deferredPrompt;
-    
-    window.addEventListener('beforeinstallprompt', function(e) {
-      console.log('beforeinstallprompt Event fired');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();
-      
       // Stash the event so it can be triggered later.
       deferredPrompt = e;
-      
-      return false;
     });
     
-    btnSave.addEventListener('click', function() {
-      if(deferredPrompt !== undefined) {
-        // The user has had a postive interaction with our app and Chrome
-        // has tried to prompt previously, so let's show the prompt.
-        deferredPrompt.prompt();
-      
-        // Follow what the user has done with the prompt.
-        deferredPrompt.userChoice.then(function(choiceResult) {
-      
-          console.log(choiceResult.outcome);
-          
-          if(choiceResult.outcome == 'dismissed') {
-            console.log('User cancelled home screen install');
+
+### Notify the user your app can be installed
+
+The best way to notify the user your app can be installed is by adding a button or other element to your user interface. **Don't show a full page interstitial or other elements that may be annoying or distracting.**
+
+<pre class="prettyprint">window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
+  <strong>// Update UI notify the user they can add to home screen
+  btnAdd.style.display = 'block';</strong>
+});
+</pre>
+
+Success: you may want to wait before showing the prompt to the user, so you don't distract them from what they're doing. For example, if the user is in a check-out flow, or creating their account, let them complete that before interrupting them with the prompt.
+
+### Show the prompt
+
+To show the add to home screen prompt, call `prompt()` on the saved event from within a user gesture. It will show a modal dialog, asking the user to to add your app to their home screen.
+
+Then, listen for the promise returned by the `userChoice` property. The promise returns an object with an `outcome` property after the prompt has shown and the user has responded to it.
+
+    btnAdd.addEventListener('click', (e) => {
+      // hide our user interface that shows our A2HS button
+      btnAdd.style.display = 'none';
+      // Show the prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice
+        .then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the A2HS prompt');
+          } else {
+            console.log('User dismissed the A2HS prompt');
           }
-          else {
-            console.log('User added to home screen');
-          }
-          
-          // We no longer need the prompt.Clear it up.
           deferredPrompt = null;
         });
-      }
     });
     
 
-または、デフォルトの操作を阻止して、プロンプトをキャンセルすることもできます。
+You can only call `prompt()` on the deferred event once. If the user dismisses it, you'll need to wait until the `beforeinstallprompt` event is fired on the next page navigation.
 
-    window.addEventListener('beforeinstallprompt', function(e) {
-      console.log('beforeinstallprompt Event fired');
-      e.preventDefault();
-      return false;
+## The mini-info bar
+
+<figure class="attempt-right">
+  <img
+      class="screenshot"
+      src="/web/updates/images/2018/06/a2hs-infobar-cropped.png">
+  <figcaption>
+    The mini-infobar
+  </figcaption>
+</figure>
+
+The mini-infobar is an interim experience for Chrome on Android as we work towards creating a consistent experience across all platforms that includes an install button into the omnibox.
+
+The mini-infobar is a Chrome UI component and is not controllable by the site, but can be easily dismissed by the user. Once dismissed by the user, it will not appear again until a sufficient amount of time has passed (currently 3 months). The mini-infobar will appear when the site meets the [add to home screen criteria](/web/fundamentals/app-install-banners/#criteria), regardless of whether you `preventDefault()` on the `beforeinstallprompt` event or not.
+
+Note: The mini-info bar is not displayed on desktop devices.
+
+## Feedback {: .hide-from-toc }
+
+{% include "web/_shared/helpful.html" %}
+
+<div class="clearfix"></div>
+
+## Determine if the app was successfully installed {: #appinstalled }
+
+To determine if the app was successfully added to the user's home screen *after* they accepted the prompt, you can listen for the `appinstalled` event.
+
+    window.addEventListener('appinstalled', (evt) => {
+      app.logEvent('a2hs', 'installed');
     });
     
-## Native app install banners
 
-<div class="attempt-right">
-  <figure>
-     <img src="images/native-app-install-banner.gif" alt="ネイティブ アプリのインストール バナー" style="max-height: 500px">
-  </figure>
-</div>
+## Detecting if your app is launched from the home screen {: #detect-mode }
 
-ネイティブ アプリのインストール バナーは、[ウェブアプリのインストール バナー](.)と同様ですが、ホーム画面に追加するのではなく、サイトから移動せずにネイティブ アプリをインストールできます。
+### `display-mode` media query
 
+The `display-mode` media query makes it possible to apply styles depending on how the app was launched, or determine how it was launched with JavaScript.
 
+To apply a different background color for the app above when being launched from the home screen with `"display": "standalone"`, use conditional CSS:
 
-###  バナーの表示条件
-
-表示条件はウェブアプリのインストール バナーと同様です。ただし、Service Worker が必要になる点が異なります。
-サイトの条件:
-
-* 次の情報が記述された[ウェブアプリ マニフェスト](../web-app-manifest/) ファイルが存在する。
-  - `short_name`
-  - `name`（バナーのプロンプトで使用）
-  - 192x192 png アイコン。アイコンの宣言に MIME タイプ `image/png` を含める必要があります。
-  - アプリの情報を設定した `related_applications` オブジェクト
-* [HTTPS](/web/fundamentals/security/encrypt-in-transit/enable-https) 経由で配信されている。
-* 2 週間のうち異なる 2 日間で、ユーザーが 2 回アクセスしている。
-
-
-###  マニフェストの要件
-
-任意のマニフェストに統合するには、`play`（Google Play 用） のプラットフォームと App ID を指定した `related_applications` 配列を追加します。
-
-
-
-    "related_applications": [
-      {
-      "platform": "play",
-      "id": "com.google.samples.apps.iosched"
+    @media all and (display-mode: standalone) {
+      body {
+        background-color: yellow;
       }
-    ]
+    }
     
 
-Android アプリのインストール機能のみをユーザーに提供し、ウェブアプリのインストール バナーを表示する必要がない場合は、`"prefer_related_applications": true` を追加します。
+It's also possible to detect if the `display-mode` is standalone from JavaScript:
 
-次に例を示します。
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('display-mode is standalone');
+    }
+    
 
+### Safari
 
-    "prefer_related_applications": true,
-    "related_applications": [
-      {
-      "platform": "play",
-      "id": "com.google.samples.apps.iosched"
-      }
-    ]
+To determine if the app was launched in `standalone` mode in Safari, you can use JavaScript to check:
 
+    if (window.navigator.standalone === true) {
+      console.log('display-mode is standalone');
+    }
+    
 
-{# wf_devsite_translation #}
+## Updating your app's icon and name
+
+### Android
+
+On Android, when the WebAPK is launched, Chrome will check the currently installed manifest against the live manifest. If an update is required, it will be [queued and updated](/web/fundamentals/integration/webapks#update-webapk) once the device has is plugged in and connected to WiFi.
+
+### Desktop
+
+On Desktop, the manifest is not automatically updated, but this is planned for a future update.
+
+## Test your add to home screen experience {: #test }
+
+You can manually trigger the `beforeinstallprompt` event with Chrome DevTools. This makes it possible to see the user experience, understand how the flow works or debug the flow. If the [PWA criteria](#pwa-criteria) aren't met, Chrome will throw an exception in the console, and the event will not be fired.
+
+Caution: Chrome has a slightly different install flow for desktop and mobile. Although the instructions are similar, testing on mobile **requires** remote debugging; without it, Chrome will use the desktop install flow.
+
+### Chrome for Android
+
+1. Open a [remote debugging](/web/tools/chrome-devtools/remote-debugging/) session to your phone or tablet.
+2. Go to the **Application** panel.
+3. Go to the **Manifest** tab.
+4. Click **Add to home screen**
+
+### Chrome OS, Linux, or Windows
+
+1. Open Chrome DevTools
+2. Go to the **Application** panel.
+3. Go to the **Manifest** tab.
+4. Click **Add to home screen**
+
+Dogfood: To test the install flow for Desktop Progressive Web Apps on Mac, you'll need to enable the `#enable-desktop-pwas` flag.
+
+### Will `beforeinstallprompt` be fired?
+
+The easiest way to test if the `beforeinstallprompt` event will be fired, is to use [Lighthouse](/web/tools/lighthouse/) to audit your app, and check the results of the [User Can Be Prompted To Install The Web App](/web/tools/lighthouse/audits/install-prompt) test.

@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: アニメーションと、最新のアプリやサイトでのその使用方法に関する理解を深めます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# アニメーション {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-アニメーションは、魅力的なウェブ アプリケーションやサイトを作る上で重要な役割を果たします。ユーザーは、応答性の高いインタラクティブなユーザー インターフェースを期待しています。しかし、インターフェイスのアニメーション化は、必ずしも簡単ではありません。アニメーション化の対象、タイミング、アニメーション感触などを考慮する必要があります。
-
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-* プロジェクトに躍動感を与える手段として、アニメーションを使用します。
-* アニメーションによって、ユーザー インタラクションをサポートします。
-* アニメーション化するプロパティによっては、多くのリソースを要する場合があるので注意してください。
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-##  適切な要素をアニメーション化する
+## Choose the right things to animate
 
-素晴らしいアニメーションは、ユーザーに楽しみを与え、リピート率を向上させます。幅、高さ、位置、色、背景など、ほとんどの要素をアニメーション化することができます。ただし、潜在的なパフォーマンスのボトルネックや、アニメーションによってアプリケーションの雰囲気がどう変化するのかを把握しておく必要があります。アニメーションがスムーズに動かなかったり、選択を誤ったりすると、ユーザー エクスペリエンスが低下します。そのため、パフォーマンスと適性の両方を考慮しなければなりません。
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-##  ユーザー インタラクションのサポートにアニメーションを使用
+## Use animations to support interactions
 
-手当たりしだいにアニメーション化をしないでください。アニメーションを多用するとユーザーに不快感を与え、目障りになってしまいます。代わりに、ユーザー インタラクションをサポートする目的で、戦略的にアニメーションを使用してください。メニュー アイコンをタップした際にページの横からナビゲーション ドロワーが現れるようにしたり、ボタンをタップした際に画面が応答した感じを出すために微妙な輝きやバウンスを使用します。ユーザーの行動を不必要に妨害したり中断するアニメーションは使用しないように注意してください。
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-##  負荷の大きいプロパティをアニメーション化しない
+## Avoid animating expensive properties
 
-不適切に使用されたアニメーションよりもさらに問題なのが、ページの動きを詰まらせてしまうアニメーションです。こういったアニメーションに対してユーザーはストレスや不満を感じ、アニメーションは一切不要だと感じてしまうでしょう。
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-プロパティの中には変更時の負荷が大きいものがあり、それが原因で画面がスムーズに表示されなくなる場合が多くあります。たとえば要素の `box-shadow` を変更すると、テキストの色を変更するよりもペイント処理で負荷がかかります。また、要素の `width` を変更すると、`transform` を変更するよりも負荷は大きくなります。
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-アニメーションのパフォーマンスに関する検討事項の詳細は、[アニメーションとパフォーマンス](animations-and-performance)のガイドをご覧ください。要約すると、できるだけ形状と不透明度を変更して、`will-change` を活用することが重要だと言えます。特定のプロパティをアニメーション化することによってトリガーされる動作について詳しく知りたい場合は、[CSS トリガー](http://csstriggers.com)を参照してください。
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

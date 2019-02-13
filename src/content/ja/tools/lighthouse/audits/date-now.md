@@ -1,34 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「サイトの独自スクリプトで Date.now() を使用しない」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Date.now() In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-#  サイトの独自スクリプトで Date.now() を使用しない {: .page-title }
+# Avoids Date.now() In Its Own Scripts {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-`Date.now()` を使用して時間を計測している場合は、代わりに `performance.now()` を使用することを検討してください。
-`performance.now()`
-では、より高精度のタイムスタンプが返されます。この値はシステムクロックに依存せず、常に一定の割合で増加します。また、手動で調整したり、ずらしたりすることも可能です。
+If you're using `Date.now()` to measure time, consider using `performance.now()` instead. `performance.now()` provides a higher timestamp resolution, and always increases at a constant rate that is independent of the system clock, which can be adjusted or manually skewed.
 
+## Recommendations {: #recommendations }
 
-##  監査に合格する方法 {: #how }
+In your report, Lighthouse lists every instance of `Date.now()` that it finds under **URLs**. Replace each of these calls with `performance.now()`.
 
-Lighthouse のレポートでは、検出された `Date.now()` のインスタンスが **URLs** の下に一覧表示されます。
-これらの呼び出しを、それぞれ `performance.now()` で置き換えます。
+See [`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) for more information on the API.
 
-この API の詳細については、[`performance.now()`][MDN] をご覧ください。
+## More information {: #more-info }
 
-[MDN]: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+Lighthouse reports every instance of `Date.now()` that it finds from scripts that are on the same host as the page. Scripts from other hosts are excluded, because Lighthouse assumes that you don't have control over these scripts. So, there may be other scripts using `Date.now()` on your page, but these won't show up in your Lighthouse report.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse では、指定したページと同じホスト上にあるスクリプトで検出された `Date.now()` のインスタンスがすべて報告されます。
-その他のホスト上のスクリプトは制御不可能とみなされるため、報告対象から除外されます。
-したがって、ページで `Date.now()` を使用するスクリプトが他にあったとしても、Lighthouse のレポートには含まれない場合があります。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

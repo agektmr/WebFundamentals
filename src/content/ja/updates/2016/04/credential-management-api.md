@@ -1,41 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: 洗練されたユーザ体験を提供するために、あなたのウェブサイトでユーザの認証を手助けすることは重要なことです。しかし、特にモバイル環境においては、パスワードの作成、記憶、そして打ち込みは、エンドユーザにとって面倒に感じる傾向があります。
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: To provide a sophisticated user experience, it's important to help users authenticate themselves to your website. But creating, remembering and typing passwords tends to be cumbersome for end users, especially on mobile
 
-{# wf_updated_on: 2016-11-08 #}
-{# wf_published_on: 2016-05-07 #}
+{# wf_updated_on: 2018-03-11 #} {# wf_published_on: 2016-04-18 #} {# wf_tags: credentials,sign-in,chrome51 #} {# wf_featured_image: /web/updates/images/generic/security.png #} {# wf_blink_components: Blink>SecurityFeature>CredentialManagement #}
 
-# Credential Management API を使ったサインインフローの効率化 {: .page-title }
+# Streamlining the Sign-in Flow Using Credential Management API {: .page-title }
 
-{%include "web/_shared/contributors/agektmr.html" %}
+{% include "web/_shared/contributors/agektmr.html" %}
 
-Warning: 本翻訳記事公開後仕様が大幅に変更されています。変更点は[こちらから](/web/updates/2017/06/credential-management-updates)ご確認ください。
+To provide a sophisticated user experience, it's important to help users authenticate themselves to your website. Authenticated users can interact with each other using a dedicated profile, sync data across devices, or process data while offline; the list goes on and on. But creating, remembering and typing passwords tends to be cumbersome for end users, especially on mobile screens which leads them to re-using the same passwords on different sites. This of course is a security risk.
 
-洗練されたユーザ体験を提供するために、ウェブサイト上でユーザ認証を手助けすることは非常に重要なことです。
-認証されたユーザは、専用のプロフィール、デバイス間やオフライン状態で処理された情報の同期など
-（リストアップしていたらキリがありません）を互いにやり取りすることができるようになります。
-しかし、パスワードの作成、記憶、そして打ち込みは、エンドユーザにとって面倒に感じる傾向があります。
-これは、モバイルの画面上では、そのユーザが異なるサイトで同じパスワードを使い回すことを助長します。
-これはセキュリティリスクの原因となります。
+The latest version of Chrome (51) supports the **[Credential Management API](http://w3c.github.io/webappsec-credential-management/)**. It's a standards-track proposal at the W3C that gives developers programmatic access to a browser's credential manager and helps users sign in more easily.
 
-Chrome の最新バージョン(51)は、**[Credential Management API](http://w3c.github.io/webappsec-credential-management/)**
-をサポートします。これは、W3C による標準化過程の提案であり、開発者にブラウザのクレデンシャルマネージャに
-プログラムからアクセスすることを可能にし、そしてユーザがサインインをより簡単にできるように助けます。
+Warning: This API has been drastically updated and sample codes in this article won't work any longer. Checkout [the updated integration guide](/web/fundamentals/security/credential-management/) or [the update summary](/web/updates/2017/06/credential-management-updates).
 
-## Credential Management API とは
+Note: The new [one tap sign-up and automatic sign-in API](/identity/one-tap/web/overview), built on the Credential Management API, combines Google sign-in and password-based sign-in into one API call, and adds support for one-tap account creation. Consider using this new API instead of directly using the Credential Management API.
 
-Credential Management API は、パスワードクレデンシャルやフェデレーティッドクレデンシャルの
-格納や取得を開発者に可能にさせます。そして、3つの関数を提供します。
+## What is the Credential Management API?
+
+The Credential Management API enables developers to store and retrieve password credentials and federated credentials and it provides 3 functions:
 
 * `navigator.credentials.get()`
 * `navigator.credentials.store()`
 * `navigator.credentials.requireUserMediation()`
 
-これらのシンプルな API を使うことで、開発者は以下のような強力なことをすることができます。
+By using these simple APIs, developers can do powerful things like:
 
-* たった1回のタップでユーザがサインインすることを可能にします。
-* ユーザがサインインする時に使ったフェデレーティッドアカウントを記憶します。
-* セッションが失効した際にユーザを再度サインインします。
+* Enable users to sign in with just one tap.
+* Remember the federated account the user has used to sign in with.
+* Sign users back in when a session expires.
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="O3mBdKYMsMY"
@@ -43,74 +34,49 @@ Credential Management API は、パスワードクレデンシャルやフェデ
   </iframe>
 </div>
 
-Chrome の実装では、クレデンシャルは Chrome のパスワードマネージャの中に格納されます。もしユーザが
-Chrome にサインインした場合、それらはデバイスを横断してユーザのパスワードを同期できます。
-それらの同期されたパスワードは、
-[シームレスなクロスプラットフォーム体験のために](/identity/smartlock-passwords/android/)
-[Smart Lock for Passwords API for Android](/identity/smartlock-passwords/android/)
-を統合した Android アプリで共有もされることが可能です。
+In Chrome's implementation, credentials will be stored in Chrome's password manager. If users are signed into Chrome, they can sync the user's passwords across devices. Those synced passwords can also be shared with Android apps which have integrated the [Smart Lock for Passwords API for Android](/identity/smartlock-passwords/android/) [for a seamless cross-platform experience](/identity/smartlock-passwords/android/).
 
-## あなたのサイトへの Credential Management API の組み込み
+## Integrating the Credential Management API with your site
 
-あなたのウェブサイトで Credential Management API を使うための方法は、そのアーキテクチャに依存して
-異なる可能性があります。それはシングルページアプリですか？それはページ遷移を伴うレガシーなアーキテクチャですか？
-サインインフォームはトップページにのみ配置されていますか？サインインボタンはどこでもありますか？
-ユーザはサインインすることなしにあなたのウェブサイトをわかりやすく閲覧できますか？フェデレーションはポップアップ
-ウィンドウ内で機能しますか？または、複数のページを横断してインタラクションを要求しますか？
+The way you use the Credential Management API with your website can vary depending on its architecture. Is it a single page app? Is it a legacy architecture with page transitions? Is the sign-in form located only at the top page? Are sign-in buttons located everywhere? Can users meaningfully browse your website without signing in? Does federation work within popup windows? Or does it require interaction across multiple pages?
 
-それらのすべてのケースをカバーすることはほとんど無理ですが、典型的なシングルページアプリを見ていきましょう。
+It's nearly impossible to cover all those cases, but let's have a look at a typical single page app.
 
-* トップページは登録フォームである。
-* "サインイン"ボタンをタップすることで、ユーザはサインインフォームに移動される。
-* 登録とサインインフォームの両方は、ID /パスワードクレデンシャルとフェデレーション
-（例: Google サインインや Facebook サインイン）の2つの典型的な選択肢を持つ。
+* The top page is a registration form.
+* By tapping on "Sign In" button, users will navigate to a sign-in form.
+* Both the registration and sign-in forms have the typical options of id/password credentials and federation, e.g. with Google Sign-In and Facebook Sign-In.
 
-Credential Management API を使うことで、サイトに以下の例のような機能を追加することができるでしょう。
+By using Credential Management API, you will be able to add the following features to the site, for example:
 
-* **サインインの際にアカウントチューザーを見せる:** ユーザが"サインイン"をタップした時に、ネイティブの
-  アカウントチューザー UI を表示する。
-* **クレデンシャルの格納:** サインインが_成功_した時に、後で使うために、ブラウザのパスワードマネージャに
-  クレデンシャル情報を格納することを提案する。
-* **自動的にユーザを再度サインインさせる** もしセッションが失効した場合にユーザを再度サインインさせる。
-* **自動的なサインインの仲介** ユーザがサインアウトした際に、そのユーザが次に訪問した際に自動的な
-  サインインを無効にする。
+* **Show an account chooser when signing in:** Shows a native account chooser UI when a user taps "Sign In".
+* **Store credentials:** Upon *successful* sign-in, offer to store the credential information to the browser's password manager for later use.
+* **Let the user automatically sign back in:** Let the user sign back in if a session is expired.
+* **Mediate auto sign-in:** Once a user signs out, disable automatic sign-in for the next visit of the user.
 
-[デモサイト](https://credential-management-sample.appspot.com)（
-[そのサンプルコード](https://github.com/GoogleChrome/credential-management-sample)）
-にて、実装された機能を体験することができます。
+You can experience these features implemented in [a demo site](https://credential-management-sample.appspot.com) with [its sample code](https://github.com/GoogleChrome/credential-management-sample).
 
-**この API は、HTTPS ドメインまたは localhost のようなセキュアなオリジンで利用される必要があることに
-注意してください。**
+**Note that this API needs to be used on secure origins such as HTTPS domains or localhost.**
 
-### サインインの際にアカウントチューザーを表示する
+### Show the Account Chooser when signing in
 
-"サインイン"ボタンのユーザタップと、サインインフォームへの移動の間に、クレデンシャル情報を取得するために
-[`navigator.credentials.get()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get)
-を使うことができます。Chrome は、ユーザがアカウントを選択することを可能にするアカウントチューザー UI を表示
-します。
+Between a user tap of a "Sign In" button and navigation to a sign-in form, you can use [navigator.credentials.get()](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get) to get credential information. Chrome will show an account chooser UI from which the user can pick an account.
 
-<img src="/web/updates/images/2016/04/credential-management-api/image00.png" style="max-width:540px; width:100%;" />
+<img src="/web/updates/images/2016/04/credential-management-api/image00.png" style="max-width:540px; width:100%;" /> *An account chooser UI pops up for user to select an account to sign-in*
 
-_アカウントチューザー UI は、サインインするためのアカウントを選択するために、ユーザに対してポップアップされます_
+#### Getting a password credential object:
 
-### パスワードクレデンシャルオブジェクトの取得:
-
-アカウントオプションとしてパスワードクレデンシャルを表示するためには、`password: true` を使用します。
-
+To show password credentials as account options, use `password: true`.
 
     navigator.credentials.get({
       password: true, // `true` to obtain password credentials
     }).then(function(cred) {
       // continuation
       ...
+    
 
+#### Using a password credential to sign in
 
-
-### サインインのためのパスワードクレデンシャルの利用
-
-ユーザがアカウント選択をした時、解決する関数はパスワードクレデンシャルを受け取ります。`fetch()` を
-使うことで、それをサーバに送ることができます:
-
+Once the user makes an account selection, the resolving function will receive a password credential. You can send it to the server using `fetch()`:
 
       // continued from previous example
     }).then(function(cred) {
@@ -118,14 +84,14 @@ _アカウントチューザー UI は、サインインするためのアカウ
         if (cred.type == 'password') {
           // Construct FormData object
           var form = new FormData();
-
+    
           // Append CSRF Token
           var csrf_token = document.querySelector('csrf_token').value;
           form.append('csrf_token', csrf_token);
-
+    
           // You can append additional credential data to `.additionalData`
           cred.additionalData = form;
-
+    
           // `POST` the credential object as `credentials`.
           // id, password and the additional data will be encoded and
           // sent to the url as the HTTP body.
@@ -137,18 +103,13 @@ _アカウントチューザー UI は、サインインするためのアカウ
           });
         } else if (cred.type == 'federated') {
           // continuation
+    
 
+#### Using a federated credential to sign in
 
+To show federated accounts to a user, add `federated`, which takes an array of identity providers, to the `get()` options.
 
-### サインインのためのフェデレーションクレデンシャルの利用
-
-ユーザにフェデレーティッドアカウントを表示するために、アイデンティティプロバイダの配列を取る
-`federated` を `get()` に追加します。
-
-<img src="/web/updates/images/2016/04/credential-management-api/image01.png" style="max-width:540px; width:100%;" />
-
-_複数のアカウントがパスワードマネージャに登録されている時_
-
+<img src="/web/updates/images/2016/04/credential-management-api/image01.png" style="max-width:540px; width:100%;" /> *When multiple accounts are stored in the password manager*
 
     navigator.credentials.get({
       password: true, // `true` to obtain password credentials
@@ -161,15 +122,9 @@ _複数のアカウントがパスワードマネージャに登録されてい�
     }).then(function(cred) {
       // continuation
       ...
+    
 
-
-
-`PasswordCredential `(`type == 'password'`) または `FederatedCredential` (`type == 'federrated'`)
-かどうかを、クレデンシャルオブジェクトの `type` プロパティで調べることができます。
-もしクレデンシャルが
-[`FederatedCredential`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential) の場合は、
-それが持つ情報を使って適切な API を呼び出すことが可能です。
-
+You can examine the `type` property of the credential object to see if it's `PasswordCredential` (`type == 'password'`) or `FederatedCredential` (`type == 'federated'`). If the credential is a [`FederatedCredential`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential), you can call the appropriate API using information it contains.
 
           });
         } else if (cred.type == 'federated') {
@@ -178,7 +133,7 @@ _複数のアカウントがパスワードマネージャに登録されてい�
             case 'https://accounts.google.com':
               // Federated login using Google Sign-In
               var auth2 = gapi.auth2.getAuthInstance();
-
+    
               // In Google Sign-In library, you can specify an account.
               // Attempt to sign in with by using `login_hint`.
               return auth2.signIn({
@@ -187,12 +142,12 @@ _複数のアカウントがパスワードマネージャに登録されてい�
                 // continuation
               });
               break;
-
+    
             case 'https://www.facebook.com':
               // Federated login using Facebook Login
               // continuation
               break;
-
+    
             default:
               // show form
               break;
@@ -201,29 +156,21 @@ _複数のアカウントがパスワードマネージャに登録されてい�
       // if the credential is `undefined`
       } else {
         // show form
+    
 
+![](/web/updates/images/2016/04/credential-management-api/image02.png)
 
-<img src="/web/updates/images/2016/04/credential-management-api/image02.png" />
+### Store credentials
 
-## クレデンシャルの保存
+When a user signs in to your website using a form, you can use [navigator.credentials.store()](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store) to store the credential. The user will be prompted to store it or not. Depending on the type of the credential, use [`new
+PasswordCredential()`](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential) or [`new
+FederatedCredential()`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential) to create a credential object you'd like to store.
 
-ユーザがあなたのウェブザイトにフォームを使ってサインインする際に、クレデンシャルを保存するために
-[`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store)
-を使うことができます。ユーザは、それを保存するかしないかの選択を聞かれることになります。クレデンシャルの種類に
-依存して、保存したいクレデンシャルオブジェクトを作成するために、
-[`new PasswordCredential()`](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential)
-または [`new FederatedCredential()`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential)
-を使います。
+<img src="/web/updates/images/2016/04/credential-management-api/image03.png" style="max-width:540px; width:100%;" /> *Chrome asks users if they want to store the credential (or a federation provider)*
 
-<img src="/web/updates/images/2016/04/credential-management-api/image03.png" style="max-width:540px; width:100%;" />
+#### Creating and storing a password credential from a form element
 
-_Chrome にはユーザにクレデンシャル（またはフェデレーションプロバイダ）を保存したいかどうかを尋ねます。_
-
-### フォーム要素からのパスワードクレデンシャルの作成及び保存
-
-以下のコードは、フォームの要素を [PasswordCredential](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential)
-オブジェクトパラメータに自動的に [マップ](http://w3c.github.io/webappsec-credential-management/#passwordcredential-form-constructor)
-するために、`autocomplete` 属性を使っています。
+The following code uses `autocomplete` attributes to automatically [map](http://w3c.github.io/webappsec-credential-management/#passwordcredential-form-constructor) the form's elements to [PasswordCredential](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential) object parameters.
 
 HTML
 
@@ -232,7 +179,7 @@ HTML
       <input type="password" name="password" autocomplete="current-password" />
       <input type="hidden" name="csrf_token" value="******" />
     </form>
-
+    
 
 JavaScript
 
@@ -243,12 +190,9 @@ JavaScript
     .then(function() {
       // continuation
     });
+    
 
-
-
-
-### フェデレーティッドクレデンシャルの作成及び保存
-
+#### Creating and storing a federated credential
 
     // After a federation, create a FederatedCredential object using
     // information you have obtained
@@ -263,22 +207,17 @@ JavaScript
     .then(function() {
       // continuation
     });
+    
 
+![](/web/updates/images/2016/04/credential-management-api/image04.png)
 
-<img src="/web/updates/images/2016/04/credential-management-api/image04.png" />
+### Let the user automatically sign back in
 
-## ユーザを自動的にサインイン状態に戻す
+When a user leaves your website and comes back later, it's possible that the session is expired. Don't bother the user to type their password every time they come back. Let the user automatically sign back in.
 
-ユーザがあなたのウェブサイトを離れ、後で戻ってきた際に、セッションが失効している可能性があります。
-ユーザが戻ってくるたびにパスワードを毎回打たせることでユーザを困らせてはなりません。自動的に
-ユーザをサインインさせましょう。
+<img src="/web/updates/images/2016/04/credential-management-api/image05.png" style="max-width:540px; width:100%;" /> *When a user is automatically signed in, a notification will pop up.*
 
-<img src="/web/updates/images/2016/04/credential-management-api/image05.png" style="max-width:540px; width:100%;" />
-
-_ユーザが自動的にサインインする際に、通知がポップアップされる。_
-
-### クレデンシャルオブジェクトの取得
-
+#### Getting a credential object
 
     navigator.credentials.get({
       password: true, // Obtain password credentials or not
@@ -298,70 +237,50 @@ _ユーザが自動的にサインインする際に、通知がポップアッ�
         ...
       }
     });
+    
 
+The code should look similar to what you've seen in the "Show Account Chooser when Signing In" section. The only difference is that you will set `unmediated: true`.
 
-コードは、"サインイン時にアカウントチューザーを表示する"セクションの時に見たものと似ているはずです。
-違いは、`unmediated: true` がセットされていることのみです。
+This resolves the function immediately and gives you the credential to automatically sign the user in. There are a few conditions:
 
-これは、即座に関数を解決し、ユーザを自動的にサインインさせるためのクレデンシャルをあなたに与えます。
-幾つかの条件があります:
+* The user has acknowledged the automatic sign-in feature in a warm welcome.
+* The user has previously signed in to the website using the Credential Management API.
+* The user has only one credential stored for your origin.
+* The user did not explicitly sign out in the previous session.
 
-* ユーザがワームウェルカム（温かい歓迎）において自動サインイン機能を承認している。
-* ユーザが前に Credential Management API を使ってウェブサイトにサインインしている。
-* ユーザがあなたのオリジンに対してクレデンシャルを一つだけ保存している。
-* ユーザが前回のセッションを明示的にサインアウトしていない。
+If any of these conditions are not met, the function will be rejected.
 
-もし条件のどれかが満たされなかった場合は、関数は拒否されます。
+![](/web/updates/images/2016/04/credential-management-api/image06.png)
 
-<img src="/web/updates/images/2016/04/credential-management-api/image06.png" />
+### Mediate auto sign-in
 
-## 自動サインインを仲介する
+When a user signs out from your website, **it's your responsibility to ensure that the user will not be automatically signed back in**. To ensure this, the Credential Management API provides a mechanism called **mediation**. You can enable mediation mode by calling [`navigator.credentials.requireUserMediation()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/requireUserMediation). As long as the user's mediation status for the origin is turned on, using `unmediated: true` with `navigator.credentials.get()`, that function will resolve with `undefined`.
 
-ユーザがあなたのウェブサイトからサインアウトする際に、**ユーザが自動的にサインイン状態に戻らないように
-保証するのは、あなたの責任です**。これを保証するために、Credential Management API は**mediation（仲介）**
-と呼ばれる機構を提供します。
-あなたは、[`navigator.credentials.requireUserMediation()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/requireUserMediation) を呼び出すことで、
-mediation モードを有効にすることができます。
-そのオリジンのユーザの mediation ステータスが ON になっている間、`navigator.credentials.get()` が持つ
-`unmediated: true` を使って、その関数は `undefined` で解決します。
-
-### 自動サインインの仲介
-
+#### Mediating auto sign-in
 
     navigator.credentials.requireUserMediation();
+    
 
-
-<img src="/web/updates/images/2016/04/credential-management-api/image07.png" />
+![](/web/updates/images/2016/04/credential-management-api/image07.png)
 
 ## FAQ
 
-**ウェブサイト上で生のパスワードを取得することは JavaScript で可能ですか？**
-いいえ。`PasswordCredential` の一部としてパスワードを取得することができるだけで、
-決してさらされることはありません。
+**Is it possible for JavaScript on the website to retrieve a raw password?** No. You can only obtain passwords as a part of `PasswordCredential` and it's not exposable by any means.
 
-**Credential Management API を使って ID に対して3組の桁を保存することは可能ですか？**
-現在はできません。あなたからの[仕様へのフィードバック](https://github.com/w3c/webappsec-credential-management)
-は大きく歓迎されるでしょう。
+**Is it possible to store 3 set of digits for an id using Credential Management API?** Not currently. Your [feedback on the specification](https://github.com/w3c/webappsec-credential-management) will be highly appreciated.
 
-**iframe の内部で Credential Management API を利用することは可能ですか？**
-このAPIはトップレベルコンテキストに制限されます。iframe 内で `.get()` または `.store()` を
-呼び出すことは、何も起きずに直ちに解決するでしょう。
+**Can I use the Credential Management API inside an iframe?** The API is restricted to top-level contexts. Calls to `.get()` or `.store()` in an iframe will resolve immediately without effect.
 
-**Credential Management API を使って、自分のパスワード管理 Chrome 拡張機能を統合することができますか？**
-`navigator.credentials` をオーバーライドして、クレデンシャルの `get()` または `store()` をするために、
-それをあなたの Chrome 拡張機能にフックすることはできるかもしれません。
+**Can I integrate my password management Chrome extension with the Credential Management API?** You may override `navigator.credentials` and hook it to your Chrome Extension to `get()` or `store()` credentials.
 
-## リソース
-より深く Credential Management API を学ぶには、[Integration Guide](/web/fundamentals/security/credential-management/) をご覧下さい。
+## Resources
 
-* [API 仕様](https://www.w3.org/TR/credential-management/)
-* [仕様のディスカッションとフィードバック](https://github.com/w3c/webappsec-credential-management)
-* [MDN API リファレンス](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)
-* [Credential Management API インテグレーションガイド](/web/fundamentals/security/credential-management/)
-* [デモ](https://credential-management-sample.appspot.com)
-* [デモのソースコード](https://github.com/GoogleChrome/credential-management-sample)
-* [コードラボ "Enabling auto sign-in with Credential Management API"](https://g.co/codelabs/cmapi)
+To learn more about the Credential Management API, checkout [Integration Guide](/web/fundamentals/security/credential-management/).
 
-Translated By:
-{% include "web/_shared/contributors/yoichiro.html" %}
-
+* [API Specification](https://www.w3.org/TR/credential-management/)
+* [Spec discussions & feedback](https://github.com/w3c/webappsec-credential-management)
+* [MDN API Reference](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)
+* [Credential Management API Integration Guide](/web/fundamentals/security/credential-management/)
+* [Demo](https://credential-management-sample.appspot.com)
+* [Demo source code](https://github.com/GoogleChrome/credential-management-sample)
+* [Codelab "Enabling auto sign-in with Credential Management API"](https://g.co/codelabs/cmapi)

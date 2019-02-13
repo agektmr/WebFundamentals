@@ -1,146 +1,141 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 이전에 가져온 리소스를 캐싱하고 재사용하는 것은 성능 최적화의 중요한 측면입니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Caching and reusing previously fetched resources is a critical aspect of optimizing for performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2013-12-31 #}
-{# wf_blink_components: Blink>Network #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>Network #}
 
-# HTTP 캐싱 {: .page-title }
+# HTTP Caching {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-네트워크를 통해 무언가를 가져오는 작업은 느린 동시에 비용도 많이 듭니다. 크기가 큰 응답은 클라이언트와 서버 사이에 많은 왕복을 필요로 하므로, 응답을 사용할 수 있게 되어 브라우저가 처리할 수 있게 되는 시기가 지연되고 방문자에 대한 데이터 비용도 발생합니다. 따라서 이전에 가져온 리소스를 캐시했다가 재활용할 수 있는 기능은 성능 최적화에 있어 중요한 측면입니다.
+Fetching something over the network is both slow and expensive. Large responses require many roundtrips between the client and server, which delays when they are available and when the browser can process them, and also incurs data costs for the visitor. As a result, the ability to cache and reuse previously fetched resources is a critical aspect of optimizing for performance.
 
+The good news is that every browser ships with an implementation of an HTTP cache. All you need to do is ensure that each server response provides the correct HTTP header directives to instruct the browser on when and for how long the browser can cache the response.
 
-좋은 소식은, 모든 브라우저에 HTTP 캐시 구현이 포함되어 있다는 것입니다. 여러분이 해야 할 일은 하나뿐입니다. 각 서버 응답이 올바른 HTTP 헤더 지시문을 제공하여 브라우저에 해당 브라우저가 응답을 캐시할 시점과 기간을 지시하는지 확인하기만 하면 됩니다.
+Note: If you are using a WebView to fetch and display web content in your application, you might need to provide additional configuration flags to ensure that the HTTP cache is enabled, its size is set to a reasonable number to match your use case, and the cache is persisted. Check the platform documentation and confirm your settings.
 
-참고: WebView를 사용하여 애플리케이션에서 웹 콘텐츠를 가져오고 표시하는 경우 추가 구성 플래그를 제공하여 HTTP 캐시가 활성화되고, 해당 크기가 활용 사례에 맞는 합당한 크기로 설정되고, 캐시가 지속되도록 해야 할 수 있습니다. 플랫폼 문서를 점검하여 설정을 확인하세요.
+<img src="images/http-request.png"  alt="HTTP request" />
 
-<img src="images/http-request.png"  alt="HTTP 요청">
+When the server returns a response, it also emits a collection of HTTP headers, describing its content-type, length, caching directives, validation token, and more. For example, in the above exchange, the server returns a 1024-byte response, instructs the client to cache it for up to 120 seconds, and provides a validation token ("x234dff") that can be used after the response has expired to check if the resource has been modified.
 
-서버가 응답을 반환할 때는 응답의 콘텐츠 유형, 길이, 캐싱 지시문, 유효성 검사 토큰 등을 설명하는 HTTP 헤더 모음도 방출합니다. 예를 들어, 위의 교환에서 서버는 1024바이트의 응답을 반환하고, 클라이언트에 최대 120초 동안 이를 캐시하도록 지시하고, 응답이 만료된 후 리소스가 수정되었는지 확인하는 데 사용할 수 있는 유효성 검사 토큰('x234dff')을 제공합니다.
+## Validating cached responses with ETags
 
+### TL;DR {: .hide-from-toc }
 
-## ETag로 캐시된 응답에 대한 유효성 검사 수행
+* The server uses the ETag HTTP header to communicate a validation token.
+* The validation token enables efficient resource update checks: no data is transferred if the resource has not changed.
 
-### 짧은 요약 {: .hide-from-toc }
-* 서버는 ETag HTTP 헤더를 사용하여 유효성 검사 토큰을 전달합니다.
-* 유효성 검사 토큰을 사용하면 효율적인 리소스 업데이트 검사가 가능합니다. 즉, 리소스가 변경되지 않은 경우 데이터가 전송되지 않습니다.
+Assume that 120 seconds have passed since the initial fetch and the browser has initiated a new request for the same resource. First, the browser checks the local cache and finds the previous response. Unfortunately, the browser can't use the previous response because the response has now expired. At this point, the browser could dispatch a new request and fetch the new full response. However, that’s inefficient because if the resource hasn't changed, then there's no reason to download the same information that's already in cache!
 
+That’s the problem that validation tokens, as specified in the ETag header, are designed to solve. The server generates and returns an arbitrary token, which is typically a hash or some other fingerprint of the contents of the file. The client doesn't need to know how the fingerprint is generated; it only needs to send it to the server on the next request. If the fingerprint is still the same, then the resource hasn't changed and you can skip the download.
 
-초기 가져오기를 수행한 이후 120초가 지났으며 브라우저가 동일한 리소스에 대해 새 요청을 실행했다고 가정해 봅시다. 우선, 브라우저는 로컬 캐시를 확인하고 이전 응답을 찾습니다. 불행히도 브라우저는 이전 응답이 이제 만료되었기 때문에 이를 사용할 수 없습니다. 이 시점에서 브라우저가 새 요청을 발송하고 전체 새 응답을 가져올 수 있습니다. 그러나 리소스가 변경되지 않은 경우 이미 캐시에 있는 동일한 정보를 다운로드할 이유가 없으므로 이 작업은 비효율적입니다.
+<img src="images/http-cache-control.png"  alt="HTTP Cache-Control example" />
 
-ETag 헤더에 지정된 대로 유효성 검사 토큰은 바로 이 문제를 해결하기 위해 고안되었습니다. 서버는 일반적으로 파일 콘텐츠의 해시나 기타 몇 가지 디지털 지문인 임의 토큰을 생성하고 반환합니다. 클라이언트는 디지털 지문이 생성되는 방식에 대해 알 필요가 없고, 다음 요청 시 지문을 서버에 전송하기만 하면 됩니다. 디지털 지문이 여전히 동일한 경우 리소스가 변경되지 않고 이 다운로드를 건너뛸 수 있습니다.
+In the preceding example, the client automatically provides the ETag token in the "If-None-Match" HTTP request header. The server checks the token against the current resource. If the token hasn't changed, the server returns a "304 Not Modified" response, which tells the browser that the response it has in cache hasn't changed and can be renewed for another 120 seconds. Note that you don't have to download the response again, which saves time and bandwidth.
 
-<img src="images/http-cache-control.png"  alt="HTTP Cache-Control 예시">
+As a web developer, how do you take advantage of efficient revalidation? The browser does all the work on our behalf. The browser automatically detects if a validation token has been previously specified, it appends the validation token to an outgoing request, and it updates the cache timestamps as necessary based on the received response from the server. **The only thing left to do is to ensure that the server is providing the necessary ETag tokens. Check your server documentation for the necessary configuration flags.**
 
-위의 예시에서 클라이언트는 'If-None-Match' HTTP 요청 헤더 내에서 ETag 토큰을 자동으로 제공합니다. 서버는 현재 리소스와 비교하여 이 토큰을 검사합니다. 토큰이 변경되지 않은 경우, 서버는 '304 Not Modified' 응답을 반환합니다. 이 응답은 캐시에 저장된 응답이 변경되지 않았고 추가로 120초 동안 갱신될 수 있음을 브라우저에 알립니다. 참고로, 응답을 다시 다운로드할 필요가 없으므로 시간과 대역폭이 절약됩니다.
-
-웹 개발자로서 효율적인 유효성 재검사를 어떻게 활용할 수 있을까요? 브라우저가 우리를 대신하여 모든 작업을 수행합니다. 브라우저는 유효성 검사 토큰이 이전에 지정되었는지 자동으로 탐지하고, 유효성 검사 토큰을 나가는 요청에 추가하고, 서버에서 수신된 응답에 따라 필요한 경우 캐시 타임스탬프를 업데이트합니다. **이제 남은 일은 필요한 ETag 토큰을 서버가 제공하는지 확인하는 것뿐입니다. 필요한 구성 플래그는 서버 문서를 확인하세요.**
-
-참고: 팁: HTML5 상용구 프로젝트에는 가장 인기 있는 모든 서버에 대한 <a href='https://github.com/h5bp/server-configs'>샘플 구성 파일</a>이 각 구성 플래그 및 설정의 세부 주석과 함께 들어 있습니다. 목록에서 즐겨 찾는 서버를 찾고, 적절한 설정을 검색한 후, 서버가 권장 설정으로 구성되었는지 확인하세요.
+Note: Tip: The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. Find your favorite server in the list, look for the appropriate settings, and copy/confirm that your server is configured with the recommended settings.
 
 ## Cache-Control
 
-### 짧은 요약 {: .hide-from-toc }
-* 각 리소스는 Cache-Control HTTP 헤더를 통해 캐싱 정책을 정의할 수 있습니다.
-* Cache-Control 지시문은 응답을 캐시할 수 있는 사용자, 해당 조건 및 기간을 제어합니다.
+### TL;DR {: .hide-from-toc }
 
+* Each resource can define its caching policy via the Cache-Control HTTP header.
+* Cache-Control directives control who can cache the response, under which conditions, and for how long.
 
-성능 최적화 관점에서 볼 때, 최상의 요청은 서버와의 통신이 필요 없는 요청입니다. 응답의 로컬 복제본을 사용하면 네트워크 지연 시간을 완전히 없애고 데이터 전송에 대한 데이터 요금을 피할 수 있습니다. 이를 실현하기 위해, HTTP 사양은 브라우저 및 기타 중간 캐시가 개별 응답을 캐시할 수 있는 방법 및 기간을 제어하는 [Cache-Control 지시문](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9)을 서버가 반환할 수 있도록 허용합니다.
+From a performance optimization perspective, the best request is a request that doesn't need to communicate with the server: a local copy of the response allows you to eliminate all network latency and avoid data charges for the data transfer. To achieve this, the HTTP specification allows the server to return [Cache-Control directives](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) that control how, and for how long, the browser and other intermediate caches can cache the individual response.
 
-참고: Cache-Control 헤더는 HTTP/1.1 사양의 일부로 정의되었으며, 응답 캐싱 정책을 정의하는 데 사용된 이전 헤더(예: Expires)를 대체합니다. 모든 최신 브라우저는 Cache-Control을 지원하므로 이것만 있으면 됩니다.
+Note: The Cache-Control header was defined as part of the HTTP/1.1 specification and supersedes previous headers (for example, Expires) used to define response caching policies. All modern browsers support Cache-Control, so that's all you need.
 
-<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control 예시">
+<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control example" />
 
-### 'no-cache' 및 'no-store'
+### "no-cache" and "no-store"
 
-'no-cache'는 반환된 응답이 변경된 경우 서버와 먼저 확인하지 않고는 동일한 URL에 대한 후속 요청을 충족하는 데 사용할 수 없음을 나타냅니다. 따라서 적절한 유효성 검사 토큰(ETag)이 있을 경우 'no-cache'는 캐시된 응답의 유효성을 검사하는 데 한 번의 왕복을 발생시키지만, 리소스가 변경되지 않은 경우 다운로드를 제거할 수 있습니다.
+"no-cache" indicates that the returned response can't be used to satisfy a subsequent request to the same URL without first checking with the server if the response has changed. As a result, if a proper validation token (ETag) is present, no-cache incurs a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.
 
-반대로, 'no-store'는 더욱 단순합니다. 이 경우 브라우저와 모든 중간 캐시는 반환된 응답의 모든 버전(예: 비공개 개인 데이터 또는 은행 데이터가 포함된 응답)을 저장할 수 없습니다. 사용자가 이러한 자산을 요청할 때마다 요청이 서버로 전송되고 전체 응답이 다운로드됩니다.
+By contrast, "no-store" is much simpler. It simply disallows the browser and all intermediate caches from storing any version of the returned response&mdash;for example, one containing private personal or banking data. Every time the user requests this asset, a request is sent to the server and a full response is downloaded.
 
-### 'public' vs. 'private'
+### "public" vs. "private"
 
-응답이 'public'으로 표시되면 이와 관련된 HTTP 인증이 구성되어 있고 응답 상태 코드가 정상적으로 캐시할 수 없는 경우에도 캐시가 가능합니다. 대부분의 경우, 명시적 캐싱 정보(예: 'max-age')가 응답이 어떠한 경우든지 캐시가 가능하다고 나타내므로 'public'이 필요하지 않습니다.
+If the response is marked as "public", then it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn't normally cacheable. Most of the time, "public" isn't necessary, because explicit caching information (like "max-age") indicates that the response is cacheable anyway.
 
-반대로, 'private' 응답은 브라우저가 캐시할 수 있습니다. 그러나 일반적으로 이 응답은 단일 사용자를 대상으로 하므로 중간 캐시가 이 응답을 캐시하는 것은 허용되지 않습니다. 예를 들어, 비공개 사용자 정보가 포함된 HTML 페이지는 사용자의 브라우저가 캐시할 수 있지만, CDN은 이 페이지를 캐시할 수 없습니다.
+By contrast, the browser can cache "private" responses. However, these responses are typically intended for a single user, so an intermediate cache is not allowed to cache them. For example, a user's browser can cache an HTML page with private user information, but a CDN can't cache the page.
 
-### 'max-age'
+### "max-age"
 
-이 지시문은 요청 시간부터 가져온 응답을 재활용할 수 있는 최대 시간(초)을 지정합니다. 예를 들어, 'max-age=60'은 응답이 다음 60초 동안 캐시되어 재활용될 수 있음을 나타냅니다.
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request. For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
 
-## 최적의 Cache-Control 정책 정의
+## Defining optimal Cache-Control policy
 
-<img src="images/http-cache-decision-tree.png"  alt="캐시 결정 트리">
+<img src="images/http-cache-decision-tree.png"  alt="Cache decision tree" />
 
-위의 결정 트리를 따라 특정 리소스나 애플리케이션이 사용하는 리소스 집합에 최적인 캐싱 정책을 결정하세요. 이상적으로는, 클라이언트에 최대한 많은 응답을 최대한 길게 캐시하고 효율적인 유효성 재검사가 가능하도록 각 응답에 대한 유효성 검사 토큰을 제공해야 합니다.
+Follow the decision tree above to determine the optimal caching policy for a particular resource, or a set of resources, that your application uses. Ideally, you should aim to cache as many responses as possible on the client for the longest possible period, and provide validation tokens for each response to enable efficient revalidation.
 
 <table class="responsive">
+  
 <thead>
   <tr>
-    <th colspan="2">Cache-Control 지시문 &amp; 설명</th>
+    <th colspan="2">Cache-Control directives &amp; Explanation</th>
   </tr>
 </thead>
 <tr>
   <td data-th="cache-control">max-age=86400</td>
-  <td data-th="explanation">응답을 최대 1일(60초 x 60분 x 24시간) 동안 브라우저 및 중간 캐시(즉, 'public'임)가 캐시할 수 있음.</td>
+  <td data-th="explanation">Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).</td>
 </tr>
 <tr>
   <td data-th="cache-control">private, max-age=600</td>
-  <td data-th="explanation">응답을 최대 10분(60초 x 10분) 동안 클라이언트의 브라우저만 캐시할 수 있음.</td>
+  <td data-th="explanation">Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).</td>
 </tr>
 <tr>
   <td data-th="cache-control">no-store</td>
-  <td data-th="explanation">응답을 캐시할 수 없으며 매 요청마다 전체를 모두 가져와야 함.</td>
+  <td data-th="explanation">Response is not allowed to be cached and must be fetched in full on every request.</td>
 </tr>
 </table>
 
-HTTP Archive에 따르면 주요 300,000개 사이트(Alexa 순위 기준)의 경우 브라우저가 [모든 다운로드된 응답의 거의 절반을 캐시할 수 있습니다](http://httparchive.org/trends.php#maxage0). 이는 반복된 페이지 조회(수) 및 방문과 관련하여 상당한 절감 효과를 가져다 줍니다. 물론, 특정 애플리케이션이 리소스의 50%를 캐시할 수 있다는 의미는 아닙니다. 리소스의 90% 이상을 캐시할 수 있는 사이트가 있는 반면, 전혀 캐시할 수 없는 비공개 데이터나 시간에 민감한 데이터가 많이 포함된 사이트가 있을 수도 있습니다.
+According to HTTP Archive, among the top 300,000 sites (by Alexa rank), the browser can cache [nearly half of all the downloaded responses](http://httparchive.org/trends.php#maxage0), which is a huge savings for repeat pageviews and visits. Of course, that doesn’t mean that your particular application can cache 50% of the resources. Some sites can cache more than 90% of their resources, while other sites might have a lot of private or time-sensitive data that can’t be cached at all.
 
-**페이지에 대해 감사를 수행하여 캐시할 수 있는 리소스를 확인하고 리소스가 적절한 Cache-Control 및 ETag 헤더를 반환하는지 확인하세요.**
+**Audit your pages to identify which resources can be cached and ensure that they return appropriate Cache-Control and ETag headers.**
 
-## 캐시된 응답 무효화 및 업데이트
+## Invalidating and updating cached responses
 
-### 짧은 요약 {: .hide-from-toc }
-* 로컬로 캐시된 응답은 리소스가 '만료'될 때까지 사용됩니다.
-* URL에 파일 콘텐츠 디지털 지문을 포함하면 클라이언트에게 새 버전의 응답을 업데이트하도록 강제할 수 있습니다.
-* 각 애플리케이션은 최적의 성능을 위해 자체 캐시 계층 구조를 정의해야 합니다.
+### TL;DR {: .hide-from-toc }
 
+* Locally cached responses are used until the resource "expires."
+* Embedding a file content fingerprint in the URL enables you to force the client to update to a new version of the response.
+* Each application needs to define its own cache hierarchy for optimal performance.
 
-브라우저가 수행하는 모든 HTTP 요청은 먼저 요청을 이행하는 데 사용할 수 있는 유효한 캐시된 응답이 있는지 여부를 확인하기 위해 브라우저 캐시로 전송됩니다. 일치하는 응답이 있으면 캐시에서 읽어오므로, 전송 시 발생하는 네트워크 지연 시간 및 데이터 비용이 모두 제거됩니다.
+All HTTP requests that the browser makes are first routed to the browser cache to check whether there is a valid cached response that can be used to fulfill the request. If there's a match, the response is read from the cache, which eliminates both the network latency and the data costs that the transfer incurs.
 
-**하지만 캐시된 응답을 업데이트하거나 무효화하기를 원할 경우는 어떻게 될까요?** 예를 들어, 여러분이 방문자에게 최대 24시간(max-age=86400) 동안 CSS 스타일시트를 캐시하라고 했지만, 디자이너가 모든 사용자에게 제공하기를 원하는 업데이트만 커밋했다고 가정해 봅시다. CSS의 '오래된' 캐시 복제본을 보유한 모든 방문자에게 이 캐시를 업데이트하도록 어떻게 알릴 수 있을까요? 알릴 수 없습니다. 적어도 리소스의 URL을 변경하지 않는다면 말이죠.
+**However, what if you want to update or invalidate a cached response?** For example, suppose you've told your visitors to cache a CSS stylesheet for up to 24 hours (max-age=86400), but your designer has just committed an update that you'd like to make available to all users. How do you notify all the visitors who have what is now a "stale" cached copy of your CSS to update their caches? You can't, at least not without changing the URL of the resource.
 
-브라우저에서 응답을 캐시한 후 캐시된 버전은 max-age 또는 expires로 지정된 대로 더 이상 최신 상태가 아닐 때까지 사용되거나 또는 몇몇 다른 이유(예: 사용자가 브라우저 캐시를 지우는 경우)로 캐시에서 응답이 제거될 때까지 사용됩니다. 따라서, 여러 사용자가 페이지가 생성될 때 파일의 각기 다른 버전을 사용하여 작업을 마무리할 수 있습니다. 즉, 리소스를 방금 가져온 사용자는 새 버전을 사용하는 반면, 이전 버전이지만 여전히 유효한 복제본을 캐시한 사용자는 이 응답의 이전 버전을 사용하게 됩니다.
+After the browser caches the response, the cached version is used until it's no longer fresh, as determined by max-age or expires, or until it is evicted from cache for some other reason&mdash; for example, the user clearing their browser cache. As a result, different users might end up using different versions of the file when the page is constructed: users who just fetched the resource use the new version, while users who cached an earlier (but still valid) copy use an older version of its response.
 
-**그렇다면, 클라이언트측 캐싱과 빠른 업데이트, 이 두 가지 모두를 가장 잘 활용하려면 어떻게 해야 할까요?** 리소스의 URL을 변경하고 콘텐츠가 변경될 때마다 사용자가 새 응답을 다운로드하도록 하면 됩니다. 일반적으로, 이 작업은 파일의 디지털 지문이나 버전 번호를 파일 이름에 포함하는 방식으로 수행합니다(예: style.**x234dff**.css).
+**How do you get the best of both worlds: client-side caching and quick updates?** You change the URL of the resource and force the user to download the new response whenever its content changes. Typically, you do this by embedding a fingerprint of the file, or a version number, in its filename&mdash;for example, style.**x234dff**.css.
 
-<img src="images/http-cache-hierarchy.png"  alt="캐시 계층 구조">
+<img src="images/http-cache-hierarchy.png"  alt="Cache hierarchy" />
 
-리소스별 캐싱 정책 정의 기능을 통해 '캐시 계층 구조'를 정의할 수 있으며, 이 캐시 계층 구조를 통해 각각의 리소스가 캐시되는 기간뿐만 아니라 방문자가 새 버전을 얼마나 빠르게 보는지도 제어할 수 있습니다. 이러한 동작을 보여주기 위해, 위의 예시를 분석해 보겠습니다.
+The ability to define per-resource caching policies allows you to define "cache hierarchies" that allow you to control not only how long each is cached for, but also how quickly visitors see new versions. To illustrate this, analyze the above example:
 
-* HTML은 'no-cache'로 표시되어 있습니다. 이는 브라우저가 항상 매 요청마다 문서의 유효성을 다시 검사하여 콘텐츠가 변경된 경우 최신 버전을 가져온다는 것을 의미합니다. 또한, HTML 마크업에서 CSS 및 자바스크립트 자산의 URL에 디지털 지문을 포함했습니다. 이들 파일의 콘텐츠가 변경되면 페이지의 HTML도 변경되고, 따라서 HTML 응답의 새 복제본이 다운로드됩니다.
-* CSS는 브라우저 및 중간 캐시(예: CDN)가 캐시할 수 있으며 1년 후 만료되도록 설정되어 있습니다. 참고로 파일 이름에 파일 디지털 지문을 포함했으므로 1년이라는 '긴 시간 후 만료'되는 설정을 안전하게 사용할 수 있습니다. 이 경우, CSS가 업데이트되면 URL도 변경됩니다.
-* 자바스크립트도 1년 후 만료되도록 설정되어 있지만, private으로 표시되어 있습니다. 아마도, CDN이 캐시하지 않아야 할 몇몇 비공개 사용자 데이터가 들어 있기 때문일 것입니다.
-* 이미지는 버전이나 고유 디지털 지문을 포함하지 않고 캐시되며 1일 후 만료되도록 설정되어 있습니다.
+* The HTML is marked with "no-cache", which means that the browser always revalidates the document on each request and fetches the latest version if the contents change. Also, within the HTML markup, you embed fingerprints in the URLs for CSS and JavaScript assets: if the contents of those files change, then the HTML of the page changes as well and a new copy of the HTML response is downloaded.
+* The CSS is allowed to be cached by browsers and intermediate caches (for example, a CDN), and is set to expire in 1 year. Note that you can use the "far future expires" of 1 year safely because you embed the file fingerprint in its filename: if the CSS is updated, the URL changes as well.
+* The JavaScript is also set to expire in 1 year, but is marked as private, perhaps because it contains some private user data that the CDN shouldn’t cache.
+* The image is cached without a version or unique fingerprint and is set to expire in 1 day.
 
-ETag, Cache-Control 및 고유한 URL을 함께 사용하면 장기간 활성 상태로 유지되는 만료 시간, 응답을 캐시할 수 있는 경우 제어 및 주문형 업데이트 등 최고의 환경을 제공할 수 있습니다.
+The combination of ETag, Cache-Control, and unique URLs allows you to deliver the best of all worlds: long-lived expiration times, control over where the response can be cached, and on-demand updates.
 
-## 캐싱 체크리스트
+## Caching checklist
 
-유일한 최고의 캐시 정책은 없습니다. 트래픽 패턴, 제공되는 데이터 유형 및 데이터 최신 상태에 대한 애플리케이션별 요구사항에 따라 적절한 리소스별 설정과 전체 '캐싱 계층 구조'를 정의하고 구성해야 합니다.
+There's no one best cache policy. Depending on your traffic patterns, type of data served, and application-specific requirements for data freshness, you must define and configure the appropriate per-resource settings, as well as the overall "caching hierarchy."
 
-캐싱 전략과 관련하여 작업할 때 유의해야 할 몇 가지 팁과 기술은 다음과 같습니다.
+Some tips and techniques to keep in mind as you work on caching strategy:
 
-* **일관된 URL 사용:** 여러 다른 URL에서 동일한 콘텐츠를 제공하는 경우 해당 콘텐츠를 여러 번 가져오고 저장합니다. 팁: 참고로 [URL은 대/소문자를 구분합니다](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
-* **서버가 유효성 검사 토큰(ETag)을 제공하는지 확인:** 유효성 검사 토큰은 서버에서 리소스가 변경되지 않았을 때 동일한 바이트를 전송해야 할 필요성을 없애줍니다.
-* **중간 캐시를 통해 캐시할 수 있는 리소스 식별:** 모든 사용자에 대해 동일한 응답을 갖는 리소스는 CDN 및 기타 중간 캐시에 의해 캐시될 가능성이 큽니다.
-* **각 리소스에 대해 최적의 캐시 수명 결정:** 리소스별로 최신 상태 관련 요구사항이 각각 다를 수 있습니다. 각각에 대해 적합한 max-age를 감사하고 결정합니다.
-* **사이트에 가장 적절한 캐시 계층 구조 결정:** 리소스 URL과 콘텐츠 디지털 지문을 결합하여 사용하고 HTML 문서의 수명을 짧거나 no-cache로 설정하면 클라이언트가 얼마나 빠르게 업데이트를 입수할 수 있을지 제어할 수 있습니다.
-* **이탈 최소화:** 몇몇 리소스는 다른 리소스보다 더 자주 업데이트됩니다. 리소스에 자주 업데이트되는 특정 부분(예: 자바스크립트 함수 또는 CSS 스타일 집합)이 있다면 해당 코드를 별도의 파일로 제공하는 것이 좋습니다. 그렇게 하면 나머지 콘텐츠(예: 자주 변경되지 않는 라이브러리 코드)를 캐시에서 가져올 수 있으므로, 업데이트를 가져올 때마다 다운로드되는 콘텐츠의 양이 최소화됩니다.
+* **Use consistent URLs:** if you serve the same content on different URLs, then that content will be fetched and stored multiple times. Tip: note that [URLs are case sensitive](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
+* **Ensure that the server provides a validation token (ETag):** validation tokens eliminate the need to transfer the same bytes when a resource has not changed on the server.
+* **Identify which resources can be cached by intermediaries:** those with responses that are identical for all users are great candidates to be cached by a CDN and other intermediaries.
+* **Determine the optimal cache lifetime for each resource:** different resources may have different freshness requirements. Audit and determine the appropriate max-age for each one.
+* **Determine the best cache hierarchy for your site:** the combination of resource URLs with content fingerprints and short or no-cache lifetimes for HTML documents allows you to control how quickly the client picks up updates.
+* **Minimize churn:** some resources are updated more frequently than others. If there is a particular part of a resource (for example, a JavaScript function or a set of CSS styles) that is often updated, consider delivering that code as a separate file. Doing so allows the remainder of the content (for example, library code that doesn't change very often), to be fetched from cache and minimizes the amount of downloaded content whenever an update is fetched.
 
-## 의견 {: .hide-from-toc }
+## Feedback {: .hide-from-toc }
 
 {% include "web/_shared/helpful.html" %}
 

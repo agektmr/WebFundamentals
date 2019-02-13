@@ -1,62 +1,31 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Laman berisi beberapa materi bila skripnya tidak tersedia".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Contains Some Content When JavaScript Is Not Available" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-20 #}
-{# wf_published_on: 2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# Laman Berisi Beberapa Materi Bila Skripnya Tidak Tersedia  {: .page-title }
+# Contains Some Content When JavaScript Is Not Available {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-[Peningkatan Progresif](https://en.wikipedia.org/wiki/Progressive_enhancement)
-adalah strategi development web yang memastikan bahwa situs Anda bisa diakses oleh
-sebanyak mungkin pengguna. Definisi yang paling umum dari peningkatan
-progresif adalah sebagai berikut:
+[Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) is a web development strategy that ensures that your site is accessible to the largest possible audience. The most common definition of progressive enhancement is as follows:
 
-Materi dasar dan fungsionalitas laman
-hanya boleh bergantung pada teknologi web yang paling dasar, untuk memastikan bahwa laman bisa digunakan
-dalam semua kondisi penjelajahan. Pengalaman ditingkatkan, seperti penataan gaya
-canggih menggunakan CSS, atau interaktivitas menggunakan JavaScript, bisa dibuat berlayer di atasnya untuk
-browser yang mendukung teknologi tersebut. Namun materi dasar dan fungsionalitas
-laman tidak boleh bergantung pada CSS atau JavaScript.
+Basic content and page functionality should rely on only the most fundamental web technologies, to ensure that the page is usable across all browsing conditions. Enhanced experiences, such as sophisticated styling using CSS, or interactivity using JavaScript, can be layered on top for the browsers that support those technologies. But basic content and page functionality should not rely on CSS or JavaScript.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Peningkatan progresif adalah topik yang besar dan kontroversial. Satu kubu mengatakan bahwa,
-agar bisa mengikuti strategi peningkatan progresif, laman harus
-berlayer sehingga materi dasar dan fungsionalitas laman hanya membutuhkan HTML. Lihat
-[Peningkatan Progresif: Apa itu, Dan Bagaimana Cara Menggunakannya](https://www.smashingmagazine.com/2009/04/progressive-enhancement-what-it-is-and-how-to-use-it/)
-untuk contoh dari pendekatan ini.
+Progressive enhancement is a large and contentious topic. One camp says that, in order to adhere to the strategy of progressive enhancement, pages should be layered so that basic content and page functionality only require HTML. See [Progressive Enhancement: What It Is, And How To Use It](https://www.smashingmagazine.com/2009/04/progressive-enhancement-what-it-is-and-how-to-use-it/) for an example of this approach.
 
-Kubu lainnya meyakini bahwa pendekatan yang ketat ini tidak praktis atau tidak perlu
-bagi banyak aplikasi web modern berskala-besar dan menyarankan penggunaan jalur penting
-inline CSS di `<head>` dokumen untuk penataan gaya laman yang benar-benar penting.
-Lihat [Jalur Rendering Penting](/web/fundamentals/performance/critical-rendering-path/) untuk informasi selengkapnya tentang pendekatan ini.
+Another camp believes that this strict approach is unfeasible or unnecessary for many modern, large-scale web applications and suggests using inline critical path CSS in the document `<head>` for absolutely critical page styles. See [Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) for more on this approach.
 
-Mengingat pertimbangan ini, audit Lighthouse melakukan pengecekan sederhana untuk
-memastikan bahwa laman Anda tidak kosong ketika JavaScript dinonaktifkan. Seberapa ketat aplikasi
-Anda mengikuti peningkatan progresif adalah topik perdebatan, tapi ada
-kesepakatan bersama bahwa semua laman harus menampilkan setidaknya *suatu* informasi
-bila JavaScript dinonaktifkan, bahkan jika materi tersebut hanyalah sebuah peringatan kepada pengguna
-bahwa JavaScript diperlukan untuk menggunakan laman.
+Given these considerations, this Lighthouse audit performs a simple check to ensure that your page isn't blank when JavaScript is disabled. How strictly your app adheres to progressive enhancement is a topic of debate, but there's widespread agreement that all pages should display at least *some* information when JavaScript is disabled, even if the content is just an alert to the user that JavaScript is required to use the page.
 
-Untuk laman yang bergantung penuh pada JavaScript, salah satu pendekatan adalah dengan menggunakan elemen
-[`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript)
-untuk mengingatkan pengguna bahwa laman membutuhkan JavaScript. Ini
-lebih baik daripada laman kosong, karena laman kosong membuat pengguna tidak yakin
-mengenai apakah ada masalah dengan laman, browser, atau komputer
-mereka.
+For pages that absolutely must rely on JavaScript, one approach is to use a [`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) element to alert the user that JavaScript is required for the page. This is better than a blank page, because the blank page leaves users uncertain about whether there's a problem with the page, their browsers, or their computers.
 
-Untuk melihat bagaimana situs Anda terlihat dan berjalan ketika JavaScript dinonaktifkan, gunakan
-fitur [Disable
-JavaScript](/web/tools/chrome-devtools/settings#disable-js) Chrome DevTools.
+To see how your site looks and performs when JavaScript is disabled, use Chrome DevTools' [Disable JavaScript](/web/tools/chrome-devtools/settings#disable-js) feature.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse menonaktifkan JavaScript pada laman kemudian memeriksa HTML laman. Jika
-HTML kosong maka audit gagal. Jika HTML tidak kosong maka audit
-lulus.
+Lighthouse disables JavaScript on the page and then inspects the page's HTML. If the HTML is empty then the audit fails. If the HTML is not empty then the audit passes.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

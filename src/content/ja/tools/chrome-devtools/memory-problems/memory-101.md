@@ -1,150 +1,139 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: このセクションでは、メモリ分析に使用される一般的な用語について説明します。このセクションは、さまざまな言語のさまざまなメモリ プロファイリング ツールに当てはめることができます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-{# wf_updated_on:2015-05-18 #}
-{# wf_published_on:2015-05-18 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-18 #} {# wf_blink_components: Platform>DevTools #}
 
-# メモリに関する用語 {: .page-title }
+# Memory Terminology {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-このセクションでは、メモリ分析に使用される一般的な用語について説明します。このセクションは、さまざまな言語のさまざまなメモリ プロファイリング ツールに当てはめることができます。
+This section describes common terms used in memory analysis, and is applicable to a variety of memory profiling tools for different languages.
 
-ここに記載する用語と表記は、[Chrome DevTools のヒープ プロファイラ](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)を参考にしています。Java、.NET などのメモリ プロファイラの使用経験がある方は復習としてお読みください。
+The terms and notions described here refer to the [Chrome DevTools Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). If you have ever worked with either the Java, .NET, or some other memory profiler, then this may be a refresher.
 
+## Object sizes
 
+Think of memory as a graph with primitive types (like numbers and strings) and objects (associative arrays). It might visually be represented as a graph with a number of interconnected points as follows:
 
+![Visual representation of memory](imgs/thinkgraph.png)
 
-##  オブジェクトのサイズ
+An object can hold memory in two ways:
 
-メモリを、プリミティブ型（数値や文字列など）とオブジェクト（連想配列）を持つグラフと考えます。視覚的には、以下のように多数の相互接続点を持つグラフとして表現できます。
+* Directly by the object itself.
 
-![メモリの視覚表現](imgs/thinkgraph.png)
+* Implicitly by holding references to other objects, and therefore preventing those objects from being automatically disposed by a garbage collector (**GC** for short).
 
-オブジェクトは、以下の 2 つの方法でメモリを保持します。
+When working with the Heap Profiler in DevTools (a tool for investigating memory issues found under "Profiles"), you will likely find yourself looking at a few different columns of information. Two that stand out are **Shallow Size** and **Retained Size**, but what do these represent?
 
-* オブジェクト自体によって直接保持される。
+![Shallow and Retained Size](imgs/shallow-retained.png)
 
-* 他のオブジェクトへの参照を保持することで暗黙に保持する。このようなオブジェクトは、ガベージ コレクター（**GC**）によって自動的に破棄されません。
+### Shallow size
 
-DevTools のヒープ プロファイラ（[Profiles] にあるメモリの問題を調査するツール）を使用する場合は、いくつか異なる列の情報を調べることになります。ハイライトしている 2 つの列 [<strong>Shallow Size</strong>] と [<strong>Retained Size</strong>] は何を表すのでしょう。
+This is the size of memory that is held by the object itself.
 
-![Shallow Size と Retained Size](imgs/shallow-retained.png)
+Typical JavaScript objects have some memory reserved for their description and for storing immediate values. Usually, only arrays and strings can have a significant shallow size. However, strings and external arrays often have their main storage in renderer memory, exposing only a small wrapper object on the JavaScript heap.
 
-###  浅いサイズ
+Renderer memory is all memory of the process where an inspected page is rendered: native memory + JS heap memory of the page + JS heap memory of all dedicated workers started by the page. Nevertheless, even a small object can hold a large amount of memory indirectly, by preventing other objects from being disposed of by the automatic garbage collection process.
 
-これは、オブジェクト自体が保持しているメモリのサイズです。
+### Retained size
 
-一般的な JavaScript オブジェクトは、説明用とイミディエイト値格納用にメモリを確保します。通常、浅いサイズが意味を持つのは配列と文字列のみです。ただし、文字列や外部配列は、多くの場合、レンダラーのメモリにメイン ストレージを確保します。JavaScript ヒープに公開されるのは、小さなラッパー オブジェクトのみです。
+This is the size of memory that is freed once the object itself is deleted along with its dependent objects that were made unreachable from **GC roots**.
 
-レンダラーのメモリとは、調査対象のページをレンダリングするプロセスが使用するすべてのメモリを指します。つまり、ネイティブ メモリ、ページの JS ヒープメモリ、ページによって開始される専用ワーカーすべての JS ヒープメモリの総和です。とは言っても、小さなオブジェクトでも、他のオブジェクトが自動ガベージ コレクション プロセスによって破棄されないようにすることによって、間接的に大量のメモリを保持することになります。
+**GC roots** are made up of *handles* that are created (either local or global) when making a reference from native code to a JavaScript object outside of V8. All such handles can be found within a heap snapshot under **GC roots** > **Handle scope** and **GC roots** > **Global handles**. Describing the handles in this documentation without diving into details of the browser implementation may be confusing. Both GC roots and the handles are not something you need to worry about.
 
-###  保持サイズ
+There are lots of internal GC roots most of which are not interesting for the users. From the applications standpoint there are following kinds of roots:
 
-これは、オブジェクト自体とその依存オブジェクトが削除されると解放されるメモリのサイズです。依存オブジェクトは、**GC ルート**から到達できないように設定されています。
+* Window global object (in each iframe). There is a distance field in the heap snapshots which is the number of property references on the shortest retaining path from the window.
 
-**GC ルート**は、ハンドルで構成されます。ハンドルは、ネイティブ コードから V8 外部の JavaScript オブジェクトへの参照を作成するときに、（ローカルまたはグローバルに）作成されます。そのようなハンドルはすべて、ヒープ スナップショット内の [**GC roots**] の [**Handle scope**] と [**GC roots**] の [**Global handles**] にあります。このドキュメントでブラウザの実装について詳しく触れずにハンドルについて説明すると、混乱を招く恐れがあります。このドキュメントでは GC ルートについてもハンドルについても知っておく必要はありません。
+* Document DOM tree consisting of all native DOM nodes reachable by traversing the document. Not all of them may have JS wrappers but if they have the wrappers will be alive while the document is alive.
 
-内部 GC ルートはたくさんありますが、ユーザーにとって重要なものはほとんどありません。アプリケーションから考えると、以下の種類のルートがあります。
+* Sometimes objects may be retained by debugger context and DevTools console (e.g. after console evaluation). Create heap snapshots with clear console and no active breakpoints in the debugger.
 
-* ウィンドウ グローバル オブジェクト (各 iframe 内)。ヒープ スナップショットには距離フィールドがあります。このフィールドは、ウィンドウからの最短保持パス上にあるプロパティ参照の数を示します。
+The memory graph starts with a root, which may be the `window` object of the browser or the `Global` object of a Node.js module. You don't control how this root object is GC'd.
 
-* ドキュメント全体を調べることによって到達できるすべてのネイティブ DOM ノードで構成されるドキュメント DOM ツリー。JS ラッパーを持たない DOM ノードもありますが、JS ラッパーがある場合、ドキュメントが有効な間はラッパーも有効です。
+![Root object can't be controlled](imgs/dontcontrol.png)
 
-* オブジェクトは、デバッガー コンテキストと DevTools コンソールによって保持されることがあります（コンソールの評価後など）。コンソールをクリアし、デバッガーでブレークポイントがアクティブになっていない状態で、ヒープ スナップショットを作成します。
+Whatever is not reachable from the root gets GC.
 
-メモリのグラフはルートから始まります。ルートになり得るのは、ブラウザーの `window` オブジェクトや Node.js モジュールの `Global` オブジェクトなどです。このルート オブジェクトに対して GC が行われる方法を制御することはできません。
+Note: Both the Shallow and Retained size columns represent data in bytes.
 
-![ルート オブジェクトは制御不能](imgs/dontcontrol.png)
+## Objects retaining tree
 
-ルートから到達できないオブジェクトが GC の対象になります。
+The heap is a network of interconnected objects. In the mathematical world, this structure is called a *graph* or memory graph. A graph is constructed from *nodes* connected by means of *edges*, both of which are given labels.
 
-注: Shallow size 列と Retained size 列では、データがバイト単位で表現されます。
+* **Nodes** (*or objects*) are labelled using the name of the *constructor* function that was used to build them.
+* **Edges** are labelled using the names of *properties*.
 
-##  オブジェクトの保持ツリー
+Learn [how to record a profile using the Heap Profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots). Some of the eye-catching things we can see in the Heap Profiler recording below include distance: the distance from the GC root. If almost all the objects of the same type are at the same distance, and a few are at a bigger distance, that's something worth investigating.
 
-ヒープは相互に連結されたオブジェクトのネットワークです。数学的には、このような構造を「グラフ」またはメモリグラフと呼びます。グラフは「エッジ」によって連結される「ノード」から作成されます。どちらもラベルが指定されます。
+![Distance from root](imgs/root.png)
 
-* **ノード**（「オブジェクト」）のラベルは、ビルドに使用した Constructor 関数の名前を使用して付けられます。
-* **エッジ**のラベルは、プロパティの名前を使用して付けられます。
+## Dominators
 
-[ヒープ プロファイラを使用してプロファイルを記録する方法](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)を参照してください。以下のヒープ プロファイラの記録でハイライトされている箇所には、距離が含まれています。これは、GC ルートからの距離です。同じ型のほとんどすべてのオブジェクトは等距離になります。距離の値が大きい場合、調査する価値があります。
+Dominator objects are comprised of a tree structure because each object has exactly one dominator. A dominator of an object may lack direct references to an object it dominates; that is, the dominator's tree is not a spanning tree of the graph.
 
+In the diagram below:
 
+* Node 1 dominates node 2
+* Node 2 dominates nodes 3, 4 and 6
+* Node 3 dominates node 5
+* Node 5 dominates node 8
+* Node 6 dominates node 7
 
+![Dominator tree structure](imgs/dominatorsspanning.png)
 
+In the example below, node `#3` is the dominator of `#10`, but `#7` also exists in every simple path from GC to `#10`. Therefore, an object B is a dominator of an object A if B exists in every simple path from the root to the object A.
 
+![Animated dominator illustration](imgs/dominators.gif)
 
-![ルートからの距離](imgs/root.png)
+## V8 specifics
 
-##  ドミネーター
+When profiling memory, it is helpful to understand why heap snapshots look a certain way. This section describes some memory-related topics specifically corresponding to the **V8 JavaScript virtual machine** (V8 VM or VM).
 
-各オブジェクトに含まれるドミネーターは 1 つだけなので、ドミネーターのオブジェクトはツリー構造になります。オブジェクトのドミネーターには、それが支配するオブジェクトへの直接参照がない場合があります。つまり、ドミネーターのツリーはグラフのスパニング ツリーではありません。
+### JavaScript object representation
 
-以下の図について考えます。
+There are three primitive types:
 
-* ノード 1 はノード 2 を支配しています
-* ノード 2 はノード 3、4、6 を支配しています
-* ノード 3 はノード 5 を支配しています
-* ノード 5 はノード 8 を支配しています
-* ノード 6 はノード 7 を支配しています
+* Numbers (e.g., 3.14159..)
+* Booleans (true or false)
+* Strings (e.g., 'Werner Heisenberg')
 
-![ドミネーターのツリー構造](imgs/dominatorsspanning.png)
+They cannot reference other values and are always leafs or terminating nodes.
 
-以下の例では、ノード `#3` は `#10` のドミネーターですが、GC から `#10` へのすべての単純なパスには `#7` も存在します。そのため、オブジェクト B がルートからオブジェクト A へのすべての単純なパスに存在する場合、オブジェクト B はオブジェクト A のドミネーターになります。
+**Numbers** can be stored as either:
 
-![アニメーションを用いたドミネーターの図](imgs/dominators.gif)
+* an immediate 31-bit integer values called **small integers** (*SMIs*), or
+* heap objects, referred to as **heap numbers**. Heap numbers are used for storing values that do not fit into the SMI form, such as *doubles*, or when a value needs to be *boxed*, such as setting properties on it.
 
-##  V8 の仕様
+**Strings** can be stored in either:
 
-メモリをプロファイリングするときは、ヒープ スナップショットによって特定の方法で表示される理由を理解すると役に立ちます。このセクションでは、**V8 JavaScript 仮想マシン**（V8 VM または VM）に具体的に対応するメモリ関連のトピックについて説明します。
+* the **VM heap**, or
+* externally in the **renderer’s memory**. A *wrapper object* is created and used for accessing external storage where, for example, script sources and other content that is received from the Web is stored, rather than copied onto the VM heap.
 
-###  JavaScript オブジェクトの表現
+Memory for new JavaScript objects is allocated from a dedicated JavaScript heap (or **VM heap**). These objects are managed by V8's garbage collector and therefore, will stay alive as long as there is at least one strong reference to them.
 
-以下の 3 つのプリミティブ型があります。
+**Native objects** are everything else which is not in the JavaScript heap. Native object, in contrast to heap object, is not managed by the V8 garbage collector throughout its lifetime, and can only be accessed from JavaScript using its JavaScript wrapper object.
 
-* 数値（例、3.14159..）
-* ブール値（true または false）
-* 文字列値（例: 「Werner Heisenberg」）
+**Cons string** is an object that consists of pairs of strings stored then joined, and is a result of concatenation. The joining of the *cons string* contents occurs only as needed. An example would be when a substring of a joined string needs to be constructed.
 
-これらの型は他の値を参照できないため、必ずリーフノードまたは終端ノードになります。
+For example, if you concatenate **a** and **b**, you get a string (a, b) which represents the result of concatenation. If you later concatenated **d** with that result, you get another cons string ((a, b), d).
 
-**数値**は以下のいずれかで格納できます。
+**Arrays** - An Array is an Object with numeric keys. They are used extensively in the V8 VM for storing large amounts of data. Sets of key-value pairs used like dictionaries are backed up by arrays.
 
-* **小整数**（SMI）と呼ばれる 31 ビットのイミディエイト整数値。
-* **ヒープ数値**と呼ばれるヒープ オブジェクト。ヒープ数値は、double 型など、SMI 形式に合わない値を格納する場合、またはプロパティの設定など、値をボックス化する必要がある場合に使用されます。
+A typical JavaScript object can be one of two array types used for storing:
 
-**文字列**は以下のいずれかに格納できます。
+* named properties, and
+* numeric elements
 
-* **VM ヒープ**
-* **レンダラーのメモリ**の外部。ラッパー オブジェクトは、VM ヒープにコピーされるのではなく、ウェブから受け取るスクリプト ソースやその他のコンテンツが格納されるような外部ストレージにアクセスするために作成、使用されます。
+In cases where there is a very small number of properties, they can be stored internally in the JavaScript object itself.
 
-新しい JavaScript オブジェクト用のメモリは、専用の JavaScript ヒープ（**VM ヒープ**）から割り当てられます。これらのオブジェクトは V8 のガベージ コレクターによって管理されるため、少なくとも 1 つの強い参照があれば、コレクションが行われずに残ります。
+**Map** - an object that describes the kind of object and its layout. For example, maps are used to describe implicit object hierarchies for [fast property access](/v8/design.html#prop_access).
 
-**ネイティブ オブジェクト**とは、JavaScript ヒープに含まれていないすべてのオブジェクトを指します。ヒープ オブジェクトとは異なり、ネイティブ オブジェクトは有効期間中、V8 のガベージ コレクターによって管理されません。JavaScript ラッパー オブジェクトを使用して、JavaScript からのみアクセスできます。
+### Object groups
 
-**cons 文字列**とは、その後の連結を目的として格納される文字列のペアで構成されるオブジェクトです。文字列は連結の結果になります。「cons 文字列」のコンテンツの連結は、必要な場合にのみ行われます。連結後の文字列の部分文字列を用意しておく必要がある場合などがその例です。
+Each native objects group is made up of objects that hold mutual references to each other. Consider, for example, a DOM subtree where every node has a link to its parent and links to the next child and next sibling, thus forming a connected graph. Note that native objects are not represented in the JavaScript heap — that's why they have zero size. Instead, wrapper objects are created.
 
-たとえば、**a** と **b** を連結する場合、連結の結果を表す文字列を（a, b）と表現します。その後、この結果に **d** を連結する場合は、別の cons 文字列として（（a, b）, d）と表現します。
+Each wrapper object holds a reference to the corresponding native object, for redirecting commands to it. In its own turn, an object group holds wrapper objects. However, this doesn't create an uncollectable cycle, as GC is smart enough to release object groups whose wrappers are no longer referenced. But forgetting to release a single wrapper will hold the whole group and associated wrappers.
 
-**配列** - 配列は数値キーを持つオブジェクトです。大量のデータを格納するために、V8 VM で広く使用されています。ディクショナリなどに使用されるキーと値のペアのセットには、配列を利用します。
+## Feedback {: #feedback }
 
-一般的な JavaScript オブジェクトは、以下の 2 つの配列型のいずれかの格納に使用されます。
-
-* 名前付きプロパティ
-* 数値要素
-
-プロパティの数が非常に少ない場合は、JavaScript オブジェクト自体の内部に格納できます。
-
-**マップ** - オブジェクトの型とそのレイアウトを表すオブジェクトです。たとえば、マップは[プロパティに高速にアクセスする](/v8/design.html#prop_access)ために、暗黙のオブジェクト階層を表すために使用されます。
-
-###  オブジェクト グループ
-
-それぞれのネイティブ オブジェクト グループは、相互参照を保持するオブジェクトで構成されます。たとえば、DOM サブツリーについて考えます。このサブツリーでは、各ノードに親へのリンクと、次の子とその次の兄弟へのリンクを含み、相互に接続されるグラフを形成します。ネイティブ オブジェクトは JavaScript ヒープでは表現されません。そのため、サイズはゼロになります。代わりに、ラッパー オブジェクトが作成されます。
-
-各ラッパー オブジェクトは、コマンドをリダイレクトするために、対応するネイティブ オブジェクトへの参照を保持します。今度は、オブジェクト グループがラッパー オブジェクトを保持します。ただし、ラッパーを参照しなくなったオブジェクト グループは GC によって解放されるため、コレクションを実行できないサイクルが生み出されることがなくなります。ですが、1 つでもラッパーの解放を忘れると、グループ全体と関連付けられたラッパーが保持されます。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

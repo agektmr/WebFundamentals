@@ -1,382 +1,221 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: UX 디자인의 기본 사항에 대한 단계별 가이드.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A step-by-step guide to the basics of UX design.
 
-{# wf_updated_on: 2016-10-01 #}
-{# wf_published_on: 2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: N/A #}
 
-# UX의 기본 사항 {: .page-title }
+# Basics of UX {: .page-title }
 
 {% include "web/_shared/contributors/mustafa.html" %}
 
-이 글에서는 각종 팀, 제품, 스타트업 및 회사에서 고객을 위해 더 나은 사용자 환경을
-개발하기 위한 탄탄하고 의미 있는 프로세스를 만드는 데 도움이 될 수 있는
-워크플로를 소개합니다. 프로세스의 각기 다른 파트를
-별도로 활용할 수도 있겠지만, 일련의 순차적 과정에 따라 최상의 결과를 얻을 수 있다면 이상적인 프로세스일 것입니다.
+This article introduces a workflow that can help teams, products, startups and companies create a robust and meaningful process for developing a better user experience for their customers. You could use different parts of the process separately but they ideally work best as a series of steps.
 
-이 가이드에서는 Google
-전사적으로 여러 팀이
-[Self Driving Car](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external}
-및 [Project Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external}과 같은 과제를 풀고 문제를 해결하는 데 사용하는 디자인 스프린트(Design Sprint) 방법론을 주로 차용해 설명하겠습니다.
+This guide borrows heavily from the Design Sprint methodology that multiple teams across Google use to troubleshoot and solve challenges such as the [Self Driving Car](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external} and [Project Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external}.
 
-### 더블 다이아몬드
+### Double Diamond
 
-이 워크플로는 UX 서클에 속한 사람들이 더블 다이아몬드라고 부르는 것을 기반으로 합니다.
-[British Design Council](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external} 덕분에
-널리 알려진 이 더블 다이아몬드 모델에 따르면,
-팀 조직은 연구 조사를 통해 어떤 아이디어를 이해하기 위해 확장했다가 해결 과제를 정의하기 위해 수렴한 다음, 각 해결 과제의 밑그림을 개별적으로 그리고 아이디어를 공유하고 전진, 테스트, 검증을 위한 최선의 방법을 결정하기 위해
-다시 확장하게 됩니다.
+This flow work is based on what we in UX circles call the double diamond, made popular by the [British Design Council](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external}, where your team diverges to understand an idea through research and then converges to define the challenge, diverges to sketch it individually, share the ideas, decide on what the best way forward is, test and validate.
 
 <figure>
-  <img src="images/double-diamond.png" alt="프로젝트는 이해, 정의, 확장, 결정, 프로토타입 구현, 검증의 단계를 포함함">
-  <figcaption>British Design Council이 개척한 '더블 다이아몬드' 디자인 프로세스에 따르면, 프로젝트에는 <em>이해</em>, <em>정의</em>, <em>확장</em>, <em>결정</em>, <em>프로토타입 구현</em>, <em>검증</em>과 같은 단계가 포함됩니다.</figcaption>
+  <img src="images/double-diamond.png" alt="Phases of a project include; Understand, Define, Diverge, Decide, Prototype and Validate">
+  <figcaption>The 'double diamond' design process model pioneered by the British Design Council, the steps involve these phases of a project; <em>Understand</em>, <em>Define</em>, <em>Diverge</em>, <em>Decide</em>, <em>Prototype</em> and <em>Validate</em>.</figcaption>
 </figure>
 
-## 무대 설치
+## Setting the stage
 
-쉽게 시작해 볼 수 있는 기본 과제부터 먼저 시작해 봅시다. 스스로에게
-'내가 실제로 해결하려는 문제는 뭘까?'하는
-등의 질문을 써보세요.  이런 과제 설명문은 자신의 목표를 포함하여 프로젝트에 대해 정하는 간략한
-개요서인 셈입니다.
+First thing is to start with the underlying challenge at hand and write it out like a proposal, asking yourself, “what is the problem I’m actually trying to solve?”. The challenge statement is the brief you are setting for the project that includes your goal.
 
-구체화할 필요가 있는 기존 제품의 어떤 기능에 대한 과제일 수도 있고,
-완전히 새로운 제품을 개발하는 과제일 수도 있을 것입니다. 어떤 작업이든 상관없이,
-달성하려는 목표에 맞춰 내용을 적절히 고치거나 다듬으세요. 팀 목표와 긴밀히 연계하고
-잠재고객을 중심으로 두며 공감을 불러일으킬 수 있는 내용으로 간결한 설명문이 되도록 해야 합니다.
+This challenge could be for an existing product feature that needs to be refined or a completely new product altogether. Whatever your task may be, simply adjust the language to fit the goal you are trying to achieve. A statement should be tied to your team goals, focused on your audience, inspiring and concise.
 
-제가 과거에 작업했던 실제 제품을 예로
-들겠습니다.
+These are some real life examples of products that I have worked on in the past;
 
-* 만곡족 환자의 치료와 후속 간호를 관리하기 위한
-  시스템 정의
+- Design a system to manage the treatment and follow-up care of patients with clubfoot.
 
-* 복잡한 금융상품 거래 시스템을 단순화하여 필수적인 요소만 남도록 축소하는
-  앱 만들기
+- Create an app that simplifies complex financial systems and pare them down to the essentials.
 
-* 브랜드 가치를 훼손시키지 않고 다양한 플랫폼에서 일관된 모바일 앱
-  디자인
+- Design a consistent mobile app across different platforms without sacrificing the brand.
 
-### 과제 설명문 업데이트
+### Updating your challenge statement
 
-여러 가지 목표를 작성한 후 팀 구성원에게 발표하고
-전체의 의견을 묻습니다. 팀 전체가 이 문제에 집중하도록
-마감 시한을 정해 설명문에 포함시킬 수도 있습니다. 위에 나열한 내용을 일부 수정하고 부족한 내용을 추가하여
-다음과 같이 다시 작성할 수 있을 것입니다.
+Once you have written several variations of the goal, present it to your team to get a consensus. You may want to include a deadline as this will help the team focus on the problem. So with the added adjustments, the list above could be:
 
-* 올해 1분기 출시를  목표로, 2세 미만의 만곡족 환아의 치료와
-  후속 간호를 관리하기 위한 시스템 정의
-* 2017년 7월 최초 출시를 목표로, 사전 지식이 없더라도 버튼을 탭하여
-  주식을 사고 팔 수 있게 해주는 간단한 금융상품 거래 앱
-  만들기
-* 올해 말까지 여러 플랫폼에서 융통성을 발휘하고 각 플랫폼에서
-  회사의 브랜드를 효과적으로 포지셔닝하는 디자인 가이드 만들기
+- Design a system to manage the treatment and follow-up care of children under the age of 2 with clubfoot for launch in Q1 this year.
+- Create a simple financial app that allows you to buy and sell shares at the tap of a button without prior knowledge of the financial world, with initial launch on July 2017.
+- Produce a design guide that is flexible across multiple platforms and positions the company's brand effectively on each platform by the end of this year.
 
-과제 설명문을 완성했으면 작업하는 동안 언제든 볼 수 있도록
-쉽게 눈에 띄는 곳에 붙여 놓으세요. 과제 설명문을 늘 다시 볼 필요가 있을 것이며,
-아마 프로젝트 진행 내내 수시로 업데이트하거나 수정할 수도 있을 것입니다.
+When the challenge statement is finished, display it in a prominent place so that you can see it while you work. You will need to refer back to it constantly, perhaps even updating or modifying it throughout your project.
 
-## 문제 검증
+## Validating the problem
 
-다음 단계는 도전 과제에 대해 연구 조사하고 문제에 대해 알아보는 과정입니다. 팀 전체가
-문제에 대해 제대로 이해하고 있는지 확인해야 합니다.
-기술 분야에 종사하는 우리들은 대부분
-고급 사용자에 속하고 대다수 사용자와는 다른 소수자인 셈이므로,
-개발자가 종종 자신의 시각으로 문제를 바라보는 것은 때로는 위험할 수 있습니다. 우리는 목소리만 큰 소수이므로
-실제로는 별 문제도 아닌 것을 문제로 여기는 우를 범할 수 있습니다.
+The next step is to research the challenge and learn about the problem. What you need to discover is whether your team's understanding of the problem is valid. Quite often we look at problems from our own point of view, which is dangerous as most of us in tech are actually power users and are in fact a minority of users. We are a vocal minority and can be fooled into thinking something is actually a problem when it isn’t.
 
-도전 과제의 검증을 위한 데이터 수집 방법은 다양합니다. 각각의 수집 방법은
-팀마다 다르고 사용자에게 접근할 수 있는지에 따라서도 다릅니다. 하지만 결국 당면한 문제를
-더 정확하고 깊이 있게 이해하는 것이 목적입니다.
+There are various methods of collecting data to validate the challenge. Each one depends on your team and if you have access to users. The objective is to have a better understanding of the problem at hand.
 
-### 이해관계자와의 내부 면담
+### Internal interviews with stakeholders
 
 <figure>
-  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="이해관계자와의 면담을 통해 회사나 팀 전체의 통찰과 생각을 짚어낼 정보를 얻을 수 있습니다.">
-  <figcaption>이해관계자와의 면담을 통해 회사나 팀 전체의 통찰과 생각을 짚어낼 정보를 얻을 수 있습니다.</figcaption>
+  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="Interviews with stakeholders can be informative for discovering insights across a company or team.">
+  <figcaption>Interviews with stakeholders can be informative for discovering insights across a company or team.</figcaption>
 </figure>
 
-면담 과정에는 마케팅 부서에서 회계 부서까지, 회사의 다양한 조직에 속한 구성원 및
-이해관계자와의 면담이 포함됩니다. 이런 과정은
-실제 과제와 잠재적 해결책에 대한 사람들의 생각을 파악하는 데 도움이 됩니다.
-여기서 해결책이라고 해서 기술적 해결책을 말하는 건 아니며,
-회사나 제품의 성공을 위한 최상의 시나리오와 최종 목표가 무엇일지에 대한 생각을 뜻합니다.
-위에서 제시한 과제를 예로 들자면, '연말까지 의료 시설 중 80%에
-우리가 개발한 만곡족 소프트웨어 배포'와 같은 훌륭한 목표를 제시할 수 있을 것입니다.
+The interviewing process involves interviewing each team member and stakeholder at your company, from marketing to accounts. This will help you find what they think the real challenges are and what they think potential solutions could be. When I say solution I am not speaking about technical solutions here, but rather what would be the best case scenario and end goal for the company or product. For example using the challenges above “having our clubfoot software in 80% of medical facilities by the end of the year” would be a great goal to aim for.
 
-이때 한 가지 주의할 점이 있습니다. 이런 유효성 확인 방법은
-팀 전체의 활발한 토론과 협업을 가로막아 조직 내에서
-고립된 분위기가 조성될 가능성이 있으므로 가장 마지막으로 고려할 방법입니다. 그럼에도, 이 방법을 사용하면
-다른 방법에서는 놓칠 수도 있는 고객과 디자인 과제에 대한 몇몇 중요한 정보를 얻을 수 있습니다.
+There is one caveat. This method of validation is the least favoured as it prevents team discussion and collaboration, potentially creating a siloed atmosphere in an organization. Nevertheless it can yield some good information about the clients and the design challenge that you could otherwise miss.
 
-### 라이트닝 토크
+### Lightning talks
 
 <figure>
-  <img src="images/lightning-talks.jpg" alt="라이트닝 토크(lightning talk)란 단 몇 분 정도의 매우 짧은 프레젠테이션입니다.">
-  <figcaption>라이트닝 토크(lightning talk)란 단 몇 분 정도의 매우 짧은 프레젠테이션입니다.</figcaption>
+  <img src="images/lightning-talks.jpg" alt="A lightning talk is a very short presentation lasting only a few minutes.">
+  <figcaption>A lightning talk is a very short presentation lasting only a few minutes.</figcaption>
 </figure>
 
-내부 면담과 비슷하긴 하지만, 라이트닝 토크는
-이해관계자를 모두 한 곳으로 모아서 진행한다는 차이점이 있습니다. 모인 이해관계자들 중에서 마케팅, 영업, 디자인, 회계, 연구 조사 등 분야별로 한 명씩 대여섯 명 정도를 뽑습니다.
-발표자로 뽑힌 사람에게 최장 10분의 시간을 주고서
-각자의 관점에서 특정 과제에 초점을 맞춰 발표하도록 합니다.
-발표자는 각자 프레젠테이션에서 다음 주제를 다루어야 합니다.
+This is similar to the internal interviews, but this time you get every stakeholder into a single room. Then you Elect five or six of those stakeholders (marketing, sales, design, accounts, research etc.) to give a talk, each focusing on the challenge from their perspective for a maximum of 10 minutes. The topics they must cover in their presentation should be:
 
-* 업무 목표
-* 자신의 관점에서 본 프로젝트의 해결 과제(기술, 조사 결과 수집,
-  디자인 작업 등이 될 수 있음)
-* 현재 보유한 사용자 연구 조사 자료
+- Goals of the business
+- Challenges of the project from their point of view (these could be technical, research gathering, design creation etc..)
+- User research that you have currently
 
-모임 말미에 질문할 시간 5분을 남겨두고 담당자를 지정해 그 모든 내용을 기록하도록
-합니다. 다 마쳤으면 새로 알게 된 사실을 반영해
-과제를 업데이트할 수 있습니다. 제품 개발 목표 달성에 도움이 되는 특장점이나 흐름을 이끌 수 있는
-중요 사항을 취합하는 것이 이 활동의 목표입니다.
+Leave 5 minutes at the end for questions, with an elected person taking notes throughout. Once you are done you might want to update the challenge to reflect new learnings. The goal is to collect a list of bullet points that can drive a feature or flow that helps your achieve your products goal.
 
-### 사용자 면담
-<figure>
-  <img src="images/user-interviews.jpg" class="attempt-right" alt="사용자 면담은 특정 작업에서 각 개인의 고충 사항을 파악할 수 있는 좋은 방법입니다.">
-  <figcaption>사용자 면담은 특정 작업에서 각 개인의 고충 사항을 파악할 수 있는 좋은 방법입니다.</figcaption>
-</figure>
-
-아마도 사용자가 겪어온 과정, 고충 사항, 프로세스의 흐름에 대해 알아볼 수 있는
-최선의 방법일 것입니다. 최소한 5명 이상의 사용자와 면담을 진행하고 가능하다면
-더 많은 사용자와 면담하세요. 사용자에게 질문해야 할 점으로는 다음과 같은 사항이 있습니다.
-
-- 기존의 작업을 완료하는 방법. 앞서 언급한 금융상품 거래 앱에 대한 도전 과제를
-  해결하려는 경우를 예로 들겠습니다. 사용자에게 '요즘은 어떤 방법을 주식을 사시나요?'라고
-  물어볼 수 있을 것입니다.
-- 이 프로세스 흐름에 대해 마음에 드는 점
-- 이 프로세스 흐름에 대해 마음에 들지 않는 점
-- 사용자가 현재 사용 중인 유사한 제품
-    *  그 제품에서 마음에 드는 점
-    *  그 제품에서 마음에 들지 않는 점
-- 만약 사용자에게 프로세스에서 한 가지를 자기 마음대로 바꿀 수 있다면 뭘 바꾸고 싶은지
-  질문
-
-이상적인 사용자 면담이 되려면 사용자가 자신이 겪는 어려움을 솔직히 털어놓도록
-해야 합니다. 사용자와 토론을 하자는 것이 아니므로 최대한 말을 아끼고 사용자의 얘기에 귀를 기울여야
-합니다. 사용자가 말을 잠시 멈출 때도 마찬가지입니다.
-항상 사용자가 충분히 생각을 정리한 후 다시 말할 수 있도록 인내심 있게 기다리세요. 몇 초 정도만 말을 멈추고서 생각한 후 계속 말을 이어갈 수 있도록 배려하는 것만으로도
-훨씬 더 많은 정보를 얻을 수 있습니다.
-
-면담 내용을 꼼꼼히 메모하고 중요한 사항을 놓치지 않도록 가능하면
-대화 내용을 녹음하세요. 자신이 수집한 사용자의 생각과 통계 자료를
-해결할 과제와 비교하는 것이 사용자 면담의 목표입니다. 수집한 정보와 해결 과제의 방향이 일치하는지 확인하세요. 과제 설명문 업데이트에 도움이 되는
-점을 알게 되었는지도 확인하세요.
-
-### 에스노그라피 현장 연구 조사
+### User interviews
 
 <figure>
-  <img src="images/field-interviews.jpg" class="attempt-right" alt="자연스러운 환경에서의 사용자 관찰은 각자의 과제 해결 방식을 이해하는 좋은 방법입니다.">
-  <figcaption>자연스러운 환경에서의 사용자 관찰은 각자의 과제 해결 방식을 이해하는 좋은 방법입니다.</figcaption>
+  <img src="images/user-interviews.jpg" class="attempt-right" alt="User interviews are a great way to learn about a persons pain points in any given task.">
+  <figcaption>User interviews are a great way to learn about a person's pain points in any given task.</figcaption>
 </figure>
 
-즉, 사용자들의 쇼핑 방식, 직장 출근 양태, SMS 메시지 전송 방법 등,
-실제 생활 환경에서 다양한 활동을 하는 사용자를
-잘 관찰하는 것입니다. 이렇게 관찰하는 이유는 면담에 응하는 사용자가 면담자가 듣고 싶어 할 것이라 생각하는
-내용을 말하는 경우도 있기 때문입니다. 하지만 사용자가 평소에 자연스럽게 어떻게 행동하고 작업을
-수행하는지 관찰하면 훨씬 더 깊이 사용자의 행동 양식을 이해할 수 있습니다. 기본적으로 사용자를 간섭하지 않고
-관찰하면서 사용자가 쉽거나 어렵다고 느끼는 점과 놓친 점을
-기록합니다. 사용자의 고충 사항을 더욱 확실히 공감하기 위해
-사용자의 실제 사용 환경을 파악하는 것이 이 활동의 목표입니다.
+This is perhaps the best way of learning about the user's journey, pain points, and flow. Arrange at least five user interviews, more if you have access to them. The sorts of questions you ask them should include:
 
-이 기법을 동원할 때는 보통 오랜 기간에 걸쳐 작업이 이루어지므로
-연구자가 프로젝트에서 이런 부분을 잘 리드해야 합니다. 하지만 사용자가 자연스럽게
-생활하고 활동하는 환경에서 연구 대상 집단을 관찰하므로
-가장 정확하게 실상을 통찰할 수 있는 방법일 것입니다.
+- How do they complete an existing task? For example, say you want to solve the challenge for the financial app above, you could ask them “how do you buy shares and stocks at the moment?”
+- What do they like about this flow?
+- What do they dislike about this flow?
+- What similar products does the user currently use? 
+    - What do they like?
+    - What do they dislike?
+- If they had a magic wand and could change one thing about this process what would it be?
 
-### 연구 조사 자료 취합
+The idea of interviewing is to get the user to speak about the challenges they have. It is not a discussion point for you, which is why you must remain as quiet as possible. This is even true when a user stops speaking, always wait a moment as they could be gathering their thoughts. You would be surprised at how much someone will continue to speak after they have stopped for a few seconds.
 
-프로젝트의 학습 단계를 완료한 후 해결 과제를
-마지막으로 한 번 다시 살펴볼 필요가 있습니다. 과연 올바른 궤도를 따라가고 있는지, 조정해야 할 사항이 있는지
-숙고해 보세요. 조사하면서 알게 된 모든 사항을 기록하고
-범주별로 분류하세요. 이렇게 정리한 자료는 해결할 문제에 따라
-어떤 기능이나 프로세스 흐름의 기초가 될 수 있습니다. 과제를 업데이트하고 수정하는 데 이용할 수도
-있습니다.
+Take notes throughout and if possible record the conversation to help you capture anything you might have missed. The goal is to compare the challenge to the user insights that you gather. Do they align? Did you learn anything that helps you update your challenge statement?
 
-피드백을 충분히 받고 정보를 충분히 수집했다면, 이제 그렇게 얻은 지식을
-활용하여 프로젝트 맵을 만들 시점입니다.
-
-## 프로젝트 맵
-
-해결하려는 문제는 보통 다양한 유형의
-사람(참가자)이 관련되기 마련이며, 각자가 프로젝트의 흐름에서 나름의 이해관계가 있습니다. 습득한 사실을 바탕으로
-가능한 참가자를 추려내야 합니다. 예컨대
-'만곡족 전문의', '만곡족 환자', '환자 간병인' 등의
-사용자 유형이나 이해관계자가 이런 참가자가 될 수 있습니다. 용지 왼쪽에 각 참가자를 기록하세요.
-또는 화이트보드가 있다면 역시 왼쪽에
-기록하면 됩니다. 오른쪽에는 각 참가자의 목표를 적으세요.
-
-마지막으로, 각 참가자가 저마다의 목표를 달성하는 데 필요한 단계의 수를
-적으세요. 예를 들어, '만곡족 전문의'의 목표는
-'만곡족 환자 치료'일 것이므로
-'시스템에 환자 등록', '의료보험 관련 절차 시작', '의료 건강 검토 주기 생성',
-'의료 시술 수행' 등의 단계를 생각해 볼 수 있습니다.
+### Ethnographic field research
 
 <figure>
-  <img src="images/project-map.jpg" alt="프로젝트 맵은 프로세스 흐름에서 각 사용자나 참가자의 주요 활동 단계를 나타낸 것임">
-  <figcaption>프로젝트 맵은 프로세스 흐름에서 각 사용자나 참가자의 주요 활동 단계를 나타낸 것입니다.</figcaption>
+  <img src="images/field-interviews.jpg" class="attempt-right" alt="Seeing users in their natural environment is a great way to understand how they solve their own challenges.">
+  <figcaption>Seeing users in their natural environment is a great way to understand how they solve their own challenges.</figcaption>
 </figure>
 
-위와 같이 프로세스에 주요 단계를 표시한 프로젝트 맵을 얻을 수 있습니다. 프로젝트 맵은
-너무 상세한 내용은 담지 않은 프로젝트 개요라 생각하시면 됩니다. 또한, 프로젝트 맵을 통해 팀 구성원들이
-맵이 과제 설명문과 부합하는지 판단할 수 있습니다. 이후에 각 단계를 분석할 때
-더 자세한 내용을 추가할 것입니다. 하지만 지금은
-프로젝트 맵이 사용자가 각자의 최종 목표를 완수하기 위해 수행해야 할 단계를 개략적으로 보여 주는 정도면 족합니다.
+This is where you observe the user in the field, in context while doing something like how they do their shopping, how they travel to work, how they send SMS messages etc.. The reason is in some cases people will tell you what they think you want to hear. But if you watch users perform actions and tasks on their own it can be insightful. Basically you are observing without interfering, noting things which they find easy or difficult and things they may have missed. The goal is to immerse yourself in the user's environment to better empathize with their pain points.
 
-## 와이어프레이밍과 스토리보딩
+This technique usually involves some work done over a longer period of time and requires a researcher to lead this part of the project. But it is perhaps the most insightful as you get to see a group of people that you are studying in their natural environments.
 
-### 8칸짜리 그림 그리기
+### Gathering it altogether
 
-이를 위해 '8칸짜리 그림 그리기'라는 방법을 추천합니다.
-종이 한 장을 세 번 접어 8칸의 구획이 생기도록 해보세요. 그런 다음, 각 구획에
-지금까지 파악한 모든 정보를 바탕으로 떠오르는 아이디어를 그림으로 표현해보세요. 10분의 시간을 정해 놓고
-아이디어를 떠올리면서 8칸의 구획을 채워나가세요. 시간을 빠듯하게 정하는 이유는, 예컨대 20분 이상의
-시간이 주어지면 불필요하게 꾸물대기 시작하면서 커피 한잔 마시며 할 생각이 든다든지,
-이메일 체크나 팀원들과 일상적인 잡담을 나눈다든지 하면서 결국 우리가 지금 해야 할 작업에 집중하지 못할 수 있기 때문입니다. 이
-단계는 긴급한 느낌으로 진행해야 작업을 빠르고도
-더 효과적으로 수행할 수 있습니다.
+Once you have completed the learnings phase of your project you need to take one last look at your challenge. Are you on the right path? Is there anything you need to adjust? Write down all of the things you have learnt and group them into categories. These could become the basis of a feature or a flow, depending on the problem you are solving. They could also be used to update and revise the challenge.
 
-팀과 함께 작업하는 경우에는 모든 팀원 역시 각자에게 주어진 작업에 집중하도록 합니다. 이런
-과정을 통해 두뇌를 활발히 활용하면서 해결 과제에 대해 집중적으로 생각할 수 있습니다.
-보통은 종이의 각 구획에는 인터페이스 디자인 와이어프레임을 스케치합니다.
+Once you have enough feedback and insight it is time to apply that knowledge to creating a project map.
 
-스케치가 끝나면 자신을 비롯한 모든 팀원이 각자 그림으로 표현한 아이디어를 발표합니다.
-모든 이가 각자 8가지 아이디어를 각각 자세히 설명하고 그런 구체적
-생각에 이르게 된 이유를 밝혀야 합니다. 팀원들에게는 조사 과정에서 알게 된 정보를 바탕으로 자신의 아이디어에 대한 근거와 타당성을
-제시해야 한다고 알려주세요. 모든 팀원의 발표가 끝났으면 제시된 아이디어에 대한 투표를 할
-차례입니다. 각 팀원에게 스티커 두 개를 나누어주고 좋다고 생각하는 아이디어에 스티커를 붙여 투표하도록 합니다. 정말 좋다고 생각하는
-아이디어라면 한 아이디어에 두 표를 모두 행사해도 됩니다.
+## Project Map
 
+The problem you are trying to solve is usually made up of different types of people (or players), each with a stake in the project's flow. Based on your learnings you need to list out the possible players. It could be a user type or stakeholder, for example, “a doctor who treats clubfoot”, “a patient who has clubfoot”, “a care giver who looks after patient”, etc.. Write down each player on a the left hand side of a sheet of paper or if you have access to one, on a whiteboard. On the right hand side write each player's goals.
+
+Finally for each player, write down the number of steps required for them to reach their goal. For example for "a doctor who treats clubfoot” the goal would be “cure a patient with clubfoot”, so the steps could be “register the patient in the system”, “start them on medical a plan”, “create a review cycle of their medical health” and “perform medical procedure”.
+
+<figure>
+  <img src="images/project-map.jpg" alt="Project maps plot out the main steps for each user or player in a flow">
+  <figcaption>Project maps plot out the main steps for each user or player in a flow.</figcaption>
+</figure>
+
+The result is a project map with the main steps in the process. Think of it as an overview of the project without too many details. It also lets team members judge whether the map matches the challenge statement. Later, when you break down each step, there will be more details. But for now a project map gives you a high level breakdown of the steps a user will take to complete their end goal.
+
+## Wireframing and storyboarding
+
+### Crazy 8s
+
+For this, I recommend a method called crazy 8s that involves folding a piece of paper twice over so that you have eight panels. Then in each panel you draw out an idea based on all that you have learnt so far. Give yourself ten minutes to come up with ideas to fill all eight panels. If you give yourself more than 20 minutes you may start to procrastinate, go make yourself a coffee, check email, have a general chat with your team and essentially avoid doing the work. You want to create a sense of urgency in this step as it forces you to work quickly and more effectively.
+
+If you are working with a team get everyone to do their own as well. This process will kick start your brain and get you thinking about the challenge. Generally the sketch will be an interface design wireframe.
+
+Afterwards, you and everyone on your team presents their ideas to the group. Everyone must explain each of their eight ideas in detail and why they chose to go down a specific path. Remind each team member to use the learnings for justification of their ideas. Once everyone has presented it's time to vote on the ideas. Each person gets two sticky dots and can vote on any idea. They can give both votes to a single idea if they really like it.
 
 <!-- <figure>
-  <img src="images/voting-ideas.jpg"   alt="포스트잇에 메모를 작성해 마음에 드는 개념이나 스케치 자체에 투표할 수 있음">
-  <figcaption>포스트잇에 메모를 작성해 마음에 드는 개념이나 스케치 자체에 투표할 수 있습니다.</figcaption>
+  <img src="images/voting-ideas.jpg"   alt="You can take notes on post-its and vote on concepts or the sketches themselves">
+  <figcaption>You can take notes on post-its and vote on concepts or the sketches themselves.</figcaption>
 </figure> -->
 
-
 <figure  class="attempt-left">
-  <img src="images/crazy-8s.jpg" alt="8칸짜리 그림 그리기는 떠오르는 아이디어를 전부 종이에 표현할 수 있는 좋은 방법입니다.">
-  <figcaption>8칸짜리 그림 그리기는 떠오르는 아이디어를 전부 종이에 표현할 수 있는 좋은 방법입니다.</figcaption>
+  <img src="images/crazy-8s.jpg" alt="Crazy 8s are a great way to get all of your ideas onto one page">
+  <figcaption>Crazy 8s are a great way to get all of your ideas onto one page.</figcaption>
 </figure>
 
 <figure class="attempt-right">
-  <img src="images/detailed-wireframe.jpg"   alt="이제는 습득한 정보를 바탕으로 세부적으로 디자인해야 합니다.">
-  <figcaption>이제는 습득한 정보를 바탕으로 세부적으로 디자인해야 합니다.</figcaption>
+  <img src="images/detailed-wireframe.jpg"   alt="Now you need to do a detailed design based on what you have learned.">
+  <figcaption>Now you need to do a detailed design based on what you have learned.</figcaption>
 </figure>
 
 <div class="clearfix"></div>
 
-### 디자인 구체화
+### Refine your design
 
-투표를 실시한 후 최다 득표 아이디어를 선택하여 최종 아이디어의 밑그림을 그립니다.
-동료로부터 들은 다른 아이디어에서 차용할 수도 있습니다.
-다시 10분의 시간을 정해 놓고 이 작업을 완료하세요. 이 작업을 마치면
-다시 팀원들에게 아이디어를 발표하고 전과 마찬가지로 투표를 실시합니다.
+After the voting take the idea with the most votes and sketch out a final idea. You can borrow from the other ideas that you heard from your colleagues as well. Give yourself another ten minutes to complete this task. Once you are done, again present the ideas to your team and vote like before.
 
-### 아이디어를 스토리보드로 만들기
-
+### Storyboard the idea
 
 <figure>
-  <img src="images/storyboard.jpg" class="attempt-right" alt="스토리보드에는 스케치와 아이디어를 종합적인 흐름으로 결합합니다.">
-  <figcaption>스토리보드에는 스케치와 아이디어를 종합적인 흐름으로 결합합니다.</figcaption>
+  <img src="images/storyboard.jpg" class="attempt-right" alt="The storyboard involves combining your sketches and ideas into a comprehensive flow.">
+  <figcaption>The storyboard involves combining your sketches and ideas into a comprehensive flow.</figcaption>
 </figure>
 
-디자인 작업 과정에서 이제는 사용자를 참여시켜 스토리보드를 만들 시점입니다.
-이 시점까지 왔다면, 사용자가 선택하는 다양한 단계에 대해 이미 생각해 보셨을
-것입니다. 동료가 고안한 디자인 중 하나를 본 디자인 프로세스 흐름에 포함시키는 것 역시
-꽤나 흔한 일입니다. 사용자가 이탈할지도 모르는 지점에서는
-명확한 단계별 프로세스를 두어야 할 것입니다. 프로젝트 맵을 다시 참조하여 디자인이 목표에 부합하는지
-확인하세요.
+With your design in hand, it's time to storyboard it's engagement with the user. By this point you should have already thought about the different steps a user takes. It's quite common to incorporate one of your colleagues' designs into the flow as well. You want to have a clear step-by-step process with some points where the user might diverge. Refer back to the project map to validate your design against the goal.
 
 <div class="clearfix"></div>
 
-## 프로토타입 생성
+## Creating a prototype
 
-프로토타입을 생성한다는 것이 완벽하게 코딩한다는 의미는 아니며,
-사용자가 믿고 쓸 만한 수준으로 만든다는 의미입니다. 프로토타입 생성에 사용하는 도구는
-사람마다 다릅니다. Keynote나 Powerpoint와 같은 도구는
-디자인 세부 사항이 아니라 그저 전체적인 흐름을 보여주는 도구라고 생각할 것입니다. 물론,
-Balsamiq, Marvel 또는 Framer와 같이 더 많은 동작 관련 컨트롤을 지정할 수 있는
-학습 도구에 시간과 공을 들일 수도 있습니다. 어떤 도구를 사용하든 흐름에 집중할 수 있게 해주고
-실제 제품처럼 보이도록 만들어야 합니다. 실제 사용자를 대상으로 프로토타입을 테스트할 필요가 있으므로,
-가능한 한 믿고 쓸 수 있을 정도로 만드는 동시에 프로토타입 생성에
-몇 주일씩 걸리지는 않도록 할 필요가 있습니다.
+Creating a prototype is not about molding the perfect piece of code but to make something that is believable when used by someone. Tools used to create a prototype vary from person to person. Some like Keynote or Powerpoint as it forces you to think of the flow and not design details. You might want to invest time into learning tools like Balsamiq, Marvel or Framer which can give you more behavioral controls. Whatever tool you use make sure it is one that makes you focus on the flow and looks real. You need to test the prototype on real people so it needs to be as believable as possible but at the same time it shouldn’t take weeks of work to create.
 
 <figure>
-  <img src="images/prototyping.jpg"  alt="프로토타입은 믿고 쓸 수 있을 정도로 충분히 실제 제품 같아야 함">
-  <figcaption>프로토타입은 믿고 쓸 수 있을 정도로 충분히 실제 제품 같아야 합니다.</figcaption>
+  <img src="images/prototyping.jpg"  alt="Prototypes need to be real enough to be believable">
+  <figcaption>Prototypes need to be real enough to be believable.</figcaption>
 </figure>
 
-시간과 실재 사이의 균형을 잘 맞춰 프로토타입을 생성해야 하므로,
-어느 한쪽으로 너무 치우치지 않도록 주의하세요. 어느 쪽으로 치우치든, 결국 시간 낭비가 될 수 있기 때문입니다.
+Creating a prototype is a balance between time and realness, so be careful not to sway to much into either extreme. Either way, you could end up wasting time.
 
-## 디자인의 사용성 테스트
+## Usability-test your designs
 
-테스트 랩이 있다면 정말 좋을 것입니다. 테스트 랩이 없더라도 사용자의 주의를
-분산시키지 않을 편안한 사용 환경을 만드는 데 신경을 쓴다면 괜찮은 테스트 환경을
-만드는 게 어렵지는 않습니다. 테스트에는 보통 사용자와 개발팀 담당자 두 명이 참여하며,
-담당자 한 명은 기록을 맡고 다른 한 명은 사용자에게 질문을 합니다. Hangouts와 같은 앱을 사용하여
-테스트 관련 작업을 기록하는 것이 좋습니다. 그러면
-나머지 팀원들이 다른 방에서 테스트 진행 상황을 관찰하기도 편리합니다. 앱 제작자 입장에서는
-자신이 개발한 디자인이 실제 사용 환경에서 어떻게 사용될지 알아볼 수 있으므로 이런 테스트는 정말 좋은 기회가 될 수 있습니다.
-새로운 기운을 북돋우면서도 진지하게 살펴볼 수 있는 경험이 될 수 있습니다.
+It's great if you have a testing lab. If you don't, creating one isn't difficult as long as you're mindful of creating a comfortable environment for your users that isn't distracting. Testing usually involves the user and two people from your team, one taking notes and the other asking questions. A good set up is to use an app like Hangouts and record their actions, this is also handy if you want the rest of the team to observe from a different room. This can be quite scary for us as app makers to do as we are seeing our designs out in the wild. It can be both a refreshing and sobering experience.
 
 <figure>
-  <img src="images/usability-testing.jpg"  alt="스토리보드 작업에서는 모든 스케치와 아이디어를 모두 함께 종합적인 흐름에 놓고서 고찰합니다.">
-  <figcaption>스토리보드 작업에서는 모든 스케치와 아이디어를 모두 함께 종합적인 흐름에 놓고서 고찰합니다.</figcaption>
+  <img src="images/usability-testing.jpg"  alt="The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.">
+  <figcaption>The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.</figcaption>
 </figure>
 
-### 물어볼 질문 사항
+### Questions to ask
 
-디자인 테스트를 실시할 때는 사용자에게 앱에서 여러 가지 작업을 수행하면서
-자신이 무엇을, 왜 그렇게 하고 있는지 큰소리로 설명해달라고 부탁하세요. 처음에는 어색하고 이상하게 느껴질 수도
-있겠지만, 이렇게 하면 사용자의 생각을 청취하는 데 도움이 됩니다. 사용자가 뭔가 문제에 봉착했을 때 끼어들거나 어떻게 해야 할지
-말해주지 마세요. 사용자가 특정 작업을 끝낼 수도 있고 아닐 수도 있겠지만, 일단 그 과정이 끝난 후에
-특정한 흐름에 따랐던 이유만 물어보세요.
+When testing your design, ask the user to perform tasks in your app and get them to speak aloud and verbalize what they're doing and why. This is an odd thing to do but it helps you hear what they're thinking. Try not to interrupt or tell them what they should do when they get stuck. Simply ask them why they took a particular flow after they have completed (or NOT completed).
 
-이때 알아내야 할 점은 다음과 같습니다.
+What you need to find out is:
 
-- 사용자가 프로토타입에 대해 마음에 들어 하는 점
-- 사용자가 프로토타입에 대해 불만을 가진 점
-- 사용자가 겪은 난점
-  - 어떤 흐름이 효과적이었던 이유
-  - 어떤 흐름이 효과적이지 못했던 이유
-- 사용자가 개선했으면 하는 점
-- 전체 디자인/흐름이 사용자의 요구에 부응하는지 여부
+- What do they like about the prototype?
+- What do they dislike about the prototype?
+- What are the pain points? 
+    - Why did a flow work
+    - Why did a flow not work
+- What would they like to improve?
+- Does the overall design/flow meet their needs?
 
-## 디자인 재검토와 다시 테스트 실시
+## Revisit designs and another round of testing
 
-실제 제품처럼 작동하는 프로토타입이 있고 그에 대한 피드백을 받은 상태입니다. 이제는 디자인을 수정하고
-제대로 작동한 것과 그렇지 못한 것이 무엇이었는지 분석할 차례입니다. 완전히 새로운 와이어프레임 스토리보드를
-생성하고 새 프로토타입을 만들기를 두려워하지 마시기 바랍니다. 처음부터 다시 시작하면
-기존 프로토타입을 변경하려고 애쓰는 것보다 오히려 나은 흐름을 창출할 수 있습니다. 단순히
-프로토타입일 뿐이므로 기존 프로토타입을 너무 아까워하지 마세요.
+You have a working prototype with feedback. Now it’s time to revise your designs, and analyze what worked and what didn’t. Don't be afraid to create a completely new wireframe storyboard and make a new prototype. Starting over can create a better flow than trying to move things on your earlier prototype. Try not to be too precious of it because it is just a prototype.
 
-스스로의 디자인에 만족한다면 다시 테스트하면서 좀 더 정교하게 가다듬을 수
-있습니다. 아쉽게도 프로토타입이 목표를 전혀 달성하지 못했다면
-프로젝트에 실패했다고 생각하실지도 모르겠습니다. 하지만 실은 그렇지 않습니다. 이런 테스트 과정 없이
-디자인을 구현했다가 나중에서야 사용자가 실제로 좋아하는 디자인이 무엇인지
-깨닫는 바람에 다시 처음부터 시작하는 것보다는 개발 시간이 덜 소요될 것이기 때문입니다. 디자인 스프린트 방법론은
-성공을 거두거나 뭔가 교훈을 얻는다는 철학을 바탕으로 하므로, 아이디어가 계획대로 통하지 않았다 할지라도 너무 자책할 필요가
-없습니다.
+Once you are happy with your designs you can test it again and refine it some more. In cases where the prototype didn’t hit the mark at all, well you might think the project has failed. In actual fact it hasn’t. You've likely spent less development time than if you had actually built the design and you know more bout what user's actually like. With design sprints we have a philosophy where you either win or you learn, so don’t beat yourself up too much if the idea didn't work as planned.
 
-## 성공을 향해
+## Make it!
 
-지금까지 아이디어를 테스트해봤습니다. 그래서 사용자도 좋아한다는 사실을 확인했습니다. 처음부터
-프로젝트에 관여한 이해관계자 역시 많은 노력을 쏟아부었습니다. 따라서 이젠
-제대로 된 물건을 만들어낼 차례입니다. 지금쯤이면 무엇을 만들어야 할지, 사용 환경의 각 요소에 대한 우선순위를 어떻게 정할지
-분명히 파악했을 것입니다. 프로젝트의 각 주요 이정표에서
-작업을 검증하고 올바른 궤도를 유지하기 위해 사용성 테스트를 실시하고
-싶을 수도 있습니다.
+You have tested your ideas. The user likes them. The stakeholders are invested because they've been involved since the beginning. Now it's time to make the thing. By now you should have a clear idea of what needs to be made and what the priorities of the experience are. At each milestone of the project you may want to introduce usability testing to help validate your work and keeping you on track.
 
-올바른 해결책이 아닐지도 모를 일에 맹목적으로 수많은 작업과 시간, 노력을 투입하기 전에
-최대한 많은 사항을 살펴보고 중요한 정보를 찾아내는 일이 얼마나 중요한지
-아무리 강조해도 지나치지 않을 것입니다.
+I can’t stress how important it is to find out as much as possible before you commit to a lot of work, time and energy on something that might not be the right solution.
 
-이 글을 읽고 UX와 그 중요성에 대한 기초적인 통찰력을 얻으셨기를 바랍니다. UX는
-그저 디자이너나 연구자의 역할일 뿐이라 치부할 일이
-아닙니다. 사실은 프로젝트에 관여하는 모든 이의 책임이므로
-기회가 있을 때마다 적극적으로 참여하시기 바랍니다.
+This article should now give you a basic grounding in UX and its importance. UX isn’t something that should be looked upon as a role for a designer or researcher. It is actually the responsibility of everyone involved in a project so I would recommend involvement at every opportunity.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

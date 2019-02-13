@@ -1,83 +1,84 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: De CSSOM- en DOM-boomstructuren worden gecombineerd in een weergaveboomstructuur. Deze nieuwe structuur wordt vervolgens gebruikt om de opmaak van elk zichtbaar element te berekenen en biedt invoer voor het kleurproces waarbij pixels op het scherm worden weergegeven. Het is cruciaal om elk van deze stappen te optimaliseren voor een optimale weergaveprestatie.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: TODO
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Layout,Blink>Paint #}
 
-# De opbouw van de weergaveboomstructuur, de opmaak en het kleuren {: .page-title }
+# Render-tree Construction, Layout, and Paint {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+The CSSOM and DOM trees are combined into a render tree, which is then used to compute the layout of each visible element and serves as an input to the paint process that renders the pixels to screen. Optimizing each of these steps is critical to achieving optimal rendering performance.
 
-De CSSOM- en DOM-boomstructuren worden gecombineerd in een weergaveboomstructuur. Deze nieuwe structuur wordt vervolgens gebruikt om de opmaak van elk zichtbaar element te berekenen en biedt invoer voor het kleurproces waarbij pixels op het scherm worden weergegeven. Het is cruciaal om elk van deze stappen te optimaliseren voor een optimale weergaveprestatie.
-
-
-In het vorige gedeelte over het opbouwen van het objectmodel hebben we de DOM- en de CSSOM-boomstructuren opgebouwd op basis van de HTML- en CSS-invoer. Maar beide structuren zijn onafhankelijke objecten die de verschillende aspecten van het document vastleggen: de een beschrijft de inhoud en de ander de stijlregels die moeten worden toegepast op het document. Hoe brengen we deze twee structuren samen en zorgen we dat de browser pixels op het scherm weergeeft?
+In the previous section on constructing the object model, we built the DOM and the CSSOM trees based on the HTML and CSS input. However, both of these are independent objects that capture different aspects of the document: one describes the content, and the other describes the style rules that need to be applied to the document. How do we merge the two and get the browser to render pixels on the screen?
 
 ### TL;DR {: .hide-from-toc }
-- De DOM- en CSSOM-boomstructuren worden gecombineerd om de weergaveboomstructuur op te bouwen.
-- De weergaveboomstructuur bevat alleen nodes die nodig zijn om de pagina weer te geven.
-- De opmaak berekent de precieze positie en grootte van elk object.
-- Het kleuren is de laatste stap waarbij de weergaveboomstructuur wordt gebruikt. Bij deze stap worden de pixels op het scherm weergegeven.
 
+* The DOM and CSSOM trees are combined to form the render tree.
+* Render tree contains only the nodes required to render the page.
+* Layout computes the exact position and size of each object.
+* The last step is paint, which takes in the final render tree and renders the pixels to the screen.
 
-De eerste stap is dat de browser het DOM en CSSOM in een 'weergaveboomstructuur' combineert. Hierin wordt alle zichtbare DOM-inhoud en alle CSSOM-stijlinformatie voor elke node vastgelegd.
+First, the browser combines the DOM and CSSOM into a "render tree," which captures all the visible DOM content on the page and all the CSSOM style information for each node.
 
-<img src="images/render-tree-construction.png" alt="DOM en CSSOM worden gecombineerd om de weergaveboomstructuur te maken" class="center">
+<img src="images/render-tree-construction.png" alt="DOM and CSSOM are combined to create the render tree" />
 
-Kort gezegd doet de browser het volgende om de weergaveboomstructuur op te bouwen:
+To construct the render tree, the browser roughly does the following:
 
-1. Elke zichtbare node wordt nagelopen vanaf de root van de DOM-boomstructuur.
-  * Bepaalde nodes zijn helemaal niet zichtbaar (bijvoorbeeld scripttags, metatags, enzovoort) en worden weggelaten aangezien deze niet worden afgebeeld in de weergegeven uitvoer.
-  * Bepaalde nodes zijn verborgen via CSS en worden ook weggelaten uit de weergaveboomstructuur. De span-node in het bovenstaande voorbeeld wordt bijvoorbeeld weggelaten uit de weergaveboomstructuur, omdat er een expliciete regel is die de eigenschap 'display: none' op deze node instelt.
-1. Voor elke zichtbare node worden de van toepassing zijnde CSSOM-regels gezocht en deze regels worden toegepast.
-2. Zichtbare nodes met inhoud en de berekende stijlen worden uitgezonden.
+1. Starting at the root of the DOM tree, traverse each visible node.
+    
+    * Some nodes are not visible (for example, script tags, meta tags, and so on), and are omitted since they are not reflected in the rendered output.
+    * Some nodes are hidden via CSS and are also omitted from the render tree; for example, the span node\---in the example above\---is missing from the render tree because we have an explicit rule that sets the "display: none" property on it.
 
-Note: Een kleine kanttekening: Let op dat 'visibility: hidden' niet hetzelfde is als 'display: none'. Het eerste zorgt ervoor dat het element onzichtbaar is, maar het element neemt nog altijd ruimte in de opmaak in (dat wil zeggen dat dit wordt weergegeven als een leeg vak), terwijl het laatste (display: none) het element volledig uit de weergaveboomstructuur verwijderd, waardoor het element onzichtbaar is en geen deel uitmaakt van de opmaak.
+2. For each visible node, find the appropriate matching CSSOM rules and apply them.
 
-De uiteindelijke uitvoer is een weergaveboomstructuur die zowel de inhoud als de stijlinformatie voor alle zichtbare inhoud op het scherm bevat. We zijn er nog niet helemaal, maar het begint er al op te lijken.  **Wanneer de weergaveboomstructuur af is, kunnen we verder gaan met de 'opmaak'-fase.**
+3. Emit visible nodes with content and their computed styles.
 
-Tot nu toe hebben we berekend welke nodes en de bijbehorende berekende stijlen zichtbaar moeten zijn, maar we hebben de exacte positie en grootte binnen de [viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) van het apparaat niet berekend. Dit is de 'opmaak'-fase, ook wel bekend als de 'reflow'.
+Note: As a brief aside, note that `visibility: hidden` is different from `display: none`. The former makes the element invisible, but the element still occupies space in the layout (that is, it's rendered as an empty box), whereas the latter (`display: none`) removes the element entirely from the render tree such that the element is invisible and is not part of the layout.
 
-De browser begint aan de root van de weergaveboomstructuur en loopt de hele structuur af om de geometrie van elk object op de pagina te berekenen om de precieze grootte en positie ervan uit te zoeken. Laten we een eenvoudig praktijkvoorbeeld bekijken:
+The final output is a render that contains both the content and style information of all the visible content on the screen. **With the render tree in place, we can proceed to the "layout" stage.**
+
+Up to this point we've calculated which nodes should be visible and their computed styles, but we have not calculated their exact position and size within the [viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) of the device\---that's the "layout" stage, also known as "reflow."
+
+To figure out the exact size and position of each object on the page, the browser begins at the root of the render tree and traverses it. Let's consider a simple, hands-on example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/nested.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-De body van de pagina hierboven bevat twee geneste div-elementen: de eerste (ouder-)div stelt de weergavegrootte van de node in op 50% van de viewportbreedte en de tweede div die door de ouder wordt omvat, stelt de breedte in op 50% van de breedte van de ouder, dat wil zeggen 25% van de viewportbreedte.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
 
-<img src="images/layout-viewport.png" alt="Opmaakinformatie berekenen" class="center">
+The body of the above page contains two nested div's: the first (parent) div sets the display size of the node to 50% of the viewport width, and the second div\---contained by the parent\---sets its width to be 50% of its parent; that is, 25% of the viewport width.
 
-De uitvoer van het opmaakproces is een 'vakmodel' waarin de exacte positie en afmeting van elk element in de viewport wordt vastgelegd: alle relatieve afmetingen worden geconverteerd naar absolute pixelposities op het scherm, enzovoort.
+<img src="images/layout-viewport.png" alt="Calculating layout information" />
 
-Nu we weten welke nodes zichtbaar zijn en de bijbehorende berekende stijlen en de geometrie kennen, kan deze informatie tot slot worden doorgeven aan de laatste fase waarin elke node in de weergaveboomstructuur wordt geconverteerd naar pixels op het scherm. Deze laatste stap wordt vaak 'kleuren' of 'rasteren' genoemd.
+The output of the layout process is a "box model," which precisely captures the exact position and size of each element within the viewport: all of the relative measurements are converted to absolute pixels on the screen.
 
-Heeft u dit allemaal kunnen volgen? Voor elke stap moest de browser een flinke hoeveelheid werk verzetten. Dit betekent ook dat het behoorlijk wat tijd kan kosten. Gelukkig kan Chrome DevTools ons helpen bepaalde inzichten te verkrijgen in alle drie de fasen die we zojuist hebben beschreven. Laten we de opmaakfase voor ons oorspronkelijke 'hallo wereld'-voorbeeld bekijken:
+Finally, now that we know which nodes are visible, and their computed styles and geometry, we can pass this information to the final stage, which converts each node in the render tree to actual pixels on the screen. This step is often referred to as "painting" or "rasterizing."
 
-<img src="images/layout-timeline.png" alt="De opmaak meten in DevTools" class="center">
+This can take some time because the browser has to do quite a bit of work. However, Chrome DevTools can provide some insight into all three of the stages described above. Let's examine the layout stage for our original "hello world" example:
 
-* De opbouw van de weergaveboomstructuur en de berekening van de positie en grootte worden vastgelegd in de gebeurtenis 'Layout' (Opmaak) in de Timeline (Tijdlijn).
-* Zodra de opmaak is voltooid, geeft de browser de gebeurtenissen 'Paint setup' (Instelling kleuren) en 'Paint' (Schilderen) vrij waardoor de weergaveboomstructuur wordt geconverteerd naar pixels op het scherm.
+<img src="images/layout-timeline.png" alt="Measuring layout in DevTools" />
 
-De tijd die nodig is voor de opbouw van de weergaveboomstructuur, de opmaak en het kleuren kan verschillen op basis van de grootte van het document, de toegepaste stijlen en natuurlijk het apparaat waarop de pagina wordt weergegeven: hoe groter het document, hoe meer de browser moet doen; hoe ingewikkelder de stijlen, hoe meer tijd wordt ingenomen door het kleuren (een massieve kleur is eenvoudig te kleuren, maar een klein beetje schaduw is veel 'zwaarder' te berekenen en weer te geven).
+* The "Layout" event captures the render tree construction, position, and size calculation in the Timeline.
+* When layout is complete, the browser issues "Paint Setup" and "Paint" events, which convert the render tree to pixels on the screen.
 
-Maar na dit hele proces is onze pagina eindelijk zichtbaar in de viewport.
+The time required to perform render tree construction, layout and paint varies based on the size of the document, the applied styles, and the device it is running on: the larger the document, the more work the browser has; the more complicated the styles, the more time taken for painting also (for example, a solid color is "cheap" to paint, while a drop shadow is "expensive" to compute and render).
 
-<img src="images/device-dom-small.png" alt="Weergegeven pagina Hallo wereld" class="center">
+The page is finally visible in the viewport:
 
-Laten we nog een korte samenvatting maken van alle stappen die de browser heeft genomen:
+<img src="images/device-dom-small.png" alt="Rendered Hello World page" />
 
-1. De HTML verwerken en de DOM-boomstructuur opbouwen.
-2. Het CSS verwerken en de CSSOM-boomstructuur opbouwen.
-3. Het DOM en CSSOM combineren in een weergaveboomstructuur.
-4. De opmaak uitvoeren op de weergaveboomstructuur om de geometrie voor elke node te berekenen.
-5. De individuele nodes op het scherm kleuren.
+Here's a quick recap of the browser's steps:
 
-Onze voorbeeldpagina ziet er misschien eenvoudig uit, maar het kost nog behoorlijk wat werk. Wilt u een gokje wagen wat er gebeurt wanneer het DOM of CSSOM wordt aangepast? We zouden het gehele proces opnieuw moeten doorlopen om uit te zoeken welke pixels opnieuw moeten worden weergegeven op het scherm.
+1. Process HTML markup and build the DOM tree.
+2. Process CSS markup and build the CSSOM tree.
+3. Combine the DOM and CSSOM into a render tree.
+4. Run layout on the render tree to compute geometry of each node.
+5. Paint the individual nodes to the screen.
 
-**Het optimaliseren van het kritieke weergavepad bestaat uit het minimaliseren van de totale tijd die wordt gebruikt om stap 1 tot en met 5 in de bovenstaande volgorde uit te voeren.** Door dit proces kunnen we inhoud zo snel mogelijk op het scherm weergeven en de hoeveelheid tijd tussen schermupdates na de initiële weergave ook verminderen. Dit laatste betekent een hogere vernieuwingssnelheid behalen voor interactieve inhoud.
+Our demo page may look simple, but it requires quite a bit of work. If either the DOM or CSSOM were modified, you would have to repeat the process in order to figure out which pixels would need to be re-rendered on the screen.
 
+***Optimizing the critical rendering path* is the process of minimizing the total amount of time spent performing steps 1 through 5 in the above sequence.** Doing so renders content to the screen as quickly as possible and also reduces the amount of time between screen updates after the initial render; that is, achieve higher refresh rates for interactive content.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

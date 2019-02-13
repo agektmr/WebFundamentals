@@ -1,55 +1,45 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 無論是小螢幕手機或是大螢幕電視，使用者都能透過各式各類的裝置造訪網站。 快來瞭解如何打造適用於所有裝置的網站。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The web is accessible on a huge range of devices, from small-screen phones to big-screen televisions. Each device presents its own benefits and constraints. As a web developer, you are expected to support a full ranges of devices.
 
-{# wf_updated_on: 2014-01-05 #}
-{# wf_published_on: 2013-12-31 #}
+{# wf_updated_on: 2015-10-05 #} {# wf_published_on: 2013-12-31 #}
 
-# 您的第一個多裝置網站 {: .page-title }
+# Your First Multi-Device Site {: .page-title }
+
+Caution: This article has not been updated in a while and may not reflect reality. Instead, check out the free [Responsive Web Design](https://www.udacity.com/course/responsive-web-design-fundamentals--ud893) course on Udacity.
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
+<img src="images/finaloutput-2x.jpg" alt="many devices showing the final project" class="attempt-right" />
 
+Creating multi-device experiences is not as hard as it might seem. In this guide, we will build a product landing page for the [CS256 Mobile Web Development course](https://www.udacity.com/course/mobile-web-development--cs256) that works well across different device types.
 
-其實，打造適用於多種裝置的網站並不困難。 我們將會依照這份指南，為 <a href='https://www.udacity.com/course/mobile-web-development--cs256'>CS256 行動網站開發課程</a>打造適用於所有不同裝置類型的產品到達網頁示例。
+Building for multiple devices with differing capabilities, vastly different screen sizes and interaction methods can seem daunting, if not impossible to get started.
 
-<img src="images/finaloutput-2x.jpg" alt="多種裝置顯示專案完成後的樣貌">
+It is not as hard to build fully responsive sites as you think, and to show you, this guide takes you through the steps that you can use to get started. We have broken it into two simple steps:
 
-說到要為多種裝置打造功能多樣、可隨螢幕大小調整並具備互動方法的網站，不僅讓人眼冒金星，而且第一步似乎無法跨越。
+1. Defining the information architecture (commonly known as IA) and structure of the page,
+2. Adding design elements to make it responsive and look good across all devices.
 
-其實，要打造功能完善的回應式網站並沒有想像中那麼困難。為了證明這一點，這份指南會帶您逐漸邁出成功的第一步。  我們將整個程序分為兩個步驟：
+## Create your content and structure
 
-1.  定義資訊架構 (通常簡稱為 IA) 和網頁架構  
-2.  加入設計元素，讓網頁在所有裝置上都能靈活回應並讓人目不轉睛。
+Content is the most important aspect of any site. So let’s design for the content and not let the design dictate the content. In this guide, we identify the content we need first, create a page structure based on this content, and then present the page in a simple linear layout that works well on narrow and wide viewports.
 
+### Create the page structure
 
+We have identified we need:
 
+1. An area that describes at a high-level our product "CS256: Mobile web development" course
+2. A form to collect information from users who are interested in our product
+3. An in depth description and video
+4. Images of the product in action
+5. A data table with information to back the claims up
 
-## 建立內容和架構 
+#### TL;DR {: .hide-from-toc }
 
+* Identify the content you need first.
+* Sketch out Information Architecture (IA) for narrow and wide viewports.
+* Create a skeleton view of the page with content but without styling.
 
-
-
-對任何網站來說，內容絕對是最重要的一環。 在設計網站時，我們必須秉持內容至上的原則，而不是讓設計喧賓奪主。 在這份指南中，首先我們會找出所需的內容，並依據內容建立網頁架構，然後再以寬窄檢視區都適用的簡單線性版面配置呈現網頁。
-
-
-### 建立網頁結構
-
-我們已確定所需內容：
-
-1.  簡介「CS256：行動網路開發」課程的區域
-2.  收集對我們產品感興趣的使用者資訊的表單
-3.  深入說明和影片
-4.  產品實際運作的圖片
-5.  包含可驗證相關要求資訊的資料表
-
-### TL;DR {: .hide-from-toc }
-- 先找出所需的內容。
-- 草擬寬窄檢視區都適用的資訊架構 (IA)。
-- 建立網頁內容骨架圖 (還不需加上樣式)。
-
-
-我們也已草擬一份寬窄檢視區都適用的資訊架構和版面配置。
+We have also come up with a rough information architecture and layout for both the narrow and wide viewports.
 
 <div class="attempt-left">
   <figure>
@@ -59,6 +49,7 @@ description: 無論是小螢幕手機或是大螢幕電視，使用者都能透�
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="images/wideviewport.png" alt="Wide Viewport IA">
@@ -68,203 +59,182 @@ description: 無論是小螢幕手機或是大螢幕電視，使用者都能透�
   </figure>
 </div>
 
-這份文件可輕鬆轉換成網頁骨架中的粗略區段，後續在這個專案中都會用到。
+<div style="clear:both;"></div>
+
+This can be converted easily into the rough sections of a skeleton page that we will use for the rest of this project.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addstructure.html" region_tag="structure" adjust_indentation="auto" %}
 </pre>
 
-### 將內容新增到網頁
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addstructure.html){: target="_blank" .external }
 
-網站的基本架構已完成。 我們知道所需的區段、其中要顯示的內容，以及內容在整體資訊架構中的位置。 現在就讓我們著手打造網站吧！
+### Add content to the page
 
-Note: 樣式以後還會來
+The basic structure of the site is complete. We know the sections we need, the content to display in those sections, and where to position it in the overall information architecture. We can now start to build out the site.
 
-#### 建立標題和表單
+Note: We'll add the styling later
 
-對於我們的網頁來說，標題和要求通知表單是不可或缺的要素， 因此必須立即向使用者顯示。
+### Create the headline and form
 
-在標題中，請簡單描述課程內容：
+The headline and request notification form are the critical components of our page. These must be presented to the user immediately.
+
+In the headline, add simple text to describe the course:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addheadline.html" region_tag="headline" adjust_indentation="auto" %}
 </pre>
 
-我們也需要填寫表單。
-這份簡易表單必須收集使用者姓名、電話號碼和方便我們回電的時間等資訊。
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addheadline.html){: target="_blank" .external }
 
-所有表單都必須具備標籤和預留位置，方便使用者聚焦於表單元素、瞭解應填入何種資訊，並可讓協助工具瞭解扁擔架構。名稱屬性不僅會將表單值傳送給伺服器，也可為瀏覽器提供重要提示，說明如何自動為使用者填寫表單資訊。
+We need to also fill out the form. It will be a simple form that collects the users' name, email address, and phone number.
 
-為方便使用者在行動裝置上輕鬆快速地輸入內容，我們會新增語意類型。舉例來說，當使用者輸入電話號碼時，應會看到撥號鍵盤。
+All forms should have labels and placeholders to make it easy for users to focus elements, understand what is supposed to go in them, and to also help accessibility tools understand the structure of the form. The name attribute not only sends the form value to the server, it is also used to give important hints to the browser about how to automatically fill in the form for the user.
+
+We will add semantic types to make it quick and simple for users to be able to enter content on a mobile device. For example, when entering a telephone number, the user should just see a dial pad.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addform.html" region_tag="form" adjust_indentation="auto" %}
 </pre>
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.create-amazing-forms #}
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addform.html){: target="_blank" .external }
 
-#### 建立影片和資訊區段
+#### Create the Video and Information section
 
-內容的影片和資訊區段會包含較深入的資訊。
-其中會顯示產品功能的項目符號列表，也會包含影片預留位置，讓使用者觀看產品實際運作的情形。
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="section1" adjust_indentation="auto" %}
-</pre>
-
-我們通常會透過影片以互動的方式說明內容，也常常使用影片示範產品使用方式或概念。
-
-只要依照下列最佳作法，您也可輕鬆將影片整合到網站中:
-
-*  新增 `controls` 屬性，方便使用者播放影片。
-*  新增 `poster` 圖片讓使用者預覽內容。
-*  依照支援的影片格式，新增多個 `<source>` 元素。
-*  新增備用文字告知使用者，當無法在視窗中播放影片時，可自行下載。
+The Video and Information section of content will contain a little more depth. It will have a bulleted list of features of our products and will also contain a video placeholder that shows our product working for the user.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="video"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="section1" adjust_indentation="auto" %}
 </pre>
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.video #}
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-#### 建立圖片區段
+Videos are often used to describe content in a more interactive manner and are frequently used to show a demonstration of a product or a concept.
 
-沒有圖片的網站會顯得乏味。 圖片類型共有兩種：
+By following the best practices, you can easily integrate video into your site:
 
-*  內容圖片 &mdash; 穿插在內容當中的圖片，通常用來傳達額外的資訊。
-*  美觀圖片 &mdash; 這類圖片的用途是美化網站，通常是背景圖片、花樣和漸層。我們將在[下一篇文章](#)詳細說明。
-
-在我們的網頁中，圖片區段匯集了許多內容圖片。
-
-如要有效傳達網頁涵義，絕對少不了內容圖片。 想想報紙中的圖片就不難瞭解這類圖片的重要性。 我們使用的是專案教練 Chris Wilson、Peter Lubbers 和 Sean Bennet 的圖片。
+* Add a `controls` attribute to make it easy for people to play the video.
+* Add a `poster` image to give people a preview of the content.
+* Add multiple `<source>` elements based on supported video formats.
+* Add fall-back text to let people download the video if they can't play it in the window.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addimages.html" region_tag="images"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="video" adjust_indentation="auto" %}
 </pre>
 
-這些圖片都已設為可放大成螢幕寬度。 這項設定非常適合檢視區較窄的裝置，但在檢視區較寬的裝置 (例如桌上型電腦)上效果較差。在探討回應式設計時，我們將會處理這項問題。
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.images #}
+#### Create the Images Section
 
-許多視障使用者無法看到圖片，通常需要借助螢幕閱讀器等輔助技術剖析網頁資料，才可藉由語音解讀網頁。請確認所有的內容圖片都具有包含描述字詞的 `alt` 標記，方便螢幕閱讀器為使用者朗讀。
+Sites without images can be a little boring. There are two types of images:
 
-新增 `alt` 標記時，請儘可能以最精簡的說明文字完整描述圖片。舉例來說，我們在示範中僅針對這個屬性使用了簡單的「姓名：角色」格式，但這些資訊已足以讓使用者瞭解這個區段主要是介紹作者和職務。
+* Content images &mdash; images that are in-line in the document and are used to convey extra information about the content.
+* Stylistic images &mdash; images that are used to make the site look better; often these are background images, patterns and gradients. We will cover this in the [next section](#make-it-responsive).
 
-#### 新增製表資料區段
+The Images section in our page is a collection of content images.
 
-最後一個區段就是用來顯示特定產品數據的簡表。
-
-請在需要顯示表列式資料時 (例如格狀資訊) 才使用表格。
+Content images are critical to conveying the meaning of the page. Think of them like the images used in newspaper articles. The images we are using are pictures of the tutors on the project: Chris Wilson, Peter Lubbers and Sean Bennet.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="section3" adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addimages.html" region_tag="images" adjust_indentation="auto" %}
 </pre>
 
-#### 新增頁尾
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addimages.html){: target="_blank" .external }
 
-大多數網站都需要頁尾來顯示不必出現在主要導覽或網業主要內容區域的資訊，例如《條款及細則》、免責聲明和其他內容。
+The images are set to scale to 100% of the width of the screen. This works well on devices with a narrow viewport, but less well on those with a wide viewport (like desktop). We will manage this in the responsive design section.
 
-在我們的網站中，我們會提供《條款及細則》、聯絡資訊網頁和社交媒體個人資料頁面的連結。
+Many people don't have the ability to view images and often use an assistive technology such as a screen reader that will parse the data on the page and relay that to the user verbally. You should ensure that all your content images have a descriptive `alt` tag that the screen reader can speak out to the user.
+
+When adding `alt` tags make sure that you keep the alt text as concise as possible to fully describe the image. For example in our demo we simply format the attribute to be "Name: Role", this presents enough information to the user to understand that this section is about the authors and what their job is.
+
+#### Add the Tabulated Data Section
+
+The final section is a simple table that is used to show specific product stats about the product.
+
+Tables should only be used for tabular data, i.e, matrices of information.
+
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addtable.html" region_tag="section3" adjust_indentation="auto" %}
+</pre>
+
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addtable.html){: target="_blank" .external }
+
+#### Add a Footer
+
+Most sites need a footer to display content such as Terms and Conditions, disclaimers, and other content that isn't meant to be in the main navigation or in the main content area of the page.
+
+In our site, we'll just create a simple placeholder footer.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="footer" adjust_indentation="auto" %}
 </pre>
 
-### 摘要
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addcontent.html){: target="_blank" .external }
 
-到目前為止，我們已建立了網站的雛型，並確定了所有的主要架構元素。此外，我們也確認所有相關內容都已就緒，可符合我們的業務需求。
+### Summary
 
-<div class="attempt-left">
-  <figure>
-    <img src="images/content.png" alt="Content">
-    <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-without-styles.html">Content and structure</a>
-    </figcaption>
-  </figure>
-</div>
-<div class="attempt-right">
-  <figure>
-    <img  src="images/narrowsite.png" alt="Designed site" style="max-width: 100%;">
-    <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-with-styles.html">Final site</a>
-    </figcaption>
-  </figure>
-</div>
-
-您也許注意到網頁外觀目前有些慘不忍睹，但我們是刻意的。 
-對任何網站來說，內容絕對是最重要的一環。因此，我們必須先確認網站的資訊架構穩固且紮實。 這份指南協助我們打好了地基。 在下一份指南中，我們將要為內容好好包裝一番。
-
-
-
-
-
-## 賦予網站靈活回應的能力 
-
-
-
-
-無論是小螢幕手機或是大螢幕電視，使用者都能透過各式各類的裝置造訪網站。 不過，每種裝置都各有優點和限制。 網站開發人員的職責就是確保網站可以在所有裝置上正常運作。
-
-
-我們正在打造適用於多種螢幕大小和裝置類型的網站。 在[previous article](#)中，我們已擬妥網頁的資訊架構並建立了基本架構。
-在這份指南中，我們將沿用包含內容的基本架構，著手將網頁改造為可依多數螢幕大小靈活調整的萬人迷。
+We have created the outline of the site and we have identified all the main structural elements. We have also made sure that we have all the relevant content ready and in-place to satisfy our business needs.
 
 <div class="attempt-left">
   <figure>
     <img src="images/content.png" alt="Content">
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-without-styles.html">Content and structure</a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-without-styles.html">Content and structure</a>
     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img  src="images/narrowsite.png" alt="Designed site" style="max-width: 100%;">
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-with-styles.html">Final site</a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html">Final site</a>
     </figcaption>
   </figure>
 </div>
 
-秉持「行動裝置優先」的網站開發原則，我們先從窄檢視區 (例如手機) 著手打造優異體驗。
-接下來，我們才進一步擴充到較大的裝置類別。
-我們可以透過增加檢視區寬度的方式，仔細判斷設計和版面配置是否正常顯示。
+You will notice that the page looks terrible right now; this is intentional. Content is the most important aspect of any site and we needed to make sure we had a good solid information architecture and density. This guide has given us an excellent base to build upon. We will style our content in the next guide.
 
-稍早前，我們建立了一些高解析度的設計，做為評斷內容是否正常顯示的標準。 現在我們需要讓網頁依照不同版面配置自動調整，
-方法是依據內容判斷我們應在哪裡設置中斷點 (版面配置和樣式需要變更的點)。
+## Make it responsive {: #make-it-responsive }
+
+The web is accessible on a huge range of devices from small-screen phones through to huge-screen televisions. Each device presents its own unique benefits and also constraints. As a web developer, you are expected to support all ranges of devices.
+
+We are building a site that works across multiple screen sizes and device types. We've crafted the Information Architecture of the page and created a basic structure. In this section, we will take our basic structure with content and turn it into a beautiful page that is responsive across a large number of screen sizes.
+
+Following the principles of Mobile First web development, we start with a narrow viewport &mdash; similar to a mobile phone &mdash; and build for that experience first. Then we scale up to larger device classes. We can do this by making our viewport wider and making a judgment call on whether the design and layout look right.
+
+Earlier we created a couple of different high-level designs for how our content should be displayed. Now we need to make our page adapt to those different layouts. We do this by making a decision on where to place our breakpoints &mdash; a point where the layout and styles change &mdash; based on how the content fits the screen-size.
 
 ### TL;DR {: .hide-from-toc }
-- 務必使用檢視區。
-- 務必從窄檢視區開始，然後再陸續擴展。
-- 視需要依據中斷點調整內容。
-- 在每個主要中斷點建立版面配置概覽。
 
+* Always use a viewport.
+* Always start with a narrow viewport first and scale out.
+* Base your breakpoints off when you need to adapt the content.
+* Create a high-level vision of your layout across major breakpoints.
 
-### 添加一個檢視區
+### Add a viewport
 
-即使是簡易網頁，您也**必須**納入檢視區中繼標記。
-在打造多裝置體驗時，檢視區是最關鍵的一環。
-如果沒有檢視區，您的網站將無法在行動裝置上正常顯示。
+Even for a basic page, you **must** always include a viewport meta tag. The viewport is the most critical component you need for building multi-device experiences. Without it, your site will not work well on a mobile device.
 
-檢視區的作用是告知瀏覽器依據螢幕大小縮放網頁。您可以透過多項檢視區設定來控制網頁的顯示方式。我們建議您採用下列預設設定：
+The viewport indicates to the browser that the page needs to be scaled to fit the screen. There are many different configurations that you can specify for your viewport to control the display of the page. As a default, we recommend:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/viewport.html" region_tag="viewport" adjust_indentation="auto" %}
 </pre>
 
-檢視區位於文件的開頭，而且只需要宣告一次。
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/viewport.html){: target="_blank" .external }
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.responsive #}
+The viewport lives in the head of the document and only needs to be declared once.
 
-### 運用簡單的樣式
+### Apply simple styling
 
-我們的樣式指南對於產品和公司的品牌和字型都有詳盡規範。
+Our product and company already has a very specific branding and font guide-lines supplied in a style guide.
 
-#### 樣式指南
+#### Style guide
 
-透過樣式指南，開發人員對於網頁視覺呈現的規定即可一目瞭然，並可確保整體設計的一致性。
+A style guide is a useful way to get a high-level understanding of the visual representation of the page and it helps you ensure that you are consistent throughout the design.
 
-##### 顏色
+#### Colors
 
 <div class="styles" style="font-family: monospace;">
   <div style="background-color: #39b1a4">#39b1a4</div>
@@ -275,16 +245,17 @@ Note: 樣式以後還會來
   <div style="background-color: #dc4d38">#dc4d38</div>
 </div>
 
-#### 添加美觀圖片
-
-在前一份指南中，我們新增了「內容圖片」。這些圖片可襯托產品的描述內容，因此非常重要。美觀圖片則是為了吸引使用者注意特定內容區塊所加入的圖片。雖然這不是主要內容的必要項目，但可讓內容增色不少。
-
-位於「不需捲動位置」內容的標題圖片就是一個很好的例子。 這類圖片的用意是吸引使用者進一步閱讀產品內容。
+#### Add stylistic images
 
 <img  src="images/narrowsite.png" alt="Designed site"  class="attempt-right" />
 
-您可輕鬆加入這類圖片。 就我們的例子來說，我們會透過簡單的 CSS 將圖片設為標題的背景。
+In the previous guide, we added images called "content images". These were images that were important to the narrative of our product. Stylistic images are images that are not needed as part of the core content but add visual flare or help guide the user's attention to a specific piece of content.
 
+A good example of this is a headline image for the 'above the fold' content. It is often used to entice the user to read more about the product.
+
+They can be very simple to include. In our case, it will be the background to the header and we will apply it via some simple CSS.
+
+<div style="clear:both;"></div>
 
     #headline {
       padding: 0.8em;
@@ -295,179 +266,185 @@ Note: 樣式以後還會來
     }
     
 
-為了避免圖片喧賓奪主，我們選擇了模糊處理的簡約背景圖片，然後將圖片設為 `cover` 整個元素。如此一來，每當圖片需要放大時，仍然可以保持正確的長寬比。
+We have chosen a simple background image that is blurred so it doesn't take away from the content and we have set it to `cover` the entire element; that way it always stretches whilst maintaining the correct aspect ratio.
 
-<br style="clear: both;">
+### Set your first breakpoint
 
-### 設置你的第一個中斷點
-
-當寬度為 600px 時，整個設計就開始走樣了。就我們的例子來說，每行文字的長度超過了 10 個字 (最佳閱讀的上限)，因此必須修正。
+The design starts to look bad at about 600px wide. In our case, the length of the line is going above 10 words (the optimal reading length) and that is where we want to change it.
 
 <video controls poster="images/firstbreakpoint.png" style="width: 100%;">
   <source src="videos/firstbreakpoint.mov" type="video/mov"></source>
   <source src="videos/firstbreakpoint.webm" type="video/webm"></source>
-  <p>很抱歉，您的瀏覽器不支援影片。
-     <a href="videos/firstbreakpoint.mov">下載影片</a>。
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/firstbreakpoint.mov">Download the video</a>.
   </p>
 </video>
 
-對我們來說，600px 看來很適合建立第一個中斷點，因為我們可以藉此獲得理想範圍重新安排各項元素，以便更加符合螢幕大小。我們可以透過名為 [Media Queries](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness)的技術輕鬆完成修正。
-
+600px appears to be a good place to create our first breakpoint as it will give us scope to reposition elements to make them fit the screen better. We can do this using a technology called [Media Queries](/web/fundamentals/design-and-ux/responsive/#use-media-queries).
 
     @media (min-width: 600px) {
     
     }
     
 
-較大的螢幕擁有更充裕的空間，因此顯示網頁時也會有較大的彈性。
+There is more space on a larger screen so there is more flexibility with how content can be displayed.
 
-Note: 您不需要一次移動所有元素，可視情況進行微幅調整。
+Note: You don't have to move all the elements at once, you can make smaller adjustments if needed.
 
-就我們的產品網頁來說，看來我們需要：
+In the context of our product page, it looks like we will need to:
 
-*  限制設計的寬度上限
-*  修改元素間隙並縮小文字大小
-*  移動表單，以便讓表單隨標題內容浮動。
-*  讓影片隨內容浮動。
-*  縮減圖片大小，以便顯示在更美觀的範圍內。
+* Constrain the maximum width of the design.
+* Alter the padding of elements and reduce the text size.
+* Move the form to float in-line with the heading content.
+* Make the video float around the content.
+* Reduce the size of the images and have them appear in a nicer grid.
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.first-break-point #}
+### Constrain the maximum width of the design
 
-### 限制設計的寬度上限
+We have chosen to have only two major layouts: a narrow viewport and a wide viewport, which greatly simplifies our build process.
 
-我們僅選擇了兩種主要的版面配置 (窄檢視區和寬檢視區)，因此大幅簡化了建構程序。
+We have also decided to create full-bleed sections on the narrow viewport that stay full-bleed on the wide viewport. This means we should constrain the maximum width of the screen so that the text and paragraphs don't extend into one long, single line on ultra-wide screens. We have chosen this point to be about 800px.
 
-此外，我們也決定在窄檢視區建立全出血區段，以便在寬檢視區也可維持全出血顯示。這表示我們必須限制螢幕的寬度上限，如此文字和段落在超寬螢幕顯示時，才不會變成連綿冗長的單行文字。我們選擇的中斷點是 800px。
+To achieve this, we need to constrain the width and center the elements. We need to create a container around each major section and apply a `margin:
+auto`. This will allow the screen to grow but the content remain centered and at a maximum size of 800px.
 
-為達成這項要求，我們必須限制寬度並將元素置中。我們需要在每個主要區段周圍建立容器，並套用 `margin:
-auto`。 如此一來，即使螢幕變大，內容仍會維持在螢幕中心位置，且大小也不會超過 800px。
+The container will be a simple `div` in the following form:
 
-容器其實就是簡單的 `div`，格式如下:
-
-    <div class="container">
-    ...
-    </div>
+    <div class="container">...</div>
+    
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="containerhtml"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="containerhtml" adjust_indentation="auto" %}
 </pre>
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="container"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="container" adjust_indentation="auto" %}
 </pre>
 
-### 修改間隙並縮小文字大小
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/constrainwidth.html){: target="_blank" .external }
 
-在窄檢視區中，我們沒有太多空間可顯示內容。因此，為了讓內容符合螢幕大小，通常會縮減字型的大小和粗細。
+### Alter the padding and reduce text size
 
-對於寬檢視區來說，我們則必須考量使用者通常會在較遠的距離觀看大螢幕的內容。為了方便使用者閱讀內容，我們可以增加字型的大小和粗細，或是修改間隙讓重要區域更加醒目。
+On the narrow viewport, we don't have a lot of space to display content so the size and weight of the typography is often drastically reduced to fit the screen.
 
-在我們的產品網頁中，我們會將間隙保持在寬度的 5%，藉此增加區段元素之間的空隙。我們也會增加每個區段標題的大小。
+With a larger viewport, we need to consider that the user is more likely to be on a larger screen but further away. To increase the readability of the content, we can increase the size and weight of the typography and we can also alter the padding to make distinct areas stand out more.
+
+In our product page, we will increase the padding of the section elements by setting it to remain at 5% of the width. We will also increase the size of the headers for each of the sections.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="padding"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/alterpadding.html" region_tag="padding" adjust_indentation="auto" %}
 </pre>
 
-### 依照寬檢視區調整元素
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/alterpadding.html){: target="_blank" .external }
 
-我們的窄檢視區是透過線性堆疊的方式顯示。每個主要區段和其中的內容都是從上到下依序顯示。
+### Adapt elements to wide viewport
 
-因為寬檢視區提供充裕的空間，我們可以透過最有效益的方式顯示內容。就我們的產品網頁來說，這表示我們可以依據 IA：
+Our narrow viewport was a stacked linear display. Each major section and the content inside them was displayed in order from top to bottom.
 
-*  將表單移動到標題資訊周圍。
-*  將影片放置在主要重點的右側。
-*   拼貼圖片。
-*   擴充表格。
+A wide viewport gives us extra space to use to display the content in an optimal way for that screen. For our product page, this means that according to our IA we can:
 
-#### 讓表單元素靈活浮動
+* Move the form around the header information.
+* Position the video to the right of the key points.
+* Tile the images.
+* Expand the table.
 
-因為窄檢視區的水平空間有限，我們無法隨心所欲地在螢幕上放置元素。
+#### Float the Form element
 
-為了妥善運用水平螢幕空間，我們需要打破標題中的線性流程，並將表單和清單放在一起。
+The narrow viewport means that we have a lot less horizontal space available for us to comfortably position elements on the screen.
+
+To make more effective use of the horizontal screen space, we need to break out of the linear flow of the header and move the form and list to be next to each other.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="formfloat"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floattheform.html" region_tag="formfloat" adjust_indentation="auto" %}
 </pre>
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="padding"   adjust_indentation="auto" %}
-</pre>
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floattheform.html){: target="_blank" .external }
 
 <video controls poster="images/floatingform.png" style="width: 100%;">
   <source src="videos/floatingform.mov" type="video/mov"></source>
   <source src="videos/floatingform.webm" type="video/webm"></source>
-  <p>很抱歉，您的瀏覽器不支援影片。
-     <a href="videos/floatingform.mov">下載影片</a>。
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/floatingform.mov">Download the video</a>.
   </p>
 </video>
 
-#### 讓影片元素靈活浮動
+#### Float the Video element
 
-在窄檢視區中，影片介面的設計是與螢幕同寬，並位於主要功能之後。 在寬檢視區中，影片則會過大，並且在功能清單旁邊會顯得放錯地方了。
+The video in the narrow viewport interface is designed to be the full width of the screen and positioned after the list of key features. On a wide viewport, the video will scale up to be too large and look incorrect when placed next to our list of features.
 
-影片元素必須從窄檢視區的垂直流程移出，並與寬檢視區中的內容項目符號列表放在一起。
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="floatvideo"   adjust_indentation="auto" %}
-</pre>
-
-#### 拼貼圖片
-
-在窄檢視區 (通常是行動裝置 ) 中，圖片介面會設為與螢幕同寬並垂直堆疊。但是，這樣的設計無法在寬檢視區正常顯示。
-
-為了讓圖片在寬檢視區正常顯示，圖片必須縮放為容器寬度的 30%，並採水平放置 (有別於窄檢視區的垂直堆疊)。 我們也會新增邊框半徑和方塊陰影，讓圖片更具吸引力。
-
-<img src="images/imageswide.png" style="width:100%">
+The video element needs to be moved out of the vertical flow of the narrow viewport and should be displayed side-by-side with the bulleted list of content on a wide viewport.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="tileimages"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floatthevideo.html" region_tag="floatvideo" adjust_indentation="auto" %}
 </pre>
 
-#### 讓圖片回應 DPI
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floatthevideo.html){: target="_blank" .external }
 
-使用圖片時，請考量檢視區大小和螢幕解析度。
+#### Tile the Images
 
-網站原本是針對 96dpi 螢幕所設計。隨著行動裝置問世，我們發現螢幕解析度大幅提升，更別說筆記型電腦配備的 Retina 等級的顯示器了。因此在高 DPI 裝置上，以 96dpi 編碼的圖片通常都慘不忍睹。
+<img src="images/imageswide.png" class="attempt-right" />
 
-我們有一個還不是廣為人知的解決方法。
-對於支援高 DPI 的瀏覽器，您可以在高解析度螢幕中顯示高解析度的圖片。
+The images in the narrow viewport (mobile devices mostly) interface are set to be the full width of the screen and stacked vertically. This doesn't scale well on a wide viewport.
 
+To make the images look correct on a wide viewport, they are scaled to 30% of the container width and laid out horizontally (rather than vertically in the narrow view). We will also add some border radius and box-shadow to make the images look more appealing.
+
+<div style="clear:both;"></div>
+
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/tiletheimages.html" region_tag="tileimages" adjust_indentation="auto" %}
+</pre>
+
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/tiletheimages.html){: target="_blank" .external }
+
+#### Make images responsive to DPI
+
+When using images, take the size of the viewport and the density of the display into consideration.
+
+The web was built for 96dpi screens. With the introduction of mobile devices, we have seen a huge increase in the pixel density of screens not to mention Retina class displays on laptops. As such, images that are encoded to 96dpi often look terrible on a hi-dpi device.
+
+We have a solution that is not widely adopted yet. For browsers that support it, you can display a high density image on a high density display.
 
     <img src="photo.png" srcset="photo@2x.png 2x">
     
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.images #}
+#### Tables
 
-#### 表格
+Tables are very hard to get right on devices that have a narrow viewport and need special consideration.
 
-就具備窄檢視區的裝置來說，想要正確顯示表格並不容易，因此需要考量其他因素。
+We recommend on a narrow viewport that you transform your table by changing each row into a block of key-value pairs (where the key is what was previously the column header, and the value is still the cell value). Fortunately, this isn't too difficult. First, annotate each `td` element with the corresponding heading as a data attribute. (This won't have any visible effect until we add some more CSS.)
 
-針對窄檢視區，我們建議您將表格分為兩列，讓標題和儲存格儲垂直排列。
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/updatingtablehtml.html" region_tag="table-tbody" adjust_indentation="auto" %}
+</pre>
+
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/updatingtablehtml.html){: target="_blank" .external }
+
+Now we just need to add the CSS to hide the original `thead` and instead show the `data-th` labels using a `:before` pseudoelement. This will result in the multi-device experience seen in the following video.
 
 <video controls poster="images/responsivetable.png" style="width: 100%;">
   <source src="videos/responsivetable.mov" type="video/mov"></source>
   <source src="videos/responsivetable.webm" type="video/webm"></source>
-  <p>很抱歉，您的瀏覽器不支援影片。
-     <a href="videos/responsivetable.mov">下載影片</a>。
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/responsivetable.mov">Download the video</a>.
   </p>
 </video>
 
-在我們的網站中，我們特地為表格內容設定了一個中斷點。
-當您優先為行動裝置打造網站時，比較難以將套用的樣式復原，因此我們必須將窄檢視區和寬檢視區的表格 CSS 加以區隔。
-如此一來，該中斷的地方都會精確一致。
+In our site, we had to create an extra breakpoint just for the table content. When you build for a mobile device first, it is harder to undo applied styles, so we must section off the narrow viewport table CSS from the wide viewport css. This gives us a clear and consistent break.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/content-with-styles.html" region_tag="table-css"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/content-with-styles.html" region_tag="table-css" adjust_indentation="auto" %}
 </pre>
 
-### 總結
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html){: target="_blank" .external }
 
-**恭喜！** 當您讀到這裡，您已經建立了第一個簡易的產品到達網頁，可用於多種裝置、機型和螢幕大小。
+## Wrapping up
 
-如果您遵照這些規範，就可順利踏出成功的第一步：
+Success: By the time you read this, you will have created your first simple product landing page that works across a large range of devices, form-factors, and screen sizes.
 
-1.  撰寫程式碼之前，請先建立基本 IA 並瞭解您的內容。
-2.  務必設定檢視區
-3.  秉持行動裝置優先的原則基準體驗
-4.  完成行動裝置體驗後，請增加顯示器寬度，直到版面走樣了，再設置中斷點。
-5.  繼續不斷嘗試上述步驟。
+If you follow these guidelines, you will be off to a good start:
+
+1. Create a basic IA and understand your content before you code.
+2. Always set a viewport.
+3. Create your base experience around mobile-first approach.
+4. Once you have your mobile experience, increase the width of the display until it doesn't look right and set your breakpoint there.
+5. Keep iterating.

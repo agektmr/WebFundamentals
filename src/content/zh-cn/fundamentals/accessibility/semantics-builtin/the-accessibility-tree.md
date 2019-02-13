@@ -1,80 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:无障碍树简介
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to the Accessibility Tree
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+# The Accessibility Tree {: .page-title }
 
-# 无障碍树 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+Imagine that you're building a user interface *for screen reader users only*. Here, you don't need to create any visual UI at all, but just provide enough information for the screen reader to use.
 
+What you'd be creating is a kind of API describing the page structure, similar to the DOM API, but you can get away with less information and fewer nodes, because a lot of that information is only useful for visual presentation. It might look something like this.
 
+![screen reader DOM API mockup](imgs/treestructure.jpg)
 
-试想您要构建一个*屏幕阅读器用户专用*的界面。在这种情况下，您根本不需要创建任何视觉 UI，只需提供足够屏幕阅读器使用的信息。
+This is basically what the browser actually presents to the screen reader. The browser takes the DOM tree and modifies it into a form that is useful to assistive technology. We refer to this modified tree as the *Accessibility Tree*.
 
+You might visualize the accessibility tree as looking a bit like an old web page from the '90s: a few images, lots of links, perhaps a field and a button.
 
+![a 1990s style web page](imgs/google1998.png)
 
-您将要创建的是一种说明页面结构的 API，与 DOM API 类似，但好在信息和节点数量较少，因为其中有许多信息只对视觉呈现有用。其结构可能与下图类似。
+Visually scanning down a page like this case gives you an experience similar to what a screen reader user would get. The interface is there, but it is simple and direct, much like an accessibility tree interface.
 
+The accessibility tree is what most assistive technologies interact with. The flow goes something like this.
 
-![屏幕阅读器 DOM API 模型](imgs/treestructure.jpg)
+1. An application (the browser or other app) exposes a semantic version of its UI to assistive technology via an API.
+2. The assistive technology may use the information it reads via the API to create an alternative user interface presentation for the user. For example, a screen reader creates an interface in which the user hears a spoken representation of the app.
+3. The assistive technology may also allow the user to interact with the app in a different way. For example, most screen readers provide hooks to allow a user to easily simulate a mouse click or finger tap.
+4. The assistive technology relays the user intent (such as "click") back to the app via the accessibility API. The app then has the responsibility to interpret the action appropriately in the context of the original UI.
 
-这基本上就是浏览器实际呈现给屏幕阅读器的内容。浏览器获取 DOM 树，并将其修改成适用于辅助技术的形式。我们将这个修改后的树称为*无障碍树*。
+For web browsers, there's an extra step in each direction, because the browser is in fact a platform for web apps that run inside it. So the browser needs to translate the web app into an accessibility tree, and must make sure that the appropriate events get fired in JavaScript based on the user actions that come in from the assistive technology.
 
+But that is all the browser's responsibility. Our job as web developers is just to be aware that this is going on, and to develop web pages that take advantage of this process to create an accessible experience for our users.
 
-您可以将无障碍树想像成有点类似于 20 世纪 90 年代的旧式网页：几张图片、大量链接，或许还有一个字段和一个按钮。
+We do this by ensuring that we express the semantics of our pages correctly: making sure that the important elements in the page have the correct accessible roles, states, and properties, and that we specify accessible names and descriptions. The browser can then let the assistive technology access that information to create a customized experience.
 
+## Semantics in native HTML
 
-![一个 20 世纪 90 年代风格的网页](imgs/google1998.png)
+A browser can transform the DOM tree into an accessibility tree because much of the DOM has *implicit* semantic meaning. That is, the DOM uses native HTML elements that are recognized by browsers and work predictably on a variety of platforms. Accessibility for native HTML elements such as links or buttons is thus handled automatically. We can take advantage of that built-in accessibility by writing HTML that expresses the semantics of our page elements.
 
-目视向下浏览上例这样的网页得到的体验与屏幕阅读器用户获得的体验类似。
-界面就在那里，但简单而又直接，与无障碍树界面很像。
-
-
-无障碍树就是大多数辅助技术的交互对象。交互流程与以下所述类似：
-
-
- 1. 一个应用（浏览器或其他应用）通过某个 API 将其 UI 的一个语义版本向辅助技术公开。
-
- 1. 辅助技术可以利用其通过 API 读取的信息为用户创建一个替代性界面呈现。
-例如，屏幕阅读器可以创建一个能让用户听到应用语音表示的界面。
-
-
- 1. 辅助技术还可以允许用户以不同方式与应用进行交互。
-例如，大多数屏幕阅读器都提供了钩子，让用户能够轻松地模拟鼠标点击或手指点按。
-
- 1. 辅助技术通过无障碍 API 将用户意图（例如“点击”）传送回应用。
-应用随即负责在原始 UI 上下文中对操作进行相应解读。
-
-
-对于网络浏览器，在每个方向都要额外执行一个步骤，因为浏览器实际上是在其内运行的网络应用的平台。
-因此，浏览器需要将网络应用转换成无障碍树，并且必须确保根据来自辅助技术的用户操作在 JavaScript 中触发相应事件。
-
-
-
-
-但那全都是浏览器的责任。作为网络开发者，我们所要做的不过是明了这一进行中的情况，以及让所开发的网页能够充分利用此过程来为用户打造无障碍体验。
-
-
-
-我们通过确保正确表达页面语义，亦即确保页面中的重要元素具有正确的无障碍角色、状态和属性并确保指定无障碍名称和说明，来实现这一目的。然后，浏览器便可让辅助技术获取该信息以打造自定义体验。
-
-
-## 原生 HTML 中的语义
-
-浏览器可以将 DOM 树转变成无障碍树，因为 DOM 的大部分内容具有*隐式*语义含义。
-也就是说，DOM 采用的原生 HTML 元素能够被浏览器识别，并且可以预测其在各类平台上的工作方式。因此，链接或按钮等原生 HTML 元素的无障碍功能可自动得到处理。
-我们可以通过编写表达页面元素语义的 HTML 来充分利用这一内置无障碍功能。
-
-
-但有时我们采用的元素虽然看上去像原生元素，实际却并非如此。例如，以下这个“按钮”就根本不是按钮。
-
+However, sometimes we use elements that look like native elements but aren't. For example, this "button" isn't a button at all.
 
 {% framebox height="60px" %}
+
 <style>
     .fancy-btn {
         display: inline-block;
@@ -86,95 +52,75 @@ description:无障碍树简介
         cursor: pointer;
     }
 </style>
+
 <div class="fancy-btn">Give me tacos</div>
+
 {% endframebox %}
 
-可在 HTML 中通过许多方式构建该按钮；以下所示为其中一种方式。
-
+It might be constructed in HTML in any number of ways; one way is shown below.
 
     <div class="button-ish">Give me tacos</div>
+    
 
+When we don't use an actual button element, the screen reader has no way to know what it has landed on. Also, we would have to do the extra work [of adding tabindex](/web/fundamentals/accessibility/focus/using-tabindex) to make it usable to keyboard-only users because, as it is coded now, it can only be used with a mouse.
 
-当我们不使用实际按钮元素时，屏幕阅读器无从知晓其读取的内容。
-此外，我们还需要额外完成[添加 tabindex](/web/fundamentals/accessibility/focus/using-tabindex) 的工作，以便只使用键盘的用户能够使用它，因为按照现有编码，它只能使用鼠标操作。
+We can easily fix this by using a regular `button` element instead of a `div`. Using a native element also has the benefit of taking care of keyboard interactions for us. And remember that you don't have to lose your spiffy visual effects just because you use a native element; you can style native elements to make them look the way you want and still retain the implicit semantics and behavior.
 
+Earlier we noted that screen readers will announce an element's role, name, state, and value. By using the right semantic element, role, state, and value are covered, but we must also ensure that we make an element's name discoverable.
 
+Broadly, there are two types of names:
 
+- *Visible labels*, which are used by all users to associate meaning with an element, and
+- *Text alternatives*, which are only used when there is no need for a visual label.
 
-使用普通 `button` 元素替代 `div` 便可轻松地解决这个问题。使用原生元素的另一个好处是，它能为我们处理键盘交互。而且别忘了，并不是说您使用原生元素就得放弃漂亮的视觉效果；您可以通过为原生元素设置样式来让它们具有您想要的外观，同时仍保留隐式语义和行为。
+For text-level elements, we don't need to do anything, because by definition it will have some text content. However, for input or control elements, and visual content like images, we need to make sure that we specify a name. In fact, providing text alternatives for any non-text content is [the very first item on the WebAIM checklist](http://webaim.org/standards/wcag/checklist#g1.1).
 
+One way to do that is to follow their recommendation that "Form inputs have associated text labels." There are two ways to associate a label with a form element, such as a checkbox. Either of the methods causes the label text to also become a click target for the checkbox, which is also helpful for mouse or touchscreen users. To associate a label with an element, either
 
-
-
-之前我们曾指出，屏幕阅读器将述说元素的角色、名称、状态和值。
-通过使用合适的语义元素，可以覆盖角色、状态和值，但我们还必须确保让元素的名称可检测到。
-
-
-
-一般来说，名称分为两种类型：
-
- - *可见标签*：所有用户都使用它们将含义与元素关联起来；
-
- - *文本替代项*：仅在不需要视觉标签时使用。
-
-
-对于文本级元素，我们什么都不用做，因为按照定义它们将包含一些文本内容。
-不过，对于输入或控件元素以及图像之类的视觉内容，我们需要确保为其指定名称。
-事实上，为任何非文本内容提供文本替代项是 [WebAIM 检查清单上的第一项](http://webaim.org/standards/wcag/checklist#g1.1)。
-
-
-
-实现该目的的一种方法是遵循他们的建议“表单输入有关联的文本标签”。
-将标签与表单元素（例如复选框）关联有两种方法。
-无论采用哪一种方法，都会使标签文本同时成为复选框的点击目标，这对鼠标或触摸屏用户同样有帮助。要将标签与元素关联，请执行下列任一操作：
-
- - 将 input 元素置于 label 元素内
+- Place the input element inside a label element
 
 <div class="clearfix"></div>
 
     <label>
       <input type="checkbox">Receive promotional offers?</input>
     </label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <label style="font-size: 16px; color: #212121;">
         <input type="checkbox">Receive promotional offers?</input>
     </label>
 </div>
+
 {% endframebox %}
 
+or
 
-或
-
- - 使用 label 的 `for` 属性并引用元素的 `id`
+- Use the label's `for` attribute and refer to the element's `id`
 
 <div class="clearfix"></div>
 
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
 </div>
+
 {% endframebox %}
 
+When the checkbox has been labeled correctly, the screen reader can report that the element has a role of checkbox, is in a checked state, and is named "Receive promotional offers?".
 
-正确标示复选框后，屏幕阅读器便可报告元素角色为 checkbox，处于 checked 状态，名称为“Receive promotional offers?”。
+![on-screen text output from VoiceOver showing the spoken label for a checkbox](imgs/promo-offers.png)
 
+Success: You can actually use the screen reader to find improperly-associated labels by tabbing through the page and verifying the spoken roles, states, and names.
 
+## Feedback {: #feedback }
 
-![VoiceOver 产生的显示复选框朗读标签的屏幕文本输出](imgs/promo-offers.png)
-
-Success: 您实际上可以使用屏幕阅读器，通过按 Tab 键在页面上循环跳转并验证朗读的角色、状态和名称来找到关联不正确的标签。
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,61 +1,53 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Mengaktifkan HTTPS di server Anda sangatlah penting untuk mengamankan laman web.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Enabling HTTPS on your servers is critical to securing your webpages.
 
-{# wf_updated_on: 2018-02-12 #}
-{# wf_published_on: 2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature,Internals>Network>SSL #}
 
-# Mengaktifkan HTTPS di Server Anda {: .page-title }
+# Enabling HTTPS on Your Servers {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
 ### TL;DR {: .hide-from-toc }
 
-* Buat sebuah pasangan kunci privat/publik RSA 2048-bit.
-* Buat permintaan penandatanganan sertifikat (CSR) yang akan menyematkan kunci publik Anda.
-* Bagikan CSR Anda bersama Otoritas Sertifikat (CA) untuk menerima sertifikat final atau rantai sertifikat.
-* Pasang sertifikat final Anda di tempat yang bisa diakses selain web misalnya `/etc/ssl` (Linux dan Unix) atau di mana saja yang diperlukan oleh IIS (Windows).
+* Create a 2048-bit RSA public/private key pair.
+* Generate a certificate signing request (CSR) that embeds your public key.
+* Share your CSR with your Certificate Authority (CA) to receive a final certificate or a certificate chain.
+* Install your final certificate in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS requires it (Windows).
 
-## Membuat kunci dan permintaan penandatanganan sertifikat
+## Generating keys and certificate signing requests
 
-Bagian ini menggunakan program baris perintah openssl, yang umumnya disertakan
-bersama sistem Linux, BSD, dan Mac OS X, untuk membuat kunci privat/publik dan CSR.
+This section uses the openssl command-line program, which comes with most Linux, BSD, and Mac OS X systems, to generate private/public keys and a CSR.
 
+### Generate a public/private key pair
 
-### Membuat sepasang kunci privat/publik
+Let's start by generating a 2,048-bit RSA key pair. A smaller key, such as 1,024 bits, is insufficiently resistant to brute-force guessing attacks. A larger key, such as 4,096 bits, is overkill. Over time, key sizes increase as computer processing gets cheaper. 2,048 is currently the sweet spot.
 
-Mari kita mulai dengan membuat sepasang kunci RSA 2.048-bit. Kunci yang lebih kecil, misalnya
-1.024 bit, tidak cukup resistan terhadap serangan tebakan brutal-paksa. Kunci
-yang lebih besar, misalnya 4.096 bit, terlalu berlebihan. Lama-kelamaan, ukuran kunci meningkat karena
-pemrosesan komputer semakin murah. 2.048 saat ini sudah pas.
-
-Perintah untuk membuat pasangan kunci RSA adalah:
+The command to generate the RSA key pair is:
 
     openssl genrsa -out www.example.com.key 2048
+    
 
-Ini akan memberikan keluaran berikut:
+This gives the following output:
 
     Generating RSA private key, 2048 bit long modulus
     .+++
     .......................................................................................+++
     e is 65537 (0x10001)
+    
 
-### Membuat permintaan penandatanganan sertifikat
+### Generate a certificate signing request
 
-Dalam langkah ini, Anda menyematkan kunci publik dan informasi tentang organisasi
-serta situs web Anda ke dalam permintaan penandatanganan sertifikat atau CSR. Perintah *openssl*
-secara interaktif akan meminta metadata yang diperlukan kepada Anda.
+In this step, you embed your public key and information about your organization and your website into a certificate signing request or CSR. The *openssl* command interactively asks you for the required metadata.
 
-Dengan menjalankan perintah berikut:
+Running the following command:
 
     openssl req -new -sha256 -key www.example.com.key -out www.example.com.csr
+    
 
-Keluarannya adalah seperti berikut:
+Outputs the following:
 
     You are about to be asked to enter information that will be incorporated
     into your certificate request
-
+    
     What you are about to enter is what is called a Distinguished Name or a DN.
     There are quite a few fields but you can leave some blank
     For some fields there will be a default value,
@@ -69,17 +61,19 @@ Keluarannya adalah seperti berikut:
     Team
     Common Name (e.g. server FQDN or YOUR name) []:www.example.com
     Email Address []:webmaster@example.com
-
+    
     Please enter the following 'extra' attributes
     to be sent with your certificate request
     A challenge password []:
     An optional company name []:
+    
 
-Untuk memastikan validitas CSR, jalankan perintah ini:
+To ensure the validity of the CSR, run this command:
 
     openssl req -text -in www.example.com.csr -noout
+    
 
-Dan responsnya akan terlihat seperti ini:
+And the response should look like this:
 
     Certificate Request:
         Data:
@@ -101,254 +95,183 @@ Dan responsnya akan terlihat seperti ini:
              5f:05:f3:71:d5:f7:b7:b6:dc:17:cc:88:03:b8:87:29:f6:87:
              2f:7f:00:49:08:0a:20:41:0b:70:03:04:7d:94:af:69:3d:f4:
              ...
+    
 
-### Mengirimkan CSR Anda ke otoritas sertifikat
+### Submit your CSR to a certificate authority
 
-Otoritas sertifikat (CA) yang berbeda memerlukan metode berbeda untuk mengirim
-CSR Anda ke sana. Metode dapat meliputi penggunaan formulir di situs web mereka, pengiriman
-CSR melalui email, atau cara lainnya. Beberapa CA (atau reseller-nya) bahkan dapat mengotomatiskan
-sebagian atau semua proses ini (termasuk, dalam beberapa kasus, pasangan kunci
-dan pembuatan CSR).
+Different certificate authorities (CAs) require different methods for sending them your CSRs. Methods may include using a form on their website, sending the CSR by email, or something else. Some CAs (or their resellers) may even automate some or all of the process (including, in some cases, key pair and CSR generation).
 
-Kirimkan CA Anda ke CSR, dan ikuti petunjuknya untuk menerima sertifikat final
-atau rantai sertifikat Anda.
+Send the CA to your CSR, and follow their instructions to receive your final certificate or certificate chain.
 
-CA berbeda mengenakan biaya berbeda untuk layanan penjaminan
-kunci publik Anda.
+Different CAs charge different amounts of money for the service of vouching for your public key.
 
-Ada juga opsi untuk memetakan kunci Anda ke lebih dari satu nama DNS, termasuk
-sejumlah nama berbeda (mis. semua example.com, www.example.com, example.net,
-dan www.example.net) atau nama "karakter pengganti" seperti \*.example.com.
+There are also options for mapping your key to more than one DNS name, including several distinct names (e.g. all of example.com, www.example.com, example.net, and www.example.net) or "wildcard" names such as \*.example.com.
 
-Misalnya, satu CA saat ini menawarkan harga:
+For example, one CA currently offers these prices:
 
-* Standar: $16/tahun, berlaku untuk example.com dan www.example.com.
-* Karakter pengganti: $150/tahun, berlaku untuk example.com dan \*.example.com.
+* Standard: $16/year, valid for example.com and www.example.com.
+* Wildcard: $150/year, valid for example.com and \*.example.com.
 
-Dengan harga ini, sertifikat karakter pengganti akan ekonomis bila Anda memiliki lebih dari 9
-subdomain; atau, Anda bisa membeli hanya satu atau beberapa sertifikat nama tunggal. (Jika
-Anda memiliki lebih dari lima subdomain, misalnya, Anda mungkin akan merasa sertifikat karakter pengganti
-lebih praktis bila Anda akan mengaktifkan HTTPS di server.)
+At these prices, wildcard certificates are economical when you have more than 9 subdomains; otherwise, you can just buy one or more single-name certificates. (If you have more than, say, five subdomains, you might find a wildcard certificate more convenient when you come to enable HTTPS on your servers.)
 
-Note: Ingatlah bahwa di sertifikat karakter pengganti, karakter pengganti hanya diterapkan pada satu label DNS. Sertifikat yang baik untuk \*.example.com akan cocok untuk foo.example.com dan bar.example.com, namun _tidak_ untuk foo.bar.example.com.
+Note: Keep in mind that in wildcard certificates the wildcard applies to only one DNS label. A certificate good for \*.example.com will work for foo.example.com and bar.example.com, but _not_ for foo.bar.example.com.
 
-Salin sertifikat ke semua server front-end Anda di tempat yang bisa diakses selain web
-misalnya `/etc/ssl` (Linux dan Unix) atau di mana saja yang diperlukan oleh IIS (Windows).
+Copy the certificates to all your front-end servers in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS (Windows) requires them.
 
-## Mengaktifkan HTTPS di server Anda
+## Enable HTTPS on your servers
 
-Mengaktifkan HTTPS di server merupakan langkah sangat penting dalam memberikan keamanan bagi laman web Anda.
+Enabling HTTPS on your servers is a critical step in providing security for your web pages.
 
-* Gunakan alat (bantu) Server Configuration dari Mozilla untuk menyiapkan server bagi dukungan HTTPS.
-* Ujilah situs secara teratur dengan SSL Server Test yang praktis dari Qualys dan pastikan setidaknya Anda mendapat nilai A atau A+.
+* Use Mozilla's Server Configuration tool to set up your server for HTTPS support.
+* Regularly test your site with the Qualys' handy SSL Server Test and ensure you get at least an A or A+.
 
-Di poin ini, keputusan operasi yang sangat penting harus diambil. Pilih salah satu dari berikut ini:
+At this point, you must make a crucial operations decision. Choose one of the following:
 
-* Khususkan alamat IP berbeda ke setiap hostname yang digunakan server web Anda
-  untuk menyajikan materi.
-* Gunakan hosting virtual berbasis nama.
+* Dedicate a distinct IP address to each hostname your web server serves content from.
+* Use name-based virtual hosting.
 
-Jika Anda menggunakan alamat IP berbeda untuk setiap hostname, Anda bisa
-dengan mudah mendukung HTTP maupun HTTPS bagi semua klien.
+If you have been using distinct IP addresses for each hostname, you can easily support both HTTP and HTTPS for all clients.
 
-Akan tetapi, kebanyakan operator situs menggunakan hosting maya berbasis nama untuk melindungi
-alamat IP dan karena lebih praktis secara umum. Masalah pada IE di
-Windows XP dan Android sebelum versi 2.3 adalah karena tidak memahami [Server
-Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI),
-yang sangat penting bagi hosting virtual berbasis nama HTTPS.
+However, most site operators use name-based virtual hosting to conserve IP addresses and because it's more convenient in general. The problem with IE on Windows XP and Android earlier than 2.3 is that they do not understand [Server Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI), which is crucial for HTTPS name-based virtual hosting.
 
-Suatu hari — mudah-mudahan secepatnya — klien yang tidak mendukung SNI akan diganti
-dengan perangkat lunak modern. Pantau string agen-pengguna di log permintaan untuk mengetahui
-bila populasi pengguna sudah cukup banyak yang bermigrasi ke perangkat lunak modern. (Anda bisa
-memutuskan berapa nilai ambang; mungkin &lt; 5%, atau &lt; 1%.)
+Someday—hopefully soon—clients that don't support SNI will be replaced with modern software. Monitor the user agent string in your request logs to know when enough of your user population has migrated to modern software. (You can decide what your threshold is; perhaps &lt; 5%, or &lt; 1%.)
 
-Jika belum memiliki layanan HTTPS yang tersedia di server Anda, aktifkanlah sekarang
-(tanpa pengalihan HTTP ke HTTPS; lihat di bawah ini). Konfigurasilah server web untuk menggunakan
-sertifikat yang telah dibeli dan dipasang. Mungkin [pembuat
-konfigurasi
-praktis di Mozilla](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external}
-bisa membantu.
+If you don't already have HTTPS service available on your servers, enable it now (without redirecting HTTP to HTTPS; see below). Configure your web server to use the certificates you bought and installed. You might find [Mozilla's handy configuration generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external} useful.
 
-Jika memiliki banyak hostname/subdomain, maka masing-masing perlu menggunakan
-sertifikat yang tepat.
+If you have many hostnames/subdomains, they each need to use the right certificate.
 
-Caution: Jika Anda sudah menyelesaikan langkah-langkah ini, namun menggunakan HTTPS hanya untuk keperluan mengalihkan klien kembali ke HTTP, sekarang hentikanlah. Lihat bagian berikutnya untuk memastikan HTTPS dan HTTP bekerja dengan mulus.
+Warning: If you've already completed these steps, but are using HTTPS for the sole purpose of redirecting clients back to HTTP, stop doing that now. See the next section to make sure HTTPS and HTTP work smoothly.
 
-Note: Akhirnya permintaan HTTP harus dialihkan ke HTTPS dan gunakan HTTP Strict Transport Security (HSTS). Akan tetapi, ini bukan tahapan yang tepat untuk melakukannya dalam proses migrasi; lihat “Alihkan HTTP ke HTTPS” dan “Aktifkan Strict Transport Security dan Cookie Aman”.
+Note: Ultimately you should redirect HTTP requests to HTTPS and use HTTP Strict Transport Security (HSTS). However, this is not the right stage in the migration process to do that; see “Redirect HTTP To HTTPS” and “Turn On Strict Transport Security And Secure Cookies.”
 
-Sekarang, dan sepanjang masa pakai situs Anda, periksa konfigurasi HTTPS dengan
-[SSL Server Test yang praktis dari Qualys](https://www.ssllabs.com/ssltest/){: .external }. Situs Anda
-seharusnya mendapatkan skor A atau A+; anggaplah semua yang menyebabkan nilai lebih rendah sebagai bug.
-(sekarang A besok adalah B, karena serangan terhadap algoritme dan protokol
-selalu diperbaiki!)
+Now, and throughout your site's lifetime, check your HTTPS configuration with [Qualys' handy SSL Server Test](https://www.ssllabs.com/ssltest/){: .external }. Your site should score an A or A+; treat anything that causes a lower grade as a bug. (Today's A is tomorrow's B, because attacks against algorithms and protocols are always improving!)
 
-## Membuat relatif URL intrasitus
+## Make intrasite URLs relative
 
-Karena sekarang Anda melayani situs di HTTP maupun HTTPS, segala sesuatunya
-perlu bekerja semulus mungkin, apa pun protokolnya. Sebuah faktor penting adalah menggunakan
-URL relatif untuk tautan intrasitus.
+Now that you are serving your site on both HTTP and HTTPS, things need to work as smoothly as possible, regardless of protocol. An important factor is using relative URLs for intrasite links.
 
-Pastikan URL intrasitus dan URL eksternal bersifat agnostik terhadap protokol; yakni, pastikan Anda menggunakan jalur relatif atau biarkan protokol seperti `//example.com/something.js`.
+Make sure intrasite URLs and external URLs are agnostic to protocol; that is, make sure you use relative paths or leave out the protocol like `//example.com/something.js`.
 
-Masalah timbul bila Anda menyajikan laman lewat HTTPS yang menyertakan sumber daya HTTP,
-yang dikenal dengan [materi campuran](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content). Browser memperingatkan pengguna bahwa kekuatan penuh HTTPS telah hilang. Sebenarnya, dalam hal materi campuran aktif (skrip, plug-in, CSS, iframe), sering kali browser cuma tidak mau memuat atau mengeksekusi materi sama sekali, yang mengakibatkan laman terputus.
+A problem arises when you serve a page via HTTPS that includes HTTP resources, known as [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content). Browsers warn users that the full strength of HTTPS has been lost. In fact, in the case of active mixed content (script, plug-ins, CSS, iframes), browsers often simply won't load or execute the content at all, resulting in a broken page. And remember, it's perfectly OK to include HTTPS resources in an HTTP page.
 
-Note: Boleh saja menyertakan sumber daya HTTPS di laman HTTP.
+Key Point: See [Fixing Mixed Content](/web/fundamentals/security/prevent-mixed-content/fixing-mixed-content) for more details about ways to fix and prevent mixed content.
 
-Selain itu, bila Anda menautkan ke laman lain di situs Anda, pengguna bisa mengalami
-penurunan versi dari HTTPS menjadi HTTP.
+Additionally, when you link to other pages in your site, users could get downgraded from HTTPS to HTTP.
 
-Masalah-masalah ini terjadi bila laman Anda berisi URL intrasitus yang benar-benar memenuhi syarat,
-yang menggunakan skema *http://*.
+These problems happen when your pages include fully-qualified, intrasite URLs that use the *http://* scheme.
 
-<p><span class="compare-worse">Tidak disarankan</span> — Kami tidak menyarankan Anda menggunakan URL intrasitus yang sepenuhnya memenuhi syarat.</p>
+<span class="compare-worse">Not recommended</span> — We recommend you avoid using fully qualified intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="http://example.com/jquery.js"></script>
-    <link rel="stylesheet" href="http://assets.example.com/style.css"/>
-    <img src="http://img.example.com/logo.png"/>;
-    <p>Read this nice <a href="http://example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>http://</b>example.com/jquery.js">&lt;/script>
+&lt;link rel="stylesheet" href="<b>http://</b>assets.example.com/style.css"/>
+&lt;img src="<b>http://</b>img.example.com/logo.png"/>;
+&lt;p>A &lt;a href="<b>http://</b>example.com/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-Dengan kata lain, buatlah URL intrasitus serelatif mungkin: baik berupa protokol-relatif (tidak memiliki protokol, dimulai dengan `//example.com`) maupun host-relatif (dimulai dengan jalur saja, seperti `/jquery.js`).
+In other words, make intrasite URLs as relative as possible: either protocol-relative (lacking a protocol, starting with `//example.com`) or host-relative (starting with just the path, like `/jquery.js`).
 
-<p><span class="compare-better">Disarankan</span> — Kami menyarankan Anda menggunakan URL intrasitus yang protokol-relatif.</p>
+<span class="compare-better">Recommended</span> — We recommend that you use relative intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="//example.com/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="//example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>/jquery.js</b>">&lt;/script>
+&lt;link href="<b>/styles/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>/images/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-<p><span class="compare-better">Disarankan</span> — Kami menyarankan Anda menggunakan URL intrasitus relatif.</p>
+<span class="compare-better">Recommended</span> — Or, you can use protocol-relative intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>//example.com/jquery.js</b>">&lt;/script>
+&lt;link href="<b>//assets.example.com/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>//img.example.com/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>//example.com/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-Lakukan proses ini dengan skrip, bukan dengan cara manual. Jika materi situs Anda ada dalam database,
-uji skrip di salinan development database Anda. Jika
-materi situs Anda terdiri dari beberapa file sederhana, uji skrip Anda di salinan development file itu. Pindahkan perubahan ke produksi hanya setelah perubahan tersebut lulus QA, seperti biasa. Anda bisa menggunakan [skrip Bram van Damme](https://github.com/bramus/mixed-content-scan) atau sesuatu yang mirip dengan itu untuk mendeteksi materi campuran di situs Anda.
+<span class="compare-better">Recommended</span> — We recommend that you use HTTP**S** URLs for intersite URLs (where possible).
 
-Saat menautkan ke situs lain (kebalikan dari menyertakan sumber daya dari sana),
-jangan ubah protokol karena Anda tidak memiliki kontrol atas cara beroperasi
-situs itu.
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="/jquery.js">&lt;/script>
+&lt;link href="/styles/style.css" rel="stylesheet"/>
+&lt;img src="/images/logo.png"/>;
+&lt;p>A &lt;a href="/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+&lt;p>Check out this &lt;a href="<b>https://foo.com/</b>">other cool site.&lt;/a>&lt;/p>
+</pre>
 
-Berhasil: Saya menyarankan URL protokol-relatif untuk membuat proses migrasi lebih mulus bagi situs besar. Jika Anda belum yakin apakah bisa menerapkan HTTPS sepenuhnya, memaksa situs Anda untuk menggunakan HTTPS bagi semua sub-sumber daya malah akan merugikan. Mungkin ada masanya Anda masih baru dan asing dengan HTTPS, sementara situs HTTP harus tetap berfungsi seperti biasa. Lama-kelamaan, Anda akan menyelesaikan migrasi dan mengunci HTTPS (lihat dua bagian berikutnya).
+Do this with a script, not by hand. If your site’s content is in a database, test your script on a development copy of your database. If your site’s content consists of simple files, test your script on a development copy of the files. Push the changes to production only after the changes pass QA, as normal. You can use [Bram van Damme’s script](https://github.com/bramus/mixed-content-scan) or something similar to detect mixed content in your site.
 
-Jika situs Anda bergantung pada skrip, gambar, atau sumber daya lainnya yang dilayani dari
-pihak ketiga, misalnya CDN atau jquery.com, Anda memiliki dua opsi:
+When linking to other sites (as opposed to including resources from them), don’t change the protocol since you don’t have control over how those sites operate.
 
-* Gunakan URL protokol-relatif untuk sumber daya ini. Jika pihak ketiga tidak
-melayani HTTPS, mintalah mereka melakukannya. Sebagian besar sudah melakukannya, termasuk jquery.com.
-* Layani sumber daya dari server yang Anda kontrol, dan yang menawarkan HTTP
-maupun HTTPS. Sering kali ini merupakan ide bagus, karena nanti Anda memiliki kontrol
-yang lebih baik atas penampilan, kinerja, dan keamanan situs Anda. Selain itu,
-Anda tidak harus mempercayai pihak ketiga, walaupun biasanya hal itu bagus.
+Success: To make migration smoother for large sites, we recommend protocol-relative URLs. If you are not sure whether you can fully deploy HTTPS yet, forcing your site to use HTTPS for all sub-resources may backfire. There is likely to be a period of time in which HTTPS is new and weird for you, and the HTTP site must still work as well as ever. Over time, you’ll complete the migration and lock in HTTPS (see the next two sections).
 
-Note: Ingatlah bahwa Anda juga perlu mengubah URL intrasitus di stylesheet, JavaScript, aturan pengalihan, tag `<link>`, dan deklarasi CSP, tidak cuma di laman HTML.
+If your site depends on scripts, images, or other resources served from a third party, such as a CDN or jquery.com, you have two options:
 
-## Mengalihkan HTTP ke HTTPS
+* Use protocol-relative URLs for these resources. If the third party does not serve HTTPS, ask them to. Most already do, including jquery.com.
+* Serve the resources from a server that you control, and which offers both HTTP and HTTPS. This is often a good idea anyway, because then you have better control over your site's appearance, performance, and security. In addition, you don't have to trust a third party, which is always nice.
 
-Anda perlu menempatkan [tautan kanonis](https://support.google.com/webmasters/answer/139066) di kepala laman Anda untuk memberi tahu mesin telusur bahwa HTTPS adalah cara terbaik untuk menuju situs Anda.
+Note: Keep in mind that you also need to change intrasite URLs in your stylesheets, JavaScript, redirect rules, `<link>` tags, and CSP declarations, not just in the HTML pages.
 
-Setel tag `<link rel="canonical" href="https://…"/>` di laman Anda. Ini
-membantu mesin telusur menentukan cara terbaik menuju situs Anda.
+## Redirect HTTP to HTTPS
 
-## Mengaktifkan Strict Transport Security dan cookie aman
+You need to put a [canonical link](https://support.google.com/webmasters/answer/139066) at the head of your page to tell search engines that HTTPS is the best way to get to your site.
 
-Pada titik ini, Anda siap untuk "mengunci" penggunaan HTTPS.
+Set `<link rel="canonical" href="https://…"/>` tags in your pages. This helps search engines determine the best way to get to your site.
 
-* Gunakan HTTP Strict Transport Security (HSTS) untuk menghindari biaya pengalihan 301.
-* Selalu setel flag Secure pada cookie.
+## Turn on Strict Transport Security and secure cookies
 
-Pertama, gunakan [Strict Transport Security](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security)
-untuk memberi tahu klien bahwa mereka harus selalu menghubungkan ke server Anda melalui HTTPS, bahkan
-saat mengikuti referensi `http://`. Ini akan mengalahkan serangan seperti
-[SSL Stripping](http://www.thoughtcrime.org/software/sslstrip/){: .external }, juga
-akan menghindari biaya bolak-balik `301 redirect` yang kita aktifkan di
-[Mengalihkan HTTP ke HTTPS](#redirect-http-to-https).
+At this point, you are ready to "lock in" the use of HTTPS.
 
-Note: Klien yang telah mengenali situs Anda sebagai HSTS Host kemungkinan akan mengalami <a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>hard-fail</i> jika situs Anda memiliki kesalahan dalam konfigurasi TLS</a> (misalnya sertifikat telah berakhir). HSTS secara eksplisit didesain seperti ini untuk memastikan penyerang jaringan tidak bisa menipu klien agar mengakses situs tanpa HTTPS. Jangan aktifkan HSTS hingga Anda yakin bahwa operasi situs cukup tangguh untuk menghindari penerapan HTTPS dengan kesalahan validasi sertifikat.
+* Use HTTP Strict Transport Security (HSTS) to avoid the cost of the 301 redirect.
+* Always set the Secure flag on cookies.
 
-Aktifkan HTTP Strict Transport Security (HSTS) dengan menyetel header `Strict-Transport-Security`. [Laman HSTS milik OWASP berisi tautan ke petunjuk](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security) untuk beragam perangkat lunak server.
+First, use [Strict Transport Security](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) to tell clients that they should always connect to your server via HTTPS, even when following an `http://` reference. This defeats attacks such as [SSL Stripping](http://www.thoughtcrime.org/software/sslstrip/){: .external }, and also avoids the round-trip cost of the `301 redirect` that we enabled in [Redirect HTTP to HTTPS](#redirect-http-to-https).
 
-Sebagian besar server web menawarkan kemampuan menambahkan header khusus.
+Note: Clients that have noted your site as a known HSTS Host are likely to <a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>hard-fail</i> if your site ever has an error in its TLS configuration</a> (such as an expired certificate). HSTS is explicitly designed this way to ensure that network attackers cannot trick clients into accessing the site without HTTPS. Do not enable HSTS until you are certain that your site operation is robust enough to avoid ever deploying HTTPS with certificate validation errors.
 
-Note: `max-age` diukur dalam detik. Anda bisa mulai dengan nilai yang rendah dan berangsur-angsur menambah `max-age` bila sudah nyaman mengoperasikan situs HTTPS-saja.
+Turn on HTTP Strict Transport Security (HSTS) by setting the `Strict-Transport-Security` header. [OWASP's HSTS page has links to instructions](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security) for various server software.
 
-Perlu juga dipastikan bahwa klien tidak pernah mengirim cookie (misalnya untuk
-autentikasi atau preferensi situs) melalui HTTP. Misalnya, jika cookie
-autentikasi pengguna akan diekspos dalam bentuk teks biasa, jaminan keamanan
-seluruh sesinya akan dimusnahkan — sekalipun Anda telah melakukan hal lainnya
-dengan benar!
+Most web servers offer a similar ability to add custom headers.
 
-Karena itu, ubah aplikasi web Anda untuk selalu menyetel flag Secure pada cookie
-yang disetelnya. [Laman OWASP ini menjelaskan cara menyetel flag Secure](https://www.owasp.org/index.php/SecureFlag) di sejumlah kerangka kerja aplikasi. Setiap kerangka kerja aplikasi memiliki sebuah cara untuk menyetel flag.
+Note: `max-age` is measured in seconds. You can start with low values and gradually increase the `max-age` as you become more comfortable operating an HTTPS-only site.
 
-Sebagian besar server web menawarkan fitur pengalihan sederhana. Gunakan `301 (Moved Permanently)` untuk
-menunjukkan ke mesin telusur dan browser bahwa versi HTTPS bersifat kanonis dan mengalihkan pengguna Anda ke versi HTTPS situs Anda dari HTTP.
+It is also important to make sure that clients never send cookies (such as for authentication or site preferences) over HTTP. For example, if a user's authentication cookie were to be exposed in plain text, the security guarantee of their entire session would be destroyed—even if you have done everything else right!
 
-## Persoalan dalam migrasi
+Therefore, change your web application to always set the Secure flag on cookies that it sets. [This OWASP page explains how to set the Secure flag](https://www.owasp.org/index.php/SecureFlag) in several application frameworks. Every application framework has a way to set the flag.
 
-Banyak developer memiliki persoalan yang sudah sewajarnya tentang migrasi dari HTTP ke HTTPS.
-Google Webmaster Team memberikan beberapa [panduan bagus](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J).
+Most web servers offer a simple redirect feature. Use `301 (Moved Permanently)` to indicate to search engines and browsers that the HTTPS version is canonical, and redirect your users to the HTTPS version of your site from HTTP.
 
-### Peringkat penelusuran
+## Migration concerns
 
-Google menggunakan [HTTPS sebagai indikator kualitas penelusuran positif](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html).
-Google juga mempublikasikan panduan untuk
-[cara mentransfer, memindah, atau memigrasikan situs](https://support.google.com/webmasters/topic/6029673)
-sambil mempertahankan peringkat penelusuran. Bing juga mempublikasikan
-[panduan untuk webmaster](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a).
+Many developers have legitimate concerns about migrating from HTTP to HTTPS. The Google Webmasters Team has some [excellent guidance](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J) available.
 
-### Kinerja
+### Search ranking
 
-Bila layer materi dan aplikasi telah diatur dengan baik (lihat
-[buku Steve Souders](https://stevesouders.com/){: .external } untuk mendapatkan saran bagus),
-persoalan kinerja TLS selebihnya umumnya kecil, relatif dengan biaya
-keseluruhan aplikasi. Selain itu, biaya tersebut bisa dikurangi
-dan disusutkan. (Untuk mendapatkan saran bagus mengenai optimalisasi TLS dan secara umum, lihat
-[High Performance Browser Networking](https://hpbn.co/) oleh Ilya Grigorik.) Lihat juga tulisan Ivan Ristic di [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/) dan [Bulletproof SSL And TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/).
+Google uses [HTTPS as a positive search quality indicator](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html). Google also publishes a guide for [how to transfer, move, or migrate your site](https://support.google.com/webmasters/topic/6029673) while maintaining its search rank. Bing also publishes [guidelines for webmasters](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a).
 
-Dalam beberapa kasus, TLS bisa _meningkatkan_ kinerja, umumnya akibat mengizinkan
-HTTP/2. Chris Palmer memberikan pendapatnya mengenai [kinerja HTTPS dan HTTP/2 di Chrome Dev Summit 2014](/web/shows/cds/2014/tls-all-the-things).
+### Performance
 
-### Header Referer
+When the content and application layers are well-tuned (see [Steve Souders' books](https://stevesouders.com/){: .external } for great advice), the remaining TLS performance concerns are generally small, relative to the overall cost of the application. Additionally, you can reduce and amortize those costs. (For great advice on TLS optimization and generally, see [High Performance Browser Networking](https://hpbn.co/) by Ilya Grigorik.) See also Ivan Ristic's [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/) and [Bulletproof SSL And TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/).
 
-Bila pengguna mengikuti tautan dari situs HTTPS ke situs HTTP lain, agen-pengguna tidak akan mengirim header Referer. Jika ini masalahnya, ada sejumlah cara
-untuk mengatasinya:
+In some cases, TLS can *improve* performance, mostly as a result of making HTTP/2 possible. Chris Palmer gave a talk on [HTTPS and HTTP/2 performance at Chrome Dev Summit 2014](/web/shows/cds/2014/tls-all-the-things).
 
-* Situs lainnya harus bermigrasi ke HTTPS. Jika situs penengah bisa melakukan bagian [Mengaktifkan HTTPS di server Anda](#enable-https-on-your-servers) pada panduan ini, Anda bisa mengubah tautan di situs ke situs rujukannya dari `http://` ke `https://`, atau Anda bisa menggunakan tautan protokol-relatif.
-* Untuk mengatasi beragam masalah pada header Referer, gunakan [standar Kebijakan Referrer](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta) baru.
+### Referer headers
 
-Karena mesin telusur bermigrasi ke HTTPS, di masa mendatang Anda mungkin akan melihat _lebih banyak_ header Referer saat bermigrasi ke HTTPS.
+When users follow links from your HTTPS site to other HTTP sites, user agents don't send the Referer header. If this is a problem, there are several ways to solve it:
 
-Perhatian: Sesuai dengan [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3), klien **TIDAK BOLEH** menyertakan bidang header Referer dalam permintaan HTTP (tidak-aman) jika laman perujuk telah ditransfer dengan protokol aman.
+* The other sites should migrate to HTTPS. If referee sites can complete the [Enable HTTPS on your servers](#enable-https-on-your-servers) section of this guide, you can change links in your site to theirs from `http://` to `https://`, or you can use protocol-relative links.
+* To work around a variety of problems with Referer headers, use the new [Referrer Policy standard](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta).
 
-### Pendapatan iklan
+Because search engines are migrating to HTTPS, in the future you are likely see *more* Referer headers when you migrate to HTTPS.
 
-Operator situs yang menghasilkan uang dari situs mereka dengan menampilkan iklan ingin memastikan bahwa
-bermigrasi ke HTTPS tidak akan mengurangi tayangan iklan. Namun, karena persoalan keamanan
-materi campuran, `<iframe>` HTTP tidak berfungsi di laman HTTPS. Ada masalah tindakan kolektif
-yang pelik di sini: sebelum pengiklan mempublikasikan lewat HTTPS,
-operator situs tidak bisa bermigrasi ke HTTPS tanpa kehilangan pendapatan iklan; namun sebelum operator
-situs bermigrasi ke HTTPS, pengiklan memiliki motivasi kecil untuk mempublikasikan HTTPS.
+Caution: According to the [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3), clients **SHOULD NOT** include a Referer header field in a (non-secure) HTTP request if the referring page is transferred with a secure protocol.
 
-Pengiklan setidaknya harus menawarkan layanan iklan lewat HTTPS (misalnya dengan melakukan bagian
-"Mengaktifkan HTTPS di server Anda" pada laman ini). Banyak yang sudah melakukan. Mintalah
-para pengiklan yang sama sekali tidak menggunakan HTTPS untuk memulainya.
-Anda mungkin perlu menunda penyelesaian [Membuat relatif URL intrasitus](#make-intrasite-urls-relative) hingga cukup banyak pengiklan yang melakukan interoperasi dengan benar.
+### Ad revenue
 
+Site operators that monetize their site by showing ads want to make sure that migrating to HTTPS does not reduce ad impressions. But due to mixed content security concerns, an HTTP `<iframe>` doesn't work in an HTTPS page. There is a tricky collective action problem here: until advertisers publish over HTTPS, site operators cannot migrate to HTTPS without losing ad revenue; but until site operators migrate to HTTPS, advertisers have little motivation to publish HTTPS.
 
-{# wf_devsite_translation #}
+Advertisers should at least offer ad service via HTTPS (such as by completing the "Enable HTTPS on your servers" section on this page. Many already do. You should ask advertisers that do not serve HTTPS at all to at least start. You may wish to defer completing [Make IntraSite URLs relative](#make-intrasite-urls-relative) until enough advertisers interoperate properly.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

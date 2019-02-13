@@ -1,114 +1,75 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:在開發計算機網絡服務器上託管網站，然後從 Android 設備訪問內容。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Host a site on a development machine web server, and then access the content from an Android device.
 
-{# wf_updated_on:2016-04-07 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 訪問本地服務器 {: .page-title }
+# Access Local Servers {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-在開發計算機網絡服務器上託管網站，然後從 Android 設備訪問內容。
+Host a site on a development machine web server, then access the content from an Android device.
 
-
-使用 USB 電纜和 Chrome DevTools，您可以從開發計算機運行網站，然後在 Android 設備上查看網站。
- 
-
+With a USB cable and Chrome DevTools, you can run a site from a development machine and then view the site on an Android device.
 
 ### TL;DR {: .hide-from-toc }
-- 利用端口轉發，您可以在 Android 設備上查看開發計算機網絡服務器中的內容。
-- 如果您的網絡服務器正在使用自定義域名，您可以將 Android 設備設置爲訪問位於具有自定義域名映射的網域中的內容。
 
+- Port forwarding enables you to view content from your development machine's web server on your Android device.
+- If your web server is using a custom domain, you can set up your Android device to access the content at that domain with custom domain mapping.
 
-## 設置端口轉發 {:#port-forwarding}
+## Set up port forwarding {:#port-forwarding}
 
-端口轉發使您的 Android 設備可以訪問在開發計算機網絡服務器上託管的內容。
-端口轉發通過在映射到開發計算機上 TCP 端口的 Android 設備上創建偵聽 TCP 端口的方式工作。端口之間的流量通過 Android 設備與開發計算機之間的 USB 連接傳輸，所以連接並不取決於您的網絡配置。
+Port forwarding enables your Android device to access content that's being hosted on your development machine's web server. Port forwarding works by creating a listening TCP port on your Android device that maps to a TCP port on your development machine. Traffic between the ports travel through the USB connection between your Android device and development machine, so the connection doesn't depend on your network configuration.
 
+To enable port forwarding:
 
+1. Set up [remote debugging](.) between your development machine and your Android device. When you're finished, you should see your Android device in the left-hand menu of the **Inspect Devices** dialog and a **Connected** status indicator. 
+2. In the **Inspect Devices** dialog in DevTools, enable **Port forwarding**.
+3. Click **Add rule**. ![adding a port forwarding rule](imgs/add-rule.png)
+4. In the **Device port** textfield on the left, enter the `localhost` port number from which you want to be able to access the site on your Android device. For example, if you wanted to access the site from `localhost:5000` you would enter `5000`.
+5. In the **Local address** textfield on the right, enter the IP address or hostname on which your site is running on your development machine's web server, followed by the port number. For example, if your site is running on `localhost:7331` you would enter `localhost:7331`. 
+6. Click **Add**.
 
-要啓用端口轉發，請執行以下操作：
+Port forwarding is now set up. You can see a status indicator of the port forward on the device's tab within the **Inspect Devices** dialog.
 
-1. 在您的開發計算機與 Android 設備之間設置[遠程調試](.)。
-完成後，您應在 **Inspect Devices** 對話框的左側菜單中看到 Android 設備，還應看到 **Connected** 狀態指示器。
+![port forwarding status](imgs/port-forwarding-status.png)
 
+To view the content, open up Chrome on your Android device and go to the `localhost` port that you specified in the **Device port** field. For example, if you entered `5000` in the field, then you would go to `localhost:5000`.
 
-1. 在 DevTools 的 **Inspect Devices** 對話框中，啓用 **Port forwarding**。
-1. 點擊 **Add rule**。
+## Map to custom local domains {:#custom-domains}
 
-   ![添加端口轉發規則](imgs/add-rule.png)
-1. 在左側的 **Device port** 文本字段中，輸入 Android 設備上您想要從其訪問網站的 `localhost` 端口號。例如，如果您想要從 `localhost:5000` 訪問網站，則應輸入 `5000`。
-1. 在右側的 **Local address** 文本字段中，輸入開發計算機網絡服務器上運行的您的網站的 IP 地址或主機名，後面緊跟端口號。例如，如果您的網站在 `localhost:7331` 上運行，則應輸入 `localhost:7331`。
+Custom domain mapping enables you to view content on an Android device from a web server on your development machine that is using a custom domain.
 
-1. 點擊 **Add**。
+For example, suppose that your site uses a third-party JavaScript library that only works on the whitelisted domain `chrome.devtools`. So, you create an entry in your `hosts` file on your development machine to map this domain to `localhost` (i.e. `127.0.0.1 chrome.devtools`). After setting up custom domain mapping and port forwarding, you'll be able to view the site on your Android device at the URL `chrome.devtools`.
 
-端口轉發已設置完畢。您可以在該設備位於 **Inspect Devices** 對話框內的標籤上看到端口轉發的狀態指示器。
+### Set up port forwarding to proxy server
 
+To map a custom domain you must run a proxy server on your development machine. Examples of proxy servers are [Charles](http://www.charlesproxy.com/), [Squid](http://www.squid-cache.org/), and [Fiddler](http://www.telerik.com/fiddler).
 
-![端口轉發狀態](imgs/port-forwarding-status.png)
+To set up port forwarding to a proxy:
 
-要查看內容，請在您的 Android 設備上打開 Chrome，然後轉至您在 **Device port** 中指定的 `localhost` 端口。
-例如，如果您在字段中輸入了 `5000`，則應轉至 `localhost:5000`。
+1. Run the proxy server and note the port that it's using. **Note**: The proxy server and your web server must run on different ports. 
+2. Set up [port forwarding](#port-forwarding) to your Android device. For the **local address** field, enter `localhost:` followed by the port that your proxy server is running on. For example, if it's running on port `8000`, then you would enter `localhost:8000`. In the **device port** field enter the number that you want your Android device to listen on, such as `3333`.
 
- 
+### Configure proxy settings on your device
 
-## 映射到自定義本地域名 {:#custom-domains}
+Next, you need to configure your Android device to communicate with the proxy server.
 
-利用自定義域名映射，您可以在 Android 設備上查看當前使用自定義域名的開發計算機上網絡服務器中的內容。
+1. On your Android device go to **Settings** > **Wi-Fi**.
+2. Long-press the name of the network that you are currently connected to. **Note**: Proxy settings apply per network.
+3. Tap **Modify network**.
+4. Tap **Advanced options**. The proxy settings display. 
+5. Tap the **Proxy** menu and select **Manual**.
+6. For the **Proxy hostname** field, enter `localhost`.
+7. For the **Proxy port** field, enter the port number that you entered for **device port** in the previous section. 
+8. Tap **Save**.
 
+With these settings, your device forwards all of its requests to the proxy on your development machine. The proxy makes requests on behalf of your device, so requests to your customized local domain are properly resolved.
 
-例如，假設您的網站使用僅在白名單網域 `chrome.devtools` 上運行的第三方 JavaScript 庫。
-因此，您可以在開發計算機上的 `hosts` 文件中創建條目，將此網域映射到 `localhost`（如 `127.0.0.1 chrome.devtools`）。設置自定義域名映射和端口轉發後，您將能夠在 Android 設備上查看網站，網址爲 `chrome.devtools`。
+Now you can access custom domains on your Android device Android just as you would on the development machine.
 
- 
+If your web server is running off of a non-standard port, remember to specify the port when requesting the content from your Android device. For example, if your web server is using the custom domain `chrome.devtools` on port `7331`, when you view the site from your Android device you should be using the URL `chrome.devtools:7331`.
 
-### 爲代理服務器設置端口轉發
+**Tip**: To resume normal browsing, remember to revert the proxy settings on your Android device after you disconnect from the development machine.
 
-要映射自定義域名，您必須在開發計算機上運行代理服務器。
-代理服務器示例包括 [Charles][charles]、[Squid][squid] 和 [Fiddler][fiddler]。
+## Feedback {: #feedback }
 
-
-要爲代理設置端口轉發，請執行以下操作：
-
-1. 運行代理服務器並記下其正在使用的端口。**注**：代理服務器和您的網絡服務器必須在不同的端口上運行。
-1. 爲您的 Android 設備設置[端口轉發](#port-forwarding)。在 **local address** 字段中，輸入 `localhost:`，後面緊跟運行代理服務器的端口。例如，如果代理服務器在端口 `8000` 上運行，您應輸入 `localhost:8000`。
-在 **device port** 字段中，輸入您想要使 Android 設備在其上面偵聽的端口號，如 `3333`。
-
-
-[charles]: http://www.charlesproxy.com/
-[squid]: http://www.squid-cache.org/
-[fiddler]: http://www.telerik.com/fiddler
-
-### 在您的設備上配置代理設置
-
-接下來，您需要配置 Android 設備，以便與代理服務器進行通信。
- 
-
-1. 在您的 Android 設備上，轉至 **Settings** > **Wi-Fi**。
-1. 長按您當前連接到的網絡的名稱。
-   **注**：代理設置的適用範圍爲單個網絡。
-3. 點按 **Modify network**。
-4. 點按 **Advanced options**。將會顯示代理設置。
-5. 點按 **Proxy** 菜單，然後選擇 **Manual**。
-6. 在 **Proxy hostname** 字段中，輸入 `localhost`。
-7. 在 **Proxy port** 字段中，輸入您在前一部分中爲 **device port** 輸入的端口號。
-8. 點按 **Save**。
-
-進行這些設置後，您的設備會將所有請求轉發給開發計算機上的代理。
-代理會代表您的設備發出請求，這樣就可以正確解析對自定義本地域名的請求。
-
-
-現在，您可以在 Android 設備上訪問自定義域名，就像您在開發計算機上訪問一樣。
- 
-
-如果您的網絡服務器正在非標準端口上運行，從 Android 設備請求內容時請務必指定端口。例如，如果網絡服務器正在端口 `7331` 上使用自定義域名 `chrome.devtools`，您從 Android 設備上查看網站時應使用網址 `chrome.devtools:7331`。
-
- 
-
-**提示**：要恢復正常瀏覽，與開發計算機斷開連接後請務必在您的 Android 設備上還原代理設置。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

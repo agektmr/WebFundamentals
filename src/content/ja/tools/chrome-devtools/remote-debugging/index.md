@@ -1,10 +1,6 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Windows、Mac、または Linux コンピュータから Android 端末上のライブ コンテンツのリモート デバッグを行います。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Remote debug live content on an Android device from a Windows, Mac, or Linux computer.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-11-19 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #} 
 
 <style>
 .devtools-inline {
@@ -13,192 +9,126 @@ description:Windows、Mac、または Linux コンピュータから Android 端
 }
 </style>
 
-# Android 端末のリモート デバッグを行う {: .page-title }
+ 
+
+# Get Started with Remote Debugging Android Devices {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Windows、Mac、または Linux コンピュータから Android 端末上のライブ コンテンツのリモート デバッグを行います。
- このチュートリアルでは、次の操作を行う方法について説明します。
+Remote debug live content on an Android device from your Windows, Mac, or Linux computer. This tutorial teaches you how to:
 
-* Android 端末をリモート デバッグ用に設定し、開発マシンから検出します。
-* 開発マシンで Android 端末上のライブ コンテンツを調査し、デバッグします。
-* Android 端末のコンテンツを開発マシン上の DevTools インスタンスにスクリーンキャストします。
-
+* Set up your Android device for remote debugging, and discover it from your development machine.
+* Inspect and debug live content on your Android device from your development machine.
+* Screencast content from your Android device onto a DevTools instance on your development machine.
 
 <figure>
   <img src="imgs/remote-debugging.png"
-       alt="リモート デバッグを行うと、Android 端末で実行されているページを開発マシンで調査できます。
-"/>
+       alt="Remote Debugging lets you inspect a page running on an Android device from
+            your development machine."/>
   <figcaption>
-    <b>図 1</b>。 リモート デバッグを行うと、Android 端末で実行されているページを開発マシンで調査できます。
-
+    <b>Figure 1</b>. Remote Debugging lets you inspect a page running on an Android device
+    from your development machine.
   </figcaption>
 </figure>
 
-## ステップ 1: Android 端末を検出する {: #discover }
+## Step 1: Discover your Android device {: #discover }
 
-以下のワークフローは、ほとんどのユーザーが使用できます。 さらに詳しくは、[トラブルシューティング:DevTools が Android 端末を検出しない](#troubleshooting)をご覧ください。
+The workflow below works for most users. See [Troubleshooting: DevTools is not detecting the Android device](#troubleshooting) for more help.
 
+1. Open the **Developer Options** screen on your Android. See [Configure On-Device Developer Options](https://developer.android.com/studio/debug/dev-options.html){:.external}.
+2. Select **Enable USB Debugging**.
+3. On your development machine, open Chrome.
+4. [Open DevTools](/web/tools/chrome-devtools/#open).
+5. In DevTools, click the **Main Menu** ![Main Menu](/web/tools/chrome-devtools/images/three-dot.png){:.devtools-inline} then select **More tools** > **Remote devices**.
+    
+    <figure> 
+    
+    ![Opening the Remote Devices tab via the Main Menu.](imgs/open-remote-devices.png) <figcaption> **Figure 2**. Opening the **Remote Devices** tab via the **Main Menu** </figcaption> </figure>
+6. In DevTools, open the **Settings** tab.
 
-1. Android で **[Developer Options]** 画面を開きます。 [端末の開発者向けオプションの設定](https://developer.android.com/studio/debug/dev-options.html){:.external}をご覧ください。
-1. **[Enable USB Debugging]** を選択します。 
-1. 開発マシンで Chrome を開きます。
-1. [DevTools を開きます](/web/tools/chrome-devtools/#open)。
-1. DevTools で、**[Main Menu]** ![Main Menu][main]{:.devtools-inline} をクリックします。 
-   次に、**[More tools]** > **[Remote devices]** の順に選択します。 
+7. Make sure that the **Discover USB devices** checkbox is enabled.
+    
+    <figure> 
+    
+    ![The Discover USB Devices checkbox is
+       enabled.](imgs/discover-usb-devices.png) <figcaption> **Figure 3**. The **Discover USB Devices** checkbox is enabled </figcaption> </figure>
+8. Connect your Android device directly to your development machine using a USB cable. The first time you do this, you usually see that DevTools has detected an unknown device. If you see a green dot and the text **Connected** below the model name of your Android device, then DevTools has successfully established the connection to your device. Continue to [Step 2](#debug).
+    
+    <figure> 
+    
+    ![The Remote Devices tab has successfully detected
+       an unknown device that is pending authorization.](imgs/unknown-device.png) <figcaption> **Figure 4**. The **Remote Devices** tab has successfully detected an unknown device that is pending authorization </figcaption> </figure>
+9. If your device is showing up as **Unknown**, accept the **Allow USB Debugging** permission prompt on your Android device.
 
-     <figure>
-       <img src="imgs/open-remote-devices.png"
-            alt="[Main Menu] から [Remote Devices] タブを開きます。"/>
-       <figcaption>
-         <b>図 2</b>。 <b>[Main Menu]</b> から <b>[Remote Devices]</b> タブを開きます
-       </figcaption>
-     </figure>
+### Troubleshooting: DevTools is not detecting the Android device {: #troubleshooting }
 
-[main]: /web/tools/chrome-devtools/images/three-dot.png
-[open]: /web/tools/chrome-devtools/remote-debugging/imgs/open-remote-devices.png
+Make sure that your hardware is set up correctly:
 
-1. DevTools で、**[Settings]** タブを開きます。
+* If you're using a USB hub, try connecting your Android device directly to your development machine instead.
+* Try unplugging the USB cable between your Android device and development machine, and then plugging it back in. Do it while your Android and development machine screens are unlocked.
+* Make sure that your USB cable works. You should be able to inspect files on your Android device from your development machine.
 
-1. **[Discover USB devices]** チェックボックスが有効になっていることを確認します。
+Make sure that your software is set up correctly:
 
-     <figure>
-       <img src="imgs/discover-usb-devices.png" alt="[Discover USB Devices] チェックボックスが有効になっています。
-"/>
-       <figcaption>
-         <b>図 3</b>。 <b>[Discover USB Devices]</b> チェックボックスが有効になっています
-</figcaption>
-     </figure>
+* If your development machine is running Windows, try manually installing the USB drivers for your Android device. See [Install OEM USB Drivers](https://developer.android.com/tools/extras/oem-usb.html){:.external}.
+* Some combinations of Windows and Android devices (especially Samsung) require extra set up. See [Chrome DevTools Devices does not detect device when plugged in](https://stackoverflow.com/questions/21925992){:.external}.
 
-[discover]: /web/tools/chrome-devtools/remote-debugging/imgs/discover-usb-devices.png
+If you don't see the **Allow USB Debugging** prompt on your Android device try:
 
-1. USB ケーブルを使用して、Android 端末を開発マシンに直接接続します。
- 初めてこの操作を行う場合、DevTools が不明なデバイスを検出したことが表示されます。
- DevTools が端末への接続を確立すると、Android 端末のモデル名の下に、緑色の点と **[Connected]** が表示されます。
- [ステップ 2](#debug)に進みます。
+* Disconnecting and then re-connecting the USB cable while DevTools is in focus on your development machine and your Android homescreen is showing. In other words, sometimes the prompt doesn't show up when your Android or development machine screens are locked.
+* Updating the display settings for your Android device and development machine so that they never go to sleep.
+* Setting Android's USB mode to PTP. See [Galaxy S4 does not show Authorize USB debugging dialog box](https://android.stackexchange.com/questions/101933){: .external }.
+* Select **Revoke USB Debugging Authorizations** from the **Developer Options** screen on your Android device to reset it to a fresh state.
 
-     <figure>
-       <img src="imgs/unknown-device.png" alt="[Remote Devices] タブが、承認待ちの不明な端末を検出しました。
-"/>
-       <figcaption>
-         <b>図 4</b>。 <b>[Remote Devices]</b> タブが、承認待ちの不明な端末を検出しました
-</figcaption>
+If you find a solution that is not mentioned in this section or in [Chrome DevTools Devices does not detect device when plugged in](https://stackoverflow.com/questions/21925992){: .external}, please add an answer to that Stack Overflow question, or [open an issue in the webfundamentals repository](https://github.com/google/webfundamentals/issues/new?title=[Remote%20Debugging]){:.external}!
 
-     </figure>
+## Step 2: Debug content on your Android device from your development machine {: #debug }
 
+1. Open Chrome on your Android device.
+2. In the **Remote Devices** tab, click the tab that matches your Android device model name. At the top of this page, you see your Android device's model name, followed by its serial number. Below that, you can see the version of Chrome that's running on the device, with the version number in parentheses. Each open Chrome tab gets its own section. You can interact with that tab from this section. If there are any apps using WebView, you see a section for each of those apps, too. In **Figure 5** there are no tabs or WebViews open.
+    
+    <figure> 
+    
+    ![A connected remote device.](imgs/connected-remote-device.png) <figcaption> **Figure 5**. A connected remote device </figcaption> </figure>
+3. In the **New tab** text box, enter a URL and then click **Open**. The page opens in a new tab on your Android device.
 
-[unknown]: /web/tools/chrome-devtools/remote-debugging/imgs/unknown-device.png
+4. Click **Inspect** next to the URL that you just opened. A new DevTools instance opens. The version of Chrome running on your Android device determines the version of DevTools that opens on your development machine. So, if your Android device is running a very old version of Chrome, the DevTools instance may look very different than what you're used to.
 
-1. 端末に **[Unknown]** と表示される場合は、Android 端末に表示される **[Allow USB Debugging]** パーミッション プロンプトでデバッグを許可します。
- 
+### More actions: reload, focus, or close a tab {: #more-actions }
 
-### トラブルシューティング：DevTools が、Android 端末を検出しません {: #troubleshooting }
-
-ハードウェアが正しく設定されていることを確認してください。
-
-* USB ハブを使用している場合は、Android 端末を開発マシンに直接接続してみてください。
-* Android 端末と開発マシンをつないでいる USB ケーブルをいったん抜いて、再び差し込んでください。
- この操作は、Android 端末と開発マシンの画面がロックされていない間に行います。
-* USB ケーブルが機能することを確認してください。 開発マシンから Android 端末のファイルが調査できるようになるはずです。
-
-
-ソフトウェアが正しく設定されていることを確認してください。
-
-* 開発マシンが Windows を実行している場合は、Android 端末用の USB ドライバを手動でインストールしてください。
- [OEM USB ドライバのインストール][drivers]をご覧ください{:.external}。
-* Windows と Android 端末（特に Samsung）を組み合わせる場合は、特別な設定が必要となることがあります。
- [端末を接続しても Chrome DevTools Devices が検出しない][SO]をご覧ください{:.external}。
-
-Android 端末に **[Allow USB Debugging]** プロンプトが表示されない場合は、次の操作を行ってください。
-
-* 開発マシンで DevTools にフォーカスがあり Android のホーム画面が表示されている間に、USB ケーブルをいったん抜いてから再度接続してください。
- Android または開発マシンの画面がロックされていると、プロンプトが表示されない場合があります。
-* Android 端末および開発マシンの表示設定を更新し、スリープ状態にならないようにしてください。
-* Android の USB モードを PTP に設定します。 [Galaxy S4 に [USB デバッグの承認] ダイアログ ボックスが表示されない](https://android.stackexchange.com/questions/101933){: .external }をご覧ください。
-* Android 端末の **[Developer Options]** 画面から **[Revoke USB Debugging Authorizations]** を選択し、新しい状態にリセットします。
-
-
-このセクションまたは[端末を接続しても Chrome DevTools Devices が検出しない][SO]{: .external}に記載されていない解決策が見つかった場合、該当する Stack Overflow の質問への回答を追加するか、または [webfundamentals リポジトリで問題をオープンしてください][issue]{:.external}。
-
-[drivers]: https://developer.android.com/tools/extras/oem-usb.html
-[SO]: https://stackoverflow.com/questions/21925992
-[issue]: https://github.com/google/webfundamentals/issues/new?title=[Remote%20Debugging]
-
-## ステップ 2: 開発マシンから Android 端末のコンテンツをデバッグする {: #debug }
-
-1. Android 端末で Chrome を開きます。
-1. **[Remote Devices]** タブで、使用する Android 端末のモデル名と一致するタブをクリックします。
-   ページの上部に Android 端末のモデル名が表示され、その横にシリアル番号が表示されます。
- その下には、端末で実行している Chrome のバージョンが表示され、かっこ内にバージョン番号が示されます。
- 開いている各 Chrome タブについて独自のセクションが表示されます。 このセクションからそのタブを操作することができます。
- WebView を使用しているアプリがある場合は、それらの各アプリのセクションが表示されます。
- <b>図 5</b> では、開かれているタブや WebView はありません。
-
-     <figure>
-       <img src="imgs/connected-remote-device.png" alt="接続済みのリモート端末。"/>
-       <figcaption>
-         <b>図 5</b>。 接続済みのリモート端末
-       </figcaption>
-     </figure>
-
-1. **[New tab]** テキストボックスで、URL を入力して **[Open]** をクリックします。 Android 端末の新しいタブでそのページが開きます。
-
-1. 開いた URL の横にある **[Inspect]** をクリックします。 新しい DevTools インスタンスが開きます。
- Android 端末で実行している Chrome のバージョンによって、開発マシン上で起動する DevTools のバージョンが決まります。
-   そのため、Android 端末で非常に古いバージョンの Chrome を使用している場合は、DevTools インスタンスが、使い慣れたものとは異なって見えることがあります。
-
-
-### その他のアクション: タブを再読み込みする、タブをフォーカスする、タブを閉じる {: #more-actions }
-
-再読み込みするタブ、フォーカスするタブ、閉じるタブの横にある **[More Options]** ![More Options][more]{:.devtools-inline}  をクリックします。
-
-
-[more]: /web/tools/chrome-devtools/images/three-dot.png
+Click **More Options** ![More Options](/web/tools/chrome-devtools/images/three-dot.png){:.devtools-inline} next to the tab that you want to reload, focus, or close.
 
 <figure>
-  <img src="imgs/reload.png" alt="タブを再読み込みする、タブをフォーカスする、タブを閉じるためのメニュー。"/>
+  <img src="imgs/reload.png" alt="The menu for reloading, focusing, or closing a tab."/>
   <figcaption>
-    <b>図 6</b>。 タブを再読み込みする、タブをフォーカスする、タブを閉じるためのメニュー
-</figcaption>
+    <b>Figure 6</b>. The menu for reloading, focusing, or closing a tab
+  </figcaption>
 </figure>
 
-### 要素を調査する {: #inspect }
+### Inspect elements {: #inspect }
 
-DevTools インスタンスの **[Elements]** パネルを表示し、要素にカーソルを合わせると Android 端末のビューポートで要素がハイライト表示されます。
+Go to the **Elements** panel of your DevTools instance, and hover over an element to highlight it in the viewport of your Android device.
 
+You can also tap an element on your Android device screen to select it in the **Elements** panel. Click **Select Element** ![Select
+Element](imgs/select-element.png){:.devtools-inline} on your DevTools instance, and then tap the element on your Android device screen. Note that **Select Element** is disabled after the first touch, so you need to re-enable it every time you want to use this feature.
 
-Android 端末の画面上で要素をタップして、**[Elements]** パネルの要素を選択することもできます。
- DevTools インスタンスで **[Select Element]** ![Select Element][select]
-{:.devtools-inline} をクリックしてから、Android 端末の画面上で要素をタップします。
- 1 回タップすると **[Select Element]** が無効になるため、この機能を使用する場合は毎回再度有効にする必要があることに注意してください。
+### Screencast your Android screen to your development machine {: #screencast }
 
+Click **Toggle Screencast** ![Toggle Screencast](imgs/toggle-screencast.png){:.devtools-inline} to view the content of your Android device in your DevTools instance.
 
+You can interact with the screencast in multiple ways:
 
-[select]: imgs/select-element.png
+* Clicks are translated into taps, firing proper touch events on the device. 
+* Keystrokes on your computer are sent to the device. 
+* To simulate a pinch gesture, hold <kbd>Shift</kbd> while dragging. 
+* To scroll, use your trackpad or mouse wheel, or fling with your mouse pointer.
 
-### 開発マシンに Android の画面をスクリーンキャストします {: #screencast }
+Some notes on screencasts:
 
-**[Toggle Screencast]** ![Toggle Screencast][screencast]{:.devtools-inline}
- をクリックして、DevTools インスタンスで Android 端末のコンテンツを表示します。
+* Screencasts only display page content. Transparent portions of the screencast represent device interfaces, such as the Chrome address bar, the Android status bar, or the Android keyboard.
+* Screencasts negatively affect frame rates. Disable screencasting while measuring scrolls or animations to get a more accurate picture of your page's performance.
+* If your Android device screen locks, the content of your screencast disappears. Unlock your Android device screen to automatically resume the screencast.
 
-[screencast]: imgs/toggle-screencast.png
-
-さまざまな方法でスクリーンキャストを操作できます。
-
-* クリックはタップに変換され、端末で正しいタッチイベントが発生します。 
-* コンピュータでのキーストロークが端末に送信されます。 
-* ピンチ操作をシミュレートするには、<kbd>Shift</kbd> キーを押しながらドラッグします。 
-* スクロールするには、トラックパッドやマウスホイールを使用するか、マウスポインターでフリングします。
-
-
-スクリーンキャストに関する注意事項:
-
-* スクリーンキャストではページのコンテンツのみが表示されます。 スクリーンキャストの透明な部分は、Chrome のアドレスバー、Android のステータスバー、Android のキーボードなど、端末のインターフェースを表します。
-* スクリーンキャストはフレームレートに悪影響を及ぼします。 スクロールやアニメーションのパフォーマンスを計測するときは、スクリーンキャストを無効にすると、ページのパフォーマンスをより正確に把握できます。
-* Android 端末の画面がロックされると、スクリーンキャストのコンテンツが非表示になります。
- Android 端末の画面のロックを解除すると、スクリーンキャストが自動的に再開します。
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

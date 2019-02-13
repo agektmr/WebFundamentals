@@ -1,134 +1,89 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:このインタラクティブなガイドに従って、レイアウトの強制同期の診断に DevTools を使う方法を習得します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Follow along with this interactive guide to learn how to use DevTools to diagnose forced synchronous layouts.
 
-{# wf_updated_on: 2016-03-31 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# レイアウトの強制同期の診断 {: .page-title }
+# Diagnose Forced Synchronous Layouts {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-レイアウトの強制同期の診断に DevTools を使う方法について説明します。
+Warning: This page is deprecated. See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance) for an up-to-date tutorial on forced synchronous layouts.
 
+Learn how to use DevTools to diagnose forced synchronous layouts.
 
-このガイドでは、ライブデモを使って問題を特定して解決することで、[レイアウトの強制同期][fsl]をデバッグする方法を学びます。
-このデモでは、[`requestAnimationFrame()`][raf] を使って、イメージをアニメーションにします。アニメーションにする場合は、フレームベースのアニメーションのアプローチが推奨されます。
-ただし、このアニメーションにはかなりの量の問題点が含まれます。
-目標は、デモが 60 FPS でスムーズに実行されるように、問題点の原因を見極め、解決することです。
- 
+In this guide you learn how to debug [forced synchronous layouts](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) by identifying and fixing issues in a live demo. The demo animates images using [`requestAnimationFrame()`](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes), which is the recommended approach for frame-based animation. However, there's a considerable amount of jank in the animation. Your goal is to identify the cause of the jank and fix the issue so that the demo runs at a silky-smooth 60 FPS.
 
-[fsl]: /web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts
+## Gather data
 
-[raf]: /web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes
+First, you need to capture data so that you can understand exactly what happens as your page runs.
 
+1. Open the [demo](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html).
+2. Open the **Timeline** panel of DevTools.
+3. Enable the **JS Profile** option. When analyzing the flame chart later, this option will let you see exactly which functions were called. 
+4. Click **Start** on the page to start the animation.
+5. Click the **Record** button on the Timeline panel to start the Timeline recording. 
+6. Wait two seconds.
+7. Click the **Record** button again to stop the recording. 
 
-##  データの収集
+When you are finished recording you should see something like the following on the Timeline panel.
 
-まず、ページの実行中に行われている処理を正確に把握できるように、データを取得します。
- 
+![timeline recording of janky demo](imgs/demo-recording.png)
 
-1. [デモ](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html)を開きます。
-1. DevTools の [**Timeline**] パネルを開きます。
-1. [**JS Profile**] オプションを有効にします。後でフレーム チャートを分析する際に、このオプションによって呼び出された関数が正確に表示されるようになります。
-1. ページの [**Start**] をクリックして、アニメーションを開始します。
-1. [Timeline] パネルの**記録**ボタンをクリックして、Timeline の記録を開始します。
-1. 2 秒間待機します。
-1. もう一度**記録**ボタンをクリックして、記録を停止します。 
+## Identify problem
 
-記録が完了すると、[Timeline] パネルに以下のように表示されます。
- 
+Now that you have your data, it's time to start making sense of it.
 
-![問題のあるデモの Timeline 記録](imgs/demo-recording.png)
+At a glance, you can see in the **Summary** pane of your Timeline recording that the browser spent most of its time rendering. Generally speaking, if you can [optimize your page's layout operations](/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout), you may be able to reduce time spent rendering.
 
-##  問題点の特定
+![Timeline summary](imgs/summary.png)
 
-データを収集したら、そのデータを解釈します。 
+Now move your attention to the pink bars just below the **Overview** pane. These represent frames. Hover over them to see more information about the frame.
 
-Timeline 記録の [**Summary**] ペインを見ると、ブラウザは大半の時間をレンダリングに費やしているのがわかります。
-一般的には、[ページのレイアウト操作を最適化][layout]できると、レンダリング時間が短くなる可能性があります。
+![long frame](imgs/long-frame.png)
 
- 
+The frames are taking a long time to complete. For smooth animations you want to target 60 FPS.
 
-![Timeline の [Summary]](imgs/summary.png)
+Now it's time to diagnose exactly what is wrong. Using your mouse, [zoom in](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom) on a call stack.
 
-ここで、**概要**ペインの直下にあるピンクのバーに注目します。
-これらのバーはフレームを表します。バーにカーソルを合わせると、そのフレームに関する詳細情報が表示されます。
+![zoomed timeline recording](imgs/zoom.png)
 
+The top of the stack is an `Animation Frame Fired` event. The function that you passed to `requestAnimationFrame()` is called whenever this event is fired. Below `Animation Frame Fired` you see `Function Call`, and below that you see `update`. You can infer that a method called `update()` is the callback for `requestAnimationFrame()`.
 
-![実行時間が長いフレーム](imgs/long-frame.png)
+Note: This is where the **JS Profile** option that you enabled earlier is useful. If it was disabled, you would just see `Function Call`, followed by all the small purple events (discussed next), without details on exactly which functions were called.
 
-このフレームは完了までに時間がかかっています。スムーズなアニメーションにするために、60 FPS を目標にします。
- 
+Now, focus your attention on all of the small purple events below the `update` event. The top part of many of these events are red. That's a warning sign. Hover over these events and you see that DevTools is warning you that your page may be a victim of forced reflow. Forced reflow is just another name for forced synchronous layouts.
 
-ここからは、問題点を正確に診断していきます。マウスを使用して、コールスタックを[拡大][zoom]します。
- 
+![hovering over layout event](imgs/layout-hover.png)
 
-![拡大した Timeline 記録](imgs/zoom.png)
+Now it's time to take a look at the function which is causing all of the forced synchronous layouts. Click on one of the layout events to select it. In the Summary pane you should now see details about this event. Click on the link under **Layout Forced** (`update @ forcedsync.html:457`) to jump to the function definition.
 
-スタックの一番上に `Animation Frame Fired` イベントがあります。このイベントが発生すると、必ず `requestAnimationFrame()` に渡した関数が呼び出されています。`Animation Frame Fired` の下には `Function Call` が、その下には `update` があります。
-`update()` というメソッドが `requestAnimationFrame()` のコールバックだと推測できます。
- 
+![jump to function definition](imgs/jump.png)
 
-注: ここで、以前有効にした [**JS Profile**] オプションが役に立ちます。
-このオプションを無効にしていると、`Function Call` の下にすべてのイベントが小さく紫色（後述）で表示されます。呼び出された関数を正確に示す詳細情報は表示されません。
+You should now see the function definition in the **Sources** panel.
 
+![function definition in sources panel](imgs/definition.png)
 
+The `update()` function is the callback handler for `requestAnimationCallback()`. The handler computes each image's `left` property based off of the image's `offsetTop` value. This forces the browser to perform a new layout immediately to make sure that it provides the correct value. Forcing a layout during every animation frame is the cause of the janky animations on the page.
 
-次に、`update` イベントの下にある、小さく紫色で表示されたイベントに注目します。
-これらのイベントのうち、上部にある多くのイベントは赤で表示されています。これは警告を表します。
-このようなイベントにカーソルを合わせると、ページが強制リフローの影響を受けている可能性を示す DevTools からの警告が表示されます。
-強制リフローとは、レイアウトの強制同期の別称です。
- 
+So now that you've identified the problem, you can try to fix it directly in DevTools.
 
-![レイアウト イベントにカーソルを合わせる](imgs/layout-hover.png)
+## Apply fix within DevTools
 
-ここからは、すべてのレイアウトの強制同期の原因となっている関数を見ていきます。
-レイアウト イベントの 1 つをクリックして選択します。[Summary] ペインに、このイベントに関する詳細が表示されるようになります。
-[**Layout Forced**]（`update @ forcedsync.html:457`）の下にあるリンクをクリックして、関数の定義に移動します。
+This script is embedded in HTML, so you can't edit it via the **Sources** panel (scripts in `*.js` can be edited in the Sources panel, however).
 
+However, to test your changes, you can redefine the function in the Console. Copy and paste the function definition from the HTML file into the DevTools Console. Delete the statement that uses `offsetTop` and uncomment the one below it. Press `Enter` when you're done.
 
+![redefining the problematic function](imgs/redefinition.png)
 
-![関数定義への移動](imgs/jump.png)
+Restart the animation. You can verify visually that it's much smoother now.
 
-[**Sources**] パネルに関数の定義が表示されます。 
+## Verify with another recording
 
-![[Sources] パネルの関数定義](imgs/definition.png)
+It's always good practice to take another recording and verify that the animation truly is faster and more performant than before.
 
-`update()` 関数は `requestAnimationCallback()` のコールバック ハンドラです。
-ハンドラは、イメージの `offsetTop` 値に基づいて各イメージの `left` プロパティを計算します。
-この計算により、ブラウザは新しいレイアウトの即時実行を強制され、正確な値になるようにします。
-アニメーションのフレームで毎回レイアウトの適用が強制されると、ページのアニメーションが不自然になる原因になります。
- 
+![timeline recording after optimization](imgs/after.png)
 
-問題を特定したら、DevTools で直接解決します。
+Much better.
 
+## Feedback {: #feedback }
 
-[layout]: /web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout
-[zoom]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom
-
-##  DevTools 内での解決
-
-このスクリプトは HTML に埋め込まれているため、[**Sources**] パネルからは編集できません（ただし、`*.js` のスクリプトは [Sources] パネルで編集できます）。
- 
-
-ただし、変更点をテストするために、コンソールで関数を再定義できます。HTML ファイルから DevTools コンソールに関数の定義をコピーして貼り付けます。
-`offsetTop` を使用しているステートメントを削除し、その下のステートメントのコメントを解除します。
-完了したら、`Enter` キーを押します。 
-
-![問題のある関数の再定義](imgs/redefinition.png)
-
-アニメーションを再開します。以前よりもはるかにスムーズに動くことを確認できます。 
-
-##  再記録による確認
-
-新たに記録を取って、実際にアニメーションが以前よりも高速かつ高パフォーマンスになっていることを確認します。
- 
-
-![最適化後の Timeline 記録](imgs/after.png)
-
-パフォーマンスが大幅に改善されています。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

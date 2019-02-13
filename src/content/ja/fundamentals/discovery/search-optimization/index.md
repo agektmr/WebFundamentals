@@ -1,131 +1,101 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ウェブサイトには、人間だけでなく、検索エンジンのウェブクローラもアクセスします。ここでは、検索の精度とウェブサイトのランキングを向上させる方法について説明します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
-{# wf_updated_on:2015-10-05 #}
-{# wf_published_on:2014-08-30 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-30 #}
 
-# 検索の最適化 {: .page-title }
+# Search Optimization {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-ウェブサイトには、人間だけでなく、検索エンジンのウェブクローラもアクセスします。ここでは、検索の精度とウェブサイトのランキングを向上させる方法について説明します。
+Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
 ### TL;DR {: .hide-from-toc }
-- ウェブページの URL 構造を決定します。
-- 最も推奨されるのはレスポンシブ デザインです。
-- PC 向けサイトとモバイル向けサイトのそれぞれ対して、 <code>rel='canonical'</code> と  <code>rel='alternate'</code> を使用します。
-- PC 向け HTML とモバイル向け HTML をそれぞれ動的に配信する 1 つの URL に対して、 <code>Vary HTTP</code> ヘッダーを使用します。
-- URL を知っているユーザーのみがアクセスできるページに対して、 <code>noindex</code> を使用します。
-- 非公開にしたいページに対しては適切な認証メカニズムを使用します。
 
-##  検索エンジンにサイト構造を示す
+* Determine the URL structure of your web page.
+* Responsive design is most recommended.
+* Use `rel='canonical'` + `rel='alternate'` for separate desktop/mobile sites.
+* Use `Vary HTTP` header for a single URL dynamically serving separate desktop/mobile HTMLs.
+* Use `noindex` for pages you want to limit access to those who know the URL.
+* Use relevant authentication mechanism for pages you want to keep private.
 
-マルチデバイス サイトのデザインでは、ウェブサイトが検索結果にどのように表示されるかが重要になります。このガイドでは、ウェブサイトの URL 構造に基づいて、検索エンジン向けにウェブサイトを最適化する方法について説明します。
+## Give search engines your site structure
 
-レスポンシブ ウェブページの構築を計画していますか？URL の異なるモバイル専用サイトがありますか？
-または、同じ URL で PC 版とモバイル版の両方を配信していますか？
-これらのすべてのケースにおいて、検索エンジン向けにウェブサイトを最適化する方法が存在します。
+How your website appears in search results is important to multi-device site design. This guide helps you optimize your website for search engines based on its URL structure.
 
+Are you planning to build a responsive web page? Is there a mobile-specific version with a separate URL? Are you serving both the desktop version and the mobile version from the same URL? Regardless, you can always do a better job of optimizing your website for search engines.
 
-###  サイトの URL 構造を決定する
+### Give your site a URL structure
 
-異なる端末にコンテンツを配信する方法は複数あります。最も一般的な方法は次の 3 つです。
+There are several ways to serve content to different devices. The three most common methods are:
 
+**Responsive web design:** serves the same HTML from one URL and uses CSS media queries to determine how the content is rendered on the client side. For example, Desktop and Mobile: http://www.example.com/
 
-**レスポンシブ ウェブデザイン:** 1 つの URL から同じ HTML を配信し、CSS メディアクエリを使用して、クライアント側でのコンテンツのレンダリング方法を決定します。たとえば、PC とモバイルに共通の URL（http://www.example.com/）を使用します。
+**Separate mobile site:** redirects users to a different URL depending on the user-agent. For example, Desktop: http://www.example.com/ Mobile: http://m.example.com/
 
+**Dynamic serving:** serves different HTML from one URL depending on the user- agent. For example, Desktop and Mobile: http://www.example.com/
 
+The best approach is to use **responsive web design**, though many websites use other methods.
 
-**別個のモバイルサイト:** ユーザー エージェントに応じて、異なる URL にユーザーをリダイレクトします。
-たとえば、PC の場合は http://www.example.com/ にリダイレクトし、モバイルの場合は http://m.example.com/ にリダイレクトします。
+Determine which URL structure suits your web page. Then try the respective best practices to optimize it for search engines.
 
+### We recommend responsive web design
 
-**動的な配信:** ユーザー エージェントに応じて、1 つの URL で HTML の出し分けをします。
-たとえば、PC とモバイルに共通の URL（http://www.example.com/）を使用します。
+The benefits of making your website responsive are:
 
-最適なアプローチは**レスポンシブ ウェブデザイン**を採用することですが、多くのウェブサイトでは他の方法が使用されています。
- 
-自身のウェブページに適した URL 構造を採用してください。構造を決定したら、それぞれのベスト プラクティスを検討して、検索エンジン向けにウェブサイトを最適化します。
+<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" />
 
-
-###  推奨: レポンシブ ウェブデザイン
-
-ウェブサイトをレスポンシブにするメリットは次のとおりです。
-
-<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" >
-
-* ユーザーによる共有が簡単。
-* リダイレクトが不要で、ページをすばやく読み込める。
-* 1 つの URL で検索結果に表示される。
+* Friendlier for user sharing.
+* Quicker page load without redirects.
+* Single URL for search results.
 
 <div style="clear:both;"></div>
-  
-レスポンシブ ウェブデザインを採用したウェブサイトの構築方法については、[レスポンシブ ウェブデザインの基本](/web/fundamentals/design-and-ux/responsive/)をご覧ください。
 
-###  各 URL での配信に `link[rel=canonical]` と `link[rel=alternate]` を使用する
+Learn to build websites with responsive web design at [Responsive Web Design Basics](/web/fundamentals/design-and-ux/responsive/).
 
-異なる URL で、PC 用とモバイル用に類似したコンテンツを配信すると、それらのコンテンツが同一のものか判断が難しくなり、ユーザーと検索エンジンの両方において混乱を招く可能性があります。そのため、以下を明示する必要があります。
+### Use `link[rel=canonical]` and `link[rel=alternate]` when serving separate URLs
 
-* 2 つの URL のコンテンツが同一であること。
-* どちらがモバイル版か。
-* どちらが PC 版（正規）か。
+Serving similar contents on a desktop version and a mobile version at different URLs may cause confusion for both users and search engines because it's not obvious to viewers that they are intended to be identical. You should indicate:
 
-これらの情報を明示すると、検索エンジンでコンテンツが適切にインデックス登録されるようになり、ユーザーは使用端末に対応した形式で、求めるコンテンツを見つけることができます。
+* That the content of the two URLs are identical.
+* Which is the mobile version.
+* Which is the desktop (canonical) version.
 
+This information helps search engines better index content and ensures that users find what they're looking for in a format that works for their device.
 
-####  PC 版での alternate 属性の使用
+#### Use alternate for desktop
 
-PC 版を配信するときは、rel="alternate" 属性を指定した `link` タグ（`href` 属性でモバイル版を示唆する）を追加して、別の URL にモバイル版が存在することを示します。
+When serving the desktop version, indicate that there's a mobile version on another URL by adding a `link` tag with a `rel="alternate" attribute that points
+to the mobile version in the`href` attribute.
 
-
-
-[http://www.example.com/](http://www.example.com/){: .external } HTML
-
+<http://www.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="alternate" media="only screen and (max-width: 640px)" href="http://m.example.com/">
     
 
-####  モバイル版での canonical 属性の使用
+#### Use canonical for mobile
 
-モバイル版を配信するときは、`rel="canonical"` 属性を指定した
-`link` タグ（`href` 属性で PC 版を示唆する）を追加して、別の URL に PC 版（正規）が存在することを示します。
-`media` 属性を追加して `"only screen and (max-width: 640px)"` を値として指定し、モバイル版が小さな画面専用であることを検索エンジンが認識できるようにします。
+When serving the mobile version, indicate that there's a desktop (canonical) version on another URL by adding a `link` tag with a `rel="canonical"` attribute that points to the desktop version in the `href` attribute. Help search engines understand that the mobile version is explicitly for small screens by adding a `media` attribute with a value of `"only screen and (max-width: 640px)"`.
 
-
-[http://m.example.com/](http://m.example.com/){: .external } HTML
-
+<http://m.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="canonical" href="http://www.example.com/">
     
-  
-<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" >
 
-###  Vary HTTP ヘッダーの使用
+<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" />
 
-端末の種別に応じて異なる HTML を配信すると、不要なリダイレクトが減少し、最適化された HTML が配信され、検索エンジンに単一の URL が提供されます。
-ただし、次のようなデメリットもあります。
+### Use the Vary HTTP header
 
+Serving different HTML based on device type reduces unnecessary redirects, serves optimized HTML, and provides single URL for search engines. It also has several disadvantages:
 
-* ユーザーのブラウザとサーバーの間に中間プロキシがある場合があります。そのため、ユーザー エージェントによってコンテンツが異なることをプロキシ側が認識していないと、予期しない結果が生じる可能性があります。
+* There may be intermediate proxies between a user's browsers and the server. Unless the proxy knows that the content varies depending on user agent, it may serve unexpected results.
+* Changing contents depending on user agent risks being considered "[cloaking](https://support.google.com/webmasters/answer/66355)", which is a violation of Google’s Webmaster Guidelines.
 
+By letting search engines know that the content varies depending on user agent, they can optimize search results for the user agent that is sending queries.
 
-* ユーザー エージェントに応じてコンテンツを出し分けると、「[クローキング](https://support.google.com/webmasters/answer/66355)」であると見なされるリスクがあります。クローキングは、Google のウェブマスター向けガイドラインに違反しています。
+To indicate that the URL serves different HTML depending on user agent, provide a b `Vary: User-Agent` in the HTTP header. This allows search indexing to treat desktop and mobile versions separately, and intermediate proxies to cache those contents gracefully.
 
-
-
-コンテンツがユーザー エージェントによって異なることを検索エンジンに示すことで、クエリを送信するユーザー エージェントに対して、検索結果を最適化することができます。
-
-
-ユーザー エージェントに応じて、URL から別々の HTML を配信することを示すには、HTTP ヘッダーに `Vary: User-Agent` を追加します。
-これにより、検索インデックス処理で PC 版とモバイル版が別々に扱われ、中間プロキシがこれらのコンテンツを適切にキャッシュできるようになります。
-
-
-
-[http://www.example.com/](http://www.example.com/){: .external } HTTP Header
-
+<http://www.example.com/>{: .external } HTTP Header
 
     HTTP/1.1 200 OK
     Content-Type: text/html
@@ -133,52 +103,37 @@ PC 版を配信するときは、rel="alternate" 属性を指定した `link` �
     Content-Length: 5710
     
 
-<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" >
+<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" />
 
-PC およびモバイル向けの URL 構造を構築する詳細な方法については、[スマートフォン向けに最適化されたウェブサイトの構築](/webmasters/smartphone-sites/)をご覧ください。
+To learn more about building URL structure across desktop and mobile, read [about building smartphone-optimized websites](/webmasters/smartphone-sites/).
 
+## Control crawling and indexing from search engines
 
-##  検索エンジンのクロールとインデックス登録を制御する
+Being listed properly on search engines is critical to delivering your website to the world, but poor configuration can cause unexpected content to be included in the results. This section helps you avoid such problems by explaining how crawlers work and how they index websites.
 
-検索エンジンに適切にリストアップされることは、ウェブサイトを世界中に配信するうえで重要ですが、設定が不適切であると、検索結果に予期しないコンテンツが含まれる可能性があります。このセクションでは、このような問題を回避するために、クローラの動作とウェブサイトのインデックス登録の仕組みについて説明します。
+Sharing information has no better place than the web. When you publish a document, it's immediately available to the entire world. The page will be visible to anyone who knows the URL. That's where search engines come in. They need to be able to find your website.
 
+However, there are some cases where you don't want people to find those documents even though you want to put them on the web. For example, a blog's admin page is something only certain people should have access to. There's no benefit to letting people find those pages through search engines.
 
-ウェブは情報共有に最適な場所です。ドキュメントを公開すると、世界中でそのドキュメントが即座に利用可能になります。
-URL を知っている誰もがそのページを閲覧できるようになります。
-そこで必要になるのが、検索エンジンです。検索エンジンはウェブサイトを検出できる必要があります。
+This section also explains how to restrict certain pages from appearing in search results.
 
-ただし、ドキュメントをウェブページに掲載したいけれども、一般のユーザーにはそのドキュメントを公開したくない場合があります。
-たとえば、ブログの管理ページなどには、特定のユーザーにアクセスを制限する必要があります。
-他のユーザーが検索エンジンによって、そのようなページを見つけることができたとしても、何のメリットもありません。
+### The difference between "crawl" and "index"
 
+Before you learn how to control search results, you need to understand how search engines interact with your web page. From your site's point of view, there are roughly two things search engines do to your site: crawling and indexing.
 
-このセクションでは、検索結果に特定のページを表示しないようにする方法についても説明します。
+**Crawling** is when a search engine bot fetches your web page to analyze its content. The content is stored in the search engine's database and can be used to populate search result details, rank pages, and discover new pages by following links.
 
+**Indexing** is when a search engine stores a website's URL and any associated information in its database so it is ready to serve as a search result.
 
-### 「クロール」と「インデックス登録」の違い
+Note: Many people confuse crawling with indexing. Prohibiting crawling doesn't mean that the page won't show up in the search results. For example, if a third-party website has a link to one of your web pages, it can still be indexed even though it's blocked from crawling. In this case, the search result lacks a detailed description.
 
-検索結果を制御する方法を学ぶ前に、検索エンジンによるウェブページの処理方法を理解する必要があります。サイト側から見ると、検索エンジンはサイトに対して、主にクロールとインデックス登録の 2 つの処理を行います。  
+### Control crawling with robots.txt
 
-**クロール**とは、検索エンジンのボットがウェブページの情報を収集して、そのコンテンツを分析することです。コンテンツは検索エンジンのデータベースに保存され、検索結果の詳細を表示したり、ページをランク付けしたり、リンクを経由して新しいページを検出したりするために使用されます。  
+You can use a text file called `robots.txt` to control how well-behaved crawlers access your web page. `Robots.txt` is a simple text file describing how you want search bots to crawl your site. (Not all crawlers necessarily respect `robots.txt`. Imagine that anyone can create their own stray crawlers.)
 
-**インデックス登録**とは、検索エンジンがそのデータベースにウェブサイトの URL や関連情報を保存して、検索結果として配信できるようにすることです。 
+Place `robots.txt` at the root directory of your website's host. For example, if your site's host is `http://pages.example.com/`, then the `robots.txt` file should be located at `http://pages.example.com/robots.txt`. If the domain has different schema, subdomains, or other ports, they are considered different hosts and should have `robots.txt` for each of their root directories.
 
-注: 多くの人がクロールとインデックス登録を混同しています。クロールを禁止したとしても、ページが検索結果に表示されなくなるわけではありません。たとえば、任意のウェブページがクロールからブロックされていたとしても、別のウェブサイトにそのウェブページへのリンクがあれば、そのページはインデックス登録される可能性があります。この場合、検索結果に詳細な説明は表示されません。
-
-###  robots.txt でクロールを制御する
-
-`robots.txt` というテキスト ファイルを使用して、適切に動作するクローラがウェブページにアクセスする方法を制御することができます。`Robots.txt` は、検索ボットがサイトをクロールする方法を記述したシンプルなテキスト ファイルです
-（すべてのクローラが `robots.txt` に従うわけではありません。
-悪意のあるクローラが作成される可能性もあります）。
-
-ウェブサイトのホストのルート ディレクトリに `robots.txt` を配置します。たとえば、サイトのホストが `http://pages.example.com/` である場合は、`robots.txt` を `http://pages.example.com/robots.txt`
-に配置する必要があります。
-ドメインに別のスキーマ、サブドメイン、またはその他のポートがある場合、これらは異なるホストであると見なされるため、それぞれのルート ディレクトリに `robots.txt` を配置する必要があります。
-
-
-
-
-簡単な例を次に示します。  
+Here's a quick example:
 
 **http://pages.example.com/robots.txt**
 
@@ -186,171 +141,158 @@ URL を知っている誰もがそのページを閲覧できるようになり�
     Disallow: /
     
 
-これで、すべてのボットに対して、ウェブサイト全体のクロールが禁止されます。
+This indicates that you want to disallow all bots from crawling your entire website.
 
-
-別の例を次に示します。
+Here's another example:
 
 **http://pages.example.com/robots.txt**
 
-    User-agent:Googlebot
+    User-agent: Googlebot
     Disallow: /nogooglebot/
     
 
-ユーザー エージェントの名前を明示すると、ボット（ユーザー エージェント）ごとに動作を指定することができます。
-上記の例では、`Googlebot` というユーザー エージェントが `/nogooglebot/` とそのディレクトリの配下にあるすべてのコンテンツをクロールすることを禁止しています。
-  
+You can specify the behavior per bot (user agent) by indicating a user-agent name. In the above case, you are disallowing the user agent called `Googlebot` from crawling `/nogooglebot/` and all contents below this directory.
 
-各検索エンジンのボットの詳細については、各検索エンジンのヘルプページをご覧ください。
+Learn more about each search engine's bots on their help pages:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_txt)
 * [Bing](http://www.bing.com/webmaster/help/how-to-create-a-robots-txt-file-cb7c31ec)
 * [Yandex](https://help.yandex.com/webmaster/controlling-robot/robots-txt.xml)
 
+Note: `robots.txt` is only required **if** you want to control the way your site is crawled. Do not return response code 500 for the url: `/robots.txt`. This terminates all subsequent crawls for the entire host resulting in empty search result details.
 
-注: サイトがクロールされる方法を**制御する必要がある場合にのみ**、`robots.txt` が必要です。url: `/robots.txt` に対してレスポンス コード 500 を返さないでください。このコードを返すと、ホスト全体に対する以降のクロールがすべて終了され、検索結果の詳細が空になります。
+#### Test robots.txt
 
-####  robots.txt をテストする
+Depending on which crawlers your robots.txt is targeting, search engine providers may provide a tool to test `robots.txt`. For example, for Google there's a validator in [Webmaster Tools](https://www.google.com/webmasters/tools/robots-testing-tool) that you can use to test your robots.txt.
 
-robots.txt で対象とするクローラによっては、`robots.txt` のテスト用ツールが検索エンジン プロバイダーから提供されている場合があります。
-たとえば、Google の[ウェブマスター ツール](https://www.google.com/webmasters/tools/robots-testing-tool)には、robots.txt のテストに使用できる検証ツールが付属しています。
+<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x" />
 
+Yandex provides [a similar tool](https://webmaster.yandex.com/tools/robotstxt/).
 
+### Control search indexing with meta tags
 
+If you don't want your web page to show up in search results, robots.txt isn't the solution. You need to allow those pages to be crawled, and explicitly indicate that you don't want them to be indexed. There are two solutions:
 
-<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x">
-
-Yandex でも、[同様のツール](https://webmaster.yandex.com/tools/robotstxt/)が提供されています。  
-
-###  メタタグで検索インデックス処理を制御する
-
-ウェブページを検索結果に表示したくない場合、robots.txt は解決策になりません。
-ウェブページのクロールは許可して、ウェブページのインデックス登録は禁止することを明示的に示す必要があります。
-ソリューションは 2 つあります。
-
-HTML ページのインデックス登録を禁止することを示すには、属性として `name="robots"` および `content="noindex"` を指定した特別な `<meta>` タグを使用します。  
-
+To indicate you don't want an HTML page to be indexed, use a specific kind of `<meta>` tag, one with its attributes set as `name="robots"` and `content="noindex"`.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="robots" content="noindex" />
     
 
-`name` 属性の値を特定のユーザー エージェント名に変更すると、スコープを絞り込むことができます。たとえば、`name="googlebot"`（大文字と小文字は区別されない）は、ページのインデックス登録を Googlebot に許可しないことを示します。  
-
+By changing the value of the `name` attribute to a specific user agent name, you can narrow the scope. For example, `name="googlebot"` (case insensitive) indicates that you don't want Googlebot to index the page.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="googlebot" content="noindex" />
     
 
-robots メタタグには、次のようなオプションもあります。  
+Other options for the robots meta tag include:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/which-robots-metatags-does-bing-support-5198d240)
 * [Yandex](https://help.yandex.com/webmaster/controlling-robot/html.xml)
 
-####  X-Robots-Tag
+#### X-Robots-Tag
 
-画像、スタイルシート、スクリプト ファイルなどのリソースのインデックス登録を禁止することを示すには、HTTP ヘッダーに `X-Robots-Tag: noindex` を追加します。
-
-
+To indicate that you don't want resources such as images, stylesheets, or script files to be indexed, add `X-Robots-Tag: noindex` in an HTTP header.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: noindex
     Content-Type: text/html; charset=UTF-8
     
 
-スコープを特定のユーザー エージェントに絞り込む場合は、`noindex` の前にユーザー エージェント名を記載します。  
-
+If you want to narrow the scope to a specific user agent, insert the user agent name before `noindex`.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: googlebot: noindex
     Content-Type: text/html; charset=UTF-8
     
 
-X-Robots-Tag の詳細については、以下をご覧ください。  
+To learn more about X-Robots-Tag:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/how-can-i-remove-a-url-or-page-from-the-bing-index-37c07477)
 
-注: `robots.txt` を使用してクロールを禁止すると、ページのインデックス登録を望んでいない場合でも、検索ボットがページを引き続きインデックス登録する可能性があります。この理由は、次のとおりです。<ul><li>検索ボットが他のウェブサイトにあるリンクを経由してウェブページを見つける可能性がある。</li><li>クロールできない検索エンジンは  <code>noindex</code> を検出できない。</li></ul>
+Note: If you disallow crawls using `robots.txt`,  search bots still may index those pages without knowing that you don't want those pages to be indexed. This can happen because:
 
-`robots.txt` では検索インデックスを制御できないと考えてください。
+* Search bots may find your web pages by following links from other websites.
+* Search engines that can't crawl can't detect `noindex`.
 
-###  コンテンツ タイプごとの例
+Don't expect `robots.txt` to control search indexes.
 
-クロールとインデックス登録を制御するための最適なソリューションを見つけましょう。以下に、ページタイプ別のソリューションの例を紹介します。
+### Examples by content type
 
-####  誰でもアクセスおよび検索できるページ
+What are the best solutions to control crawling and indexing? Here are some example solutions for different types of pages.
 
-ウェブ上の大半のページはこのタイプです。  
+#### Fully accessible and searchable by anyone
 
-* `robots.txt` は不要。
-* robots メタタグは不要。
+Most of the pages on the web are of this type.
 
-####  URL を知っているユーザーのみがアクセスできるページ
+* No `robots.txt` required.
+* No robots meta tags required.
 
-たとえば以下のようなページです。  
+#### Limited access by people who know the URL
 
-* ブログの管理者コンソールのログインページ。
-* URL を渡すことで共有される、インターネット初心者向けのプライベート コンテンツ。
+Examples include:
 
-このようなページの場合、検索エンジンによるインデックス登録を禁止する必要があります。  
+* Login page for a blog admin console.
+* Private content shared by passing a URL for novice internet users.
 
-* `robots.txt` は不要。
-* HTML ページに `noindex` メタタグを使用。
-* 非 HTML リソース（画像や PDF など）に `X-Robots-Tag: noindex` を使用。
+In this case, you don't want search engines to index those pages.
 
-注: JavaScript やスタイルシート ファイルのクロールを禁止する必要があるのでしょうか。AJAX などの最新テクノロジーを活用したコンテンツを検索エンジンで検出できるようにするために、<a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google は最善を尽くしています</a>。検出対象にするには、もちろんクローラによる JavaScript のクロールを許可する必要があります。
+* No `robots.txt` required.
+* Use `noindex` meta tags for HTML pages.
+* Use `X-Robots-Tag: noindex` for non HTML resources (images, pdf, etc).
 
-####  承認されたユーザーのみがアクセスできるページ
+Note: Wondering if you should prohibit crawling JavaScript and Stylesheet files? <a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google tries its best to understand them</a> so that it can find contents available through modern technologies such as AJAX. You should definitely allow crawlers to crawl JavaScript.
 
-この場合、誰かが URL を見つけたとしても、適切な認証情報がない限り、サーバーはその結果を表示することを拒否します。次に例を示します。  
+#### Restricted access from authorized people
 
-* ソーシャル ネットワークで私的に共有されるコンテンツ。
-* 企業の出納システム
+In this case, even if someone finds the URL, the server refuses to present the result without a proper credential. For example:
 
-これらのタイプのページでは、検索エンジンによるページクロールとインデックス登録を禁止する必要があります。  
+* Privately shared content on a social network.
+* Enterprise expense system.
 
-* 適切な認証情報がないアクセスに対しては、レスポンス コード 401 "Unauthorized" を返す（または、ユーザーをログインページにリダイレクトする）。
-* これらのページのクロールを禁止するために `robots.txt` を使用しないでください。使用した場合、401 エラーが検出されません。
+In these types of pages, search engines should neither crawl nor index them.
 
-この場合の制限メカニズムは、IP アドレス、Cookie、基本認証、OAuth などです。
-こうした認証および承認機能を実装する方法はインフラストラクチャによって異なるため、この記事では扱いません。
+* Return response code 401 "Unauthorized" for an access without a proper credential (or redirect the user to a login page).
+* Don't use `robots.txt` to disallow crawling these pages. Otherwise, 401 can't be detected.
 
+The restriction mechanism here can be an IP address, a cookie, basic auth, OAuth, etc. How to implement such authentication/authorization depends on your infrastructure and is beyond this article's scope.
 
-###  検索エンジンからのページの削除をリクエストする
+### Request a page removal from a search engine
 
-検索結果を削除する必要があるのは、次のようなケースです。  
+You might want to remove a search result when:
 
-* ページが存在しなくなった。
-* 機密情報が含まれるページが誤ってインデックス登録された。
+* The page no longer exists.
+* A page was accidentally indexed that includes confidential information.
 
+Major search engines provide a way to send a request to remove such pages. The process usually takes the following:
 
-主要な検索エンジンには、このようなページの削除リクエストを送信する方法が用意されています。通常、次のような手順でリクエストを送信します。  
+1. Make sure the page you want removed:
+    
+    * Is already deleted from your server and returns 404
+    * Is configured not to be indexed (ex: noindex)
 
-1. 削除するページが次の状態であることを確認します。
-    * サーバーから既に削除されていて、404 エラーが返される
-    * インデックス登録されないように設定されている（例: noindex）
+2. Go to the request page on each search engine. (Google and Bing require you to register and validate ownership of your website.)
 
-1. 各検索エンジンのリクエスト ページに移動します（Google と Bing の場合、ウェブサイトの登録と所有権の確認が必要です）。
-1. リクエストを送信します。
+3. Send a request.
 
-<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x">
+<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x" />
 
-詳細な手順については、各検索エンジンのヘルプページをご覧ください。  
+Check out concrete steps at the respective search engine's help pages:
 
 * [Google](https://support.google.com/webmasters/answer/1663419)
 * [Bing](http://www.bing.com/webmaster/help/bing-content-removal-tool-cb6c294d)
 * [Yandex](https://help.yandex.com/webmaster/yandex-indexing/removing-from-index.xml)
 
-###  付録: クローラのユーザー エージェントのリスト
+### Appendix: List of crawler user agents
 
 * [Google](https://support.google.com/webmasters/answer/1061943)
 * [Bing](http://www.bing.com/webmaster/help/which-crawlers-does-bing-use-8c184ec0)
 * [Yandex](https://help.yandex.com/search/robots/logs.xml)
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

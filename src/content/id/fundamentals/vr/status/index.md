@@ -1,37 +1,57 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Dapatkan status informasi terbaru mengenai WebVR, serta hal yang perlu diingat saat membangun pengalaman WebVR.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get the latest info on WebVR and AR's status, as well as things to keep in mind when building WebVR experiences.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# Status dan Pertimbangan WebVR {: .page-title }
+# WebVR Status {: .page-title }
 
-Caution: WebVR masih eksperimental dan dapat berubah.
+## WebVR Implementation Status
 
-## Status Implementasi WebVR
+### WebXR Device API {:#xrdevice}
 
-Saat ini WebVR API tersedia di:
+* Using the WebXR device API requires a [compatible device](/ar/discover/supported-devices) running Android O or later, [ARCore](https://play.google.com/store/apps/details?id=com.google.ar.core&e=-EnableAppDetailsPageRedesign) , and of course, Chrome.
+* The WebXR device API is available on other browsers with a [polyfill](https://github.com/immersive-web/webxr-polyfill).
+* Documentation is available from the [Immersive Web Early Adopters Guide](https://immersive-web.github.io/webxr-reference/).
 
-* Chrome Beta (M56+), melalui [Origin Trial](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md).
+Today the API is available in:
+
+| Feature             | Chrome version                          | Details                                                                                                                                                                                                                   |
+| ------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AR hit test support | Chrome Canary for the immediate future. | Enable the `#webxr` and `#webxr-hit-test` flags under chrome://flags. Note that VR magic windows do not work when the `#webxr-hit-test` flag is turned on. Please excuse our construction debri.                          |
+| VR use cases        | Chrome 66 and later                     | Enable the `chrome://flags/#webxr` flag. (The URL must be entered manually.).                                                                                                                                             |
+| VR use cases        | Chrome 67 origin trial                  | Enable the `chrome://flags/#webxr` flag *and* sign up for the origin trial ([explainer](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md), [sign-up form](http://bit.ly/OriginTrialSignup)). |
+
+Learn more about the immersive web at the [Immersive Web Community Group](https://github.com/immersive-web).
+
+### Version 1.1 {:#version_1_1}
+
+Note: This API is deprecated and its origin trial is scheduled to end in July.
+
+Today the WebVR 1.1 API is available in:
+
 * Firefox Nightly.
-* Browser Samsung Internet untuk Gear VR. (Harap diingat: versi lama spesifikasi WebVR saat ini telah didukung.)
+* Samsung Internet for Android and for Gear VR.
+* A Chrome [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md) that ran from version 56 beta to June of 2017.
 
-<iframe width="100%" height="320" src="https://www.chromestatus.com/feature/4532810371039232?embed" style="border: 1px solid #CCC" allowfullscreen>
-</iframe>
+It's supported on:
 
-Informasi selengkapnya mengenai status implementasi browser bisa ditemukan di [chromestatus.com](https://www.chromestatus.com/features/4532810371039232?embed).
+* Daydream View since M56
+* Google Cardboard since M57
 
-## Pertimbangan
+It's also available through the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill). <iframe width="100%" height="320"
+  src="https://www.chromestatus.com/feature/4532810371039232?embed"
+  style="border: 1px solid #CCC" allowfullscreen mark="crwd-mark">
+</iframe> 
 
-Inilah hal-hal yang harus diingat saat membangun pengalaman WebVR saat ini.
+Find more information on browser implementation status on [chromestatus.com](https://www.chromestatus.com/features/4532810371039232).
 
-* **Anda harus menyajikan materi WebVR melalui HTTPS.** Jika tidak maka pengguna akan mendapatkan peringatan dari browser.
-    * Lihat [Mengaktifkan HTTPS di Server Anda](/web/fundamentals/security/encrypt-in-transit/enable-https) untuk panduan selengkapnya.
-* **Chrome hanya mendukung WebVR asli di Android saat ini.** Anda harus menggunakan headset Daydream bersama ponsel Pixel.
-* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill) mungkin tidak selalu cocok 1:1 dengan implementasi asli spesifikasi.** Jika Anda berencana menggunakan Polyfill, pastikan memeriksa di perangkat berkemampuan VR maupun non-VR.
-* **Pengguna harus mengeklik tombol pengontrol VR sebelum ini tersedia untuk kode Anda**. Anda harus mempertimbangkan hal ini dalam kode, umumnya dengan menampilkan pesan kepada pengguna yang meminta mereka menekan tombol pengontrol di awal pengalaman VR mereka.
-* **Anda harus mengaktifkan informasi pose Gamepad di Chrome 56 bila dijalankan secara lokal**. Informasi gamepad tidak akan berisi informasi pose (atau lokasi) saat dijalankan di localhost kecuali jika Anda mengaktifkan flag waktu proses Gamepad Extensions di Chrome 56. Jika Anda menjalankan Origin Trial, Gamepad Extensions akan diaktifkan bersama WebVR API.
+## Considerations
 
+Here are things to remember when building WebVR experiences today.
 
-{# wf_devsite_translation #}
+* **You must serve your WebVR content over HTTPS.** If you don’t your users will get warnings from the browser. See [Enabling HTTPS on Your Servers](/web/fundamentals/security/encrypt-in-transit/enable-https) for more guidance.
+* **The [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill) may not always be a 1:1 match with native implementations of the spec.** If you plan to use the Polyfill, be sure to check on both VR-capable and non-VR devices.
+* **For some types of sessions, users must click a button before AR or VR are available to your code**. See the [Immersive Web Early Adopters Guide](https://immersive-web.github.io/webxr-reference/) for more information.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

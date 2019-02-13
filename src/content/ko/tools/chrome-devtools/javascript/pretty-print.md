@@ -1,26 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools에서 Pretty-Print 아이콘을 클릭하여 자바스크립트를 읽기 쉬운 형식으로 변형합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Transform your JavaScript into a more readable form by clicking the Pretty-Print icon in Chrome DevTools.
 
-{# wf_updated_on: 2016-02-21 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 자바스크립트를 예쁘게 만들기 {: .page-title }
+# Make JavaScript Look Pretty {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-**Sources** 패널에서 스크립트를 보면서 **Pretty-Print**
-![pretty-print 아이콘](imgs/prettyprint-icon.png){:.inline}
-아이콘을 클릭하여 최소화된 스크립트를 사람이 쉽게 읽을 수 있는 형식으로 변형합니다.
+Warning: This page is deprecated. See [Make a minified file readable](reference#format) for up-to-date information.
 
-최소화된 스크립트는 **Sources** 패널에서 아래와 같이 보입니다.
+When viewing a script in the **Sources** panel, click the **Pretty-Print** ![the pretty-print icon](imgs/prettyprint-icon.png){:.inline} icon to transform a minified script into a more human-readable form.
 
-![최소화된 스크립트](imgs/pretty-print-off.jpg)
+Here is how a minified script might look in the **Sources** panel:
 
-**Pretty-Print** 아이콘을 클릭하면 이 스크립트는 아래와 같이 보입니다.
+![a minified script](imgs/pretty-print-off.jpg)
 
-![pretty print 이후 최소화된 스크립트](imgs/pretty-print-on.jpg)
+Here is how the same script looks after clicking the **Pretty-Print** icon:
 
+![a minified script after pretty print](imgs/pretty-print-on.jpg)
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

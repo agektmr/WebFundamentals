@@ -1,37 +1,28 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: このガイドでは、コンテキストに応じた PageSpeed Insights ルールについて、つまりクリティカル レンダリング パスを最適化する際の注意点と注意すべき理由を説明します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
-{# wf_updated_on:2015-10-05 #}
-{# wf_published_on:2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>JavaScript,Blink>CSS #}
 
-# PageSpeed ルールおよび推奨事項 {: .page-title }
+# PageSpeed Rules and Recommendations {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-このガイドでは、コンテキストに応じた PageSpeed Insights ルールについて、つまりクリティカル レンダリング パスを最適化する際の注意点と注意すべき理由を説明します。
+This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
+## Eliminate render-blocking JavaScript and CSS
 
-## レンダリング ブロック JavaScript および CSS の除去
+To deliver the fastest time to first render, minimize and (where possible) eliminate the number of critical resources on the page, minimize the number of downloaded critical bytes, and optimize the critical path length.
 
-最初のレンダリングまでの時間をできるだけ短縮するには、ページ上のクリティカル リソース数の最小化（可能な場合はリソースの除去）、ダウンロードするクリティカル バイト数の最小化、クリティカル パス長の最適化を行います。
+## Optimize JavaScript use
 
-## JavaScript の使用法を最適化する
+JavaScript resources are parser blocking by default unless marked as `async` or added via a special JavaScript snippet. Parser blocking JavaScript forces the browser to wait for the CSSOM and pauses construction of the DOM, which in turn can significantly delay the time to first render.
 
-JavaScript リソースは、`async` としてマーキングするか、特別な JavaScript スニペットを介して追加していない場合、デフォルトでパーサー ブロックです。パーサー ブロック JavaScript があると、ブラウザは、CSSOM を待ち、DOM の構築を一時中断する必要があります。これにより、最初のレンダリングまでの時間に大幅な遅延が生じることがあります。
+### Prefer asynchronous JavaScript resources
 
-### 非同期 JavaScript リソースを優先する
+Asynchronous resources unblock the document parser and allow the browser to avoid blocking on CSSOM prior to executing the script. Often, if the script can use the `async` attribute, it also means it is not essential for the first render. Consider loading scripts asynchronously after the initial render.
 
-非同期リソースの場合、ドキュメント パーサーはブロックされず、ブラウザでは、スクリプトを実行する前の CSSOM ブロックを回避できます。多くの場合、スクリプトが `async` 属性を使用できるということは、最初のレンダリングに必須ではないことも意味します。最初のレンダリング後に非同期でスクリプトを読み込むことを検討してください。
+### Avoid synchronous server calls
 
-### 同期サーバー呼び出しを避ける
-
-`navigator.sendBeacon()` メソッドを使用して `unload` ハンドラで XMLHttpRequests によって送信されるデータを制限してください。
-多くのブラウザではこのようなリクエストは同期している必要があるため、ページの遷移が遅れることがあり、ときには目立つほどの遅延が生じます。
-次のコードは、`navigator.sendBeacon()` を使用して、`unload` ハンドラではなく `pagehide` ハンドラでサーバーにデータを送信する方法を示しています。
-
-
-
+Use the `navigator.sendBeacon()` method to limit data sent by XMLHttpRequests in `unload` handlers. Because many browsers require such requests to be synchronous, they can slow page transitions, sometimes noticeably. The following code shows how to use `navigator.sendBeacon()` to send data to the server in the `pagehide` handler instead of in the `unload` handler.
 
     <script>
       function() {
@@ -43,10 +34,9 @@ JavaScript リソースは、`async` としてマーキングするか、特別�
         }
       }();
     </script>
+    
 
-
-新しい `fetch()` メソッドを使用すると、データ リクエストの非同期化が容易になります。ただし、これを使用できる環境はまだ限られているため、機能検出を使用して存在していることを確認してから使用する必要があります。このメソッドでは、複数イベント ハンドラではなく、Promises を使用してレスポンスを処理します。XMLHttpRequest に対するレスポンスとは違い、fetch レスポンスは Chrome 43 以降で提供されているストリーム オブジェクトです。つまり、`json()` を呼び出すと Promise も返ります。
-
+The new `fetch()` method provides an easy way to asynchronously request data. Because it is not available everywhere yet, you should use feature detection to test for its presence before use. This method processes responses with Promises rather than multiple event handlers. Unlike the response to an XMLHttpRequest, a fetch response is a stream object starting in Chrome 43. This means that a call to `json()` also returns a Promise.
 
     <script>
     fetch('./api/some.json')  
@@ -66,10 +56,9 @@ JavaScript リソースは、`async` としてマーキングするか、特別�
         console.log('Fetch Error :-S', err);  
       });
     </script>
+    
 
-
-`fetch()` メソッドでは、 POST リクエストも処理できます。
-
+The `fetch()` method can also handle POST requests.
 
     <script>
     fetch(url, {
@@ -78,34 +67,34 @@ JavaScript リソースは、`async` としてマーキングするか、特別�
         "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"  
       },  
       body: 'foo=bar&lorem=ipsum'  
-    }).then(function() { // Aditional code });
+    }).then(function() { // Additional code });
     </script>
+    
 
+### Defer parsing JavaScript
 
-### JavaScript の解析を延期する
+To minimize the amount of work the browser has to perform to render the page, defer any non-essential scripts that are not critical to constructing the visible content for the initial render.
 
-ブラウザがページのレンダリングのために実行する作業量を最小化するには、最初のレンダリングで表示コンテンツを構築するために必須ではないスクリプトは処理を延期して、ページをレンダリングするためにブラウザで実行しなければならない作業量を最小化する必要があります。
+### Avoid long running JavaScript
 
-### 長時間実行される JavaScript を避ける
+Long running JavaScript blocks the browser from constructing the DOM, CSSOM, and rendering the page, so defer until later any initialization logic and functionality that is non-essential for the first render. If a long initialization sequence needs to run, consider splitting it into several stages to allow the browser to process other events in between.
 
-長時間実行される JavaScript があると、ブラウザによる DOM の構築、CSSOM の構築、ページ レンダリングがブロックされます。そのため、最初のレンダリングで必須ではない初期化ロジックや機能は、レンダリング後まで処理を延期する必要があります。長時間に及ぶ初期化シーケンスを実行する必要がある場合は、複数のステージに分割して、その間にブラウザが他のイベントを処理できるようにすることを検討してください。
+## Optimize CSS Use
 
-## CSS の使用法を最適化する
+CSS is required to construct the render tree and JavaScript often blocks on CSS during initial construction of the page. Ensure that any non-essential CSS is marked as non-critical (for example, print and other media queries), and that the amount of critical CSS and the time to deliver it is as small as possible.
 
-CSS は、レンダリング ツリーの構築に必要であり、通常 JavaScript は、最初にページを構築する際に CSS でブロックをします。重要でない CSS（print その他のメディアクエリなど）はすべて非クリティカルとして指定し、クリティカル CSS の量とその配信時間をできる限り削減する必要があります。
+### Put CSS in the document head
 
-### CSS をドキュメントの head に配置する
+Specify all CSS resources as early as possible within the HTML document so that the browser can discover the `<link>` tags and dispatch the request for the CSS as soon as possible.
 
-すべての CSS リソースを HTML ドキュメント内でできるだけ早く指定すると、ブラウザで `<link>` タグを検出して CSS のリクエストをディスパッチするまでの時間を短縮することができます。
+### Avoid CSS imports
 
-### CSS のインポートインポートを避ける
+The CSS import (`@import`) directive enables one stylesheet to import rules from another stylesheet file. However, avoid these directives because they introduce additional roundtrips into the critical path: the imported CSS resources are discovered only after the CSS stylesheet with the `@import` rule itself is received and parsed.
 
-CSS のインポート（`@import`）ディレクティブを使用すると、あるスタイルシート ファイルから別のスタイルシートにルールをインポートできます。ただし、このディレクティブにより、クリティカル パスのラウンドトリップが増えるため、使用は避けてください。インポートされる CSS リソースは、`@import` ルールのある CSS スタイルシート自体の取得と解析が完了するまで検出されません。
+### Inline render-blocking CSS
 
-### インライン レンダリング ブロック CSS
+For best performance, you may want to consider inlining the critical CSS directly into the HTML document. This eliminates additional roundtrips in the critical path and if done correctly can deliver a "one roundtrip" critical path length where only the HTML is a blocking resource.
 
-最大のパフォーマンスを得るには、クリティカル CSS を、HTML ドキュメントに直接インライン化することをおすすめします。これにより、クリティカル パスから余計なラウンドトリップを排除できます。また、適切に実施すれば、HTML 以外のブロック リソースがない「1 ラウンドトリップ」のクリティカル パス長を実現できます。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

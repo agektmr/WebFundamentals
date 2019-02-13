@@ -1,56 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: デベロッパーが HTTPS に移行するときに直面する 2 つの障壁は、概念と用語です。このガイドでは、これら両方の概要を示します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Two of the hurdles developers face when migrating to HTTPS are concepts and terminology. This guide provides a brief overview of both.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# 重要なセキュリティ用語 {: .page-title }
+# Important Security Terminology {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-  
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
+
 ### TL;DR {: .hide-from-toc }
 
-* 公開鍵 / 秘密鍵は、ブラウザとサーバー間のメッセージに署名し、メッセージを復号化するために使用されます。
-* 認証局（CA）とは、公開鍵とパブリック DNS 名（「www.foobar.com」など）間のマッピングを保証する組織です。
-* 証明書署名要求（CSR）は、鍵を所有するエンティティに関するメタデータと一緒に公開鍵をバンドルしたデータ形式です。
+* Public/private keys are used to sign and decrypt messages between the browser and the server.
+* A certificate authority (CA) is an organization that vouches for the mapping between the public keys and public DNS names (such as "www.foobar.com").
+* A certificate signing request (CSR) is a data format that bundles a public key together with some metadata about the entity that owns the key
 
-##  公開鍵と秘密鍵のペアとは
+## What are the public and private key pairs?
 
-**公開鍵と秘密鍵のペア**は、暗号鍵および復号鍵として使用できる非常に多くの数字から成るペアであり、特殊な数学的関係を共有します。
-鍵のペアの一般的なシステムは、**[RSA 暗号システム](https://en.wikipedia.org/wiki/RSA_(cryptosystem)){: .external}**です。
-**公開鍵**はメッセージを暗号化するために使用され、メッセージは対応する**秘密鍵**によってのみ復号化することができます。
-ウェブサーバーは世界にその公開鍵を通知し、クライアント（ウェブブラウザなど）は、サーバーに安全なチャネルをブートストラップするためにそれを使用します。
+A **public/private key pair** is a pair of very large numbers that are used as encryption and decryption keys, and that share a special mathematical relationship. A common system for key pairs is the **[RSA cryptosystem](https://en.wikipedia.org/wiki/RSA_(cryptosystem)){: .external}**. The **public key** is used to encrypt messages, and the messages can only be feasibly decrypted with the corresponding **private key**. Your web server advertises its public key to the world, and clients (such as web browsers) use that to bootstrap a secure channel to your server.
 
+## What is a certificate authority?
 
+A **certification authority (CA)** is an organization that vouches for the mapping between public keys and public DNS names (such as "www.foobar.com"). For example, how is a client to know if a particular public key is the *true* public key for www.foobar.com? A priori, there is no way to know. A CA vouches for a particular key as being the true one for a particular site by using its own private key to **[cryptographically sign](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Signing_messages){: .external}** the website's public key. This signature is computationally infeasible to forge. Browsers (and other clients) maintain **trust anchor stores** containing the public keys owned by the well-known CAs, and they use those public keys to **cryptographically verify** the CA's signatures.
 
-##  認証局とは
+An **X.509 certificate** is a data format that bundles a public key together with some metadata about the entity that owns the key. In the case of the web, the owner of the key is the site operator, and the important metadata is the DNS name of the web server. When a client connects to an HTTPS web server, the web server presents its certificate for the client to verify. The client verifies that the certificate has not expired, that the DNS name matches the name of the server the client is trying to connect to, and that a known trust anchor CA has signed the certificate. In most cases, CAs do not directly sign web server certificates; usually, there is a **chain of certificates** linking a trust anchor to an intermediate signer or signers, and finally to the web server's own certificate (the **end entity**).
 
-**認証局（CA）**とは、公開鍵とパブリック DNS 名（「www.foobar.com」など）間のマッピングを保証する組織です。たとえば、特定の公開鍵が本物の www.foobar.com の公開鍵であることをクライアントが確認するにはどうすればよいでしょうか。
-先験的には知る方法はありません。CA は、独自の秘密鍵を使ってウェブサイトの公開鍵に**[暗号により署名する](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Signing_messages){: .external}**ことで、特定の鍵が特定のサイトの本物の公開鍵であることを保証します。
-この署名は、計算上偽造が不可能です。ブラウザ（およびその他のクライアント）は、有名な CA が所有する公開鍵を含む**トラスト アンカー ストア**を保持し、それらの公開鍵を使用して、CA の署名を**暗号により検証**します。
+## What is a certificate signing request?
 
+A **certificate signing request (CSR)** is a data format which, like a certificate, bundles a public key together with some metadata about the entity that owns the key. However, clients do not interpret CSRs; CAs do. When you seek to have a CA vouch for your web server's public key, you send the CA a CSR. The CA validates the information in the CSR and uses it to generate a certificate. The CA then sends you the final certificate, and you install that certificate (or, more likely, a certificate chain) and your private key on your web server.
 
+## Feedback {: #feedback }
 
-
-**X.509 証明書**は、鍵を所有するエンティティに関するメタデータと一緒に公開鍵をバンドルしたデータ形式です。
-ウェブの場合、鍵の所有者はサイトの運営者であり、重要なメタデータはウェブサーバーの DNS 名です。
-クライアントが HTTPS ウェブサーバーに接続すると、ウェブサーバーは、クライアントが確認できるようにその証明書を提示します。
-クライアントは、証明書の有効期限が切れていないこと、DNS 名がクライアントが接続を試みたサーバー名と一致していること、および既知のトラスト アンカー CA が証明書に署名していることを検証します。
-ほとんどの場合、CA はウェブサーバーの証明書に直接署名はしません。通常、トラスト アンカーを中間署名者または署名者、そして最終的にウェブサーバーの独自の証明書（**エンド エンティティ**）にリンクする**証明書チェーン**が存在します。
-
-
-
-
-##  証明書署名要求とは
-
-**証明書署名要求（CSR）**とは、証明書と同様に、鍵を所有するエンティティに関するメタデータと一緒に公開鍵をバンドルしたデータ形式です。
-ただし、クライアントは CSR を解釈しません。解釈は CA が行います。CA にウェブサーバーの公開鍵の保証を求める場合に、CA に CSR を送信します。
-CA は CSR の情報を検証し、それを使用して証明書を生成します。次に、最終的な証明書をユーザーに送信します。ユーザーはウェブサーバー上に証明書（多くの場合は証明書チェーン）と秘密鍵をインストールします。
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

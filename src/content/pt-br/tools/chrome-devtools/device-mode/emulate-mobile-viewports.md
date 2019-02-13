@@ -1,137 +1,155 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: O Device Mode do Chrome DevTools permite simular como seu site em desenvolvimento ficará na produção em diversos dispositivos.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools' Device Mode lets you mimic how your development site will look in production on a range of devices. robots: noindex
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Testar janelas de visualização responsivas e específicas de dispositivo {: .page-title }
+# Test Responsive and Device-specific Viewports {: .page-title }
 
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+<aside class="warning">
+  <b>This page is deprecated</b>. There are links to up-to-date documentation
+  throughout the page.
+</aside>
 
-O Device Mode atualizado (desde o Chrome 49) é uma parte integrante do novo DevTools que prioriza a mobilidade e 
-estende a barra principal do DevTools. Saiba como usar os controles para simular uma grande variedade de dispositivos ou de modo 
-100% responsivo.
-
+The updated Device Mode (since Chrome 49) is an integral part of the now-mobile-first DevTools and extends the main DevTools bar. Learn how to use its controls to simulate a wide range of devices or go fully responsive.
 
 ### TL;DR {: .hide-from-toc }
-- Teste a responsividade do seu site usando o emulador de tela do Device Mode.
-- Salve predefinições personalizadas para acessá-las facilmente depois.
-- O Device Mode não substitui os testes com dispositivos reais. Esteja ciente das limitações do recurso.
 
+* Test your site's responsiveness using the Device Mode's screen emulator.
+* Save custom presets so you can easily access them later.
+* Device mode isn't a replacement for real device testing. Be aware of its limitations.
 
-## Usar os controles da janela de visualização {: #viewport-controls }
+## Using the viewport controls {: #viewport-controls }
 
-![device mode ativado](imgs/device-mode.png)
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#responsive">Response Viewport Mode</a>
+  and
+  <a href="/web/tools/chrome-devtools/device-mode/#device">Mobile Device Viewport Mode</a>.
+</aside>
 
-Com os controles da janela de visualização, você pode testar seu site em diversos dispositivos e de modo totalmente 
-responsivo. Há dois modos:
+![device mode enabled](imgs/device-mode.png)
 
-  1. **Responsivo**. Torna a janela de visualização dimensionável com alças grandes em ambos os lados. 
-  2. **Dispositivo específico**. Bloqueia a janela de visualização no tamanho exato da janela de visualização de um dispositivo específico e 
-  emula determinadas características do dispositivo.
+The Viewport Controls allow you to test your site against a variety of devices, as well as fully responsively. It comes in two modes:
 
-## Modo responsivo
+1. **Responsive**. Makes the Viewport freely resizable via big handles on either side. 
+2. **Specific Device**. Locks the Viewport to the exact viewport size of a specific device and emulates certain device characteristics.
 
-Recomendamos usar o **Modo responsivo** como padrão. Use-o durante o 
-desenvolvimento ativo do seu site e aplicativo. Redimensione a janela de visualização com frequência para criar um design totalmente responsivo 
-que se adapte até mesmo a tipos de dispositivos desconhecidos e futuros.
+## Responsive mode
 
-Para aproveitar ao máximo o Modo responsivo, ative a [barra de consultas de mídia](#media-queries).
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#responsive">Response Viewport Mode</a>.
+</aside>
 
-### Personalizar o tamanho da janela de visualização
+We recommend using the **Responsive Mode** as your default work mode. Use it during active development of your site and app and resize the viewport often to create a freely responsive design that adapts to even unknown and future device types.
 
-Arraste as grandes alças de redimensionamento da janela de visualização ou clique nos valores na barra de menu para ter um 
-controle mais preciso.
+To get the most out of the Responsive Mode, turn on the [Media Queries Bar](#media-queries).
 
-## Modo específico de dispositivo
+### Customize the viewport size
 
-Use o **Modo específico de dispositivo** quando estiver terminando o desenvolvimento ativo e quiser 
-aperfeiçoar a aparência do seu site em dispositivos móveis específicos (por exemplo, um determinado iPhone ou Nexus).
+Either drag the big resize handles on the viewport or click into the values in the menu bar for finer grained control.
 
-### Predefinições de dispositivo integradas
+## Device-specific mode
+
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#device">Mobile Device Viewport Mode</a>.
+</aside>
+
+Use the **Device-specific Mode** when you're nearing the end of active development and want to perfect how your site looks like on specific mobiles (e.g. a certain iPhone or Nexus).
+
+### Built-in device presets
+
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#device">Mobile Device Viewport Mode</a>.
+</aside>
 
 <div class="wf-devtools-flex">
   <div>
-  <p>Incluímos os dispositivos mais populares atualmente no menu suspenso de dispositivo. Depois de selecionar 
-    um dispositivo, cada predefinição configura a emulação de determinadas características do dispositivo automaticamente:</p>
+  <p>We've included the currently most popular devices in the device dropdown. After selecting 
+    a device, each preset automatically configures emulation of certain device characteristics:</p>
   <ul>
-    <li>Define a string "User Agent" (UA) correta.</li>
-    <li>Define a resolução e o DPI (taxa de pixels) do dispositivo.</li>
-    <li>Emula eventos de toque (se aplicável).</li>
-    <li>Emula sobreposições à barra de rolagem e meta viewport.</li>
-    <li>Dimensiona (aprimora) automaticamente o texto de páginas sem uma janela de visualização definida.</li>
+    <li>Sets the correct "User Agent" (UA) string.</li>
+    <li>Sets the device resolution and DPI (device pixel ratio).</li>
+    <li>Emulates touch events (if applicable).</li>
+    <li>Emulates mobile scrollbar overlays and meta viewport.</li>
+    <li>Autosizes (boosts) text for pages without a defined viewport.</li>
   </ul>
   </div>
   <div class="wf-devtools-flex-third">
-    <img src="imgs/select-device.png" alt="selecione um dispositivo">
+    <img src="imgs/select-device.png" alt="select a device">
   </div>
 </div>
 
-### Adicionar predefinições de dispositivo personalizadas
+### Adding custom device presets
 
-O Device Mode oferece uma grande variedade de dispositivos para emulação. Você pode adicionar um 
-dispositivo personalizado caso encontre um dispositivo de nicho ou extremo que não seja coberto. 
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#custom">Add a custom mobile device</a>.
+</aside>
+
+Device Mode offers a wide array of devices for emulation. You can add a custom device if you find an edge-case or niche device that isn't covered.
 
 <div class="wf-devtools-flex">
   <div>
-  <p>Para adicionar um dispositivo personalizado:</p>
+  <p>To add a custom device:</p>
   <ol>
-    <li>Acesse Settings no DevTools.</li>
-    <li>Clique na guia <strong>Devices</strong>.</li>
-    <li>Clique em <strong>Add custom device</strong>.</li>
-    <li>Insira o nome, comprimento, altura, DPI e 
-     a string user agent do dispositivo.</li>
-     <li>Clique em <strong>Add</strong>.</li>
+    <li>Go to DevTools Settings.</li>
+    <li>Click the <strong>Devices</strong> tab.</li>
+    <li>Click <strong>Add custom device</strong>.</li>
+    <li>Enter a device name, width, height, device pixel ratio, and 
+     user agent string.</li>
+     <li>Click <strong>Add</strong>.</li>
   </ol>
-  <p>Seu dispositivo personalizado agora está disponível no menu suspenso <strong>Device</strong>.</p>
+  <p>Your custom device is now available in the <strong>Device</strong> dropdown menu.</p>
   </div>
   <div class="wf-devtools-flex-half">
-    <img src="imgs/custom-device.png" alt="selecione um dispositivo">
+    <img src="imgs/custom-device.png" alt="select a device">
   </div>
 </div>
 
-### Estados e orientação do dispositivo
+### Device states and orientation
 
-![alternar orientação](imgs/change-orientation.png)
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#orientation">Set orientation</a>.
+</aside>
 
-Ao emular um dispositivo específico, a barra de ferramentas do Device Mode exibe um controle adicional que serve
- principalmente como forma de alternar a orientação entre paisagem e retrato.
+![toggle orientation](imgs/change-orientation.png)
+
+When emulating a specific device, the Device Mode toolbar shows an additional control that primarily serves as a way to toggle the orientation between landscape and portrait.
 
 <div class="wf-devtools-flex">
   <div>
-    <p>Em alguns dispositivos, o controle faz mais do que apenas mudança de orientação. Para dispositivos 
-      compatíveis, como o Nexus 5X, você terá um menu suspenso que permite emular determinados estados do 
-      dispositivo, como:</p>
+    <p>On selected devices, the control does more than just orientation toggling. For supported 
+      devices like the Nexus 5X, you'll get a dropdown that allows you to emulate certain device 
+      states, like:</p>
     <ul>
-      <li>IU padrão de navegador</li>
-      <li>Com a barra de navegação do Chrome</li>
-      <li>Com teclado aberto</li>
+      <li>Default browser UI</li>
+      <li>With Chrome navigation bar</li>
+      <li>With opened keyboard</li>
     </ul>
   </div>
   <div class="wf-devtools-flex-third">
-    <img src="imgs/change-device-state.png" alt="Alterar a IU do dispositivo">
+    <img src="imgs/change-device-state.png" alt="Change the Device UI">
   </div>
 </div>
 
-### Zoom to fit  
+### Zoom to fit
 
 <div class="wf-devtools-flex">
   <div>
-  <p>Às vezes, você precisará testar um dispositivo que tem resolução maior do que o espaço 
-    disponível na janela do navegador. Nesses casos, a opção <strong>Zoom to Fit</strong> é muito 
-    útil:</p>
+  <p>Sometimes you'll want to test a device that has a resolution larger than the actual available 
+    space in your browser window. In these cases, the <strong>Zoom to Fit</strong> option comes in 
+    handy:</p>
   <ol>
     <li>
-      <strong>Fit to Window</strong> definirá o nível de aproximação automaticamente de acordo com o espaço máximo 
-      disponível.
+      <strong>Fit to Window</strong> will automatically set the zoom level to the maximum available 
+      space.
     </li>
     <li>
-      <strong>Explicit percentages</strong> é um recurso útil caso você queira testar o DPI em imagens, 
-      por exemplo.
+      <strong>Explicit percentages</strong> are useful if you want to test DPI on images, 
+      for instance.
     </li>
   </ol>
   </div>
@@ -140,86 +158,59 @@ Ao emular um dispositivo específico, a barra de ferramentas do Device Mode exib
   </div>
 </div>
 
-## Controles opcionais (por exemplo tocar, consultas de mídia, DPR)
+## Optional controls (e.g. touch, media queries, DPR)
 
 <div class="wf-devtools-flex">
   <div>
-  <p>Os controles opcionais podem ser alterados ou ativados clicando nos três pontos pequenos à 
-    direita da barra de ferramentas do dispositivo. As opções atuais incluem</p>
+  <p>Optional controls can be changed or enabled by clicking on the three little dots on the right 
+    side of the device toolbar. Current options include</p>
   <ul>
-    <li>Tipo de user agent (emula eventos de UA e toque)</li>
-    <li>Proporção de pixels do dispositivo</li>
-    <li>Consultas de mídia</li>
-    <li>Réguas</li>
-    <li>Configurar rede (UA, limitação de rede)</li>
+    <li>User agent type (Emulates UA and touch events)</li>
+    <li>Device pixel ratio</li>
+    <li>Media Queries</li>
+    <li>Rulers</li>
+    <li>Configure Network (UA, Network Throttling)</li>
   </ul>
   </div>
   <div class="wf-devtools-flex-third">
-    <img src="imgs/device-mode-dotmenu.png" alt="Configurações do Device Mode">
+    <img src="imgs/device-mode-dotmenu.png" alt="Device Mode Settings">
   </div>
 </div>
 
-Continue lendo para saber mais sobre as opções específicas.
+Read on to learn more about the specific options.
 
-### Tipo de user agent
+### Device pixel ratio (DPR)
 
-A configuração **User Agent Type** ou Tipo do dispositivo, permite alterar o tipo
-do dispositivo. Os valores possíveis são:
+If you want to emulate a Retina device from a non-Retina machine or vice versa, adjust the **Device pixel ratio**. The **device pixel ratio** (DPR) is the ratio between logical pixels and physical pixels. Devices with Retina displays, such as the Nexus 6P, have higher pixel density than standard devices, which can affect the sharpness and size of visual content.
 
-  1. Mobile
-  2. Desktop
-  3. Desktop with touch
+Some examples of "Device Pixel Ratio" (DPR) sensitivity on the web are:
 
-Alterar essa configuração influenciará na emulação do evento de toque e da janela de visualização do dispositivo móvel,
-além de alterar a string UA. Assim, se quiser criar um site responsivo para
-computador e quiser testar os efeitos de passar o cursor, altere para "Desktop" no Modo responsivo.
+* CSS media queries such as:
+    
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { ... }
 
-**Dica**: Você também pode definir o user agent na gaveta [**Network conditions**][nc] 
-.
+* CSS [image-set](http://dev.w3.org/csswg/css-images/#image-set-notation) rules.
 
+* The [srcset](/web/fundamentals/design-and-ux/responsive/images#images-in-markup) attribute on images.
 
-### Proporção de pixels do dispositivo (DPR)
+* The `window.devicePixelRatio` property.
 
-Se quiser emular um dispositivo com Retina em uma máquina sem Retina ou vice-versa, 
-ajuste a opção **Device pixel ratio**. A **proporção de pixels 
-do dispositivo** (DPR, na sigla em inglês) é a relação entre pixels lógicos e físicos. 
-Os dispositivos com telas Retina, como o Nexus 6P, têm maior densidade de pixels 
-que os dispositivos padrão, o que pode afetar a nitidez e o tamanho do conteúdo 
-visual.
+If you have a native Retina display, you'll notice that low "Dots Per Inch" (DPI) assets look pixelated while higher-DPI assets are sharp. To simulate this effect on a standard display, set the DPR to 2 and scale the viewport by zooming. A 2x asset will continue to look sharp, while a 1x one will look pixelated.
 
-Alguns exemplos de sensibilidade à "proporção de pixels do dispositivo" (DPR) na Web são:
+### Media queries {: #media-queries }
 
-* Consultas de mídia CSS como:
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#queries">Show media queries</a>.
+</aside>
 
-      @media (-webkit-min-device-pixel-ratio: 2), 
-             (min-resolution: 192dpi) { ... }
+[Media queries](/web/fundamentals/design-and-ux/responsive/#use-media-queries) are an essential part of responsive web design.To view the media query inspector, click **Show Media queries** in the three dot menu. The DevTools detect media queries in your stylesheets and display them as colored bars in the top ruler.
 
-* Regras CSS [image-set](http://dev.w3.org/csswg/css-images/#image-set-notation) 
-.
+![show media queries](imgs/show-media-queries.png)
 
-* O atributo [srcset](/web/fundamentals/design-and-ux/responsive/images#images-in-markup) 
-  em imagens.
+![media query inspector](imgs/media-query-inspector-ruler.png)
 
-* A property `window.devicePixelRatio`.
-
-Se tiver uma tela Retina nativa, você perceberá que recursos com poucos "pontos por polegada" 
-(DPI) parecem pixelados enquanto ativos com mais DPI são nítidos. Para simular 
-este efeito em uma tela comum, defina o DPR como 2 e dimensione a janela de visualização 
-ajustando o zoom. Um recurso 2x continuará nítido, enquanto um 1x parecerá 
-pixelado.
-
-### Consultas de mídia {: #media-queries }
-
-[Consultas de mídia](/web/fundamentals/design-and-ux/responsive/#use-media-queries)
-são uma parte essencial do design para Web responsivo. Para visualizar o inspetor de consultas de mídia,
-clique em **Show Media queries** no menu de três pontos. O DevTools detecta consultas
-de mídia na sua folha de estilo e exibe-as como barras coloridas na régua superior.
-
-![mostrar consultas de mídia](imgs/show-media-queries.png)
-
-![inspetor de consultas de mídia](imgs/media-query-inspector-ruler.png)
-
-As consultas de mídia têm o seguinte código de cores:
+Media queries are color-coded as follows:
 
 <style>
   #colortable { width: 60%; border: none; } #colortable td { border: none; } 
@@ -232,79 +223,67 @@ As consultas de mídia têm o seguinte código de cores:
   <tbody>
     <tr>
       <td class="max-width"></td>
-      <td>Consultas segmentando uma largura máxima.</td>
+      <td>Queries targeting a maximum width.</td>
     </tr>
     <tr>
       <td class="max-and-min"></td>
-      <td>Consultas segmentando larguras dentro de um intervalo.</td>
+      <td>Queries targeting widths within a range.</td>
     </tr>
     <tr>
       <td class="min-width"></td>
-      <td>Consultas segmentando uma largura mínima.</td>
+      <td>Queries targeting a minimum width.</td>
     </tr>
   </tbody>
 </table>
 
-#### Visualizar uma consulta de mídia rapidamente
+#### Quickly preview a media query
 
-Clique em uma barra de consulta de mídia para ajustar o tamanho da janela de visualização e os estilos de visualização para
-os tamanhos de tela de destino.
+Click a media query bar to adjust the viewport size and preview styles for the targeted screen sizes.
 
-#### Visualizar o CSS associado
+#### View associated CSS
 
-Clique com o botão direito em uma barra para visualizar onde a consulta de mídia está definida no CSS e ir diretamente
-para a definição no código-fonte.
+Right-click a bar to view where the media query is defined in CSS and jump to the definition in source code.
 
-![Visualização de consultas de mídia no Web Fundamentals](imgs/reveal-source-code.png)
+![web fundamentals media queries view](imgs/reveal-source-code.png)
 
-### Réguas
+### Rulers
 
-Ative a opção Rulers para mostrar réguas de pixels ao lado da janela de visualização.
+<aside class="warning">
+  <b>This page is deprecated</b>. See
+  <a href="/web/tools/chrome-devtools/device-mode/#rulers">Show rulers</a>.
+</aside>
 
-### Configurar rede (UA, limitação de rede) {: #network }
+Toggle this option to show pixel-based rulers next to the viewport.
 
-Selecionar essa opção abre a [Gaveta de condições da rede][nc], onde você pode
-alterar os seguintes comportamentos de rede:
+### Configure network (UA, network throttling) {: #network }
 
-  1. **Disk Cache**: Desativar o Disk Cache impede que as páginas e seus recursos sejam
- armazenados em cache pelo navegador enquanto o DevTools está aberto.
-  2. **Network Throttling**: Simula conexões de rede lentas.
-  3. **User agent**: Permite definir a modificação de uma string UA (User Agent)
-     específica.
+Selecting this option opens the [Network Conditions drawer](/web/tools/chrome-devtools/network-performance/reference#network-conditions), where you can change the following network behaviors:
 
-[nc]: /web/tools/chrome-devtools/network-performance/reference#network-conditions
+1. **Disk Cache**: Disable Disk Cache stops pages and their assets from being cached by the browser while the DevTools are open.
+2. **Network Throttling**: Simulate slow network connections.
+3. **User Agent**: Allows you to set a specific UA (User Agent) string override.
 
-## Limitações
+## Limitations
 
-O Device Mode tem algumas limitações.
+Device Mode has some limitations.
 
-* **Hardware do dispositivo**
-    * O comportamento de CPU e GPU não são emulados.
-* **IU do navegador**
-    * Telas do sistema, como a barra de endereço, não são emuladas.
-    * Telas nativas, como elementos `<select>`, não são emuladas como uma lista modal.
-    * Algumas melhorias, como a entrada de números para abrir um teclado, podem variar do comportamento real do 
-    dispositivo.
-* **Funcionalidade do navegador**
-    * O WebGL opera no emulador, mas não é compatível com dispositivos iOS 7.
-    * MathML não é compatível com o Chrome, mas é compatível com dispositivos iOS 7.
-    * Não há suporte para a [reprodução HLS](https://en.wikipedia.org/wiki/HTTP_Live_Streaming) (HTTP Live Streaming para 
-		vídeo) durante a emulação, mas ela é compatível de forma nativa no Chrome do Android e no iOS.
-    * O [bug de zoom na orientação do iOS 5](https://github.com/scottjehl/device-bugs/issues/2) não é 
-		emulado.
-    * A property CSS line-height opera no emulador, mas não é compatível com o Opera Mini.
-    * Os limites de regra do CSS, como os do 
-		[Internet Explorer](http://blogs.msdn.com/b/ieinternals/archive/2011/05/14/10164546.aspx), 
-		não são emulados.
-* **AppCache**
-    * O emulador não modifica o <abbr title="User Agent">UA</abbr> para 
-		[arquivos de manifesto](https://code.google.com/p/chromium/issues/detail?id=334120) ou 
-		[solicitações de origem da vista](https://code.google.com/p/chromium/issues/detail?id=119767) do AppCache.
+* **Device hardware** 
+    * GPU and CPU behavior are not emulated.
+* **Browser UI** 
+    * System displays, such as the address bar, are not emulated.
+    * Native displays, such as `<select>` elements, are not emulated as a modal list.
+    * Some enhancements, such as number inputs opening a keypad, might vary from actual device behavior.
+* **Browser functionality** 
+    * WebGL operates in the emulator, but is not supported on iOS 7 devices.
+    * MathML is not supported in Chrome, but is supported on iOS 7 devices.
+    * [HLS playback](https://en.wikipedia.org/wiki/HTTP_Live_Streaming) (HTTP Live Streaming for video) is not supported while emulating, but is supported natively on Android Chrome and iOS.
+    * The [iOS 5 orientation zoom bug](https://github.com/scottjehl/device-bugs/issues/2) is not emulated.
+    * The line-height CSS property operates in the emulator, but is not supported in Opera Mini.
+    * CSS rule limits, such as those in [Internet Explorer](http://blogs.msdn.com/b/ieinternals/archive/2011/05/14/10164546.aspx), are not emulated.
+* **AppCache** 
+    * The emulator does not override the UA for AppCache [manifest files](https://code.google.com/p/chromium/issues/detail?id=334120) or [view source requests](https://code.google.com/p/chromium/issues/detail?id=119767).
 
-Apesar dessas limitações, o Device Mode é robusto o suficiente para a maioria das tarefas. 
-Quando precisar testar em um dispositivo real, você pode usar a 
-[Depuração remota](/web/tools/chrome-devtools/debug/remote-debugging) 
-para obter informações adicionais.
+Despite these limitations, the Device Mode is robust enough for most tasks. When you need to test on a real device, you can use [Remote Debugging](/web/tools/chrome-devtools/debug/remote-debugging) for additional insight.
 
 ## Feedback {: #feedback }
 

@@ -1,127 +1,120 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ペイントは、最終的にユーザーの画面に合成されるピクセルを書き込む処理です。通常、ペイントはパイプライン内のすべてのタスクの中で最も実行時間が長いため、できるだけ避ける必要があります。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-{# wf_updated_on:2015-03-20 #}
-{# wf_published_on:2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-#  ペイントの複雑さの簡略化とペイントエリアの縮小 {: .page-title }
+# Simplify Paint Complexity and Reduce Paint Areas {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-ペイントは、最終的にユーザーの画面に合成されるピクセルを書き込む処理です。
-通常、ペイントはパイプライン内のすべてのタスクの中で最も実行時間が長いため、できるだけ避ける必要があります。
+Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
+### TL;DR {: .hide-from-toc }
 
-### TL;DR {: .hide-from-toc } 
+* Changing any property apart from transforms or opacity always triggers paint.
+* Paint is often the most expensive part of the pixel pipeline; avoid it where you can.
+* Reduce paint areas through layer promotion and orchestration of animations.
+* Use the Chrome DevTools paint profiler to assess paint complexity and cost; reduce where you can.
 
-* 形状または不透明度以外の任意のプロパティを変更すると、常にペイントがトリガーされます。
-* ペイントは多くの場合、ピクセル パイプラインの中で最も高コストの部分なので、できるだけ避けるようにします。
-* レイヤー プロモーションやアニメーションのオーケストレーションを介してペイントエリアを縮小します。
-* Chrome DevTools のペイント プロファイラを使用して、ペイントの複雑さとコストを評価し、可能なものを削減します。
+## Triggering Layout And Paint
 
-##  レイアウトとペイントのトリガー
+If you trigger layout, you will *always trigger paint*, since changing the geometry of any element means its pixels need fixing!
 
-任意の要素の形状を変更すると要素のピクセルの修正が必要になるため、レイアウトをトリガーすると、常にペイントがトリガーされます。
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="The full pixel pipeline." />
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="フル ピクセル パイプライン。">
+You can also trigger paint if you change non-geometric properties, like backgrounds, text color, or shadows. In those cases layout won’t be needed and the pipeline will look like this:
 
-背景、テキスト色、影などの非形状プロパティを変更した場合も、ペイントをトリガーすることができます。これらのケースではレイアウトが必要とされず、パイプラインは次のようになります。
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="The pixel pipeline without layout." />
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="レイアウトなしのピクセル パイプライン。">
-
-## Chrome DevTools を使用して、ペイントのボトルネックを迅速な識別
+## Use Chrome DevTools to quickly identify paint bottlenecks
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="DevTools の [Show paint rectangles] オプション。">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="The show paint rectangles option in DevTools.">
   </figure>
 </div>
 
-Chrome DevTools を使用して、ペイントされた領域を迅速に識別することができます。DevTools に移動して、キーボードの Esc キーを押します。表示されるパネルの [Rendering] タブに移動し、[Show paint rectangles] を選択します。
+You can use Chrome DevTools to quickly identify areas that are being painted. Go to DevTools and hit the escape key on your keyboard. Go to the rendering tab in the panel that appears and choose “Show paint rectangles”.
 
 <div style="clear:both;"></div>
 
-Chrome でこのオプションをオンに切り替えると、ペイントが発生するたびに画面が緑色で点滅します。画面の全体、またはペイントされるべきではなかった画面領域が緑色で点滅する場合は、その原因を詳しく調査する必要があります。
+With this option switched on Chrome will flash the screen green whenever painting happens. If you’re seeing the whole screen flash green, or areas of the screen that you didn’t think should be painted, then you should dig in a little further.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="ペイントが発生するたびに画面が緑色で点滅します。">
-
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="The page flashing green whenever painting occurs." />
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="Chrome DevTools でペイント プロファイリングを有効にするトグル。">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="The toggle to enable paint profiling in Chrome DevTools.">
   </figure>
 </div>
 
-Chrome DevTools の Timeline には、ペイント プロファイラの詳細情報を提供するオプションがあります。これを有効にするには、Timeline に移動し、上部の [Paint] ボックスを選択します。このオプションはオーバーヘッドを伴い、パフォーマンス プロファイリングをゆがめるため、ペイント問題のプロファイルを行うときにのみ有効にするよう留意してください。実際にペイントされている対象を詳しく分析したいときに、このオプションを使用するのが最適です。
+There’s an option in the Chrome DevTools timeline which will give you more information: a paint profiler. To enable it, go to the Timeline and check the “Paint” box at the top. It’s important to *only have this switched on when trying to profile paint issues*, as it carries an overhead and will skew your performance profiling. It’s best used when you want more insight into what exactly is being painted.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="ペイント プロファイラを起動するボタン。" class="screenshot">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="The button to bring up the paint profiler." class="screenshot">
   </figure>
 </div>
 
-ここから Timeline の記録を実行できます。これにより、ペイント レコードはかなり詳細な情報を持つようになります。フレーム内のペイント レコードをクリックすることで、そのフレームのペイント プロファイラにアクセスできます。
+From here you can now run a Timeline recording, and paint records will carry significantly more detail. By clicking on a paint record in a frame you will now get access to the Paint Profiler for that frame:
 
 <div style="clear:both;"></div>
 
-ペイント プロファイラをクリックすると、ビューが表示されます。このビューでは、ペイントされたもの、ペイントにかかった時間、必要であった個々のペイントコールを確認することができます。
+Clicking on the paint profiler brings up a view where you can see what got painted, how long it took, and the individual paint calls that were required:
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools ペイント プロファイラ。">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler." />
 
-このプロファイラでは、エリアと複雑性（実際にはペイントにかかる時間）を分析し、ペイントを回避できない場合に修正個所を確定することができます。
+This profiler lets you know both the area and the complexity (which is really the time it takes to paint), and both of these are areas you can look to fix if avoiding paint is not an option.
 
-## 移動またはフェードする要素のプロモート
+## Promote elements that move or fade
 
-ペイントは常にメモリ内の単一の画像に対して行われるわけではありません。実際、ブラウザは複数の画像、必要な場合はコンポジ層に対してペイントを行うことができます。
+Painting is not always done into a single image in memory. In fact, it’s possible for the browser to paint into multiple images, or compositor layers, if necessary.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="コンポジ層の表現。">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="A representation of compositor layers." />
 
-このアプローチには、通常は再ペイントされる要素、または変換によって画面上を移動する要素を、他の要素に影響を与えないで処理できるという利点があります。これは Sketch、GIMP、Photoshop などのアート パッケージの手法と同じであり、個々のレイヤーを他のレイヤーに対して相互に処理および合成して最終的な画像を作成することができます。
+The benefit of this approach is that elements that are regularly repainted, or are moving on screen with transforms, can be handled without affecting other elements. This is the same as with art packages like Sketch, GIMP, or Photoshop, where individual layers can be handled and composited on top of each other to create the final image.
 
-新しいレイヤーを作成するための最良の方法は、`will-change` CSS プロパティを使用することです。この方法は Chrome、Opera、Firefox で動作し、`transform` の値を使用すると、新しいコンポジ層が作成されます。
-
+The best way to create a new layer is to use the `will-change` CSS property. This will work in Chrome, Opera and Firefox, and, with a value of `transform`, will create a new compositor layer:
 
     .moving-element {
       will-change: transform;
     }
+    
 
-
-`will-change` をサポートしないものの、レイヤー作成を利用できるブラウザ（Safari や Mobile Safari など）では、3D 変換を（誤）使用して新しいレイヤーを強制的に作成する必要があります。
-
+For browsers that don’t support `will-change`, but benefit from layer creation, such as Safari and Mobile Safari, you need to (mis)use a 3D transform to force a new layer:
 
     .moving-element {
       transform: translateZ(0);
     }
+    
 
+Care must be taken not to create too many layers, however, as each layer requires both memory and management. There is more information on this in the [Stick to compositor-only properties and manage layer count](stick-to-compositor-only-properties-and-manage-layer-count) section.
 
-ただし、各レイヤーはメモリと管理を必要とするため、あまり多くのレイヤーを作成しないように注意する必要があります。この手法の詳細については、[コンポジタ専用プロパティのみの使用、およびレイヤー数の管理](stick-to-compositor-only-properties-and-manage-layer-count) セクションを参照してください。
+If you have promoted an element to a new layer, use DevTools to confirm that doing so has given you a performance benefit. **Don't promote elements without profiling.**
 
-新しいレイヤーに要素をプロモートした場合は、それによってパフォーマンス上の利点が得られたことを DevTools によって確認してください。**プロファイリングなしに要素をプロモートしないでください。**
+## Reduce paint areas
 
-## ペイントエリアの縮小
+Sometimes, however, despite promoting elements, paint work is still necessary. A large challenge of paint issues is that browsers union together two areas that need painting, and that can result in the entire screen being repainted. So, for example, if you have a fixed header at the top of the page, and something being painted at the bottom the screen, the entire screen may end up being repainted.
 
-ただし、要素をプロモートしても、ペイント作業が依然として必要になる場合があります。ペイントの大きな問題は、ペイントを必要とする 2 つのエリアがブラウザによって結合されると、画面全体の再ペイントが必要になる可能性が生じることです。したがって、たとえば、ページの最上部にヘッダーを固定し、画面の最下部に何かを描くと、最終的に画面全体が再ペイントされる可能性があります。
+Note: On High DPI screens elements that are fixed position are automatically promoted to their own compositor layer. This is not the case on low DPI devices because the promotion changes text rendering from subpixel to grayscale, and layer promotion needs to be done manually.
 
-注: 位置が固定されている高 DPI 画面の要素は、自動的に独自のコンポジ層にプロモートされます。これは低 DPI 端末では実行されません。その理由は、プロモーションによってテキスト レンダリングがサブピクセルからグレースケールに変更され、レイヤー プロモーションを手動で実行する必要があるためです。
+Reducing paint areas is often a case of orchestrating your animations and transitions to not overlap as much, or finding ways to avoid animating certain parts of the page.
 
-ペイントエリアの縮小は、通常、過度のオーバーラップが生じないようにアニメーションと遷移を調整するか、ページの特定の部分のアニメーション化を避ける方法を見つける作業です。
-
-##  ペイントの複雑さの簡略化
+## Simplify paint complexity
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="画面の一部のペイントにかかる時間。">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="The time taken to paint part of the screen.">
   </figure>
 </div>
 
-ペイントでは、特定の処理のコストが他の処理よりも高くなります。たとえば、ブラーを必要とする処理（シャドウなど）では、赤いボックスの描画などよりもペイントに時間がかかります。ただし、CSS に関しては、これは必ずしも明白でありません。`background: red;` と `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` は、パフォーマンス特性が大きく異なるようには見えませんが、実際には異なります。
+When it comes to painting, some things are more expensive than others. For example, anything that involves a blur (like a shadow, for example) is going to take longer to paint than -- say -- drawing a red box. In terms of CSS, however, this isn’t always obvious: `background: red;` and `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` don’t necessarily look like they have vastly different performance characteristics, but they do.
 
-上記のペイント プロファイラを使用すると、効果を実現するために他の方法を探す必要があるかどうかを判断できます。より低コストのスタイル、または目的の結果を実現する他の手法を使用できるかどうかを検討してください。
+The paint profiler above will allow you to determine if you need to look at other ways to achieve effects. Ask yourself if it’s possible to use a cheaper set of styles or alternative means to get to your end result.
 
-可能な場合、特にアニメーションの実行中には常に、ペイントを避ける必要があります。これは、特にモバイル端末上では、1 フレームあたり **10 ミリ秒**は、一般的にペイント作業を実行するのに十分長い時間ではないためです。
+Where you can you always want to avoid paint during animations in particular, as the **10ms** you have per frame is normally not long enough to get paint work done, especially on mobile devices.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

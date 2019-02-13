@@ -1,637 +1,464 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Mengukur kinerja jaringan aplikasi web Anda menggunakan panel Network Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Measure the network performance of your web application using the Chrome DevTools Network panel.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mengukur Waktu Pemuatan Resource {: .page-title }
+# Measure Resource Loading Times {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
+Warning: This page is deprecated. At the top of each section, there's a link to an up-to-date page where you can find similar information.
 
-Perhatian: Halaman ini tidak digunakan lagi. Di bagian atas setiap bagian, terdapat
-link ke halaman terbaru tempat Anda dapat menemukan informasi yang serupa.
+Measure the network performance of your site using the
+<strong>Network</strong> panel.
 
-Ukur kinerja jaringan situs Anda menggunakan panel
-<strong>Network</strong>.
-
-
-Panel **Network** mencatat informasi tentang operasi setiap jaringan di
-suatu halaman, termasuk detail data timing, permintaan dan respons HTTP
-header, cookie, dan lainnya.
-
+The **Network** panel records information about each network operation on a page, including detailed timing data, HTTP request and response headers, cookies, and more.
 
 ### TL;DR {: .hide-from-toc }
-- Menggunakan panel Network untuk mencatat dan menganalisis aktivitas jaringan.
-- Melihat informasi pemuatan secara agregat atau untuk setiap resource.
-- Memfilter dan mengurutkan tampilan resource.
-- Menyimpan, menyalin, dan membersihkan catatan jaringan.
-- Menyesuaikan panel Network sesuai kebutuhan Anda.
 
-## Ringkasan panel Network
+* Use the Network panel to record and analyze network activity.
+* View load information in aggregate or for individual resources.
+* Filter and sort how resources are displayed.
+* Save, copy, and clear network recordings.
+* Customize the Network panel to your needs.
+
+## Network panel overview
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat bagian berikut untuk mengetahui informasi
-  terbaru:
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#controls">Panel Kontrol</a></li>
-    <li><a href="reference#filters">Panel Filter</a></li>
-    <li><a href="reference#overview">Panel Ringkasan</a></li>
-    <li><a href="reference#requests">Panel Permintaan</a></li>
-    <li><a href="reference#summary">Panel Rangkuman</a></li>
+    <li><a href="reference#controls">Controls pane</a></li>
+    <li><a href="reference#filters">Filters pane</a></li>
+    <li><a href="reference#overview">Overview pane</a></li>
+    <li><a href="reference#requests">Requests pane</a></li>
+    <li><a href="reference#summary">Summary pane</a></li>
   </ul>
 </aside>
 
-Panel Network terdiri dari lima panel:
+The Network panel consists of five panes:
 
-1. **Controls**. Gunakan opsi ini untuk mengontrol tampilan panel **Network**
-   dan fungsinya.
-2. **Filters**. Gunakan opsi ini untuk mengontrol resource apa saja yang ditampilkan di
-   **Requests Table**. Tips: tekan dan tahan <kbd>Cmd</kbd> (Mac) atau <kbd>Ctrl</kbd>
-   (Window/Linux), lalu klik filter untuk memilih beberapa filter di
-   pada saat yang sama.
-3. **Overview**. Grafik ini menampilkan timeline pengambilan resource.
-   Jika Anda melihat beberapa bilah yang ditumpuk secara vertikal, artinya resource tersebut
- diambil secara bersamaan.
-4. **Requests Table**. Tabel ini menampilkan daftar setiap resource yang diambil.
-   Secara default, tabel ini diurutkan secara kronologis, dengan resource
-   paling awal ditampilkan di atas.
-   Mengklik nama resource akan menampilkan informasi selengkapnya tentang resource tersebut.
-   Tips: klik kanan header tabel mana pun kecuali **Timeline** untuk
-   menambahkan atau menghapus kolom informasi.
-5. **Summary**. Sekilas, panel ini memberi tahu Anda tentang jumlah total permintaan,
- jumlah data yang ditransfer, dan waktu muat.
+1. **Controls**. Use these options to control how the **Network** panel looks and functions.
+2. **Filters**. Use these options to control which resources are displayed in the **Requests Table**. Tip: hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Window/Linux), and then click on a filter to select multiple filters at the same time.
+3. **Overview**. This graph shows a timeline of when resources were retrieved. If you see multiple bars stacked vertically, it means that those resources were retrieved simultaneously.
+4. **Requests Table**. This table lists out every resource that was retrieved. By default, this table is sorted chronologically, with the earliest resources at the top. Clicking on the name of a resource yields more information about it. Tip: right-click on any of the table headers except **Timeline** to add or remove columns of information.
+5. **Summary**. At a glance this pane tells you the total number of requests, amount of data transferred, and load times.
 
-![panel jaringan](imgs/panes.png)
+![network panel panes](imgs/panes.png)
 
-**Requests Table** menampilkan kolom berikut secara default. Anda bisa
-[menambahkan dan menghapus kolom](#add-and-remove-table-columns).
+The **Requests Table** displays the following columns by default. You can [add and remove columns](#add-and-remove-table-columns).
 
-* **Name**. Nama resource.
-* **Status**. Kode status HTTP.
-* **Type**. Jenis MIME dari resource yang diminta.
-* **Initiator**. Objek atau proses yang memulai permintaan. Inisiator
-  bisa memiliki salah satu nilai berikut:
-  * **Parser**. Parser HTML Chrome memulai permintaan.
-  * **Redirect**. Pengalihan HTTP memulai permintaan.
-  * **Script**. Skrip memulai permintaan.
-  * **Other**. Beberapa proses atau tindakan lain memulai permintaan,
-   misalnya pengguna yang masuk ke halaman melalui link, atau dengan memasukkan
-   URL di kolom alamat.
-* **Size**. Ukuran gabungan header respons (biasanya berukuran
-  beberapa ratus byte) ditambah isi respons, sebagaimana dikirimkan oleh server.
-* **Time**. Durasi total, dari permulaan permintaan ke
-  bagian akhir byte terakhir dalam respons.
-* **Timeline**. Kolom Timeline menampilkan jenjang visual semua
-  permintaan jaringan. Mengklik header kolom ini akan menampilkan menu
-  bidang pengurutan tambahan.
+* **Name**. The name of the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The object or process that initiated the request. It can have one of the following values: 
+    * **Parser**. Chrome's HTML parser initiated the request.
+    * **Redirect**. An HTTP redirect initiated the request.
+    * **Script**. A script initiated the request.
+    * **Other**. Some other process or action initiated the request, such as the user navigating to a page via a link, or by entering a URL in the address bar.
+* **Size**. The combined size of the response headers (usually a few hundred bytes) plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* **Timeline**. The Timeline column displays a visual waterfall of all network requests. Clicking the header of this column reveals a menu of additional sorting fields.
 
-## Rekam aktivitas jaringan
+## Record network activity
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#record">Memulai atau menghentikan perekaman</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#record">Start or stop recording</a>
+  for up-to-date information.
 </aside>
 
-Saat panel **Network** terbuka, DevTools akan merekam semua aktivitas jaringan
-secara default. Untuk merekam, cukup muat ulang halaman saat panel terbuka, atau tunggu
-aktivitas jaringan pada halaman yang saat ini dimuat.
+When the **Network** panel is open, DevTools records all network activity by default. To record, just reload a page while the panel is open, or wait for network activity on the currently loaded page.
 
-Anda bisa melihat apakah DevTools melakukan perekaman atau tidak melalui tombol
-**record**. Jika berwarna merah
-(![tombol rekam aktif](imgs/record-on.png){:.inline}), berarti DevTools sedang merekam.
-Jika berwarna abu-abu (![tombol rekam nonaktif](imgs/record-off.png){:.inline}), berarti DevTools
-tidak sedang merekam. Klik tombol ini untuk memulai atau menghentikan perekaman, atau tekan
-pintasan keyboard <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd>.
+You can tell whether or not DevTools is recording via the **record** button. When it's red (![record button on](imgs/record-on.png){:.inline}), DevTools is recording. When it's grey (![record button off](imgs/record-off.png){:.inline}), DevTools is not recording. Click this button to start or stop recording, or press the keyboard shortcut <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd>.
 
-## Ambil screenshot saat merekam {:#filmstrip}
+## Capture screenshots during recording {:#filmstrip}
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#screenshots">Mengambil screenshot saat merekam</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#screenshots">Capture screenshots during recording</a>
+  for up-to-date information.
 </aside>
 
-Panel **Network** dapat mengambil screenshot selama pemuatan halaman. Fitur ini
-dikenal sebagai **Filmstrip**.
+The **Network** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
-Klik ikon **camera** untuk mengaktifkan Filmstrip. Jika ikon berwarna abu-abu,
-artinya Filmstrip dinonaktifkan  (![filmstrip
-nonaktif](imgs/filmstrip-disabled.png){:.inline}). Jika ikon berwarna biru, artinya
-Filmstrip diaktifkan (![filmstrip aktif](imgs/filmstrip-enabled.png){:.inline}).
+Click on the **camera** icon to enable the Filmstrip. When the icon is grey, the Filmstrip is disabled (![filmstrip
+disabled](imgs/filmstrip-disabled.png){:.inline}). When the icon is blue, it is enabled (![filmstrip enabled](imgs/filmstrip-enabled.png){:.inline}).
 
-Muat ulang laman untuk merekam tangkapan layar. Screenshot ditampilkan
-di atas **Overview**.
+Reload the page to capture the screenshots. The screenshots are displayed above the **Overview**.
 
-![merekam dengan filmstrip](imgs/filmstrip.png)
+![recording with filmstrip](imgs/filmstrip.png)
 
-Jika Anda mengarahkan kursor ke screenshot, **Timeline** akan menampilkan garis kuning
-vertikal yang menunjukkan bahwa bingkai itu direkam.
+When you hover over a screenshot, the **Timeline** displays a vertical yellow line indicating when the frame was captured.
 
-![overlay filmstrip pada timeline](imgs/filmstrip-timeline-overlay.png)
+![filmstrip overlay on timeline](imgs/filmstrip-timeline-overlay.png)
 
-Klik dua kali screenshot untuk melihat versinya yang diperbesar. Saat
-tangkapan layar diperbesar, gunakan panah kiri dan kanan di keyboard Anda
-untuk berpindah antar-tangkapan layar.
+Double-click on a screenshot to view a zoomed version of the screenshot. While a screenshot is zoomed, use the left and right arrows of your keyboard to navigate between screenshots.
 
-![screenshot filmstrip yang diperbesar](imgs/filmstrip-zoom.png)
+![zoomed filmstrip screenshot](imgs/filmstrip-zoom.png)
 
-## Lihat informasi peristiwa DOMContentLoaded dan pemuatan
+## View DOMContentLoaded and load event information
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#load">Melihat peristiwa pemuatan</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#load">View load events</a>
+  for up-to-date information.
 </aside>
 
-Panel **Network** menyorot dua peristiwa:
-[`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) dan
-[`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load).
+The **Network** panel highlights two events: [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) and [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load).
 
-`DOMContentLoaded` dipicu saat markup awal halaman telah
-di-parse. Ini ditampilkan di dua tempat pada panel **Network**:
+`DOMContentLoaded` is fired when the initial markup of a page has been parsed. It is displayed in two places on the **Network** panel:
 
-1. Bilah vertikal biru di panel **Overview** menandakan peristiwa.
-2. Di panel **Summary**, Anda bisa melihat waktu persisnya peristiwa.
+1. The blue vertical bar in the **Overview** pane signifies the event.
+2. In the **Summary** pane you can see the exact time of the event.
 
-![peristiwa DOMContentLoaded di panel Network](imgs/domcontentloaded.png)
+![DOMContentLoaded event on network panel](imgs/domcontentloaded.png)
 
-`load` dipicu saat halaman telah dimuat sepenuhnya. Ini ditampilkan di tiga tempat:
+`load` is fired when a page has fully loaded. It is displayed in three places:
 
-1. Bilah vertikal merah di panel **Overview** menandakan peristiwa.
-2. Bilah vertikal merah di **Requests Table** menandakan peristiwa juga.
-3. Di panel **Summary** Anda bisa melihat waktu persis peristiwa tersebut.
+1. The red vertical bar in the **Overview** pane signifies the event.
+2. The red vertical bar in the **Requests Table** signifies the event, too.
+3. In the **Summary** pane you can see the exact time of the event.
 
-![memuat kejadian di panel Network](imgs/load.png)
+![load event on network panel](imgs/load.png)
 
-## Lihat detail untuk resource tunggal
+## View details for a single resource
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#details">Menampilkan detail</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#details">View details</a>
+  for up-to-date information.
 </aside>
 
-Klik nama resource (di kolom **Name** pada **Requests Table**)
-untuk melihat informasi selengkapnya tentang resource tersebut.
+Click on a resource name (under the **Name** column of the **Requests Table**) to view more information about that resource.
 
-Tab yang tersedia akan berubah, tergantung tipe resource yang Anda pilih,
-tetapi empat tab berikut paling umum ditampilkan:
+The tabs available change depending on what type of resource you've selected, but the four tabs below are most common:
 
-* **Headers**. Header HTTP yang terkait dengan resource ini.
-* **Preview**. Pratinjau resource JSON, gambar, dan teks.
-* **Response**. Data respons HTTP (jika ada).
-* **Timing**. Perincian daur hidup permintaan yang lebih detail untuk
- resource.
+* **Headers**. HTTP headers associated with the resource.
+* **Preview**. Previews of JSON, image, and text resources.
+* **Response**. HTTP response data (if any).
+* **Timing**. A granular breakdown of the request lifecycle for the resource.
 
-![menampilkan perincian untuk satu resource](imgs/network-headers.png)
+![viewing details for a single resource](imgs/network-headers.png)
 
-### Lihat timing jaringan
+### View network timing
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#timing">tab Timing</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#timing">Timing tab</a>
+  for up-to-date information.
 </aside>
 
-Klik tab **Timing** untuk menampilkan perincian daur hidup permintaan yang lebih detail
-untuk resource tunggal.
+Click the **Timing** tab to view a granular breakdown of the request lifecycle for a single resource.
 
-Siklus hidup menampilkan berapa lama waktu yang dihabiskan dalam kategori berikut:
+The lifecycle shows how much time is spent in the following categories:
 
 <!-- the screenshot above and list below are redundant, but we include
      the text for SEO -->
 
-* Mengantrekan
-* Terhenti
-* Jika berlaku: DNS lookup, initial connection, SSL handshake
+* Queuing
+* Stalled
+* If applicable: DNS lookup, initial connection, SSL handshake
 * Request sent
 * Waiting (Time to first byte (TTFB))
 * Content Download
 
-![tab timing](imgs/timing-tab.png)
+![timing tab](imgs/timing-tab.png)
 
-Anda juga bisa melihat informasi yang sama ini dengan mengarahkan pointer mouse ke atas
-resource di dalam grafik **Timeline**.
+You can also view this same information by hovering your mouse over a resource within the **Timeline** graph.
 
-![data timing untuk satu resource di timeline](imgs/timeline-view-hover.png)
+![timing data for one resource in timeline](imgs/timeline-view-hover.png)
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.timing #}
 
-Panduan Terkait:
+Related Guides:
 
-* [Memahami Resource Timing](understanding-resource-timing)
+* [Understanding Resource Timing](understanding-resource-timing)
 
-### Melihat header HTTP
+### View HTTP headers
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#headers">Tab Headers</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#headers">Headers tab</a>
+  for up-to-date information.
 </aside>
 
-Mengklik **Headers** akan menampilkan header untuk resource tersebut.
+Clicking the **Headers** shows the headers for that resource.
 
-Tab **Headers** menampilkan URL permintaan, metode HTTP, dan
-kode status respons resource. Selain itu, tab ini menampilkan header respons dan permintaan
-HTTP dan nilainya, serta setiap parameter string kueri.
+The **Headers** tab displays the resource's request URL, HTTP method, and response status code. Additionally, it lists the HTTP response and request headers and their values, and any query string parameters.
 
-![header HTTP untuk resource tunggal](imgs/network-headers.png)
+![HTTP headers for a single resource](imgs/network-headers.png)
 
-Anda dapat menampilkan header respons, header permintaan, atau parameter string kueri
-dalam format sumber atau format yang di-parse dengan mengklik link `view source` atau `view parsed`
-di sebelah masing-masing bagian.
+You can view response headers, request headers, or query string parameters in source or parsed format by clicking the `view source` or `view parsed` link next to each section.
 
-![menampilkan resource header](imgs/view-header-source.png)
+![view header source](imgs/view-header-source.png)
 
-Anda juga bisa menampilkan parameter string kueri di format URL yang dienkode atau didekode dengan
-mengklik link `view URL encoded` atau `view decoded` di sebelah bagian tersebut.
+You can also view query string parameters in URL-encoded or decoded format by clicking the `view URL encoded` or `view decoded` link next to that section.
 
-![menampilkan URL yang dienkode](imgs/view-url-encoded.png)
+![view URL encoded](imgs/view-url-encoded.png)
 
-### Pratinjau resource
+### Preview a resource
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#preview">Tab Pratinjau</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preview">Preview tab</a>
+  for up-to-date information.
 </aside>
 
-Klik tab **Preview** untuk menampilkan pratinjau resource tersebut. Tab **Preview**
-bisa menampilkan informasi berguna atau tidak, tergantung tipe
-resource yang Anda pilih.
+Click the **Preview** tab to view a preview of that resource. The **Preview** tab may or may not display any useful information, depending on the type of resource you've selected.
 
-![pratinjau resource gambar](imgs/preview-png.png)
+![image resource preview](imgs/preview-png.png)
 
-### Tampilkan materi respons HTTP
+### View HTTP response content
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#response">Tab Respons</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#response">Response tab</a>
+  for up-to-date information.
 </aside>
 
-Klik tab **Response** untuk menampilkan materi respons HTTP
-yang tidak diformat. Tab **Response** bisa menampilkan informasi berguna atau tidak,
-tergantung tipe resource yang Anda pilih.
+Click the **Response** tab to view the resource's unformatted HTTP response content. The **Response** tab may or may not contain any useful information, depending on the type of resource you've selected.
 
-![data respons resource JSON](imgs/response-json.png)
+![JSON resource response data](imgs/response-json.png)
 
-### Melihat cookie
+### View cookies
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#cookies">Tab Cookie</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#cookies">Cookies tab</a>
+  for up-to-date information.
 </aside>
 
-Klik tab **Cookies** untuk menampilkan tabel cookie yang ditransmisikan di
-header respons dan permintaan HTTP resource. Tab ini hanya tersedia
-jika cookie ditransmisikan.
+Click the **Cookies** tab to view a table of cookies transmitted in the resource's HTTP request and response headers. This tab is only available when cookies are transmitted.
 
-Berikut adalah keterangan setiap kolom di tabel:
+Below is a description of each of the columns in the table:
 
-* **Name**. Nama cookie.
-* **Value**. Nilai cookie.
-* **Domain**. Domain tempat cookie berada.
-* **Path**. Jalur URL asal cookie.
-* **Expires / Max-Age**. Nilai properti kedaluwarsa atau usia maksimum
- cookie.
-* **Size**. Ukuran cookie dalam byte.
-* **HTTP**. Menandakan bahwa cookie harus ditetapkan oleh browser dalam
-  permintaan HTTP saja dan tidak bisa diakses dengan JavaScript.
-* **Secure**. Kehadiran atribut ini menandakan bahwa cookie harus
-  ditransmisikan hanya melalui koneksi aman.
+* **Name**. The cookie's name.
+* **Value**. The cookie's value.
+* **Domain**. The domain the cookie belongs to.
+* **Path**. The URL path the cookie came from.
+* **Expires / Max-Age**. The value of the cookie's expires or max-age properties.
+* **Size**. The size of the cookie in bytes.
+* **HTTP**. Indicates that the cookie should only be set by the browser in the HTTP request, and cannot be accessed with JavaScript.
+* **Secure**. The presence of this attribute indicates that the cookie should only be transmitted over a secure connection.
 
-![cookie resource](imgs/cookies.png)
+![resource cookies](imgs/cookies.png)
 
-### Tampilkan frame WebSocket
+### View WebSocket frames
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#frames">Tab Frame</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#frames">Frames tab</a>
+  for up-to-date information.
 </aside>
 
-Klik tab **Frames** untuk menampilkan
-[`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
-informasi koneksi. Tab ini hanya terlihat jika resource yang dipilih
-memulai koneksi `WebSocket`.
+Click the **Frames** tab to view [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) connection information. This tab is only visible when the selected resource initiated a `WebSocket` connection.
 
-![tab websocket frames](imgs/websocket-frames.png)
+![websocket frames tab](imgs/websocket-frames.png)
 
-Daftar berikut menjelaskan masing-masing kolom di tabel tab
-**Frames**:
+The list below describes each of the columns in the table on the **Frames** tab:
 
-* **Data**. Payload pesan. Jika berformat teks biasa, pesan
-  ditampilkan di sini. Untuk opcode biner, bidang ini menampilkan nama dan kode
-  opcode. Didukung opcode berikut:
-  * Continuation Frame
-  * Binary Frame
-  * Connection Close Frame
-  * Ping Frame
-  * Pong Frame
-* **Length**. Panjang payload pesan dalam byte.
-* **Time**. Stempel waktu saat pesan dibuat.
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this field displays the opcode's name and code. The following opcodes are supported: 
+    * Continuation Frame
+    * Binary Frame
+    * Connection Close Frame
+    * Ping Frame
+    * Pong Frame
+* **Length**. The length of the message payload in bytes.
+* **Time**. The time stamp when the message was created.
 
-Pesan diberi kode warna sesuai dengan jenisnya:
+Messages are color-coded according to their type:
 
-* Pesan teks keluar ditandai dengan kode warna hijau muda.
-* Pesan teks masuk berwarna putih.
-* Opcode WebSocket berwarna kuning terang.
-* Error berwarna merah terang.
+* Outgoing text messages are color-coded light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-**Catatan tentang implementasi saat ini:**
+**Notes about current implementation:**
 
-* Untuk memuat ulang tabel **Frames** setelah pesan baru masuk, klik
-  nama resource di sebelah kiri.
-* Hanya 100 pesan `WebSocket` terakhir yang dipertahankan di tabel **Frames**.
+* To refresh the **Frames** table after new messages arrive, click the resource name on the left.
+* Only the last 100 `WebSocket` messages are preserved by the **Frames** table.
 
-## Tampilkan inisiator dan dependensi resource {:#initiators-dependencies}
+## View resource initiators and dependencies {:#initiators-dependencies}
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#initiators-dependencies">Menampilkan inisiator dan
-  dependensi</a> untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#initiators-dependencies">View initiators and
+  dependencies</a> for up-to-date information.
 </aside>
 
-Tekan <kbd>Shift</kbd> dan arahkan kursor ke resource untuk menampilkan inisiator
-dan dependensinya. Bagian ini mengacu pada resource yang Anda arahkan pointer mouse
-ke atasnya sebagai **target**.
+Hold <kbd>Shift</kbd> and hover over a resource to view its initiators and dependencies. This section refers to the resource that you are hovering over as the **target**.
 
-Resource pertama di atas target yang ditandai warna hijau adalah inisiator
-target. Jika ada resource kedua di atasnya yang ditandai warna
-hijau, ini adalah inisiator dari inisiator. Semua resource di bawah target
-dengan kode warna merah adalah dependensi target.
+The first resource above the target that is color-coded green is the initiator of the target. If there is a second resource above that which is color-coded green, that's the initiator of the initiator. Any resources below the target that are color-coded red are dependencies of the target.
 
-Di screenshot berikut, targetnya adalah `dn/`. Inisiator target adalah
-skrip yang dimulai dengan `rs=AA2Y`. Inisiator dari inisiator
-(`rs=AA2Y`) adalah `google.com`. Terakhir, `dn.js` adalah dependensi
-target (`dn/`).
+In the screenshot below, the target is `dn/`. The initiator of the target is the script beginning with `rs=AA2Y`. The initiator of the initiator (`rs=AA2Y`) is `google.com`. Last, `dn.js` is a dependency of the target (`dn/`).
 
-![menampilkan inisiator dan
-dependensi resource](imgs/initiators-dependencies.png)
+![viewing resource initiators and
+dependencies](imgs/initiators-dependencies.png)
 
-Perhatikan bahwa untuk halaman yang berisi banyak resource, Anda mungkin
-tidak dapat melihat semua inisiator atau dependensi.
+Keep in mind that for pages with lots of resources it's possible that you may not be able to see all of the initiators or dependencies.
 
-## Mengurutkan permintaan
+## Sort requests
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#sort-by-activity">Mengurutkan berdasarkan fase aktivitas</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#sort-by-activity">Sort by activity phase</a>
+  for up-to-date information.
 </aside>
 
-Secara default, resource di **Requests Table** diurutkan berdasarkan waktu mulai
-dari setiap permintaan, yang dimulai dengan permintaan paling awal di bagian atas.
+By default, the resources in the **Requests Table** are sorted by the start time of each request, starting with the earliest requests at the top.
 
-Klik header kolom untuk mengurutkan tabel berdasarkan setiap nilai resource
-untuk header tersebut. Klik lagi header yang sama untuk mengubah urutan ke
-naik atau turun.
+Click on the header of a column to sort the table by each resource's value for that header. Click the same header again to change the sort order to ascending or descending.
 
-Kolom **Timeline** bersifat unik, berbeda dari yang lain. Jika diklik, menu bidang pengurutan
-akan ditampilkan:
+The **Timeline** column is unique from the others. When clicked, it displays a menu of sort fields:
 
-* **Timeline**. Mengurutkan berdasarkan waktu mulai setiap permintaan jaringan. Ini adalah
-  pengurutan default dan sama dengan mengurutkan berdasarkan opsi **Start Time**
-* **Start Time**. Mengurutkan berdasarkan waktu mulai setiap permintaan jaringan (sama
-  dengan mengurutkan opsi **Timeline**).
-* **Response Time**. Mengurutkan berdasarkan waktu respons setiap permintaan.
-* **End Time**. Mengurutkan berdasarkan waktu setiap kali permintaan selesai.
-* **Duration**. Mengurutkan berdasarkan waktu total setiap permintaan. Pilih filter
-  ini untuk melihat resource mana yang membutuhkan waktu paling lama untuk dimuat.
-* **Latency**. Mengurutkan berdasarkan waktu antara permintaan dimulai sampai
-  awal mulai respons. Pilih filter ini untuk melihat resource
- mana yang membutuhkan waktu terlama untuk byte pertama atau time to first byte (TTFB).
+* **Timeline**. Sorts by the start time of each network request. This is the default sort, and is the same as sorting by the **Start Time** option.
+* **Start Time**. Sorts by the start time of each network request (same as sorting by the **Timeline** option).
+* **Response Time**. Sorts by each request's response time.
+* **End Time**. Sorts by the time when each request completed.
+* **Duration**. Sorts by the total time of each request. Select this filter to determine which resource takes the longest time to load.
+* **Latency**. Sorts by the time between the start of the request and the beginning of the response. Select this filter to determine which resource takes the longest time to first byte (TTFB).
 
-![bidang pengurutan timeline](imgs/timeline-sort-fields.png)
+![Timeline sort fields](imgs/timeline-sort-fields.png)
 
-## Memfilter permintaan
+## Filter requests
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#filters">Panel filter</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#filters">Filters panel</a>
+  for up-to-date information.
 </aside>
 
-Panel **Network** menyediakan berbagai cara untuk memfilter resource mana yang akan
-ditampilkan. Klik tombol **filters**
-(![tombol filter](imgs/filters.png){:.inline})
-untuk menyembunyikan atau menampilkan panel **Filter**.
+The **Network** panel provides numerous ways to filter which resources are displayed. Click the **filters** button (![filters button](imgs/filters.png){:.inline}) to hide or display the **Filters** pane.
 
-Gunakan tombol tipe materi untuk menampilkan resource tipe materi
-yang dipilih saja.
+Use the content type buttons to only display resources of the selected content type.
 
-Note: Tekan <kbd>Cmd</kbd> (Mac) atau <kbd>Ctrl</kbd> (Windows/Linux), lalu klik untuk mengaktifkan beberapa filter secara bersamaan.
+Note: Hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Windows/Linux) and then click to enable multiple filters simultaneously.
 
-![beberapa filter tipe materi dipilih
-secara bersamaan](imgs/multiple-content-type-filters.png)
+![multiple content type filters selected
+simultaneously](imgs/multiple-content-type-filters.png)
 
-Bidang teks **filter** meski sederhana, tetapi sangat berguna. Jika Anda memasukkan
-sembarang string ke dalamnya, panel **Network** hanya menampilkan resource yang
-nama filenya cocok dengan string yang dimasukkan.
+The **filter** text field is deceptively powerful. If you enter an arbitrary string in it, the **Network** panel only displays the resources whose filenames match the given string.
 
-![pemfilteran nama resource](imgs/resource-name-filtering.png)
+![resource name filtering](imgs/resource-name-filtering.png)
 
-Bidang teks **filter** juga mendukung berbagai kata kunci yang dapat Anda gunakan untuk
-mengurutkan resource berdasarkan berbagai properti, seperti ukuran file menggunakan kata kunci `larger-than`
-.
+The **filter** text field also supports various keywords that let you sort resources by various properties, such as file size using the `larger-than` keyword.
 
-Daftar berikut menguraikan semua kata kunci.
+The list below describes all of the keywords.
 
-* `domain`. Hanya menampilkan resource dari domain yang ditetapkan. Anda dapat menggunakan
-  karakter pengganti (`*`) untuk menyertakan beberapa domain. Misalnya, `*.com`
-  menampilkan resource dari semua nama domain yang berakhiran `.com`. DevTools
-  mengisi menu dropdown pelengkapan otomatis dengan semua domain
-  yang dijumpainya.
-* `has-response-header`. Menampilkan resource yang berisi header respons HTTP
-  yang sudah ditetapkan. DevTools mengisi menu dropdown pelengkapan otomatis dengan
-  semua header respons yang dijumpainya.
-* `is`. Gunakan `is:running` untuk menemukan resource `WebSocket`.
-* `larger-than`. Menampilkan resource yang lebih besar dari ukuran yang ditetapkan,
-  dalam byte. Menetapkan nilai `1000` adalah sama dengan menetapkan nilai `1k`.
-* `method`. Menampilkan resource yang diambil melalui jenis metode HTTP
-  yang ditetapkan. DevTools mengisi dropdown dengan semua metode HTTP
-  yang dijumpainya.
-* `mime-type`. Menampilkan resource jenis MIME yang sudah ditentukan. DevTools mengisi otomatis menu
-  dropdown dengan semua jenis MIME yang dijumpainya.
-* `mixed-content`. Menampilkan semua resource konten campuran (`mixed-content:all`) atau
-  hanya yang sedang ditampilkan (`mixed-content:displayed`).
-* `scheme`. Menampilkan resource yang diambil melalui HTTP yang tidak dilindungi (`scheme:http`)
-  atau HTTPS yang dilindungi (`scheme:https`).
-* `set-cookie-domain`. Menampilkan resource yang memiliki header `Set-Cookie`
-  dengan atribut `Domain` yang cocok dengan nilai yang ditetapkan. DevTools
-  mengisi pelengkapan otomatis dengan semua domain cookie yang
-  dijumpainya.
-* `set-cookie-name`. Menampilkan resource yang memiliki header `Set-Cookie`
-  dengan nama yang cocok dengan nilai yang ditetapkan. DevTools mengisi
-  pelengkapan otomatis dengan semua nama cookie yang dijumpainya.
-* `set-cookie-value`. Menampilkan resource yang memiliki header `Set-Cookie`
-  dengan nilai yang cocok dengan nilai yang ditetapkan. DevTools mengisi
-  pelengkapan otomatis dengan semua nilai cookie yang dijumpainya.
-* `status-code`. Hanya menampilkan resource yang kode status HTTP-nya cocok dengan kode
-  yang ditetapkan. DevTools mengisi menu dropdown pelengkapan otomatis dengan semua
- kode status yang dijumpainya.
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
-![memfilter berdasarkan ukuran file](imgs/larger-than.png)
+![filtering by file size](imgs/larger-than.png)
 
-Beberapa kata kunci di atas menyebutkan menu dropdown pelengkapan otomatis. Untuk membuka menu
-pelengkapan otomatis, ketik kata kunci diikuti dengan tanda titik dua. Misalnya,
-di screenshot berikut, mengetik `domain:` akan membuka dropdown pelengkapan otomatis.
+Some of the keywords above mention an autocomplete dropdown menu. To trigger the autocomplete menu, type in the keyword followed by a colon. For example, in the screenshot below typing `domain:` triggered the autocomplete dropdown.
 
-![memfilter pelengkapan otomatis bidang teks](imgs/filter-autocomplete.png)
+![filter text field autocomplete](imgs/filter-autocomplete.png)
 
-## Salin, simpan, dan bersihkan informasi jaringan
+## Copy, save, and clear network information
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat bagian berikut untuk mengetahui informasi
-  terbaru:
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#copy">Menyalin satu atau semua permintaan</a></li>
-    <li><a href="reference#save-as-har">Menyimpan sebagai HAR dengan konten</a></li>
-    <li><a href="reference#clear-cache">Membersihkan cache browser</a></li>
-    <li><a href="reference#clear-cookies">Membersihkan cookie browser</a></li>.
+    <li><a href="reference#copy">Copy one or all requests</a></li>
+    <li><a href="reference#save-as-har">Save as HAR with content</a></li>
+    <li><a href="reference#clear-cache">Clear browser cache</a></li>
+    <li><a href="reference#clear-cookies">Clear browser cookies</a></li>
   </ul>
 </aside>
 
-Klik kanan di dalam **Requests Table** untuk menyalin, menyimpan, atau
-menghapus informasi jaringan. Beberapa opsi peka konteks, sehingga
-jika Anda ingin beroperasi dengan satu resource, Anda harus mengklik kanan
-baris resource tersebut. Daftar berikut menjelaskan setiap opsi.
+Right-click within the **Requests Table** to copy, save, or delete network information. Some of the options are context-sensitive, so if you want to operate on a single resource, you need to right-click on that resource's row. The list below describes each of the options.
 
-* **Copy Response**. Menyalin respons HTTP resource yang dipilih ke
-  clipboard sistem.
-* **Copy as cURL**. Menyalin permintaan jaringan resource yang dipilih sebagai
- string perintah   [cURL](http://curl.haxx.se/){: .external } ke clipboard sistem.
-  Lihat [Menyalin permintaan sebagai perintah cURL](#copy-requests-as-curl-commands).
-* **Copy All as HAR**. Menyalin semua resource ke clipboard sistem sebagai
- data [HAR](https://en.wikipedia.org/wiki/.har){: .external } .
-  File HAR berisi struktur data JSON yang menjelaskan "jenjang"
-  jaringan. Banyak [pihak ketiga](https://ericduran.github.io/chromeHAR/){: .external }
-  [fitur](https://code.google.com/p/harviewer/){: .external } dapat merekonstruksi jenjang
- jaringan dari data di file HAR. Lihat
- [Web Performance Power Tool: Arsip HTTP
-  (HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/)
-  untuk informasi selengkapnya.
-* **Save as HAR with Content**. Menyimpan semua data jaringan ke dalam
-  file HAR bersama dengan setiap resource halaman. Resource biner, termasuk gambar,
-  dienkode sebagai teks berenkode Base64.
-* **Clear Browser Cache**. Bersihkan cache browser.
-  **Tips**: Anda juga bisa mengaktifkan atau menonaktifkan cache browser dari panel samping
-  [**Network Conditions**][nc].
-* **Clear Browser Cookies**. Bersihkan cookie browser.
-* **Open in Sources Panel**. Buka resource yang dipilih di panel
-  **Sources**.
-* **Open Link in New Tab**. Membuka resource yang dipilih di tab baru. Anda
-  juga bisa mengklik dua kali nama resource di tabel Network.
-* **Copy Link Address**. Menyalin URL resource ke clipboard sistem.
-* **Save**. Simpan resource teks yang dipilih. Hanya ditampilkan pada resource
-  teks.
-* **Replay XHR**. Mengirimkan ulang `XMLHTTPRequest` yang dipilih. Hanya ditampilkan di resource
- XHR.
+* **Copy Response**. Copies the HTTP response of the selected resource to the system clipboard.
+* **Copy as cURL**. Copies the network request of the selected resource as a [cURL](http://curl.haxx.se/){: .external } command string to the system clipboard. See [Copying requests as cURL commands](#copy-requests-as-curl-commands).
+* **Copy All as HAR**. Copies all resources to the system clipboard as [HAR](https://en.wikipedia.org/wiki/.har){: .external } data. A HAR file contains a JSON data structure that describes the network "waterfall". Several [third-party](https://ericduran.github.io/chromeHAR/){: .external } [tools](https://code.google.com/p/harviewer/){: .external } can reconstruct the network waterfall from the data in the HAR file. See [Web Performance Power Tool: HTTP Archive (HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/) for more information.
+* **Save as HAR with Content**. Saves all network data to an HAR file along with each page resource. Binary resources, including images, are encoded as Base64-encoded text.
+* **Clear Browser Cache**. Clear the browser cache. **Tip**: You can also enable or disable the browser cache from the [**Network Conditions**](/web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions) drawer.
+* **Clear Browser Cookies**. Clear the browser's cookies.
+* **Open in Sources Panel**. Open the selected resource in the **Sources** panel.
+* **Open Link in New Tab**. Opens the selected resource in a new tab. You can also double-click the resource name in the Network table.
+* **Copy Link Address**. Copies the resource URL to the system clipboard.
+* **Save**. Save the selected text resource. Only displayed on text resources.
+* **Replay XHR**. Re-send the selected `XMLHTTPRequest`. Only displayed on XHR resources.
 
-![menyalin dan menyimpan menu konteks](imgs/copy-save-menu.png)
+![copy and save context menu](imgs/copy-save-menu.png)
 
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-
-### Salin satu atau semua permintaan sebagai perintah cURL {: #curl }
+### Copy one or all requests as cURL commands {: #curl }
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#copy">Menyalin satu atau semua permintaan</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#copy">Copy one or all requests</a>
+  for up-to-date information.
 </aside>
 
-[cURL](http://curl.haxx.se/){: .external } adalah alat (bantu) baris perintah untuk membuat transaksi
-HTTP
+[cURL](http://curl.haxx.se/){: .external } is a command line tool for making HTTP transactions.
 
-Klik kanan pada resource dalam Tabel Permintaan, arahkan kursor ke
-**Copy** lalu pilih **Copy as cURL** untuk menyalin string permintaan cURL
-untuk semua resource yang dideteksi oleh panel Network.
+Right-click on a resource within the Requests Table, hover over **Copy** and then select **Copy as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
-![Menyalin permintaan tunggal sebagai perintah cURL](imgs/copy-as-curl.png)
+![Copy single request as cURL command](imgs/copy-as-curl.png)
 
-Pilih **Copy All as cURL** untuk menyalin string permintaan cURL untuk semua
-resource yang dideteksi oleh panel Network.
+Select **Copy All as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
-Jika Anda menyalin semua, pemfilteran akan diabaikan (mis. Anda memfilter panel Network
-agar hanya menampilkan resourse **Copy All as cURL**, Anda akan mendapatkan
-semua resource yang terdeteksi, tidak hanya CSS).
+When you copy all, filtering is ignored (e.g. if you filter the Network panel to only display CSS resources and then press **Copy All as cURL**, you'll get all the detected resources, not just the CSS).
 
-## Menyesuaikan panel Network
+## Customize the Network panel
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#request-rows">Menggunakan baris permintaan besar atau kecil</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#request-rows">Use large or small requests rows</a>
+  for up-to-date information.
 </aside>
 
-Secara default, **Requests Table** menampilkan resource dengan baris kecil. Klik
-tombol **Use large resource rows**
-(![tombol baris resource besar](imgs/large-resource-rows-button.png){:.inline})
-untuk menambah ukuran masing-masing baris.
+By default the **Requests Table** displays resources with small rows. Click the **Use large resource rows** button (![large resource rows button](imgs/large-resource-rows-button.png){:.inline}) to increase the size of each row.
 
-Baris besar memungkinkan beberapa kolom untuk menampilkan dua bidang teks: bidang
-primer dan bidang sekunder. Header kolom menunjukkan arti dari
-bidang sekunder.
+Large rows enable some columns to display two text fields: a primary field and a secondary field. The column header indicates the meaning of the secondary field.
 
-![baris resource besar](imgs/large-resource-rows.png)
+![large resource rows](imgs/large-resource-rows.png)
 
-### Tambah dan hapus kolom tabel
+### Add and remove table columns
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat bagian berikut untuk mengetahui informasi
-  terbaru:
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#columns">Tampilkan atau sembunyikan kolom</a></li>
-    <li><a href="reference#custom-columns">Tambahkan kolom khusus</a></li>
+    <li><a href="reference#columns">Show or hide columns</a></li>
+    <li><a href="reference#custom-columns">Add custom columns</a></li>
   </ul>
 </aside>
 
-Klik kanan header apa pun di **Requests Table** untuk menambahkan atau menghapus
-kolom.
+Right-click on any of the headers in the **Requests Table** to add or remove columns.
 
-![Menambahkan atau menghapus kolom](imgs/add-remove-columns.png)
+![Add or remove columns](imgs/add-remove-columns.png)
 
-### Simpan log jaringan saat navigasi
+### Preserve the network log upon navigation
 
 <aside class="warning">
-  <b>Perhatian:</b> Halaman ini tidak digunakan lagi. Lihat
-  <a href="reference#preserve-log">Menyimpan log</a>
-  untuk informasi terbaru.
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preserve-log">Preserve log</a>
+  for up-to-date information.
 </aside>
 
-Secara default, perekaman aktivitas jaringan dibuang setiap kali Anda
-memuat ulang halaman saat ini atau memuat halaman yang berbeda.
-Aktifkan kotak centang **Preserve log** untuk menyimpan log jaringan di semua
-skenario ini. Catatan baru ditambahkan ke bagian bawah **Requests Table**.
+By default, the network activity recording is discarded whenever you reload the current page or load a different page. Enable the **Preserve log** checkbox to save the network log across these scenarios. New records are appended to the bottom of the **Requests Table**.
 
-## Resource tambahan
+## Additional resources
 
-Untuk mempelajari selengkapnya tentang mengoptimalkan kinerja jaringan aplikasi Anda, lihat referensi berikut:
+To learn more optimizing the network performance of your application, see the following resources:
 
-* Gunakan [Insight
- PageSpeed](/speed/pagespeed/insights) untuk mengidentifikasi
-  praktik terbaik kinerja yang bisa diterapkan pada situs Anda, dan
-  [fitur Pengoptimalan PageSpeed](/speed/pagespeed/optimization) untuk
-  mengotomatiskan proses penerapan praktik terbaik tersebut.
-* [Jaringan Kinerja Tinggi di Google
-  Chrome](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/)
-  membahas bagian dalam jaringan Chrome dan bagaimana Anda dapat memanfaatkannya
-  untuk mempercepat situs Anda.
-* [Bagaimana cara kerja kompresi gzip
-](/speed/articles/gzip) memberikan ringkasan tingkat tinggi
-  tentang kompresi gzip dan keunggulannya.
-* [Praktik Terbaik Kinerja
-  Web](/speed/docs/best-practices/rules_intro)
-  memberikan tips tambahan untuk mengoptimalkan kinerja jaringan halaman web
-  atau aplikasi Anda.
+* Use [PageSpeed Insights](/speed/pagespeed/insights) to identify performance best practices that can be applied to your site, and [PageSpeed optimization tools](/speed/pagespeed/optimization) to automate the process of applying those best practices.
+* [High Performance Networking in Google Chrome](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/) discusses Chrome network internals and how you can take advantage of them to make your site faster.
+* [How gzip compression works](/speed/articles/gzip) provides a high-level overview gzip compression and why it's a good idea.
+* [Web Performance Best Practices](/speed/docs/best-practices/rules_intro) provides additional tips for optimizing the network performance of your web page or application.
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

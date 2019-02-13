@@ -1,239 +1,240 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Internet is toegankelijk op tal van apparaten, van telefoons met kleine schermen tot televisies met grote schermen. Ontdek hoe u een website maakt die op al deze apparaten goed werkt.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The web is accessible on a huge range of devices, from small-screen phones to big-screen televisions. Each device presents its own benefits and constraints. As a web developer, you are expected to support a full ranges of devices.
 
-{# wf_updated_on: 2014-01-05 #}
-{# wf_published_on: 2013-12-31 #}
+{# wf_updated_on: 2015-10-05 #} {# wf_published_on: 2013-12-31 #}
 
-# Uw eerste website voor meerdere apparaten {: .page-title }
+# Your First Multi-Device Site {: .page-title }
+
+Caution: This article has not been updated in a while and may not reflect reality. Instead, check out the free [Responsive Web Design](https://www.udacity.com/course/responsive-web-design-fundamentals--ud893) course on Udacity.
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-Het bouwen van websites voor meerdere apparaten is niet zo moeilijk als het lijkt. Met behulp van deze gids bouwen we een voorbeeld van een landingspagina voor een product voor onze cursus <a href='https://www.udacity.com/course/mobile-web-development--cs256'>CS256 Mobile Web Development</a> die goed werkt op alle verschillende apparaten.
+<img src="images/finaloutput-2x.jpg" alt="many devices showing the final project" class="attempt-right" />
 
-<img src="images/finaloutput-2x.jpg" alt="verschillende apparaten die het eindproduct weergeven">
+Creating multi-device experiences is not as hard as it might seem. In this guide, we will build a product landing page for the [CS256 Mobile Web Development course](https://www.udacity.com/course/mobile-web-development--cs256) that works well across different device types.
 
-Het bouwen voor meerdere apparaten met uiteenlopende mogelijkheden, erg verschillende schermformaten en interactiemethodes lijkt een lastige taak, zo niet onmogelijk.
+Building for multiple devices with differing capabilities, vastly different screen sizes and interaction methods can seem daunting, if not impossible to get started.
 
-Het is niet zo moeilijk om volledig responsieve websites te maken als u misschien denkt. Om dit te bewijzen biedt deze gids uw stappen die u kunt volgen om aan de slag te gaan. We hebben alles in twee eenvoudige stappen verdeeld:
+It is not as hard to build fully responsive sites as you think, and to show you, this guide takes you through the steps that you can use to get started. We have broken it into two simple steps:
 
-1.  De informatiearchitectuur (ook IA genoemd) en structuur van de pagina bepalen, 2.  ontwerpelementen toevoegen zodat de pagina responsief is en er op alle apparaten goed uitziet.
+1. Defining the information architecture (commonly known as IA) and structure of the page,
+2. Adding design elements to make it responsive and look good across all devices.
 
+## Create your content and structure
 
+Content is the most important aspect of any site. So let’s design for the content and not let the design dictate the content. In this guide, we identify the content we need first, create a page structure based on this content, and then present the page in a simple linear layout that works well on narrow and wide viewports.
 
+### Create the page structure
 
-## Uw eigen inhoud en structuur maken 
+We have identified we need:
 
+1. An area that describes at a high-level our product "CS256: Mobile web development" course
+2. A form to collect information from users who are interested in our product
+3. An in depth description and video
+4. Images of the product in action
+5. A data table with information to back the claims up
 
+#### TL;DR {: .hide-from-toc }
 
+* Identify the content you need first.
+* Sketch out Information Architecture (IA) for narrow and wide viewports.
+* Create a skeleton view of the page with content but without styling.
 
-Inhoud is het belangrijkste aspect van een website. We moeten dus het design afstemmen op de inhoud en niet andersom. In deze gids bepalen we eerst de inhoud die we nodig hebben, maken we een paginastructuur op basis van deze inhoud en geven we de pagina weer in een eenvoudige lineaire lay-out die ideaal is voor smalle en brede viewports.
+We have also come up with a rough information architecture and layout for both the narrow and wide viewports.
 
+<div class="attempt-left">
+  <figure>
+    <img src="images/narrowviewport.png" alt="Narrow Viewport IA">
+    <figcaption>
+      Narrow Viewport IA
+     </figcaption>
+  </figure>
+</div>
 
-### De paginastructuur maken
+<div class="attempt-right">
+  <figure>
+    <img src="images/wideviewport.png" alt="Wide Viewport IA">
+    <figcaption>
+      Wide Viewport IA
+     </figcaption>
+  </figure>
+</div>
 
-We hebben bepaald dat we het volgende nodig hebben:
+<div style="clear:both;"></div>
 
-1.  Een gedeelte waarin ons product `CS256: Mobile web development`-cursus uitvoerig wordt beschreven
-2.  Een formulier om informatie te verzamelen van gebruikers die interesse hebben voor ons product
-3.  Een uitgebreide beschrijving en video
-4.  Afbeeldingen van het product in actie
-5.  Een gegevenstabel met informatie als back-up van de claims
-
-### TL;DR {: .hide-from-toc }
-- Bepaal eerst de inhoud die u nodig heeft.
-- Stel Information Architecture (IA) op voor smalle en brede viewports.
-- Maak een geraamte van de pagina met inhoud maar zonder styling.
-
-
-We hebben ook een architectuur van onbewerkte informatie en lay-out verkregen voor zowel de smalle als brede viewports.
-
-<img class="attempt-left" src="images/narrowviewport.png" alt="Smalle viewport IA">
-<img  class="attempt-right" src="images/wideviewport.png" alt="Brede viewport IA">
-<div class="clearfix"></div>
-
-
-U kunt dit gemakkelijk converteren naar de onbewerkte gedeelten van een geraamtepagina die we voor de rest van het project zullen gebruiken.
+This can be converted easily into the rough sections of a skeleton page that we will use for the rest of this project.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addstructure.html" region_tag="structure" adjust_indentation="auto" %}
 </pre>
 
-### Inhoud aan de pagina toevoegen
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addstructure.html){: target="_blank" .external }
 
-De basisstructuur van de website is klaar. We weten welke gedeelten we nodig hebben, de inhoud die we in deze gedeelten willen weergeven en waar we deze in de algemene informatie-architectuur willen plaatsen. We kunnen nu beginnen aan het bouwen van de website.
+### Add content to the page
 
-Note: stijl komt later
+The basic structure of the site is complete. We know the sections we need, the content to display in those sections, and where to position it in the overall information architecture. We can now start to build out the site.
 
-#### De kop en het formulier maken
+Note: We'll add the styling later
 
-De kop en het aanmeldingsformulier vormen de essentiële onderdelen van onze pagina. Deze moeten onmiddellijk aan de gebruiker worden weergegeven.
+### Create the headline and form
 
-Voeg aan de kop eenvoudige tekst toe om de cursus te beschrijven:
+The headline and request notification form are the critical components of our page. These must be presented to the user immediately.
+
+In the headline, add simple text to describe the course:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addheadline.html" region_tag="headline" adjust_indentation="auto" %}
 </pre>
 
-We moeten ook het formulier invullen.
-Het formulier is eenvoudig en verzamelt de namen en telefoonnummers van de gebruikers en een goed moment om hen terug te bellen.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addheadline.html){: target="_blank" .external }
 
-Alle formulieren moeten labels en placeholders bevatten zodat gebruikers zich gemakkelijk op elementen kunnen richten en kunnen begrijpen wat zo is bedoeld, en zodat toegankelijkheidstools de structuur van het formulier kunnen begrijpen. Het naamkenmerk stuurt niet alleen de formulierwaarde naar de server, het wordt ook gebruikt om de browser belangrijke hints te geven over het automatisch invullen van het formulier voor de gebruiker.
+We need to also fill out the form. It will be a simple form that collects the users' name, email address, and phone number.
 
-We voegen semantische typen toe zodat gebruikers snel en eenvoudig inhoud kunnen invoeren op een mobiel apparaat. Wanneer de gebruiker bijvoorbeeld een telefoonnummer invoert, wordt alleen een toetsenblok weergegeven.
+All forms should have labels and placeholders to make it easy for users to focus elements, understand what is supposed to go in them, and to also help accessibility tools understand the structure of the form. The name attribute not only sends the form value to the server, it is also used to give important hints to the browser about how to automatically fill in the form for the user.
+
+We will add semantic types to make it quick and simple for users to be able to enter content on a mobile device. For example, when entering a telephone number, the user should just see a dial pad.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addform.html" region_tag="form" adjust_indentation="auto" %}
 </pre>
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.create-amazing-forms #}
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addform.html){: target="_blank" .external }
 
-#### Het gedeelte Video en informatie
+#### Create the Video and Information section
 
-Het gedeelte Video en informatie van inhoud is meer uitgebreid.
-Het bevat een lijst met opsommingstekens van kenmerken van onze producten en ook een placeholder voor video die weergeeft hoe ons product voor de gebruiker werkt.
+The Video and Information section of content will contain a little more depth. It will have a bulleted list of features of our products and will also contain a video placeholder that shows our product working for the user.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="section1" adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="section1" adjust_indentation="auto" %}
 </pre>
 
-Video`s worden vaak gebruikt om inhoud op een interactievere manier te beschrijven en om een product of een concept te demonstreren.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-Door de best practices te volgen kunt u video gemakkelijk in uw website integreren:
+Videos are often used to describe content in a more interactive manner and are frequently used to show a demonstration of a product or a concept.
 
-*  Voeg een kenmerk `controls` toe zodat gebruikers de video gemakkelijk kunnen afspelen.
-*  Voeg een `poster`-afbeelding toe zodat gebruikers een voorbeeld van de inhoud kunnen weergeven.
-*  Voeg meerdere `<source>`-elementen toe op basis van ondersteunde videoindelingen.
-*  Voeg `fall-back`-tekst toe zodat gebruikers de video kunnen downloaden als ze deze niet in het venster kunnen afspelen.
+By following the best practices, you can easily integrate video into your site:
+
+* Add a `controls` attribute to make it easy for people to play the video.
+* Add a `poster` image to give people a preview of the content.
+* Add multiple `<source>` elements based on supported video formats.
+* Add fall-back text to let people download the video if they can't play it in the window.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="video" adjust_indentation="auto" %}
 </pre>
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.video #}
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-#### Het gedeelte Afbeeldingen maken
+#### Create the Images Section
 
-Websites zonder afbeeldingen kunnen saai zijn. Er zijn twee soorten afbeeldingen:
+Sites without images can be a little boring. There are two types of images:
 
-*  Inhoudsafbeeldingen &mdash; afbeeldingen die in het document staan en worden gebruikt om extra informatie over de inhoud weer te geven.
-*  Stilistische afbeeldingen &mdash; afbeeldingen die worden gebruikt om de website mooier te maken. Dit zijn vaak achtergrondafbeeldingen, patronen en kleurovergangen. We bespreken dit in het [volgende artikel](#).
+* Content images &mdash; images that are in-line in the document and are used to convey extra information about the content.
+* Stylistic images &mdash; images that are used to make the site look better; often these are background images, patterns and gradients. We will cover this in the [next section](#make-it-responsive).
 
-Het gedeelte Afbeeldingen in onze pagina is een verzameling van inhoudsafbeeldingen.
+The Images section in our page is a collection of content images.
 
-Inhoudsafbeeldingen zijn heel belangrijk om de betekenis van de pagina weer te geven. Vergelijk ze met de afbeeldingen die in krantenartikelen worden gebruikt. De afbeeldingen die we gebruiken zijn foto`s van de lesgevers van het project: Chris Wilson, Peter Lubbers en Sean Bennet.
+Content images are critical to conveying the meaning of the page. Think of them like the images used in newspaper articles. The images we are using are pictures of the tutors on the project: Chris Wilson, Peter Lubbers and Sean Bennet.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addimages.html" region_tag="images" adjust_indentation="auto" %}
 </pre>
 
-De afbeeldingen zijn ingesteld om aan te passen naar 100% van de breedte van het scherm. Dit werkt goed op apparaten met een smalle viewport, maar minder goed op apparaten met een brede viewport (bijvoorbeeld een desktop). We bespreken dit in het gedeelte over responsive design.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addimages.html){: target="_blank" .external }
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.images #}
+The images are set to scale to 100% of the width of the screen. This works well on devices with a narrow viewport, but less well on those with a wide viewport (like desktop). We will manage this in the responsive design section.
 
-Vaak kunnen mensen geen afbeeldingen weergeven en gebruiken ze een ondersteunende technologie zoals een schermlezer die de gegevens op de pagina parseert en verbaal aan de gebruiker doorgeeft. U moet ervoor zorgen dat al uw inhoudsafbeeldingen een beschrijvende `alt`-tag hebben die de schermlezer aan de gebruiker kan doorgeven.
+Many people don't have the ability to view images and often use an assistive technology such as a screen reader that will parse the data on the page and relay that to the user verbally. You should ensure that all your content images have a descriptive `alt` tag that the screen reader can speak out to the user.
 
-Wanneer u `alt`-tags toevoegt, moet u erop letten dat de alt-tekst de afbeelding zo beknopt mogelijk volledig beschrijft. In onze demo gebruiken we bijvoorbeeld het kenmerk `Name: Role`, dat genoeg informatie bevat zodat de gebruiker begrijpt dat in dit gedeelte de auteurs en hun functie worden besproken.
+When adding `alt` tags make sure that you keep the alt text as concise as possible to fully describe the image. For example in our demo we simply format the attribute to be "Name: Role", this presents enough information to the user to understand that this section is about the authors and what their job is.
 
-#### Het gedeelte Tabelgegevens toevoegen
+#### Add the Tabulated Data Section
 
-Het laatste gedeelte is een eenvoudige tabel die wordt gebruikt om specifieke statistieken over het product weer te geven.
+The final section is a simple table that is used to show specific product stats about the product.
 
-Tabellen mogen alleen worden gebruikt voor tabelgegevens, bijvoorbeeld matrices van informatie.
+Tables should only be used for tabular data, i.e, matrices of information.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="section3" adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addtable.html" region_tag="section3" adjust_indentation="auto" %}
 </pre>
 
-#### Een voettekst toevoegen
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addtable.html){: target="_blank" .external }
 
-De meeste websites hebben een voettekst nodig voor inhoud zoals Algemene voorwaarden, Vrijwaringen, en andere inhoud die niet past in de hoofdnavigatie of in het hoofdinhoud-gebied van de pagina.
+#### Add a Footer
 
-Op onze website maken we gewoon een koppeling naar Algemene voorwaarden, een pagina Contact en onze sociale mediaprofielen.
+Most sites need a footer to display content such as Terms and Conditions, disclaimers, and other content that isn't meant to be in the main navigation or in the main content area of the page.
+
+In our site, we'll just create a simple placeholder footer.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="footer" adjust_indentation="auto" %}
 </pre>
 
-### Samenvatting
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addcontent.html){: target="_blank" .external }
 
-We hebben overzicht van de website gemaakt en we hebben alle belangrijke structurele elementen bepaald. We hebben er ook voor gezorgd dat alle relevante inhoud klaar is en op de juiste plaats staat om aan onze zakelijke behoeften te voldoen.
+### Summary
 
-<img class="attempt-left" src="images/content.png" alt="inhoud">
-<img  class="attempt-right" src="images/narrowsite.png" alt="">
-<div class="clearfix"></div>
+We have created the outline of the site and we have identified all the main structural elements. We have also made sure that we have all the relevant content ready and in-place to satisfy our business needs.
 
+<div class="attempt-left">
+  <figure>
+    <img src="images/content.png" alt="Content">
+    <figcaption>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-without-styles.html">Content and structure</a>
+    </figcaption>
+  </figure>
+</div>
 
-Het is u misschien opgevallen dat de pagina helemaal niet mooi is. Dat is de bedoeling. 
-Inhoud is het belangrijkste aspect van een website en we moesten ervoor zorgen dat we een goede solide informatiearchitectuur en -dichtheid hebben. Dankzij deze gids hebben we een uitstekende basis waarop we kunnen bouwen. In de volgende gids zullen we onze inhoud vormgeven.
+<div class="attempt-right">
+  <figure>
+    <img  src="images/narrowsite.png" alt="Designed site" style="max-width: 100%;">
+    <figcaption>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html">Final site</a>
+    </figcaption>
+  </figure>
+</div>
 
+You will notice that the page looks terrible right now; this is intentional. Content is the most important aspect of any site and we needed to make sure we had a good solid information architecture and density. This guide has given us an excellent base to build upon. We will style our content in the next guide.
 
+## Make it responsive {: #make-it-responsive }
 
+The web is accessible on a huge range of devices from small-screen phones through to huge-screen televisions. Each device presents its own unique benefits and also constraints. As a web developer, you are expected to support all ranges of devices.
 
+We are building a site that works across multiple screen sizes and device types. We've crafted the Information Architecture of the page and created a basic structure. In this section, we will take our basic structure with content and turn it into a beautiful page that is responsive across a large number of screen sizes.
 
-## De pagina responsief maken 
+Following the principles of Mobile First web development, we start with a narrow viewport &mdash; similar to a mobile phone &mdash; and build for that experience first. Then we scale up to larger device classes. We can do this by making our viewport wider and making a judgment call on whether the design and layout look right.
 
-
-
-
-Internet is toegankelijk op tal van apparaten, van telefoons met kleine schermen tot televisies met grote schermen. Elk apparaat biedt eigen unieke voordelen en beperkingen. Als webontwikkelaar wordt van u verwacht dat u voor alle soorten apparaten ondersteuning kunt bieden.
-
-
-We bouwen een website die werkt op verschillende schermformaten en uiteenlopende apparaten. In het [vorige artikel](#) vormden we de informatiearchitectuur van de pagina en maakten we een basisstructuur.
-In deze gids toveren we onze basisstructuur met inhoud om tot een mooie pagina die responsief is op een groot aantal schermformaten.
-
-
-<figure class="attempt-left">
-  <img  src="images/content.png" alt="Inhoud">
-  <figcaption><a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-without-styles.html"> Inhoud en structuur </a>
-  </figcaption>
-</figure>
-<figure class="attempt-right">
-  <img  src="images/narrowsite.png" alt="Designed site">
-  <figcaption><a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-with-styles.html"> Uiteindelijke website </a> </figcaption>
-</figure>
-<div class="clearfix"></div>
-
-
-Volgens de principes van Mobile First-webontwikkeling beginnen we met een smalle viewport (vergelijkbaar met een mobiele telefoon) en bouwen we eerst voor die ervaring.
-Daarna passen we de schaal aan grotere apparaten aan.
-Dit kan door onze viewport breder te maken en te bepalen of het design en de lay-out er goed uitzien.
-
-We hebben eerder enkele verschillende hoogwaardige ontwerpen gemaakt voor de manier waarop onze inhoud moet worden weergegeven. Nu moeten we ervoor zorgen dat onze pagina zich aanpast aan deze verschillende lay-outs.
-We doen dit door te bepalen waar we onze breekpunten (een punt waar de lay-out en stijlen veranderen) plaatsen op basis van de manier waarop de inhoud in het schermformaat past.
+Earlier we created a couple of different high-level designs for how our content should be displayed. Now we need to make our page adapt to those different layouts. We do this by making a decision on where to place our breakpoints &mdash; a point where the layout and styles change &mdash; based on how the content fits the screen-size.
 
 ### TL;DR {: .hide-from-toc }
-- Gebruik altijd een viewport.
-- Begin altijd met een smalle viewport en pas daarna de schaal aan.
-- Plaats uw breekpunten daar waar u de inhoud moet aanpassen.
-- Stel een gedegen visie op van uw lay-out in grote breekpunten.
 
+* Always use a viewport.
+* Always start with a narrow viewport first and scale out.
+* Base your breakpoints off when you need to adapt the content.
+* Create a high-level vision of your layout across major breakpoints.
 
-### Voeg een viewport in
+### Add a viewport
 
-Zelfs voor een basispagina **moet** u altijd een viewport-metatag invoegen.
-De viewport is het belangrijkste onderdeel dat u nodig heeft om ervaringen op meerdere apparaten te bouwen.
-Zonder viewport werkt uw website niet goed op een mobiel apparaat.
+Even for a basic page, you **must** always include a viewport meta tag. The viewport is the most critical component you need for building multi-device experiences. Without it, your site will not work well on a mobile device.
 
-De viewport vertelt de browser dat de pagina moet worden aangepast om in het scherm te passen. Er zijn veel verschillende configuraties voor uw viewport die u kunt gebruiken zodat u de weergave van de pagina kunt beheren. Standaard raden we het volgende aan:
+The viewport indicates to the browser that the page needs to be scaled to fit the screen. There are many different configurations that you can specify for your viewport to control the display of the page. As a default, we recommend:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/viewport.html" region_tag="viewport" adjust_indentation="auto" %}
 </pre>
 
-De viewport bevindt zich in de kop van het document en moet slechts eenmaal worden gedeclareerd.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/viewport.html){: target="_blank" .external }
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.responsive #}
+The viewport lives in the head of the document and only needs to be declared once.
 
-### Pas eenvoudige stijl toe
+### Apply simple styling
 
-Ons product en bedrijf heeft al erg specifieke richtlijnen voor merk en lettertype die in een stijlgids zijn opgenomen.
+Our product and company already has a very specific branding and font guide-lines supplied in a style guide.
 
-#### Stijlgids
+#### Style guide
 
-Een stijlgids is een erg handige manier om een goed inzicht te krijgen in de visuele weergave van de pagina en helpt u ervoor te zorgen dat u consistent blijft in het hele design.
+A style guide is a useful way to get a high-level understanding of the visual representation of the page and it helps you ensure that you are consistent throughout the design.
 
-##### Kleuren
+#### Colors
 
 <div class="styles" style="font-family: monospace;">
   <div style="background-color: #39b1a4">#39b1a4</div>
@@ -244,18 +245,17 @@ Een stijlgids is een erg handige manier om een goed inzicht te krijgen in de vis
   <div style="background-color: #dc4d38">#dc4d38</div>
 </div>
 
-#### Voeg stilistische afbeeldingen
+#### Add stylistic images
 
-In de vorige gids voegden we `inhoudsafbeeldingen` toe. Deze afbeeldingen waren belangrijk voor het verhaal van ons product. Stilistische afbeeldingen zijn afbeeldingen die niet noodzakelijk zijn als onderdeel van de kerninhoud maar die visuele flare toevoegen of de aandacht van de gebruiker op een specifiek gedeelte van de inhoud helpen vestigen.
+<img  src="images/narrowsite.png" alt="Designed site"  class="attempt-right" />
 
-Een goed voorbeeld hiervan is een kopafbeelding voor de `above the fold`-inhoud. Deze wordt vaak gebruikt om de gebruiker te overhalen om meer over het product te lezen.
+In the previous guide, we added images called "content images". These were images that were important to the narrative of our product. Stylistic images are images that are not needed as part of the core content but add visual flare or help guide the user's attention to a specific piece of content.
 
+A good example of this is a headline image for the 'above the fold' content. It is often used to entice the user to read more about the product.
 
-<img  src="images/narrowsite.png" alt="Ontworpen website">
+They can be very simple to include. In our case, it will be the background to the header and we will apply it via some simple CSS.
 
-
-Het kan erg eenvoudig zijn om ze in te voegen. In ons voorbeeld wordt deze afbeelding de achtergrond van de kop en passen we deze toe via eenvoudige CSS.
-
+<div style="clear:both;"></div>
 
     #headline {
       padding: 0.8em;
@@ -266,182 +266,185 @@ Het kan erg eenvoudig zijn om ze in te voegen. In ons voorbeeld wordt deze afbee
     }
     
 
-We hebben een eenvoudige achtergrondafbeelding gekozen die wazig is zodat de aandacht op de inhoud blijft gevestigd en we hebben ingesteld dat deze het hele element bedekt, zodat de hoogte-breedteverhouding ook tijdens het uitrekken blijft behouden.
+We have chosen a simple background image that is blurred so it doesn't take away from the content and we have set it to `cover` the entire element; that way it always stretches whilst maintaining the correct aspect ratio.
 
-<br style="clear: both;">
+### Set your first breakpoint
 
-### Stel uw eerste breekpunt in
-
-Het ontwerp ziet er pas slecht uit vanaf een breedte van 600 pixels. In ons voorbeeld is de regel langer dan 10 woorden (de optimale leeslengte) en dat willen we aanpassen.
+The design starts to look bad at about 600px wide. In our case, the length of the line is going above 10 words (the optimal reading length) and that is where we want to change it.
 
 <video controls poster="images/firstbreakpoint.png" style="width: 100%;">
   <source src="videos/firstbreakpoint.mov" type="video/mov"></source>
   <source src="videos/firstbreakpoint.webm" type="video/webm"></source>
-  <p>Uw browser biedt geen ondersteuning voor video.
-     <a href="videos/firstbreakpoint.mov">Download de video</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/firstbreakpoint.mov">Download the video</a>.
   </p>
 </video>
 
-600 pixels blijkt een goede plaats voor ons eerste breekpunt, want het biedt ons het bereik om elementen te verplaatsen zodat ze beter op het scherm passen. We kunnen dit met behulp van de technologie [Mediaquery`s](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness).
-
+600px appears to be a good place to create our first breakpoint as it will give us scope to reposition elements to make them fit the screen better. We can do this using a technology called [Media Queries](/web/fundamentals/design-and-ux/responsive/#use-media-queries).
 
     @media (min-width: 600px) {
     
     }
     
 
-Er is meer ruimte op een groter scherm, waardoor u flexibeler kunt zijn in de manier waarop inhoud wordt weergegeven.
+There is more space on a larger screen so there is more flexibility with how content can be displayed.
 
-Note: U hoeft niet alle elementen tegelijk te verplaatsen. U kunt zo nodig kleine aanpassingen doorvoeren.
+Note: You don't have to move all the elements at once, you can make smaller adjustments if needed.
 
-In de context van onze productpagina moeten we:
+In the context of our product page, it looks like we will need to:
 
-*  De maximale breedte van het ontwerp beperken.
-*  De opvulling van elementen aanpassen en de tekstgrootte verkleinen.
-*  Het formulier verplaatsen zodat het op een lijn met de kop zweeft.
-*  De video rond de inhoud laten zweven.
-*  Het formaat van de afbeeldingen verkleinen en ze in een mooier rooster weergeven.
+* Constrain the maximum width of the design.
+* Alter the padding of elements and reduce the text size.
+* Move the form to float in-line with the heading content.
+* Make the video float around the content.
+* Reduce the size of the images and have them appear in a nicer grid.
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.first-break-point #}
+### Constrain the maximum width of the design
 
-### De maximale breedte van het ontwerp beperken
+We have chosen to have only two major layouts: a narrow viewport and a wide viewport, which greatly simplifies our build process.
 
-We hebben gekozen voor slechts twee hoofdlay-outs: een smalle viewport en een brede viewport, waardoor ons bouwproces aanzienlijk eenvoudiger is.
+We have also decided to create full-bleed sections on the narrow viewport that stay full-bleed on the wide viewport. This means we should constrain the maximum width of the screen so that the text and paragraphs don't extend into one long, single line on ultra-wide screens. We have chosen this point to be about 800px.
 
-We hebben ook beslist om aflopende gedeelten te maken in de smalle viewport die ook aflopend blijven in het brede viewport. Dit betekent dat we de maximale breedte van het scherm moeten beperken zodat de tekst en alinea`s op heel brede schermen niet één lange regel worden. We hebben ervoor gekozen dat dit punt op ongeveer 800 pixels ligt.
+To achieve this, we need to constrain the width and center the elements. We need to create a container around each major section and apply a `margin:
+auto`. This will allow the screen to grow but the content remain centered and at a maximum size of 800px.
 
-Om dit te bereiken moeten we de breedte beperken en de elementen centreren. We moeten rond elk groot gedeelte een container maken en een `marge:
-auto` toepassen. Hierdoor kan het scherm groter worden maar blijft de inhoud gecentreerd en op een maximumgrootte van 800 pixels.
+The container will be a simple `div` in the following form:
 
-De container is een eenvoudige `div` in het volgende formulier:
-
-    <div class="container">
-    ...
-    </div>
+    <div class="container">...</div>
+    
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="containerhtml"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="containerhtml" adjust_indentation="auto" %}
 </pre>
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="container"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="container" adjust_indentation="auto" %}
 </pre>
 
-### De vulling aanpassen en de tekstgrootte verkleinen
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/constrainwidth.html){: target="_blank" .external }
 
-In de smalle viewport hebben we niet veel ruimte om inhoud weer te geven, waardoor de grootte en het gewicht van de typografie vaak aanzienlijk worden verkleind om op het scherm te passen.
+### Alter the padding and reduce text size
 
-Bij een bredere viewport moeten we er rekening mee houden dat de gebruiker waarschijnlijk een groter scherm gebruikt, maar er verder van verwijderd is. Om de leesbaarheid van de inhoud te vergroten kunnen we de grootte en het gewicht van de typografie vergroten en bovendien de vulling aanpassen zodat afzonderlijke gebieden duidelijker opvallen.
+On the narrow viewport, we don't have a lot of space to display content so the size and weight of the typography is often drastically reduced to fit the screen.
 
-Op onze productpagina verhogen we de vulling van de elementen in het gebied door in te stellen dat deze altijd 5% van de breedte behoudt. Bovendien vergroten we de grootte van de koppen voor elk gedeelte.
+With a larger viewport, we need to consider that the user is more likely to be on a larger screen but further away. To increase the readability of the content, we can increase the size and weight of the typography and we can also alter the padding to make distinct areas stand out more.
+
+In our product page, we will increase the padding of the section elements by setting it to remain at 5% of the width. We will also increase the size of the headers for each of the sections.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="padding"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/alterpadding.html" region_tag="padding" adjust_indentation="auto" %}
 </pre>
 
-### Elementen aan een brede viewport aanpassen
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/alterpadding.html){: target="_blank" .external }
 
-Onze smalle viewport was een gestapelde lineaire weergave. Elk groot gedeelte en de inhoud ervan werd weergegeven in volgorde van boven naar beneden.
+### Adapt elements to wide viewport
 
-Een brede viewport biedt ons extra ruimte zodat we de inhoud op een optimale manier voor dat scherm kunnen weergeven. Voor onze productpagina betekent dit dat we volgens onze IA:
+Our narrow viewport was a stacked linear display. Each major section and the content inside them was displayed in order from top to bottom.
 
-*  Het formulier naar de kopinformatie kunnen verplaatsen.
-*  De video naar de rechterkant van de belangrijke punten kunnen verplaatsen.
-*  De afbeeldingen naast elkaar kunnen plaatsen.
-*  De tabel kunnen uitbreiden.
+A wide viewport gives us extra space to use to display the content in an optimal way for that screen. For our product page, this means that according to our IA we can:
 
-#### Het Formulierelement laten zweven
+* Move the form around the header information.
+* Position the video to the right of the key points.
+* Tile the images.
+* Expand the table.
 
-De smalle viewport biedt ons veel minder horizontale ruimte om elementen op het scherm te plaatsen.
+#### Float the Form element
 
-Om op een efficiëntere manier gebruik te maken van de horizontale ruimte van het scherm moeten we de lineaire flow van de kop doorbreken en het formulier en de lijst naast elkaar plaatsen.
+The narrow viewport means that we have a lot less horizontal space available for us to comfortably position elements on the screen.
+
+To make more effective use of the horizontal screen space, we need to break out of the linear flow of the header and move the form and list to be next to each other.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="formfloat"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floattheform.html" region_tag="formfloat" adjust_indentation="auto" %}
 </pre>
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="padding"   adjust_indentation="auto" %}
-</pre>
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floattheform.html){: target="_blank" .external }
 
 <video controls poster="images/floatingform.png" style="width: 100%;">
   <source src="videos/floatingform.mov" type="video/mov"></source>
   <source src="videos/floatingform.webm" type="video/webm"></source>
-  <p>Uw browser biedt geen ondersteuning voor video.
-     <a href="videos/floatingform.mov">Download de video</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/floatingform.mov">Download the video</a>.
   </p>
 </video>
 
-#### Het Video-element laten zweven
+#### Float the Video element
 
-De video in de interface met smalle viewport is ontworpen zodat deze de volledige breedte van het scherm inneemt en zich achter de lijst van belangrijke functies bevindt. In een brede viewport wordt de video te groot en ziet deze er niet goed uit wanneer we deze naast onze lijst van functies plaatsen.
+The video in the narrow viewport interface is designed to be the full width of the screen and positioned after the list of key features. On a wide viewport, the video will scale up to be too large and look incorrect when placed next to our list of features.
 
-Het video-element moet in een brede viewport uit de verticale flow van de smalle viewport worden gehaald en naast de lijst met opsommingstekens van inhoud worden weergegeven.
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="floatvideo"   adjust_indentation="auto" %}
-</pre>
-
-#### De afbeeldingen naast elkaar plaatsen
-
-De afbeeldingen in de interface met de smalle viewport (vooral mobiele apparaten) zijn ingesteld zodat ze de volledige breedte van het scherm innemen en verticaal worden gestapeld. Dit wordt niet goed aangepast in een brede viewport.
-
-Opdat de afbeeldingen er goed uitzien in een brede viewport, worden ze aangepast tot 30% van de breedte van de container en horizontaal weergegeven (in plaats van verticaal in de smalle viewport). We voegen ook randradius en schaduw voor vak toe zodat de afbeeldingen er aantrekkelijker uitzien.
-
-<img src="images/imageswide.png" style="width:100%">
+The video element needs to be moved out of the vertical flow of the narrow viewport and should be displayed side-by-side with the bulleted list of content on a wide viewport.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="tileimages"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floatthevideo.html" region_tag="floatvideo" adjust_indentation="auto" %}
 </pre>
 
-#### Afbeeldingen responsief voor dpi maken
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floatthevideo.html){: target="_blank" .external }
 
-Wanneer u afbeeldingen gebruikt, moet u rekening houden met de grootte van de viewport en de dichtheid van de weergave.
+#### Tile the Images
 
-Het internet werd gebouwd voor schermen met 96 dpi. Toen de mobiele apparaten werden geïntroduceerd, zagen we een aanzienlijke verhoging van de pixeldichtheid van schermen, waarbij we geen rekening houden met Retina-schermen op laptops. Afbeeldingen die zijn gecodeerd voor 96 dpi zien er vaak niet uit op een apparaat met veel dpi.
+<img src="images/imageswide.png" class="attempt-right" />
 
-We hebben een oplossing die nog niet op grote schaal wordt gevolgd.
-Voor browsers die het ondersteunen, kunt u een afbeelding met hoge dichtheid weergeven op een scherm met hoge dichtheid.
+The images in the narrow viewport (mobile devices mostly) interface are set to be the full width of the screen and stacked vertically. This doesn't scale well on a wide viewport.
 
+To make the images look correct on a wide viewport, they are scaled to 30% of the container width and laid out horizontally (rather than vertically in the narrow view). We will also add some border radius and box-shadow to make the images look more appealing.
+
+<div style="clear:both;"></div>
+
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/tiletheimages.html" region_tag="tileimages" adjust_indentation="auto" %}
+</pre>
+
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/tiletheimages.html){: target="_blank" .external }
+
+#### Make images responsive to DPI
+
+When using images, take the size of the viewport and the density of the display into consideration.
+
+The web was built for 96dpi screens. With the introduction of mobile devices, we have seen a huge increase in the pixel density of screens not to mention Retina class displays on laptops. As such, images that are encoded to 96dpi often look terrible on a hi-dpi device.
+
+We have a solution that is not widely adopted yet. For browsers that support it, you can display a high density image on a high density display.
 
     <img src="photo.png" srcset="photo@2x.png 2x">
     
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.images #}
+#### Tables
 
-#### Tabellen
+Tables are very hard to get right on devices that have a narrow viewport and need special consideration.
 
-Het is heel moeilijk om tabellen juist weer te geven op apparaten met een smalle viewport en u moet er bijzondere aandacht aan besteden.
+We recommend on a narrow viewport that you transform your table by changing each row into a block of key-value pairs (where the key is what was previously the column header, and the value is still the cell value). Fortunately, this isn't too difficult. First, annotate each `td` element with the corresponding heading as a data attribute. (This won't have any visible effect until we add some more CSS.)
 
-In een smalle viewport raden we u aan om uw tabel in twee rijen te maken, waarbij de kop en cellen in een rij worden omgezet om de kolomvorm te vormen.
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/updatingtablehtml.html" region_tag="table-tbody" adjust_indentation="auto" %}
+</pre>
+
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/updatingtablehtml.html){: target="_blank" .external }
+
+Now we just need to add the CSS to hide the original `thead` and instead show the `data-th` labels using a `:before` pseudoelement. This will result in the multi-device experience seen in the following video.
 
 <video controls poster="images/responsivetable.png" style="width: 100%;">
   <source src="videos/responsivetable.mov" type="video/mov"></source>
   <source src="videos/responsivetable.webm" type="video/webm"></source>
-  <p>Uw browser biedt geen ondersteuning voor video.
-     <a href="videos/responsivetable.mov">Download de video</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/responsivetable.mov">Download the video</a>.
   </p>
 </video>
 
-Op onze website moesten we een extra breekpunt maken voor de tabelinhoud alleen.
-Wanneer u eerst voor een mobiel apparaat bouwt, is het moeilijker om toegepaste stijlen ongedaan te maken. We moeten dus de tabel-CSS van de smalle viewport uit de CSS van de brede viewport halen.
-We verkrijgen dan een duidelijke en consistente onderbreking.
+In our site, we had to create an extra breakpoint just for the table content. When you build for a mobile device first, it is harder to undo applied styles, so we must section off the narrow viewport table CSS from the wide viewport css. This gives us a clear and consistent break.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/content-with-styles.html" region_tag="table-css"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/content-with-styles.html" region_tag="table-css" adjust_indentation="auto" %}
 </pre>
 
-### Afronden
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html){: target="_blank" .external }
 
-**GEFELICITEERD.** Wanneer u dit leest, heeft u uw eerste eenvoudige landingspagina voor een product gemaakt die op veel verschillende apparaten, modellen en schermformaten werkt.
+## Wrapping up
 
-Als u deze richtlijnen volgt, maakt u een goed begin:
+Success: By the time you read this, you will have created your first simple product landing page that works across a large range of devices, form-factors, and screen sizes.
 
-1.  Maak een basis-IA en zorg dat u eerst de inhoud en dan uw code begrijpt.
-2.  Stel altijd een viewport in.
-3.  Maak uw basiservaring volgens een aanpak voor mobiele apparaten eerst.
-4.  Als u uw mobiele ervaring heeft, maakt u de weergave breder tot deze niet meer juist is en stelt u uw breekpunt daar in.
-5.  Blijf herhalen.
+If you follow these guidelines, you will be off to a good start:
 
-
-
+1. Create a basic IA and understand your content before you code.
+2. Always set a viewport.
+3. Create your base experience around mobile-first approach.
+4. Once you have your mobile experience, increase the width of the display until it doesn't look right and set your breakpoint there.
+5. Keep iterating.

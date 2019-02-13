@@ -1,94 +1,73 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools Command Line API는 이벤트 리스너를 관찰 및 검사하는 다양한 방법을 제공합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners
 
-{# wf_updated_on: 2015-08-02 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 이벤트 모니터링 {: .page-title }
+# Monitor Events {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Chrome DevTools Command Line API는 이벤트 리스너를 관찰 및 검사하는 다양한 방법을 제공합니다. 자바스크립트가 대화형 페이지에서 핵심 역할을 하고 브라우저가 이벤트 및 이벤트 핸들러를 디버그하는 유용한 도구를 제공합니다.
-
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners. JavaScript plays a central role in interactive pages, and the browser provides you some useful tools to debug events and event handlers.
 
 ### TL;DR {: .hide-from-toc }
--  <code>monitorEvents()</code>를 사용하여 특정 유형의 이벤트를 수신합니다.
--  <code>unmonitorEvents()</code>를 사용하여 수신을 중지합니다.
--  <code>getEventListeners()</code>를 사용하여 DOM 요소의 리스너를 가져옵니다.
-- Event Listeners Inspector 패널을 사용하여 이벤트 리스너에 대한 정보를 가져옵니다.
 
+- Listen to events of a certain type using `monitorEvents()`.
+- Use `unmonitorEvents()` to stop listening.
+- Get listeners of a DOM element using `getEventListeners()`.
+- Use the Event Listeners Inspector panel to get information on event listeners.
 
-## 이벤트 모니터링
+## Monitor events
 
-[monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events)
-메서드는 지정된 대상에 정보를 기록하도록 DevTools에 지시합니다.
+The [monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events) method instructs the DevTools to log information on the specified targets.
 
-첫 번째 매개변수는 모니터링할 객체입니다.
-모든 이벤트는 두 번째 매개변수가 입력되지 않으면 반환됩니다.
-수신할 이벤트를 지정하려면
-문자열 또는 문자열 배열을 두 번째 매개변수로 전달하세요.
+The first parameter is the object to monitor. All events return if the second parameter is not provided. To specify the events to listen to, pass either a string or an array of strings as the second parameter.
 
-페이지 본문에서 클릭 이벤트 수신:
+Listen to click events on the body of the page:
 
     monitorEvents(document.body, "click");
+    
 
-모니터링하는 이벤트가 DevTools에서 표준 이벤트 이름 집합으로 매핑되는 지원 *이벤트 유형*이라면
-이 메서드는 해당 유형의 이벤트를 수신합니다.
+If the monitored event is a supported *event type* that the DevTools maps to a set of standard event names, then the method listens to the events for that type.
 
+The [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) has a full mapping of *event types* to the events they cover.
 
-[Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference)는 대상 이벤트에 대해 완전한 *이벤트 유형* 매핑을 가지고 있습니다.
+To stop monitoring events, call the `unmonitorEvents()` method and give it the object to stop monitoring.
 
-이벤트 모니터링을 중단하려면
-`unmonitorEvents()` 메서드를 호출하고 객체에 전달합니다.
-
-`body` 객체에서 이벤트 수신 중단:
+Stop listening to events on the `body` object:
 
     unmonitorEvents(document.body);
+    
 
-## 객체에 등록된 이벤트 리스너 보기
+## View event listeners registered on objects
 
-[getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject)는
-지정된 객체에 등록된 이벤트 리스너를 반환합니다.
+The [getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject) returns the event listeners registered on the specified object.
 
-반환 값은 등록된 각 이벤트 유형(예: `click` 또는 `keydown`)에 대한 배열을 포함하는 객체입니다.
-각 배열의 멤버는 각 유형에 등록된 리스너를 설명하는 객체입니다.
-예를 들어,
-다음 코드는 document 객체에 등록된
-모든 이벤트 리스너를 나열합니다.
+The return value is an object that contains an array for each registered event type (`click` or `keydown`, for example). The members of each array are objects that describe the listener registered for each type. For example, the following code lists all the event listeners registered on the document object:
 
     getEventListeners(document);
+    
 
-![getEventListeners() 사용 시의 출력](images/events-call-geteventlisteners.png)
+![Output of using getEventListeners()](images/events-call-geteventlisteners.png)
 
-지정된 객체에 리스너를 두 개 이상 등록한 경우
-배열이 각 리스너에 대한 구성원을 포함합니다.
-다음 예시에는
-`mousedown` 이벤트에 대해 #scrollingList 요소에 등록된 2개의 이벤트 리스너가 있습니다.
+If more than one listener is registered on the specified object, then the array contains a member for each listener. In the following example, there are two event listeners registered on the #scrollingList element for the `mousedown` event:
 
-![mousedown에 첨부된 이벤트 리스너 보기](images/events-geteventlisteners_multiple.png)
+![View of the event listeners attached to mousedown](images/events-geteventlisteners_multiple.png)
 
-각 객체를 확장하여 속성을 탐색할 수 있습니다.
+Further expand each of these objects to explore their properties:
 
-![리스너 객체의 확장된 뷰](images/events-geteventlisteners_expanded.png)
+![Expanded view of listener object](images/events-geteventlisteners_expanded.png)
 
-## DOM 요소에 등록된 이벤트 리스너 보기
+## View event listeners registered on DOM elements
 
-기본적으로
-Element Inspector의 *Event Listeners* 패널은 페이지에 첨부된 모든 이벤트를 보여줍니다.
+By default, the *Event Listeners* panel in the Elements Inspector shows all the events attached to a page:
 
-![Event Listeners 패널](images/events-eventlisteners_panel.png)
+![Event listeners panel](images/events-eventlisteners_panel.png)
 
-이 필터는 선택된 노드로 이벤트를 제한합니다.
+The filter limits the events just to the selected node:
 
-![선택된 노드로만 필터링된 Event Listeners 패널](images/events-eventlisteners_panel_filtered.png)
+![Event listeners panel, filtered by selected node only](images/events-eventlisteners_panel_filtered.png)
 
-객체를 확장하면 패널에 이벤트 리스너 세부정보가 표시됩니다.
-이 예시의 페이지에는
-jQuery를 통해 첨부된 2개의 이벤트 리스너가 있습니다.
+By expanding the object, the panel shows the event listener details. In this example, the page has two event listeners attached via jQuery:
 
-![확장된 이벤트 리스너 뷰](images/events-eventlisteners_panel_details.png)
+![Expanded view of the event listeners](images/events-eventlisteners_panel_details.png)
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

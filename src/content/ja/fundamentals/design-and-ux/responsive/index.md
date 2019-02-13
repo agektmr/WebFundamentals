@@ -1,171 +1,134 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ほとんどのウェブサイトは、マルチデバイス エクスペリエンスという観点で最適化されていません。モバイルやパソコンなど、さまざまな端末の画面上でサイトを適切に機能させるための基本情報について説明します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Much of the web isn't optimized for those multi-device experiences. Learn the fundamentals to get your site working on mobile, desktop, or anything else with a screen.
 
-{# wf_updated_on:2014-04-29 #}
-{# wf_published_on:2014-04-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-29 #} {# wf_blink_components: Blink>CSS #}
 
-# レスポンシブ ウェブデザインの基本 {: .page-title }
+# Responsive Web Design Basics {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-モバイル端末からのウェブアクセスは目覚ましいペースで増加していますが、残念なことにウェブサイトの多くはモバイル端末向けに最適化されていません。一般的に、モバイル端末は画面サイズによる制約を受けるため、画面上にコンテンツを配置する際は異なるアプローチが必要です。
+The use of mobile devices to surf the web is growing at an astronomical pace, but unfortunately much of the web isn't optimized for those mobile devices. Mobile devices are often constrained by display size and require a different approach to how content is laid out on the screen.
 
-
-スマートフォン、ファブレット、タブレット、パソコン、ゲーム機、テレビ、そしてウェアラブルに至るまで、さまざまな画面サイズが存在します。
-画面サイズは常に変化しているため、今ある画面サイズだけでなく、今後登場するあらゆるサイズに対応できるウェブサイトを構築することが重要です。
-
-
+A multitude of different screen sizes exist across phones, "phablets," tablets, desktops, game consoles, TVs, and even wearables. Screen sizes are always changing, so it's important that your site can adapt to any screen size, today or in the future.
 
 <video autoplay muted loop controls>
   <source src="videos/resize.webm" type="video/webm">
   <source src="videos/resize.mp4" type="video/mp4">
 </video>
 
-レスポンシブ ウェブデザイン（元々は [Ethan Marcotte が A List Apart](http://alistapart.com/article/responsive-web-design/) で定義した概念）を採用することで、ユーザーと使用端末に応じたニーズに対応できます。レイアウトはデバイスのサイズと機能に基づいて変化します。たとえば、スマートフォンでは
-1 列のビューで表示されるコンテンツが、タブレットでは 2 列で表示される場合があります。
-
+Responsive web design, originally defined by [Ethan Marcotte in A List Apart](http://alistapart.com/article/responsive-web-design/), responds to the needs of the users and the devices they're using. The layout changes based on the size and capabilities of the device. For example, on a phone users would see content shown in a single column view; a tablet might show the same content in two columns.
 
 {% include "web/_shared/udacity/ud893.html" %}
 
-##  ビューポートを設定する{: #set-the-viewport }
+## Set the viewport {: #set-the-viewport }
 
-さまざまなデバイス向けにページを最適化するには、ドキュメントの head 部に meta viewport タグを含める必要があります。meta viewport タグは、ページのサイズとスケーリングの制御方法についてブラウザに指示を与えます。
+Pages optimized for a variety of devices must include a meta viewport tag in the head of the document. A meta viewport tag gives the browser instructions on how to control the page's dimensions and scaling.
 
 ### TL;DR {: .hide-from-toc }
-- meta viewport タグを使用して、ブラウザのビューポートの幅とスケーリングを制御します。
-- `width=device-width` を追加して、デバイス非依存ピクセルで画面の幅を合わせます。
-- `initial-scale=1` を追加して、CSS ピクセルとデバイス非依存ピクセルが 1:1 の関係になるように指定します。
-- ユーザーによるスケーリングを無効にせず、確実にページを見れるようにします。
 
+- Use the meta viewport tag to control the width and scaling of the browser's viewport.
+- Include `width=device-width` to match the screen's width in device-independent pixels.
+- Include `initial-scale=1` to establish a 1:1 relationship between CSS pixels and device-independent pixels.
+- Ensure your page is accessible by not disabling user scaling.
 
-ユーザーに最適な画面を表示するために、モバイル ブラウザではページをパソコンの画面幅（通常は約 980px、ただしデバイスよって異なる）でレンダリングしたのち、画面に合わせてフォント サイズを拡大し、コンテンツをスケーリングして体裁を整えます。この調整により、ユーザーにはフォント サイズが統一されていないように見える可能性があります。また、コンテンツを表示したり、操作したりするために、ダブルタップやピンチ操作によるズームが必要な場合もあります。
-
-
+To attempt to provide the best experience, mobile browsers render the page at a desktop screen width (usually about 980px, though this varies across devices), and then try to make the content look better by increasing font sizes and scaling the content to fit the screen. This means that font sizes may appear inconsistent to users, who may have to double-tap or pinch-to-zoom in order to see and interact with the content.
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
 
-
-meta viewport の値 `width=device-width` を使用すると、画面の幅をデバイス非依存ピクセルで合わせるようページに指示が与えられます。
-これにより、小さいスマートフォンと大きいパソコン用モニターのどちらでレンダリングするかを問わず、さまざまな画面サイズに合わせてページのコンテンツをリフローすることができます。
-
-
+Using the meta viewport value `width=device-width` instructs the page to match the screen's width in device-independent pixels. This allows the page to reflow content to match different screen sizes, whether rendered on a small mobile phone or a large desktop monitor.
 
 <div class="attempt-left">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-no.html">
   <figure>
-    <img src="imgs/no-vp.png" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="ビューポートを設定していないページ">
+    <img src="imgs/no-vp.png" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="Page without a viewport set">
     <figcaption>
-      ビューポートを設定していないページ
-</figcaption>
+      Page without a viewport set
+     </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="attempt-right">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp.html">
   <figure>
-    <img src="imgs/vp.png" srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="ビューポートを設定したページ">
+    <img src="imgs/vp.png" srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="Page with a viewport set">
     <figcaption>
-      ビューポートを設定したページ
-</figcaption>
+      Page with a viewport set
+     </figcaption>
   </figure>
   </a>
 </div>
 
-一部のブラウザでは、回転して横表示になったあともページが幅が保たれ、リフローではなくズームによってコンテンツが画面いっぱいに表示されます。
-属性 `initial-scale=1` を追加すると、デバイスの向きに関係なく CSS ピクセルとデバイス非依存ピクセルとの間に 1:1 の関係を確立するようブラウザに指示が与えられます。これにより、横向きにした場合にページ幅全体を利用できるようになります。
+Some browsers keep the page's width constant when rotating to landscape mode, and zoom rather than reflow to fill the screen. Adding the attribute `initial-scale=1` instructs browsers to establish a 1:1 relationship between CSS pixels and device-independent pixels regardless of device orientation, and allows the page to take advantage of the full landscape width.
 
+Note: To ensure that older browsers can properly parse the attributes, use a comma to separate attributes.
 
+### Ensure an accessible viewport
 
+In addition to setting an `initial-scale`, you can also set the following attributes on the viewport:
 
+- `minimum-scale`
+- `maximum-scale`
+- `user-scalable`
 
-注: 属性の区切りにはカンマを使用して、古いブラウザでも属性を適切に解析できるようにします。
+When set, these can disable the user's ability to zoom the viewport, potentially causing accessibility issues.
 
-###  ビューポートに確実にアクセスできるようにする
+## Size content to the viewport
 
-ビューポートには、`initial-scale` のほかに次の属性も設定できます。
-
-* `minimum-scale`
-* `maximum-scale`
-* `user-scalable`
-
-これらの属性を設定するとユーザーがビューポートをズームできなくなる場合があるため、アクセシビリティに関連する問題が生じる可能性があります。
-
-
-##  コンテンツのサイズをビューポートに合わせる
-
-パソコンとモバイル端末のどちらにおいても、ユーザーはウェブサイトを縦方向にスクロールすることには慣れていますが、横方向へのスクロールには慣れていません。そのため、横方向へのスクロールやズームアウトをしないとページ全体が表示されないサイトは、ユーザーにとっては不便です。
+On both desktop and mobile devices, users are used to scrolling websites vertically but not horizontally; forcing the user to scroll horizontally or to zoom out in order to see the whole page results in a poor user experience.
 
 ### TL;DR {: .hide-from-toc }
-- 幅が固定された大きな要素の使用を避けます。
-- 特定のビューポート幅に依存したコンテンツの使用を避け、適切にレンダリングされるようにします。
-- CSS メディアクエリを使用して、画面のサイズに応じて異なるスタイルを適用します。
 
-`meta viewport` タグを設定したモバイルサイトを構築する際、特定のビューポートにうまく合わないページ コンテンツを誤って作成してしまうことがよくあります。たとえば、ビューポートよりも広い幅で表示される画像があると、ビューポートで横方向へのスクロールが発生します。
-ユーザーが横方向にスクロールしなくて済むよう、このコンテンツをビューポートの幅に収まるよう調整することが必要です。
+- Do not use large fixed width elements.
+- Content should not rely on a particular viewport width to render well.
+- Use CSS media queries to apply different styling for small and large screens.
 
+When developing a mobile site with a `meta viewport` tag, it's easy to accidentally create page content that doesn't quite fit within the specified viewport. For example, an image that is displayed at a width wider than the viewport can cause the viewport to scroll horizontally. You should adjust this content to fit within the width of the viewport, so that the user does not need to scroll horizontally.
 
+Since screen dimensions and width in CSS pixels vary widely between devices (for example, between phones and tablets, and even between different phones), content should not rely on a particular viewport width to render well.
 
-CSS
-ピクセルでの画面のサイズと幅はデバイスによって大きく異なるため（スマートフォンとタブレット間、異なるスマートフォン間で差がある）、コンテンツを適切にレンダリングするには、特定のビューポート幅に依存しないようにする必要があります。
-
-
-CSS でページ要素の幅に絶対値の大きな値を指定すると（以下の例を参照）、幅の狭い端末（iPhone などの幅が 320 CSS ピクセルの端末）では、ビューポートに対して `div`
-が広すぎてしまいます。
-代わりに、`width: 100%` などの相対的な幅の値を使用してください。
-同様に、位置指定に大きな絶対値を使用すると、小さい画面では要素がビューポートの外にはみ出してしまう可能性があるため注意が必要です。
-
-  
+Setting large absolute CSS widths for page elements (such as the example below), cause the `div` to be too wide for the viewport on a narrower device (for example, a device with a width of 320 CSS pixels, such as an iPhone). Instead, consider using relative width values, such as `width: 100%`. Similarly, beware of using large absolute positioning values that may cause the element to fall outside the viewport on small screens.
 
 <div class="attempt-left">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
   <figure>
-    <img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x" alt="固定幅 344px の要素が表示された iPhone 上のページ。">
+    <img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x" alt="Page with a 344px fixed width element on an iPhone.">
     <figcaption>
-      固定幅 344px の要素が表示された iPhone 上のページ
-</figcaption>
+      Page with a 344px fixed width element on an iPhone
+    </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="attempt-right">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
   <figure>
-    <img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x" alt="固定幅 344px の要素が表示された Nexus 5 上のページ。">
+    <img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x" alt="Page with a 344px fixed width element on a Nexus 5.">
     <figcaption>
-      固定幅 344px の要素が表示された Nexus 5 上のページ
-</figcaption>
+      Page with a 344px fixed width element on a Nexus 5
+    </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="clearfix"></div>
-         
-##  CSS メディアクエリを使用してレスポンシブにする{: #css-media-queries }  
 
-メディア クエリは、CSS スタイルに適用できるシンプルなフィルタです。メディアクエリを使用すると、画面の種類、幅、高さ、向き、解像度など、コンテンツをレンダリングするデバイスの特性に基づいて、スタイルを容易に変更できます。
+## Use CSS media queries for responsiveness {: #css-media-queries }
 
-
-
-
+Media queries are simple filters that can be applied to CSS styles. They make it easy to change styles based on the characteristics of the device rendering the content, including the display type, width, height, orientation, and even resolution.
 
 ### TL;DR {: .hide-from-toc }
-- メディア クエリを使用して、デバイスの特性に応じたスタイルを適用します。
-- `min-device-width` の代わりに `min-width` を使用して、幅広いエクスペリエンスを提供します。
-- レイアウトの崩れを防ぐため、要素に相対サイズを使用します。
 
-たとえば、印刷時に必要なすべてのスタイルを、印刷用のメディア クエリ内に記述することができます。
+- Use media queries to apply styles based on device characteristics.
+- Use `min-width` over `min-device-width` to ensure the broadest experience.
+- Use relative sizes for elements to avoid breaking layout.
 
-
+For example, you could place all styles necessary for printing inside a print media query:
 
     <link rel="stylesheet" href="print.css" media="print">
     
 
-CSS ファイルに埋め込み可能なメディアクエリを適用するには、スタイルシートのリンクで `media` 属性を使用するほかに、`@media`
-および `@import` を使用する方法があります。
-パフォーマンス上の理由から、`@import` 構文ではなく、最初の 2 つの方法のいずれかを使用することをおすすめします（[CSS のインポートを避ける](/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations)をご覧ください）。
-
-
-
+In addition to using the `media` attribute in the style sheet link, there are two other ways to apply media queries that can be embedded in a CSS file: `@media` and `@import`. For performance reasons, either of the first two methods are recommended over the `@import` syntax (see [Avoid CSS imports](/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations)).
 
     @media print {
       /* print style sheets go here */
@@ -174,70 +137,61 @@ CSS ファイルに埋め込み可能なメディアクエリを適用するに�
     @import url(print.css) print;
     
 
-メディアクエリに適用されるロジックは相互排他的ではないため、条件に一致するすべてのフィルタに対して、CSS 標準の優先ルールに基づいて最終的な CSS
-ブロックが適用されます。
+The logic that applies to media queries is not mutually exclusive, and for any filter meeting that criteria the resulting CSS block is applied using the standard rules of precedence in CSS.
 
+### Apply media queries based on viewport size
 
-###  ビューポートのサイズに基づいてメディア クエリを適用する
-
-メディアクエリを使用すると、小さい画面から大きな画面まで、さまざまな画面サイズに固有のスタイルを適用できるため、レスポンシブなサイトを作成できます。
-メディア クエリの構文では、デバイスの特性に応じて適用されるルールを作成できます。
-
-
-
+Media queries enable us to create a responsive experience where specific styles are applied to small screens, large screens, and anywhere in between. The media query syntax allows for the creation of rules that can be applied depending on device characteristics.
 
     @media (query) {
       /* CSS Rules used when query matches */
     }
     
 
-さまざまなアイテムについてクエリを記述できますが、レスポンシブ ウェブデザインでは、`min-width`、`max-width`、`min-height`、`max-height`
-が最もよく使用されます。
-
-
+While there are several different items we can query on, the ones used most often for responsive web design are `min-width`, `max-width`, `min-height`, and `max-height`.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">パラメータ</th>
+      <th colspan="2">Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="attribute"><code>min-width</code></td>
-      <td data-th="Result">ブラウザの幅の値がクエリに定義された値よりも大きい場合にルールが適用されます。</td>
+      <td data-th="Result">Rules applied for any browser width greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-width</code></td>
-      <td data-th="Result">ブラウザの幅の値がクエリに定義された値よりも小さい場合にルールが適用されます。</td>
+      <td data-th="Result">Rules applied for any browser width less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>min-height</code></td>
-      <td data-th="Result">ブラウザの高さの値がクエリに定義された値よりも大きい場合にルールが適用されます。</td>
+      <td data-th="Result">Rules applied for any browser height greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-height</code></td>
-      <td data-th="Result">ブラウザの高さの値がクエリに定義された値よりも小さい場合にルールが適用されます。</td>
+      <td data-th="Result">Rules applied for any browser height less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=portrait</code></td>
-      <td data-th="Result">ブラウザの高さが、幅と同じかそれ以上の場合にルールが適用されます。</td>
+      <td data-th="Result">Rules applied for any browser where the height is greater than or equal to the width.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=landscape</code></td>
-      <td data-th="Result">ブラウザの幅の値が、高さよりも大きい場合にルールが適用されます。</td>
+      <td data-th="Result">Rules for any browser where the width is greater than the height.</td>
     </tr>
   </tbody>
 </table>
 
-以下の例で説明します。
+Let's take a look at an example:
 
 <figure>
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html">
-    <img src="imgs/mq.png" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="メディアクエリを使用してリサイズ時にプロパティを変更するページのプレビュー。">
+    <img src="imgs/mq.png" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="Preview of a page using media queries to change properties as it is resized.">
     <figcaption>
-      メディアクエリを使用してリサイズ時にプロパティを変更するページのプレビュー。
-</figcaption>
+      Preview of a page using media queries to change properties as it is resized.
+    </figcaption>
   </a>
 </figure>
 
@@ -245,153 +199,116 @@ CSS ファイルに埋め込み可能なメディアクエリを適用するに�
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-queries.html" region_tag="mqueries" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html){: target="_blank" .external }
 
-* ブラウザの幅が <b>0px</b>～<b>640px</b> の場合、`max-640px.css` が適用されます。
-* ブラウザの幅が <b>500px</b>～<b>600px</b> の場合、`@media` 内のスタイルが適用されます。
-* ブラウザの幅が <b>640px 以上</b>の場合、`min-640px.css` が適用されます。
-* ブラウザの<b>幅が高さよりも長い</b>場合、`landscape.css` が適用されます。
-* ブラウザの<b>幅が高さよりも短い</b>場合、`portrait.css` が適用されます。
+- When the browser is between **0px** and **640px** wide, `max-640px.css` is applied.
+- When the browser is between **500px** and **600px** wide, styles within the `@media` is applied.
+- When the browser is **640px or wider**, `min-640px.css` is applied.
+- When the browser **width is greater than the height**, `landscape.css` is applied.
+- When the browser **height is greater than the width**, `portrait.css` is applied.
 
+### A note on `min-device-width`
 
-###  `min-device-width` についての注意
+It is also possible to create queries based on `min-device-width`, though this practice is **strongly discouraged**.
 
-`min-device-width`
-を基準にしたクエリも作成できますが、この方法は**使用しないことを強くおすすめします**。
+The difference is subtle but very important: `min-width` is based on the size of the browser window whereas `min-device-width` is based on the size of the screen. Unfortunately some browsers, including the legacy Android browser, don't report the device width properly; they report the screen size in device pixels instead of the expected viewport width.
 
-`min-width` と `min-device-width`
-には、わずかではあるものの極めて重要な違いがあります。前者はブラウザのウィンドウ サイズを基準にしており、後者は画面サイズを基準にしています。
-一部のブラウザ（以前の Android ブラウザを含む）ではデバイスの幅が正しく通知されず、期待されるビューポートの幅の代わりに、画面サイズがデバイス ピクセルで通知される場合があります。
+In addition, using `min-device-width` can prevent content from adapting on desktops or other devices that allow windows to be resized because the query is based on the actual device size, not the size of the browser window.
 
+### Use `any-pointer` and `any-hover` for flexible interactions
 
-さらに、`min-device-width` を使用すると、ウィンドウのサイズ変更が可能なパソコンや他のデバイスでコンテンツが対応しないことがあります。これは、クエリがブラウザ ウィンドウのサイズではなく実際のデバイスのサイズに基づいているためです。
+Starting with Chrome 39, your style sheets can write selectors that cover multiple pointer types and hover behaviors. The `any-pointer` and `any-hover` media features are similar to `pointer` and `hover` in that they allow you to query the capabilities of the user's pointer. However, unlike the latter, `any-pointer` and `any-hover` operate on the union of all pointer devices rather than just the primary pointer device.
 
+### Use relative units
 
+A key concept behind responsive design is fluidity and proportionality as opposed to fixed width layouts. Using relative units for measurements can help simplify layouts and prevent accidental creation of components that are too big for the viewport.
 
-###  `any-pointer` と `any-hover` を使用して柔軟に操作できるようにする
+For example, setting width: 100% on a top level `div`, ensures that it spans the width of the viewport and is never too big or too small for the viewport. The `div` fits, no matter if it's a 320px wide iPhone, 342px wide Blackberry Z10, or a 360px wide Nexus 5.
 
-Chrome 39 以降、スタイルシートに、数種類のポインターやカーソルを合わせたときの動作についてセレクタを記述できるようになりました。
-メディア特性の `any-pointer` および `any-hover`
-を使用すると、`pointer` と `hover` と同様に、ユーザーのポインター機能を照会できます。
-ただし、`any-pointer` および
-`any-hover` の場合は、最も主要なポインター デバイスだけでなく、すべてのポインター デバイスを対象に機能します。
+In addition, using relative units allows browsers to render the content based on the user's zoom level without the need for adding horizontal scroll bars to the page.
 
-
-###  相対的な単位を使用する
-
-レスポンシブ デザインを支える主なコンセプトとして、固定幅のレイアウトとは対照的な流動性と比例性が挙げられます。
-サイズに相対単位を使用すると、レイアウトをシンプルにできるほか、誤ってビューポートに収まらないコンポーネントを作成することを防止できます。
-
-
-
-たとえば、トップレベルの div に width:100% と指定すると、その `div` の幅は確実にビューポートの幅になるため、ビューポートより大きすぎる（または小さすぎる）という問題は生じません。
-幅が 320px の iPhone、342px の BlackBerry Z10、360px の Nexus 5 など、どの端末でもこの
-`div` は適切に表示されます。
-
-
-さらに、相対単位を使用すると、ブラウザ側でユーザーのズームレベルに基づいてコンテンツをレンダリングできるため、横方向のスクロールバーをページに追加する必要がありません。
-
-
-
-<span class="compare-worse">非推奨</span> - 固定幅
+<span class="compare-worse">Not recommended</span>&mdash;fixed width
 
     div.fullWidth {
       width: 320px;
       margin-left: auto;
       margin-right: auto;
     }
+    
 
-
-<span class="compare-better">推奨</span> - レスポン  シブな幅
+<span class="compare-better">Recommended</span>&mdash;responsive width
 
     div.fullWidth {
       width: 100%;
     }
+    
 
+## How to choose breakpoints
 
-##  ブレークポイントの決め方 
-
-ブレークポイントは、デバイスクラスを基準に設定しないでください。現在使用されている特定のデバイス、製品、ブランド名、オペレーティング システムを基準にブレークポイントを設定すると、メンテナンスが非常に大変になる可能性があります。代わりにコンテンツ内容に基づいて、コンテナに合ったレイアウト方法を決定するようにしてください。
-
-
+Don't define breakpoints based on device classes. Defining breakpoints based on specific devices, products, brand names, or operating systems that are in use today can result in a maintenance nightmare. Instead, the content itself should determine how the layout adjusts to its container.
 
 ### TL;DR {: .hide-from-toc }
-- 特定のデバイス、製品、ブランドではなく、コンテンツ内容に基づいてブレークポイントを作成します。
-- まず、サイズが最小のモバイル端末向けにデザインします。その後、使用できる画面領域の増加に合わせて段階的にエクスペリエンスを拡張します。
-- 一行に表示する文字数は最大で 70～80 文字程度にします。
 
+- Create breakpoints based on content, never on specific devices, products, or brands.
+- Design for the smallest mobile device first; then progressively enhance the experience as more screen real estate becomes available.
+- Keep lines of text to a maximum of around 70 or 80 characters.
 
-###  小さい値から順にメジャー ブレークポイントを設定していく
+### Pick major breakpoints by starting small, then working up
 
 <figure class="attempt-right">
   <img src="imgs/weather-1.png" srcset="imgs/weather-1.png 1x, imgs/weather-1-2x.png 2x" alt="">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
-      小さい画面に表示された天気予報のプレビュー。
-</a>
+      Preview of the weather forecast displayed on a small screen.
+    </a>
   </figcaption>
 </figure>
 
-まず小さな画面にコンテンツが収まるようにデザインし、そのうえで、ブレークポイントが必要となるまで画面を広げていきます。
-こうすることで、コンテンツに基づいて最適なブレークポイントを設定し、その数を最小限に抑えることができます。
+Design the content to fit on a small screen size first, then expand the screen until a breakpoint becomes necessary. This allows you to optimize breakpoints based on content and maintain the least number of breakpoints possible.
 
-
-
-では、最初に紹介した天気予報の例で説明しましょう。
-まずは小さい画面で天気予報の表示を整えます。
-
+Let's work through the example we saw at the beginning: the weather forecast. The first step is to make the forecast look good on a small screen.
 
 <div style="clear:both;"></div>
 
 <figure class="attempt-right">
-  <img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="ページ幅を広げたときの天気予報のプレビュー。">
+  <img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="Preview of the weather forecast as the page gets wider.">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
-      ページ幅を広げたときの天気予報のプレビュー。
-</a>
+      Preview of the weather forecast as the page gets wider.
+    </a>
   </figcaption>
 </figure>
 
-次に、要素間の余白が空きすぎて天気予報の見た目が悪くなるまで、ブラウザのサイズを大きくします。
-やや主観的な判断になりますが、横幅が 600px を超えると余白は明らかに広すぎます。
-
+Next, resize the browser until there is too much white space between the elements, and the forecast simply doesn't look as good. The decision is somewhat subjective, but above 600px is certainly too wide.
 
 <div style="clear:both;"></div>
 
-600px にブレークポイントを設定するには、2 つのスタイルシートを新たに追加します。1 つはブラウザの幅が 600px 以下の場合に、もう 1 つは幅が 600px より広い場合に使用します。
-
+To insert a breakpoint at 600px, create two new style sheets, one to use when the browser is 600px and below, and one for when it is wider than 600px.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-2.html" region_tag="mqweather2" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html){: target="_blank" .external }
 
 <figure class="attempt-right">
-  <img src="imgs/weather-3.png"  srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="広い画面用にデザインされた天気予報のプレビュー。">
+  <img src="imgs/weather-3.png"  srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="Preview of the weather forecast designed for a wider screen.">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html">
-      広い画面用にデザインされた天気予報のプレビュー。
-</a>
+      Preview of the weather forecast designed for a wider screen.
+    </a>
   </figcaption>
 </figure>
 
-最後に、CSS をリファクタリングします。この例では、フォント、アイコン、基本的な配置、色などの共通のスタイルを `weather.css` に記述しています。
-さらに、小さい画面専用のレイアウトを `weather-small.css`
-に、大きい画面専用のレイアウトを `weather-large.css` に記述しています。
-
+Finally, refactor the CSS. In this example, we've placed the common styles such as fonts, icons, basic positioning, and colors in `weather.css`. Specific layouts for the small screen are then placed in `weather-small.css`, and large screen styles are placed in `weather-large.css`.
 
 <div style="clear:both"></div>
 
+### Pick minor breakpoints when necessary
 
-###  必要に応じてマイナー ブレークポイントを設定する
+In addition to choosing major breakpoints when layout changes significantly, it is also helpful to adjust for minor changes. For example, between major breakpoints it may be helpful to adjust the margins or padding on an element, or increase the font size to make it feel more natural in the layout.
 
-レイアウトが大きく変化する場合のメジャー ブレークポイントの選択に加えて、マイナーな変化にも対応することをおすすめします。たとえば、メジャー ブレークポイントの間で、要素の余白やパディングを調整したり、レイアウトになじむようにフォントサイズを拡大したりすると、見栄えが良くなります。
-
-
-
-まず、小さい画面のレイアウトを最適化します。このケースでは、ビューポートの幅が 360px を超えた際にフォントを大きくするようにします。次に、上下に表示されている最高気温と最低気温を、十分なスペースがある場合は同じ行に横並びで表示します。また、天気のアイコンを少し大きくします。
-
+Let's start by optimizing the small screen layout. In this case, let's boost the font when the viewport width is greater than 360px. Second, when there is enough space, we can separate the high and low temperatures so that they're on the same line instead of on top of each other. And let's also make the weather icons a bit larger.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-small.css" region_tag="mqsmallbpsm" adjust_indentation="auto" %}
@@ -399,101 +316,78 @@ Chrome 39 以降、スタイルシートに、数種類のポインターやカ�
 
 <div class="attempt-left">
   <figure>
-    <img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="マイナー ブレークポイントを追加する前">
+    <img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="Before adding minor breakpoints.">
     <figcaption>
-      マイナー ブレークポイントを追加する前
-</figcaption>
-  </figure>
-</div>
-<div class="attempt-right">
-  <figure>
-    <img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="マイナー ブレークポイントを追加した後">
-    <figcaption>
-      マイナー ブレークポイントを追加した後
-</figcaption>
+      Before adding minor breakpoints.
+     </figcaption>
   </figure>
 </div>
 
+<div class="attempt-right">
+  <figure>
+    <img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>
+      After adding minor breakpoints.
+     </figcaption>
+  </figure>
+</div>
 
 <div style="clear:both;"></div>
 
-
-大きい画面の場合も同様に、予報パネルが画面の横幅いっぱいに表示されないように、予報パネルの最大幅を制限することをおすすめします。
-
+Similarly, for the large screens it's best to limit to maximum width of the forecast panel so it doesn't consume the whole screen width.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-large.css" region_tag="mqsmallbplg" adjust_indentation="auto" %}
 </pre>
 
-###  テキストを読みやすく最適化する
+### Optimize text for reading
 
-従来より、読みやすいカラム幅にするには、1 行あたりの文字数を 70～80 文字（英単語で約 8～10 語）にするのが理想とされています。
-よって、テキスト ブロックの幅が約 10 語分に達するたびにブレークポイントを設定するとよいでしょう。
-
+Classic readability theory suggests that an ideal column should contain 70 to 80 characters per line (about 8 to 10 words in English). Thus, each time the width of a text block grows past about 10 words, consider adding a breakpoint.
 
 <div class="attempt-left">
   <figure>
-    <img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="マイナー ブレークポイントを追加する前">
-    <figcaption>マイナー ブレークポイントを追加する前</figcaption>
+    <img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="Before adding minor breakpoints.">
+    <figcaption>Before adding minor breakpoints.</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="マイナー ブレークポイントを追加した後">
-    <figcaption>マイナー ブレークポイントを追加した後</figcaption>
+    <img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>After adding minor breakpoints.</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-上記のブログ記事の例を詳しく見てみましょう。小さい画面の場合は、1em の Roboto
-フォントだと 1 行あたりちょうど 10 語になりますが、大きい画面の場合はブレークポイントが必要です。
-この例では、ブラウザの幅が 575px を超えた場合の最適なコンテンツの幅は 550px です。
-
+Let's take a deeper look at the above blog post example. On smaller screens, the Roboto font at 1em works perfectly giving 10 words per line, but larger screens require a breakpoint. In this case, if the browser width is greater than 575px, the ideal content width is 550px.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/reading.html" region_tag="mqreading" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/reading.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/reading.html){: target="_blank" .external }
 
-###  コンテンツを完全に非表示にしないようにする
+### Never completely hide content
 
-画面サイズに応じてどのコンテンツを表示し、どのコンテンツを非表示にするかを選ぶ際は、注意が必要です。画面に収まらないという理由だけで、コンテンツを単に非表示にすることは避けてください。
-画面サイズだけで、ユーザーが必要とする情報を判断してはいけません。
-たとえば、天気予報の画面から花粉情報を削除してしまうと、春先に花粉症に悩む人は、その情報を見て外出の可否の判断を下せなくなるという大きな問題が生じます。
+Be careful when choosing what content to hide or show depending on screen size. Don't simply hide content just because you can't fit it on the screen. Screen size is not a definitive indication of what a user may want. For example, eliminating the pollen count from the weather forecast could be a serious issue for spring-time allergy sufferers who need the information to determine if they can go outside or not.
 
+## View media query breakpoints in Chrome DevTools {: #devtools }
 
+Once you've got your media query breakpoints set up, you'll want to see how your site looks with them. You *could* resize your browser window to trigger the breakpoints, but there's a better way: Chrome DevTools. The two screenshots below demonstrate using DevTools to view how a page looks under different breakpoints.
 
+![Example of DevTools' media queries feature](imgs/devtools-media-queries-example.png)
 
-##  Chrome DevTools でメディアクエリのブレークポイントを表示する{: #devtools }
+To view your page under different breakpoints:
 
-メディアクエリ ブレークポイントを設定したあとに、サイトの見栄えを確認したい場合があります。
-ブレークポイントをトリガーするには、ブラウザのウィンドウ サイズを変更する方法がありますが、
-よりおすすめなのは Chrome DevTools を使う方法です。以下の 2 つのスクリーンショットは、DevTools
-を使用してブレークポイントが異なるページを表示した例です。
+[Open DevTools](/web/tools/chrome-devtools/#open) and then turn on [Device Mode](/web/tools/chrome-devtools/device-mode/#toggle).
 
+Use the [viewport controls](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#viewport-controls) to select **Responsive**, which puts DevTools into responsive mode.
 
-![DevTools のメディアクエリ機能の例](imgs/devtools-media-queries-example.png)
+Last, open the Device Mode menu and select [**Show media queries**](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) to display your breakpoints as colored bars above your page.
 
-ブレークポイントが異なるページを表示するには、
+Click on one of the bars to view your page while that media query is active. Right-click on a bar to jump to the media query's definition. See [Media queries](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) for more help.
 
-[DevTools を起動して](/web/tools/chrome-devtools/#open)、[Device Mode](/web/tools/chrome-devtools/device-mode/#toggle) を有効にします。
+## Feedback {: #feedback }
 
-
-[viewport controls](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#viewport-controls)
-を使用して [**Responsive**] を選択すると、DevTools がレスポンシブ モードに切り替わります。
-
-
-最後に、[Device Mode] メニューを開いて
-[[**Show media queries**](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries)]
-を選択すると、ページ上にブレークポイントがカラーバーとして表示されます。
-
-バーを 1 つクリックすると、そのメディアクエリが有効になった状態のページが表示されます。
-メディアクエリの定義へ移動するには、バーを右クリックします。
-詳細は[メディアクエリ](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries)の説明を参照してください。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

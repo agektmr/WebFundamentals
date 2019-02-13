@@ -1,164 +1,166 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:瞭解如何在 Three.js 中選取 WebGL 場景並添加 WebVR 功能。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to take a WebGL scene in Three.js and add WebVR capabilities.
 
-{# wf_updated_on: 2016-12-12 #}
-{# wf_published_on: 2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# WebVR 入門指南 {: .page-title }
+# Getting Started with WebVR {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/mscales.html" %}
+{% include "web/_shared/webxr-status.html" %}
 
-Warning: WebVR 仍處於實驗階段，並且隨時可能更改。
+In this guide we will be exploring the WebVR APIs, and using them to enhance a simple WebGL scene built with [Three.js](https://threejs.org/). For production work, however, you may want to starting with existing solutions, like [WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate). If you’re totally new to Three.js, you can use this [handy starting guide](https://aerotwist.com/tutorials/getting-started-with-three-js/). The community is also extremely supportive, so if you get stuck, definitely give them a shout.
 
-在本指南中，我們將探討 WebVR API，並利用它們增強一個使用 [Three.js](https://threejs.org/) 構建的簡單 WebGL 場景。不過，在執行過程中，您可能需要從現有的解決方案（如 [WebVR 樣板文件](https://github.com/borismus/webvr-boilerplate)）着手。如果您是初次使用 Three.js，那麼，您可以使用這個[便捷的入門指南](https://aerotwist.com/tutorials/getting-started-with-three-js/)。這是一個非常樂於提供支持的社區，因此，如果您遇到問題，可以向他們尋求幫助。
+Let’s start with [a scene that puts a box inside a wireframe room](https://googlechrome.github.io/samples/web-vr/hello-world/), the code for which is on the [Google Chrome samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-首先看一個[將一個盒子放入一個立體空間的場景](https://googlechrome.github.io/samples/web-vr/hello-world/)，其代碼可在 [Google Chrome 示例存儲區](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world)找到。
+![WebGL Scene running on Chrome desktop](./img/desktop.jpg)
 
-![在 Chrome 桌面上運行的 WebGL 場景](./img/desktop.jpg)
+### A small note on support
 
-### 有關支持的一個小提示
+WebVR is available in Chrome 56+ behind a runtime flag. Enabling the flag (head to `chrome://flags` and search for "WebVR") will allow you to build and test your VR work locally. If you want to support WebVR for your visitors, you can opt into an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md), which will allow you to have WebVR enabled for your origin.
 
-WebVR 可以在 Chrome 56+ 中使用（通過啓用一個運行時標誌）。啓用此標誌（請訪問 `chrome://flags` 並搜索“WebVR”）將允許您在本地構建和測試您的 VR 作品。如果您要爲訪問者提供 WebVR 支持，您可以選擇加入[來源試用版](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md)，其允許您爲您的源啓用 WebVR。
+You can also use the [Web VR polyfill](https://github.com/googlevr/webvr-polyfill), but bear in mind that there are significant performance penalties when using polyfills. You should definitely test on your target devices, and avoid shipping anything that does not keep up with the device’s refresh rate. A poor or variable frame rate can result in significant discomfort for the people using your experience!
 
-您還可以使用 [Web VR polyfill](https://github.com/googlevr/webvr-polyfill)，但請注意，使用 polyfill 會性能大受影響。您一定要在目標設備上進行測試，並避免發佈無法跟上設備的更新頻率的任何內容。幀率不佳或總是發生變化會導致使用您的體驗的用戶感覺非常不舒適！
+For more information, take a look at [the WebVR Status](../status/) page.
 
-如需瞭解詳細信息，請查看 [WebVR 狀態](../status/)頁面。
+## Get access to VR Displays
 
-## 獲取 VR 顯示器
-
-在有了一個 WebGL 場景後，爲了使其通過 WebVR 運行我們需要做些什麼？首先，我們需要查詢瀏覽器以發現是否有任何可用的 VR 顯示器，我們可以通過 navigator.getVRDisplays() 執行此操作。
+So with a WebGL scene, what do we need to do get it working with WebVR? Well, firstly we need to query the browser to discover if there are any VR displays available, which we can do with `navigator.getVRDisplays()`.
 
     navigator.getVRDisplays().then(displays => {
       // Filter down to devices that can present.
       displays = displays.filter(display => display.capabilities.canPresent);
-
+    
       // If there are no devices available, quit out.
       if (displays.length === 0) {
         console.warn('No devices available able to present.');
         return;
       }
-
+    
       // Store the first display we find. A more production-ready version should
       // allow the user to choose from their available displays.
       this._vr.display = displays[0];
       this._vr.display.depthNear = DemoVR.CAMERA_SETTINGS.near;
       this._vr.display.depthFar = DemoVR.CAMERA_SETTINGS.far;
     });
+    
 
-以下是此代碼中的幾點注意事項。
+There are a few things to notice in this code.
 
-1. **並非每個設備都可以將內容“顯示”到一個頭戴式顯示器。** 例如，有些設備允許使用加速度計或僞 VR 體驗，但是不能使用 HMD。對於 canPresent 布爾值將變成 false 的設備，需要注意這一點。
+1. **Not every device can "present" to a Head Mounted Display.** There are devices which allow for — say — accelerometer usage, or a pseudo-VR experience, but do not make use of an HMD. For those devices the canPresent boolean will be false, and it’s something to be checked.
 
-2. **可能沒有可用的 VR 設備。** 我們的目標應該是打造適用於非 VR 設置的體驗，並將 VR 的可用性視爲漸進式增強。
+2. **There may be no VR devices available.** We should aim to create experiences that work just fine for non-VR settings, and treat the availability of VR as Progressive Enhancement.
 
-3. **可能有多個可用的 VR 設備。**同樣，某人完全可能有多個可用的 VR 設備，如果可以的話，我們應允許這種情況，從而讓用戶可以選擇最適合的設備。
+3. **There may be several VR devices available. **Equally it’s perfectly possible that someone will have multiple VR devices available, and we should allow for that if at all possible, letting them choose the most appropriate.
 
-## 安裝 WebVR Emulation Chrome DevTools 擴展程序
+## Install a WebVR Emulation Chrome DevTools Extension
 
-您可能發現自己沒有 VR 設備進行測試。如果出現此情況，可隨時尋求幫助！Jaume Elias 創建了一個 [Chrome DevTools 擴展程序，其可模擬一臺 VR 設備](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil)。
+Perhaps you find yourself not having a VR-capable device to test against. If that’s the case, help is at hand! Jaume Elias has created a [Chrome DevTools Extension which emulates a VR device](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil).
 
-![使用 Jaume Elias 的 Chrome 擴展程序模擬 WebVR](./img/webvr-emulation.jpg)
+![Emulating WebVR with Jaume Elias's Chrome Extension](./img/webvr-emulation.jpg)
 
-雖然最好是在真實設備上進行測試（特別是性能測試！），但提供此擴展程序有助於您在開發期間快速進行調試。
+While it’s always preferable to test on real devices (especially for performance testing!) having this extension to hand can help you quickly debug during your builds.
 
-## 從設備請求顯示
+## Request presentation from the device
 
-要開始在“VR 模式”下進行顯示，我們必須從設備進行請求：
+To begin presenting in "VR mode", we have to request it from the device:
 
     this._vr.display.requestPresent([{
       source: this._renderer.domElement
     }]);
+    
 
-`requestPresent` 接受一個 [Web VR 規範](https://w3c.github.io/webvr/#vrlayer)稱之爲“VRLayers”的數組，其本質上是針對 VR 設備的 Canvas 元素的包裝器。在上面的代碼段中，我們將選取 Canvas 元素 — `WebGLRenderer.domElement`（由 Three.js 提供），並將其作爲一個 VRLayer 的源屬性進行傳遞。反過來，`requestPresent` 將爲您提供一個 [Promise](/web/fundamentals/getting-started/primers/promises)，其在請求成功時進行解析，否則將被拒絕。
+`requestPresent` takes an array of what the [Web VR spec](https://w3c.github.io/webvr/#vrlayer) calls "VRLayers", which is essentially a wrapper around a Canvas element given to the VR device. In the code snippet above we’re taking the Canvas element — `WebGLRenderer.domElement` — provided by Three.js, and passing it in as the source property of a single VRLayer. In return, `requestPresent` will give you a [Promise](/web/fundamentals/getting-started/primers/promises), which will resolve if the request is successful, and will reject if not.
 
-## 繪製 VR 場景
+## Draw your VR scene
 
-最後，我們準備向用戶顯示一個 VR 場景，這真令人興奮！
+Finally, we’re ready to present the user with a VR scene, which is really exciting!
 
-![Pixel 上運行的 WebVR 場景](../img/getting-started-with-webvr.jpg)
+![The WebVR scene running on a Pixel](../img/getting-started-with-webvr.jpg)
 
-首先，介紹一下我們需要做的工作。
+Firstly let’s talk about what we need to do.
 
-* 確保使用設備的 `requestAnimationFrame` 回調。
-* 從 VR 設備請求當前的姿勢、屏幕方向和眼睛信息。
-* 將 WebGL 上下文分成兩半，每一半對應一隻眼睛，並單獨繪製。
+* Ensure we use the device’s `requestAnimationFrame()` callback.
+* Request the current pose, orientation, and eye information from the VR device.
+* Split our WebGL context into two halves, one for each eye, and draw each.
 
-爲什麼我們使用的 `requestAnimationFrame` 需要與 window 對象提供的不同？原因是我們所使用的顯示器的刷新頻率可能與主機不同！如果耳機的刷新頻率爲 120Hz，那麼，我們需要根據該頻率生成幀，即使主機以 60Hz 的頻率刷新屏幕。WebVR API 考慮到了這一點，因此，爲我們提供了一個不同的 `requestAnimationFrame` API 進行調用。如果使用的是移動設備，那麼通常只有一個顯示器（Android 目前的刷新頻率爲 60Hz），但即使如此，我們也應使用正確的 API 以使我們的代碼能適應未來需求，並儘可能提供更廣泛的兼容性。
+Why do we need to use a different `requestAnimationFrame()` to the one provided with the window object? Because we’re working with a display whose refresh rate may differ from the host machine! If the headset has a refresh rate of 120Hz, we need to generate frames according to that rate, even if the host machine refreshes its screen at 60Hz. The WebVR API accounts for that by giving us a different `requestAnimationFrame()` API to call. In the case of a mobile device, there is typically only one display (and on Android today the refresh rate is 60Hz). Even so we should use the correct API to make our code future-proof and as broadly compatible as possible.
 
     _render () {
       // Use the VR display's in-built rAF (which can be a diff refresh rate to
       // the default browser one).  _update will call _render at the end.
-
+    
       this._vr.display.requestAnimationFrame(this._update);
       …
     }
+    
 
-接下來，我們需要請求與用戶的頭部位置、方向有關的信息，以及正確進行繪製所需的任何其他信息（我們可以使用 `getFrameData()` 進行請求）。
+Next, we need to request the information about where the person’s head is, its rotation, and any other information we need to be able to do the drawing correctly, which we do with `getFrameData()`.
 
     // Get all the latest data from the VR headset and dump it into frameData.
     this._vr.display.getFrameData(this._vr.frameData);
+    
 
-`getFrameData()` 將選取一個對象，它將我們需要的信息放置在該對象上。這必須是一個 `VRFrameData` 對象，我們可以通過 `new VRFrameData()` 創建它。
+`getFrameData()` takes an object on which it can place the information we need. It needs to be a `VRFrameData` object, which we can create with `new VRFrameData()`.
 
     this._vr.frameData = new VRFrameData();
+    
 
-幀數據中有許多有趣的信息，我們快速地看一下。
+There’s lots of interesting information in the frame data, so let’s take a quick look over that.
 
-* **timestamp**。來自設備的更新時間戳。在 VR 顯示器上首次調用 getFrameData 時，此值爲 0。
+* **timestamp**. The timestamp of the update from the device. This value starts at 0 the first time getFrameData() is invoked on the VR display.
 
-* **leftProjectionMatrix** 和 **rightProjectionMatrix**。這些矩陣適用於考慮場景中眼睛角度的攝像頭。稍後我們將進行詳細介紹。
+* **leftProjectionMatrix** and **rightProjectionMatrix**. These are the matrices for the camera that account for the perspective of the eyes in the scene. We’ll talk more about these in a moment.
 
-* **leftViewMatrix** 和 **rightViewMatrix**。這些指的是兩個以上的矩陣，其提供場景中每隻眼睛的位置。
+* **leftViewMatrix** and **rightViewMatrix**. These are two more matrices that provide about the location of each eye in the scene.
 
-如果您剛剛接觸 3D 作品投影矩陣和 Model-View 矩陣，您可能會感到很難。儘管這些矩陣背後含有一些數學知識，但理論上，我們不需要確切瞭解其工作原理，以及它們還能做些什麼。
+If you’re new to 3D work Projection matrices and Model-View matrices can appear daunting. While there is some math behind what these do, we don’t technically need to know exactly how they work, more what they do.
 
-* **投影矩陣。** 這些矩陣用於創建場景中角度的展示。其做法通常是在場景中的物體進一步遠離視線時將物體的比例進行扭曲變形。
+* **Projection Matrices.** These are used to create an impression of perspective within a scene. They typically do this by distorting the scale of objects in the scene as they move further away from the eye.
 
-* **Model-View 矩陣。** 這些矩陣用於確定 3D 空間中物體的位置。矩陣的工作原理讓您可以創建場景圖表，並根據需要處理此圖表，將每個節點的矩陣相乘，從而達到討論中的物體的最終 model-view 矩陣。
+* **Model-View Matrices.** These are used to position an object in 3D space. Because of the way matrices work you can create scene graphs and work your way down the graph, multiplying each node’s matrix, arriving at the final model-view matrix for the object in question.
 
-網上有很多深入探討投影矩陣和 Model-View 矩陣的相關優秀指南，如果您要獲取更多背景信息，可以在 Google 上搜索這些指南。
+There are many good guides around the web that explain Projection and Model-View matrices in much more depth, so have a google around if you want to get more background information.
 
-## 控制場景渲染
+## Take control of the scene rendering
 
-有了需要的矩陣，我們可以繪製呈現給左眼的視圖。首先，我們需要指示 Three.js 在我們每次調用渲染時不要清除 WebGL 上下文，因爲我們需要繪製兩次，我們不想在爲右眼繪製圖像時丟失左眼的圖像。
+Since we have the matrices we need, let’s draw the view for the left eye. To begin with we will need to tell Three.js not to clear out the WebGL context every time we call render, since we need to draw twice and we don’t want to lose the image for the left eye when we draw it for the right.
 
     // Make sure not to clear the renderer automatically, because we will need
     // to render it ourselves twice, once for each eye.
     this._renderer.autoClear = false;
-
+    
     // Clear the canvas manually.
     this._renderer.clear();
+    
 
-接下來，我們設置渲染器以便僅繪製左半部分：
+Next let’s set the renderer to only draw the left half:
 
     this._renderer.setViewport(
         0, // x
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-此代碼假設 GL 上下文佔滿全屏 (`window.inner*`)，這對於 VR 來說是一個非常好的選擇。現在，我們可以針對左眼插入兩個矩陣。
+This code assumes that the GL context is full screen (`window.inner*`), which is a pretty good bet for VR. We can now plug in the two matrices for the left eye.
 
     const lViewMatrix = this._vr.frameData.leftViewMatrix;
     const lProjectionMatrix = this._vr.frameData.leftProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(lProjectionMatrix);
     this._scene.matrix.fromArray(lViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-以下是幾個重要的實現細節。
+There are a couple of implementation details that are important.
 
-* **我們移動世界座標，而不是攝像頭。** 如果您以前沒遇到過這種情況，這可能看上去有些奇怪，但在圖形作品中將攝像頭置於起點 (0, 0, 0) 並移動世界座標很常見。不太哲學性地解釋一下，如果我向前移動 10 米，那麼我是向前移動了 10 米還是世界座標向後移動了 10 米？這與您的視角有關，從數學角度看哪種移動都並無關緊要。由於 WebVR API 返回“眼睛模型矩陣的*反向*”，因此，我們期望將其應用於世界座標（我們的代碼中的 `this._scene`），而不是攝像頭本身。
+* **We move the world, not the camera.** It may seem a little odd if you’ve not encountered it before, but it’s common in graphics work to leave the camera at the origin (0, 0, 0) and move the world. Without getting too philosophical, if I move 10 metres forward did I move 10 metres forward or did the world move 10 metres backward? It’s relative to your point-of-view, and it doesn’t matter from a mathematical perspective which one we do. Since the WebVR API returns the "*inverse* of the model matrix of the eye" we’re expected to apply it to the world (`this._scene` in our code) not the camera itself.
 
-* **在更改矩陣值後，我們必須手動更新矩陣。** Three.js 緩存值非常大（這非常有利於性能），但這意味着您*必須*先通知緩存已發生變化，然後才能查看更改。這可通過 `updateMatrixWorld()` 方法完成，該方法選取一個布爾值以確保計算傳入場景圖形。
+* **We must manually update the matrix after we change its values.** Three.js caches values very heavily (which is great for performance!), but that means that you *must* tell it that something has changed in order to see changes. This is done with the `updateMatrixWorld()` method, which takes a boolean for ensuring the calculations propagate down the scene graph.
 
-很快就要完成了！最後一步是針對右眼重複此流程。下面，在針對左眼繪製視圖後，我們將清除渲染器的深度計算，因爲我們不想讓它影響右眼視圖的渲染。然後，我們更新右側的視口，並再次繪製場景。
+We’re nearly there! The final step is repeat the process for the right eye. Here we’ll clear the renderer’s depth calculations after drawing the view for the left eye, since we don’t want it to affect the rendering of the right eye’s view. Then we update the viewport to be the right hand side, and draw the scene again.
 
     // Ensure that left eye calcs aren't going to interfere with right eye ones.
     this._renderer.clearDepth();
@@ -167,53 +169,57 @@ WebVR 可以在 Chrome 56+ 中使用（通過啓用一個運行時標誌）。�
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-現在，我們可以針對右眼插入兩個矩陣。
+We can now plug in the two matrices for the right eye.
 
     const rViewMatrix = this._vr.frameData.rightViewMatrix;
     const rProjectionMatrix = this._vr.frameData.rightProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(rProjectionMatrix);
     this._scene.matrix.fromArray(rViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-終於完成了！實際上，還差一點...
+And we’re done! Actually, not quite...
 
-## 指示設備進行更新
+## Tell the device to update
 
-如果您從設備的角度看，您會注意到顯示從未更新。這是因爲我們可以對 WebGL 上下文進行很多渲染，並且 HMD 不知道何時真正更新自己的顯示。例如，在渲染每單隻眼睛的圖像後進行更新沒有任何效果。因此，我們通過調用 submitFrame 來控制更新。
+If you run things as they stand you’ll notice that the display never updates. This is because we can do a bunch of rendering to the WebGL context, and the HMD doesn’t know when to actually update its own display. It’s inefficient to update after — say — each individual eye’s image is rendered. So we take control of that ourselves by calling submitFrame.
 
     // Call submitFrame to ensure that the device renders the latest image from
     // the WebGL context.
     this._vr.display.submitFrame();
+    
 
-此時，藉助該代碼，我們算是真正*完成了*。如果您需要最終版本，別忘了您可以查看 [Google Chrome 示例存儲區](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world)。
+With that code we really *are* done this time. If you want the final version, don’t forget you can check out the [Google Chrome Samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-## 結論和相關資源
+## Closing thoughts and resources
 
-對於向內容添加身臨其境的體驗，WebVR 真的是一個非常棒的方法，而且使用 Three.js 等內容庫可以讓處理 WebGL 變得更簡單。但是，需要注意一些重要事項：
+WebVR is a really awesome way to add immersion to your content, and using libraries like Three.js makes it much easier to get going with WebGL. There are some important things to remember, though.
 
-* **從一開始就構建漸進式增強。** 正如我們在本指南中多次提到的，構建良好的基礎級別體驗非常重要，您可以基於該體驗對 WebVR 進行分層。許多體驗都可使用鼠標/觸摸控件實現，並且可以通過加速度計控件升級，從而形成完全合格的 VR 體驗。將您的目標設備最大化總是值得一試。
+* **Build in Progressive Enhancement from the start.** As we’ve mentioned several times, it’s important to build a good base level experience onto which you can layer WebVR. While billions of people can reach your page only a few million can see your VR content. Many experiences can be implemented with mouse / touch control, and can upgrade through accelerometer controls, to fully-fledged VR experiences. Maximizing your audience is always worthwhile.
 
-* **請記住，您要對場景渲染兩次。** 您可能需要考慮大量詳細信息 (LOD) 和其他技巧，以確保您在對場景進行兩次渲染時，它可以針對 CPU 和 GPU 按比例減少計算工作負載。首先，您必須保持穩定的幀率！如果人們因爲眩暈而感到非常不適，那麼再多娛樂內容也沒有用！
+* **Remember you’re going to render your scene twice.** You may need to think about Level of Detail (LOD) and other techniques to ensure that when you render the scene twice it scales down the computation workload for the CPU and GPU. Above all else you must maintain a solid frame rate! No amount of showbiz is worth someone feeling extreme discomfort from motion sickness!
 
-* **在實體設備上進行測試。** 這與以前的提到的要點有關。您應儘量使用實體設備，在上面測試您正在構建的內容，特別是您針對移動設備構建的內容。俗話說的好，[“筆記本電腦是卑劣的騙子”](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405)。
+* **Test on a real device.** This is related to the previous point. You should try and get a hold of real devices on which you can test what you’re building, especially if you’re targeting mobile devices. As the saying goes, ["your laptop is a filthy liar"](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405).
 
-目前，用於創建 WebVR 內容的資源非常充足，可爲您提供一臂之力：
+While we’re here, there are plenty of resources out there to give you a flying start when it comes to making WebVR content:
 
-* **[VRView](https://github.com/googlevr/vrview)**。此內容庫可幫助您嵌入 360 度全景照片和視頻。
+* **[VRView](https://github.com/googlevr/vrview)**. This library helps you embed 360-degree panoramic photos and videos.
 
-* **[WebVR 樣板文件](https://github.com/borismus/webvr-boilerplate)**.WebVR 和 Three.js 入門工具
+* **[WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate)**. For getting started with WebVR and Three.js
 
-* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)**.回填 WebVR 所需的 API。請記住，雖然它確實能爲您的用戶提供改善您的非 VR 體驗的功能，但使用 polyfill 會使性能下降。
+* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)**. To back-fill required APIs for WebVR. Please remember that there are performance penalties for using polyfills, so while this does provide functionality your users may be better off with your non-VR experience.
 
-* **[Ray-Input](https://github.com/borismus/ray-input)**。一個內容庫，可幫助您處理 VR 設備和非 VR 設備的各種類型的輸入，如鼠標、觸摸和 VR 遊戲手柄控制器。
+* **[Ray-Input](https://github.com/borismus/ray-input)**. A library to help you handle the various types of input for VR- and non-VR-devices, such as mouse, touch, and VR Gamepad controllers.
 
-立即行動吧！打造一些令人驚歎的 VR 體驗！
+Now go and make some awesome VR!
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

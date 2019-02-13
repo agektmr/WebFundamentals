@@ -1,76 +1,74 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: La quantité de données téléchargée par chaque application ne cesse d'augmenter. Pour offrir d'excellentes performances, nous devons optimiser la livraison de chaque octet !
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Optimiser le contenu de façon efficace {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-Nos applications Web continuent de se développer en termes de portée, d'ambition et de fonctionnalité. Et c'est une bonne chose. Cependant, la course incessante vers un Web plus riche provoque une autre tendance : la quantité de données téléchargée par chaque application augmente sens cesse, rapidement. Pour offrir d'excellentes performances, nous devons optimiser la livraison de chaque octet de données !
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
-
-À quoi ressemble une application Web moderne ? [HTTP Archive](http://httparchive.org/){: .external } peut nous aider à répondre à cette question. Ce projet suit la façon dont le Web se construit en arpentant régulièrement les sites les plus populaires (plus de 300 000, tirés de la liste Alexa Top 1M), et en enregistrant et en agrégeant des statistiques sur le nombre de ressources, les types de contenus et autres métadonnées pour chaque destination.
-
-<img src="images/http-archive-trends.png" class="center" alt="Tendances HTTP Archive">
-
-<table>
+<table class="">
+  
+<colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>50e percentile</th>
-    <th>75e percentile</th>
-    <th>90e percentile</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
   <td data-th="type">HTML</td>
-  <td data-th="50%">13 Ko</td>
-  <td data-th="75%">26 Ko</td>
-  <td data-th="90%">54 Ko</td>
+  <td data-th="50%">13 KB</td>
+  <td data-th="75%">26 KB</td>
+  <td data-th="90%">54 KB</td>
 </tr>
 <tr>
   <td data-th="type">Images</td>
-  <td data-th="50%">528 Ko</td>
-  <td data-th="75%">1 213 Ko</td>
-  <td data-th="90%">2 384 Ko</td>
+  <td data-th="50%">528 KB</td>
+  <td data-th="75%">1213 KB</td>
+  <td data-th="90%">2384 KB</td>
 </tr>
 <tr>
   <td data-th="type">JavaScript</td>
-  <td data-th="50%">207 Ko</td>
-  <td data-th="75%">385 Ko</td>
-  <td data-th="90%">587 Ko</td>
+  <td data-th="50%">207 KB</td>
+  <td data-th="75%">385 KB</td>
+  <td data-th="90%">587 KB</td>
 </tr>
 <tr>
   <td data-th="type">CSS</td>
-  <td data-th="50%">24 Ko</td>
-  <td data-th="75%">53 Ko</td>
-  <td data-th="90%">108 Ko</td>
+  <td data-th="50%">24 KB</td>
+  <td data-th="75%">53 KB</td>
+  <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="type">Autre</td>
-  <td data-th="50%">282 Ko</td>
-  <td data-th="75%">308 Ko</td>
-  <td data-th="90%">353 Ko</td>
+  <td data-th="type">Other</td>
+  <td data-th="50%">282 KB</td>
+  <td data-th="75%">308 KB</td>
+  <td data-th="90%">353 KB</td>
 </tr>
 <tr>
   <td data-th="type"><strong>Total</strong></td>
-  <td data-th="50%"><strong>1 054 Ko</strong></td>
-  <td data-th="75%"><strong>1 985 Ko</strong></td>
-  <td data-th="90%"><strong>3 486 Ko</strong></td>
+  <td data-th="50%"><strong>1054 KB</strong></td>
+  <td data-th="75%"><strong>1985 KB</strong></td>
+  <td data-th="90%"><strong>3486 KB</strong></td>
 </tr>
 </table>
 
-Les données ci-dessus capturent la tendance de la croissance du nombre d'octets téléchargés pour les destinations populaires sur Internet entre janvier 2013 et janvier 2014. Bien sûr, tous les sites n'ont pas la même croissance, et ne nécessitent pas la même quantité de données. C'est pour cette raison que nous mettons en évidence les différents quantiles au sein de la distribution : 50e (médian), 75e et 90e.
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-Un site médian au début de l'année 2014 est composé de 75 requêtes pour un total de 1 054 Ko transférés, et le nombre total d'octets et de demandes n'a pas cessé d'augmenter rapidement au cours de l'année précédente. Cette information n'est pas surprenante en soit, mais elle a des implications importantes en termes de performances : oui, les vitesses d'Internet augmentent, mais elles augmentent à une vitesse différente selon les pays, et de nombreux utilisateurs sont encore soumis à des plafonds de données et à des forfaits mesurés et onéreux, en particulier sur les appareils mobiles.
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-Contrairement à leurs équivalents sur les ordinateurs de bureau, les applications Web ne nécessitent pas un processus d'installation distinct : saisissez l'URL et l'application est prête à l'emploi. C'est l'une des principales caractéristiques d'Internet. Cependant, pour y parvenir **nous devons souvent récupérer des dizaines, parfois même des centaines, de ressources différentes, ce qui peut représenter des mégaoctets de données, qui doivent être rassemblés en des centaines de millisecondes pour permettre l'expérience instantanée d'Internet que nous souhaitons offrir.**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-À la lumière de ces exigences, obtenir une expérience instantanée d'Internet n'est pas une mince affaire. C'est pourquoi il est indispensable d'optimiser l'efficacité du contenu, en éliminant les téléchargements inutiles, en optimisant l'encodage du transfert de chaque ressource à l'aide de diverses techniques de compression et en utilisant la mise en cache chaque fois que c'est possible pour éliminer les téléchargements redondants.
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

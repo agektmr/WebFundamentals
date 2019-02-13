@@ -1,64 +1,41 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse “Site usa detectores de evento passivos para melhorar o desempenho de rolagem”.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses Passive Event Listeners to Improve Scrolling Performance" Lighthouse audit.
 
-{# wf_updated_on: 2017-12-19 #}
-{# wf_published_on: 2016-11-30 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# Site usa detectores de evento passivos para melhorar o desempenho de rolagem {: .page-title }
+# Uses Passive Event Listeners to Improve Scrolling Performance {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Definir a opção `passive` nos seus detectores de eventos touch e wheel pode
-melhorar o desempenho de rolagem.
+Setting the `passive` option on your touch and wheel event listeners can improve scrolling performance.
 
-Consulte [Melhorar desempenho de rolagem com detectores de evento passivos][blog] para
-obter uma visão geral.
+See [Improving Scrolling Performance with Passive Event Listeners](/web/updates/2016/06/passive-event-listeners) for an overview.
 
-Consulte o [Explainer][explainer] na especificação do detector de evento
-para obter detalhes técnicos.
+See the [Explainer](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md) in the passive event listener specification for a technical deep-dive.
 
-[blog]: /web/updates/2016/06/passive-event-listeners
-[explainer]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+## Recommendations {: #recommendations }
 
-## Como ser aprovado na auditoria {: #how }
+Add the `passive` flag to all of the event listeners that Lighthouse has identified. In general, add the `passive` flag to every `wheel`, `mousewheel`, `touchstart`, and `touchmove` event listener that does not call `preventDefault()`.
 
-Adicione o sinalizador `passive` a todos os detectores de evento que o Lighthouse
-identificar. Em geral, você deve adicionar o sinalizador `passive` a todos os detectores de evento `wheel`,
-`mousewheel`, `touchstart`, e `touchmove` que não
-chamarem `preventDefault()`.
-
-Em navegadores compatíveis com detectores de evento passivos, marcar um detector como
-`passive` é tão simples como definir um sinalizador:
+In browsers that support passive event listeners, marking a listener as `passive` is as easy as setting a flag:
 
     document.addEventListener('touchstart', onTouchStart, {passive: true});
+    
 
-Entretanto, em navegadores incompatíveis com detectores de evento passivos, o terceiro
-parâmetro é um booleano para indicar se o evento deve surgir ou capturar.
-Portanto, a sintaxe acima pode causar consequências inesperadas.
+However, in browsers that do not support passive event listeners, the third parameter is a boolean to indicate whether the event should bubble or capture. So, using the syntax above may cause unintended consequences.
 
-Consulte o polyfill em [Detecção de recursos][polyfill] para saber como implementar
-detectores de evento passivos com segurança.
+See the polyfill in [Feature Detection](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection) to learn how to safely implement passive event listeners.
 
-[polyfill]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse uses the following algorithm to flag potential passive event listener candidates:
 
-O Lighthouse usa o seguinte algoritmo para sinalizar candidatos em potencial para
-detectores de evento passivos:
+1. Collect all event listeners on the page.
+2. Filter out non-touch and non-wheel listeners.
+3. Filter out listeners that call `preventDefault()`.
+4. Filter out listeners that are from a different host than the page.
 
-1. Coletar todos os detectores de evento na página.
-2. Remover dos filtros detectores non-touch e non-wheel.
-3. Remover dos filtros detectores que chamem `preventDefault()`.
-4. Remover dos filtros detectores originados de um host diferente
- do da página.
+Lighthouse filters out listeners from different hosts because you probably don't have control over these scripts. Because of this, note that Lighthouse's audit does not represent the full scroll performance of your page. There may be third-party scripts that are harming your page's scroll performance, but these aren't listed in your Lighthouse report.
 
-O Lighthouse remove dos filtros detectores de hosts diferentes porque você provavelmente não tem
-controle sobre esses scripts. Por causa disso, observe que a auditoria do Lighthouse
-não representa o desempenho de rolagem integral da sua página. Pode
-haver scripts de terceiros que prejudiquem o desempenho de rolagem da página,
-mas eles não são listados no relatório do Lighthouse.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

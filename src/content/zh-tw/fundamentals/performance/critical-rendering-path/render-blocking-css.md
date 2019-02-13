@@ -1,26 +1,20 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 在預設情況下，CSS 會被視為禁止轉譯的資源，只要 CSSOM 還未建構完成，即使內容已經過處理，瀏覽器也不會進行轉譯。請務必保持 CSS 簡潔、儘快提供 CSS，並使用媒體類型和媒體查詢來解除對轉譯作業的禁止令。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: By default CSS is treated as a render blocking resource. Learn how to prevent it from blocking rendering.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>CSS #}
 
-# 禁止轉譯的 CSS {: .page-title }
+# Render Blocking CSS {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+By default, CSS is treated as a render blocking resource, which means that the browser won't render any processed content until the CSSOM is constructed. Make sure to keep your CSS lean, deliver it as quickly as possible, and use media types and queries to unblock rendering.
 
-在預設情況下，CSS 會被視為禁止轉譯的資源，只要 CSSOM 還未建構完成，即使內容已經過處理，瀏覽器也不會進行轉譯。請務必保持 CSS 簡潔、儘快提供 CSS，並使用媒體類型和媒體查詢來解除對轉譯作業的禁止令。
-
-
-
-在上一節中，我們看到關鍵轉譯路徑要求同時具備 DOM 和 CSSOM 才能打造轉譯樹狀結構，這對效能有很重要的含義：**HTML 和 CSS 都是禁止轉譯的資源。** 對 HTML 的要求顯而易見，因為如果沒有 DOM，就沒有任何可呈現的內容，但是對 CSS 的要求也許沒那麼顯而易見。如果我們嘗試呈現一個普通網頁，而不讓 CSS 禁止轉譯，會發生什麼情況？
+In the [render tree construction](render-tree-construction) we saw that the critical rendering path requires both the DOM and the CSSOM to construct the render tree. This creates an important performance implication: **both HTML and CSS are render blocking resources.** The HTML is obvious, since without the DOM we would not have anything to render, but the CSS requirement may be less obvious. What would happen if we try to render a typical page without blocking rendering on CSS?
 
 ### TL;DR {: .hide-from-toc }
-- 在預設情況下，CSS 會被視為禁止轉譯的資源。
-- 透過媒體類型和媒體查詢，我們可以將一些 CSS 資源標記為不禁止轉譯的資源。
-- 無論禁止與否，瀏覽器都會下載所有 CSS 資源。
 
+* By default, CSS is treated as a render blocking resource.
+* Media types and media queries allow us to mark some CSS resources as non-render blocking.
+* The browser downloads all CSS resources, regardless of blocking or non-blocking behavior.
 
 <div class="attempt-left">
   <figure>
@@ -28,6 +22,7 @@ description: 在預設情況下，CSS 會被視為禁止轉譯的資源，只要
     <figcaption>The New York Times with CSS</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="images/nytimes-nocss-device.png" alt="NYTimes without CSS">
@@ -35,41 +30,26 @@ description: 在預設情況下，CSS 會被視為禁止轉譯的資源，只要
   </figure>
 </div>
 
-{% comment %}
-<table>
-<tr>
-<td>具備 CSS 的 NYTimes</td>
-<td>不具備 CSS 的 NYTimes (FOUC)</td>
-</tr>
-<tr>
-<td><img src="images/nytimes-css-device.png" alt="具備 CSS 的 NYTimes" class="center"></td>
-<td><img src="images/nytimes-nocss-device.png" alt="不具備 CSS 的 NYTimes" class="center"></td>
-</tr>
-</table>
-{% endcomment %}
+<div style="clear:both;"></div>
 
-上述示例分別顯示了具備 CSS 和沒有 CSS 的紐約時報網站，目的是說明為什麼要在 CSS 可用之前禁止轉譯，因為沒有 CSS 的網頁根本無法使用。實際上，右側的體驗通常稱為「內容樣式短暫失效」(FOUC)。有鑑於此，在同時具備 DOM 和 CSSOM 之前，瀏覽器會禁止轉譯。
+The above example, showing the NYTimes website with and without CSS, demonstrates why rendering is blocked until CSS is available\---without CSS the page is relatively unusable. The experience on the right is often referred to as a "Flash of Unstyled Content" (FOUC). The browser blocks rendering until it has both the DOM and the CSSOM.
 
-> **_CSS 是禁止轉譯的資源，您必須儘快將 CSS 提供給用戶端，以便縮短初次轉譯的時間。_**
+> ***CSS is a render blocking resource. Get it to the client as soon and as quickly as possible to optimize the time to first render.***
 
-但是，如果部分 CSS 樣式只能在特定條件下使用 (例如，在列印網頁時，或者在將網頁投影到大螢幕時)，應該怎麼辦？。如果我們不需要禁止轉譯這些資源，那就太棒了！
+However, what if we have some CSS styles that are only used under certain conditions, for example, when the page is being printed or being projected onto a large monitor? It would be nice if we didn’t have to block rendering on these resources.
 
-我們可以透過 CSS「媒體類型」和「媒體查詢」處理這類使用情況：
-
+CSS "media types" and "media queries" allow us to address these use cases:
 
     <link href="style.css" rel="stylesheet">
     <link href="print.css" rel="stylesheet" media="print">
     <link href="other.css" rel="stylesheet" media="(min-width: 40em)">
     
 
-[媒體查詢](/web/fundamentals/design-and-ux/responsive/#use-media-queries)由媒體類型以及零個或多個運算式組成，用於檢查特定媒體特徵的條件。舉例來說，我們的第一個樣式表聲明沒有提供任何媒體類型或媒體查詢。因此，這些樣式將適用於所有情況，也就是說一律禁止網頁轉譯。另一方面，第二個樣式表將只適用於列印內容 (也許您希望重新配置版面、變更字型等等)。因此，在首次載入網頁時，這個樣式表不需要禁止網頁的轉譯。最後一個樣式表聲明提供了由瀏覽器執行的媒體查詢：如果符合條件，在該樣式表下載並處理完成之前，瀏覽器將禁止轉譯。
+A [media query](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) consists of a media type and zero or more expressions that check for the conditions of particular media features. For example, our first stylesheet declaration doesn't provide a media type or query, so it applies in all cases; that is to say, it is always render blocking. On the other hand, the second stylesheet declaration applies only when the content is being printed\---perhaps you want to rearrange the layout, change the fonts, and so on, and hence this stylesheet declaration doesn't need to block the rendering of the page when it is first loaded. Finally, the last stylesheet declaration provides a "media query," which is executed by the browser: if the conditions match, the browser blocks rendering until the style sheet is downloaded and processed.
 
-透過使用媒體查詢，我們可以根據具體用途 (例如顯示還是列印) 來量身打造顯示外觀，也可以根據動態條件 (例如螢幕方向改變、大小調整等事件) 來量身打造顯示外觀。**在聲明樣式表資產時，請務必留意媒體類型和媒體查詢，因為它們對於關鍵轉譯路徑的效能會產生巨大影響！**
+By using media queries, we can tailor our presentation to specific use cases, such as display versus print, and also to dynamic conditions such as changes in screen orientation, resize events, and more. **When declaring your style sheet assets, pay close attention to the media type and queries; they greatly impact critical rendering path performance.**
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.media-queries #}
-
-接下來，就讓我們看看一些簡單的例子：
-
+Let's consider some hands-on examples:
 
     <link href="style.css"    rel="stylesheet">
     <link href="style.css"    rel="stylesheet" media="all">
@@ -77,12 +57,13 @@ description: 在預設情況下，CSS 會被視為禁止轉譯的資源，只要
     <link href="print.css"    rel="stylesheet" media="print">
     
 
-* 第一個聲明是禁止轉譯的，並且符合所有條件。
-* 第二個聲明也是禁止轉譯的：「all」是預設的類型，如果未指定任何類型，則預設設定為「all」。因此，第一個聲明和第二個聲明實際上是一樣的。
-* 第三個聲明包含動態媒體查詢，在網頁載入時將評估該查詢。根據載入網頁時裝置的方向，決定 portrait.css 是否禁止轉譯。
-* 最後一個聲明只適用於列印網頁，因此在瀏覽器中初次載入網頁時，不會禁止轉譯。
+* The first declaration is render blocking and matches in all conditions.
+* The second declaration is also render blocking: "all" is the default type so if you don’t specify any type, it’s implicitly set to "all". Hence, the first and second declarations are actually equivalent.
+* The third declaration has a dynamic media query, which is evaluated when the page is loaded. Depending on the orientation of the device while the page is loading, portrait.css may or may not be render blocking.
+* The last declaration is only applied when the page is being printed so it is not render blocking when the page is first loaded in the browser.
 
-最後，請注意「禁止轉譯」僅指該資源是否會阻止瀏覽器初次轉譯網頁。無論是否禁止，瀏覽器仍會下載 CSS 資產，只是非禁止性資產的優先順序較低而已。
+Finally, note that "render blocking" only refers to whether the browser has to hold the initial rendering of the page on that resource. In either case, the browser still downloads the CSS asset, albeit with a lower priority for non-blocking resources.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}

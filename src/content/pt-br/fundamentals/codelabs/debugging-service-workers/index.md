@@ -1,503 +1,510 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Neste codelab, você aprenderá como depurar um service worker usando o novo painel DevTools Application. Você também aprenderá como simular uma notificação push para verificar se sua inscrição está configurada corretamente.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: In this codelab, you'll learn how to debug a service worker using the new DevTools Application panel. You'll also learn how to simulate a Push notification to verify your subscription is properly setup.
 
-{# wf_updated_on: 2016-10-19 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# Depurar Service Workers {: .page-title }
+# Debugging Service Workers {: .page-title }
 
 {% include "web/_shared/contributors/robdodson.html" %}
 
+## Introduction
 
+Service Workers give developers the amazing ability to handle spotty networks and create truly offline-first web apps. But being a new technology means they can sometimes be difficult to debug, especially as we wait for our tools to catch up.
 
-##  Introdução
+This codelab will walk you through creating a basic Service Worker and demonstrate how to use the new Application panel in Chrome DevTools to debug and inspect your worker.
 
-
-
-
-Service workers dão aos desenvolvedores a incrível capacidade de lidar com redes instáveis e criar apps da Web que verdadeiramente priorizam o modo off-line. Porém, ser uma tecnologia nova significa que às vezes pode ser difícil de depurar, especialmente enquanto esperamos que as nossas ferramentas se tornem compatíveis.
-
-Este codelab orientará você na criação de um Service Worker básico e demonstrar como usar o novo painel Application no Chrome DevTools para depurar e inspecionar seu worker.
-
-### O que vamos criar?
+### What are we going to be building?
 
 ![6ffdd0864a80600.png](img/6ffdd0864a80600.png)
 
-Neste codelab você vai trabalhar com um Progressive Web App extremamente simples e aprender técnicas que pode empregar em seus próprios aplicativos quando encontrar problemas.
+In this code lab you'll work with an extremely simple progressive web app and learn techniques you can employ in your own applications when you encounter issues.
 
-Como este codelab é focado em ensinar ferramentas, fique à vontade para interromper em vários pontos experimentar. Brinque com o código, atualize a página, abra novas guias etc. A melhor maneira de aprender ferramentas de depuração é simplesmente quebrar as coisas e sujar as mãos corrigindo-as.
+Because this code lab is focused on teaching you tools, feel free to stop at various points and experiment. Play with the code, refresh the page, open new tabs, etc. The best way to learn debugging tools is just to break things and get your hands dirty fixing them.
 
-### O que você aprenderá
+### What you'll learn
 
-* Como inspecionar um Service Worker com o painel Application
-* Como explorar o Cache e IndexedDB
-* Como simular diferentes condições de rede
-* Como usar declarações do depurador e pontos de interrupção para depurar um Service Worker
-* Como simular eventos Push
+* How to inspect a Service Worker with the Application panel
+* How to explore the Cache and IndexedDB
+* How to simulate different network conditions
+* How to use debugger statements and breakpoints to debug a Service Worker
+* How to simulate Push events
 
-### O que será necessário
+### What you'll need
 
-* Chrome 52 ou superior
-* Instale [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), ou use seu servidor de Web preferido.
-* O exemplo de código
-* Um editor de texto
-* Conhecimentos básicos sobre HTML, CSS e JavaScript
+* Chrome 52 or above
+* Install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), or use your own web server of choice.
+* The sample code
+* A text editor
+* Basic knowledge of HTML, CSS and JavaScript
 
-Este codelab se concentra na depuração de Service Workers e assume alguns conhecimentos prévio de trabalho com Service Workers. Alguns conceitos são apenas pincelados ou blocos de código (como estilos ou JavaScript não relevante) são fornecidos para que você os copie e cole. Se você é novo em Service Workers, certifique-se de [ler o API Primer](/web/fundamentals/primers/service-worker/) antes de continuar.
+This codelab is focused on debugging Service Workers and assumes some prior knowledge of working with Service Workers. Some concepts are glossed over or code blocks (for example styles or non-relevant JavaScript) are provided for you to simply copy and paste. If you are new to Service Workers be sure to [read through the API Primer](/web/fundamentals/primers/service-worker/) before proceeding.
 
+## Getting set up
 
-## Configuração
+### Download the Code
 
+You can download all of the code for this codelab, by clicking the following button:
 
+[Download source code](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
 
+Unpack the downloaded zip file. This will unpack a root folder (`debugging-service-workers-master`), which contains one folder for each step of this codelab, along with all of the resources you will need.
 
-### Faça o download do código
+The `step-NN` folders contain the desired end state of each step of this codelab. They are there for reference. We'll be doing all our coding work in the directory called `work`.
 
-Você pode baixar todo o código para este codelab, clicando no botão a seguir:
+### Install and verify web server
 
-[Link](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
+While you're free to use your own web server, this codelab is designed to work well with the Chrome Web Server. If you don't have that app installed yet, you can install it from the Chrome Web Store.
 
-Descompacte o arquivo zip baixado. Isso irá descompactar uma pasta raiz (`debugging-service-workers-master`), que contém uma pasta para cada etapa deste codelab, juntamente com todos os recursos que você vai precisar.
+[Install Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
 
-As pastas `step-NN` contêm o estado final desejado de cada etapa deste codelab. Elas servem como referência. Faremos todo nosso trabalho de codificação em um diretório chamado `work`.
+After installing the Web Server for Chrome app, click on the Apps shortcut on the bookmarks bar:
 
-### Instale e verifique o servidor de Web
+![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)<aside class="key-point">
 
-Embora você seja livre para usar seu próprio servidor de Web, este codelab é projetado para funcionar bem com o Chrome Web Server. Se ainda não tem esse aplicativo instalado, você pode instalá-lo pela Chrome Web Store.
+<p>More help:  <a href="https://support.google.com/chrome_webstore/answer/3060053?hl=en">Add and open Chrome apps</a></p>
 
-[Link](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
+</aside> 
 
-Após instalar o aplicativo Web Server for Chrome, clique no atalho Apps na barra de favoritos: 
-
-![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)
-
-Na janela seguinte, clique no ícone do Web Server: 
+In the ensuing window, click on the Web Server icon:
 
 ![dc07bbc9fcfe7c5b.png](img/dc07bbc9fcfe7c5b.png)
 
-Você verá esta caixa de diálogo, que lhe permite configurar seu servidor de Web local:
+You'll see this dialog next, which allows you to configure your local web server:
 
 ![433870360ad308d4.png](img/433870360ad308d4.png)
 
-Clique no botão __choose folder__ e selecione a pasta `work`. Isto permitirá servir o seu trabalho em andamento pelo URL em destaque na caixa de diálogo do servidor de Web (na seção __Web Server URL(s)__).
+Click the **choose folder** button, and select the `work` folder. This will enable you to serve your work in progress via the URL highlighted in the web server dialog (in the **Web Server URL(s)** section).
 
-Em Options, marque a caixa ao lado de "Automatically show index.html", como mostrado abaixo:
+Under Options, check the box next to "Automatically show index.html", as shown below:
 
 ![8937a38abc57e3.png](img/8937a38abc57e3.png)
 
-Em seguida, interrompa e reinicie o servidor, deslizando o botão de alternância marcado como "Web Server: STARTED" para a esquerda e de volta para a direita.
+Then stop and restart the server by sliding the toggle labeled "Web Server: STARTED" to the left and then back to the right.
 
 ![daefd30e8a290df5.png](img/daefd30e8a290df5.png)
 
-Agora, acesse seu site de trabalho no navegador da Web (clicando no URL Web Server em destaque) e você deve ver uma página com a seguinte aparência:
+Now visit your work site in your web browser (by clicking on the highlighted Web Server URL) and you should see a page that looks like this:
 
 ![693305d127d9fe80.png](img/693305d127d9fe80.png)
 
-Obviamente, este aplicativo ainda não está fazendo nada interessante. Adicionaremos funcionalidade e recursos de IU em etapas posteriores. 
+Obviously, this app is not yet doing anything interesting. We'll add functionality so we can verify it works offline in subsequent steps.<aside class="key-point">
 
+<p>From this point forward, all testing/verification should be performed using this web server setup. You'll usually be able to get away with simply refreshing your test browser tab.</p>
 
-## Introdução à guia Application
+</aside> 
 
+## Introducing the Application tab
 
+### Inspecting the Manifest
 
+Building a Progressive Web Apps requires tying together a number of different core technologies, including Service Workers and Web App Manifests, as well as useful enabling technologies, like the Cache Storage API, IndexedDB, and Push Notifications. To make it easy for developers to get a coordinated view of each of these technologies the Chrome DevTools has incorporated inspectors for each in the new Application panel.
 
-### Inspecione o Manifesto
+* Open the Chrome DevTools and click on the tab that says **Application**
 
-Construir um Progressive Web App requer juntar várias tecnologias essenciais diferentes, inclusive Service Workers e Manifestos de Aplicativos Web, bem como as tecnologias facilitadoras úteis, como a API de Armazenamento de Cache, IndexedDB e Notificações Push. Para facilitar que os desenvolvedores obtenham uma visão coordenada de cada uma dessas tecnologias o Chrome DevTools incorporou inspetores para cada um no novo painel Application.
+![5d18df60c53a0420.png](img/5d18df60c53a0420.png)
 
-* Abra o Chrome DevTools e clique na aba que diz __Application__.
+Look in the sidebar and notice **Manifest** is currently highlighted. This view shows important information related to the `manifest.json` file such as its application name, start URL, icons, etc.
 
-![b380532368b4f56c.png](img/b380532368b4f56c.png)
-
-Olhe na barra lateral e observe que __Manifest__ está destacado no momento. Esta visualização mostra informações importantes relacionadas com o arquivo `manifest.json`, como o nome do aplicativo, URL de início, ícones etc.
-
-Embora este codelab não trate disso, observe que há um botão __Add to homescreen__ que pode ser usado para simular a experiência de adicionar o aplicativo à tela inicial do usuário.
+Although we won't be covering it in this codelab, note that there is an **Add to homescreen** button which can be used to simulate the experience of adding the app to the user's homescreen.
 
 ![56508495a6cb6d8d.png](img/56508495a6cb6d8d.png)
 
-### Inspecione os Service Workers
+### Inspecting the Service Workers
 
-No passado, inspecionar um Service Worker exigia bisbilhotar o Chrome internamente e definitivamente não era a melhor experiência de usuário. Tudo isso muda com a nova guia __Application__.
+In the past, inspecting a Service Worker required poking around in Chrome internals and was definitely not the most user friendly experience. All of that changes with the new **Application** tab!
 
-* Clique no item de menu __Service Workers__ abaixo do item __Manifest__ selecionado no momento
+* Click on the **Service Workers** menu item below the currently selected **Manifest** item
 
-![3dea544e6b44979d.png](img/3dea544e6b44979d.png)
+![d4eeba0a3c66a04.png](img/d4eeba0a3c66a04.png)
 
-A visualização __Service Workers__ fornece informações sobre Service Workers que estão ativos na origem atual. Ao longo da linha superior, há uma série de caixas de seleção.
+The **Service Workers** view provides information about Service Workers which are active in the current origin. Along the top row there are a series of checkboxes.
 
-* __Offline__- Simula ser desconectado da rede. Isso pode ser útil para verificar rapidamente que os gerenciadores de busca do seu Service Worker estão funcionando corretamente.
-* __Update on reload__ - Força o Service Worker atual a ser substituído por um novo Service Worker (se o desenvolvedor tiver feito alterações em seu `service-worker.js`). Normalmente, o navegador esperar até que um usuário feche todas as guias que contêm o site atual antes de atualizar para um novo Service Worker.
-* __Bypass for network__ - Força o navegador a ignorar qualquer Service Worker ativo e buscar recursos da rede. Isso é extremamente útil para situações em que você deseja trabalhar em CSS ou JavaScript e não precisa se preocupar que Service Worker armazene em cache acidentalmente e retorne arquivos antigos.
-* __Show all__ - Mostra uma lista de todos os Service Workers ativos, independentemente da origem.
+* **Offline** - Will simulate being disconnected from the network. This can be useful to quickly verify that your Service Worker fetch handlers are working properly.
+* **Update on reload** - Will force the current Service Worker to be replaced by a new Service Worker (if the developer has made updates to their `service-worker.js`). Normally the browser will wait until a user closes all tabs that contain the current site before updating to a new Service Worker.
+* **Bypass for network** - Will force the browser to ignore any active Service Worker and fetch resources from the network. This is extremely useful for situations where you want to work on CSS or JavaScript and not have to worry about the Service Worker accidentally caching and returning old files.
+* **Show all** - Will show a list of all active Service Workers regardless of the origin.
 
-Abaixo disso você verá informações relacionadas com o Service Worker ativo atual (se houver). Um dos campos mais úteis é o campo __Status__, que mostra o estado atual do Service Worker. Como esta é a primeira vez que o aplicativo é iniciado, o Service Worker atual foi instalado com êxito e ativado, portanto ele exibe um círculo verde para indicar que tudo está bem.
+Below that you will see information relating to the current active Service Worker (if there is one). One of the most useful fields is the **Status** field, which shows the current state of the Service Worker. Since this is the first time starting the app, the current Service Worker has successfully installed and been activated, so it displays a green circle to indicate everything's good.<aside class="key-point">
 
-Observe o número de código ao lado do indicador de status verde. Esse é o código para o Service Worker ativo no momento. Lembre-se dele ou anote-o, pois o usaremos para uma comparação em um momento.
+<p>If you had installed a service worker on this localhost port previously, you will see an orange circle as well, indicating that the new service worker is waiting to activate. If this is the case, click <strong>skipWaiting</strong>.</p>
 
-* Em seu editor de texto, abra o arquivo `service-worker.js`
+</aside> 
 
-O código para o Service Worker atual é bastante simples, apenas alguns de registros do console.
+Note the ID number next to the green status indicator. That's the ID for the currently active Service Worker. Remember it or write it down as we'll use it for a comparison in just a moment.
+
+* In your text editor, open the `service-worker.js` file
+
+The code for the current Service Worker is quite simple, just a couple of console logs.
 
     self.addEventListener('install', function(event) {
       console.log('Service Worker installing.');
     });
     
     self.addEventListener('activate', function(event) {
-      console.log('Service Worker activating.');  
-    });
-
-Se voltar para DevTools e olhar no Console, você pode ver que ambos os registros saíram com êxito.
-
-![5fcfd389f5357c09.png](img/5fcfd389f5357c09.png)
-
-Vamos atualizar o código para o `service-worker.js`, para vê-lo passar por uma mudança de ciclo de vida.
-
-* Atualize os comentários em `service-worker.js` para que eles contenham novas mensagens
-
-    self.addEventListener('install', function(event) {
-      console.log('A *new* Service Worker is installing.');
+      console.log('Service Worker activating.');
     });
     
-    self.addEventListener('activate', function(event) {
-      console.log('Finally active. Ready to start serving content!');  
-    });
 
-* Atualize a página e abra o console em DevTools
+If you switch back to the DevTools and look in the Console you can see that both logs have been output successfully.
 
-O console registra `A *new* Service Worker is installing.`, mas não mostra a 2ª mensagem sobre o novo Service Worker estar ativo.
+![a8c1d1bb2a14eb24.png](img/a8c1d1bb2a14eb24.png)
 
-* Alterne para a guia Application no DevTools
+Let's update the code for the `service-worker.js` to watch it go through a lifecycle change.
 
-Na guia Application, agora há dois indicadores de status, cada um representando o estado de nossos dois Service Workers.
+* Update the comments in `service-worker.js` so they contain new messages
+    
+    self.addEventListener('install', function(event) { console.log('A *new* Service Worker is installing.'); });
+    
+    self.addEventListener('activate', function(event) { console.log('Finally active. Ready to start serving content!'); });
 
-![2e41dbf21437944c.png](img/2e41dbf21437944c.png)
+* Refresh the page and open the console in DevTools
 
-Observe o código do primeiro Service Worker. Ele deve corresponder o código do Service Worker original. Quando você instala um novo Service Worker, o worker anterior permanece ativo até a próxima vez que o usuário visitar a página.
+The console logs `A *new* Service Worker is installing.` but doesn't show the 2nd message about the new Service Worker being active.
 
-O segundo indicador de status mostra o novo Service Worker que acabamos de editar. Agora ele está em um estado de espera.
+* Switch to the Application tab in DevTools
 
-Uma maneira fácil de forçar o novo Service Worker a se ativar é com o botão __skipWaiting__.
+In the Application tab there are now two status indicators, each representing the state of our two Service Workers.
+
+![67548710d5ca4936.png](img/67548710d5ca4936.png)
+
+Note the ID of the first Service Worker. It should match the original Service Worker ID. When you install a new Service Worker, the previous worker remains active until the next time the user visits the page.
+
+The second status indicator shows the new Service Worker we just edited. Right now it's in a waiting state.<aside class="key-point">
+
+<p><strong>Try it!</strong></p>
+
+<p>If a user has multiple tabs open for the same page, it will continue using the old Service Worker until those tabs are closed. Try opening a few more tabs and visiting this same page and notice how the Application panel still shows the old Service Worker as active.</p>
+
+</aside> 
+
+An easy way to force the new Service Worker to activate is with the **skipWaiting** button.
 
 ![7a60e9ceb2db0ad2.png](img/7a60e9ceb2db0ad2.png)
 
-* Clique no botão skipWaiting e depois alterne para o Console
+* Click the skipWaiting button and then switch to the Console
 
-Observe que o console agora registra a mensagem do gerenciador de eventos `activate`
+Note that the console now logs the message from the `activate` event handler:
 
-`Finally active. Ready to start serving content!`
+`Finally active. Ready to start serving content!`<aside class="key-point">
 
+<p><strong>Skip waiting</strong></p>
 
-## Explore o cache
+<p>Having to click the <code>skipWaiting</code> button all the time can get a little annoying. If you'd like your Service Worker to force itself to become active you can include the line <code>self.skipWaiting()</code> in the <code>install</code> event handler. You can learn more about the <code>skipWaiting</code> method in  <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-skipwaiting">the Service Workers spec</a>.</p>
 
+</aside> 
 
+## Exploring the cache
 
+Managing your own offline file cache with a Service Worker is an incredible super power. The new **Application** panel has a number of useful tools for exploring and modifying your stored resources which can be very helpful during development time.
 
-Gerir o seu próprio cache de arquivos off-line com um Service Worker é um superpoder incrível. O novo painel __Application__ tem uma série de ferramentas úteis para explorar e modificar seus recursos armazenados, o que pode ser muito útil durante o desenvolvimento.
+### Add caching to your Service Worker
 
-### Adicionar armazenamento em cache ao seu Service Worker
+Before you can inspect the cache you'll need to write a little code to store some files. Pre-caching files during the Service Worker's install phase is a useful technique to guarantee that crucial resources are available to user if they happen to go offline. Let's start there.
 
-Antes de poder inspecionar o cache, você precisa escrever um pouco de código para armazenar alguns arquivos. Pré-armazenar arquivos em cache durante a fase de instalação do Service Worker é uma técnica útil para garantir que recursos cruciais estejam disponíveis para o usuário, se ele ficar off-line. Vamos começar por aí.
-
-* Antes de atualizar o `service-worker.js`, abra o painel __Application__ no DevTools, navegue até o menu __Service Workers__, e marque a caixa que diz __Update on Reload__
+* Before updating the `service-worker.js`, open the DevTools **Application** panel, navigate to the **Service Workers** menu, and check the box that says **Update on reload**
 
 ![d4bcfb0983246797.png](img/d4bcfb0983246797.png)
 
-Este truque útil forçará a página a usar o Service Worker que for o mais recente, então você não tem que clicar na opção __skipWaiting__ toda vez que quiser fazer alterações em seu Service Worker.
+This useful trick will force the page to use whatever Service Worker is the latest, so you don't have to click the **skipWaiting** option every time you want to make changes to your Service Worker.
 
-* Em seguida, atualize o código em `service-worker.js` para que fique assim
+* Next, update the code in `service-worker.js` so it looks like this
 
-```
-var CACHE_NAME = 'my-site-cache-v1';
-var urlsToCache = [
-  '/',
-  '/styles/main.css',
-  '/scripts/main.js',
-  '/images/smiley.svg'
-];
+    var CACHE_NAME = 'my-site-cache-v1';
+    var urlsToCache = [
+      '/',
+      '/styles/main.css',
+      '/scripts/main.js',
+      '/images/smiley.svg'
+    ];
+    
+    self.addEventListener('install', function(event) {
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
+    self.addEventListener('activate', function(event) {
+      console.log('Finally active. Ready to start serving content!');
+    });
+    
 
-self.addEventListener('install', function(event) {
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
+* Refresh the page
 
-self.addEventListener('activate', function(event) {
-  console.log('Finally active. Ready to start serving content!');  
-});
-```
+In the Application panel you might notice a warning shows up. This seems scary but it's just telling you that your old Service Worker was forcibly updated. Since that was the intention, this is totally O.K., but it can serve as a useful warning so you don't forget to turn the checkbox off when you're done editing the `service-worker.js` file.
 
-* Atualize a página
+![c6363ac5b51e06b1.png](img/c6363ac5b51e06b1.png)
 
-No painel de Application, você pode perceber que um Erro aparece. Parece assustador, mas clicar no botão __details__ revela que é apenas o painel __Application__ informando que seu Service Worker antigo foi atualizado forçosamente. Como essa era a intenção, isso é totalmente OK, mas pode servir como um alerta útil para que você não esqueça de desmarcar a caixa de seleção ao terminar de editar o arquivo `service-worker.js`.
+### Inspecting Cache Storage
 
-![a039ca69d2179199.png](img/a039ca69d2179199.png)
+Notice that the **Cache Storage** menu item in the **Application** panel now has a caret indicating it can be expanded. If you don't see it, right click on **Cache Storage** and choose **Refresh Caches** (this doesn't actually do anything to the caches, it just updates the DevTools UI).
 
-### Inspecione o armazenamento em cache
+* Click to expand the **Cache Storage** menu, then click on `my-site-cache-v1`
 
-Observe que o item de menu __Cache Storage__ no painel __Application__ agora tem um cursor, indicando que ele pode ser expandido.
+![7990023bd9e8fe7a.png](img/7990023bd9e8fe7a.png)
 
-* Clique para expandir o menu __Cache Storage__, em seguida, clique em `my-site-cache-v1`
-
-![af2b3981c63b1529.png](img/af2b3981c63b1529.png)
-
-Aqui você pode ver todos os arquivos armazenados em cache pelo Service Worker. Se precisar remover um arquivo do cache, você pode clicar com o botão direito sobre ele e selecionar a opção __delete__ no menu de contexto. Da mesma forma, você pode apagar todo o cache clicando com o botão direito em `my-site-cache-v1` e escolhendo excluir.
+Here you can see all of the files cached by the Service Worker. If you need to remove a file from the cache you can right-click on it and select the **delete** option from the context menu. Similarly, you can delete the entire cache by right-clicking on `my-site-cache-v1` and choosing delete.
 
 ![5c8fb8f7948066e6.png](img/5c8fb8f7948066e6.png)
 
-### Limpe o slate
+### Cleaning the slate
 
-Como você pode ter notado, juntamente com __Cache Storage__, há uma série de outros itens de menu relacionados com os recursos armazenados, incluindo: Armazenamento Local, Armazenamento de Sessão, IndexedDB, Web SQL, Cookies, e Cache do Aplicativo ("AppCache"). Ter controle granular de cada um desses recursos em um único painel é extremamente útil. Mas você estivesse em um cenário em deseja excluir todos os recursos armazenados, seria muito tedioso ter que visitar cada item do menu e apagar seu conteúdo. Em vez disso, você pode usar a opção __Clear storage__ para limpar o slate de uma só vez (observe que isso também cancelará o registro de quaisquer Service Workers).
+As you may have noticed, along with **Cache Storage**, there are a number of other menu items related to stored resources, including: Local Storage, Session Storage, IndexedDB, Web SQL, Cookies, and Application Cache ("AppCache"). Having granular control of each of these resources all in one panel is extremely useful! But if you were in a scenario where you wanted to delete all of the stored resources it would be pretty tedious to have to visit each menu item and delete their contents. Instead, you can use the **Clear storage** option to clean the slate in one fell swoop (note that this will also unregister any Service Workers).
 
-* Selecione a opção de menu __Clear storage__
-* Clique no botão __Clear site data__ para excluir todos os recursos armazenados
+* Select the **Clear storage** menu option
+* Click the **Clear selected** button to delete all stored resources
 
-![59838a73a2ea2aaa.png](img/59838a73a2ea2aaa.png)
+![744eb12fec050d31.png](img/744eb12fec050d31.png)
 
-Se voltar e clicar em `my-site-cache-v1`, você verá que agora todos os arquivos armazenados foram excluídos.
+If you go back to **Cache Storage** you'll now see that all the stored files have been deleted.
 
-![317d24238f05e69c.png](img/317d24238f05e69c.png)
+![3d8552f02b82f4d5.png](img/3d8552f02b82f4d5.png)<aside class="key-point">
 
-__E a engrenagem?__
+<p><strong>TIP:</strong> You can also use a new Incognito window for testing and debugging Service Workers. When the Incognito window is closed, Chrome will remove any cached data or installed Service Worker, ensuring that you always start from a clean state.</p>
 
-Como o Service Worker pode fazer suas próprias solicitações de rede, ele pode ser útil para identificar o tráfego de rede que se originou a partir do próprio worker.
+</aside> 
 
-* Enquanto `my-site-cache-v1` ainda está vazio, alterne para o painel Network
-* Atualize a página
+**What's with the gear?**
 
-No painel Network, você deve ver um conjunto inicial de solicitação de arquivos como `main.css`, seguida de uma segunda rodada de solicitações, com o prefixo de um ícone de engrenagem, que parecem buscar os mesmos ativos.
+Because the Service Worker is able to make its own network requests, it can be useful to identify network traffic which originated from the worker itself.
 
-![2ba393cf3d41e087.png](img/2ba393cf3d41e087.png)
+* While `my-site-cache-v1` is still empty, switch over to the Network panel
+* Refresh the page
 
-O ícone de engrenagem significa que estas solicitações vieram do próprio Service Worker. Especificamente, estas são as solicitações que estão sendo feitas pelo gerenciador `install` do Service Worker para preencher o cache off-line.
+In the Network panel, you should see an initial set of request for files like `main.css`, followed by a second round of requests, prefixed with a gear icon, which seem to fetch the same assets.
 
+![8daca914fe2d9dc7.png](img/8daca914fe2d9dc7.png)
 
-## Como simular diferentes condições de rede
+The gear icon signifies that these requests came from the Service Worker itself. Specifically, these are the requests being made by the Service Worker's `install` handler to populate the offline cache.<aside class="key-point">
 
+<p><strong>Learn More</strong>: For a deeper understanding of the Network panel identifies Service Worker traffic take a look at  <a href="http://stackoverflow.com/a/33655173/385997">this StackOverflow discussion</a>.</p>
 
+</aside> 
 
+## Simulating different network conditions
 
-Um dos recursos arrasadores dos Service Workers é a sua capacidade de servir conteúdo armazenado em cache aos usuários, mesmo quando estão off-line. Para verificar se tudo funciona como planejado, vamos testar algumas das ferramentas de limitação de rede fornecida pelo Chrome.
+One of the killer features of Service Workers is their ability to serve cached content to users even when they're offline. To verify everything works as planned, let's test out some of the network throttling tools that Chrome provides.
 
-### Fornecendo solicitações enquanto está off-line
+### Serving requests while offline
 
-Para servir de conteúdo off-line, você precisa adicionar um gerenciador `fetch` ao seu `service-worker.js`
+In order to serve offline content, you'll need to add a `fetch` handler to your `service-worker.js`
 
-* Adicione o código a seguir ao `service-worker.js` logo após o `activate` gerenciador
+* Add the following code to `service-worker.js` just after the `activate` handler
 
-```
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-```
+    self.addEventListener('fetch', function(event) {
+      event.respondWith(
+        caches.match(event.request)
+          .then(function(response) {
+            // Cache hit - return response
+            if (response) {
+              return response;
+            }
+            return fetch(event.request);
+          }
+        )
+      );
+    });
+    
 
-* Alterne para o painel __Application__ e verifique se __Update on Reload__ ainda está marcada
-* Atualize a página para instalar o novo Service Worker
-* Desmarque __Update on reload__
-* Marque __Offline__
+* Switch to the **Application** panel and verify that **Update on reload** is still checked
+* Refresh the page to install the new Service Worker
+* Uncheck **Update on reload**
+* Check **Offline**
 
-Seu painel __Application__ deve ter a seguinte aparência agora:
+Your **Application** panel should look like this now:
 
-![873b58278064b627.png](img/873b58278064b627.png)
+![54d7f786f2a8838e.png](img/54d7f786f2a8838e.png)
 
-Observe que o painel __Network__ agora tem um sinal de aviso amarelo para indicar que você está off-line (e para lembrá-lo de desmarcar essa caixa de seleção se desejar continuar a desenvolver com a rede).
+Notice the **Network** panel now has a yellow warning sign to indicate that you're offline (and to remind you that you'll want to uncheck that checkbox if you want to continue developing with the network).
 
-Com seu gerenciador `fetch`, e seu aplicativo  definido para __Offline__, agora é a hora da verdade. Atualize a página e, se tudo correr bem, você deve continuar a ver o conteúdo do site, mesmo que nada venha da rede. Você pode alternar para o painel __Network__ para verificar se todos os recursos estão sendo servidos a partir de armazenamento de cache. Observe que, na coluna __Size__ é dito que esses recursos estão vindo do `(from Service Worker)`. Este é o sinal que nos diz que o Service Worker interceptou a solicitação, e serviu uma resposta do cache em vez de acessar a rede.
+With your `fetch` handler in place, and your app set to **Offline**, now is the moment of truth. Refresh the page and if all goes well you should continue to see site content, even though nothing is coming from the network. You can switch to the **Network** panel to verify that all of the resources are being served from Cache Storage. Notice in the **Size** column it says these resources are coming `(from Service Worker)`. That's the signal that tells us the Service Worker intercepted the request, and served a response from the cache instead of hitting the network.
 
-![a6f485875ca088db.png](img/a6f485875ca088db.png)
+![96f2065b2f0adece.png](img/96f2065b2f0adece.png)
 
-Você perceberá que há solicitações que falharam (como por um novo Service Worker ou `manifest.json`). Isso é totalmente bom e esperado.
+You'll notice that there are failed requests (like for a new Service Worker or `manifest.json`). That's totally fine and expected.
 
-### Testando redes lentas ou instáveis
+### Testing slow or flaky networks
 
-Como usamos nossos dispositivos móveis em uma infinidade de contextos diferentes, estamos em constante movimento entre vários estados de conectividade. Não apenas isso, mas há muitas partes do mundo onde as velocidades 3G e 2G são a norma. Para verificar se nosso aplicativo funciona bem para esses consumidores, devemos testar que ele é funcional mesmo em uma conexão mais lenta.
+Because we use our mobile devices in a plethora of different contexts, we're constantly moving between various states of connectivity. There are also many parts of the world where 3G and 2G speeds are the norm. To verify that our app works well for these consumers, we should test that it is performant even on a slower connection.
 
-Para começar, vamos simular como o aplicativo funciona em uma rede lenta quando o Service Worker não está em jogo.
+To start, let's simulate how the application works on a slow network when the Service Worker is not in play.
 
-* No painel __Application__, desmarque __Offline__
-* Marque __Bypass for network__
+* From the **Application** panel, uncheck **Offline**
+* Check **Bypass for network**
 
-![739dc5811e4aa937.png](img/739dc5811e4aa937.png)
+![d9ea0e24a6ef374e.png](img/d9ea0e24a6ef374e.png)
 
-A opção __Bypass for network__ informará ao navegador para ignorar nosso service worker quando precisar fazer uma solicitação de rede. Isso significa que nada poderá vir do armazenamento em cache, será como se não houvesse um Service Worker instalado.
+The **Bypass for network** option will tell the browser to skip our service worker when it needs to make a network request. This means nothing will be able to come from Cache Storage, it will be as if we have no Service Worker installed at all.
 
-* Em seguida, alterne para o painel __Network__
-* Use a lista suspensa __Network Throttle__ para definir a velocidade de rede para `Regular 2G`
+* Next, switch to the **Network** panel
+* Use the **Network Throttle** dropdown to set the network speed to `Regular 2G`
 
-A lista suspensa __Network Throttle__ está localizada no canto superior direito do painel __Network__, junto à caixa de seleção __Offline__ do próprio painel __Network__. Por padrão, ela é definida como `No throttling`.
+The **Network Throttle** dropdown is located in the top right of the **Network** panel, right next to the **Network** panel's own **Offline** checkbox. By default it is set to `No throttling`.
 
-![c59b54a853215598.png](img/c59b54a853215598.png)
+![662a15b44afb6633.png](img/662a15b44afb6633.png)
 
-* Com a velocidade defina como `Regular 2G`, atualize a página
+* With the speed set to `Regular 2G`, refresh the page
 
-Observe que os tempos de resposta aumentam muito! Agora cada ativo leva várias centenas de milissegundos para ser baixado.
+Notice the response times jump way up! Now each asset takes several hundred milliseconds to download.
 
-![70e461338a0bb051.png](img/70e461338a0bb051.png)
+![9774a4c588a6604c.png](img/9774a4c588a6604c.png)
 
-Vejamos como isso fica diferente com nosso Service Worker de volta ao jogo.
+Let's see how things differ with our Service Worker back in play.
 
-* Com a rede ainda definida para `Regular 2G`, volte para a guia __Application__
-* Desmarque a caixa de seleção __Bypass for network__
-* Volte ao painel __Network__
-* Atualize a página
+* With the network still set to `Regular 2G`, switch back to the **Application** tab
+* Uncheck the **Bypass for network** checkbox
+* Switch back to the **Network** panel
+* Refresh the page
 
-Agora nossos tempos de resposta caem para rápidos poucos milissegundos por recurso. Para usuários em redes mais lentas, esta é uma diferença da noite para o dia!
+Now our response times jump down to a blazing fast few milliseconds per resource. For users on slower networks this is a night and day difference!
 
-![f0f6d3b0a1b1f18d.png](img/f0f6d3b0a1b1f18d.png)
+![44253f3de0e694b8.png](img/44253f3de0e694b8.png)<aside class="warning">
 
+<p>Before proceeding make sure you set the <strong>Network Throttle</strong> back to <code>No throttling</code></p>
 
-## Lembre-se, é apenas JavaScript
+</aside> 
 
+## Remember, it's just JavaScript
 
+Service Workers can feel like magic, but under the hood they're really just regular JavaScript files. This means you can use existing tools like `debugger` statements and breakpoints to debug them.
 
+### Working with the debugger
 
-Service Workers podem parecer mágica, mas na verdade eles são apenas arquivos JavaScript regulares. Isso significa que você pode usar as ferramentas existentes, como declarações `debugger` e pontos de interrupção para depurá-los.
+Many developers rely on good old `console.log()` when they have an issue in their app. But there's a much more powerful tool available in the toolbox: `debugger`.
 
-### Trabalhe com o depurador
+Adding this one line to your code will pause execution and open up the **Sources** panel in the DevTools. From here you can step through functions, inspect objects, and even use the console to run commands against the current scope. This can be especially useful for debugging a cranky Service Worker.
 
-Muitos desenvolvedores contam com o bom e velho `console.log()` quando têm um problema em seu aplicativo. Mas há uma ferramenta muito mais poderosa disponível na caixa de ferramentas: `debugger`.
+To test it out, let's debug our `install` handler.
 
-Adicionar esta linha ao seu código interromperá a execução e abrirá o painel __Sources__ do DevTools. A partir daí você pode percorrer as funções, inspecionar objetos, e até mesmo usar o console para executar comandos contra o escopo atual. Isso pode ser especialmente útil para depurar um Service Worker instável.
+* Add a `debugger` statement to the beginning of your `install` handler in `service-worker.js`
 
-Para testar, vamos depurar nosso gerenciador `install`.
+    self.addEventListener('install', function(event) {
+      debugger;
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
 
-* Adicione uma declaração `debugger` ao início do seu gerenciador `install` em `service-worker.js`
+* Refresh the page
 
-```
-self.addEventListener('install', function(event) {
-  debugger;
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
-```
+The application will pause execution and switch panels over to **Sources** where the `debugger` statement is now highlighted in `service-worker.js`.
 
-* No painel __Application__, atualize a página
-* Clique em __skipWaiting__ para ativar o novo Service Worker
-* Atualize a página novamente para permitir que o gerenciador `fetch` seja executado
+![2f20258491acfaa8.png](img/2f20258491acfaa8.png)<aside class="key-point">
 
-O aplicativo fará uma pausa na execução e alternará para o painel __Sources__ onde a instrução `debugger` agora está em destaque no `service-worker.js`.
+<p><strong>Learn More</strong>: A full explanation of the <strong>Sources</strong> panel is outside the scope of this codelab but you can  <a href="/web/tools/chrome-devtools/debug/">learn more about the debugging capabilities of the DevTools</a> on the Google Developers site.</p>
 
-![d960b322c020d6cc.png](img/d960b322c020d6cc.png)
+</aside> 
 
-Há uma infinidade de ferramentas úteis disponíveis nesta visualização. Uma dessas ferramentas é o inspetor __Scope__, que nos permite ver o estado atual de objetos no escopo da função atual.
+There are a ton of useful tools available in this view. One such tool is the **Scope** inspector, which let's us see the current state of objects in the current function's scope.
 
-* Clique na lista suspensa `event: ExtendableEvent`
+* Click on the `event: InstallEvent` dropdown
 
-![5116146f838a566.png](img/5116146f838a566.png)
+![3fa715abce820cea.png](img/3fa715abce820cea.png)
 
-Daí você pode descobrir todos os tipos de informações úteis sobre os atuais objetos no escopo. Por exemplo, olhando o campo `type`, é possível verificar se o objeto de evento atual é para o evento `install`.
+From here you can learn all sorts of useful information about the current in-scope objects. For instance, looking at the `type` field you can verify that the current event object is for the `install` event.
 
-### Como usar pontos de interrupção alternativamente
+* when you've finished exploring the **Scope** inspector, press the Resume button
 
-Se já está inspecionando seu código no painel __Sources__, você pode achar mais fácil configurar um ponto de interrupção, em vez de adicionar declarações `debugger` aos seus arquivos reais. Um ponto de interrupção serve a um propósito semelhante (congela a execução e permite que você inspecione o app), mas pode ser definido de dentro do próprio DevTools.
+![97cd70fb204fa26b.png](img/97cd70fb204fa26b.png)
 
-Para definir um ponto de interrupção, você precisa clicar no número da linha onde deseja que a solicitação para interrompa a execução.
+This allows the script to resume executing after the break. Finally, let's complete the activation of the new service worker.
 
-* No painel __Sources__, desça para a linha 25 do `service-worker.js` e clique no número da linha
+* Return to the **Service Workers** section of the **Application** panel
+* Click on **skipWaiting** to activate the new Service Worker
 
-![da7b5f76723ca525.png](img/da7b5f76723ca525.png)
+### Using breakpoints instead
 
-Isso definirá um ponto de interrupção no início do gerenciador `fetch` para que você possa fiscalizar seu objeto de evento.
+If you're already inspecting your code in the **Sources** panel, you may find it easier to set a breakpoint, versus adding `debugger` statements to your actual files. A breakpoint serves a similar purpose (it freezes execution and lets you inspect the app) but it can be set from within DevTools itself.
 
-* Atualize a página
+To set a breakpoint you need to click the line number where you'd like the application to halt execution.
 
-Observe que, de modo semelhante a quando você usou a declaração `debugger`, a execução agora parou na linha com o ponto de interrupção. Isto significa que agora você pode inspecionar os objetos `FetchEvent` que passam por seu aplicativo e determinar quais recursos eles estavam solicitando.
+* From the **Sources** panel, scroll down to line 39 of `service-worker.js` and click on the line number
 
-* No inspetor __Scope__, expanda o objeto expanda o objeto `event`
-* Expanda o objeto `request`
-* Observe a propriedade `url`
+![dabccb06c7231b3e.png](img/dabccb06c7231b3e.png)
+
+This will set a breakpoint at the beginning of the `fetch` handler so you can inspect its event object.
+
+* Refresh the page
+
+Notice that, similar to when you used the `debugger` statement, execution has now stopped on the line with the breakpoint. This means you can now inspect the `FetchEvent` objects passing through your app and determine what resources they were requesting.
+
+* In the **Scope** inspector, expand the `event` object
+* Expand the `request` object
+* Note the `url` property
 
 ![f9b0c00237b4400d.png](img/f9b0c00237b4400d.png)
 
-Você pode ver que este `FetchEvent` estava solicitando o recurso em `http://127.0.0.1:8887/`, que é nosso `index.html`. Como o aplicativo irá lidar com muitas solicitações `fetch`, você pode deixar o ponto de interrupção no lugar e continuar a execução. Isso permitirá que você inspecione cada `FetchEvent` conforme ele passa pelo aplicativo. Uma técnica muito útil para obter uma visão exata de todas as solicitações em seu aplicativo.
+You can see that this `FetchEvent` was requesting the resource at `http://127.0.0.1:8887/`, which is our `index.html`. Because the app will handle many `fetch` requests, you can leave the breakpoint in place and resume execution. This will let you inspect each `FetchEvent` as it passes through the app. A very useful technique for getting a fine grained look at all the requests in your app.
 
-* Pressione o botão __Resume__ para permitir que a execução de scripts continue
+* Press the **Resume** button to allow script execution to continue
 
-![ce7b5e8df4e8bc07.png](img/ce7b5e8df4e8bc07.png)
+![66b08c42b47a9987.png](img/66b08c42b47a9987.png)
 
-Após um momento, a execução será interrompida no mesmo ponto de interrupção. Verifique a propriedade `event.request.url` e observe que ela agora exibe `http://127.0.0.1:8887/styles/main.css`. Você pode continuar desta maneira para vê-la solicitar `smiley.svg`, `main.js` e finalmente o `manifest.json`.
+After a moment, execution will pause on the same breakpoint. Check the `event.request.url` property and note it now displays `http://127.0.0.1:8887/styles/main.css`. You can continue in this way to watch it request `smiley.svg`, `main.js`, and finally the `manifest.json`.
 
+When you are finished exploring, remove any breakpoints and comment out the `debugger` call so that they don't interfere with the rest of the lab.
 
-## Testando notificações push
+## Testing Push notifications
 
+Push notifications are an important part of creating an engaging experience. Because notifications require coordination between an application server, a messaging service (like Google Cloud Messaging), and your Service Worker, it can be useful to test the Service Worker in isolation first to verify it is setup properly.
 
+### Adding Push support
 
+You may have noticed a button in the center of the application asking for the user to **Subscribe for Push Notifications**. This button is already wired up to request the Push notification permission from the user when clicked.
 
-Notificações push são uma parte importante de criar uma experiência envolvente. Como as notificações requerem coordenação entre um servidor de aplicativos, um serviço de mensagens (como o Google Cloud Messaging) e seu Service Worker, pode ser útil testar o Service Worker isoladamente primeiro para verificar se ele está configurado corretamente.
+![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)<aside class="warning">
 
-### Adicionar suporte a Push
+<p>The code used to set up this Push subscription is just for demo purposes and should not be used in production. For a thorough guide on setting up Push notifications  <a href="/web/fundamentals/engage-and-retain/push-notifications/">see this post</a> on the Google Developers site.</p>
 
-Você pode ter notado um botão no centro da aplicativo pedindo ao usuário para __Subscribe for Push Notifications__. Este botão já está preparado para solicitar a permissão de Notificação push do usuário quando clicado.
+</aside> 
 
-![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)
+The only remaining step is to add support for the `push` event to `service-worker.js`.
 
-O único passo restante é adicionar suporte para o evento `push`  no `service-worker.js`.
+* Open `service-worker.js` and add the following lines after the `fetch` handler
 
-* Abra `service-worker.js` e adicione as linhas a seguir após o gerenciador `fetch`
+    self.addEventListener('push', function(event) {
+      var title = 'Yay a message.';
+      var body = 'We have received a push message.';
+      var icon = '/images/smiley.svg';
+      var tag = 'simple-push-example-tag';
+      event.waitUntil(
+        self.registration.showNotification(title, {
+          body: body,
+          icon: icon,
+          tag: tag
+        })
+      );
+    });
+    
 
-```
-self.addEventListener('push', function(event) {  
-  var title = 'Yay a message.';  
-  var body = 'We have received a push message.';  
-  var icon = '/images/smiley.svg';  
-  var tag = 'simple-push-example-tag';
-  event.waitUntil(  
-    self.registration.showNotification(title, {  
-      body: body,  
-      icon: icon,  
-      tag: tag  
-    })  
-  );  
-});
-```
+With the handler in place it's easy to simulate a Push event.
 
-Com o gerenciador configurado, é fácil simular um evento Push.
-
-* Abra o painel de __Application__
-* Atualize a página, ao ver o novo Service Worker entrar na fase `waiting`, clique no botão __skipWaiting__
-* Clique no botão __Subscribe to Push Notifications__
-* Aceite a solicitação de permissão
+* Open the **Application** panel
+* Refresh the page, when you see the new Service Worker enter the `waiting` phase, click on the **skipWaiting** button
+* Click on the **Subscribe to Push Notifications** button in the app
+* Accept the permission prompt
 
 ![a8a8fa8d35b0667a.png](img/a8a8fa8d35b0667a.png)
 
-* Finalmente, clique no botão __Push__, ao lado de __Update__ e __Unregister__
+* Finally, click the **Push** button, next to **Update** and **Unregister** back in the **Application** tab
 
 ![eacd4c5859f5f3ff.png](img/eacd4c5859f5f3ff.png)
 
-Agora você deve ver uma notificação push aparecer no canto superior direito da tela, confirmando que o Service Worker está lidando com eventos `push` como esperado.
+You should now see a Push notification appear in the top right of the screen, confirming that the Service Worker is handling `push` events as expected.
 
 ![b552ed129bc6cdf6.png](img/b552ed129bc6cdf6.png)
 
-Bom trabalho!
+Nice work!
 
-Agora que tem algumas ferramentas de depuração em sua caixa de ferramentas, você deve estar bem equipado para resolver quaisquer problemas que surjam em seu projeto. A única coisa que falta é você se aventurar e construir o próximo incrível Progressive Web App!
+Now that you have some debugging tools in your toolbox, you should be well equipped to fix-up any issues that arise in your project. The only thing left is for you to get out there and build the next amazing Progressive Web App!
 
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-
-
-
-## Encontrou um problema ou tem feedback? {: .hide-from-toc }
-Ajude-nos a melhorar nossos codelabs reportando um 
-[problema](https://github.com/googlecodelabs/debugging-service-workers/issues) hoje. E obrigado!
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlecodelabs/debugging-service-workers/issues) today. And thanks!

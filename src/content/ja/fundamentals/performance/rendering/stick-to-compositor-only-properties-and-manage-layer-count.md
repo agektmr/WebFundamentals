@@ -1,99 +1,93 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: コンポジットは、画面に表示するために、ページのペイントされた部分がまとめて置かれている場所です。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Compositing is where the painted parts of the page are put together for displaying on screen.
 
-{# wf_updated_on:2015-03-20 #}
-{# wf_published_on:2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Compositing #}
 
-# コンポジタ専用プロパティの優先使用、およびレイヤー数の管理 {: .page-title }
+# Stick to Compositor-Only Properties and Manage Layer Count {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-コンポジットは、画面に表示するために、ページのペイントされた部分がまとめて置かれている場所です。
+Compositing is where the painted parts of the page are put together for displaying on screen.
 
-
-ページのパフォーマンスに影響を与える 2 つの重要な要因があります。管理対象となるコンポジタ レイヤーの数と、アニメーションのために使用するプロパティです。
+There are two key factors in this area that affect page performance: the number of compositor layers that need to be managed, and the properties that you use for animations.
 
 ### TL;DR {: .hide-from-toc }
 
-* アニメーションの形状と不透明度の変更のみを行うようにします。
-* 移動要素を `will-change` または `translateZ` でプロモートします。
-* プロモーション ルールにより、レイヤーでメモリーと管理が必要になるため、ルールの多用は避けてください。
+* Stick to transform and opacity changes for your animations.
+* Promote moving elements with `will-change` or `translateZ`.
+* Avoid overusing promotion rules; layers require memory and management.
 
-## アニメーションの形状と不透明度の変更の使用
+## Use transform and opacity changes for animations
 
-最もパフォーマンスの高いピクセル パイプラインでは、レイアウトとペイントの両方を避け、コンポジットの変更のみを必要とします。
+The best-performing version of the pixel pipeline avoids both layout and paint, and only requires compositing changes:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="レイアウトまたはペイントなしのピクセル パイプライン。">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="The pixel pipeline with no layout or paint." />
 
-これを実現するには、コンポジタのみで処理できるプロパティの変更のみを行う必要があります。現在、これに当てはまるプロパティは **`transforms`** と **`opacity`** のみです。
+In order to achieve this you will need to stick to changing properties that can be handled by the compositor alone. Today there are only two properties for which that is true - `transform`s and `opacity`:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="レイアウトやペイントをトリガーせずにアニメーション化できるプロパティ。">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="The properties you can animate without triggering layout or paint." />
 
-`transform` と `opacity` を使用する際の注意点は、これらのプロパティを変更する要素がそれ自身のコンポジ層になければならないということです。レイヤーを作成するには、要素をプロモートする必要があります。これについては、次のセクションで説明します。
+The caveat for the use of `transform`s and `opacity` is that the element on which you change these properties should be on *its own compositor layer*. In order to make a layer you must promote the element, which we will cover next.
 
-注: これらのプロパティだけにアニメーションを制限することができない場合は、FLIP principle(https://aerotwist.com/blog/flip-your-animations) を参照してください。より高価なプロパティから、形状と不透明度の変更にアニメーションを再マッピングするのに役立つ場合があります。
+Note: If you’re concerned that you may not be able to limit your animations to just those properties, take a look at the [FLIP principle](https://aerotwist.com/blog/flip-your-animations), which may help you remap animations to changes in transforms and opacity from more expensive properties.
 
-## アニメーション化する要素をプロモートする
+## Promote elements that you plan to animate
 
-[ペイントの複雑さの簡略化とペイントエリアの縮小](simplify-paint-complexity-and-reduce-paint-areas) セクションで説明したように、アニメーション化する要素をそれら自身のレイヤーにプロモートする必要があります（合理的な範囲にとどめてください）。
-
+As we mentioned in the “[Simplify paint complexity and reduce paint areas](simplify-paint-complexity-and-reduce-paint-areas)” section, you should promote elements that you plan to animate (within reason, don’t overdo it!) to their own layer:
 
     .moving-element {
       will-change: transform;
     }
+    
 
-
-古いブラウザ、または will-change をサポートしていないブラウザの場合は、次のようにします。
-
+Or, for older browsers, or those that don’t support will-change:
 
     .moving-element {
       transform: translateZ(0);
     }
+    
 
+This gives the browser the forewarning that changes are incoming and, depending on what you plan to change, the browser can potentially make provisions, such as creating compositor layers.
 
-これにより、ブラウザに変更が行われることが予告されます。予定されている変更の内容に応じて、ブラウザは、コンポジット層を作成するなどの準備をすることができます。
+## Manage layers and avoid layer explosions
 
-## レイヤーを管理して、レイヤーが増えすぎないようにする
-
-レイヤーによってパフォーマンスが向上することが多いことを知ると、次のように、ページ上のすべての要素をプロモートしたくなることでしょう。
-
+It’s perhaps tempting, then, knowing that layers often help performance, to promote all the elements on your page with something like the following:
 
     * {
       will-change: transform;
       transform: translateZ(0);
     }
+    
 
+Which is a roundabout way of saying that you’d like to promote every single element on the page. The problem here is that every layer you create requires memory and management, and that’s not free. In fact, on devices with limited memory the impact on performance can far outweigh any benefit of creating a layer. Every layer’s textures needs to be uploaded to the GPU, so there are further constraints in terms of bandwidth between CPU and GPU, and memory available for textures on the GPU.
 
-これは、ページ上のあらゆる要素をプロモートしたいという遠回しな言い方です。ここでの問題は、作成したすべてのレイヤーにメモリと管理が必要であり、それはコストなしでは行えないということです。実際、メモリが限られている端末では、レイヤーの作成によって得られる利益を、パフォーマンスへの影響がはるかに上回ることがあります。すべてのレイヤーのテクスチャは GPU にアップロードする必要があるため、CPU と GPU 間の帯域幅や、GPU のテクスチャで使用可能なメモリの面でさらなる制約が生じます。
+Warning: Do not promote elements unnecessarily.
 
-警告:要素を不必要にプロモートしないでください。
-
-## Chrome DevTools を使用してアプリのレイヤーを理解する
+## Use Chrome DevTools to understand the layers in your app
 
 <div class="attempt-right">
   <figure>
-    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="Chrome DevTools のペイント プロファイラ用のトグル。">
+    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="The toggle for the paint profiler in Chrome DevTools.">
   </figure>
 </div>
 
-アプリ内の各レイヤーを理解し、その要素がなぜレイヤーを有しているかを知るために、Chrome DevTools の Timeline でペイント プロファイラを有効にする必要があります。
+To get an understanding of the layers in your application, and why an element has a layer you must enable the Paint profiler in Chrome DevTools’ Timeline:
 
 <div style="clear:both;"></div>
 
-これがオンになっている場合、記録を実行する必要があります。記録が終了したら、frames-per-second バーと詳細の間にある個々のフレームをクリックできるようになります。
+With this switched on you should take a recording. When the recording has finished you will be able to click individual frames, which is found between the frames-per-second bars and the details:
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="デベロッパーがプロファイリングを行うフレーム。">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="A frame the developer is interested in profiling." />
 
-これをクリックすると、詳細に新しいオプションの [layer] タブが表示されます。
+Clicking on this will provide you with a new option in the details: a layer tab.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="Chrome DevTools の [layer] タブボタン。">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="The layer tab button in Chrome DevTools." />
 
-このオプションでは新しいビューが表示されます。これを使用して、対象のフレームの間にすべてのレイヤーをパン、スキャン、およびズームインすることができ、各レイヤーが作成された理由も示されます。
+This option will bring up a new view that allows you to pan, scan and zoom in on all the layers during that frame, along with reasons that each layer was created.
 
-<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="Chrome DevTools の [layer] ビュー。">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="The layer view in Chrome DevTools." />
 
-このビューを使用すると、現在あるレイヤーの数を追跡することができます。スクロールやトランジションなどのパフォーマンスが重要なアクションの間に合成に多くの時間を費やしている場合（目標は **4～5 ミリ秒**）、この情報を使用して、現在あるレイヤーの数とレイヤーが作成された理由を確認できます。また、このビューから、自分のアプリのレイヤー数を管理できます。
+Using this view you can track the number of layers you have. If you’re spending a lot time in compositing during performance-critical actions like scrolling or transitions (you should aim for around **4-5ms**), you can use the information here to see how many layers you have, why they were created, and from there manage layer counts in your app.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

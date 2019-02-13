@@ -1,39 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 學習如何在您的應用程式的兩個檢視之間執行動畫處理。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate between two views in your apps.
 
-{# wf_updated_on: 2014-10-21 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 檢視之間的動畫處理 {: .page-title }
+# Animating Between Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-您可能常常會想要在應用程式中，讓使用者於檢視之間移動 -- 無論是前往詳細資料檢視的清單，或是顯示側邊欄導覽。 檢視之間的動畫處理能讓使用者不至於分心，並為專案增添更多的活力。
+Often, you want to move users between views in your application, whether that's from a list to a details view, or show a sidebar navigation. Animations between these views keep the user engaged and add even more life to your projects.
 
 ### TL;DR {: .hide-from-toc }
-- 使用轉換，以在檢視之間移動；避免使用 `left`、`top` 或觸發版面配置的任何其他屬性。
-- 確保您使用的任何動畫不但要潮，而且控制持續時間要短。
-- 同時要考慮螢幕變大時的動畫和版面配置變化；較小螢幕上可行的內容，在桌面環境上可能看起來很突兀。
 
+* Use translations to move between views; avoid using `left`, `top`, or any other property that triggers layout.
+* Ensure that any animations you use are snappy and the durations are kept short.
+* Consider how your animations and layouts change as the screen sizes go up; what works for a smaller screen may look odd when used in a desktop context.
 
-這些檢視轉換的外觀和行為重度取決於您正在處理的檢視類型，因此在檢視上層動畫處理強制回應重疊，較之於在清單和詳細資訊檢視之間轉換，應該是個不同的經驗。
+What these view transitions look and behave like depends on the type of views you’re dealing with. For example, animating a modal overlay on top of a view should be a different experience from transitioning between a list and details view.
 
-Note: 您應該針對所有動畫，旨在維持至少 60 fps。 這樣您的使用者就不會遇到會間斷的動畫，而導致他們的體驗很出戲。 確保早在動畫開始之前，針對您計畫變更的一切，設定好動畫處理元素的 will-change。 針對檢視轉換，極有可能您會想要使用<code>will-change: transform</code>。
+Success: Try to maintain 60fps for all of your animations. That way, your users won't see stuttering animations that interfere with their experience. Ensure that any animating element has `will-change` set for anything you plan to change well ahead of the animation starting. For view transitions, it’s highly likely you will want to use `will-change: transform`.
 
-## 使用轉換以在檢視之間移動
+## Use translations to move between views
 
-要讓過程更容易些，讓我們假設有兩個檢視： 一個清單檢視和一個詳細資訊檢視。 當使用者在清單檢視內點選一個清單項目，詳細資訊檢視將滑入，而清單檢視將滑出。
+<div class="attempt-left">
+  <figure>
+    <img src="images/view-translate.gif" alt="Translating between two views" />
+  </figure>
+</div>
 
-<img src="images/view-translate.gif" alt="在兩個檢視之間轉換" />
+To make life easier, assume that there are two views: a list view and a details view. As the user taps a list item inside the list view, the details view slides in, and the list view slides out.
 
-要達到這個效果，您需要針對兩種檢視使用容器，並將之設定 `overflow: hidden`。 以這種方式，兩個檢視都可以在容器裡並排，而不會顯示任何水平捲軸，而每一檢視也也可視需要在容器內並排滑動。
+<div style="clear:both;"></div>
 
-<img src="images/container-two-views.svg" alt="視圖層次。" />
+<div class="attempt-right">
+  <figure>
+    <img src="images/container-two-views.svg" alt="View hierarchy." />
+  </figure>
+</div>
 
-該容器的 CSS 為：
+To achieve this effect, you need a container for both views that has `overflow: hidden` set on it. That way, the two views can both be inside the container side-by-side without showing any horizontal scrollbars, and each view can slide side-to-side inside the container as needed.
 
+<div style="clear:both;"></div>
+
+The CSS for the container is:
 
     .container {
       width: 100%;
@@ -43,8 +50,7 @@ Note: 您應該針對所有動畫，旨在維持至少 60 fps。 這樣您的使
     }
     
 
-該容器的位置被設定為 `relative`。 這代表其中的每個檢視可以定位在最左上角，然後以變形來到處移動。 較之使用 `left` 屬性 (會觸發版面配置與繪製)，這種方法的效能更好，通常也更容易合理化。
-
+The position of the container is set as `relative`. This means that each view inside it can be positioned absolutely to the top left corner and then moved around with transforms. This approach is better for performance than using the `left` property (because that triggers layout and paint), and is typically easier to rationalize.
 
     .view {
       width: 100%;
@@ -59,8 +65,7 @@ Note: 您應該針對所有動畫，旨在維持至少 60 fps。 這樣您的使
     }
     
 
-在 `transform` 屬性上新增 `transition`，會提供不錯的滑動效果。 為了給它一個不錯的感覺，它使用自訂 `cubic-bezier` 曲線，如我們在 [自訂緩動指南](custom-easing.html) 中所討論。
-
+Adding a `transition` on the `transform` property provides a nice slide effect. To give it a nice feel, it’s using a custom `cubic-bezier` curve, which we discussed in the [Custom Easing guide](custom-easing).
 
     .view {
       /* Prefixes are needed for Safari and other WebKit-based browsers */
@@ -69,8 +74,7 @@ Note: 您應該針對所有動畫，旨在維持至少 60 fps。 這樣您的使
     }
     
 
-畫面之外的檢視應該解譯為往右，因此在此例中，詳細資訊檢視應該要移動：
-
+The view that is offscreen should be translated to the right, so in this case the details view needs to be moved:
 
     .details-view {
       -webkit-transform: translateX(100%);
@@ -78,8 +82,7 @@ Note: 您應該針對所有動畫，旨在維持至少 60 fps。 這樣您的使
     }
     
 
-現在需要少量的 JavaScript 來處理類別。 這會切換檢視上的適當類別。
-
+Now a small amount of JavaScript is necessary to handle the classes. This toggles the appropriate classes on the views.
 
     var container = document.querySelector('.container');
     var backButton = document.querySelector('.back-button');
@@ -93,17 +96,16 @@ Note: 您應該針對所有動畫，旨在維持至少 60 fps。 這樣您的使
       container.classList.toggle('view-change');
     }
     
-    // When you click on a list item bring on the details view.
+    // When you click a list item, bring on the details view.
     for (var i = 0; i < listItems.length; i++) {
       listItems[i].addEventListener('click', onViewChange, false);
     }
     
-    // And switch it back again when you click on the back button
+    // And switch it back again when you click the back button
     backButton.addEventListener('click', onViewChange);
     
 
-最後，我們為這些類別新增 CSS 宣告。
-
+Finally, we add the CSS declarations for those classes.
 
     .view-change .list-view {
       -webkit-transform: translateX(-100%);
@@ -116,18 +118,24 @@ Note: 您應該針對所有動畫，旨在維持至少 60 fps。 這樣您的使
     }
     
 
-<a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/inter-view-animation.html">請參閱範例。</a>
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/inter-view-animation.html){: target="_blank" .external }
 
-您可以加以擴展，以涵蓋多個檢視，基本概念應該是一樣的；每個非可見檢視應該在畫面之外，並在必要時帶回，而目前的畫面上檢視應該要移開。
+You could expand this to cover multiple views, and the basic concept should remain the same; each non-visible view should be offscreen and brought on as needed, and the currently onscreen view should be moved off.
 
-Note: 要跨瀏覽器設計這種階層，可能頗具挑戰性。 例如，iOS 需要額外的 CSS 屬性 <code>-webkit-overflow-scrolling: touch</code>，以「重新啟用」快滑捲動，但不同於標準溢出屬性的是，您無法控制要針對哪個軸執行。 一定要在不同裝置測試您的建置！
+Caution: Making this kind of hierarchy in a cross-browser way can be challenging. For example, iOS requires an additional CSS property, `-webkit-overflow-scrolling: touch`, to "reenable" fling scrolling, but you don’t get to control which axis that’s for, as you can with the standard overflow property. Be sure to test your implementation across a range of devices!
 
-除了在檢視之間轉換，這項技巧也可套用於其他滑入元素中，例如側邊欄導覽元素。 唯一真正的區別是您應該不需要移動其他檢視。
+In addition to transitioning between views, this technique can also be applied to other slide-in elements, like sidebar navigation elements. The only real difference is that you shouldn’t need to move the other views.
 
-## 確保您的動畫可搭配較大螢幕運作
+## Ensure that your animation works with larger screens
 
-針對較大的螢幕，您應該隨時保持清單檢視 (而非移除它)，並從右手邊滑入詳細資訊檢視。 大概就和處理導覽檢視相同。
+<div class="attempt-right">
+  <figure>
+    <img src="images/container-two-views-ls.svg" alt="View hierarchy on a large screen." />
+  </figure>
+</div>
 
-<img src="images/container-two-views-ls.svg" alt="在較大螢幕上的視圖層次。" />
+For a larger screen, you should keep the list view around all the time rather than removing it, and slide on the details view from the right-hand side. It’s pretty much the same as dealing with a navigation view.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

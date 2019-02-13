@@ -1,43 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 사용자설정 요소를 사용하면 웹 개발자가 새로운 HTML 태그를 정의하고, 기존 태그를 확장하며 재사용 가능한 웹 구성 요소를 생성할 수 있습니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Custom elements allow web developers to define new HTML tags, extend existing ones, and create reusable web components.
 
-{# wf_updated_on: 2016-09-26 #}
-{# wf_published_on: 2016-06-28 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-06-28 #} {# wf_blink_components: Blink>DOM #}
 
-# 사용자설정 요소 v1: 재사용 가능한 웹 구성 요소 {: .page-title }
+# Custom Elements v1: Reusable Web Components {: .page-title }
 
 {% include "web/_shared/contributors/ericbidelman.html" %}
 
 ### TL;DR {: #tldr .hide-from-toc }
 
-[사용자설정 요소][spec]를 사용하면 웹 개발자가 **새로운 HTML 태그**를 생성하거나,
-기존 HTML 태그를 보강하거나, 다른 개발자가 작성한 구성 요소를 확장할 수 있습니다.
-이 API는 [웹 구성 요소](http://webcomponents.org/){: .external }의 기반입니다. 이 API는
-단순하게 vanilla JS/HTML/CSS를 사용하여 재사용 가능한 구성 요소를 생성할 수 있는 웹 표준 기반 방법을
-제공합니다. 그 결과, 앱에서 사용되는 코드 수가 줄어들고, 모듈식 코드 사용이 가능하며, 코드 재사용 가능성이 늘어납니다.
+With [Custom Elements](https://html.spec.whatwg.org/multipage/scripting.html#custom-elements), web developers can **create new HTML tags**, beef-up existing HTML tags, or extend the components other developers have authored. The API is the foundation of [web components](http://webcomponents.org/). It brings a web standards-based way to create reusable components using nothing more than vanilla JS/HTML/CSS. The result is less code, modular code, and more reuse in our apps.
 
-## 소개 {: #intro}
+## Introduction {: #intro}
 
-참고: 이 문서에서는 새로운 <a href="https://html.spec.whatwg.org/multipage/scripting.html#custom-elements" target="_blank">사용자설정 요소 v1 사양</a>에 대해 설명합니다. 사용자설정 요소를 사용하고 있었다면 <a href="https://www.chromestatus.com/features/4642138092470272">Chrome 33에서 제공되는 v0 버전</a>에 익숙할 것입니다. 개념은 동일하지만, v1 사양에는 API와 관련하여 중요한 차이가 있습니다. 자세한 내용을 보려면 문서를 계속해서 읽어 새로운 기능을 확인하거나 <a href="#historysupport">기록 및 브라우저 지원</a>에 대한 섹션을 확인하세요.
+Note: This article describes the new <a
+href="https://html.spec.whatwg.org/multipage/scripting.html#custom-elements"
+target="_blank">Custom Elements spec</a>. If you've been using custom elements, chances are you're familiar with the [version 0 that shipped in Chrome 33](https://www.chromestatus.com/features/4642138092470272). The concepts are the same, but the version 1 spec has important API differences. Keep reading to see what's new or check out the section on [History and browser support](#historysupport) for more info.
 
-브라우저는 웹 애플리케이션을 구조화하는 데 탁월한 도구를 제공합니다.
-이를 HTML이라고 합니다.  이에 대해 들어봤을 것입니다. 이는 선언 및 이식이 가능하며, 완벽히 지원되고, 사용이 쉽습니다. HTML은 나름 훌륭하지만, 해당 어휘와 확장성은 한정되어 있습니다. [HTML Living Standard](https://html.spec.whatwg.org/multipage/){: .external }에는 아직까지는 작성한 마크업을 JS 동작에 자동으로 연결할 수 있는 방법이 없습니다.
+The browser gives us an excellent tool for structuring web applications. It's called HTML. You may have heard of it! It's declarative, portable, well supported, and easy to work with. Great as HTML may be, its vocabulary and extensibility are limited. The [HTML living standard](https://html.spec.whatwg.org/multipage/) has always lacked a way to automatically associate JS behavior with your markup... until now.
 
-사용자설정 요소가 HTML을 현대화하고, 없는 부분을 채우고,
-구조와 동작을 함께 묶을 수 있는 해답입니다. HTML이 문제에 대한 해결책을 제시하지 못할 경우
-문제를 해결해 줄 사용자설정 요소를 생성할 수 있습니다. **사용자설정 요소는 HTML의 이점을 유지하는 동시에 새로운 방법을 브라우저에 알려줍니다**.
+Custom elements are the answer to modernizing HTML, filling in the missing pieces, and bundling structure with behavior. If HTML doesn't provide the solution to a problem, we can create a custom element that does. **Custom elements teach the browser new tricks while preserving the benefits of HTML**.
 
-## 새로운 요소 정의 {: #define}
+## Defining a new element {: #define}
 
-새로운 HTML 요소를 정의하려면 자바스크립트를 활용해야 합니다.
+To define a new HTML element we need the power of JavaScript!
 
-사용자설정 요소를 정의하고
-브라우저에 새로운 태그에 대해 알리는 데에는 전역적 `customElements`가 사용됩니다. 생성하려는
-태그 이름과 기본 `HTMLElement`를 확장하는 자바스크립트 `class`를 사용하여 `customElements.define()`을 호출합니다.
+The `customElements` global is used for defining a custom element and teaching the browser about a new tag. Call `customElements.define()` with the tag name you want to create and a JavaScript `class` that extends the base `HTMLElement`.
 
-**예** - 모바일 창 패널 `<app-drawer>` 정의:
-
+**Example** - defining a mobile drawer panel, `<app-drawer>`:
 
     class AppDrawer extends HTMLElement {...}
     window.customElements.define('app-drawer', AppDrawer);
@@ -46,23 +35,18 @@ description: 사용자설정 요소를 사용하면 웹 개발자가 새로운 H
     window.customElements.define('app-drawer', class extends HTMLElement {...});
     
 
-사용 예:
-
+Example usage:
 
     <app-drawer></app-drawer>
     
 
-사용자설정 요소를 사용하는 것은 `<div>` 또는 기타 요소를 사용하는 것과 별반 다를 게 없다는 점을 명심해야 합니다. 인스턴스를 페이지에서 선언하고, 자바스크립트에서 동적으로 생성할 수 있으며, 이벤트 리스너를 추가할 수도 있습니다. 추가 예제를 보려면 다음 내용을 계속 읽어보세요.
+It's important to remember that using a custom element is no different than using a `<div>` or any other element. Instances can be declared on the page, created dynamically in JavaScript, event listeners can be attached, etc. Keep reading for more examples.
 
-### 요소의 JavaScript API 정의 {: #jsapi}
+### Defining an element's JavaScript API {: #jsapi}
 
-사용자설정 요소의 기능은 `HTMLElement`를 확장하는 ES2015 [`class`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)를 사용하여 정의됩니다.
-`HTMLElement`를 확장하면 사용자설정 요소가 전체 DOM API를 상속하도록 보장되고,
-이 클래스에 추가하는 모든 속성/메서드가 요소의 DOM 인터페이스에 포함되게 됩니다.
-기본적으로, 이 클래스를 사용하여 태그에 대한 **공용 JavaScript API**를 생성해야 합니다.
+The functionality of a custom element is defined using an ES2015 [`class`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes) which extends `HTMLElement`. Extending `HTMLElement` ensures the custom element inherits the entire DOM API and means any properties/methods that you add to the class become part of the element's DOM interface. Essentially, use the class to create a **public JavaScript API** for your tag.
 
-**예** - `<app-drawer>`의 DOM 인터페이스 정의:
-
+**Example** - defining the DOM interface of `<app-drawer>`:
 
     class AppDrawer extends HTMLElement {
     
@@ -119,201 +103,87 @@ description: 사용자설정 요소를 사용하면 웹 개발자가 새로운 H
     customElements.define('app-drawer', AppDrawer);
     
 
-이 예에서는 `open` 속성, `disabled` 속성
-및 `toggleDrawer()` 메서드가 있는 창을 생성합니다. 이는 또한 [속성을 HTML 특성으로 나타냅니다](#reflectattr).
+In this example, we're creating a drawer that has an `open` property, `disabled` property, and a `toggleDrawer()` method. It also [reflects properties as HTML attributes](#reflectattr).
 
-사용자설정 요소의 특징은 **클래스 정의 내 `this`가
-DOM 요소 자체(예: 클래스의 인스턴스)를 나타낸다**는 것입니다. 이 예에서는 `this`가 `<app-drawer>`를 나타냅니다. 이것(😉)이 바로 요소가 `click` 리스너를 자기 자신에 추가할 수 있는 방법입니다. 이벤트 리스너로만 국한되지 않습니다. 전체 DOM API를 요소 코드 내에서 사용할 수 있습니다. 요소의 속성에 액세스하고, 해당 하위 항목(`this.children`)을 검사하고, 노드를 쿼리하는(`this.querySelectorAll('.items')`) 등의 작업을 수행하려면 `this`를 사용하세요.
+A neat feature of custom elements is that **`this` inside a class definition refers to the DOM element itself** i.e. the instance of the class. In our example, `this` refers to `<app-drawer>`. This (😉) is how the element can attach a `click` listener to itself! And you're not limited to event listeners. The entire DOM API is available inside element code. Use `this` to access the element's properties, inspect its children (`this.children`), query nodes (`this.querySelectorAll('.items')`), etc.
 
-**사용자설정 요소 생성 관련 규칙**
+**Rules on creating custom elements**
 
-1. 사용자설정 요소의 이름에는 **대시(-)가 포함되어야 합니다**. 이에 따라 `<x-tags>`, `<my-element>` 및 `<my-awesome-app>`은 모두 유효한 이름이지만, `<tabs>` 및 `<foo_bar>`는 그렇지 않습니다. 이러한 요구사항은 HTML 파서가 일반 요소와 사용자설정 요소를 구별할 수 있도록 합니다. 또한 새로운 태그가 HTML에 추가될 때 다음 버전과의 호환성도 보장되도록 합니다.
-2. 동일한 태그를 두 번 이상 등록할 수 없습니다. 그렇게 하려고 하면 `DOMException`이 발생합니다. 새로운 태그에 대해 브라우저에 알리고 나면 그걸로 끝입니다. 취소할 수 없습니다.
-3. HTML은 [몇 가지 요소](https://html.spec.whatwg.org/multipage/syntax.html#void-elements)만 스스로 닫도록 허용하므로 사용자설정 요소는 스스로 닫을 수 없습니다. 따라서 항상 닫는 태그를 작성해야 합니다(<code>&lt;app-drawer&gt;&lt;/app-drawer&gt;</code>).
+1. The name of a custom element **must contain a dash (-)**. So `<x-tags>`, `<my-element>`, and `<my-awesome-app>` are all valid names, while `<tabs>` and `<foo_bar>` are not. This requirement is so the HTML parser can distinguish custom elements from regular elements. It also ensures forward compatibility when new tags are added to HTML.
+2. You can't register the same tag more than once. Attempting to do so will throw a `DOMException`. Once you've told the browser about a new tag, that's it. No take backs.
+3. Custom elements cannot be self-closing because HTML only allows [a few elements](https://html.spec.whatwg.org/multipage/syntax.html#void-elements) to be self-closing. Always write a closing tag (`<app-drawer></app-drawer>`).
 
-## 요소 확장 {: #extend}
+## Custom element reactions {: #reactions}
 
-Custom Elements API는 새로운 HTML 요소를 생성하는 데 유용하지만,
-다른 사용자설정 요소를 확장하거나 브라우저에서 기본 제공되는 HTML을 확장하는 데도 유용합니다.
-
-### 사용자설정 요소 확장 {: #extendcustomeel}
-
-다른 사용자설정 요소 확장은 해당 클래스 정의를 확장함으로써 수행할 수 있습니다.
-
-**예** - `<app-drawer>`를 확장하는 `<fancy-app-drawer>` 생성:
-
-
-    class FancyDrawer extends AppDrawer {
-      constructor() {
-        super(); // always call super() first in the constructor. This also calls the extended class' constructor.
-        ...
-      }
-    
-      toggleDrawer() {
-        // Possibly different toggle implementation?
-        // Use ES2015 if you need to call the parent method.
-        // super.toggleDrawer()
-      }
-    
-      anotherMethod() {
-        ...
-      }
-    }
-    
-    customElements.define('fancy-app-drawer', FancyDrawer);
-    
-
-### 기본 HTML 요소 확장 {: #extendhtml}
-
-이를 테면 여러분은 더 화려한 `<button>`을 생성하기를 원했다고 가정해 봅시다. 더 나은 옵션은 `<button>`의 동작 및
-기능을 복제하는 대신 사용자설정 요소를 사용하여 기존 요소를 점진적으로 개선하는 것입니다.
-
-**사용자설정 기본 제공 요소**는 브라우저의
-기본 제공 HTML 태그 중 하나를 확장하는 사용자설정 요소입니다. 기존 요소 확장의 주요 이점은
-해당 기능(DOM 속성, 메서드, 접근성)을 모두 얻을 수 있다는 점입니다. **기존 HTML 요소를 점진적으로 개선**하는 데 있어 [Progressive Web App](/web/progressive-web-apps/)을 작성하는 것보다 더 좋은 방법은 없습니다.
-
-요소를 확장하려면 올바른 DOM 인터페이스에서
-상속하는 클래스 정의를 생성해야 합니다. 예를 들어, `<button>`을 확장하는 사용자설정 요소는
-`HTMLElement`가 아니라 `HTMLButtonElement`에서 상속해야 합니다. 마찬가지로,
-`<img>`를 확장하는 요소는 `HTMLImageElement`를 확장해야 합니다.
-
-**예** - `<button>` 확장:
-
-
-    // See https://html.spec.whatwg.org/multipage/indices.html#element-interfaces
-    // for the list of other DOM interfaces.
-    class FancyButton extends HTMLButtonElement {
-      constructor() {
-        super(); // always call super() first in the constructor.
-        this.addEventListener('click', e => this.drawRipple(e.offsetX, e.offsetY));
-      }
-    
-      // Material design ripple animation.
-      drawRipple(x, y) {
-        let div = document.createElement('div');
-        div.classList.add('ripple');
-        this.appendChild(div);
-        div.style.top = `${y - div.clientHeight/2}px`;
-        div.style.left = `${x - div.clientWidth/2}px`;
-        div.style.backgroundColor = 'currentColor';
-        div.classList.add('run');
-        div.addEventListener('transitionend', e => div.remove());
-      }
-    }
-    
-    customElements.define('fancy-button', FancyButton, {extends: 'button'});
-    
-
-`define()`에 대한 호출이 기본 요소를 확장할 때 약간 변경된다는 점에 유의하세요. 세 번째로 필요한 매개변수는 확장하는 태그가 무엇인지를 브라우저에 알립니다. 이는 많은 HTML 태그가 동일한 DOM 인터페이스를 공유하기 때문에 필수입니다. 그중에 `<section>`, `<address>` 및 `<em>`은 모두 `HTMLElement`를 공유하며, `<q>` 및 `<blockquote>`는 `HTMLQuoteElement`를 공유하는 식입니다. `{extends: 'blockquote'}`를 지정하면 `<q>` 대신 성능이 향상된 `<blockquote>`를 생성한다는 것을 브라우저에 알립니다. HTML DOM 인터페이스의 전체 목록은
-[HTML 사양](https://html.spec.whatwg.org/multipage/indices.html#element-interfaces)을 참조하세요.
-
-참고: `HTMLButtonElement`를 확장하면 화려한 버튼에 `<button>`의 모든 DOM속성/메서드가 부여됩니다. 이는 `disabled` 속성, `click()` 메서드, `keydown` 리스너, `tabindex` 관리 등 우리가 직접 구현할 필요가 없는 것들을 제외시켜 줍니다. 그 대신, 사용자설정 기능, 즉 `drawRipple()` 메서드를 사용하여 `<button>`을 점진적으로 개선하는 데 집중할 수 있습니다. 코드가 줄어들고 재사용이 늘어나게 되죠!
-
-사용자설정된 기본 제공 요소를 소비하는 사용자는 여러 가지 방법으로 이 요소를 사용할 수 있습니다.
-사용자는 기본 태그에 `is=""` 속성을 추가하여 이 요소를 선언하거나
-
-
-    <!-- This <button> is a fancy button. -->
-    <button is="fancy-button" disabled>Fancy button!</button>
-    
-
-자바스크립트로 인스턴스를 생성하거나
-
-
-    // Custom elements overload createElement() to support the is="" attribute.
-    let button = document.createElement('button', {is: 'fancy-button'});
-    button.textContent = 'Fancy button!';
-    button.disabled = true;
-    document.body.appendChild(button);
-    
-
-`new` 연산자를 사용할 수 있습니다.
-
-
-    let button = new FancyButton();
-    button.textContent = 'Fancy button!';
-    button.disabled = true;
-    
-
-다음은 `<img>`를 확장하는 또 다른 예입니다.
-
-**예** - `<img>` 확장:
-
-
-    customElements.define('bigger-img', class extends Image {
-      // Give img default size if users don't specify.
-      constructor(width=50, height=50) {
-        super(width * 10, height * 10);
-      }
-    }, {extends: 'img'});
-    
-
-사용자는 이 구성 요소를 다음과 같이 선언하거나
-
-
-    <!-- This <img> is a bigger img. -->
-    <img is="bigger-img" width="15" height="20">
-    
-
-자바스크립트로 인스턴스를 생성합니다.
-
-
-    const BiggerImage = customElements.get('bigger-img');
-    const image = new BiggerImage(15, 20); // pass constructor values like so.
-    console.assert(image.width === 150);
-    console.assert(image.height === 200);
-    
-
-참고: 일부 브라우저는  <code>is=""</code> 구문 구현을 지원하지 않습니다. 이는 접근성 및 점진적인 개선에 있어서는 불행한 일입니다. 기본 HTML 요소를 확장하는 것이 유용하다고 생각되면 여러분의 생각을 <a href='https://github.com/w3c/webcomponents/issues/662'>Github</a>에 올려 주세요.
-
-## 사용자설정 요소 반응 {: #reactions}
-
-사용자설정 요소는
-존재하는 동안 실행되는 코드에 대한 특수한 수명 주기 후크를 정의할 수 있습니다. 이를 **사용자설정 요소 반응**이라고 합니다.
+A custom element can define special lifecycle hooks for running code during interesting times of its existence. These are called **custom element reactions**.
 
 <table>
-  <thead>
-    <tr>
-      <th>이름</th>
-      <th>호출 시기</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>constructor</code></td>
-      <td>요소의 인스턴스가 생성되거나 <a href="#upgrades">업그레이드</a>된 경우. 초기화 단계, 이벤트 리스너 설정 또는 <a href="#shadowdom">Shadow DOM 생성</a>에 유용합니다.  <code>constructor</code>에서 할 수 있는 작업에 대한 제한 사항은 <a href="https://html.spec.whatwg.org/multipage/scripting.html#custom-element-conformance">사양</a>을 참조하세요.</td>
-    </tr>
-    <tr>
-      <td><code>connectedCallback</code></td>
-      <td>요소가 DOM에 삽입될 때마다 호출됩니다. 리소스 가져오기나 렌더링과 같이 설정 코드 실행에 유용합니다. 일반적으로, 이 시간까지는 작업을 지연시켜야 합니다.</td>
-    </tr>
-    <tr>
-      <td><code>disconnectedCallback</code></td>
-      <td>요소가 DOM에서 제거될 때마다 호출됩니다. 정리 코드(이벤트 리스너 제거 등) 실행에 유용합니다.</td>
-    </tr>
-    <tr>
-      <td><code>attributeChangedCallback(attrName, oldVal, newVal)</code></td>
-      <td>속성이 추가, 제거, 업데이트 또는 대체된 경우. 또한, 요소가 파서에 의해 생성되거나 <a href="#upgrades">업그레이드</a>된 경우에도 초기 값에 대해 호출됩니다. <b>참고:</b>  <code>observedAttributes</code> 속성에 나열된 특성만 이 콜백을 수신합니다.</td>
-    </tr>
-    <tr>
-      <td><code>adoptedCallback()</code></td>
-      <td>사용자설정 요소가 새  <code>document</code>(예:  <code>document.adoptNode(el)</code>라고도 함)로 이동된 경우</td>
-    </tr>
-  </tbody>
+  <tr>
+    <th>
+      Name
+    </th>
+    
+    <th>
+      Called when
+    </th>
+  </tr>
+  
+  <tr>
+    <td>
+      <code>constructor</code>
+    </td>
+    
+    <td>
+      An instance of the element is created or <a href="#upgrades">upgraded</a>. Useful for initializing state, settings up event listeners, or <a href="#shadowdom">creating shadow dom</a>. See the <a href="https://html.spec.whatwg.org/multipage/scripting.html#custom-element-conformance"> spec </a> for restrictions on what you can do in the <code>constructor</code>.
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <code>connectedCallback</code>
+    </td>
+    
+    <td>
+      Called every time the element is inserted into the DOM. Useful for running setup code, such as fetching resources or rendering. Generally, you should try to delay work until this time.
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <code>disconnectedCallback</code>
+    </td>
+    
+    <td>
+      Called every time the element is removed from the DOM. Useful for running clean up code.
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <code>attributeChangedCallback(attrName, oldVal, newVal)</code>
+    </td>
+    
+    <td>
+      Called when an <a href="#attrchanges">observed attribute</a> has been added, removed, updated, or replaced. Also called for initial values when an element is created by the parser, or <a href="#upgrades">upgraded</a>. <b>Note:</b> only attributes listed in the <code>observedAttributes</code> property will receive this callback.
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <code>adoptedCallback()</code>
+    </td>
+    
+    <td>
+      The custom element has been moved into a new <code>document</code> (e.g. someone called <code>document.adoptNode(el)</code>).
+    </td>
+  </tr>
 </table>
 
-브라우저는 `observedAttributes` 배열의
-허용 목록에 추가된 모든 속성에 대해 `attributeChangedCallback()`을 호출합니다([속성에 대한 변경 내용 확인](#attrchanges) 참조).
-근본적으로, 이는 성능 최적화 작업입니다. 사용자가 `style` 또는 `class`와 같은 일반적인
-속성을 변경할 때 개발자는 쓸데없이 수많은 콜백을 받는 것을 원치 않습니다.
+Note: The browser calls the `attributeChangedCallback()` for any attributes whitelisted in the `observedAttributes` array (see [Observing changes to attributes](#attrchanges)). Essentially, this is a performance optimization. When users change a common attribute like `style` or `class`, you don't want to be spammed with tons of callbacks.
 
-**반응 콜백은 동기식입니다**. 누군가가 개발자 요소에 대해 `el.setAttribute(...)`를
-호출하면 브라우저가 즉시 `attributeChangedCallback()`을 호출합니다. 마찬가지로,
-개발자 요소가 DOM에서
-제거(예: 사용자가 `el.remove()`를 호출함)되고 나면 즉시 `disconnectedCallback()`이 수신됩니다.
+**Reaction callbacks are synchronous**. If someone calls `el.setAttribute()` on your element, the browser will immediately call `attributeChangedCallback()`. Similarly, you'll receive a `disconnectedCallback()` right after your element is removed from the DOM (e.g. the user calls `el.remove()`).
 
-**예:** `<app-drawer>`에 대한 사용자설정 요소 반응 추가:
-
+**Example:** adding custom element reactions to `<app-drawer>`:
 
     class AppDrawer extends HTMLElement {
       constructor() {
@@ -332,67 +202,28 @@ Custom Elements API는 새로운 HTML 요소를 생성하는 데 유용하지만
     }
     
 
-합당한 경우 반응을 정의합니다. 요소가 충분히 복잡하고 `connectedCallback()`에서 IndexedDB에 대한 연결을 열 경우 `disconnectedCallback()`에서 필요한 정리 작업을 수행해야 합니다. 하지만, 주의를 기울여야 합니다. 모든 경우에 DOM에서 요소를 제거하는 것은 좋지 않습니다. 예를 들어, 사용자가 탭을 닫는 경우에는 `disconnectedCallback()`이 절대로 호출되지 않습니다.
+Define reactions if/when it make senses. If your element is sufficiently complex and opens a connection to IndexedDB in `connectedCallback()`, do the necessary cleanup work in `disconnectedCallback()`. But be careful! You can't rely on your element being removed from the DOM in all circumstances. For example, `disconnectedCallback()` will never be called if the user closes the tab.
 
-**예:** 사용자설정 요소를 다른 문서로 이동 및 해당 `adoptedCallback()` 관찰:
+## Properties and attributes
 
+### Reflecting properties to attributes {: #reflectattr}
 
-    function createWindow(srcdoc) {
-      let p = new Promise(resolve => {
-        let f = document.createElement('iframe');
-        f.srcdoc = srcdoc || '';
-        f.onload = e => {
-          resolve(f.contentWindow);
-        };
-        document.body.appendChild(f);
-      });
-      return p;
-    }
-    
-    // 1. Create two iframes, w1 and w2.
-    Promise.all([createWindow(), createWindow()])
-      .then(([w1, w2]) => {
-        // 2. Define a custom element in w1.
-        w1.customElements.define('x-adopt', class extends w1.HTMLElement {
-          adoptedCallback() {
-            console.log('Adopted!');
-          }
-        });
-        let a = w1.document.createElement('x-adopt');
-    
-        // 3. Adopts the custom element into w2 and invokes its adoptedCallback().
-        w2.document.body.appendChild(a);
-      });
-    
-
-## 속성 및 특성
-
-### 속성을 특성에 반영 {: #reflectattr}
-
-HTML 속성이 해당 값을 HTML 특성으로 다시 DOM에 반영하는 것은 흔한 일입니다.
-예를 들어, `hidden` 또는 `id`의 값이 JS에서 변경된 경우:
-
+It's common for HTML properties to reflect their value back to the DOM as an HTML attribute. For example, when the values of `hidden` or `id` are changed in JS:
 
     div.id = 'my-id';
     div.hidden = true;
     
 
-값이 속성으로 라이브 DOM에 적용됩니다.
-
+the values are applied to the live DOM as attributes:
 
     <div id="my-id" hidden>
     
 
-이를 '[속성을 특성에 반영한다](https://html.spec.whatwg.org/multipage/infrastructure.html#reflecting-content-attributes-in-idl-attributes)'고 합니다. HTML의 거의 모든 속성이 이를 수행합니다. 그 이유는 무엇일까요? 속성은 요소를
-선언적으로 구성하는 데 유용하며 접근성 및 CSS 선택기와 같은 특정 API는 작업하는 데 속성을 사용합니다.
+This is called "[reflecting properties to attributes](https://html.spec.whatwg.org/multipage/infrastructure.html#reflecting-content-attributes-in-idl-attributes)". Almost every property in HTML does this. Why? Attributes are also useful for configuring an element declaratively and certain APIs like accessibility and CSS selectors rely on attributes to work.
 
-속성을 반영하는 것은 **요소의 DOM
-표현이 해당 자바스크립트 상태와 동기화된 상태를 유지**하도록 하려는 모든 경우에 유용합니다. 속성을 반영해야 할 수 있는
-한 가지 이유는 JS 상태가 변경될 때 사용자 정의 스타일 지정이 적용되기 때문입니다.
+Reflecting a property is useful anywhere you want to **keep the element's DOM representation in sync with its JavaScript state**. One reason you might want to reflect a property is so user-defined styling applies when JS state changes.
 
-앞서 설명한 `<app-drawer>`를 떠올려 보세요. 이 구성 요소의 소비자는 이 구성 요소를 서서히 사라지게 하거나
-이 구성 요소가 비활성화되었을 때 사용자 상호작용을 방지하기를 원할 것입니다.
-
+Recall our `<app-drawer>`. A consumer of this component may want to fade it out and/or prevent user interaction when it's disabled:
 
     app-drawer[disabled] {
       opacity: 0.5;
@@ -400,10 +231,7 @@ HTML 속성이 해당 값을 HTML 특성으로 다시 DOM에 반영하는 것은
     }
     
 
-`disabled` 속성이 JS에서 변경될 때에는 사용자 선택기가 일치하도록 해당 특성이
-DOM에 추가되기를 원합니다. 이 요소는 값을 동일한 이름의 속성에 반영하여
-이 동작을 제공할 수 있습니다.
-
+When the `disabled` property is changed in JS, we want that attribute to be added to the DOM so the user's selector matches. The element can provide that behavior by reflecting the value to an attribute of the same name:
 
     ...
     
@@ -422,17 +250,14 @@ DOM에 추가되기를 원합니다. 이 요소는 값을 동일한 이름의 �
     }
     
 
-### 속성에 대한 변경 내용 확인 {: #attrchanges}
+### Observing changes to attributes {: #attrchanges}
 
-HTML 속성은 사용자가 초기 상태를 선언할 수 있는 간편한 방법입니다.
-
+HTML attributes are a convenient way for users to declare initial state:
 
     <app-drawer open disabled></app-drawer>
     
 
-요소는 `attributeChangedCallback`을 정의함으로써 속성 변경에 반응할 수 있습니다.
-브라우저는 `observedAttributes` 배열에 나열된 속성이 변경될 때마다 이 메서드를 호출합니다.
-
+Elements can react to attribute changes by defining a `attributeChangedCallback`. The browser will call this method for every change to attributes listed in the `observedAttributes` array.
 
     class AppDrawer extends HTMLElement {
       ...
@@ -468,32 +293,26 @@ HTML 속성은 사용자가 초기 상태를 선언할 수 있는 간편한 방�
     }
     
 
-이 예에서는 `disabled` 속성이 변경될 때
-`<app-drawer>`에 대한 추가 속성을 설정합니다. 여기서 이 작업을 수행하지 않더라도
-**`attributeChangedCallback`을 사용하여 JS 속성이 해당 특성과 동기화된 상태를 유지**하도록 할 수 있습니다.
+In the example, we're setting additional attributes on the `<app-drawer>` when a `disabled` attribute is changed. Although we're not doing it here, you could also **use the `attributeChangedCallback` to keep a JS property in sync with its attribute**.
 
-## 요소 업그레이드 {: #upgrades}
+## Element upgrades {: #upgrades}
 
-### 점진적으로 개선되는 HTML
+### Progressively enhanced HTML
 
-앞서 `customElements.define()`을 호출하여 사용자설정 요소가 정의되는 것을 살펴보았습니다.
-하지만 이것이 사용자설정 요소를 한 번에 정의하고 등록해야 한다는 것을 의미하지는 않습니다.
+We've already learned that custom elements are defined by calling `customElements.define()`. But this doesn't mean you have to define + register a custom element all in one go.
 
-**사용자설정 요소는 해당 정의가 등록되기 _전에_ 사용할 수 있습니다**.
+**Custom elements can be used *before* their definition is registered**.
 
-점진적인 개선은 사용자설정 요소의 한 기능입니다. 다시 말해서, 페이지에 여러 `<app-drawer>` 요소를 선언해 두고 한참이 지날 때까지 `customElements.define('app-drawer', ...)`를 호출하지 않아도 됩니다. 이는 브라우저가 [알 수 없는 태그](#unknown) 덕분에 잠재적인 사용자설정 요소를 각각 다르게 처리하기 때문입니다. `define()`을 호출하고 기존 요소에 클래스 정의를 부여하는 프로세스를 '요소 업그레이드'라고 합니다.
+Progressive enhancement is a feature of custom elements. In other words, you can declare a bunch of `<app-drawer>` elements on the page and never invoke `customElements.define('app-drawer', ...)` until much later. This is because the browser treats potential custom elements differently thanks to [unknown tags](#unknown). The process of calling `define()` and endowing an existing element with a class definition is called "element upgrades".
 
-태그 이름이 언제 정의되었는지를 확인하려면 `window.customElements.whenDefined()`를 사용하면 됩니다.
-이는 요소가 정의된 시간을 확인하는 프라미스를 반환합니다.
-
+To know when a tag name becomes defined, you can use `window.customElements.whenDefined()`. It vends a Promise that resolves when the element becomes defined.
 
     customElements.whenDefined('app-drawer').then(() => {
       console.log('app-drawer defined');
     });
     
 
-**예** - 하위 요소 집합이 업그레이드될 때까지 작업 지연
-
+**Example** - delay work until a set of child elements are upgraded
 
     <share-buttons>
       <social-button type="twitter"><a href="...">Twitter</a></social-button>
@@ -501,8 +320,8 @@ HTML 속성은 사용자가 초기 상태를 선언할 수 있는 간편한 방�
       <social-button type="plus"><a href="...">G+</a></social-button>
     </share-buttons>
     
-
-
+    
+    
     // Fetch all the children of <share-buttons> that are not defined yet.
     let undefinedButtons = buttons.querySelectorAll(':not(:defined)');
     
@@ -516,13 +335,13 @@ HTML 속성은 사용자가 초기 상태를 선언할 수 있는 간편한 방�
     });
     
 
-참고: 사용자설정 요소는 정의되기 전에는 불확실한 상태라고 생각합니다. [사양](https://dom.spec.whatwg.org/#concept-element-custom-element-state)에서 요소의 상태를 'undefined', 'uncustomized' 또는 'custom'으로 정의합니다. `<div>`와 같은 기본 제공 요소는 항상 'defined'입니다.
+Note: I think of custom elements as being in a state of limbo before they're defined. The [spec](https://dom.spec.whatwg.org/#concept-element-custom-element-state) defines an element's state as "undefined", "uncustomized", or "custom". Built-in elements like `<div>` are always "defined".
 
-## 요소로 정의되는 콘텐츠 {: #addingmarkup}
+## Element-defined content {: #addingmarkup}
 
-사용자설정 요소는 요소 코드 안에 DOM API를 사용하여 자체 콘텐츠를 관리할 수 있습니다. [반응](#reactions)이 이에 유용합니다.
+Custom elements can manage their own content by using the DOM APIs inside element code. [Reactions](#reactions) come in handy for this.
 
-**예** - 일부 기본 HTML을 사용하여 요소 생성:
+**Example** - create an element with some default HTML:
 
     customElements.define('x-foo-with-markup', class extends HTMLElement {
       connectedCallback() {
@@ -531,81 +350,87 @@ HTML 속성은 사용자가 초기 상태를 선언할 수 있는 간편한 방�
       ...
     });
     
-이 태그를 선언하면 다음이 생성됩니다.
+
+Declaring this tag will produce:
 
     <x-foo-with-markup>
      <b>I'm an x-foo-with-markup!</b>
     </x-foo-with-markup>
+    
 
-{% framebox height="70px" %}
+{% framebox height="100px" %} 
+
 <style>
-.demoarea {
-  padding: 8px;
-  border: 1px dashed #ccc;
-}
-.demoarea::before {
-  display: block;
-  content: 'DEMO';
-}
+  .demoarea {
+    padding: 8px; border: 1px dashed #ccc;
+  }
+  .demoarea::before {
+    display: block; content: 'DEMO';
+  }
 </style>
+
+ 
 
 <div class="demoarea">
   <x-foo-with-markup></x-foo-with-markup>
-</div>
+</div> 
 
 <script>
-const supportsCustomElementsV1 = 'customElements' in window;
+  const supportsCustomElementsV1 = 'customElements' in window;
 
-if (supportsCustomElementsV1) {
-  customElements.define('x-foo-with-markup', class extends HTMLElement {
-    connectedCallback() {
-      this.innerHTML = "<b>I'm an x-foo-with-markup!</b>";
+  if(supportsCustomElementsV1) {
+    customElements.define('x-foo-with-markup', class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = "<b>I'm an x-foo-with-markup!</b>";
+      }
+    });
+  } else {
+    if (self.frameElement) {
+      self.frameElement.style.display = 'none';
     }
-  });
-} else {
-  if (self.frameElement) {
-    self.frameElement.style.display = 'none';
   }
-}
 </script>
+
+ 
+
 {% endframebox %}
 
-참고: 요소의 하위 항목을 새 콘텐츠로 덮어쓰는 것은 예상되지 않는 동작이므로 일반적으로 그리 좋은 방법이 아닙니다. 사용자는 자신의 마크업을 버려야 한다는 것에 놀랄 것입니다. 요소로 정의되는 콘텐츠를 추가하는 더 좋은 방법은 Shadow DOM을 사용하는 것입니다. 이에 대해서는 다음에 설명하겠습니다.
+Note: Overwriting an element's children with new content is generally not a good idea because it's unexpected. Users would be surprised to have their markup thrown out. A better way to add element-defined content is to use shadow DOM, which we'll talk about next.
 
-### Shadow DOM을 사용하는 요소 생성 {: #shadowdom}
+### Creating an element that uses Shadow DOM {: #shadowdom}
 
-참고: 이 문서에서는 [Shadow DOM][sd_spec]의 기능에 대해 다루지 않지만,
-이는 사용자설정 요소와 함께 사용할 수 있는 강력한 API입니다. Shadow DOM은 그 자체만으로
-컴퍼지션 도구입니다. 사용자설정 요소와 함께 사용하면 마법같은 일이 벌어집니다.
+Note: I'm not going to cover the features of [Shadow DOM](http://w3c.github.io/webcomponents/spec/shadow/) in this article, but it's a powerful API to combine with custom elements. By itself, Shadow DOM is composition tool. When it's used in conjunction with custom elements, magical things happen.
 
-
-Shadow DOM은 요소가 페이지의 나머지 요소와 별개인
-DOM 집합을 소유하고, 렌더링하고, 이에 대한 스타일을 지정할 수 있는 방법을 제공합니다. 단일 태그 안에서
-전체 앱을 숨겨버릴 수도 있습니다.
-
+Shadow DOM provides a way for an element to own, render, and style a chunk of DOM that's separate from the rest of the page. Heck, you could even hide away an entire app within a single tag:
 
     <!-- chat-app's implementation details are hidden away in Shadow DOM. -->
     <chat-app></chat-app>
     
 
-사용자설정 요소에서 Shadow DOM을 사용하려면 `constructor` 안에서 `this.attachShadow`를 호출하세요.
+To use Shadow DOM in a custom element, call `this.attachShadow` inside your `constructor`:
 
+    let tmpl = document.createElement('template');
+    tmpl.innerHTML = `
+      <style>:host { ... }</style> <!-- look ma, scoped styles -->
+      <b>I'm in shadow dom!</b>
+      <slot></slot>
+    `;
+    
     customElements.define('x-foo-shadowdom', class extends HTMLElement {
       constructor() {
         super(); // always call super() first in the constructor.
-
+    
         // Attach a shadow root to the element.
         let shadowRoot = this.attachShadow({mode: 'open'});
-        shadowRoot.innerHTML = `
-          <style>:host { ... }</style> <!-- look ma, scoped styles -->
-          <b>I'm in shadow dom!</b>
-          <slot></slot>
-        `;
+        shadowRoot.appendChild(tmpl.content.cloneNode(true));
       }
       ...
     });
+    
 
-사용 예:
+Note: In the above snippet we use a `template` element to clone DOM, instead of setting the `innerHTML` of the `shadowRoot`. This technique cuts down on HTML parse costs because the content of the template is only parsed once, whereas calling `innerHTML` on the `shadowRoot` will parse the HTML for each instance. We'll talk more about templates in the next section.
+
+Example usage:
 
     <x-foo-shadowdom>
       <p><b>User's</b> custom text</p>
@@ -613,132 +438,148 @@ DOM 집합을 소유하고, 렌더링하고, 이에 대한 스타일을 지정�
     
     <!-- renders as -->
     <x-foo-shadowdom>
-      <b>I'm in shadow dom!</b>
-      <slot></slot>
+      #shadow-root
+        <b>I'm in shadow dom!</b>
+        <slot></slot> <!-- slotted content appears here -->
     </x-foo-shadowdom>
+    
 
-{% framebox height="130px" %}
+{% framebox height="142px" %} 
+
 <style>
-.demoarea {
-  padding: 8px;
-  border: 1px dashed #ccc;
-}
+  .demoarea {
+    padding: 8px; border: 1px dashed #ccc;
+  }
 
-.demoarea::before {
-  content: 'DEMO';
-  display: block;
-}
+  .demoarea::before {
+    content: 'DEMO'; display: block;
+  }
 </style>
 
+ 
+
 <div class="demoarea">
-  <x-foo-shadowdom>
-    <p><b>User's</b> custom text</p>
-  </x-foo-shadowdom>
-</div>
+  <x-foo-shadowdom> 
+  
+  <p>
+    <b>User's</b> custom text
+  </p></x-foo-shadowdom>
+</div> 
 
 <script>
-const supportsCustomElementsV1 = 'customElements' in window;
+  const supportsCustomElementsV1 = 'customElements' in window;
 
-if (supportsCustomElementsV1) {
-  customElements.define('x-foo-shadowdom', class extends HTMLElement {
-    constructor() {
-      super(); // always call super() first in the constructor.
-      let shadowRoot = this.attachShadow({mode: 'open'});
-      shadowRoot.innerHTML = `
-        <b>I'm in shadow dom!</b>
-        <slot></slot>
-      `;
+  if(supportsCustomElementsV1) {
+    let tmpl = document.createElement('template');
+    tmpl.innerHTML = `
+      <b>I'm in shadow dom!</b>
+      <slot></slot>
+    `;
+
+    customElements.define('x-foo-shadowdom', class extends HTMLElement {
+      constructor() {
+        super(); // always call super() first in the constructor.
+        let shadowRoot = this.attachShadow({mode: 'open'});
+        shadowRoot.appendChild(tmpl.content.cloneNode(true));
+      }
+    });
+  } else {
+    if (self.frameElement) {
+      self.frameElement.style.display = 'none';
     }
-  });
-} else {
-  if (self.frameElement) {
-    self.frameElement.style.display = 'none';
   }
-}
 </script>
+
+ 
+
 {% endframebox %}
 
-### `<template>` {: #fromtemplate}에서 요소 생성
+### Creating elements from a `<template>` {: #fromtemplate}
 
-이러한 개념에 익숙치 않은 경우 [`<template>` 요소](https://html.spec.whatwg.org/multipage/scripting.html#the-template-element)를 사용하면 파싱된 후 페이지 로드 시 비활성화 상태였다가 나중에 런타임에 활성화될 수 있는 DOM 프래그먼트를 선언할 수 있습니다. 웹 구성 요소 모음에 또 다른 원시 API가 있습니다. **템플릿은 사용자설정 요소의 구조를 선언하는 데 사용할 수 있는 이상적인 자리표시자입니다**.
+For those unfamiliar, the [`<template>` element](https://html.spec.whatwg.org/multipage/scripting.html#the-template-element) allows you to declare fragments of DOM which are parsed, inert at page load, and can be activated later at runtime. It's another API primitive in the web components family. **Templates are an ideal placeholder for declaring the structure of a custom element**.
 
-**예:** `<template>`를 통해 생성된 Shadow DOM 콘텐츠를 포함하는 요소 등록:
+**Example:** registering an element with Shadow DOM content created from a `<template>`:
 
     <template id="x-foo-from-template">
       <style>
-        p { color: orange; }
+        p { color: green; }
       </style>
       <p>I'm in Shadow DOM. My markup was stamped from a &lt;template&gt;.</p>
     </template>
     
     <script>
+      let tmpl = document.querySelector('#x-foo-from-template');
+      // If your code is inside of an HTML Import you'll need to change the above line to:
+      // let tmpl = document.currentScript.ownerDocument.querySelector('#x-foo-from-template');
+    
       customElements.define('x-foo-from-template', class extends HTMLElement {
         constructor() {
           super(); // always call super() first in the constructor.
           let shadowRoot = this.attachShadow({mode: 'open'});
-          const t = document.querySelector('#x-foo-from-template');
-          const instance = t.content.cloneNode(true);
-          shadowRoot.appendChild(instance);
+          shadowRoot.appendChild(tmpl.content.cloneNode(true));
         }
         ...
       });
     </script>
     
 
-이 몇 줄의 코드는 강력한 효과를 제공합니다. 핵심 사항에 대해 살펴보도록 하겠습니다.
+These few lines of code pack a punch. Let's understand the key things going on:
 
-1. HTML에 새로운 요소 `<x-foo-from-template>`를 정의합니다.
-2. 이 요소의 Shadow DOM이 `<template>`에서 생성됩니다.
-3. Shadow DOM 덕분에 이 요소의 DOM은 이 요소에 로컬입니다.
-4. Shadow DOM 덕분에 이 요소의 내부 CSS의 범위는 이 요소로 지정됩니다.
+1. We're defining a new element in HTML: `<x-foo-from-template>`
+2. The element's Shadow DOM is created from a `<template>`
+3. The element's DOM is local to the element thanks to Shadow DOM
+4. The element's internal CSS is scoped to the element thanks to Shadow DOM
 
-{% framebox height="100px" %}
+{% framebox height="120px" %} 
+
 <style>
 .demoarea {
-  padding: 8px;
-  border: 1px dashed #ccc;
+  padding: 8px; border: 1px dashed #ccc;
 }
 
 .demoarea::before {
-  content: 'DEMO';
-  display: block;
+  content: 'DEMO'; display: block;
 }
 </style>
+
+ 
 
 <div class="demoarea">
   <x-foo-from-template></x-foo-from-template>
 </div>
 
-<template id="x-foo-from-template">
-  <style>:host p { color: orange; }</style>
-  <p>I'm in Shadow DOM. My markup was stamped from a &lt;template&gt;.</p>
-</template>
+<template id="x-foo-from-template"> <style>:host p { color: green; }</style>
+
+I'm in Shadow DOM. My markup was stamped from a &lt;template&gt;.
+
+</template> 
 
 <script>
-const supportsCustomElementsV1 = 'customElements' in window;
+  const supportsCustomElementsV1 = 'customElements' in window;
 
-if (supportsCustomElementsV1) {
-  customElements.define('x-foo-from-template', class extends HTMLElement {
-    constructor() {
-      super();
-      let shadowRoot = this.attachShadow({mode: 'open'});
-      const t = document.querySelector('#x-foo-from-template');
-      shadowRoot.appendChild(t.content.cloneNode(true));
+  if(supportsCustomElementsV1) {
+    customElements.define('x-foo-from-template', class extends HTMLElement {
+      constructor() {
+        super();
+        let shadowRoot = this.attachShadow({mode: 'open'});
+        const t = document.querySelector('#x-foo-from-template');
+        shadowRoot.appendChild(t.content.cloneNode(true));
+      }
+    });
+  } else {
+    if (self.frameElement) {
+      self.frameElement.style.display = 'none';
     }
-  });
-} else {
-  if (self.frameElement) {
-    self.frameElement.style.display = 'none';
   }
-}
 </script>
+
+ 
+
 {% endframebox %}
 
-## 사용자설정 요소 스타일 지정 {: #styling}
+## Styling a custom element {: #styling}
 
-개발자 요소가 Shadow DOM을 사용하여 자체 스타일을 정의하더라도 사용자가
-자신의 페이지에서 이러한 사용자설정 요소의 스타일을 지정할 수 있습니다. 이를 '사용자 정의 스타일'이라고 합니다.
-
+Even if your element defines its own styling using Shadow DOM, users can style your custom element from their page. These are called "user-defined styles".
 
     <!-- user-defined styling -->
     <style>
@@ -771,19 +612,13 @@ if (supportsCustomElementsV1) {
     </app-drawer>
     
 
-여러분은 요소의 스타일이
-Shadow DOM 내에 정의된 경우 CSS 특정성이 어떤 식으로 실현되는지 자문할 수 있습니다. 특정성 측면에서는 사용자 스타일이 더 뛰어납니다.
-사용자 스타일은 항상 요소에서 정의되는 스타일보다 우선합니다. [Shadow DOM을 사용하는 요소 생성](#shadowdom) 관련 섹션을 참조하세요.
+You might be asking yourself how CSS specificity works if the element has styles defined within Shadow DOM. In terms of specificity, user styles win. They'll always override element-defined styling. See the section on [Creating an element that uses Shadow DOM](#shadowdom).
 
-### 등록되지 않은 요소의 스타일 사전 지정 {: #prestyle}
+### Pre-styling unregistered elements {: #prestyle}
 
-요소가 [업그레이드](#upgrades)되기 전에 `:defined` 의사 클래스를 사용하여 CSS에서 요소를 대상으로 지정할 수 있습니다.
-이는 구성 요소의 스타일을 사전 지정하는 데 유용합니다. 예를 들어, 정의되지 않은 구성 요소를 숨겼다가
-정의되었을 때 페이드 인하는 방식으로 레이아웃이나 기타 시각적 FOUC를
-차단하고자 할 수 있습니다.
+Before an element is [upgraded](#upgrades) you can target it in CSS using the `:defined` pseudo-class. This is useful for pre-styling a component. For example, you may wish to prevent layout or other visual FOUC by hiding undefined components and fading them in when they become defined.
 
-**예** - 정의되기 전에 `<app-drawer>` 숨기기:
-
+**Example** - hide `<app-drawer>` before it's defined:
 
     app-drawer:not(:defined) {
       /* Pre-style, give layout, replicate app-drawer's eventual styles, etc. */
@@ -794,18 +629,135 @@ Shadow DOM 내에 정의된 경우 CSS 특정성이 어떤 식으로 실현되�
     }
     
 
-`<app-drawer>`가 정의되면 선택기(`app-drawer:not(:defined)`)가
-더 이상 일치하지 않습니다.
+After `<app-drawer>` becomes defined, the selector (`app-drawer:not(:defined)`) no longer matches.
 
-## 기타 세부정보 {: #details}
+## Extending elements {: #extend}
 
-### 알 수 없는 요소 및 정의되지 않은 사용자설정 요소 비교 {: #unknown}
+The Custom Elements API is useful for creating new HTML elements, but it's also useful for extending other custom elements or even the browser's built-in HTML.
 
-HTML은 사용하기가 까다롭지 않고 유연합니다. 예를 들어, 페이지에 `<randomtagthatdoesntexist>`를 선언하면 브라우저가 이를 완전히 수락합니다. 비표준 태그가 왜 작동할까요? 그 해답은 [HTML 사양](https://html.spec.whatwg.org/multipage/dom.html#htmlunknownelement)이 이를 허용하기 때문입니다. 사양에 정의되지 않은 요소는 `HTMLUnknownElement`로 파싱됩니다.
+### Extending a custom element {: #extendcustomeel}
 
-이는 사용자설정 요소에는 적용되지 않습니다. 잠재적인 사용자설정 요소는 유효한 이름('-' 포함)으로 생성된 경우
-`HTMLElement`로 파싱됩니다. 이에 대해서는 사용자설정 요소를 지원하는 브라우저에서 확인할 수 있습니다. 콘솔을 실행합니다. (<span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">J</span>, 또는 Mac의 경우 <span class="kbd">Cmd</span>+<span class="kbd">Opt</span>+<span class="kbd">J</span>를 누릅니다.) 그런 후 다음 코드 줄을 붙여넣습니다.
+Extending another custom element is done by extending its class definition.
 
+**Example** - create `<fancy-app-drawer>` that extends `<app-drawer>`:
+
+    class FancyDrawer extends AppDrawer {
+      constructor() {
+        super(); // always call super() first in the constructor. This also calls the extended class' constructor.
+        ...
+      }
+    
+      toggleDrawer() {
+        // Possibly different toggle implementation?
+        // Use ES2015 if you need to call the parent method.
+        // super.toggleDrawer()
+      }
+    
+      anotherMethod() {
+        ...
+      }
+    }
+    
+    customElements.define('fancy-app-drawer', FancyDrawer);
+    
+
+### Extending native HTML elements {: #extendhtml}
+
+Let's say you wanted to create a fancier `<button>`. Instead of replicating the behavior and functionality of `<button>`, a better option is to progressively enhance the existing element using custom elements.
+
+A **customized built-in element** is a custom element that extends one of the browser's built-in HTML tags. The primary benefit of extending an existing element is to gain all of its features (DOM properties, methods, accessibility). There's no better way to write a [progressive web app](/web/progressive-web-apps/) than to **progressively enhance existing HTML elements**.
+
+Note: Only Chrome 67 supports customized built-in elements ([status](https://www.chromestatus.com/feature/4670146924773376)) right now. Edge and Firefox will implement it, but Safari has chosen not to implement it. This is unfortunate for accessibility and progressive enhancement. If you think extending native HTML elements is useful, voice your thoughts on <a href='https://github.com/w3c/webcomponents/issues/509'>509</a> and [662](https://github.com/w3c/webcomponents/issues/662) on Github.
+
+To extend an element, you'll need to create a class definition that inherits from the correct DOM interface. For example, a custom element that extends `<button>` needs to inherit from `HTMLButtonElement` instead of `HTMLElement`. Similarly, an element that extends `<img>` needs to extend `HTMLImageElement`.
+
+**Example** - extending `<button>`:
+
+    // See https://html.spec.whatwg.org/multipage/indices.html#element-interfaces
+    // for the list of other DOM interfaces.
+    class FancyButton extends HTMLButtonElement {
+      constructor() {
+        super(); // always call super() first in the constructor.
+        this.addEventListener('click', e => this.drawRipple(e.offsetX, e.offsetY));
+      }
+    
+      // Material design ripple animation.
+      drawRipple(x, y) {
+        let div = document.createElement('div');
+        div.classList.add('ripple');
+        this.appendChild(div);
+        div.style.top = `${y - div.clientHeight/2}px`;
+        div.style.left = `${x - div.clientWidth/2}px`;
+        div.style.backgroundColor = 'currentColor';
+        div.classList.add('run');
+        div.addEventListener('transitionend', e => div.remove());
+      }
+    }
+    
+    customElements.define('fancy-button', FancyButton, {extends: 'button'});
+    
+
+Notice that the call to `define()` changes slightly when extending a native element. The required third parameter tells the browser which tag you're extending. This is necessary because many HTML tags share the same DOM interface. `<section>`, `<address>`, and `<em>` (among others) all share `HTMLElement`; both `<q>` and `<blockquote>` share `HTMLQuoteElement`; etc.. Specifying `{extends: 'blockquote'}` lets the browser know you're creating a souped-up `<blockquote>` instead of a `<q>`. See [the HTML spec](https://html.spec.whatwg.org/multipage/indices.html#element-interfaces) for the full list of HTML's DOM interfaces.
+
+Note: Extending `HTMLButtonElement` endows our fancy button with all the DOM properties/methods of `<button>`. That checks off a bunch of stuff we don't have to implement ourselves: `disabled` property, `click()` method, `keydown` listeners, `tabindex` management. Instead, our focus can be progressively enhancing `<button>` with custom functionality, namely, the `drawRipple()` method. Less code, more reuse!
+
+Consumers of a customized built-in element can use it in several ways. They can declare it by adding the `is=""` attribute on the native tag:
+
+    <!-- This <button> is a fancy button. -->
+    <button is="fancy-button" disabled>Fancy button!</button>
+    
+
+create an instance in JavaScript:
+
+    // Custom elements overload createElement() to support the is="" attribute.
+    let button = document.createElement('button', {is: 'fancy-button'});
+    button.textContent = 'Fancy button!';
+    button.disabled = true;
+    document.body.appendChild(button);
+    
+
+or use the `new` operator:
+
+    let button = new FancyButton();
+    button.textContent = 'Fancy button!';
+    button.disabled = true;
+    
+
+Here's another example that extends `<img>`.
+
+**Example** - extending `<img>`:
+
+    customElements.define('bigger-img', class extends Image {
+      // Give img default size if users don't specify.
+      constructor(width=50, height=50) {
+        super(width * 10, height * 10);
+      }
+    }, {extends: 'img'});
+    
+
+Users declare this component as:
+
+    <!-- This <img> is a bigger img. -->
+    <img is="bigger-img" width="15" height="20">
+    
+
+or create an instance in JavaScript:
+
+    const BiggerImage = customElements.get('bigger-img');
+    const image = new BiggerImage(15, 20); // pass constructor values like so.
+    console.assert(image.width === 150);
+    console.assert(image.height === 200);
+    
+
+## Misc details {: #details}
+
+### Unknown elements vs. undefined custom elements {: #unknown}
+
+HTML is lenient and flexible to work with. For example, declare `<randomtagthatdoesntexist>` on a page and the browser is perfectly happy accepting it. Why do non-standard tags work? The answer is the [HTML specification](https://html.spec.whatwg.org/multipage/dom.html#htmlunknownelement) allows it. Elements that are not defined by the specification get parsed as `HTMLUnknownElement`.
+
+The same is not true for custom elements. Potential custom elements are parsed as an `HTMLElement` if they're created with a valid name (includes a "-"). You can check this in a browser that supports custom elements. Fire up the Console: <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span
+class="kbd">J</span> (or <span class="kbd">Cmd</span>+<span
+class="kbd">Opt</span>+<span class="kbd">J</span> on Mac) and paste in the following lines of code:
 
     // "tabs" is not a valid custom element name
     document.createElement('tabs') instanceof HTMLUnknownElement === true
@@ -814,16 +766,15 @@ HTML은 사용하기가 까다롭지 않고 유연합니다. 예를 들어, 페�
     document.createElement('x-tabs') instanceof HTMLElement === true
     
 
-## API 참조
+## API reference
 
-전역적 `customElements`는 사용자설정 요소를 사용하기 위한 유용한 메서드를 정의합니다.
+The `customElements` global defines useful methods for working with custom elements.
 
 **`define(tagName, constructor, options)`**
 
-브라우저에서 새로운 사용자설정 요소를 정의합니다.
+Defines a new custom element in the browser.
 
-예
-
+Example
 
     customElements.define('my-app', class extends HTMLElement { ... });
     customElements.define(
@@ -832,11 +783,9 @@ HTML은 사용하기가 까다롭지 않고 유연합니다. 예를 들어, 페�
 
 **`get(tagName)`**
 
-유효한 사용자설정 요소의 태그 이름이 지정된 경우, 요소의 생성자를 반환합니다. 요소 정의가 등록되지 않은 경우
-`undefined`를 반환합니다.
+Given a valid custom element tag name, returns the element's constructor. Returns `undefined` if no element definition has been registered.
 
-예
-
+Example
 
     let Drawer = customElements.get('app-drawer');
     let drawer = new Drawer();
@@ -844,85 +793,86 @@ HTML은 사용하기가 까다롭지 않고 유연합니다. 예를 들어, 페�
 
 **`whenDefined(tagName)`**
 
-사용자설정 요소가 정의된 경우 이를 확인하는 프라미스를 반환합니다. 요소가
-이미 정의된 경우 즉시 확인합니다. 태그 이름이 유효한
-사용자설정 요소 이름이 아닌 경우 거부합니다.
+Returns a Promise that resolves when the custom element is defined. If the element is already defined, resolve immediately. Rejects if the tag name is not a valid custom element name
 
-예
-
+Example
 
     customElements.whenDefined('app-drawer').then(() => {
       console.log('ready!');
     });
     
 
-## 지금까지의 발자취 및 브라우저 지원 {: #historysupport}
+## History and browser support {: #historysupport}
 
-지난 몇 년 동안 웹 구성 요소의 발자취를 따라가 보면
-Chrome 36+에서 `customElements.define()` 대신 `document.registerElement()`를
-사용하는 Custom Elements API 버전을 구현했음을 알 수 있을 것입니다. 이 버전은 현재 v0라고 하는 더 이상 사용되지 않는 표준
-버전으로 간주됩니다. `customElements.define()`은 브라우저
-공급업체가 이제 막 구현하기 시작한 따끈따끈한 최신 기능입니다. 이를 사용자설정 요소 v1이라고 합니다.
+If you've been following web components for the last couple of years, you'll know that Chrome 36+ implemented a version of the Custom Elements API that uses `document.registerElement()` instead of `customElements.define()`. That's now considered a deprecated version of the standard, called v0. `customElements.define()` is the new hotness and what browser vendors are starting to implement. It's called Custom Elements v1.
 
-구식 v0 사양에 관심이 있는 경우 [html5rocks 문서](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/){: .external }를 확인하세요.
+If you happen to be interested in the old v0 spec, check out the [html5rocks article](http://www.html5rocks.com/en/tutorials/webcomponents/customelements/){: .external }.
 
-### 브라우저 지원
+### Browser support
 
-Chrome 54([상태](https://www.chromestatus.com/features/4696261944934400))에는 사용자설정 요소 v1이 있습니다. Safari는 [프로토타입 제작을 시작](https://bugs.webkit.org/show_bug.cgi?id=150225)했으며 WebKit nightly에서 API를 테스트할 수 있습니다. Edge는 [프로토타입 제작을 시작](https://twitter.com/AaronGustafson/status/717028669948977153)했습니다. Mozilla는 구현 관련 [해결되지 않은 버그](https://bugzilla.mozilla.org/show_bug.cgi?id=889230) 문제가 있습니다.
+Chrome 54 ([status](https://www.chromestatus.com/features/4696261944934400)), Safari 10.1 ([status](https://webkit.org/status/#feature-custom-elements)), and Firefox 63 ([status](https://platform-status.mozilla.org/#custom-elements)) have Custom Elements v1. Edge has [begun development](https://developer.microsoft.com/microsoft-edge/platform/status/customelements/).
 
-사용자설정 요소를 검색하려면 `window.customElements`가 있는지 확인합니다.
-
+To feature detect custom elements, check for the existence of `window.customElements`:
 
     const supportsCustomElementsV1 = 'customElements' in window;
     
 
-#### 폴리필(Polyfill) {: #polyfill}
+#### Polyfill {: #polyfill}
 
-브라우저 지원이 광범위하게 제공될 때까지 [폴리필](https://github.com/webcomponents/custom-elements/blob/master/custom-elements.min.js)을 사용할 수 있습니다. 
+Until browser support is widely available, there's a [standalone polyfill](https://github.com/webcomponents/custom-elements/) available for Custom Elements v1. However, we recommend using the [webcomponents.js loader](https://github.com/webcomponents/webcomponentsjs#using-webcomponents-loaderjs) to optimally load the web components polyfills. The loader uses feature detection to asynchronously load only the necessary pollyfills required by the browser.
 
-**참고**: `:defined` CSS 의사 클래스를 폴리필할 수는 없습니다.
+Note: If your project transpiles to or uses ES5, be sure to see the notes on including [custom-elements-es5-adapter.js](https://github.com/webcomponents/webcomponentsjs#custom-elements-es5-adapterjs) in addition to the polyfills.
 
-설치:
+Install it:
 
-    bower install --save webcomponents/custom-elements
-
-사용:
-
-
-    function loadScript(src) {
-     return new Promise(function(resolve, reject) {
-       const script = document.createElement('script');
-       script.src = src;
-       script.onload = resolve;
-       script.onerror = reject;
-       document.head.appendChild(script);
-     });
-    }
+    npm install --save @webcomponents/webcomponentsjs
     
-    // Lazy load the polyfill if necessary.
-    if (!supportsCustomElementsV1) {
-      loadScript('/bower_components/custom-elements/custom-elements.min.js').then(e => {
-        // Polyfill loaded.
+
+Usage:
+
+    <!-- Use the custom element on the page. -->
+    <my-element></my-element>
+    
+    <!-- Load polyfills; note that "loader" will load these async -->
+    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js" defer></script>
+    
+    <!-- Load a custom element definitions in `waitFor` and return a promise -->
+    <script type="module"> 
+      function loadScript(src) {
+        return new Promise(function(resolve, reject) {
+          const script = document.createElement('script');
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+    
+      WebComponents.waitFor(() => {
+        // At this point we are guaranteed that all required polyfills have
+        // loaded, and can use web components APIs.
+        // Next, load element definitions that call `customElements.define`.
+        // Note: returning a promise causes the custom elements
+        // polyfill to wait until all definitions are loaded and then upgrade
+        // the document in one batch, for better performance.
+        return loadScript('my-element.js');
       });
-    } else {
-      // Native support. Good to go.
-    }
+    </script>
     
 
-## 결론
+Note: the `:defined` CSS pseudo-class cannot be polyfilled.
 
-사용자설정 요소는 브라우저에서 새로운 HTML 태그를 정의하고 재사용 가능한
-구성 요소를 생성하는 데 사용할 수 있는 새로운 도구입니다. 사용자설정 요소를 다른 신규 플랫폼 원시 기능(예: Shadow DOM) 및 `<template>`과 함께 사용하면 다음과 같이 웹 구성 요소의 장대한 그림을 볼 수 있습니다.
+## Conclusion
 
-- 재사용 가능한 구성 요소를 생성하고 확장하기 위한 다중 브라우저 지원(웹 표준)
-- 시작하는 데 라이브러리나 프레임워크가 필요하지 않음. Vanilla JS/HTML FTW!
-- 익숙한 프로그래밍 모델 제공. 이를 테면 DOM/CSS/HTML
-- 다른 신규 플랫폼 기능(Shadow DOM, `<template>`, CSS 사용자설정 속성 등)과 호환
-- 브라우저의 DevTools와 완벽하게 통합됨
-- 기존 접근성 기능 활용
+Custom elements give us a new tool for defining new HTML tags in the browser and creating reusable components. Combine them with the other new platform primitives like Shadow DOM and `<template>`, and we start to realize the grand picture of Web Components:
 
-[spec]: https://html.spec.whatwg.org/multipage/scripting.html#custom-elements
-[sd_spec]: http://w3c.github.io/webcomponents/spec/shadow/
+- Cross-browser (web standard) for creating and extending reusable components.
+- Requires no library or framework to get started. Vanilla JS/HTML FTW!
+- Provides a familiar programming model. It's just DOM/CSS/HTML.
+- Works well with other new web platform features (Shadow DOM, `<template>`, CSS custom properties, etc.)
+- Tightly integrated with the browser's DevTools.
+- Leverage existing accessibility features.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

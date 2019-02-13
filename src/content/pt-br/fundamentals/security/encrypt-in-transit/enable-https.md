@@ -1,61 +1,53 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Usar HTTPS nos servidores é fundamental para proteger páginas da web.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Enabling HTTPS on your servers is critical to securing your webpages.
 
-{# wf_updated_on: 2018-08-30 #}
-{# wf_published_on: 2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature,Internals>Network>SSL #}
 
-# Como usar o HTTPS nos servidores {: .page-title }
+# Enabling HTTPS on Your Servers {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
 ### TL;DR {: .hide-from-toc }
 
-* Crie um par de chaves pública/privada RSA de 2.048 bits.
-* Gere um solicitação de assinatura de certificado (CSR, na sigla em inglês) que contenha sua chave pública.
-* "Envie a CSR para a autoridade certificadora (CA, na sigla em inglês) para receber um certificado ou uma cadeia de certificados final.
-* Instale o certificado final em um local não acessível pela web, como `/etc/ssl` (Linux e Unix) ou no local indicado pelo IIS (Windows)."
+* Create a 2048-bit RSA public/private key pair.
+* Generate a certificate signing request (CSR) that embeds your public key.
+* Share your CSR with your Certificate Authority (CA) to receive a final certificate or a certificate chain.
+* Install your final certificate in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS requires it (Windows).
 
-## Gerar chaves e solicitações de assinatura de certificado
+## Generating keys and certificate signing requests
 
-Esta seção usa o programa de linha de comando openssl, que vem com a maioria dos sistemas
-Linux, BSD e Mac OS X, para gerar chaves pública/privada e uma CSR.
+This section uses the openssl command-line program, which comes with most Linux, BSD, and Mac OS X systems, to generate private/public keys and a CSR.
 
+### Generate a public/private key pair
 
-### Gerar um par de chaves pública/privada
+Let's start by generating a 2,048-bit RSA key pair. A smaller key, such as 1,024 bits, is insufficiently resistant to brute-force guessing attacks. A larger key, such as 4,096 bits, is overkill. Over time, key sizes increase as computer processing gets cheaper. 2,048 is currently the sweet spot.
 
-Vamos começar gerando um par de chaves RSA de 2.048 bits. Uma chave menor, como
-com 1.024 bits, não tem resistência suficiente contra ataques de força bruta. Uma
-chave maior, como a de 4.096 bits, é um exagero. Com o tempo, o tamanho da chave aumenta conforme
-o processamento computacional fica mais barato. Atualmente, o tamanho mais adequado é 2.048.
-
-O comando para gerar o par de chaves RSA é:
+The command to generate the RSA key pair is:
 
     openssl genrsa -out www.example.com.key 2048
+    
 
-Isso gera o seguinte resultado:
+This gives the following output:
 
     Generating RSA private key, 2048 bit long modulus
     .+++
     .......................................................................................+++
     e is 65537 (0x10001)
+    
 
-### Gerar uma solicitação de assinatura de certificado
+### Generate a certificate signing request
 
-Nesta etapa, você insere sua chave pública e informações sobre a sua organização
-e seu site em uma solicitação de assinatura de certificado, ou CSR. O comando
-*openssl* solicita, de forma interativa, os metadados necessários.
+In this step, you embed your public key and information about your organization and your website into a certificate signing request or CSR. The *openssl* command interactively asks you for the required metadata.
 
-A execução do comando:
+Running the following command:
 
     openssl req -new -sha256 -key www.example.com.key -out www.example.com.csr
+    
 
-Produz o seguinte:
+Outputs the following:
 
     You are about to be asked to enter information that will be incorporated
     into your certificate request
-
+    
     What you are about to enter is what is called a Distinguished Name or a DN.
     There are quite a few fields but you can leave some blank
     For some fields there will be a default value,
@@ -69,17 +61,19 @@ Produz o seguinte:
     Team
     Common Name (e.g. server FQDN or YOUR name) []:www.example.com
     Email Address []:webmaster@example.com
-
+    
     Please enter the following 'extra' attributes
     to be sent with your certificate request
     A challenge password []:
     An optional company name []:
+    
 
-Para garantir a validez da CSR, execute este comando:
+To ensure the validity of the CSR, run this command:
 
     openssl req -text -in www.example.com.csr -noout
+    
 
-E a resposta deve ser parecida com esta:
+And the response should look like this:
 
     Certificate Request:
         Data:
@@ -101,254 +95,183 @@ E a resposta deve ser parecida com esta:
              5f:05:f3:71:d5:f7:b7:b6:dc:17:cc:88:03:b8:87:29:f6:87:
              2f:7f:00:49:08:0a:20:41:0b:70:03:04:7d:94:af:69:3d:f4:
              ...
+    
 
-### Envie a CSR a uma autoridade certificadora
+### Submit your CSR to a certificate authority
 
-Cada autoridade certificadora (CA) tem o próprio método de envio de
-CSRs. Os métodos podem incluir usar um formulário no site, enviar a CSR
-por email ou outro. Algumas CAs (ou seus revendedores) podem até mesmo automatizar alguns ou
-todos os processos (inclusive, em alguns casos, incluir o par de chaves e a geração
-da CSR).
+Different certificate authorities (CAs) require different methods for sending them your CSRs. Methods may include using a form on their website, sending the CSR by email, or something else. Some CAs (or their resellers) may even automate some or all of the process (including, in some cases, key pair and CSR generation).
 
-Envie sua CSR à CA e siga as instruções para receber o certificado
-ou a cadeia de certificados final.
+Send the CA to your CSR, and follow their instructions to receive your final certificate or certificate chain.
 
-Cada CA cobra um valor pelo serviço de confirmar
-sua chave pública.
+Different CAs charge different amounts of money for the service of vouching for your public key.
 
-Também há opções para mapear sua chave para mais de 1 nome DNS, incluindo
-vários nomes distintos (por exemplo, example.com, www.example.com, example.net,
-e www.example.net) ou nomes com "caractere especial" como \*.example.com.
+There are also options for mapping your key to more than one DNS name, including several distinct names (e.g. all of example.com, www.example.com, example.net, and www.example.net) or "wildcard" names such as \*.example.com.
 
-Por exemplo, uma CA no momento oferece os seguintes preços:
+For example, one CA currently offers these prices:
 
-* Padrão: US$ 16/ano, válido para example.com e www.example.com.
-* Caractere curinga: US$ 150/ano, válido para example.com e \*.example.com.
+* Standard: $16/year, valid for example.com and www.example.com.
+* Wildcard: $150/year, valid for example.com and \*.example.com.
 
-Com esses preços, os certificados com caractere especial são econômicos quando se tem mais de 9
-subdomínios, em outros casos, é possível comprar apenas 1 ou mais certificados de nome único (se
-você tiver mais do que 5 subdomínios, por exemplo, poderá encontrar um certificado com caractere especial
-mais conveniente se usar HTTPS nos servidores).
+At these prices, wildcard certificates are economical when you have more than 9 subdomains; otherwise, you can just buy one or more single-name certificates. (If you have more than, say, five subdomains, you might find a wildcard certificate more convenient when you come to enable HTTPS on your servers.)
 
-Observação: Lembre-se de que nesse tipo de certificado, o caractere especial se aplica somente a um rótulo de DNS. Um bom certificado para \*.example.com funciona para foo.example.com e bar.example.com, mas _não_ para foo.bar.example.com.
+Note: Keep in mind that in wildcard certificates the wildcard applies to only one DNS label. A certificate good for \*.example.com will work for foo.example.com and bar.example.com, but _not_ for foo.bar.example.com.
 
-Copie os certificados para todos os servidores de front-end em um local não acessível pela web
-, como `/etc/ssl` (Linux e Unix) ou no local indicado pelo IIS (Windows).
+Copy the certificates to all your front-end servers in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS (Windows) requires them.
 
-## Usar HTTPS nos servidores
+## Enable HTTPS on your servers
 
-O uso do HTTPS nos servidores é uma etapa essencial para proporcionar segurança às páginas da web.
+Enabling HTTPS on your servers is a critical step in providing security for your web pages.
 
-* Use a ferramenta de configuração de servidor do Mozilla para fazer o servidor oferecer suporte a HTTPS.
-* Teste seu site regularmente com o teste de servidor SSL da Qualys e busque obter pelo menos um A ou A+.
+* Use Mozilla's Server Configuration tool to set up your server for HTTPS support.
+* Regularly test your site with the Qualys' handy SSL Server Test and ensure you get at least an A or A+.
 
-Nesse momento, você deve tomar uma decisão operacional crucial: Escolha uma das seguintes opções:
+At this point, you must make a crucial operations decision. Choose one of the following:
 
-* Dedicar um endereço IP exclusivo para cada nome de host pelo qual o servidor web fornece
-  conteúdo.
-* Use hospedagem virtual baseada em nome.
+* Dedicate a distinct IP address to each hostname your web server serves content from.
+* Use name-based virtual hosting.
 
-Se você está usando endereços IP distintos para cada nome de host, é
-fácil oferecer suporte a HTTP e HTTPS a todos os clientes.
+If you have been using distinct IP addresses for each hostname, you can easily support both HTTP and HTTPS for all clients.
 
-No entanto, a maioria dos operadores de site usam hospedagem virtual baseada em nome para economizar endereços
-IP porque isso é geralmente mais conveniente. O problema do IE no
-Windows XP e do Android nas versões anteriores à 2.3 é que eles não entendem a [indicação
-de nome de servidor](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI),
-que é essencial para a hospedagem virtual baseada em nome do HTTPS.
+However, most site operators use name-based virtual hosting to conserve IP addresses and because it's more convenient in general. The problem with IE on Windows XP and Android earlier than 2.3 is that they do not understand [Server Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI), which is crucial for HTTPS name-based virtual hosting.
 
-Algum dia — esperamos que em breve — todos os clientes incompatíveis com SNI serão substituídos
-por software moderno. Monitore a string de user-agent nos registros de solicitações para saber
-quando uma parte suficiente da população de usuários migrou para software moderno. (você pode
-escolher o limite: talvez &lt; 5% ou &lt; 1%).
+Someday—hopefully soon—clients that don't support SNI will be replaced with modern software. Monitor the user agent string in your request logs to know when enough of your user population has migrated to modern software. (You can decide what your threshold is; perhaps &lt; 5%, or &lt; 1%.)
 
-Se você ainda não tem o serviço HTTPS disponível nos servidores, ative-o agora
-(sem redirecionar o HTTP para o HTTPS; veja abaixo). Configure o servidor da Web para usar
-os certificados comprados e instalados. O [prático gerador de
-configurações
-do Mozilla](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external}
-pode ser útil para você.
+If you don't already have HTTPS service available on your servers, enable it now (without redirecting HTTP to HTTPS; see below). Configure your web server to use the certificates you bought and installed. You might find [Mozilla's handy configuration generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external} useful.
 
-Se você tem muitos nomes de host/subdomínios, eles precisam usar o certificado
-correto individualmente.
+If you have many hostnames/subdomains, they each need to use the right certificate.
 
-Aviso: Se você já passou por essas etapas, mas está usando HTTPS pura e simplesmente para redirecionar clientes ao HTTP, pare de fazer isso agora. Leia a próxima seção para garantir que HTTPS e HTTP funcionem corretamente.
+Warning: If you've already completed these steps, but are using HTTPS for the sole purpose of redirecting clients back to HTTP, stop doing that now. See the next section to make sure HTTPS and HTTP work smoothly.
 
-Observação: Em última análise, você deve redirecionar solicitações HTTP para HTTPS e usar a segurança de transporte estrita do HTTP (HSTS, na sigla em inglês). Porém, nesse caso, essa não é a etapa adequada do processo de migração. Consulte "Redirecionar HTTP para HTTPS" e "Ativar segurança de transporte estrita e cookies seguros".
+Note: Ultimately you should redirect HTTP requests to HTTPS and use HTTP Strict Transport Security (HSTS). However, this is not the right stage in the migration process to do that; see “Redirect HTTP To HTTPS” and “Turn On Strict Transport Security And Secure Cookies.”
 
-Agora e durante todo o tempo de atividade do seu site, verifique a configuração HTTPS com o
-[teste de servidor SSL da Qualys](https://www.ssllabs.com/ssltest/){: .external }. O site
-deve obter pontuação A ou A+. Tudo que gerar uma avaliação inferior deve ser tratado como erro
-(o A de hoje é o B de amanhã, pois os ataques contra algoritmos e protocolos
-estão cada vez mais eficazes).
+Now, and throughout your site's lifetime, check your HTTPS configuration with [Qualys' handy SSL Server Test](https://www.ssllabs.com/ssltest/){: .external }. Your site should score an A or A+; treat anything that causes a lower grade as a bug. (Today's A is tomorrow's B, because attacks against algorithms and protocols are always improving!)
 
-## Torne relativos os URLs internos do site
+## Make intrasite URLs relative
 
-Agora que você está disponibilizando o site em HTTP e HTTPS, ele precisa funcionar
-da forma mais fluida possível, qualquer que seja o protocolo usado. Um fator importante é usar
-URLs relativos para links internos do site.
+Now that you are serving your site on both HTTP and HTTPS, things need to work as smoothly as possible, regardless of protocol. An important factor is using relative URLs for intrasite links.
 
-Confirme que os URLs internos e externos do site independem do protocolo. Ou seja, use caminhos relativos ou remova o protocolo. Por exemplo: `//example.com/something.js`.
+Make sure intrasite URLs and external URLs are agnostic to protocol; that is, make sure you use relative paths or leave out the protocol like `//example.com/something.js`.
 
-Surge um problema quando se disponibiliza via HTTPS uma página que contém recursos
-HTTP, conhecidos como [conteúdo misto](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content). Os navegadores alertam os usuários que toda a força do HTTPS foi perdida. Na verdade, no caso de conteúdo misto ativo (scripts, plug-ins, CSS, iframes), muitas vezes os navegadores simplesmente não carregam nem executam o conteúdo, o que gera uma página inválida.
+A problem arises when you serve a page via HTTPS that includes HTTP resources, known as [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content). Browsers warn users that the full strength of HTTPS has been lost. In fact, in the case of active mixed content (script, plug-ins, CSS, iframes), browsers often simply won't load or execute the content at all, resulting in a broken page. And remember, it's perfectly OK to include HTTPS resources in an HTTP page.
 
-Observação: É perfeitamente aceitável incluir recursos HTTPS em uma página HTTP.
+Key Point: See [Fixing Mixed Content](/web/fundamentals/security/prevent-mixed-content/fixing-mixed-content) for more details about ways to fix and prevent mixed content.
 
-Além disso, quando você criar vínculos para outras páginas no site, os usuários podem ser
-sofrer downgrade de HTTPS para HTTP.
+Additionally, when you link to other pages in your site, users could get downgraded from HTTPS to HTTP.
 
-Esses problemas acontecem quando as páginas contêm URLs internos do site totalmente qualificados
-que usam o esquema *http://*.
+These problems happen when your pages include fully-qualified, intrasite URLs that use the *http://* scheme.
 
-<p><span class="compare-worse">Não recomendado</span> — Não recomendamos usar URLs internos do site totalmente qualificados.</p>
+<span class="compare-worse">Not recommended</span> — We recommend you avoid using fully qualified intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="http://example.com/jquery.js"></script>
-    <link rel="stylesheet" href="http://assets.example.com/style.css"/>
-    <img src="http://img.example.com/logo.png"/>;
-    <p>Read this nice <a href="http://example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>http://</b>example.com/jquery.js">&lt;/script>
+&lt;link rel="stylesheet" href="<b>http://</b>assets.example.com/style.css"/>
+&lt;img src="<b>http://</b>img.example.com/logo.png"/>;
+&lt;p>A &lt;a href="<b>http://</b>example.com/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-Em outras palavras, torne os URLs internos do site os mais relativos possível: relativos ao protocolo (sem protocolo, começando com `//example.com`) ou relativos ao host (começando apenas com o caminho, como com `/jquery.js`).
+In other words, make intrasite URLs as relative as possible: either protocol-relative (lacking a protocol, starting with `//example.com`) or host-relative (starting with just the path, like `/jquery.js`).
 
-<p><span class="compare-better">Recomendado</span> — Recomendamos usar URLs internos do site relativos ao protocolo.</p>
+<span class="compare-better">Recommended</span> — We recommend that you use relative intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="//example.com/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="//example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>/jquery.js</b>">&lt;/script>
+&lt;link href="<b>/styles/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>/images/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-<p><span class="compare-better">Recomendado</span> — Recomendamos usar URLs internos do site relativos.</p>
+<span class="compare-better">Recommended</span> — Or, you can use protocol-relative intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>//example.com/jquery.js</b>">&lt;/script>
+&lt;link href="<b>//assets.example.com/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>//img.example.com/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>//example.com/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-Faça isso com um script, não manualmente. Se o conteúdo do site está em um banco de dados,
-teste o script em uma cópia de desenvolvimento do banco de dados.
-Se o conteúdo do site só contém arquivos simples, teste o script em uma cópia de desenvolvimento dos arquivos. Implemente as alterações na produção somente depois de aprovadas em teste de controle de qualidade, como sempre. Você pode usar o [script do Bram van Damme](https://github.com/bramus/mixed-content-scan) ou algo parecido para detectar conteúdo misto no site.
+<span class="compare-better">Recommended</span> — We recommend that you use HTTP**S** URLs for intersite URLs (where possible).
 
-Ao oferecer links para outros sites (em vez de incluir os recursos deles),
-como você não tem controle sobre o funcionamento deles,
-não altere o protocolo.
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="/jquery.js">&lt;/script>
+&lt;link href="/styles/style.css" rel="stylesheet"/>
+&lt;img src="/images/logo.png"/>;
+&lt;p>A &lt;a href="/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+&lt;p>Check out this &lt;a href="<b>https://foo.com/</b>">other cool site.&lt;/a>&lt;/p>
+</pre>
 
-Success: para fazer migrações mais suaves de sites grandes, recomendamos usar URLs relativos a protocolo. Se você não tem certeza de que já consegue implantar o HTTPS totalmente, forçar o site a usar HTTPS para todos os recursos secundários pode não dar certo. É provável que o HTTPS seja algo novo e estranho para você por algum tempo. Enquanto isso, o site HTTP deverá funcionar normalmente como sempre. Com o tempo, você vai concluir a migração e poder forçar o uso do HTTPS (veja as duas próximas seções).
+Do this with a script, not by hand. If your site’s content is in a database, test your script on a development copy of your database. If your site’s content consists of simple files, test your script on a development copy of the files. Push the changes to production only after the changes pass QA, as normal. You can use [Bram van Damme’s script](https://github.com/bramus/mixed-content-scan) or something similar to detect mixed content in your site.
 
-Se o site depende de scripts, imagens ou outros recursos fornecidos por
-terceiros, como CDN, jquery.com, você tem duas opções:
+When linking to other sites (as opposed to including resources from them), don’t change the protocol since you don’t have control over how those sites operate.
 
-* Usar URLs relativos a protocolo para esses recursos. Se o terceiro não
-oferecer HTTPS, peça que o faça. A maioria faz isso, incluindo o jquery.com.
-* Fornecer os recursos a partir de um servidor que você controle e que oferece HTTP
-e HTTPS. Na maioria dos casos, essa é uma boa ideia, porque assim você tem maior
-controle sobre o visual, o desempenho e a segurança do seu site. Além disso,
-você não precisará confiar em terceiros, o que é ótimo.
+Success: To make migration smoother for large sites, we recommend protocol-relative URLs. If you are not sure whether you can fully deploy HTTPS yet, forcing your site to use HTTPS for all sub-resources may backfire. There is likely to be a period of time in which HTTPS is new and weird for you, and the HTTP site must still work as well as ever. Over time, you’ll complete the migration and lock in HTTPS (see the next two sections).
 
-Observação: Não se esqueça de que você também precisa alterar os URLs internos do site nas folhas de estilo, no JavaScript, nas regras de redirecionamento, nas tags `<link>`, nas declarações de CSP, não só nas páginas HTML.
+If your site depends on scripts, images, or other resources served from a third party, such as a CDN or jquery.com, you have two options:
 
-## Redirecionar HTTP para HTTPS
+* Use protocol-relative URLs for these resources. If the third party does not serve HTTPS, ask them to. Most already do, including jquery.com.
+* Serve the resources from a server that you control, and which offers both HTTP and HTTPS. This is often a good idea anyway, because then you have better control over your site's appearance, performance, and security. In addition, you don't have to trust a third party, which is always nice.
 
-Você precisa colocar um [link canônico](https://support.google.com/webmasters/answer/139066) no cabeçalho da página para informar aos mecanismos de pesquisa que a melhor forma de chegar ao site é via HTTPS.
+Note: Keep in mind that you also need to change intrasite URLs in your stylesheets, JavaScript, redirect rules, `<link>` tags, and CSP declarations, not just in the HTML pages.
 
-Insira as tags `<link rel="canonical" href="https://…"/>` nas páginas. Isso
-ajuda os mecanismos de pesquisa a determinar a melhor forma de chegar ao seu site.
+## Redirect HTTP to HTTPS
 
-## Ativar a segurança de transporte estrita e cookies seguros
+You need to put a [canonical link](https://support.google.com/webmasters/answer/139066) at the head of your page to tell search engines that HTTPS is the best way to get to your site.
 
-Neste ponto, você está pronto para “bloquear" o uso do HTTPS.
+Set `<link rel="canonical" href="https://…"/>` tags in your pages. This helps search engines determine the best way to get to your site.
 
-* Use a segurança de transporte estrita do HTTP (HSTS) para evitar o custo do redirecionamento 301.
-* Sempre ative o sinalizador Secure para os cookies.
+## Turn on Strict Transport Security and secure cookies
 
-Primeiro, use [StrictTransportSecurity](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security)
-para informar os clientes de que eles devem sempre se conectar ao servidor via HTTPS, mesmo
-ao seguir uma referência `http://`. Isso evita ataques como
-[SSLStrip](http://www.thoughtcrime.org/software/sslstrip/){: .external } e também
-evita o custo de ida e volta do `301 redirect` que ativamos em
-[Redirecionar HTTP para HTTPS](#redirect-http-to-https).
+At this point, you are ready to "lock in" the use of HTTPS.
 
-Observação: Os clientes que marcaram seu site como host HSTS conhecido provavelmente passarão por uma <a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>falha grave</i> se o site tiver um erro na configuração do TLS</a> (como um certificado expirado). O HSTS foi desenvolvido explicitamente dessa forma para garantir que os invasores de rede não consigam enganar os clientes e fazê-los acessar o site sem HTTPS. Não ative o HSTS até ter certeza de que o funcionamento do site está suficientemente sólido para impedir a implantação de HTTPS com erros de validação de certificado.
+* Use HTTP Strict Transport Security (HSTS) to avoid the cost of the 301 redirect.
+* Always set the Secure flag on cookies.
 
-Ative a segurança de transporte estrita do HTTP (HSTS) configurando o cabeçalho `Strict-Transport-Security`. A [página de HSTS do OWASP contém links para instruções](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security) de diversas versões de software do servidor.
+First, use [Strict Transport Security](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) to tell clients that they should always connect to your server via HTTPS, even when following an `http://` reference. This defeats attacks such as [SSL Stripping](http://www.thoughtcrime.org/software/sslstrip/){: .external }, and also avoids the round-trip cost of the `301 redirect` that we enabled in [Redirect HTTP to HTTPS](#redirect-http-to-https).
 
-A maioria dos servidores da Web oferece recursos semelhantes para adicionar cabeçalhos personalizados.
+Note: Clients that have noted your site as a known HSTS Host are likely to <a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>hard-fail</i> if your site ever has an error in its TLS configuration</a> (such as an expired certificate). HSTS is explicitly designed this way to ensure that network attackers cannot trick clients into accessing the site without HTTPS. Do not enable HSTS until you are certain that your site operation is robust enough to avoid ever deploying HTTPS with certificate validation errors.
 
-Observação: `max-age` é medido em segundos. Você pode começar com valores baixos para `max-age` e aumentar gradualmente à medida que se familiarizar com a operação de um site exclusivamente em HTTPS.
+Turn on HTTP Strict Transport Security (HSTS) by setting the `Strict-Transport-Security` header. [OWASP's HSTS page has links to instructions](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security) for various server software.
 
-Também é importante garantir que os clientes nunca enviem cookies (para
-autenticação ou preferências do site) por HTTP. Por exemplo, se o
-cookie de autenticação de um usuário for exposto em texto simples, a garantia de segurança
-de toda a sessão será destruída, mesmo que todo resto esteja
-correto!
+Most web servers offer a similar ability to add custom headers.
 
-Portanto, altere seu aplicativo da Web para sempre aplicar o sinalizador Secure aos cookies
-que ele define. [Essa página da OWASP explica como aplicar o sinalizador Secure](https://www.owasp.org/index.php/SecureFlag) em diversos frameworks de aplicativo. Cada framework de aplicativo tem uma maneira de ativar o sinalizador.
+Note: `max-age` is measured in seconds. You can start with low values and gradually increase the `max-age` as you become more comfortable operating an HTTPS-only site.
 
-A maioria dos servidores da Web oferece um recurso simples de redirecionamento. Use `301 (Moved Permanently)` para
-indicar aos mecanismos de pesquisa e navegadores que a versão HTTPS é canônica, e redirecione os usuários da versão HTTP para a versão HTTPS do site.
+It is also important to make sure that clients never send cookies (such as for authentication or site preferences) over HTTP. For example, if a user's authentication cookie were to be exposed in plain text, the security guarantee of their entire session would be destroyed—even if you have done everything else right!
 
-## Questões da migração
+Therefore, change your web application to always set the Secure flag on cookies that it sets. [This OWASP page explains how to set the Secure flag](https://www.owasp.org/index.php/SecureFlag) in several application frameworks. Every application framework has a way to set the flag.
 
-Muitos desenvolvedores têm preocupações válidas sobre a migração de HTTP para HTTPS.
-A equipe de webmasters do Google tem [orientações excelentes](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J) disponíveis.
+Most web servers offer a simple redirect feature. Use `301 (Moved Permanently)` to indicate to search engines and browsers that the HTTPS version is canonical, and redirect your users to the HTTPS version of your site from HTTP.
 
-### Classificação das pesquisas
+## Migration concerns
 
-O Google usa [HTTPS como um indicador de qualidade positivo para a pesquisa](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html) e,
-além disso, publica um guia sobre
-[como transferir, mover ou migrar um site](https://support.google.com/webmasters/topic/6029673)
-sem alterar sua classificação nas pesquisas. O Bing também publica
-[orientações para webmasters](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a).
+Many developers have legitimate concerns about migrating from HTTP to HTTPS. The Google Webmasters Team has some [excellent guidance](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J) available.
 
-### Desempenho
+### Search ranking
 
-Quando as camadas de conteúdo e aplicativo estão bem ajustadas (leia o
-[livro de Steve Souders](https://stevesouders.com/){: .external } para obter ótimas dicas), as
-demais preocupações com o desempenho do TLS geralmente são pequenas em relação
-ao custo geral do aplicativo. Além disso, você pode reduzir e aliviar
-esses custos (para ver ótimos conselhos sobre otimização do TLS e em termos globais, leia
-[High performance Browser Networking](https://hpbn.co/), de Ilya Grigorik). Leia também o [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/) e [Bulletproof SSL And TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/), de Ivan Ristic.
+Google uses [HTTPS as a positive search quality indicator](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html). Google also publishes a guide for [how to transfer, move, or migrate your site](https://support.google.com/webmasters/topic/6029673) while maintaining its search rank. Bing also publishes [guidelines for webmasters](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a).
 
-Em alguns casos, o TLS pode _melhorar_ o desempenho, principalmente como resultado de possibilitar o
-HTTP/2. Chris Palmer deu uma palestra sobre o [desempenho do HTTPS e do HTTP/2 no Chrome Dev Summit 2014](/web/shows/cds/2014/tls-all-the-things).
+### Performance
 
-### Cabeçalhos "referer"
+When the content and application layers are well-tuned (see [Steve Souders' books](https://stevesouders.com/){: .external } for great advice), the remaining TLS performance concerns are generally small, relative to the overall cost of the application. Additionally, you can reduce and amortize those costs. (For great advice on TLS optimization and generally, see [High Performance Browser Networking](https://hpbn.co/) by Ilya Grigorik.) See also Ivan Ristic's [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/) and [Bulletproof SSL And TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/).
 
-Quando o usuário segue links do site HTTPS para outros sites HTTP, os agentes do usuário não enviam o cabeçalho Referer. Se isso for um problema, há várias formas de
-resolver:
+In some cases, TLS can *improve* performance, mostly as a result of making HTTP/2 possible. Chris Palmer gave a talk on [HTTPS and HTTP/2 performance at Chrome Dev Summit 2014](/web/shows/cds/2014/tls-all-the-things).
 
-* Os outros sites devem migrar para HTTPS. Se os sites referidos puderem concluir a seção [Usar HTTPS nos servidores](#enable-https-on-your-servers) deste guia, você poderá alterar os links deles que seu site oferece de `http://` para `https://` ou usar links relativos a protocolo.
-* Para encontrar solução para diversos problemas com os cabeçalhos Referer, use o novo [padrão da Política dos referenciadores](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta).
+### Referer headers
 
-Como os mecanismos de pesquisa estão migrando para HTTPS, no futuro, você provavelmente verá _mais_ cabeçalhos Referer quando migrar para HTTPS.
+When users follow links from your HTTPS site to other HTTP sites, user agents don't send the Referer header. If this is a problem, there are several ways to solve it:
 
-Warning: De acordo com a [RFC do HTTP](https://tools.ietf.org/html/rfc2616#section-15.1.3), os clientes **NÃO DEVEM** incluir um campo de cabeçalho Referer em uma solicitação HTTP (desprotegida) se a página referida tiver sido transferida por meio de um protocolo seguro.
+* The other sites should migrate to HTTPS. If referee sites can complete the [Enable HTTPS on your servers](#enable-https-on-your-servers) section of this guide, you can change links in your site to theirs from `http://` to `https://`, or you can use protocol-relative links.
+* To work around a variety of problems with Referer headers, use the new [Referrer Policy standard](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta).
 
-### Receita com anúncios
+Because search engines are migrating to HTTPS, in the future you are likely see *more* Referer headers when you migrate to HTTPS.
 
-Os operadores de site que lucram com seu site mostrando anúncios querem ter certeza de que
-a migração para  HTTPS não reduzirá as impressões dos anúncios. Mas, devido a questões
-de segurança envolvendo o conteúdo misto, um `<iframe>` HTTP não funciona em uma página HTTPS. Aqui, temos um
-problema complexo de ação coletiva: até que os anunciantes publiquem via HTTPS,
-os operadores do site não poderão migrar para HTTPS sem perder receita com anúncios. No entanto, até que os operadores do
-site migrem para HTTPS, os anunciantes não terão muita motivação para publicar via HTTPS.
+Caution: According to the [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3), clients **SHOULD NOT** include a Referer header field in a (non-secure) HTTP request if the referring page is transferred with a secure protocol.
 
-Os anunciantes devem, no mínimo, oferecer serviço de anúncio via HTTPS (como na conclusão
-da seção "Usar HTTPS nos servidores" desta página. Muitos já fazem isso. Você
-deve pedir aos anunciantes que não fornecem HTTPS em nenhuma hipótese que, pelo menos comecem a fornecer.
-Talvez seja uma boa ideia adiar a conclusão da seção [Tornar relativos os URLs internos do site](#make-intrasite-urls-relative) deste guia até que haja anunciantes suficientes operando adequadamente entre si.
+### Ad revenue
 
+Site operators that monetize their site by showing ads want to make sure that migrating to HTTPS does not reduce ad impressions. But due to mixed content security concerns, an HTTP `<iframe>` doesn't work in an HTTPS page. There is a tricky collective action problem here: until advertisers publish over HTTPS, site operators cannot migrate to HTTPS without losing ad revenue; but until site operators migrate to HTTPS, advertisers have little motivation to publish HTTPS.
 
-{# wf_devsite_translation #}
+Advertisers should at least offer ad service via HTTPS (such as by completing the "Enable HTTPS on your servers" section on this page. Many already do. You should ask advertisers that do not serve HTTPS at all to at least start. You may wish to defer completing [Make IntraSite URLs relative](#make-intrasite-urls-relative) until enough advertisers interoperate properly.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

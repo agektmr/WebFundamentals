@@ -1,24 +1,18 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Siapkan workspace Anda agar dilengkapi dengan editor, alat debug, dan alat versi untuk web multiperangkat.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up your workspace to include a good editor, debugging, and build tools for the multi-device web.
 
-{# wf_updated_on: 2015-04-13 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2015-04-13 #}
 
-# Memulai {: .page-title }
+# Getting Started {: .page-title }
 
-Siapkan workspace Anda agar dilengkapi dengan editor, alat debug, dan alat versi untuk web multiperangkat.
+Set up your workspace to include a good editor, debugging, and build tools for the multi-device web.
 
-Waktu adalah faktor yang sangat besar supaya tetap produktif. Lingkungan development Anda adalah tempat Anda menghabiskan sebagian besar waktu. Siapkan diri Anda untuk meraih kesuksesan dengan menyertakan editor yang andal dan bisa diperluas, serta alat debug dan development yang kokoh.
+Time is a huge factor in staying productive. Your development environment is where you spend most of yours. Set yourself up for success by including a strong, extensible editor and powerful debugging & development tools.
 
-* [Menyiapkan Editor Anda](setup-editor)
-* [Menyiapkan Persistensi dengan DevTools Workspace](setup-workflow)
-* [Menyiapkan Praprosesor CSS dan JS](setup-preprocessors)
-* [Menyiapkan Pintasan Baris Perintah](setup-shortcuts)
-* [Menyiapkan Ekstensi Browser](setup-extensions)
-* [Menyiapkan Alat Pembangunan Anda](setup-buildtools)
+* [Setup Your Editor](setup-editor)
+* [Setup Persistence with DevTools Workspaces](setup-workflow)
+* [Setup CSS and JS Preprocessors](setup-preprocessors)
+* [Setup Command Line Shortcuts](setup-shortcuts)
+* [Setup Browser Extensions](setup-extensions)
+* [Setup Your Build Tools](setup-buildtools)
 
-Setelah selesai, lanjutkan dengan mempelajari selengkapnya tentang [Alat Developer Chrome (DevTools)](/web/tools/chrome-devtools), alat bawaan Chrome yang membantu Anda mengembangkan, menguji, dan men-debug laman Anda.
-
-
-{# wf_devsite_translation #}
+When you're done, continue to learn more about the [Chrome Developer Tools (DevTools)](/web/tools/chrome-devtools), Chrome's built-in tool that helps you develop, test, and debug your pages.

@@ -1,86 +1,58 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Security 面板確保您的網站上的所有資源均通過 HTTPS 進行保護。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Security Panel to ensure that all resources on your site are protected with HTTPS.
 
-{# wf_updated_on:2017-12-19 #}
-{# wf_published_on:2015-12-21 #}
-{# wf_blink_components: Security #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-12-21 #} {# wf_blink_components: Security #}
 
-# 瞭解安全問題 {: .page-title }
+# Understand Security Issues {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-HTTPS 爲您的網站和將個人信息委託給您的網站的人提供了[重要的安全性和數據完整性][why-https]。在 Chrome DevTools 中使用 Security 面板調試安全問題，確保您已在自己的網站上恰當地實現 HTTPS。
-
-
-
+HTTPS provides [critical security and data integrity](/web/fundamentals/security/encrypt-in-transit/why-https) both for your websites and for the people that entrust your websites with their personal information. Use the Security Panel in Chrome DevTools to debug security issues and ensure that you have properly implemented HTTPS on your websites.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 Security Overview 可以立即查看當前頁面是否安全。
-- 檢查各個源以查看連接和證書詳情（安全源）或找出具體哪些請求未受保護（非安全源）。
 
+- Use the Security Overview to instantly find out whether the current page is secure or non-secure.
+- Inspect individual origins to view connection and certificate details (for secure origins) or to find out exactly which requests are unprotected (for non-secure origins).
 
 ## Security Overview
 
-要查看頁面的整體安全性，請打開 DevTools，然後轉至 Security 面板。
- 
+To view the overall security of a page, open DevTools and go to the Security Panel.
 
-您首先會看到 Security Overview。Security Overview 會一目瞭然地告訴您頁面是否安全。
-安全頁面會通過消息 `This page is secure (valid HTTPS).` 指示
+The first thing you see is the Security Overview. At a glance, the Security Overview tells you whether the page is secure. A secure page is indicated with the message `This page is secure (valid HTTPS).`
 
+![security overview, secure page](images/overview-secure.png)
 
-![Security Overview，安全頁面](images/overview-secure.png)
+Click **View certificate** to view the server certificate for the [main origin](https://en.wikipedia.org/wiki/Same-origin_policy).
 
-點擊 **View certificate** 查看[主源][same-origin-policy]的服務器證書。
- 
+![view certificate](images/view-certificate.png)
 
-![查看證書](images/view-certificate.png)
+A non-secure page is indicated with the message `This page is not secure.`
 
-非安全頁面會通過消息 `This page is not secure.` 指示
+The Security Panel distinguishes between two types of non-secure pages. If the requested page is served over HTTP, then the main origin is flagged as not secure.
 
-Security 面板可以區分兩種非安全頁面。
-如果請求的頁面通過 HTTP 提供，則主源會被標記爲不安全。
- 
+![security overview, non-secure main origin](images/overview-non-secure.png)
 
-![Security Overview，非安全主源](images/overview-non-secure.png)
+If the requested page is retrieved over HTTPS, but the page then goes on to retrieve content from other origins using HTTP, then the page is still flagged as not secure. This is known as a [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content) page. Mixed content pages are only partially protected because the HTTP content is accessible to sniffers and vulnerable to man-in-the-middle attacks.
 
-如果請求的頁面通過 HTTPS 檢索，但頁面會繼續使用 HTTP 檢索其他源的內容，然後頁面仍然會被標記爲不安全。這稱爲[混合內容][mixed-content]頁面。
-混合內容頁面僅受部分保護，因爲 HTTP 內容可以被嗅探器獲取到且易受到中間人攻擊。
- 
+![security overview, mixed content](images/overview-mixed.png)
 
-![Security Overview，混合內容](images/overview-mixed.png)
+Click **View request in Network Panel** to open up a filtered view of the Network Panel and see exactly which requests were served over HTTP. This shows all unprotected requests from all origins.
 
-點擊 **View request in Network Panel** 打開 Network 面板的過濾視圖，然後查看具體是哪些請求通過 HTTP 提供。
-這將顯示來自所有源的所有未受保護的請求。
- 
+## Inspect origins
 
-![Network 面板，非安全資源，所有源](images/network-all.png)
+Use the left panel to inspect an individual secure or non-secure origin.
 
-## 檢查源
+Click on a secure origin to view the connection and certificate details for that origin.
 
-使用左側面板可以檢查各個安全或非安全源。 
+![origin details, secure](images/origin-detail-secure.png)
 
-點擊安全源查看該源的連接和證書詳情。
+If you click on a non-secure origin, the Security Panel provides a link to a filtered view of the Network Panel.
 
+![origin details, non-secure](images/origin-detail-non-secure.png)
 
-![源詳情，安全](images/origin-detail-secure.png)
+Click on the link to see exactly which requests from that origin were served over HTTP.
 
-如果您點擊非安全源，Security 面板會提供 Network 面板過濾視圖的鏈接。 
+![network panel, non-secure resources, one origin](images/network-one.png)
 
-![源詳情，非安全](images/origin-detail-non-secure.png)
+## Feedback {: #feedback }
 
-點擊鏈接可以查看具體是源的哪些請求通過 HTTP 提供。
- 
-
-![Network 面板，非安全資源，一個源](images/network-one.png)
-
-
-
-
-
-[mixed-content]: /web/fundamentals/security/prevent-mixed-content/what-is-mixed-content
-[same-origin-policy]: https://en.wikipedia.org/wiki/Same-origin_policy
-[why-https]: /web/fundamentals/security/encrypt-in-transit/why-https
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,127 +1,121 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Mode kejadian timeline menampilkan semua kejadian yang dipicu saat membuat rekaman. Gunakan referensi kejadian timeline untuk mempelajari selengkapnya tentang setiap jenis kejadian timeline.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The timeline events mode displays all events triggered while making a recording. Use the timeline event reference to learn more about each timeline event type.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Referensi Kejadian Timeline {: .page-title }
+# Timeline Event Reference {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %}
 
-Mode kejadian timeline menampilkan semua kejadian yang dipicu saat membuat rekaman. Gunakan referensi kejadian timeline untuk mempelajari selengkapnya tentang setiap jenis kejadian timeline.
+The timeline events mode displays all events triggered while making a recording. Use the timeline event reference to learn more about each timeline event type.
 
+## Common timeline event properties
 
-## Properti kejadian timeline umum
+Certain details are present in events of all types, while some only apply to certain event types. This section lists properties common to different event types. Properties specific to certain event types are listed in the references for those event types that follow.
 
-Beberapa detail ditampilkan pada semua jenis kejadian, sedangkan sebagian lagi hanya berlaku pada jenis kejadian tertentu. Bagian ini mencantumkan properti yang umum pada berbagai jenis kejadian. Properti yang spesifik untuk jenis kejadian tertentu dicantumkan di referensi untuk jenis kejadian yang mengikutinya.
+| Property                 | When is it shown                                                                                                                                                      |
+| ------------------------ |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Aggregated time          | For events with [nested events](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), the time taken by each category of events. |
+| Call Stack               | For events with [child events](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), the time taken by each category of events.  |
+| CPU time                 | How much CPU time the recorded event took.                                                                                                                            |
+| Details                  | Other details about the event.                                                                                                                                        |
+| Duration (at time-stamp) | How long it took the event with all of its children to complete; timestamp is the time at which the event occurred, relative to when the recording started.           |
+| Self time                | How long the event took without any of its children.                                                                                                                  |
+| Used Heap Size           | Amount of memory being used by the application when the event was recorded, and the delta (+/-) change in used heap size since the last sampling.                     |
 
-| Properti   |      Kapan ditampilkan                                                       |
-|----------|:-----------------------------------------------------------------|
-| Aggregated time | Untuk kejadian dengan [kejadian tersarang](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), waktu yang dibutuhkan oleh setiap kategori kejadian.|
-| Call Stack | Untuk kejadian dengan [kejadian anak](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), waktu yang dibutuhkan oleh setiap kategori kejadian.|
-| CPU time | Berapa lama waktu CPU yang dibutuhkan oleh kejadian yang direkam.|
-| Details | Detail lainnya tentang kejadian.|
-| Duration (at time-stamp) | Waktu yang dibutuhkan oleh kejadian bersama semua anaknya sampai selesai; stempel waktu adalah waktu saat kejadian terjadi, relatif terhadap waktu rekaman dimulai.|
-| Self time    | Waktu yang dibutuhkan kejadian tanpa anaknya.|
-| Used Heap Size | Besar memori yang dipakai oleh aplikasi saat kejadian direkam, dan perubahan delta (+/-) di ukuran heap yang digunakan sejak pengambilan sampel terakhir.|
+## Loading events
 
-## Memuat kejadian
+This section lists events that belong to Loading category and their properties.
 
-Bagian ini mencantumkan kejadian yang berada dalam kategori Loading dan propertinya.
+| Event            | Description                                                                     |
+| ---------------- |:------------------------------------------------------------------------------- |
+| Parse HTML       | Chrome executed its HTML parsing algorithm.                                     |
+| Finish Loading   | A network request completed.                                                    |
+| Receive Data     | Data for a request was received. There will be one or more Receive Data events. |
+| Receive Response | The initial HTTP response from a request.                                       |
+| Send Request     | A network request has been sent.                                                |
 
-| Kejadian | Keterangan |
-|-------|:----------|
-|Parse HTML|  Chrome mengeksekusi algoritme yang mem-parse HTML-nya.|
-|Finish Loading|  Permintaan jaringan selesai.|
-|Receive Data| Data untuk sebuah permintaan diterima. Ada satu atau beberapa kejadian Receive Data.|
-|Receive Response|  Respons HTTP awal dari sebuah permintaan.|
-|Send Request|  Permintaan jaringan telah dikirim.|
+### Loading event properties
 
-### Properti kejadian Loading
+| Property            | Description                                                  |
+| ------------------- |:------------------------------------------------------------ |
+| Resource            | The URL of the requested resource.                           |
+| Preview             | Preview of the requested resource (images only).             |
+| Request Method      | HTTP method used for the request (GET or POST, for example). |
+| Status Code         | HTTP response code.                                          |
+| MIME Type           | MIME type of the requested resource.                         |
+| Encoded Data Length | Length of requested resource in bytes.                       |
 
-| Properti | Keterangan |
-|-------|:----------|
-|Resource|URL sumber daya yang diminta.|
-|Preview|Pratinjau sumber daya yang diminta (hanya gambar).|
-|Request Method|Metode HTTP yang digunakan untuk permintaan (misalnya, GET atau POST).|
-|Status Code|Kode respons HTTP.|
-|MIME Type|Tipe MIME sumber daya yang diminta.|
-|Encoded Data Length|Panjang sumber daya yang diminta dalam byte.|
+## Scripting events
 
-## Kejadian Scripting
+This section lists events that belong to the Scripting category and their properties.
 
-Bagian ini mencantumkan kejadian yang termasuk dalam kategori Scripting dan propertinya.
+| Event                   | Description                                                                                                                                                                                                      |
+| ----------------------- |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Animation Frame Fired   | A scheduled animation frame fired, and its callback handler invoked.                                                                                                                                             |
+| Cancel Animation Frame  | A scheduled animation frame was canceled.                                                                                                                                                                        |
+| GC Event                | Garbage collection occurred.                                                                                                                                                                                     |
+| DOMContentLoaded        | The [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) was fired by the browser. This event is fired when all of the page’s DOM content has been loaded and parsed.        |
+| Evaluate Script         | A script was evaluated.                                                                                                                                                                                          |
+| Event                   | A JavaScript event ("mousedown", or "key", for example).                                                                                                                                                         |
+| Function Call           | A top-level JavaScript function call was made (only appears when browser enters JavaScript engine).                                                                                                              |
+| Install Timer           | A timer was created with [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval) or [setTimeout()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setTimeout). |
+| Request Animation Frame | A `requestAnimationFrame()` call scheduled a new frame                                                                                                                                                           |
+| Remove Timer            | A previously created timer was cleared.                                                                                                                                                                          |
+| Time                    | A script called [console.time()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimelabel)                                                                                                    |
+| Time End                | A script called [console.timeEnd()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel)                                                                                              |
+| Timer Fired             | A timer fired that was scheduled with `setInterval()` or `setTimeout()`.                                                                                                                                         |
+| XHR Ready State Change  | The ready state of an XMLHTTPRequest changed.                                                                                                                                                                    |
+| XHR Load                | An `XMLHTTPRequest` finished loading.                                                                                                                                                                            |
 
-| Kejadian | Keterangan |
-|-------|:----------|
-|Animation Frame Fired| Bingkai animasi yang dijadwalkan terpicu dan penangan callback-nya dijalankan.|
-|Cancel Animation Frame|  Bingkai animasi yang dijadwalkan dibatalkan.|
-|GC Event|  Terjadi pengumpulan sampah.|
-|DOMContentLoaded|  [DOMContentLoaded](https://docs.webplatform.org/wiki/dom/events/DOMContentLoaded) dipicu oleh browser. Kejadian ini dipicu saat semua materi DOM laman telah dimuat dan di-parse.|
-|Evaluate Script| Sebuah skrip dievaluasi.|
-|Event| Sebuah kejadian JavaScript (misalnya, "mousedown" atau "key").|
-|Function Call| Panggilan fungsi JavaScript tingkat tinggi dibuat (hanya muncul saat browser memasuki mesin JavaScript.|
-|Install Timer| Sebuah timer dibuat dengan [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval) atau [setTimeout()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setTimeout).|
-|Request Animation Frame| Sebuah panggilan `requestAnimationFrame()` menjadwalkan bingkai baru|
-|Remove Timer|  Timer yang sebelumnya dibuat dibersihkan.|
-|Time|  Sebuah skrip memanggil [console.time()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimelabel)|
-|Time End|  Sebuah skrip memanggil [console.timeEnd()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel)|
-|Timer Fired| Sebuah timer terpicu yang dijadwalkan dengan `setInterval()` atau `setTimeout()`.|
-|XHR Ready State Change|  Status siap XMLHTTPRequest berubah.|
-|XHR Load|  Sebuah `XMLHTTPRequest` selesai dimuat.|
+### Scripting event properties
 
-### Properti kejadian Scripting
+| Property      | Description                                  |
+| ------------- |:-------------------------------------------- |
+| Timer ID      | The timer ID.                                |
+| Timeout       | The timeout specified by the timer.          |
+| Repeats       | Boolean that specifies if the timer repeats. |
+| Function Call | A function that was invoked.                 |
 
-| Properti | Keterangan |
-|-------|:----------|
-|Timer ID|ID timer.|
-|Timeout|Waktu tunggu yang ditetapkan oleh timer.|
-|Repeats|Boolean yang menetapkan apakah timer diulangi.|
-|Function Call|Sebuah fungsi yang dipanggil.|
+## Rendering events
 
-## Kejadian Rendering
+This section lists events that belong to Rendering category and their properties.
 
-Bagian ini mencantumkan kejadian yang termasuk dalam kategori Rendering dan propertinya.
+| Event             | Description                                      |
+| ----------------- |:------------------------------------------------ |
+| Invalidate layout | The page layout was invalidated by a DOM change. |
+| Layout            | A page layout was executed.                      |
+| Recalculate style | Chrome recalculated element styles.              |
+| Scroll            | The content of nested view was scrolled.         |
 
-| Kejadian | Keterangan |
-|-------|:----------|
-|Invalidate layout| Layout laman dibuat tidak valid oleh perubahan DOM.|
-|Layout|  Sebuah layout laman dieksekusi.|
-|Recalculate style| Chrome menghitung ulang gaya elemen.|
-|Scroll|  Materi tampilan bersarang digulir.|
+### Rendering event properties
 
-### Properti kejadian Rendering
+| Property               | Description                                                                                                                                                                                                          |
+| ---------------------- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout invalidated     | For Layout records, the stack trace of the code that caused the layout to be invalidated.                                                                                                                            |
+| Nodes that need layout | For Layout records, the number of nodes that were marked as needing layout before the relayout started. These are normally those nodes that were invalidated by developer code, plus a path upward to relayout root. |
+| Layout tree size       | For Layout records, the total number of nodes under the relayout root (the node that Chrome starts the relayout).                                                                                                    |
+| Layout scope           | Possible values are "Partial" (the re-layout boundary is a portion of the DOM) or "Whole document".                                                                                                                  |
+| Elements affected      | For Recalculate style records, the number of elements affected by a style recalculation.                                                                                                                             |
+| Styles invalidated     | For Recalculate style records, provides the stack trace of the code that caused the style invalidation.                                                                                                              |
 
-| Properti | Keterangan |
-|-------|:----------|
-|Layout invalidated|Untuk catatan Layout, pelacakan tumpukan kode yang menyebabkan layout diinvalidkan.|
-|Nodes that need layout|Untuk catatan Layout, jumlah simpul yang ditandai sebagai memerlukan layout sebelum layout ulang dimulai. Ini biasanya simpul yang dibuat tidak valid oleh kode developer, ditambah jalur ke atas ke akar layout ulang.|
-|Layout tree size|Untuk catatan Layout, total jumlah simpul di bawah akar layout ulang (simpul tempat Chrome memulai layout ulang).|
-|Layout scope|Nilai yang mungkin adalah "Partial" (batas layout ulang adalah bagian dari DOM) atau "Whole document".|
-|Elements affected|Untuk catatan gaya Recalculate, jumlah elemen yang terkena dampak penghitungan ulang gaya.|
-|Styles invalidated|Untuk catatan gaya Recalculate, menyediakan pelacakan tumpukan kode yang disebabkan oleh invalidasi gaya.|
+## Painting events
 
-## Kejadian Painting
+This section lists events that belong to Painting category and their properties.
 
-Bagian ini mencantumkan kejadian yang termasuk dalam kategori Painting dan propertinya.
+| Event            | Description                                                                                                                                    |
+| ---------------- |:---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composite Layers | Chrome's rendering engine composited image layers.                                                                                             |
+| Image Decode     | An image resource was decoded.                                                                                                                 |
+| Image Resize     | An image was resized from its native dimensions.                                                                                               |
+| Paint            | Composited layers were painted to a region of the display. Hovering over a Paint record highlights the region of the display that was updated. |
 
-| Kejadian | Keterangan |
-|-------|:----------|
-|Composite Layers|  Mesin rendering Chrome mengomposisikan layer gambar.|
-|Image Decode|  Sebuah sumber daya gambar didekode.|
-|Image Resize|  Sebuah gambar diubah ukurannya dari dimensi bawaannya.|
-|Paint| Layer yang dikomposisi digambarkan ke sebuah region tampilan. Mengarahkan kursor ke atas catatan Paint menyorot region tampilan yang diperbarui.|
+### Painting event properties
 
-### Properti kejadian Painting
+| Property   | Description                                                       |
+| ---------- |:----------------------------------------------------------------- |
+| Location   | For Paint events, the x and y coordinates of the paint rectangle. |
+| Dimensions | For Paint events, the height and width of the painted region.     |
 
-| Properti | Keterangan |
-|-------|:----------|
-|Location|Untuk kejadian Paint, koordinat x dan y kotak paint.|
-|Dimensions|Untuk kejadian Paint, tinggi dan lebar region yang digambar.|
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

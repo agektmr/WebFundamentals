@@ -1,301 +1,262 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:通過每次執行一個代碼行或一個函數，您可以觀察數據和頁面中的變化，準確瞭解正在發生什麼。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: By executing code one line or one function at a time, you can observe changes in the data and in the page to understand exactly what is happening.
 
-{# wf_updated_on: 2015-09-01 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 如何單步調試代碼 {: .page-title }
+# How to step through your code {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-通過每次執行一個代碼行或一個函數，您可以觀察數據和頁面中的變化，準確瞭解正在發生什麼。您還可以修改腳本使用的數據值，您甚至可以修改腳本本身。
+Warning: This page is deprecated. At the top of each section, there's a link to an up-to-date page where you can find similar information.
 
-*爲什麼此變量值是 20 而不是 30？爲什麼該代碼行看上去沒什麼效果？爲什麼此標誌在應爲 false 的時候成爲 true？* 每個開發者都面臨這些問題，逐步執行代碼可瞭解問題所在。
+By executing code one line or one function at a time, you can observe changes in the data and in the page to understand exactly what is happening. You can also modify data values used by the script, and you can even modify the script itself.
 
-[設置斷點](add-breakpoints)後，返回此頁面，並正常地使用它，直到達到某個斷點。這將暫停頁面上的所有 JavaScript，焦點轉向“DevTools Sources”面板，並突出顯示斷點。現在，您可以有選擇性地執行代碼並逐步檢查其數據。
+*Why is this variable value 20 instead of 30? Why doesn't that line of code seem to have any effect? Why is this flag true when it should be false?* Every developer faces these questions, and steps through code to find out.
 
+After [setting breakpoints](breakpoints), return to the page and use it normally until a breakpoint is reached. This pauses all JavaScript on the page, focus shifts to the DevTools Sources panel, and the breakpoint is highlighted. You can now selectively execute code and examine its data, step by step.
 
 ### TL;DR {: .hide-from-toc }
-- 逐步執行代碼以便在問題發生之前或發生時觀察問題，並通過實時編輯測試更改。
-- 最好越過控制檯記錄，因爲記錄的數據在到達控制檯時已過時。
-- 啓用“Async call stack”功能以提高異步函數調用堆棧的可視性。
-- 將腳本設爲黑箱以使第三方代碼不出現在調用堆棧中。
-- 使用已命名的函數而不是匿名函數，以提高調用堆棧可讀性。
 
+* Step through code to observe issues before or while they happen and test out changes through live editing.
+* Prefer stepping over console logging, as logged data is already stale the moment it arrives in the console.
+* Enable the 'Async call stack' feature to gain greater visibility into the call stack of asynchronous functions.
+* Blackbox scripts to hide third-party code from your call stacks.
+* Use named functions rather than anonymous ones to improve call stack readability.
 
-## 步驟的操作
+## Stepping in action
 
-所有步驟選項均通過邊欄中的可點擊圖標![斷點按鈕欄](imgs/image_7.png){:.inline}表示，但也可以通過快捷鍵觸發。下面是簡要介紹：
+Warning: This page is deprecated. See [Step through code](reference#stepping) for up-to-date information.
+
+All step options are represented through clickable icons ![Breakpoints button bar](imgs/image_7.png){:.inline} in the sidebar, but can also be triggered via shortcut. Here's the rundown:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Icon/Button">圖標/按鈕</th>
-      <th data-th="Action">操作</th>
-      <th data-th="Description">描述</th>
+      <th data-th="Icon/Button">Icon/Button</th>
+      <th data-th="Action">Action</th>
+      <th data-th="Description">Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_8.png" alt="Resume" class="inline"></td>
       <td data-th="Action">Resume</td>
-      <td data-th="Description">繼續執行直到下一個斷點。如果沒有遇到斷點，則繼續正常執行。</td>
+      <td data-th="Description">Resumes execution up to the next breakpoint. If no breakpoint is encountered, normal execution is resumed.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_9.png" alt="Long Resume" class="inline"></td>
       <td data-th="Action">Long Resume</td>
-      <td data-th="Description">繼續執行，將斷點停用 500 毫秒。便於暫時跳過斷點，否則會持續暫停執行代碼，例如，循環內的斷點。<p><b>點擊並按住 <i>Resume</i>，直到展開以顯示操作。</b></p></td>
+      <td data-th="Description">Resumes execution with breakpoints disabled for 500ms. Convenient for momentarily skipping breakpoints that would otherwise continually pause the code, e.g., a breakpoint inside a loop. <p><b>Click and hold <i>Resume</i> until expands to show the action.</b></p></td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_10.png" alt="Step Over" class="inline"></td>
       <td data-th="Action">Step Over</td>
-      <td data-th="Description">不管下一行發生什麼都會執行，並跳轉到下一行。</td>
+      <td data-th="Description">Executes whatever happens on the next line and jumps to the next line.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_11.png" alt="Step Into" class="inline"></td>
       <td data-th="Action">Step Into</td>
-      <td data-th="Description">如果下一行包含一個函數調用，<i>Step Into</i> 將跳轉並在其第一行暫停該函數。</td>
+      <td data-th="Description">If the next line contains a function call, <i>Step Into</i> will jump to and pause that function at its first line.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_12.png" alt="Step Out" class="inline"></td>
       <td data-th="Action">Step Out</td>
-      <td data-th="Description">函數調用後，執行當前函數剩餘部分，然後在下一個語句暫停。</td>
+      <td data-th="Description">Executes the remainder of the current function and then pauses at the next statement after the function call.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_13.png" alt="Deactivate breakpoints" class="inline"></td>
       <td data-th="Action">Deactivate breakpoints</td>
-      <td data-th="Description">暫時停用所有斷點。用於繼續完整執行，不會真正移除斷點。再次點擊以重新激活斷點。</td>
+      <td data-th="Description">Temporarily disables all breakpoints. Use to resume full execution without actually removing your breakpoints. Click it again to reactivate the breakpoints.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_14.png" alt="Pause on exceptions" class="inline"></td>
       <td data-th="Action">Pause on exceptions</td>
-      <td data-th="Description">在發生異常時，自動暫停執行代碼。</td>
+      <td data-th="Description">Automatically pauses the code when an exception occurs.</td>
     </tr>
   </tbody>
 </table>
 
-使用 **step into** 作爲典型的“一次一行”操作，因爲它確保只有一個語句被執行，無論您進入或離開哪些函數。
+Use **step into** as your typical "one line at a time" action, as it ensures that only one statement gets executed, no matter what functions you step in and out of.
 
-當您懷疑未捕獲的異常正在引發問題，但不知道異常在哪裏時，使用 [Pause on exceptions](add-breakpoints#break-on-uncaught-exception)。啓用此選項後，您可以通過點擊 **Pause On Caught Exceptions** 複選框優化它；在此情況下，僅當發生需要特別處理的異常時執行纔會暫停。
+Use [Pause on exceptions](breakpoints#exceptions) when you suspect an uncaught exception is causing a problem, but you don't know where it is. When this option is enabled, you can refine it by clicking the **Pause On Caught Exceptions** checkbox; in this case, execution is paused only when a specifically-handled exception occurs.
 
-## 按作用域查看屬性 {: #scope }
+## View properties by scope {: #scope }
 
-當您暫停腳本時，**Scope** 窗格會顯示在該時刻當前已定義的所有屬性。
+Warning: This page is deprecated. See [View and edit local, closure, and global properties](reference#scope) for up-to-date information.
 
+When you pause a script, the **Scope** pane shows you all of the currently-defined properties at that moment in time.
 
-在以下屏幕截圖中，此窗格用藍色突出顯示。
+The pane is highlighted in blue in the screenshot below.
 
-![Sources 面板的 Scope 窗格](imgs/scope-pane.png)
+![The Scope pane of the Sources panel](imgs/scope-pane.png)
 
-Scope 窗格只有在腳本暫停時纔會填充信息。頁面運行時，Scope 窗格不含任何信息。
+The Scope pane is only populated when a script is paused. While your page is running, the Scope pane is empty.
 
+The Scope pane shows you properties defined at the local, closure, and global levels.
 
-Scope 窗格顯示在 local、closure 和 global 級別定義的屬性。
+If a property has a carat icon next to it, it means that it's an object. Click on the carat icon to expand the object and view its properties.
 
+Sometimes properties are dimmed down. For example, the property `constructor` is dimmer than the `confirm` property in the screenshot below.
 
-如果某個屬性旁有“Carat”圖標，這意味着此屬性指代一個對象。點擊“Carat”圖標可展開對象並查看其屬性。
+![Dimmed down properties](imgs/enumerables.png)
 
+The darker properties are enumerable. The lighter, dimmed down properties are not. See the following Stack Overflow thread for more information: [What do the colors mean in Chrome Developer Tools Scope panel?](http://stackoverflow.com/a/36545767/1669860)
 
-有時這些屬性的顯示會變暗。例如，在以下屏幕截圖中，屬性 `function Object() { [native code] }` 比 `confirm` 屬性暗淡。
+## The call stack
 
+Warning: This page is deprecated. See [View the current call stack](reference#call-stack) for up-to-date information.
 
-![顯示暗淡的屬性](imgs/enumerables.png)
+Near the top of the sidebar is the **Call Stack** section. When the code is paused at a breakpoint, the call stack shows the execution path, in reverse chronological order, that brought the code to that breakpoint. This is helpful in understanding not just where the execution is *now*, but how it got there, an important factor in debugging.
 
-深顏色屬性可以計數。淺顏色、顯示暗淡的屬性則不可計數。
-如需瞭解詳細信息，請參閱以下 Stack Overflow 主題：[Chrome 開發者工具 Scope 面板中的顏色有何含義？](Chrome 開發者工具 Scope 面板中的顏色有何含義？)
+### Example
 
+<img src="imgs/image_15.png" alt="Call stack" class="attempt-left" />
 
-
-## 調用堆棧
-
-在靠近邊欄頂部的位置是 **Call Stack** 部分。在斷點處代碼暫停時，調用堆棧以倒序形式顯示將代碼帶到該斷點的執行路徑。這不但有助於瞭解執行*現在*所在位置，還有助於瞭解代碼的執行路徑，這是進行調試的一個重要因素。
-
-### 示例
-
-<img src="imgs/image_15.png" alt="Call stack" class="attempt-left">
-
-`index.html` 文件中位於第 50 行的一個初始 onclick 事件調用了位於 `dgjs.js` JavaScript 文件第 18 行的 `setone()` 函數，後者接着調用了位於同一文件第 4 行的 `setall()` 函數，執行在當前斷點處暫停。
-
-
-
+An initial onclick event at line 50 in the `index.html` file called the `setone()` function at line 18 in the `dgjs.js` JavaScript file, which then called the `setall()` function at line 4 in the same file, where execution is paused at the current breakpoint.
 
 <div class="clearfix"></div>
 
-### 啓用異步調用堆棧
+### Enable the async call stack
 
-啓用異步調用堆棧功能可提高執行異步函數調用的透明度。
+Enable the async call stack feature to gain more visibility into the execution of your asynchronous function calls.
 
+1. Open the **Sources** panel of DevTools.
+2. On the **Call Stack** pane, enable the **Async** checkbox.
 
-1. 打開 DevTools 的 **Sources** 面板。
-2. 在 **Call Stack** 窗格上，啓用 **Async** 複選框。
-
-以下視頻包含一個展示異步調用堆棧功能的簡單腳本。
-在此腳本中，第三方庫用於選擇一個 DOM 元素。
-一個名爲 `onClick` 的函數被註冊爲此元素的 `onclick` 事件處理程序。
-無論何時調用 `onClick`，它都會循序調用一個名爲 `f` 的函數，該函數通過 `debugger` 關鍵字強制腳本暫停。
-
- 
+The video below contains a simple script to demonstrate the async call stack feature. In the script, a third-party library is used to select a DOM element. A function called `onClick` is registered as the `onclick` event handler for the element. Whenever `onClick` is called, it in turn calls a function named `f`, which just forces the script to pause via the `debugger` keyword.
 
 <video src="animations/async-call-stack-demo.mp4"
        autoplay muted loop controls></video>
 
-在此視頻中，觸發了一個斷點並展開了調用堆棧。堆棧中只有一個調用：`f`。
-然後，啓用異步調用堆棧功能，腳本繼續執行，並再次觸發斷點和展開調用堆棧。此時，調用堆棧包含 `f` 之前的所有調用，包括第三方內容庫調用和 `onClick` 調用。首次調用該腳本時，調用堆棧中只有一個調用。
-第二次調用腳本時，有四個調用。簡言之，異步調用堆棧功能可提高完整的異步函數調用堆棧的可視性。
+In the video, a breakpoint is triggered, and the call stack is expanded. There is only one call in the stack: `f`. The async call stack feature is then enabled, the script resumes, the breakpoint is triggered again, and then the call stack is expanded a second time. This time, the call stack contains all of the calls leading up to `f`, including third-party library calls, and the call to `onClick`. The first time that the script was called, there was only one call in the call stack. The second time, there were four. In short, the async call stack feature provides increased visibility into the full call stack of asynchronous functions.
 
+### Tip: name functions to improve call stack readability
 
+Anonymous functions make the call stack difficult to read. Name your functions to improve readability.
 
-### 提示：給函數命名以提高調用堆棧可讀性
+The code snippets in the two screenshots below are functionally equivalent. The exact functioning of the code is not important, what is important is that the code in the first screenshot uses anonymous functions, while the second uses named functions.
 
-匿名函數使調用堆棧很難閱讀。爲函數命名以提高可讀性。
+In the call stack in the first screenshot, the top two functions are both just titled `(anonymous function)`. In the second screenshot, the top two functions are named, which makes it easier to understand the program flow at a glance. When you are working with numerous script files, including third-party libraries and frameworks, and your call stack is five or ten calls deep, it is much easier to understand the call stack flow when functions are named.
 
+Call stack with anonymous functions:
 
-以下兩個屏幕截圖中的代碼段功能效果相同：代碼功能並不重要，重要的是第一個屏幕截圖中的代碼使用匿名函數，而第二個屏幕截圖中的代碼使用已命名的函數。
+![Call stack with hard-to-read anonymous functions](imgs/anon.png)
 
+Call stack with named functions:
 
-
-
-在第一個屏幕截圖的調用堆棧中，前兩個函數均標明 `(anonymous function)`。
-在第二個屏幕截圖中，前兩個函數已命名，從而讓您更容易瞭解程序流的大致情況。在處理大量的腳本文件（包括第三方內容庫和框架）時，您的調用堆棧爲五個或者十個調用深，在函數已命名後，理解調用堆棧流要容易得多。
-
-
-
-
-含匿名函數的調用堆棧：
-
-![包含可讀性低匿名函數的調用堆棧](imgs/anon.png)
-
-含已命名函數的調用堆棧： 
-
-![包含可讀性更高已命名函數的調用堆棧](imgs/named.png)
+![Call stack with easier-to-read named function](imgs/named.png)
 
 <!-- blackbox OR disable third-party code??? -->
 
-### 將第三方代碼設置爲黑箱
+### Blackbox third-party code
 
-將腳本文件設置爲黑箱以忽略來自調用棧的第三方文件。
+Warning: This page is deprecated. See [Ignore a script or pattern of scripts](reference#blackbox) for up-to-date information.
 
-設置爲黑箱之前：
+Blackbox script files to omit third-party files from your call stacks.
 
-![設置爲黑箱之前的調用堆棧](imgs/before-blackbox.png)
+Before blackbox:
 
-設置爲黑箱之後：
+![Call stack before blackbox](imgs/before-blackbox.png)
 
-![設置爲黑箱之後的調用堆棧](imgs/after-blackbox.png)
+After blackbox:
 
-如需將文件設置爲黑箱：
+![Call stack after blackbox](imgs/after-blackbox.png)
 
-1. 打開 DevTools Settings。
+To blackbox a file:
 
-   ![打開 DevTools 設置](imgs/open-settings.png)
+1. Open DevTools Settings.
+    
+    ![Opening DevTools Settings](imgs/open-settings.png)
 
-2. 在左側的導航菜單中，點擊 **Blackboxing**。
+2. In the navigation menu on the left, click **Blackboxing**.
+    
+    ![Blackboxing panel in Chrome DevTools](imgs/blackbox-panel.png)
 
-   ![Chrome DevTools 中的 Blackboxing 面板](imgs/blackbox-panel.png)
+3. Click **Add pattern**.
 
-3. 點擊 **Add pattern**。
+4. In the **Pattern** textfield enter the filename pattern that you wish to exclude from your call stack. DevTools excludes any scripts that match the pattern.
+    
+    ![Adding blackbox pattern](imgs/add-pattern.png)
 
-4. 在 **Pattern** 文本字段中，輸入您想要從調用堆棧排除的文件名模式。
-DevTools 將排除與該模式匹配的任意腳本。
- 
+5. In the dropdown menu to the right of the textfield, select **Blackbox** to execute the script files but exclude the calls from the call stack, or select **Disabled** to prevent the files from executing.
 
-   ![添加黑箱模式](imgs/add-pattern.png)
+6. Click **Add** to save.
 
-5. 在文本字段右側的下拉菜單中，選擇 **Blackbox** 以執行腳本文件，但從調用堆棧排除調用，或選擇 **Disabled** 以阻止執行文件。
+The next time that you run the page and a breakpoint is triggered, DevTools hides any function calls from the blackboxed scripts from the call stack.
 
+## Data manipulation
 
+When code execution is paused, you can observe and modify the data it is processing. This is crucial when trying to track down a variable that seems to have the wrong value or a passed parameter that isn't received as expected.
 
-6. 點擊 **Add** 保存。
+Show the Console drawer by clicking **Show/Hide drawer** ![Show/Hide drawer](imgs/image_16.png){: .inline} or press <kbd class="kbd">ESC</kbd>. With the console open while stepping, you can now:
 
-下次運行此頁面並觸發斷點時，DevTools 將使函數調用不出現在來自調用堆棧的已設置爲黑箱的腳本中。
+* Type the name of a variable to see its current value in the scope of the current function
+* Type a JavaScript assignment statement to change the value
 
+Try modifying values, then continue execution to see how it changes the outcome of your code and whether it behaves as you expect.
 
-## 數據操作
+#### Example
 
-代碼執行暫停時，您可以觀察和修改其正在處理的數據。這對於嘗試追蹤一個看上去有錯誤值的變量或沒有如期收到的傳遞參數很關鍵。
+<img src="imgs/image_17.png" alt="Console Drawer" class="attempt-left" />
 
-通過點擊 **Show/Hide drawer** 顯示 Console 抽屜![顯示/隱藏抽屜](imgs/image_16.png){: .inline}或按 <kbd class="kbd">ESC</kbd>.在執行步驟時打開控制檯，您現在可以：
-
-* 輸入變量的名稱以在當前函數範圍中查看其當前值
-* 輸入一個 JavaScript 分配語句以更改此值
-
-嘗試修改值，然後繼續執行以查看它如何改變您的代碼的結果，以及它是否如期運行。
-
-#### 示例
-
-<img src="imgs/image_17.png" alt="Console Drawer" class="attempt-left">
-
-我們發現參數 `dow` 的值當前爲 2，但在繼續執行前將其手動更改爲 3。
-
+We reveal that the value of the parameter `dow` is currently 2, but manually change it to 3 before resuming execution.
 
 <div class="clearfix"></div>
 
-## 實時編輯
+## Live editing
 
-觀察並暫停執行代碼有助於您查找錯誤，而實時編輯讓您可以快速預覽更改，無需重新加載。
+Warning: This page is deprecated. See [Edit a script](reference#edit) for up-to-date information.
 
-如需實時編輯腳本，只需在執行步驟時點擊“Sources”面板的編輯器部分。在編輯器中進行所需的更改，然後按 <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">S</kbd>（或在 Mac 上按 <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">S</kbd>）提交此更改。此時，整個 JS 文件將作爲補丁程序進入 VM，並且所有函數定義都將更新。 
+Observing and pausing the executing code helps you locate errors, and live editing allows you to quickly preview changes without the need to reload.
 
-現在，您可以繼續執行；已修改的腳本將替代原始腳本執行，並且您可以觀察您的更改效果。
+To live edit a script, simply click into the editor part of the Sources panel while stepping. Make your changes as you would do in your editor, then commit the change with <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> (or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> on Mac). At this point, the entire JS file will be patched into the VM and all function definitions will be updated.
 
-#### 示例
+Now, you can resume execution; your modified script will execute in place of the original, and you can observe the effects of your changes.
 
-![實時編輯](imgs/image_18.png)
+#### Example
 
-我們懷疑參數 `dow` 在被傳遞到函數 `setone()` 時，在任何情況下都會增加 1，也就是說，收到的值 `dow<` 在應爲 0 時卻爲 1，在應爲 1 時卻爲 2，等等。爲了快速測試遞減的傳遞值是否確認這是一個問題，我們在函數的開頭添加第 17 行，並按 <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> 鍵提交併繼續。
+![Live editing](imgs/image_18.png)
 
+We suspect that the parameter `dow` is, in every case, off by +1 when it is passed to the function `setone()` – that is, the value of `dow<`, as received, is 1 when it should be 0, 2 when it should be 1, etc. To quickly test whether decrementing the passed value confirms that this is the problem, we add line 17 at the beginning of the function, commit with
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> and resume.
 
+## Managing thread execution {: #threads }
 
+Warning: This page is deprecated. See [Change thread context](reference#threads) for up-to-date information.
 
-## 管理線程執行 {: #threads }
+Use the **Threads** pane on the Sources panel to pause, step into, and inspect other threads, such as service worker or web worker threads.
 
-使用 Sources 面板上的 **Threads** 窗格可暫停、進入以及檢查其他線程，例如服務工作線程或網絡工作線程。
+To demonstrate the Threads pane, this section uses the following demo: [Web Workers basic example](http://mdn.github.io/simple-web-worker/).
 
+If you open DevTools on the app, you can see that the main script is located in `main.js`:
 
-爲展示 Threads 窗格，此部分使用了以下演示：[網絡工作線程基本示例](http://mdn.github.io/simple-web-worker/)。
+![Main script](imgs/main-script.png)
 
+And the web worker script is located in `worker.js`:
 
-如果您打開應用上的 DevTools，就能發現 main 腳本位於 `main.js` 中：
+![Worker script](imgs/worker-script.png)
 
+The main script listens to changes to the **Multiply number 1** or **Multiply number 2** input fields. Upon change the main script sends a message to the web worker with the values of the two numbers to multiply. The web worker does the multiplication and then passes the result back to the main script.
 
-![Main 腳本](imgs/main-script.png)
+Suppose that you set a breakpoint in `main.js` that's triggered when the first number is changed:
 
-網絡 worker 腳本位於 `worker.js` 中：
+![Main script breakpoint](imgs/main-script-breakpoint.png)
 
-![Worker 腳本](imgs/worker-script.png)
+And you also set a breakpoint in `worker.js` when the worker receives a message:
 
-Main 腳本偵聽對 **Multiply number 1** 或 **Multiply number 2** 輸入字段做出的更改。
-偵聽到更改時，main 腳本立即向網絡工作線程發送一則消息，內含這兩個需要相乘的數值。
-網絡工作線程執行完乘法運算後將結果返回給 main 腳本。
+![Worker script breakpoint](imgs/worker-script-breakpoint.png)
 
+Modifying the first number on the app's UI triggers both of the breakpoints.
 
+![Main and worker script breakpoints triggered](imgs/breakpoints-triggered.png)
 
-假定您在 `main.js` 中設置了一個在第一個數字發生變化時觸發的斷點：
+In the Threads pane the blue arrow indicates which thread is currently selected. For example, in the screenshot above the **Main** thread is selected.
 
+All of the DevTools controls for stepping through code (resume or pause script execution, step over next function call, step into next function call, etc.) pertain to that thread. In other words, if you pressed the **Resume script execution** button while your DevTools looked like the screenshot above, the Main thread would resume executing, but the web worker thread would still be paused. The **Call Stack** and **Scope** sections are only displaying information for the Main thread, too.
 
-![Main 腳本斷點](imgs/main-script-breakpoint.png)
+When you want to step through the code for the web worker thread, or see its scope and call stack information, just click on its label in the Threads pane, so that the blue arrow is next to it. The screenshot below shows how the call stack and scope information changes after selecting the worker thread. Again, if you were to press any of the stepping through code buttons (resume script execution, step over next function call, etc.), that action would only pertain to the worker thread. The Main thread is not affected.
 
-並且您還在 `worker.js` 中設置了一個在工作線程收到消息時觸發的斷點：
+![worker thread in focus](imgs/worker-thread.png)
 
+## Feedback {: #feedback }
 
-![Worker 腳本斷點](imgs/worker-script-breakpoint.png)
-
-在此應用的 UI 觸發這兩個斷點時修改第一個數字。
-
-![觸發的 main 和 worker 腳本斷點](imgs/breakpoints-triggered.png)
-
-在 Threads 窗格中，藍色箭頭指示的是當前選定的線程。
-例如，在上面的屏幕截圖中，選定的是 **Main** 線程。 
-
-DevTools 所有用於單步調試代碼（繼續或暫停腳本執行、單步執行下一函數調用、進入並單步執行下一函數調用等）的控件都與該線程有關。換言之，如果您在 DevTools 顯示類似以上屏幕截圖的內容時按 **Resume script execution** 按鈕，Main 線程會繼續執行，但網絡工作線程仍將暫停。**Call Stack** 和 **Scope** 部分同樣只顯示 Main 線程的信息。
-
-
-如果您想爲網絡工作線程單步調試代碼，或查看其作用域和調用堆棧信息，只需在 Threads 窗格中點擊其標籤，使其旁邊出現藍色箭頭。以下屏幕截圖顯示的是選擇工作線程後調用堆棧和作用域信息的變化情況。同樣，如果您要按任何一個單步調試代碼按鈕（繼續執行腳本、單步執行下一函數調用等），該操作將只與工作線程有關。Main 線程不受影響。
-
-![獲得焦點的工作線程](imgs/worker-thread.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

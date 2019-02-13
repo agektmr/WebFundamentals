@@ -1,41 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Conheça os principais fatores na otimização do caminho crítico de renderização.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Otimização do caminho crítico de renderização {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
-  Para obter a maior rapidez possível na primeira renderização, precisamos 
-  minimizar três variáveis:
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-  <ul>
-    <li>O número de recursos críticos.</li>
-    <li>O tamanho do caminho crítico.</li>
-    <li>O número de bytes críticos.</li>
-  </ul>
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-Um recurso crítico é aquele que pode bloquear a renderização inicial da página. Quanto menos desses recursos houver, menor será o trabalho do navegador, do CPU e de outros componentes.
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-De modo parecido, o tamanho do caminho crítico é uma função do gráfico de dependências entre os recursos críticos e seu tamanho em bytes: alguns downloads de recursos só podem ser iniciados depois que um recurso anterior já tiver sido processado, e quanto maior o recurso, mais idas e voltas são necessárias para baixá-lo.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-Por fim, quanto menos bytes críticos o navegador precisar baixar, mais rápido poderá processar conteúdo e renderizá-lo na tela. Para reduzir o número de bytes, podemos diminuir o número de recursos (eliminá-los ou torná-los não críticos) e assegurar a redução do tamanho da transferência compactando e otimizando cada recurso.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-**A sequência geral de etapas para otimizar o caminho crítico de renderização é:**
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-1. Analisar e caracterizar o caminho crítico: número de recursos, bytes e tamanho.
-1. Minimizar o número de recursos críticos: eliminá-los, adiar o download, marcá-los como assíncronos etc.
-1. Otimizar o número de bytes críticos para reduzir o tempo de download (número de idas e voltas).
-1. Otimizar a ordem de carregamento dos recursos críticos restantes: baixar todos os ativos críticos o quanto antes para reduzir o tamanho do caminho crítico.
+## Feedback {: #feedback }
 
-<a href="page-speed-rules-and-recommendations" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / PageSpeed">
-  <button>A seguir: Regras e recomendações para o PageSpeed</button>
-</a>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

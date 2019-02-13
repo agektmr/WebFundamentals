@@ -1,16 +1,12 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“网站在其自身的脚本中不使用突变事件”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Mutation Events In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# 网站在其自身的脚本中不使用突变事件 {: .page-title }
+# Avoids Mutation Events In Its Own Scripts {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-以下突变事件会损害性能，在 DOM 事件规范中已弃用：
-
+The following mutation events harm performance and are deprecated in the DOM events spec:
 
 * `DOMAttrModified`
 * `DOMAttributeNameChanged`
@@ -22,19 +18,14 @@ description:“网站在其自身的脚本中不使用突变事件”Lighthouse 
 * `DOMNodeRemovedFromDocument`
 * `DOMSubtreeModified`
 
-## 如何通过此审查{: #how }
+## Recommendations {: #recommendations }
 
-在 **URLs** 下，Lighthouse 报告它在您的代码中发现的每个突变事件侦听器。
-将每个突变事件替换为 `MutationObserver`。请参阅 MDN 上的 [`MutationObserver`][mdn] 以获取更多帮助。
+Under **URLs**, Lighthouse reports each mutation event listener that it found in your code. Replace each of these mutation events with a `MutationObserver`. See [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) on MDN for more help.
 
+## More information {: #more-info }
 
-[mdn]: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+Lighthouse collects all of the event listeners on the page, and flags any listener that uses one of the types listed above.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse 收集页面上的所有事件侦听器，并对使用[为什么说此审查非常重要](#why)中列出的任意类型的任何侦听器进行标记。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

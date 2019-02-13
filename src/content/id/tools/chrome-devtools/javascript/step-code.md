@@ -1,321 +1,262 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dengan mengeksekusi kode baris per baris atau fungsi per fungsi, Anda bisa mengamati perubahan dalam data dan dalam laman untuk memahami secara persis apa yang sedang terjadi.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: By executing code one line or one function at a time, you can observe changes in the data and in the page to understand exactly what is happening.
 
-{# wf_updated_on: 2015-09-01 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cara meyusuri kode Anda {: .page-title }
+# How to step through your code {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Dengan mengeksekusi kode baris per baris atau fungsi per fungsi, Anda bisa mengamati perubahan dalam data dan dalam laman untuk memahami secara persis apa yang sedang terjadi. Anda juga bisa memodifikasi nilai data yang digunakan oleh skrip, dan Anda bahkan bisa memodifikasi skrip itu sendiri.
+Warning: This page is deprecated. At the top of each section, there's a link to an up-to-date page where you can find similar information.
 
-*Mengapa nilai variabel ini 20 bukannya 30? Mengapa baris kode itu sepertinya tidak berpengaruh? Mengapa flag ini true padahal seharusnya false?* Setiap developer menghadapi pertanyaan ini, dan menyusuri kode untuk mengetahui jawabannya.
+By executing code one line or one function at a time, you can observe changes in the data and in the page to understand exactly what is happening. You can also modify data values used by the script, and you can even modify the script itself.
 
-Setelah [menyetel breakpoint](add-breakpoints), kembalilah ke laman dan gunakan seperti biasa hingga mencapai breakpoint. Ini menghentikan sementara semua JavaScript di laman, fokus berpindah ke panel Sources di DevTools, dan breakpoint akan disorot. Anda kini bisa secara selektif mengeksekusi kode dan memeriksa datanya, langkah demi langkah.
+*Why is this variable value 20 instead of 30? Why doesn't that line of code seem to have any effect? Why is this flag true when it should be false?* Every developer faces these questions, and steps through code to find out.
 
+After [setting breakpoints](breakpoints), return to the page and use it normally until a breakpoint is reached. This pauses all JavaScript on the page, focus shifts to the DevTools Sources panel, and the breakpoint is highlighted. You can now selectively execute code and examine its data, step by step.
 
 ### TL;DR {: .hide-from-toc }
-- Susur kode untuk mengamati masalah sebelum atau saat masalah terjadi dan uji perubahan melalui pengeditan langsung.
-- Sebaiknya lewati proses log konsol, karena data yang tercatat di log sudah kedaluwarsa pada saat tiba di konsol.
-- Aktifkan fitur 'Async call stack' untuk mendapatkan visibilitas lebih besar ke dalam tumpukan panggilan fungsi asinkron.
-- Kotak hitamkan skrip untuk menyembunyikan kode pihak ketiga dari tumpukan panggilan Anda.
-- Gunakan fungsi bernama daripada fungsi anonim untuk meningkatkan keterbacaan tumpukan panggilan.
 
+* Step through code to observe issues before or while they happen and test out changes through live editing.
+* Prefer stepping over console logging, as logged data is already stale the moment it arrives in the console.
+* Enable the 'Async call stack' feature to gain greater visibility into the call stack of asynchronous functions.
+* Blackbox scripts to hide third-party code from your call stacks.
+* Use named functions rather than anonymous ones to improve call stack readability.
 
-## Stepping sedang beraksi
+## Stepping in action
 
-Semua opsi langkah dinyatakan melalui ikon yang bisa diklik ![bilah tombol Breakpoints](imgs/image_7.png){:.inline} di bilah sisi, namun bisa juga dipicu lewat pintasan. Inilah ringkasannya:
+Warning: This page is deprecated. See [Step through code](reference#stepping) for up-to-date information.
+
+All step options are represented through clickable icons ![Breakpoints button bar](imgs/image_7.png){:.inline} in the sidebar, but can also be triggered via shortcut. Here's the rundown:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Icon/Button">Ikon/Tombol</th>
-      <th data-th="Action">Aksi</th>
-      <th data-th="Description">Keterangan</th>
+      <th data-th="Icon/Button">Icon/Button</th>
+      <th data-th="Action">Action</th>
+      <th data-th="Description">Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_8.png" alt="Resume" class="inline"></td>
       <td data-th="Action">Resume</td>
-      <td data-th="Description">Melanjutkan eksekusi hingga breakpoint berikutnya. Jika tidak ada breakpoint yang ditemui, eksekusi normal akan dilanjutkan.</td>
+      <td data-th="Description">Resumes execution up to the next breakpoint. If no breakpoint is encountered, normal execution is resumed.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_9.png" alt="Long Resume" class="inline"></td>
       <td data-th="Action">Long Resume</td>
-      <td data-th="Description">Melanjutkan eksekusi dengan breakpoint dinonaktifkan selama 500 md. Praktis untuk sejenak melompati breakpoint yang jika tidak dilompati akan terus menghentikan sementara suatu kode, mis., breakpoint di dalam loop. <p><b>Klik dan tahan <i>Resume</i> hingga diperluas untuk menampilkan aksi.</b></p></td>
+      <td data-th="Description">Resumes execution with breakpoints disabled for 500ms. Convenient for momentarily skipping breakpoints that would otherwise continually pause the code, e.g., a breakpoint inside a loop. <p><b>Click and hold <i>Resume</i> until expands to show the action.</b></p></td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_10.png" alt="Step Over" class="inline"></td>
       <td data-th="Action">Step Over</td>
-      <td data-th="Description">Mengeksekusi apa saja yang terjadi di baris berikutnya dan melompat ke baris berikutnya.</td>
+      <td data-th="Description">Executes whatever happens on the next line and jumps to the next line.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_11.png" alt="Step Into" class="inline"></td>
       <td data-th="Action">Step Into</td>
-      <td data-th="Description">Jika baris berikutnya berisi panggilan fungsi, <i>Step Into</i> akan melompat ke dan menghentikan sementara fungsi itu pada baris pertamanya..</td>
+      <td data-th="Description">If the next line contains a function call, <i>Step Into</i> will jump to and pause that function at its first line.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_12.png" alt="Step Out" class="inline"></td>
       <td data-th="Action">Step Out</td>
-      <td data-th="Description">Mengeksekusi sisa fungsi saat ini kemudian berhenti sementara pada pernyataan berikutnya setelah panggilan fungsi.</td>
+      <td data-th="Description">Executes the remainder of the current function and then pauses at the next statement after the function call.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_13.png" alt="Deactivate breakpoints" class="inline"></td>
       <td data-th="Action">Deactivate breakpoints</td>
-      <td data-th="Description">Menonaktifkan sementara semua breakpoint. Gunakan untuk melanjutkan eksekusi penuh tanpa benar-benar membuang breakpoint Anda. Klik lagi untuk mengaktifkan ulang breakpoint.</td>
+      <td data-th="Description">Temporarily disables all breakpoints. Use to resume full execution without actually removing your breakpoints. Click it again to reactivate the breakpoints.</td>
     </tr>
     <tr>
       <td data-th="Icon/Button"><img src="imgs/image_14.png" alt="Pause on exceptions" class="inline"></td>
       <td data-th="Action">Pause on exceptions</td>
-      <td data-th="Description">Secara otomatis menghentikan kode sementara bila terjadi pengecualian.</td>
+      <td data-th="Description">Automatically pauses the code when an exception occurs.</td>
     </tr>
   </tbody>
 </table>
 
-Gunakan **step into** sebagai aksi tipikal "baris per baris" Anda, karena ini akan memastikan hanya satu pernyataan yang dieksekusi, tidak peduli fungsi apa pun yang Anda masuki dan tinggalkan.
+Use **step into** as your typical "one line at a time" action, as it ensures that only one statement gets executed, no matter what functions you step in and out of.
 
-Gunakan [Pause on exceptions](add-breakpoints#break-on-uncaught-exception) bila Anda menduga ada pengecualian tak tertangkap yang menyebabkan masalah, namun Anda tidak tahu di mana adanya. Ketika opsi ini diaktifkan, Anda bisa menyaringnya dengan mengeklik kotak centang **Pause On Caught Exceptions**; dalam hal ini, eksekusi hanya dihentikan sementara bila terjadi pengecualian yang ditangani secara khusus.
+Use [Pause on exceptions](breakpoints#exceptions) when you suspect an uncaught exception is causing a problem, but you don't know where it is. When this option is enabled, you can refine it by clicking the **Pause On Caught Exceptions** checkbox; in this case, execution is paused only when a specifically-handled exception occurs.
 
-## Menampilkan properti menurut cakupan {: #scope }
+## View properties by scope {: #scope }
 
-Ketika Anda menghentikan sementara sebuah skrip, panel **Scope** menunjukkan semua
-properti yang didefinisikan-sekarang pada saat tersebut.
+Warning: This page is deprecated. See [View and edit local, closure, and global properties](reference#scope) for up-to-date information.
 
-Panel disorot dengan warna biru pada tangkapan layar di bawah ini.
+When you pause a script, the **Scope** pane shows you all of the currently-defined properties at that moment in time.
 
-![Panel Scope dari panel Sources](imgs/scope-pane.png)
+The pane is highlighted in blue in the screenshot below.
 
-Panel Scope hanya terisi saat skrip dihentikan sementara.
-Ketika laman Anda sedang berjalan, panel Scope kosong.
+![The Scope pane of the Sources panel](imgs/scope-pane.png)
 
-Panel Scope menunjukkan properti yang didefinisikan di tingkat lokal, closure, dan
-global.
+The Scope pane is only populated when a script is paused. While your page is running, the Scope pane is empty.
 
-Jika properti memiliki ikon carat di sebelahnya, itu berarti bahwa ia adalah sebuah objek. Klik
-pada ikon carat untuk memperluas objek dan menampilkan propertinya.
+The Scope pane shows you properties defined at the local, closure, and global levels.
 
-Kadang-kadang properti dibuat redup. Misalnya, properti `constructor`
-lebih redup daripada properti `confirm` pada tangkapan layar di bawah ini.
+If a property has a carat icon next to it, it means that it's an object. Click on the carat icon to expand the object and view its properties.
 
-![Properti diredupkan](imgs/enumerables.png)
+Sometimes properties are dimmed down. For example, the property `constructor` is dimmer than the `confirm` property in the screenshot below.
 
-Properti lebih gelap yang bisa dienumerasi. Properti lebih terang dan diredupkan,
-tidak bisa dienumerasi. Lihat thread Stack Overflow berikut untuk informasi selengkapnya:
-[Apa arti warna dalam panel
-Scope Chrome Developer Tools?](Apa arti warna dalam panel Scope Chrome Developer Tools?)
+![Dimmed down properties](imgs/enumerables.png)
 
-## Tumpukan panggilan
+The darker properties are enumerable. The lighter, dimmed down properties are not. See the following Stack Overflow thread for more information: [What do the colors mean in Chrome Developer Tools Scope panel?](http://stackoverflow.com/a/36545767/1669860)
 
-Dekat bagian atas bilah sisi terdapat bagian **Call Stack**. Bila kode dihentikan sementara di breakpoint, tumpukan panggilan akan menampilkan jalur eksekusi, dalam urutan kronologis terbalik, yang akan membawa kode tersebut ke breakpoint itu. Ini tidak cuma berguna untuk memahami di mana eksekusi terjadi *sekarang*, melainkan bagaimana eksekusi bisa sampai ke situ, merupakan faktor penting dalam proses debug.
+## The call stack
 
-### Contoh
+Warning: This page is deprecated. See [View the current call stack](reference#call-stack) for up-to-date information.
 
-<img src="imgs/image_15.png" alt="Tumpukan panggilan" class="attempt-left">
+Near the top of the sidebar is the **Call Stack** section. When the code is paused at a breakpoint, the call stack shows the execution path, in reverse chronological order, that brought the code to that breakpoint. This is helpful in understanding not just where the execution is *now*, but how it got there, an important factor in debugging.
 
-Kejadian onclick pertama di baris 50 dalam file `index.html` memanggil fungsi 
-`setone()` di baris 18 dalam file JavaScript `dgjs.js`, yang kemudian
-memanggil fungsi `setall()` di baris 4 dalam file yang sama, di mana eksekusi
-dihentikan sementara pada breakpoint saat ini.
+### Example
+
+<img src="imgs/image_15.png" alt="Call stack" class="attempt-left" />
+
+An initial onclick event at line 50 in the `index.html` file called the `setone()` function at line 18 in the `dgjs.js` JavaScript file, which then called the `setall()` function at line 4 in the same file, where execution is paused at the current breakpoint.
 
 <div class="clearfix"></div>
 
-### Mengaktifkan async call stack
+### Enable the async call stack
 
-Mengaktifkan fitur async call stack agar bisa lebih jelas melihat eksekusi
-dari panggilan fungsi asinkron Anda.
+Enable the async call stack feature to gain more visibility into the execution of your asynchronous function calls.
 
-1. Buka panel **Sources** di DevTools.
-2. Pada panel **Call Stack**, aktifkan kotak centang **Async**.
+1. Open the **Sources** panel of DevTools.
+2. On the **Call Stack** pane, enable the **Async** checkbox.
 
-Video di bawah ini berisi skrip sederhana untuk memperagakan fitur async call 
-stack. Dalam skrip, digunakan pustaka pihak ketiga untuk memilih
-elemen DOM. Sebuah fungsi dengan nama `onClick` telah didaftarkan sebagai penangan kejadian 
-`onclick` untuk elemen. Setiap kali `onClick` dipanggil,
-itu akan memanggil fungsi bernama `f`, yang sekadar memaksa skrip untuk 
-berhenti sementara lewat kata kunci `debugger`. 
+The video below contains a simple script to demonstrate the async call stack feature. In the script, a third-party library is used to select a DOM element. A function called `onClick` is registered as the `onclick` event handler for the element. Whenever `onClick` is called, it in turn calls a function named `f`, which just forces the script to pause via the `debugger` keyword.
 
 <video src="animations/async-call-stack-demo.mp4"
        autoplay muted loop controls></video>
 
-Dalam video ini, breakpoint dipicu, dan tumpukan panggilan diperluas.
-Hanya ada satu panggilan di tumpukan: `f`. Fitur async call stack kemudian
-diaktifkan, skrip dilanjutkan, breakpoint dipicu lagi, kemudian
-tumpukan panggilan diperluas untuk kedua kalinya. Kali ini, tumpukan panggilan berisi 
-semua panggilan yang mengarah ke `f`, termasuk panggilan pustaka pihak-ketiga, dan
-panggilan ke `onClick`. Saat pertama skrip dipanggil, hanya 
-ada satu panggilan di tumpukan panggilan. Saat kedua kali, ada empat panggilan. Singkatnya
-, fitur async call stack memberikan peningkatan visibilitas pada 
-tumpukan panggilan lengkap fungsi asinkron.
+In the video, a breakpoint is triggered, and the call stack is expanded. There is only one call in the stack: `f`. The async call stack feature is then enabled, the script resumes, the breakpoint is triggered again, and then the call stack is expanded a second time. This time, the call stack contains all of the calls leading up to `f`, including third-party library calls, and the call to `onClick`. The first time that the script was called, there was only one call in the call stack. The second time, there were four. In short, the async call stack feature provides increased visibility into the full call stack of asynchronous functions.
 
-### Tip: Berikan nama pada fungsi untuk meningkatkan keterbacaan tumpukan panggilan
+### Tip: name functions to improve call stack readability
 
-Fungsi anonim membuat tumpukan panggilan sulit dibaca. Berikan nama pada fungsi Anda
-untuk meningkatkan keterbacaan.
+Anonymous functions make the call stack difficult to read. Name your functions to improve readability.
 
-Cuplikan kode pada dua tangkapan layar di bawah ini setara secara fungsional. Fungsi
-sebenarnya dari kode ini tidaklah penting, yang penting adalah
-kode dalam tangkapan layar pertama menggunakan fungsi anonim, sedangkan
-yang kedua menggunakan fungsi bernama.
+The code snippets in the two screenshots below are functionally equivalent. The exact functioning of the code is not important, what is important is that the code in the first screenshot uses anonymous functions, while the second uses named functions.
 
-Dalam tumpukan panggilan di tangkapan layar pertama, dua fungsi teratas
-hanya dinamai `(anonymous function)`. Dalam tangkapan layar kedua, dua
-fungsi teratas diberi nama, yang mempermudah memahami alur program
-secara sekilas. Bila Anda menggunakan banyak file skrip, termasuk
-pustaka dan kerangka kerja pihak-ketiga, dan tumpukan panggilan Anda sedalam lima atau sepuluh
-panggilan, maka jauh lebih mudah memahami alur tumpukan panggilan bila
-fungsi-fungsi itu diberi nama.
+In the call stack in the first screenshot, the top two functions are both just titled `(anonymous function)`. In the second screenshot, the top two functions are named, which makes it easier to understand the program flow at a glance. When you are working with numerous script files, including third-party libraries and frameworks, and your call stack is five or ten calls deep, it is much easier to understand the call stack flow when functions are named.
 
-Tumpukan panggilan dengan fungsi anonim:
+Call stack with anonymous functions:
 
-![Tumpukan panggilan dengan fungsi anonim sulit dibaca](imgs/anon.png)
+![Call stack with hard-to-read anonymous functions](imgs/anon.png)
 
-Tumpukan panggilan dengan fungsi bernama: 
+Call stack with named functions:
 
-![Tumpukan panggilan dengan fungsi bernama mudah dibaca](imgs/named.png)
+![Call stack with easier-to-read named function](imgs/named.png)
 
 <!-- blackbox OR disable third-party code??? -->
 
-### Kotak-hitamkan kode pihak ketiga
+### Blackbox third-party code
 
-Kotak-hitamkan file skrip untuk meninggalkan file pihak ketiga dari tumpukan panggilan Anda.
+Warning: This page is deprecated. See [Ignore a script or pattern of scripts](reference#blackbox) for up-to-date information.
 
-Sebelum kotak-hitam:
+Blackbox script files to omit third-party files from your call stacks.
 
-![Tumpukan panggilan sebelum kotak-hitam](imgs/before-blackbox.png)
+Before blackbox:
 
-Setelah kotak-hitam:
+![Call stack before blackbox](imgs/before-blackbox.png)
 
-![Tumpukan panggilan setelah kotak-hitam](imgs/after-blackbox.png)
+After blackbox:
 
-Untuk mengotakhitamkan sebuah file:
+![Call stack after blackbox](imgs/after-blackbox.png)
 
-1. Buka DevTools Settings.
+To blackbox a file:
 
-   ![Membuka DevTools Settings](imgs/open-settings.png)
+1. Open DevTools Settings.
+    
+    ![Opening DevTools Settings](imgs/open-settings.png)
 
-2. Dalam menu navigasi di sebelah kiri, klik **Blackboxing**.
+2. In the navigation menu on the left, click **Blackboxing**.
+    
+    ![Blackboxing panel in Chrome DevTools](imgs/blackbox-panel.png)
 
-   ![Panel Blackboxing di Chrome DevTools](imgs/blackbox-panel.png)
+3. Click **Add pattern**.
 
-3. Klik **Add pattern**.
+4. In the **Pattern** textfield enter the filename pattern that you wish to exclude from your call stack. DevTools excludes any scripts that match the pattern.
+    
+    ![Adding blackbox pattern](imgs/add-pattern.png)
 
-4. Dalam bidang teks **Pattern** masukkan pola nama file yang ingin Anda 
-   kecualikan dari tumpukan panggilan. DevTools mengecualikan semua skrip yang cocok dengan 
-   pola. 
+5. In the dropdown menu to the right of the textfield, select **Blackbox** to execute the script files but exclude the calls from the call stack, or select **Disabled** to prevent the files from executing.
 
-   ![Menambahkan pola kotak-hitam](imgs/add-pattern.png)
+6. Click **Add** to save.
 
-5. Dalam menu tarik-turun di sebelah kanan bidang teks, pilih **Blackbox** untuk
-   mengeksekusi file skrip namun mengecualikan panggilan dari tumpukan panggilan, atau pilih
-   **Disabled** untuk mencegah file dieksekusi.
+The next time that you run the page and a breakpoint is triggered, DevTools hides any function calls from the blackboxed scripts from the call stack.
 
-6. Klik **Add** untuk menyimpan.
+## Data manipulation
 
-Saat berikutnya Anda menjalankan laman dan breakpoint terpicu, DevTools
-akan menyembunyikan panggilan fungsi dari skrip yang telah dikotak-hitamkan dari tumpukan panggilan.
+When code execution is paused, you can observe and modify the data it is processing. This is crucial when trying to track down a variable that seems to have the wrong value or a passed parameter that isn't received as expected.
 
-## Manipulasi data
+Show the Console drawer by clicking **Show/Hide drawer** ![Show/Hide drawer](imgs/image_16.png){: .inline} or press <kbd class="kbd">ESC</kbd>. With the console open while stepping, you can now:
 
-Bila eksekusi kode dihentikan sementara, Anda bisa mengamati dan memodifikasi data yang sedang diproses. Hal ini sangat penting saat mencoba melacak variabel yang kelihatannya memiliki nilai yang salah atau parameter yang diteruskan yang belum diterima sebagaimana diharapkan.
+* Type the name of a variable to see its current value in the scope of the current function
+* Type a JavaScript assignment statement to change the value
 
-Tampilkan panel samping Console dengan mengeklik **Show/Hide drawer** ![Tampilkan/Sembunyikan panel samping](imgs/image_16.png){: .inline} atau menekan <kbd class="kbd">ESC</kbd>. Dengan konsol yang dibuka sambil menyusuri kode, sekarang Anda bisa:
+Try modifying values, then continue execution to see how it changes the outcome of your code and whether it behaves as you expect.
 
-* Ketikkan nama variabel untuk melihat nilainya saat ini dalam cakupan fungsi saat ini
-* Ketikkan pernyataan penetapan JavaScript untuk mengubah nilai
+#### Example
 
-Cobalah memodifikasi nilai, kemudian lanjutkan eksekusi untuk melihat bagaimana ia mengubah hasil kode Anda dan apakah perilakunya seperti yang Anda harapkan.
+<img src="imgs/image_17.png" alt="Console Drawer" class="attempt-left" />
 
-#### Contoh
-
-<img src="imgs/image_17.png" alt="Panel Samping Console" class="attempt-left">
-
-Kami menunjukkan bahwa nilai parameter `dow` saat ini adalah 2, namun ubahlah
-secara manual menjadi 3 sebelum melanjutkan eksekusi.
+We reveal that the value of the parameter `dow` is currently 2, but manually change it to 3 before resuming execution.
 
 <div class="clearfix"></div>
 
-## Pengeditan langsung
+## Live editing
 
-Mengamati dan menghentikan sementara eksekusi kode akan membantu Anda menemukan kesalahan, dan pengeditan langsung memungkinkan Anda dengan cepat melihat pratinjau perubahan tanpa perlu memuat ulang.
+Warning: This page is deprecated. See [Edit a script](reference#edit) for up-to-date information.
 
-Untuk mengedit langsung sebuah skrip, cukup klik di bagian editor pada panel Sources saat menyusuri kode. Buat perubahan yang diinginkan dalam editor Anda, kemudian terapkan perubahan tersebut dengan <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> (atau <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> pada Mac). Pada titik ini, seluruh file JS akan dihubungkan ke dalam VM dan semua definisi fungsi akan diperbarui. 
+Observing and pausing the executing code helps you locate errors, and live editing allows you to quickly preview changes without the need to reload.
 
-Sekarang, Anda bisa melanjutkan eksekusi; skrip modifikasi Anda akan dieksekusi menggantikan yang asli, dan Anda bisa mengamati efek perubahan tersebut.
+To live edit a script, simply click into the editor part of the Sources panel while stepping. Make your changes as you would do in your editor, then commit the change with <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> (or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> on Mac). At this point, the entire JS file will be patched into the VM and all function definitions will be updated.
 
-#### Contoh
+Now, you can resume execution; your modified script will execute in place of the original, and you can observe the effects of your changes.
 
-![Pengeditan langsung](imgs/image_18.png)
+#### Example
 
-Kami menduga bahwa parameter `dow`, dalam setiap kasus, berubah +1 ketika
-diteruskan ke fungsi `setone()` – sehingga, nilai `dow<` pada saat 
-diterima, adalah 1 padahal seharusnya 0, 2 padahal seharusnya 1, dll. Untuk 
-menguji dengan cepat apakah pengurangan nilai yang diteruskan mengonfirmasikan bahwa ini adalah masalah,
-kami menambahkan baris 17 di awal fungsi, lakukan dengan 
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> dan lanjutkan.
+![Live editing](imgs/image_18.png)
 
-## Mengelola eksekusi thread {: #threads }
+We suspect that the parameter `dow` is, in every case, off by +1 when it is passed to the function `setone()` – that is, the value of `dow<`, as received, is 1 when it should be 0, 2 when it should be 1, etc. To quickly test whether decrementing the passed value confirms that this is the problem, we add line 17 at the beginning of the function, commit with
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> and resume.
 
-Gunakan panel **Threads** pada panel Sources untuk menghentikan sementara, masuk ke, dan
-memeriksa thread lainnya, seperti thread service worker atau web worker.
+## Managing thread execution {: #threads }
 
-Untuk mendemonstrasikan panel Threads, bagian ini menggunakan demo berikut:
-[Contoh dasar Web Worker](http://mdn.github.io/simple-web-worker/).
+Warning: This page is deprecated. See [Change thread context](reference#threads) for up-to-date information.
 
-Jika Anda membuka DevTools pada aplikasi, Anda bisa melihat bahwa skrip utama terletak
-di `main.js`:
+Use the **Threads** pane on the Sources panel to pause, step into, and inspect other threads, such as service worker or web worker threads.
 
-![Skrip utama](imgs/main-script.png)
+To demonstrate the Threads pane, this section uses the following demo: [Web Workers basic example](http://mdn.github.io/simple-web-worker/).
 
-Dan skrip web worker terletak di `worker.js`:
+If you open DevTools on the app, you can see that the main script is located in `main.js`:
 
-![Skrip worker](imgs/worker-script.png)
+![Main script](imgs/main-script.png)
 
-Skrip utama mendengarkan perubahan pada bidang masukan **Multiply number 1** atau
-**Multiply number 2**. Setelah perubahan, skrip utama mengirimkan
-pesan ke web worker dengan nilai dari dua angka yang diperbanyak. Web worker
-melakukan pelipatgandaan dan kemudian meneruskan hasilnya kembali ke
-skrip utama.
+And the web worker script is located in `worker.js`:
 
-Misalkan Anda menyetel breakpoint di `main.js` yang terpicu ketika
-angka pertama berubah:
+![Worker script](imgs/worker-script.png)
 
-![Breakpoint skrip utama](imgs/main-script-breakpoint.png)
+The main script listens to changes to the **Multiply number 1** or **Multiply number 2** input fields. Upon change the main script sends a message to the web worker with the values of the two numbers to multiply. The web worker does the multiplication and then passes the result back to the main script.
 
-Dan Anda juga menyetel breakpoint di `worker.js` ketika worker
-menerima pesan:
+Suppose that you set a breakpoint in `main.js` that's triggered when the first number is changed:
 
-![Breakpoint skrip worker](imgs/worker-script-breakpoint.png)
+![Main script breakpoint](imgs/main-script-breakpoint.png)
 
-Memodifikasi angka pertama di UI aplikasi memicu kedua breakpoint.
+And you also set a breakpoint in `worker.js` when the worker receives a message:
 
-![Breakpoint skrip utama dan worker dipicu](imgs/breakpoints-triggered.png)
+![Worker script breakpoint](imgs/worker-script-breakpoint.png)
 
-Dalam panel Threads, panah biru menunjukkan thread yang sedang
-dipilih. Misalnya, dalam tangkapan layar di atas, thread **Utama** dipilih. 
+Modifying the first number on the app's UI triggers both of the breakpoints.
 
-Semua kontrol
-DevTools untuk menyusuri kode (melanjutkan atau menghentikan sementara eksekusi skrip,
-Melangkahi panggilan fungsi berikutnya, Masuk ke dalam panggilan fungsi berikutnya, dll.) berkaitan
-dengan thread tersebut. Dengan kata lain, jika Anda menekan tombol **Resume script execution**
-selagi DevTools Anda terlihat seperti tangkapan layar di atas, thread 
-Utama akan melanjutkan eksekusi, namun thread web worker
-masih akan dihentikan sementara. Bagian **Call Stack** dan **Scope** juga hanya 
-menampilkan informasi untuk thread Utama.
+![Main and worker script breakpoints triggered](imgs/breakpoints-triggered.png)
 
-Bila Anda ingin menyusuri kode untuk thread web worker, atau melihat cakupan
-dan informasi tumpukan panggilan, klik saja pada label di panel Threads,
-sehingga panah biru muncul di sebelahnya. Tangkapan layar di bawah ini menunjukkan bagaimana
-tumpukan panggilan dan informasi cakupan berubah setelah memilih thread worker.
-Sekali lagi, jika Anda menekan salah satu tombol penyusuran kode (melanjutkan
-eksekusi skrip, melangkahi panggilan fungsi berikutnya, dll.), aksi tersebut hanya
-akan berkaitan dengan thread worker. Thread Utama tidak terpengaruh.
+In the Threads pane the blue arrow indicates which thread is currently selected. For example, in the screenshot above the **Main** thread is selected.
 
-![thread worker dalam fokus](imgs/worker-thread.png)
+All of the DevTools controls for stepping through code (resume or pause script execution, step over next function call, step into next function call, etc.) pertain to that thread. In other words, if you pressed the **Resume script execution** button while your DevTools looked like the screenshot above, the Main thread would resume executing, but the web worker thread would still be paused. The **Call Stack** and **Scope** sections are only displaying information for the Main thread, too.
 
+When you want to step through the code for the web worker thread, or see its scope and call stack information, just click on its label in the Threads pane, so that the blue arrow is next to it. The screenshot below shows how the call stack and scope information changes after selecting the worker thread. Again, if you were to press any of the stepping through code buttons (resume script execution, step over next function call, etc.), that action would only pertain to the worker thread. The Main thread is not affected.
 
-{# wf_devsite_translation #}
+![worker thread in focus](imgs/worker-thread.png)
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

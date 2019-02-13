@@ -1,32 +1,21 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Announcing the release of a new country dimension in the Chrome User Experience Report.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Announcing the release of a new country dimension in the Chrome User Experience Report.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-24 #}
-{# wf_tags: ux #}
-{# wf_blink_components: Blink #}
-{# wf_featured_image: /web/updates/images/generic/timeline.png #}
-{# wf_featured_snippet: Announcing the release of a new country dimension in the Chrome User Experience Report. #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-24 #} {# wf_tags: ux #} {# wf_blink_components: Blink #} {# wf_featured_image: /web/updates/images/generic/timeline.png #} {# wf_featured_snippet: Announcing the release of a new country dimension in the Chrome User Experience Report. #}
 
-# Laporan Pengalaman Pengguna Chrome: Dimensi negara baru {: .page-title }
+# Chrome User Experience Report: New country dimension {: .page-title }
 
 {% include "web/_shared/contributors/rviscomi.html" %}
 
 <div class="clearfix"></div>
 
-[Chrome User Experience Report](/web/tools/chrome-user-experience-report/) (CrUX) adalah dataset publik dari data kinerja pengguna yang sebenarnya. Karena kami [announced](https://blog.chromium.org/2017/10/introducing-chrome-user-experience-report.html) laporan, salah satu tambahan yang paling diminta adalah kemampuan untuk lebih memahami perbedaan pengalaman pengguna di seluruh lokasi. Berdasarkan umpan balik ini, kami memperluas dataset CrUX yang ada - yang memberikan pandangan global di seluruh wilayah geografis - untuk juga menyertakan kumpulan dataset khusus negara yang terpisah!
+The [Chrome User Experience Report](/web/tools/chrome-user-experience-report/) (CrUX) is a public dataset of real user performance data. Since we [announced](https://blog.chromium.org/2017/10/introducing-chrome-user-experience-report.html) the report, one of the most requested additions has been the ability to better understand differences in user experience across locations. Based on this feedback, we are expanding the existing CrUX dataset––which provides a global view across all geographic regions––to also include a collection of separate country-specific datasets!
 
-<img src="/web/updates/images/2018/01/crux-countries.png"
-    alt="Map of countries included in the CrUX dataset"/>
+![Map of countries included in the CrUX dataset](/web/updates/images/2018/01/crux-countries.png)
 
-Misalnya, pada gambar di atas, kami melihat kueri yang membandingkan kepadatan agregat untuk koneksi efektif 4G dan 3G di beberapa negara. Yang menarik adalah untuk melihat seberapa lazim kecepatan 4G di Jepang, sementara kecepatan 3G masih sangat umum di India. Wawasan seperti ini dimungkinkan berkat dimensi negara baru.
+For example, in the screenshot above we see a query that compares the aggregate densities for 4G and 3G effective connection types across a few countries. What’s interesting is to see how prevalent 4G speeds are in Japan, while 3G speeds are still very common in India. Insights like these are made possible thanks to the new country dimension.
 
-Untuk memulai, masuk ke [CrUX project](https://bigquery.cloud.google.com/dataset/chrome-ux-report:all) di BigQuery dan Anda akan melihat daftar dataset yang diatur oleh [country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) dari `country_ae` (Uni Emirat Arab) ke `country_za` (Afrika Selatan). `all` familiar masih ada untuk menangkap data kinerja agregat global. Di dalam setiap `201712` data ada tabel bulanan yang dimulai dengan laporan terbaru, `201712` . Untuk panduan terperinci tentang cara memulai, silakan lihat [CrUX documentation](/web/tools/chrome-user-experience-report/) kami yang diperbarui.
+To get started, head over to the [CrUX project](https://bigquery.cloud.google.com/dataset/chrome-ux-report:all) on BigQuery and you’ll see a list of datasets organized by [country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) from `country_ae` (United Arab Emirates) to `country_za` (South Africa). The familiar `all` dataset is still there to capture the global aggregate performance data. Within each dataset there are monthly tables starting with the most recent report, `201712`. For a detailed walkthrough on how to get started, please refer to our updated [CrUX documentation](/web/tools/chrome-user-experience-report/).
 
-Kami senang berbagi data baru ini dengan Anda dan berharap Anda menggunakannya dengan cara meningkatkan pengalaman pengguna di web. Untuk mendapatkan bantuan, mengajukan pertanyaan, menawarkan umpan balik, atau membagikan temuan dari analisis Anda sendiri, bergabunglah dengan diskusi di [CrUX forum](https://groups.google.com/a/chromium.org/forum/#!forum/chrome-ux-report) . Dan jika tingkat gratis di BigQuery tidak cukup untuk menahan antusiasme Anda, kami masih menjalankan promosi untuk memberi Anda [extra 10 TB free](https://docs.google.com/forms/d/e/1FAIpQLSeMYnz93JQuO7rPewVrKpLfxO7JREOysti0CQyRo31bc7cXHA/viewform) , jadi dapatkan kredit Anda saat persediaan masih ada!
+We’re excited to share this new data with you and hope to see you use it in ways to improve the user experience on the web. To get help, ask questions, offer feedback, or share findings from your own analysis, join the discussion on the [CrUX forum](https://groups.google.com/a/chromium.org/forum/#!forum/chrome-ux-report). And if the free tier on BigQuery isn’t enough to contain your querying enthusiasm, we’re still running a promotion to give you an [extra 10 TB free](https://docs.google.com/forms/d/e/1FAIpQLSeMYnz93JQuO7rPewVrKpLfxO7JREOysti0CQyRo31bc7cXHA/viewform), so go get your credits while supplies last!
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}

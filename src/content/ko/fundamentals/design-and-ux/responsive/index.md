@@ -1,181 +1,134 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 상당수의 웹은 다중 기기 환경에 최적화되어 있지 않습니다. 모바일, 데스크톱 또는 화면이 있는 모든 기기에서 작동하는 사이트를 만들기 위한 기본 사항에 대해 알아봅니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Much of the web isn't optimized for those multi-device experiences. Learn the fundamentals to get your site working on mobile, desktop, or anything else with a screen.
 
-{# wf_updated_on: 2014-04-29 #}
-{# wf_published_on: 2014-04-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-04-29 #} {# wf_blink_components: Blink>CSS #}
 
-# 반응형 웹 디자인 기본 사항 {: .page-title }
+# Responsive Web Design Basics {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-웹 서핑을 위한 휴대기기의 사용량이 엄청난 속도로 증가하고 있지만, 
-불행히도 상당수의 웹은 휴대기기에 최적화되어 있지 않습니다.
-휴대기기는 대개 화면 크기가 제한되며, 콘텐츠가 화면에 배치되는 
-방식에 따라 다른 접근방식이 필요합니다.
+The use of mobile devices to surf the web is growing at an astronomical pace, but unfortunately much of the web isn't optimized for those mobile devices. Mobile devices are often constrained by display size and require a different approach to how content is laid out on the screen.
 
-휴대폰, '패블릿',
-태블릿, 데스크톱, 게임 콘솔, TV, 웨어러블 등 다양한 화면 크기가 존재합니다.  화면 크기는 항상
-변하기 마련이므로, 현재나 미래에 모든 화면 크기에 맞게 사이트를 만드는
-것이 중요합니다.
+A multitude of different screen sizes exist across phones, "phablets," tablets, desktops, game consoles, TVs, and even wearables. Screen sizes are always changing, so it's important that your site can adapt to any screen size, today or in the future.
 
 <video autoplay muted loop controls>
   <source src="videos/resize.webm" type="video/webm">
   <source src="videos/resize.mp4" type="video/mp4">
 </video>
 
-[A List
-Apart에서 Ethan Marcotte](http://alistapart.com/article/responsive-web-design/)에 의해
-처음 정의된 반응형 웹 디자인은 사용자와 그들이 사용하는 기기의 요구사항에 맞게 반응합니다.  레이아웃은 기기의 크기와 기능에
-따라 변합니다.  예를 들어, 휴대폰에서는 콘텐츠가
-단일 열 뷰로 표시될 수 있지만, 태블릿에서는 동일한 콘텐츠가
-두 개의 열로 표시될 수 있습니다.
+Responsive web design, originally defined by [Ethan Marcotte in A List Apart](http://alistapart.com/article/responsive-web-design/), responds to the needs of the users and the devices they're using. The layout changes based on the size and capabilities of the device. For example, on a phone users would see content shown in a single column view; a tablet might show the same content in two columns.
 
 {% include "web/_shared/udacity/ud893.html" %}
 
-## 뷰포트 설정 {: #set-the-viewport }
+## Set the viewport {: #set-the-viewport }
 
-다양한 기기에 최적화된 페이지는 문서의 헤드에 meta viewport 태그를 포함해야 합니다.  meta viewport 태그는 페이지의 크기 및 배율을 제어하는 방법을 브라우저에 알려줍니다.
+Pages optimized for a variety of devices must include a meta viewport tag in the head of the document. A meta viewport tag gives the browser instructions on how to control the page's dimensions and scaling.
 
 ### TL;DR {: .hide-from-toc }
-- meta viewport 태그를 사용하여 브라우저 뷰포트의 너비와 배율을 제어합니다.
-- 기기 독립적 픽셀에서 화면 너비에 맞추려면 `width=device-width`를 포함합니다.
-- 기기 독립적 픽셀과 CSS 픽셀 간에 1:1 관계를 설정하려면 `initial-scale=1`을 포함합니다.
-- 사용자 배율 조정을 비활성화하지 않고도 여러분의 페이지에 액세스할 수 있도록 합니다.
 
+- Use the meta viewport tag to control the width and scaling of the browser's viewport.
+- Include `width=device-width` to match the screen's width in device-independent pixels.
+- Include `initial-scale=1` to establish a 1:1 relationship between CSS pixels and device-independent pixels.
+- Ensure your page is accessible by not disabling user scaling.
 
-최적의 환경을 제공하기 위해, 모바일 브라우저는 데스크톱
-화면 너비(기기마다 다르지만 일반적으로 약 980px)에서 웹페이지를
-렌더링한 다음, 글꼴 크기를 늘리고 콘텐츠의 배율을 조정하여
-화면에 맞추는 방식으로 콘텐츠를 더 보기 좋게 만들려고 시도합니다.  이 경우 글꼴 크기가 사용자에게 일관되지 않게 나타날 수 있으며, 사용자가 콘텐츠를
-보고 상호작용하기 위해 두 번 탭하거나 손가락으로 확대해야 할 수도 있습니다.
-
+To attempt to provide the best experience, mobile browsers render the page at a desktop screen width (usually about 980px, though this varies across devices), and then try to make the content look better by increasing font sizes and scaling the content to fit the screen. This means that font sizes may appear inconsistent to users, who may have to double-tap or pinch-to-zoom in order to see and interact with the content.
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
 
-
-meta viewport 값 `width=device-width`를 사용하면 기기 독립적 픽셀에서
-화면 너비에 맞게 페이지를 맞춥니다. 이렇게 하면 렌더링되는 화면이 작은
-휴대폰이든 큰 데스크톱 모니터에든 상관없이, 다양한
-화면 크기에 맞게 페이지의 콘텐츠를 재배치할 수 있습니다.
+Using the meta viewport value `width=device-width` instructs the page to match the screen's width in device-independent pixels. This allows the page to reflow content to match different screen sizes, whether rendered on a small mobile phone or a large desktop monitor.
 
 <div class="attempt-left">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-no.html">
   <figure>
-    <img src="imgs/no-vp.png" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="뷰포트 세트가 없는 페이지">
+    <img src="imgs/no-vp.png" srcset="imgs/no-vp.png 1x, imgs/no-vp-2x.png 2x" alt="Page without a viewport set">
     <figcaption>
-      뷰포트 세트가 없는 페이지
+      Page without a viewport set
      </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="attempt-right">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp.html">
   <figure>
-    <img src="imgs/vp.png" srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="뷰포트 세트가 있는 페이지">
+    <img src="imgs/vp.png" srcset="imgs/vp.png 1x, imgs/vp-2x.png 2x" alt="Page with a viewport set">
     <figcaption>
-      뷰포트 세트가 있는 페이지
+      Page with a viewport set
      </figcaption>
   </figure>
   </a>
 </div>
 
-일부 브라우저에서는 가로 모드로 회전할 때 페이지 너비를
-일정하게 유지하며, 재배치하기 보다 확대/축소를 통해 화면을 채웁니다. `initial-scale=1` 속성을
-추가하면, 기기 방향에 상관없이 브라우저가 기기 독립적 픽셀과 CSS 픽셀
-간에 1:1 관계를 설정하고, 페이지에서 전체 가로 너비를 활용할 수
-있습니다.
+Some browsers keep the page's width constant when rotating to landscape mode, and zoom rather than reflow to fill the screen. Adding the attribute `initial-scale=1` instructs browsers to establish a 1:1 relationship between CSS pixels and device-independent pixels regardless of device orientation, and allows the page to take advantage of the full landscape width.
 
+Note: To ensure that older browsers can properly parse the attributes, use a comma to separate attributes.
 
-참고: 구버전의 브라우저가 올바로 속성을 파싱할 수 있도록, 쉼표를 사용하여 해당 속성을 구분합니다.
+### Ensure an accessible viewport
 
-### 액세스 가능한 뷰포트 보장
+In addition to setting an `initial-scale`, you can also set the following attributes on the viewport:
 
-`initial-scale` 설정과 더불어 뷰포트에서 다음 속성을 설정할 수도 있습니다.
+- `minimum-scale`
+- `maximum-scale`
+- `user-scalable`
 
-* `minimum-scale`
-* `maximum-scale`
-* `user-scalable`
+When set, these can disable the user's ability to zoom the viewport, potentially causing accessibility issues.
 
-이들 속성이 설정된 경우, 사용자가 뷰포트를 확대/축소할 수 없으므로 접근성에 문제가 생길 수 있습니다.
+## Size content to the viewport
 
-
-## 뷰포트에 맞게 콘텐츠 크기 조정
-
-데스크톱 및 휴대기기에서 사용자는 가로가 아닌 세로로 웹사이트를 스크롤하는 데 익숙하며, 전체 페이지를 확인하기 위해 가로 스크롤이나 축소를 강제로 수행해야 한다면 사용자 환경이 나빠질 것입니다.
+On both desktop and mobile devices, users are used to scrolling websites vertically but not horizontally; forcing the user to scroll horizontally or to zoom out in order to see the whole page results in a poor user experience.
 
 ### TL;DR {: .hide-from-toc }
-- 너비가 고정된 큰 요소를 사용하지 마세요.
-- 잘 렌더링되기 위해서는 콘텐츠가 특정 뷰포트 너비에 종속되어서는 안 됩니다.
-- 큰 화면과 작은 화면에 다른 스타일을 적용하려면 CSS 미디어 쿼리를 사용합니다.
 
-`meta viewport` 태그로 모바일 사이트를 개발하는 경우에는,
-지정된 뷰포트 내에 잘 맞지 않는 페이지 콘텐츠가 실수로 생성되기
-쉽습니다. 예를 들어, 뷰포트보다 넓은 너비로 표시되는 이미지의 경우 뷰포트를
-가로로 스크롤해야 할 수도 있습니다. 사용자가 가로로
-스크롤할 필요가 없도록, 여러분이 뷰포트 너비 내에 맞도록 콘텐츠를
-조정해야 합니다.
+- Do not use large fixed width elements.
+- Content should not rely on a particular viewport width to render well.
+- Use CSS media queries to apply different styling for small and large screens.
 
-CSS 픽셀에서 화면 크기와 너비는 기기마다 크게 다르므로(예:
-휴대폰과 태블릿 간, 심지어 다른 휴대폰 간), 잘 렌더링되기 위해서는
-콘텐츠가 특정 뷰포트 너비에 종속되어서는 안 됩니다.
+When developing a mobile site with a `meta viewport` tag, it's easy to accidentally create page content that doesn't quite fit within the specified viewport. For example, an image that is displayed at a width wider than the viewport can cause the viewport to scroll horizontally. You should adjust this content to fit within the width of the viewport, so that the user does not need to scroll horizontally.
 
-큰 절대 CSS 너비를 페이지 요소에 설정하면(아래 예시 참조),
-좁은 기기(iPhone과 같이 너비가 320 CSS 픽셀인 기기)의 뷰포트에서 `div`가
-너무 넓어집니다. 그 대신, `width: 100%`와 같은
-상대 너비 값을 사용해 보세요.  마찬가지로, 작은 화면에서
-요소가 뷰포트를 벗어날 수가 있으므로, 큰 절대 배치 값을 사용할 때
-주의를 기울이세요.  
+Since screen dimensions and width in CSS pixels vary widely between devices (for example, between phones and tablets, and even between different phones), content should not rely on a particular viewport width to render well.
+
+Setting large absolute CSS widths for page elements (such as the example below), cause the `div` to be too wide for the viewport on a narrower device (for example, a device with a width of 320 CSS pixels, such as an iPhone). Instead, consider using relative width values, such as `width: 100%`. Similarly, beware of using large absolute positioning values that may cause the element to fall outside the viewport on small screens.
 
 <div class="attempt-left">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
   <figure>
-    <img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x" alt="iPhone에서 344px 고정 너비 요소가 있는 페이지.">
+    <img src="imgs/vp-fixed-iph.png" srcset="imgs/vp-fixed-iph.png 1x, imgs/vp-fixed-iph-2x.png 2x" alt="Page with a 344px fixed width element on an iPhone.">
     <figcaption>
-      iPhone에서 344px 고정 너비 요소가 있는 페이지
+      Page with a 344px fixed width element on an iPhone
     </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="attempt-right">
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/vp-fixed.html">
   <figure>
-    <img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x" alt="Nexus 5에서 344px 고정 너비 요소가 있는 페이지.">
+    <img src="imgs/vp-fixed-n5.png" srcset="imgs/vp-fixed-n5.png 1x, imgs/vp-fixed-n5-2x.png 2x" alt="Page with a 344px fixed width element on a Nexus 5.">
     <figcaption>
-      Nexus 5에서 344px 고정 너비 요소가 있는 페이지
+      Page with a 344px fixed width element on a Nexus 5
     </figcaption>
   </figure>
   </a>
 </div>
+
 <div class="clearfix"></div>
-         
-## 응답성을 개선하기 위해 CSS 미디어 쿼리 사용 {: #css-media-queries }  
 
-미디어 쿼리는 CSS 스타일에 적용될 수 있는 간단한 필터입니다. 이 필터를 사용하면,
-콘텐츠를 렌더링하는 기기 특성(예: 표시 유형, 너비, 높이,
-방향, 해상도 등을 포함)에 따라
-쉽게 스타일을 변경할 수 있습니다.
+## Use CSS media queries for responsiveness {: #css-media-queries }
 
+Media queries are simple filters that can be applied to CSS styles. They make it easy to change styles based on the characteristics of the device rendering the content, including the display type, width, height, orientation, and even resolution.
 
 ### TL;DR {: .hide-from-toc }
-- 기기 특성을 기반으로 스타일을 적용하려면 미디어 쿼리를 사용합니다.
-- `min-device-width`보다 `min-width`를 사용하여 가장 넓은 환경을 보장합니다.
-- 레이아웃이 깨지는 것을 막으려면 요소에 상대 크기를 사용합니다.
 
-예를 들어, 인쇄에 필요한 모든 스타일을 인쇄 미디어 쿼리 내에
-배치할 수 있습니다.
+- Use media queries to apply styles based on device characteristics.
+- Use `min-width` over `min-device-width` to ensure the broadest experience.
+- Use relative sizes for elements to avoid breaking layout.
 
+For example, you could place all styles necessary for printing inside a print media query:
 
     <link rel="stylesheet" href="print.css" media="print">
     
 
-`media` 속성을 스타일시트 링크에 사용할 뿐만 아니라, CSS 파일에서
-삽입 가능한 미디어 쿼리를 적용하기 위한 두 가지 다른 방법이
-있습니다. 즉, `@media` 및 `@import`입니다.  성능상의 이유로, 처음 두 메서드 중 하나가 `@import` 구문에 비해
-권장됩니다([CSS 가져오기 피하기](/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations)
-참조).
-
+In addition to using the `media` attribute in the style sheet link, there are two other ways to apply media queries that can be embedded in a CSS file: `@media` and `@import`. For performance reasons, either of the first two methods are recommended over the `@import` syntax (see [Avoid CSS imports](/web/fundamentals/performance/critical-rendering-path/page-speed-rules-and-recommendations)).
 
     @media print {
       /* print style sheets go here */
@@ -184,69 +137,60 @@ CSS 픽셀에서 화면 크기와 너비는 기기마다 크게 다르므로(예
     @import url(print.css) print;
     
 
-미디어 쿼리에 적용되는 로직은 상호 배타적이 아니며,
-해당 기준을 충족하는 모든 필터는 CSS에서 표준 우선순위 규칙을
-사용하여 최종 CSS 블록이 적용됩니다.
+The logic that applies to media queries is not mutually exclusive, and for any filter meeting that criteria the resulting CSS block is applied using the standard rules of precedence in CSS.
 
-### 뷰포트 크기에 따라 미디어 쿼리 적용
+### Apply media queries based on viewport size
 
-미디어 쿼리를 사용하면 반응형 환경을 만들 수 있습니다.
-이 환경에서는 작은 화면과 큰 화면 및 그 사이의 모든 화면 크기에 특정 스타일이 적용됩니다.  미디어
-쿼리 구문에서는 기기 특성에 따라 적용될 수 있는 규칙 생성을
-허용합니다.
-
+Media queries enable us to create a responsive experience where specific styles are applied to small screens, large screens, and anywhere in between. The media query syntax allows for the creation of rules that can be applied depending on device characteristics.
 
     @media (query) {
       /* CSS Rules used when query matches */
     }
     
 
-쿼리할 수 있는 항목에는 여러 가지가 있지만,
-반응형 웹 디자인에 가장 자주 사용되는 항목은 `min-width`, `max-width`, `min-height` 및
-`max-height`입니다.
-
+While there are several different items we can query on, the ones used most often for responsive web design are `min-width`, `max-width`, `min-height`, and `max-height`.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">매개변수</th>
+      <th colspan="2">Parameters</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="attribute"><code>min-width</code></td>
-      <td data-th="Result">쿼리에 정의된 값보다 큰 브라우저 너비에 적용되는 규칙.</td>
+      <td data-th="Result">Rules applied for any browser width greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-width</code></td>
-      <td data-th="Result">쿼리에 정의된 값보다 작은 브라우저 너비에 적용되는 규칙.</td>
+      <td data-th="Result">Rules applied for any browser width less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>min-height</code></td>
-      <td data-th="Result">쿼리에 정의된 값보다 큰 브라우저 높이에 적용되는 규칙.</td>
+      <td data-th="Result">Rules applied for any browser height greater than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>max-height</code></td>
-      <td data-th="Result">쿼리에 정의된 값보다 작은 브라우저 높이에 적용되는 규칙.</td>
+      <td data-th="Result">Rules applied for any browser height less than the value defined in the query.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=portrait</code></td>
-      <td data-th="Result">높이가 너비보다 크거나 같은 브라우저에 적용되는 규칙.</td>
+      <td data-th="Result">Rules applied for any browser where the height is greater than or equal to the width.</td>
     </tr>
     <tr>
       <td data-th="attribute"><code>orientation=landscape</code></td>
-      <td data-th="Result">너비가 높이보다 큰 브라우저에 적용되는 규칙.</td>
+      <td data-th="Result">Rules for any browser where the width is greater than the height.</td>
     </tr>
   </tbody>
 </table>
 
-예시를 살펴봅시다.
+Let's take a look at an example:
 
 <figure>
   <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html">
-    <img src="imgs/mq.png" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="페이지의 크기가 조정될 때, 속성 변경을 위해 미디어 쿼리를 사용하는 페이지의 미리보기">
+    <img src="imgs/mq.png" srcset="imgs/mq.png 1x, imgs/mq-2x.png 2x" alt="Preview of a page using media queries to change properties as it is resized.">
     <figcaption>
-      페이지의 크기가 조정될 때, 속성 변경을 위해 미디어 쿼리를 사용하는 페이지의 미리보기
+      Preview of a page using media queries to change properties as it is resized.
     </figcaption>
   </a>
 </figure>
@@ -255,159 +199,116 @@ CSS 픽셀에서 화면 크기와 너비는 기기마다 크게 다르므로(예
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-queries.html" region_tag="mqueries" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-queries.html){: target="_blank" .external }
 
-* 브라우저 너비가 <b>0px</b> - <b>640px</b> 사이인 경우, `max-640px.css`가 적용됩니다.
-* 브라우저 너비가 <b>500px</b> - <b>600px</b> 사이인 경우, `@media` 내의 스타일이 적용됩니다.
-* 브라우저 너비가 <b>640px 이상인 경우</b>, `min-640px.css`가 적용됩니다.
-* 브라우저 <b>너비가 높이보다 큰 경우</b>, `landscape.css`가 적용됩니다.
-* 브라우저 <b>높이가 너비보다 큰 경우</b>, `portrait.css`가 적용됩니다.
+- When the browser is between **0px** and **640px** wide, `max-640px.css` is applied.
+- When the browser is between **500px** and **600px** wide, styles within the `@media` is applied.
+- When the browser is **640px or wider**, `min-640px.css` is applied.
+- When the browser **width is greater than the height**, `landscape.css` is applied.
+- When the browser **height is greater than the width**, `portrait.css` is applied.
 
+### A note on `min-device-width`
 
-### `min-device-width` 참고 사항
+It is also possible to create queries based on `min-device-width`, though this practice is **strongly discouraged**.
 
-`min-device-width`에 따라 쿼리를 생성할 수도 있지만,
-이 방법은 **그다지 권장되지 않습니다**.
+The difference is subtle but very important: `min-width` is based on the size of the browser window whereas `min-device-width` is based on the size of the screen. Unfortunately some browsers, including the legacy Android browser, don't report the device width properly; they report the screen size in device pixels instead of the expected viewport width.
 
-그 차이점은 미세하지만 매우 중요합니다. `min-width`는
-브라우저 창 크기를 기반으로 하는 반면, `min-device-width`는 화면 크기를
-기반으로 합니다.  불행히도, 레거시 Android 브라우저를 비롯한
-일부 브라우저는 기기 너비를 제대로 보고하지 못하며, 예상 뷰포트 너비가 아니라 기기 픽셀 단위로 화면 크기를 보고합니다.
+In addition, using `min-device-width` can prevent content from adapting on desktops or other devices that allow windows to be resized because the query is based on the actual device size, not the size of the browser window.
 
-또한 `min-device-width`를 사용할 경우에는, 창 크기 조정을 허용하는
-데스크톱 또는 기타 기기에서 콘텐츠를 조정할 수 없습니다.
-왜냐하면 해당 쿼리는 브라우저 창 크기가 아닌 실제 기기 크기를 기반으로 하기 때문입니다.
+### Use `any-pointer` and `any-hover` for flexible interactions
 
-### 유연한 상호작용을 위해 `any-pointer` 및 `any-hover` 사용
+Starting with Chrome 39, your style sheets can write selectors that cover multiple pointer types and hover behaviors. The `any-pointer` and `any-hover` media features are similar to `pointer` and `hover` in that they allow you to query the capabilities of the user's pointer. However, unlike the latter, `any-pointer` and `any-hover` operate on the union of all pointer devices rather than just the primary pointer device.
 
-Chrome 39부터는, 여러분의 스타일 시트에서 다양한 포인터 유형과 마우스 오버 동작을 포함하는
-선택기를 작성할 수 있습니다. 사용자 포인터의 성능을
-쿼리할 수 있다는 점에서, `any-pointer` 및 `any-hover`
-미디어 기능은 `pointer` 및 `hover`와 유사합니다. 하지만 후자와는 달리, `any-pointer` 및
-`any-hover`는 기본 포인터 기기에서만 아니라
-모든 포인터 기기 조합에서 작동합니다.
+### Use relative units
 
-### 상대 단위 사용
+A key concept behind responsive design is fluidity and proportionality as opposed to fixed width layouts. Using relative units for measurements can help simplify layouts and prevent accidental creation of components that are too big for the viewport.
 
-반응형 디자인의 핵심 개념은 고정 너비 레이아웃과 반대되는
-유동성 및 비례성입니다.  측정 시에 상대 단위를 사용하면
-레이아웃이 간단해지며, 뷰포트에 비해 너무 큰 구성요소가
-실수로 만들어지는 것을 막아줍니다.
+For example, setting width: 100% on a top level `div`, ensures that it spans the width of the viewport and is never too big or too small for the viewport. The `div` fits, no matter if it's a 320px wide iPhone, 342px wide Blackberry Z10, or a 360px wide Nexus 5.
 
-예를 들어, 최상위 `div`에서 너비를 100%로 설정할 경우, 뷰포트의
-너비가 뷰포트에 비해 너무 크거나 너무 작지 않도록 조정됩니다.  320px 너비의
-iPhone, 342px 너비의 Blackberry Z10
-또는 360px 너비의 Nexus 5에 상관없이 `div`가 맞춰집니다.
+In addition, using relative units allows browsers to render the content based on the user's zoom level without the need for adding horizontal scroll bars to the page.
 
-또한 상대 단위를 사용하면 브라우저가 사용자 확대/축소 수준에 따라
-콘텐츠를 렌더링할 수 있으며, 가로 스크롤 막대를 페이지에
-추가할 필요가 없습니다.
-
-<span class="compare-worse">권장되지 않음</span>&mdash;고정 너비
+<span class="compare-worse">Not recommended</span>&mdash;fixed width
 
     div.fullWidth {
       width: 320px;
       margin-left: auto;
       margin-right: auto;
     }
+    
 
-
-<span class="compare-better">권장됨</span>&mdash;반응형 너비
+<span class="compare-better">Recommended</span>&mdash;responsive width
 
     div.fullWidth {
       width: 100%;
     }
+    
 
+## How to choose breakpoints
 
-## 중단점을 선택하는 방법 
-
-기기 클래스를 기준으로 중단점을 정의하지 마세요. 오늘날 사용 중인 특정 기기,
-제품, 브랜드 이름 또는 운영체제에 따라 중단점을 정의하게 되면
-유지 관리가 끔찍해질 수 있습니다. 그 대신, 콘텐츠가 직접 레이아웃을 컨테이너에 맞게
-조정하는 방식을 결정해야 합니다.
-
+Don't define breakpoints based on device classes. Defining breakpoints based on specific devices, products, brand names, or operating systems that are in use today can result in a maintenance nightmare. Instead, the content itself should determine how the layout adjusts to its container.
 
 ### TL;DR {: .hide-from-toc }
-- 콘텐츠에 따라 중단점을 만들고 절대로 특정 기기, 제품 또는 브랜드에 따라 만들지 마세요.
-- 최소형 휴대기기용으로 먼저 디자인한 다음, 점진적으로 더 큰 화면으로 환경을 향상시켜 나갑니다.
-- 텍스트 줄을 최대 약 70 ~ 80자로 유지합니다.
 
+- Create breakpoints based on content, never on specific devices, products, or brands.
+- Design for the smallest mobile device first; then progressively enhance the experience as more screen real estate becomes available.
+- Keep lines of text to a maximum of around 70 or 80 characters.
 
-### 처음에는 작게 시작하고 늘려나가는 방식으로 주요 중단점을 선택
+### Pick major breakpoints by starting small, then working up
 
 <figure class="attempt-right">
   <img src="imgs/weather-1.png" srcset="imgs/weather-1.png 1x, imgs/weather-1-2x.png 2x" alt="">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
-      작은 화면에 표시된 날씨 예보의 미리보기
+      Preview of the weather forecast displayed on a small screen.
     </a>
   </figcaption>
 </figure>
 
-처음에는 작은 화면에 맞게 콘텐츠를 디자인하고, 중단점이
-필요해질 때까지 화면을 늘려 나갑니다.  이렇게 하면 콘텐츠에 따라
-중단점을 최적화할 수 있으며, 중단점 수를 최소한으로 유지할 수
-있습니다.
+Design the content to fit on a small screen size first, then expand the screen until a breakpoint becomes necessary. This allows you to optimize breakpoints based on content and maintain the least number of breakpoints possible.
 
-앞에서 살펴보았던 날씨 예보의 예를
-살펴보겠습니다. 첫 단계는 작은 화면에서 예보가 잘 보이게
-만드는 것입니다.
+Let's work through the example we saw at the beginning: the weather forecast. The first step is to make the forecast look good on a small screen.
 
 <div style="clear:both;"></div>
 
 <figure class="attempt-right">
-  <img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="페이지가 더 넓어진 날씨 예보의 미리보기">
+  <img src="imgs/weather-2.png" class="center" srcset="imgs/weather-2.png 1x, imgs/weather-2-2x.png 2x" alt="Preview of the weather forecast as the page gets wider.">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-1.html">
-      페이지가 더 넓어진 날씨 예보의 미리보기
+      Preview of the weather forecast as the page gets wider.
     </a>
   </figcaption>
 </figure>
 
-그 다음, 요소들 사이에 너무 많은 여백이 있어서 예보가
-보기에 좋지 않은 모습이 될 때까지 브라우저의 크기를 조정합니다.  이 결정은 다소 주관적이지만,
-600px 이상이면 확실히 너무 넓은 것입니다.
+Next, resize the browser until there is too much white space between the elements, and the forecast simply doesn't look as good. The decision is somewhat subjective, but above 600px is certainly too wide.
 
 <div style="clear:both;"></div>
 
-600px에서 중단점을 삽입하기 위해 두 개의 스타일시트를 새로 만듭니다.
-하나는 브라우저가 600px 이하일 때 사용할 것이고 다른 하나는 600px보다 넓을 때 사용할 것입니다.
+To insert a breakpoint at 600px, create two new style sheets, one to use when the browser is 600px and below, and one for when it is wider than 600px.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-2.html" region_tag="mqweather2" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html){: target="_blank" .external }
 
 <figure class="attempt-right">
-  <img src="imgs/weather-3.png"  srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="더 넓은 화면용으로 디자인된 날씨 예보의 미리보기">
+  <img src="imgs/weather-3.png"  srcset="imgs/weather-3.png 1x, imgs/weather-3-2x.png 2x" alt="Preview of the weather forecast designed for a wider screen.">
   <figcaption>
     <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/weather-2.html">
-      더 넓은 화면용으로 디자인된 날씨 예보의 미리보기
+      Preview of the weather forecast designed for a wider screen.
     </a>
   </figcaption>
 </figure>
 
-마지막으로, CSS를 리팩터링합니다.  이 예시에서는 글꼴, 아이콘, 기본 배치, 색상 등의
-공통 스타일을 `weather.css`에 배치했습니다.  그런 다음, 작은 화면용
-특정 레이아웃은 `weather-small.css`에 배치하고
-큰 화면용 스타일은 `weather-large.css`에 배치했습니다.
+Finally, refactor the CSS. In this example, we've placed the common styles such as fonts, icons, basic positioning, and colors in `weather.css`. Specific layouts for the small screen are then placed in `weather-small.css`, and large screen styles are placed in `weather-large.css`.
 
 <div style="clear:both"></div>
 
+### Pick minor breakpoints when necessary
 
-### 필요한 경우 하위 중단점 선택
+In addition to choosing major breakpoints when layout changes significantly, it is also helpful to adjust for minor changes. For example, between major breakpoints it may be helpful to adjust the margins or padding on an element, or increase the font size to make it feel more natural in the layout.
 
-레이아웃이 대폭 변경될 경우 주요 중단점을 선택할 수 있는 기능과 더불어,
-사소한 변경에 대해 조정할 수 있는 기능도 유용합니다.  예를 들어, 주요 중단점 간에
-요소에서 여백이나 패딩을 조정하는 것이 유용할 수 있으며,
-또는 레이아웃에서 더 자연스럽게 보이도록 글꼴 크기를 늘릴 수도 있습니다.
-
-먼저 작은 화면의 레이아웃을 최적화해 보겠습니다.  이 경우, 뷰포트 너비가
-360px보다 커지면 글꼴을 확대합니다.  두 번째로, 충분한 공간이
-있는 경우에는, 위아래로 표시되는 대신 같은 줄에 표시되도록
-최고 기온과 최저 기온을 구분할 수 있습니다.  날씨 아이콘을 좀더 크게
-만들어 보겠습니다.
+Let's start by optimizing the small screen layout. In this case, let's boost the font when the viewport width is greater than 360px. Second, when there is enough space, we can separate the high and low temperatures so that they're on the same line instead of on top of each other. And let's also make the weather icons a bit larger.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-small.css" region_tag="mqsmallbpsm" adjust_indentation="auto" %}
@@ -415,101 +316,78 @@ iPhone, 342px 너비의 Blackberry Z10
 
 <div class="attempt-left">
   <figure>
-    <img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="하위 중단점을 추가하기 전.">
+    <img src="imgs/weather-4-l.png" srcset="imgs/weather-4-l.png 1x, imgs/weather-4-l-2x.png 2x" alt="Before adding minor breakpoints.">
     <figcaption>
-      하위 중단점을 추가하기 전.
-     </figcaption>
-  </figure>
-</div>
-<div class="attempt-right">
-  <figure>
-    <img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="하위 중단점을 추가한 후.">
-    <figcaption>
-      하위 중단점을 추가한 후.
+      Before adding minor breakpoints.
      </figcaption>
   </figure>
 </div>
 
+<div class="attempt-right">
+  <figure>
+    <img src="imgs/weather-4-r.png" srcset="imgs/weather-4-r.png 1x, imgs/weather-4-r-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>
+      After adding minor breakpoints.
+     </figcaption>
+  </figure>
+</div>
 
 <div style="clear:both;"></div>
 
-
-큰 화면에서도 마찬가지로, 전체 화면 너비가 소모되지 않도록
-예보 패널의 최대 너비로 제한하는 것이 최선입니다.
+Similarly, for the large screens it's best to limit to maximum width of the forecast panel so it doesn't consume the whole screen width.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/weather-large.css" region_tag="mqsmallbplg" adjust_indentation="auto" %}
 </pre>
 
-### 읽을 수 있도록 텍스트 최적화
+### Optimize text for reading
 
-전통적인 가독성 이론에 따르면 이상적인 경우 한 열에는
-한 줄당 70 ~ 80자(영어로 약 8 ~ 10단어)가 포함되어야 합니다. 따라서 텍스트 블록의 너비가
-약 10단어를 넘어갈 때마다 중단점 추가를 고려하세요.
+Classic readability theory suggests that an ideal column should contain 70 to 80 characters per line (about 8 to 10 words in English). Thus, each time the width of a text block grows past about 10 words, consider adding a breakpoint.
 
 <div class="attempt-left">
   <figure>
-    <img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="하위 중단점을 추가하기 전.">
-    <figcaption>하위 중단점을 추가하기 전.</figcaption>
+    <img src="imgs/reading-ph.png" srcset="imgs/reading-ph.png 1x, imgs/reading-ph-2x.png 2x" alt="Before adding minor breakpoints.">
+    <figcaption>Before adding minor breakpoints.</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="하위 중단점을 추가한 후.">
-    <figcaption>하위 중단점을 추가한 후.</figcaption>
+    <img src="imgs/reading-de.png" srcset="imgs/reading-de.png 1x, imgs/reading-de-2x.png 2x" alt="After adding minor breakpoints.">
+    <figcaption>After adding minor breakpoints.</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-위의 블로그 게시물의 예를 더 자세히 살펴봅시다.  작은 화면에서는
-1em의 Roboto 글꼴이 한 줄당 10단어를 완벽하게 표시하지만, 큰 화면에서는
-중단점이 필요합니다. 이 경우, 브라우저 너비가
-575px보다 크다면 이상적인 콘텐츠 너비는 550px입니다.
+Let's take a deeper look at the above blog post example. On smaller screens, the Roboto font at 1em works perfectly giving 10 words per line, but larger screens require a breakpoint. In this case, if the browser width is greater than 575px, the ideal content width is 550px.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/reading.html" region_tag="mqreading" adjust_indentation="auto" %}
 </pre>
 
-[체험해 보기](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/reading.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/reading.html){: target="_blank" .external }
 
-### 콘텐츠를 완전히 숨기지 마세요
+### Never completely hide content
 
-화면 크기에 따라 어떤 콘텐츠를 숨기거나 표시할지 선택할 때 주의를 기울이세요.
-화면에 맞지 않는다는 이유만으로 콘텐츠를 숨기지는 마세요.  사용자가 원하는 것을 화면 크기가
-명확히 나타내지 않을 수도 있습니다.  봄철 알레르기
-질환이 있는 사람이 외출 가능 여부를 결정해야 하는데, 날씨 예보에서
-꽃가루 개수 정보를 없앤다면 심각한 문제가 될 수
-있습니다.
+Be careful when choosing what content to hide or show depending on screen size. Don't simply hide content just because you can't fit it on the screen. Screen size is not a definitive indication of what a user may want. For example, eliminating the pollen count from the weather forecast could be a serious issue for spring-time allergy sufferers who need the information to determine if they can go outside or not.
 
-## Chrome DevTools에서 미디어 쿼리 중단점 보기 {: #devtools }
+## View media query breakpoints in Chrome DevTools {: #devtools }
 
-미디어 쿼리 중단점 설정을 마치고 나면 사이트가 어떻게 달라 보일지
-궁금할 것입니다. 브라우저 창의 크기를 조정하여 중단점을 트리거하는 것도 *가능*하긴 하겠지만, 더 나은 방법이
-있습니다. 바로 Chrome DevTools를 사용하는 방법입니다. 아래의
-두 스크린샷은 DevTools를 사용해 중단점이 서로 다른 상황에서 페이지가 어떻게 나타나는지를
-보여줍니다.
+Once you've got your media query breakpoints set up, you'll want to see how your site looks with them. You *could* resize your browser window to trigger the breakpoints, but there's a better way: Chrome DevTools. The two screenshots below demonstrate using DevTools to view how a page looks under different breakpoints.
 
-![DevTools의 미디어 쿼리 기능 예시](imgs/devtools-media-queries-example.png)
+![Example of DevTools' media queries feature](imgs/devtools-media-queries-example.png)
 
-중단점이 서로 다를 때 페이지를 보려면:
+To view your page under different breakpoints:
 
-[DevTools를 열고](/web/tools/chrome-devtools/#open) [Device
-Mode](/web/tools/chrome-devtools/device-mode/#toggle)를 설정합니다.
+[Open DevTools](/web/tools/chrome-devtools/#open) and then turn on [Device Mode](/web/tools/chrome-devtools/device-mode/#toggle).
 
-[뷰포트
-컨트롤](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#viewport-controls)을
-사용하여 **Responsive**를 선택합니다. 그러면 DevTools가 반응형 모드로 전환됩니다.
+Use the [viewport controls](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#viewport-controls) to select **Responsive**, which puts DevTools into responsive mode.
 
-마지막으로, Device Mode 메뉴를 열고
-[**미디어 쿼리 표시**](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries)를
-선택하여 페이지 위에 중단점을 색상 막대로 표시합니다.
+Last, open the Device Mode menu and select [**Show media queries**](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) to display your breakpoints as colored bars above your page.
 
-막대 중 하나를 클릭하면 미디어 쿼리가 활성인 상태에서 페이지를
-볼 수 있습니다. 미디어 쿼리의 정의로 바로 이동하려면 막대를 마우스 오른쪽 버튼으로
-클릭하세요. 더 자세한 도움말은
-[미디어 쿼리](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries)를
-참조하세요.
+Click on one of the bars to view your page while that media query is active. Right-click on a bar to jump to the media query's definition. See [Media queries](/web/tools/chrome-devtools/device-mode/emulate-mobile-viewports#media-queries) for more help.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,40 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Depure WebViews nos seus aplicativos Android usando o Chrome Developer Tools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-{# wf_updated_on: 2015-07-29 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Depuração remota de WebViews {: .page-title }
+# Remote Debugging WebViews {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-Depure WebViews nos seus aplicativos Android usando o Chrome Developer Tools.
+Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-No Android 4.4 (KitKat) ou posterior,
-use o DevTools para depurar o conteúdo do WebView em aplicativos nativos do Android.
-
+On Android 4.4 (KitKat) or later, use DevTools to debug WebView content in native Android applications.
 
 ### TL;DR {: .hide-from-toc }
-- Ative a depuração de WebView no seu aplicativo Android nativo. Depure WebViews no Chrome DevTools.
-- Acesse a lista de WebViews depuráveis via <strong>chrome://inspect</strong>.
-- Depurar WebViews é a mesma coisa que depurar uma página da Web por <a href='/web/tools/chrome-devtools/debug/remote-debugging'>depuração remota</a>.
 
+* Enable WebView debugging in your native Android app; debug WebViews in Chrome DevTools.
+* Access list of debug-enabled WebViews via **chrome://inspect**.
+* Debugging WebViews is the same as debugging a web page through [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging).
 
-## Configurar WebViews para depuração
+## Configure WebViews for debugging
 
-A depuração por WebView deve ser ativada a partir do aplicativo. Para ativar a depuração de WebView, chame o método estático [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean)) na classe WebView.
-
+WebView debugging must be enabled from within your application. To enable WebView debugging, call the static method [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean)) on the WebView class.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         WebView.setWebContentsDebuggingEnabled(true);
     }
     
 
-Esta configuração aplica-se a todas as WebViews do aplicativo.
+This setting applies to all of the application's WebViews.
 
-**Dica**: A depuração de WebView **não** é afetada pelo estado do sinalizador `debuggable` no manifesto do aplicativo. Se quiser ativar a depuração de WebView somente quando `debuggable` for `true`, teste o sinalizador em tempo de execução.
-
+**Tip**: WebView debugging is **not** affected by the state of the `debuggable` flag in the application's manifest. If you want to enable WebView debugging only when `debuggable` is `true`, test the flag at runtime.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
@@ -42,22 +35,23 @@ Esta configuração aplica-se a todas as WebViews do aplicativo.
     }
     
 
-## Abra uma WebView no DevTools
+## Open a WebView in DevTools
 
-A página **chrome://inspect** exibe uma lista de WebViews depuráveis no seu dispositivo.
+The **chrome://inspect** page displays a list of debug-enabled WebViews on your device.
 
-Para começar a depuração, clique em **inspect** abaixo da WebView que deseja depurar. Use o DevTools como se fosse uma guia de navegador remota.
+To start debugging, click **inspect** below the WebView you want to debug. Use DevTools as you would for a remote browser tab.
 
-![Inspeção de elementos em uma WebView](imgs/webview-debugging.png)
+![Inspecting elements in a WebView](imgs/webview-debugging.png)
 
-Os gráficos cinza listados com a WebView representam seu tamanho e sua posição em relação à tela do dispositivo. Se suas WebViews tiverem títulos, eles também serão listados.
+The gray graphics listed with the WebView represent its size and position relative to the device's screen. If your WebViews have titles set, the titles are listed as well.
 
-## Solução de problemas
+## Troubleshooting
 
-Não consegue ver suas WebViews na **página chrome://inspect**?
+Can't see your WebViews on the **chrome://inspect page**?
 
-* Verifique se a depuração de WebView está ativa no aplicativo.
-* No dispositivo, abra o aplicativo com a WebView que deseja depurar. Em seguida, atualize a página **chrome://inspect**.
+* Verify that WebView debugging is enabled for your app.
+* On your device, open the app with the WebView you want to debug. Then, refresh the **chrome://inspect** page.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

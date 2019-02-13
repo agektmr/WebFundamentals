@@ -1,144 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools에서 지속적 작성을 설정하면 변경 내용을 즉시 확인하고 그러한 변경 내용을 디스크에 저장할 수 있습니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-{# wf_updated_on: 2015-07-30 #}
-{# wf_published_on: 2015-07-08 #}
+{# wf_updated_on: 2018-04-20 #} {# wf_published_on: 2015-07-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# DevTools 작업 영역을 사용하여 지속성 설정 {: .page-title }
+# Set Up Persistence with DevTools Workspaces {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+Warning: This version of Workspaces is only available in Chrome 62 or lower. Check what version of Chrome you're running at `chrome://version`. See [Save Changes To Disk With Workspaces](/web/tools/chrome-devtools/workspaces/) to learn how to use the version of Workspaces that's available in Chrome 63 and later.
 
-Chrome DevTools에서 지속적 작성을 설정하면 변경 내용을 즉시 확인하고 그러한 변경 내용을 디스크에 저장할 수 있습니다.
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome DevTools를 사용하면 웹 페이지에서 요소와 스타일을 
-변경하고 변경 내용을 즉시 확인할 수 있습니다. 
-기본적으로 브라우저를 새로 고치면, 변경 내용을 외부 편집기에 수동으로 
-복사하여 붙여넣지 않은 이상 변경 내용은 사라집니다.
+Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-작업 영역을 사용하면 Chrome DevTools를 종료하지 않고도 
-변경 내용을 디스크에 지속할 수 있습니다. 
-로컬 웹 서버에서 제공한 리소스를 디스크의 파일에 매핑하고 
-해당 파일에 적용된 변경 내용을 제공 중인 것처럼 바로 볼 수 있습니다.
+Chrome DevTools lets you change elements and styles on a web page and see your changes immediately. By default, refresh the browser and the changes go away unless you've manually copied and pasted them to an external editor.
 
+Workspaces lets you persist those changes to disk without having to leave Chrome DevTools. Map resources served from a local web server to files on a disk and view changes made to those files as if they were being served.
 
 ### TL;DR {: .hide-from-toc }
-- 변경 내용을 수동으로 로컬 파일에 복사하지 마세요. 작업 영역을 사용하여 DevTools에서 변경한 내용을 로컬 리소스에서 지속하세요.
-- 로컬 파일을 브라우저에 스테이지하세요. 파일을 URL로 매핑할 수도 있습니다.
-- 지속적 작업 영역이 설정되고 나면 Elements 패널에서 적용한 스타일 변경 내용이 자동으로 지속됩니다. DOM 변경은 지속되지 않습니다. 대신 Sources 패널에서 요소 변경을 지속할 수 있습니다.
 
+* Don't manually copy changes to local files. Use workspaces to persist changes made in DevTools to your local resources.
+* Stage your local files to your browser. Map files to URLs.
+* Once persistent workspaces are set-up, style changes made in the Elements panel are persisted automatically; DOM changes aren't. Persist element changes in the Sources panel instead.
 
-## 작업 영역에 로컬 소스 파일 추가
+## Add local source files to workspace
 
-로컬 폴더의 소스 파일을 Sources 패널에서 편집할 수 있게 하려면:
+To make a local folder's source files editable in the Sources panel:
 
-1. 왼쪽의 패널을 마우스 오른쪽 버튼으로 클릭합니다. 
-2. **Add Folder to Workspace**를 선택합니다. 
-3. 매핑하고자 하는 로컬 폴더의 위치를 선택합니다. 
-4. **Allow**를 클릭하여 Chrome에 해당 폴더에 대한 액세스 권한을 부여합니다. 
+1. Right-click in the left-side panel.
+2. Select **Add Folder to Workspace**.
+3. Choose location of local folder that you want to map.
+4. Click **Allow** to give Chrome access to the folder. 
 
-![작업 영역에 폴더 추가](imgs/addfolder.png)
+![Add Folder to Workspace](imgs/addfolder.png)
 
-일반적으로 로컬 폴더에는 서버에서 사이트를 채우는 데 사용되었던 사이트의 원본 소스 파일이 포함되어 있습니다. 그러한 원본 파일을 작업 영역을 통해 변경하지 않으려면, 폴더의 사본을 만들어 이를 원본 대신 작업 영역 폴더로 지정하면 됩니다.
+Typically, the local folder contains the site's original source files that were used to populate the site on the server. If you do not want to change those original files via the workspace, make a copy of the folder and specify it as the workspace folder instead.
 
-## 지속된 변경 내용 스테이지
+## Stage persisted changes
 
-로컬 폴더는 이미 작업 영역에 복사했지만 
-브라우저는 여전히 네트워크 폴더 콘텐츠를 제공하고 있습니다. 
-브라우저에서 지속적인 변경 내용을 자동으로 스테이지하려면 
-폴더 내에 있는 로컬 파일을 다음 URL로 매핑합니다.
+You've already mapped your local folder to your workspace, but the browser is still serving the network folder contents. To automatically stage persistent changes in the browser, map local files in the folder to a URL:
 
-1. 소스 왼쪽 패널에서 파일을 마우스 오른쪽 버튼으로 클릭하거나 Control 키를 누른 채 클릭합니다. 
-2. **Map to File System Resource**를 선택합니다. 
-3. 지속적 작업 영역에서 로컬 파일을 선택합니다. 
-4. Chrome에서 해당 페이지를 새로 고칩니다.
+1. Right-click or Control+click on a file in the Sources left-side panel.
+2. Choose **Map to File System Resource**.
+3. Select the local file in the persistent workspace.
+4. Reload the page in Chrome.
 
-![파일을 URL로 매핑](imgs/maptoresource.png)
+![Map file to URL](imgs/maptoresource.png)
 
-그 다음부터는, 
-Chrome이 매핑된 URL을 로드하고 
-네트워크 콘텐츠 대신 
-작업 영역 콘텐츠를 표시합니다. 
-이렇게 하면 Chrome과 외부 편집기 사이를 반복해서 전환하지 않아도 
-로컬 파일에서 직접 작업할 수 있습니다.
+Thereafter, Chrome loads the mapped URL, displaying the workspace contents instead of the network contents. Work directly in the local files without having to repeatedly switch between Chrome and an external editor.
 
-## 제한 사항
+## Limitations
 
-작업 영역은 매우 강력한 도구이지만, 여러분이 알아야 하는 몇 가지 제한 사항이 있습니다.
+As powerful as Workspaces are, there are some limitations you should be aware of.
 
-* Elements 패널에서 적용한 스타일 변경만 적용될 뿐 DOM을 변경한 내용은 지속되지 않습니다.
+* Only style changes in the Elements panel are persisted; changes to the DOM are not persisted.
 
-* 외부 CSS 파일에서 정의한 스타일만 저장할 수 있습니다. `element.style` 또는 인라인 스타일에 적용한 변경 내용은 지속되지 않습니다. (인라인 스타일이 있는 경우, Sources 패널에서 변경하면 됩니다.)
+* Only styles defined in an external CSS file can be saved. Changes to `element.style` or to inline styles are not persisted. (If you have inline styles, they can be changed on the Sources panel.)
 
-* Elements 패널에서 적용한 스타일 변경은 명확히 저장하지 않아도 즉시 지속됩니다(
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> 또는 <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd>(Mac)를 누르면 됨). 이는 로컬 파일에 매핑된 CSS 리소스가 있는 경우로 한정됩니다.
+* Style changes in the Elements panel are persisted immediately without an explicit save -- 
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac) -- if you have the CSS resource mapped to a local file.
 
-* 파일을 로컬 서버 대신 원격 서버로부터 매핑하는 경우, 페이지를 새로 고치면 Chrome이 해당 페이지를 원격 서버에서 다시 로드합니다. 변경 내용은 디스크에서 여전히 지속되며, 작업 영역에서 편집을 계속하는 경우 다시 적용됩니다.
+* If you are mapping files from a remote server instead of a local server, when you refresh the page, Chrome reloads the page from the remote server. Your changes still persist to disk and are reapplied if you continue editing in Workspaces.
 
-* 브라우저에서 매핑된 파일의 전체 경로를 사용해야 합니다. 스테이지된 버전을 확인하려면 색인 파일도 URL에 .html을 포함해야 합니다.
+* You must use the full path to a mapped file in the browser. Even your index files must include .html in the URL, in order to see the staged version.
 
-## 로컬 파일 관리
+## Local file management
 
-기존 파일을 편집하는 것 외에도 
-작업 영역에 사용 중인 로컬 매핑된 디렉토리에 
-파일을 추가하거나 삭제할 수도 있습니다.
+In addition to editing existing files, you can also add and delete files in the local mapped directory you’re using for Workspaces.
 
-### 파일 추가
+### Add file
 
-파일을 추가하려면:
+To add a file:
 
-1. 왼쪽 Sources 창에서 폴더를 마우스 오른쪽 버튼으로 클릭합니다. 
-2. **New File**을 선택합니다. 
-3. 새 파일의 이름을 확장자까지 포함하여 입력하고(예: `newscripts.js`) **Enter** 키를 누릅니다. 그러면 파일이 로컬 폴더에 추가됩니다.
+1. Right-click a folder in the left Sources pane.
+2. Select **New File**.
+3. Type a name for the new file including its extension (e.g., `newscripts.js`) and press **Enter**; the file is added to the local folder.
 
-### 파일 삭제
+### Delete file
 
-파일을 삭제하려면:
+To delete a file:
 
-1. 왼쪽 Sources 창에서 파일을 마우스 오른쪽 버튼으로 클릭합니다. 
-2. **Delete**를 선택하고 **Yes**를 클릭하여 확인합니다.
+1. Right-click on the file in the left Sources pane.
+2. Choose **Delete** and click **Yes** to confirm.
 
-### 파일 백업
+### Back up a file
 
-파일에 중대한 변경을 적용하기 전에 
-원본을 백업용으로 복제해두면 유용합니다.
+Before making substantial changes to a file, it's useful to duplicate the original for back-up purposes.
 
-파일을 복제하려면:
+To duplicate a file:
 
-1. 왼쪽 Sources 창에서 파일을 마우스 오른쪽 버튼으로 클릭합니다. 
-2. **Make a Copy...**를 선택합니다. 
-3. 파일 이름을 확장자까지 포함하여 입력하고(예: `mystyles-org.css`) **Enter** 키를 누릅니다.
+1. Right-click on the file in the left Sources pane.
+2. Choose **Make a Copy...**.
+3. Type a name for the file including its extension (e.g., `mystyles-org.css`) and press **Enter**.
 
-### 새로고침
+### Refresh
 
-작업 영역에서 파일을 직접 만들거나 삭제한 경우, 
-Sources 디렉토리가 자동으로 새로 고쳐지면서 파일 변경 내용을 표시합니다. 
-언제든지 새로 고침을 강제 적용하려면 폴더를 마우스 오른쪽 버튼으로 클릭하고 **Refresh**를 선택하면 됩니다.
+When you create or delete files directly in Workspaces, the Sources directory automatically refreshes to show the file changes. To force a refresh at any time, right-click a folder and choose **Refresh**.
 
-이 기능은 외부 편집기에서도 동시에 열려 있는 파일을 변경한 다음 변경 내용이 DevTools에 표시되도록 하려는 경우에도 유용합니다. 대개 DevTools가 그러한 변경을 자동으로 잡아내지만, 확실히 해두고 싶다면 위에 설명된 것처럼 폴더를 새로 고치기만 하면 됩니다.
+This is also useful if you change files that are concurrently open in an external editor and want the changes to show up in DevTools. Usually DevTools catches such changes automatically, but if you want to be certain, just refresh the folder as described above.
 
-### 파일 또는 텍스트 검색
+### Search for files or text
 
-DevTools에서 로드된 파일을 검색하려면 
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> 또는 <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd>(Mac)를
-눌러 검색 대화상자를 엽니다. 
-작업 영역에서도 이렇게 할 수 있지만, 
-원격으로 로드된 파일과 
-Workspace 폴더에 있는 로컬 파일 양쪽으로 검색이 확장됩니다.
+To search for a loaded file in DevTools, press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac) to open a search dialog. You can still do this in Workspaces, but the search is expanded to both the remote loaded files and the local files in your Workspace folder.
 
-여러 파일에 걸쳐 문자열을 검색하려면:
+To search for a string across files:
 
-1. 검색 창을 엽니다. **Show Drawer** 버튼![창 표시](imgs/show_drawer_button.png){:.inline}을 클릭한 다음 **Search**를 클릭하거나 
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> 또는 <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd>(Mac)를 누릅니다. 
-2. 검색 필드에 문자열을 입력한 다음 **Enter** 키를 누릅니다. 
-3. 문자열이 정규 식이거나 대/소문자를 구분하지 않는 경우, 적절한 확인란을 클릭합니다.
+1. Open the search window: click the **Show Drawer** button ![Show drawer](imgs/show_drawer_button.png){:.inline} and then click the **Search**; or press
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac).
+2. Type a string into the search field and press **Enter**.
+3. If the string is a regular expression or needs to be case-insensitive, click the appropriate box.
 
-![여러 파일에 걸쳐 문자열 검색](imgs/searchacross.png)
+![Search for string across files](imgs/searchacross.png)
 
-검색 결과가 콘솔 창에 표시되고, 파일 이름을 기준으로 나열되고, 각 파일에서 일치하는 항목 수가 표시됩니다. 주어진 파일에 대한 결과를 확장하거나 축소하려면 **Expand**![확장](imgs/expand_button.png){:.inline} 및 **Collapse**![축소](imgs/collapse_button.png){:.inline} 화살표를 사용합니다.
-
-
-
-{# wf_devsite_translation #}
+The search results are shown in the Console drawer, listed by file name, with the number of matches in each file indicated. Use the **Expand** ![Expand](imgs/expand_button.png){:.inline} and **Collapse** ![Collapse](imgs/collapse_button.png){:.inline} arrows to expand or collapse the results for a given file.

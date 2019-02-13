@@ -1,239 +1,227 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 裝置動作和定位事件能存取行動裝置中內建的加速計、陀螺儀和羅盤。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Sensor>DeviceOrientation #}
 
-# 裝置定向 {: .page-title }
+# Device Orientation & Motion {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
+Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
-裝置動作和定位事件能存取行動裝置中內建的加速計、陀螺儀和羅盤。
+These events can be used for many purposes; in gaming, for example, to control the direction or action of a character. When used with geolocation, they can help create more accurate turn-by-turn navigation or provide information about a specific location.
 
-這些事件可用於多種用途；
-例如在遊戲中要控制角色的方向，或判斷角色應該跳多高。
- 當用於 GeoLocation 時，它可以建立更精確的逐向式導航系統，
-或提供有關商店所在的資訊。
+Caution: Not all browsers use the same coordinate system, and they may report different values under identical situations. This has improved over time, but be sure to test your situation.
 
-Note: 決定要使裝置動作或裝置定向事件時，請<b>極為</b>謹慎。  遺憾的是，並非所有瀏覽器都使用相同的座標系統，並可能會在類似情況下回報不同的值。
+## TL;DR
 
-## 哪一端朝上？
+* Detect which side of the device is up and how the device is rotating.
+* Learn when and how to respond to motion and orientation events.
 
-要使用裝置定向和動作事件所傳回的資料，
-理解所提供的值很重要。  
+## Which end is up?
 
-### 地球座標視框。
+To use the data that the device orientation and motion events return, it is important to understand the values provided.
 
-以 `X`、`Y` 與 `Z` 值所描述的地球座標視框，
-是根據重力和標準的磁性定向對準。
+### Earth coordinate frame
 
-<ul>
-  <li>
-    <b>X：</b>代表東西方向 (其中東是正值)。
-  </li>
-    <li>
-    <b>Y：</b>代表南北方向 (北是正值)。
-  </li>
-    <li>
-    <b>Z：</b>表示上下方向，
-垂直於地面 (其中上是正值)。
-  </li>
-</ul>
+The Earth coordinate frame, described by the values `X`, `Y`, and `Z`, is aligned based on gravity and standard magnetic orientation.
 
-### 裝置座標框架的圖例
+<table class="responsive">
+  
+<tr><th colspan="2">Coordinate system</th></tr>
+<tr>
+  <td><code>X</code></td>
+  <td>Represents the east-west direction (where east is positive).</td>
+</tr>
+<tr>
+  <td><code>Y</code></td>
+  <td>Represents the north-south direction (where north is positive).</td>
+</tr>
+<tr>
+  <td><code>Z</code></td>
+  <td>Represents the up-down direction, perpendicular to the ground
+      (where up is positive).
+  </td>
+</tr>
+</table>
 
-以 `x`、`y` 與 `z` 值所描述的裝置座標框架，
-是根據裝置中心對準。
+### Device coordinate frame
 
-<img src="images/axes.png" alt="裝置座標框架的圖例">
-<!-- 特別感謝 Sheppy (https://developer.mozilla.org/en-US/profiles/Sheppy){: .external} 
-提供其公共版權的影像。 -->
+<div class="attempt-right">
+  <figure id="fig1">
+    <img src="images/axes.png" alt="illustration of device coordinate frame">
+    <figcaption>
+      Illustration of device coordinate frame
+    </figcaption>
+  </figure>
+</div>
 
-<ul>
-  <li>
-    <b>x：</b>在螢幕平面上，往右為正值。
-  </li>
-    <li>
-    <b>y：</b>在螢幕平面上，往上為正值。
-  </li>
-    <li>
-    <b>z：</b>垂直於螢幕或鍵盤，
-遠離為正值。
-  </li>
-</ul>
+<!-- Special thanks to Sheppy (https://developer.mozilla.org/en-US/profiles/Sheppy)
+  for his images which are in the public domain. -->
 
-在手機或平板電腦上，
-裝置定向是基於螢幕的典型定向。螢幕方向螢幕方向  對於手機和平板電腦而言，
-它則是基於垂直模式下的裝置。 對於桌上型電腦或筆記型電腦，
-定向是考慮與鍵盤的相對位置。
+The device coordinate frame, described by the values `x`, `y`, and `z`, is aligned based on the center of the device.
 
-### 旋轉資料
+<table class="responsive">
+  
+<tr><th colspan="2">Coordinate system</th></tr>
+<tr>
+  <td><code>X</code></td>
+  <td>In the plane of the screen, positive to the right.</td>
+</tr>
+<tr>
+  <td><code>Y</code></td>
+  <td>In the plane of the screen, positive towards the top.</td>
+</tr>
+<tr>
+  <td><code>Z</code></td>
+  <td>Perpendicular to the screen or keyboard, positive extending
+    away.
+  </td>
+</tr>
+</table>
 
-旋轉資料會被傳回為 [尤拉角] (http://en.wikipedia.org/wiki/Euler_angles){: .external}，
-代表裝置的座標框架與地球座標框架之間差異的角度數字。
+On a phone or tablet, the orientation of the device is based on the typical orientation of the screen. For phones and tablets, it is based on the device being in portrait mode. For desktop or laptop computers, the orientation is considered in relation to the keyboard.
 
+### Rotation data
 
-<figure>
-  <img src="images/alpha.png">
-  <figcaption>
-    <b>alpha:</b> 繞著 z 軸的旋轉角度，在裝置頂部直接指北時為 0&deg;。
-  逆時針方向旋轉的設備價值就增加了。`alpha`
-  </figcaption>
-</figure>
-<figure>
-  <img src="images/beta.png">
-  <figcaption>
-    <b>beta:</b> 繞著 x 軸的旋轉，在裝置頂部與底部和地球表面等距時為 0&deg;。
- 裝置頂部倒向地球表面時，
-此值會增加。
-  </figcaption>
-</figure>
-<figure>
-  <img src="images/gamma.png">
-  <figcaption>
-    <b>gamma:</b> 繞著 y 軸的旋轉，當裝置左右側和地球表面等距時為 0&deg;。
-  右側倒向地球表面時，
-此值會增加。 
-  </figcaption>
-</figure>
+Rotation data is returned as a [Euler angle](https://en.wikipedia.org/wiki/Euler_angles), representing the number of degrees of difference between the device coordinate frame and the Earth coordinate frame.
 
+#### Alpha
 
+<div class="attempt-right">
+  <figure id="fig1">
+    <img src="images/alpha.png" alt="illustration of device coordinate frame">
+    <figcaption>
+      Illustration of alpha in the device coordinate frame
+    </figcaption>
+  </figure>
+</div>
 
+The rotation around the z axis. The `alpha` value is 0&deg; when the top of the device is pointed directly north. As the device is rotated counter-clockwise, the `alpha` value increases.
 
-## 裝置定向 
+<div style="clear:both;"></div>
 
+#### Beta
 
+<div class="attempt-right">
+  <figure id="fig1">
+    <img src="images/beta.png" alt="illustration of device coordinate frame">
+    <figcaption>
+      Illustration of beta in the device coordinate frame
+    </figcaption>
+  </figure>
+</div>
 
+The rotation around the x axis. The `beta` value is 0&deg; when the top and bottom of the device are equidistant from the surface of the earth. The value increases as the top of the device is tipped toward the surface of the earth.
 
-裝置定向事件會傳回旋轉資料，此資料包含裝置的前後與左右傾斜程度，以及電話或筆記型電腦是否具有羅盤、裝置面對的方向。
+<div style="clear:both;"></div>
 
+#### Gamma
 
-### TL;DR {: .hide-from-toc }
-- 請保守使用。
-- 支援測試。
-- 不要每次定向事件就更新 UI；反之請同步至 requestAnimationFrame。
+<div class="attempt-right">
+  <figure id="fig1">
+    <img src="images/gamma.png" alt="illustration of device coordinate frame">
+    <figcaption>
+      Illustration of gamma in the device coordinate frame
+    </figcaption>
+  </figure>
+</div>
 
+The rotation around the y axis. The `gamma` value is 0&deg; when the left and right edges of the device are equidistant from the surface of the earth. The value increases as the right side is tipped towards the surface of the earth.
 
-### 使用裝置定位事件的時機
+<div style="clear:both;"></div>
 
-裝置定向事件有幾個用途。  例如：
+## Device orientation
 
-<ul>
-  <li>當使用者移動時更新地圖。</li>
-  <li>細微的 UI 調校，例如新增視差效果。</li>
-  <li>結合地理位置，可用於逐向式導航。</li>
-</ul>
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
-### 查看支援並接聽事件
+Use sparingly. Test for support. Don't update the UI on every orientation event; instead, sync to `requestAnimationFrame`.
 
-若要接聽 `DeviceOrientationEvent`，
-首先請查看瀏覽器是否支援這些事件。  然後，將事件接聽器附加到 `window` 
- 物件，接聽 `deviceorientation` 物件。 
+### When to use device orientation events
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/native-hardware/device-orientation/_code/dev-orientation.html" region_tag="devori"   adjust_indentation="auto" %}
-</pre>
+There are several uses for device orientation events. Examples include the following:
 
-### 處理裝置定位事件
+* Update a map as the user moves.
+* Subtle UI tweaks, for example, adding parallax effects.
+* Combined with geolocation, can be used for turn-by-turn navigation.
 
-當裝置移動或變更方向時，
-裝置定位事件會觸發。  它會傳回裝置在目前位置相對於
- <a href="index.html#earth-coordinate-frame"> 之間差異的資料
-地球座標視框</a>。
+### Check for support and listen for events
 
-此事件通常會傳回三個屬性，
-<a href="index.html#rotation-data">`alpha`</a>、
-<a href="index.html#rotation-data">`beta`</a>和
-<a href="index.html#rotation-data">`gamma`</a>。  在 Mobile Safari 上，
-額外參數<a href="https://developer.apple.com/library/safari/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/DeviceOrientationEvent/DeviceOrientationEvent.html">`webkitCompassHeading`</a>會與羅盤標題一起傳回
-。
+To listen for `DeviceOrientationEvent`, first check to see if the browser supports the events. Then, attach an event listener to the `window` object listening for `deviceorientation` events.
 
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', deviceOrientationHandler, false);
+      document.getElementById("doeSupported").innerText = "Supported!";
+    }
+    
 
+### Handle the device orientation events
 
+The device orientation event fires when the device moves or changes orientation. It returns data about the difference between the device in its current position in relation to the [Earth coordinate frame](#earth-coordinate-frame).
 
-## 裝置動作 
+The event typically returns three properties: [`alpha`](#alpha), [`beta`](#beta), and [`gamma`](#gamma). On Mobile Safari, an additional parameter [`webkitCompassHeading`](https://developer.apple.com/library/ios/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/){: .external } is returned with the compass heading.
 
+## Device motion
 
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
+Use device motion for when the current motion of the device is needed. `rotationRate` is provided in &deg;/sec. `acceleration` and `accelerationWithGravity` are provided in m/sec<sup>2</sup>. Be aware of differences between browser implementations.
 
-裝置動作提供在特定時刻套用在裝置身上的加速度，以及旋轉速度的資訊。
+### When to use device motion events
 
+There are several uses for device motion events. Examples include the following:
 
-### TL;DR {: .hide-from-toc }
-- 在需要裝置的目前動作時，使用裝置動作。
-- <code>rotationRate</code> 是以 &deg;/sec 為單位呈現。
-- <code>acceleration</code> 和 <code>accelerationWithGravity</code> 是以 m/sec<sup>2</sup> 為單位呈現。
-- 請注意瀏覽器實作之間的差異。
+* Shake gesture to refresh data.
+* In games, to cause characters to jump or move.
+* For health and fitness apps.
 
+### Check for support and listen for events
 
-### 使用裝置動作事件的時機
+To listen for `DeviceMotionEvent`, first check to see if the events are supported in the browser. Then attach an event listener to the `window` object listening for `devicemotion` events.
 
-裝置動作事件有有幾個用途。  例如：
+    if (window.DeviceMotionEvent) {
+      window.addEventListener('devicemotion', deviceMotionHandler);
+      setTimeout(stopJump, 3*1000);
+    }
+    
 
-<ul>
-  <li>搖晃手勢以重新整理資料。</li>
-  <li>在遊戲中導致角色跳躍或移動。</li>
-  <li>針對健康和健身的應用程式</li>
-</ul>
+### Handle the device motion events
 
-### 查看支援並接聽事件
+The device motion event fires on a regular interval and returns data about the rotation (in &deg;/second) and acceleration (in m/second<sup>2</sup>) of the device, at that moment in time. Some devices do not have the hardware to exclude the effect of gravity.
 
-要接聽 `DeviceMotionEvent`，
-首先查看瀏覽器是否支援這些事件。  然後，將事件接聽器附加到 `window` 
- 物件，接聽 `devicemotion` 物件。 
+The event returns four properties, [`accelerationIncludingGravity`](#device-coordinate-frame), [`acceleration`](#device-coordinate-frame), which excludes the effects of gravity, [`rotationRate`](#rotation-data), and `interval`.
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/native-hardware/device-orientation/_code/jump-test.html" region_tag="devmot"   adjust_indentation="auto" %}
-</pre>
-
-### 處理裝置動作事件
-
-裝置動作事件會以規律周期觸發，
-並及時在當下傳回關於裝置的旋轉 (每秒 &deg; 次) 和加速度 (單位為 m/sec<sup>2</sup>) 的資料。
-  某些裝置沒有必要硬體，
-可以排除重力的作用。
-
-此事件會返回四個屬性、
-<a href="index.html#device-frame-coordinate">`accelerationIncludingGravity`</a>、
-<a href="index.html#device-frame-coordinate">`acceleration`</a>
- (排除重力的影響)、
-<a href="index.html#rotation-data">`rotationRate`</a>和`interval`。
-
-例如，讓我們看看手機放在平坦桌面上，
-螢幕朝上。
+For example, let's take a look at a phone, lying on a flat table, with its screen facing up.
 
 <table>
-    <thead>
+  <thead>
     <tr>
-      <th data-th="State">狀態</th>
-      <th data-th="Rotation">旋轉</th>
-      <th data-th="Acceleration (m/s<sup>2</sup>)">加速度 (m/s<sup>2</sup>)</th>
-      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">帶重力的加速度 (m/s<sup>2</sup>)</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
+      <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
+      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">不移動</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
       <td data-th="Acceleration with gravity">[0, 0, 9.8]</td>
     </tr>
     <tr>
-      <td data-th="State">往天空移動</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 5]</td>
       <td data-th="Acceleration with gravity">[0, 0, 14.81]</td>
     </tr>
     <tr>
-      <td data-th="State">只向右移動</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
       <td data-th="Acceleration with gravity">[3, 0, 9.81]</td>
     </tr>
     <tr>
-      <td data-th="State">往上移動&amp;向右</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 0, 5]</td>
       <td data-th="Acceleration with gravity">[5, 0, 14.81]</td>
@@ -241,39 +229,38 @@ Note: 決定要使裝置動作或裝置定向事件時，請<b>極為</b>謹慎�
   </tbody>
 </table>
 
-反之，如果手持電話時，螢幕垂直於地面，
-並直接面對檢視者：
+Conversely, if the phone were held so the screen was perpendicular to the ground, and was directly visible to the viewer:
 
 <table>
-    <thead>
+  <thead>
     <tr>
-      <th data-th="State">狀態</th>
-      <th data-th="Rotation">旋轉</th>
-      <th data-th="Acceleration (m/s<sup>2</sup>)">加速度 (m/s<sup>2</sup>)</th>
-      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">帶重力的加速度 (m/s<sup>2</sup>)</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
+      <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
+      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">不移動</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
       <td data-th="Acceleration with gravity">[0, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">往天空移動</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 5, 0]</td>
       <td data-th="Acceleration with gravity">[0, 14.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">只向右移動</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
       <td data-th="Acceleration with gravity">[3, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">往上移動&amp;向右</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 5, 0]</td>
       <td data-th="Acceleration with gravity">[5, 14.81, 0]</td>
@@ -281,17 +268,23 @@ Note: 決定要使裝置動作或裝置定向事件時，請<b>極為</b>謹慎�
   </tbody>
 </table>
 
-#### 範例：計算物件的最大加速度
+### Sample: Calculating the maximum acceleration of an object
 
-使用裝置動作事件的一種方法是計算物件的最大加速度。
-  例如，一個人跳躍的最大加速度為何。
+One way to use device motion events is to calculate the maximum acceleration of an object. For example, what's the maximum acceleration of a person jumping?
 
+    if (evt.acceleration.x > jumpMax.x) {
+      jumpMax.x = evt.acceleration.x;
+    }
+    if (evt.acceleration.y > jumpMax.y) {
+      jumpMax.y = evt.acceleration.y;
+    }
+    if (evt.acceleration.z > jumpMax.z) {
+      jumpMax.z = evt.acceleration.z;
+    }
+    
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/native-hardware/device-orientation/_code/jump-test.html" region_tag="devmothand"   adjust_indentation="auto" %}
-</pre>
+After tapping the Go! button, the user is told to jump. During that time, the page stores the maximum (and minimum) acceleration values, and after the jump, tells the user their maximum acceleration.
 
-在點選「執行！」按鈕後，使用者被告知要跳躍！在這段時間中，
-頁面會儲存最大 (和最小) 的加速度值，並在跳躍後，
-告知使用者他們的最大加速度。
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

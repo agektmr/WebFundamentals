@@ -1,115 +1,84 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: ページの HTML と CSS を調査して編集します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and edit the HTML and CSS of your pages.
 
-{# wf_updated_on:2016-01-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# ページとスタイルの調査と編集 {: .page-title }
+# Inspect and Edit Pages and Styles {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Chrome DevTools の [Elements] パネルを使用して、ページの HTML と CSS を調査してライブ編集します。
+Inspect and live-edit the HTML and CSS of a page using the Chrome DevTools Elements panel.
 
-
-![Chrome DevTools の [Elements] パネル](imgs/elements-panel.png)
-
+![Chrome DevTools Elements panel](imgs/elements-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- [Elements] パネルで、DOM ツリーの任意の要素を調査し、その場で編集します。
-- [Styles] ペインで、選択された任意の要素に適用された CSS ルールを表示して変更します。
-- [Computed] ペインで、選択された要素のボックスモデルを表示して編集します。
-- [Sources] パネルで、ページに対してローカルで行われた変更を表示します。
 
+* Inspect and edit on the fly any element in the DOM tree in the Elements panel.
+* View and change the CSS rules applied to any selected element in the Styles pane.
+* View and edit a selected element's box model in the Computed pane.
+* View any changes made to your page locally in the Sources panel.
 
-##  DOM ノードのライブ編集
+## Live-edit a DOM node
 
-DOM ノードをライブ編集するには、単純に[選択された要素](#inspect-an-element)をダブルクリックして、変更を行います。
-
+To live-edit a DOM node, simply double-click a [selected element](#inspect-an-element) and make changes:
 
 <video src="animations/edit-element-name.mp4" style="max-width:100%;"
        loop muted autoplay controls></video>
 
-DOM ツリービューには、ツリーの現在の状態が表示されます。これは、別の理由で最初に読み込まれた HTML とは一致しないことがあります。
-たとえば、ユーザーは JavaScript を使用して DOM ツリーを変更できます。ブラウザ エンジンがユーザーが作成した無効なマークアップを修正し、その結果予期しない DOM が生成されることがあります。
+The DOM tree view shows the current state of the tree; it may not match the HTML that was originally loaded for different reasons. For example, you can modify the DOM tree using JavaScript; the browser engine can try to correct invalid author markup and produce an unexpected DOM.
 
+## Live-edit a style
 
+Live-edit style property names and values in the **Styles** pane. All styles are editable, except the ones that are greyed out (as is the case with user agent stylesheets).
 
-##  スタイルのライブ編集
+To edit a name or value, click on it, make your changes, and press
+<kbd class="kbd">Tab</kbd> or <kbd class="kbd">Enter</kbd> to save the change.
 
-[**Styles**] ペインで、スタイルのプロパティ名と値をライブ編集します。（ユーザー エージェント スタイルシートと同様に）グレー表示されているスタイルを除き、すべてのスタイルを編集できます。
+![edit property name](imgs/edit-property-name.png)
 
+By default, your CSS modifications are not permanent, changes are lost when you reload the page. Set up [persistent authoring](/web/tools/setup/setup-workflow) if you want to persist your changes between page loads.
 
+## Examine and edit box model parameters
 
-名前または値を編集するには、その名前または値をクリックして変更を加え、<kbd class="kbd">Tab</kbd> キーまたは <kbd class="kbd">Enter</kbd> キーを押して変更を保存します。
+Examine and edit the current element's box model parameters using the **Computed pane**. All values in the box model are editable, just click on them.
 
+![Computed pane](imgs/computed-pane.png)
 
-![プロパティ名の編集](imgs/edit-property-name.png)
+The concentric rectangles contain the **top**, **bottom**, **left**, **right** values for the current element's **padding**, **border**, and **margin** properties.
 
-既定では、CSS の変更は永続的ではなく、ページを再読み込みすると変更内容が失われます。
-ページが読み込まれた後も変更を保持するには、[永続的に作成](/web/tools/setup/setup-workflow)できるように設定します。
+For non-statically positioned elements, a **position** rectangle is also displayed, containing the values of the **top**, **right**, **bottom**, and **left** properties.
 
- 
+![non-static computed element](imgs/computed-non-static.png)
 
-##  ボックスモデル パラメータの調査と編集
+For `position: fixed` and `position: absolute` elements, the central field contains the actual **offsetWidth × offsetHeight** pixel dimensions of the selected element. All values can be modified by double-clicking them, like property values in the Styles pane. The changes are not, however, guaranteed to take effect, as this is subject to the concrete element positioning specifics.
 
-**[Computed] ペイン**を使用して、現在の要素のボックスモデル パラメータを調査して編集します。
-ボックスモデルのすべての値は、値をクリックするだけで編集できます。
+![fixed computed element](imgs/computed-fixed.png)
 
-
-![[Computed] ペイン](imgs/computed-pane.png)
-
-同心の長方形には、現在の要素の **padding**、**border**、**margin** プロパティの **top**、**bottom**、**left**、**right** の値が表示されます。
-
- 
-
-位置が非静的に決定される要素の場合は、**position** の長方形も表示されます。これには、**top**、**right**、**bottom**、および **left** プロパティの値が含まれます。
-
-
-
-![非静的に計算される要素](imgs/computed-non-static.png)
-
-`position: fixed` と `position: absolute` 要素の場合は、中央のフィールドに、選択された要素の実際の **offsetWidth × offsetHeight** ピクセル寸法が表示されます。
-すべての値は、[Styles] ペインのプロパティ値と同様に、ダブルクリックするだけで変更できます。
-ただし、これは具象要素の位置指定の仕様に従うため、変更が有効になるとは限りません。
-
-
-
-![修正後の計算された要素](imgs/computed-fixed.png)
-
-##  ローカル変更の表示
+## View local changes
 
 <video src="animations/revisions.mp4" style="max-width:100%;"
        autoplay loop muted controls></video>
 
-ページに加えたライブ編集の履歴を表示するには、次のようにします。
+To view a history of live-edits made to your page:
 
-1. [**Styles**] ペインで、変更したファイルをクリックします。DevTools で [**Sources**] パネルが表示されます。
-1. ファイルを右クリックします。
-1. [**Local modifications**] を選択します。
+1. In the **Styles** pane, click on the file that you modified. DevTools takes you to the **Sources** panel.
+2. Right-click on the file. 
+3. Select **Local modifications**.
 
-変更内容を詳しく調べるには、次のようにします。
+To explore the changes made:
 
-* 変更が行われた時間 ![変更が行われた時間](imgs/image_25.png){:.inline}を表示するには、最上位のファイル名を展開します。
-* 変更に対応する [diff](https://en.wikipedia.org/wiki/Diff)（変更前と変更後）を表示するには、第 2 レベルの項目を展開します。背景がピンク色の行は削除を示し、緑色の行は追加を示します。
+* Expand top-level file names to view the time ![time modification occurred](imgs/image_25.png){:.inline} a modification occurred.
+* Expand second-level items to view a [diff](https://en.wikipedia.org/wiki/Diff) (before and after) corresponding to the modification. A line with a pink background signifies a removal while a line with a green background signifies an addition.
 
+## Undo changes
 
-##  変更を元に戻す
+If you haven't [set up persistent authoring](/web/tools/setup/setup-workflow), any time you reload the page, all live-edits are lost.
 
-[永続的に作成できるように設定](/web/tools/setup/setup-workflow)していない場合は、ページを再読み込みするたびに、すべてのライブ編集が失われます。
+Assuming you've set up persistent authoring, to undo changes:
 
+* Use <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) to quickly undo minor changes to the DOM or styles via the Elements panel.
 
-永続的に作成できるように設定している場合、変更を元に戻すには、次のようにします。
+* To undo all local modifications made to a file, open the **Sources** panel and select **revert** next to the filename.
 
-* [Elements] パネルで DOM またはスタイルに加えた細かな変更をすばやく元に戻す場合は、<kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> キー（Windows）または <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> キー（Mac）を使用します。
+## Feedback {: #feedback }
 
-
-
-* ファイルに加えたローカル変更をすべて元に戻すには、[**Sources**] パネルを開き、ファイル名の隣にある [**revert**] を選択します。
-
-
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,89 +1,58 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Gunakan Panel Security untuk memastikan semua sumber daya di situs Anda dilindungi dengan HTTPS.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Security Panel to ensure that all resources on your site are protected with HTTPS.
 
-{# wf_updated_on: 2016-03-09 #}
-{# wf_published_on: 2015-12-21 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-12-21 #} {# wf_blink_components: Security #}
 
-# Memahami masalah keamanan {: .page-title }
+# Understand Security Issues {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-HTTPS menyediakan [keamanan sangat penting dan integritas data][why-https] 
-baik untuk situs web Anda maupun orang-orang yang mempercayakan 
-informasi pribadi mereka pada situs web Anda. Gunakan Panel Security di Chrome DevTools 
-untuk men-debug masalah keamanan dan memastikan bahwa Anda telah mengimplementasikan 
-HTTPS dengan benar pada situs web Anda.
-
+HTTPS provides [critical security and data integrity](/web/fundamentals/security/encrypt-in-transit/why-https) both for your websites and for the people that entrust your websites with their personal information. Use the Security Panel in Chrome DevTools to debug security issues and ensure that you have properly implemented HTTPS on your websites.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan Security Overview untuk mengetahui dengan cepat apakah laman saat ini aman atau tidak.
-- Periksa masing-masing sumbernya untuk menampilkan koneksi dan detail sertifikat (untuk sumber yang aman) atau untuk mengetahui secara persis permintaan mana yang tak terlindungi (untuk sumber yang tidak aman).
 
+- Use the Security Overview to instantly find out whether the current page is secure or non-secure.
+- Inspect individual origins to view connection and certificate details (for secure origins) or to find out exactly which requests are unprotected (for non-secure origins).
 
-## Ringkasan Keamanan
+## Security Overview
 
-Untuk menampilkan keamanan keseluruhan dari sebuah laman, buka DevTools dan masuk ke 
-Panel Security. 
+To view the overall security of a page, open DevTools and go to the Security Panel.
 
-Hal pertama yang Anda lihat adalah Security Overview. Sekilas, 
-Security Overview memberi tahu apakah laman tersebut aman. Laman aman 
-ditunjukkan dengan pesan `This page is secure (valid HTTPS).`
+The first thing you see is the Security Overview. At a glance, the Security Overview tells you whether the page is secure. A secure page is indicated with the message `This page is secure (valid HTTPS).`
 
-![ringkasan keamanan, laman aman](images/overview-secure.png)
+![security overview, secure page](images/overview-secure.png)
 
-Klik **View certificate** untuk menampilkan sertifikat server untuk 
-[sumber utama][same-origin-policy]. 
+Click **View certificate** to view the server certificate for the [main origin](https://en.wikipedia.org/wiki/Same-origin_policy).
 
-![tampilan sertifikat](images/view-certificate.png)
+![view certificate](images/view-certificate.png)
 
-Laman tidak-aman ditunjukkan dengan pesan `This page is not secure.`
+A non-secure page is indicated with the message `This page is not secure.`
 
-Panel Security membedakan antara dua tipe laman tidak-aman.
-Jika laman yang diminta disajikan melalui HTTP, maka sumber utama ditandai sebagai 
-tidak aman. 
+The Security Panel distinguishes between two types of non-secure pages. If the requested page is served over HTTP, then the main origin is flagged as not secure.
 
-![ringkasan keamanan, sumber utama tidak aman](images/overview-non-secure.png)
+![security overview, non-secure main origin](images/overview-non-secure.png)
 
-Jika laman yang diminta diambil melalui HTTPS, namun laman kemudian melanjutkan dengan 
-mengambil materi dari sumber lain dengan menggunakan HTTP, maka laman tersebut tetap 
-ditandai tidak aman. Hal ini dikenal sebagai laman [materi campuran][mixed-content].
- Laman materi campuran hanya sebagian terlindungi karena materi 
-HTTP bisa diakses oleh sniffer dan rentan terhadap serangan man-in-the-middle. 
+If the requested page is retrieved over HTTPS, but the page then goes on to retrieve content from other origins using HTTP, then the page is still flagged as not secure. This is known as a [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content) page. Mixed content pages are only partially protected because the HTTP content is accessible to sniffers and vulnerable to man-in-the-middle attacks.
 
-![ringkasan keamanan, materi campuran](images/overview-mixed.png)
+![security overview, mixed content](images/overview-mixed.png)
 
-Klik **View request in Network Panel** untuk membuka tampilan terfilter dari Panel 
-Network dan melihat dengan jelas permintaan apa yang disajikan melalui HTTP. Ini memperlihatkan 
-semua permintaan tak terlindungi dari semua sumber. 
+Click **View request in Network Panel** to open up a filtered view of the Network Panel and see exactly which requests were served over HTTP. This shows all unprotected requests from all origins.
 
-![panel jaringan, sumber daya tidak aman, semua sumber](images/network-all.png)
+## Inspect origins
 
-## Memeriksa sumber
+Use the left panel to inspect an individual secure or non-secure origin.
 
-Gunakan panel kiri untuk memeriksa sumber yang aman atau tidak aman secara individual. 
+Click on a secure origin to view the connection and certificate details for that origin.
 
-Klik pada secure origin untuk menampilkan koneksi dan detail sertifikat untuk 
-sumber tersebut.
+![origin details, secure](images/origin-detail-secure.png)
 
-![detail sumber, aman](images/origin-detail-secure.png)
+If you click on a non-secure origin, the Security Panel provides a link to a filtered view of the Network Panel.
 
-Jika Anda mengeklik pada sumber tidak-aman, Panel Security menyediakan tautan ke tampilan terfilter dari Panel Network. 
+![origin details, non-secure](images/origin-detail-non-secure.png)
 
-![detail sumber, tidak aman](images/origin-detail-non-secure.png)
+Click on the link to see exactly which requests from that origin were served over HTTP.
 
-Klik pada tautan untuk melihat dengan pasti permintaan dari sumber mana yang 
-disajikan melalui HTTP. 
+![network panel, non-secure resources, one origin](images/network-one.png)
 
-![panel jaringan, sumber daya tidak aman, satu sumber](images/network-one.png)
+## Feedback {: #feedback }
 
-
-
-
-
-[mixed-content]: /web/fundamentals/security/prevent-mixed-content/what-is-mixed-content
-[same-origin-policy]: https://en.wikipedia.org/wiki/Same-origin_policy
-[why-https]: /web/fundamentals/security/encrypt-in-transit/why-https
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

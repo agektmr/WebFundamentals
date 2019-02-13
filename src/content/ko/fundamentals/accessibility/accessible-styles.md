@@ -1,82 +1,44 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 알맞은 스타일 지정으로 접근성 개선
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using proper styling to improve accessibility
 
+{# wf_updated_on: 2018-11-19 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: Blink>CSS #}
 
-{# wf_updated_on: 2018-05-23 #}
-{# wf_published_on: 2016-10-04 #}
+# Accessible Styles {: .page-title }
 
-# 액세스 가능한 스타일 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+We've explored two of the crucial pillars of accessibility, focus and semantics. Now let's tackle the third, styling. It's a broad topic that we can cover in three sections.
 
+- Ensuring that elements are styled to support our accessibility efforts by adding styles for focus and various ARIA states.
+- Styling our UIs for flexibility so they can be zoomed or scaled to accommodate users who may have trouble with small text.
+- Choosing the right colors and contrast to avoid conveying information with color alone.
 
+## Styling focus
 
-접근성의 중요한 개념 중 두 가지인 포커스와 의미 체계에 대해 살펴보았습니다.
-이제 세 번째 개념인 스타일 지정에 대해 자세히 알아봅시다. 스타일 지정은 광범위한 주제라, 다음과 같이 세 부분으로 나누어
-설명하겠습니다.
+Generally, any time we focus an element, we rely on the built-in browser focus ring (the CSS `outline` property) to style the element. The focus ring is handy because, without it, it's impossible for a keyboard user to tell which element has the focus. The [WebAIM checklist](http://webaim.org/standards/wcag/checklist){: .external } makes a point of this, requiring that "It is visually apparent which page element has the current keyboard focus (i.e., as you tab through the page, you can see where you are)."
 
- - 포커스와 다양한 ARIA 상태에 대한 스타일을 추가하여
-   접근성을 높이기 위해 요소의 스타일을 지정하는 방법
- - 작은 글씨를 읽는 데 어려움이 있는 사용자를 위해
-   확대하거나 배율을 조절할 수 있도록 UI의 스타일을 유연하게 지정하는 방법
- - 색상만으로 정보를 전달하지 않기 위해 적합한 색상과 대비를 선택하는
-   방법
+![form elements with a focus ring](imgs/focus-ring.png)
 
-## 포커스 스타일 지정
+However, sometimes the focus ring can look distorted or it may just not fit in with your page design. Some developers remove this style altogether by setting the element's `outline` to `0` or `none`. But without a focus indicator, how is a keyboard user supposed to know which item they're interacting with?
 
-일반적으로 요소를 포커스할 때마다 기본 제공 브라우저 포커스
-링(CSS `outline` 속성)을 통해 요소의 스타일을 지정합니다. 포커스 링을 사용하지 않으면
-키보드 사용자가 어떤 요소에 포커스에 있는지 알 수 없으므로
-포커스 링은 무척 편리한 수단인 셈입니다. [WebAIM
-검사 목록](http://webaim.org/standards/wcag/checklist){: .external }에서는
-이 점을 지적하면서 '어떤 페이지 요소에 현재 키보드 포커스가 있는지 시각적으로 분명할 것(예:
-페이지를 탭하며 이동할 때 자신의 위치를 볼 수 있음)'을
-요구합니다.
+Warning: Never set outline to 0 or none without providing a focus alternative!
 
-![포커스 링이 있는 양식 요소](imgs/focus-ring.png)
-
-하지만 때로는 포커스 링이 왜곡되어 보이거나 페이지 디자인에
-맞지 않을 수도 있습니다. 요소의
-`outline`을 `0`이나 `none`으로 설정하여 이 스타일을 완전히 제거하는 개발자도 있습니다. 하지만 포커스 표시기가 없다면
-키보드 사용자가 어떤 항목과 상호 작용 중인지 어찌 알 수 있겠습니까?
-
-Warning: 포커스를 대체할 수단을 제공하지 않은 상태에서는 outline을 0이나 none을 설정하면 안 됩니다!
-
-CSS
-`:hover` *의사 클래스*를 사용하여 컨트롤에 마우스 오버 상태를 추가하는 데 익숙하실지 모르겠습니다. 예를 들어, 링크 요소에 `:hover`를 사용하여
-마우스를 링크 요소 위로 가져갈 때 색상이나 배경을 변경할 수 있습니다. `:hover`와
-유사하게, `:focus` 의사 클래스를 사용하여 포커스가 있는 요소를 대상으로 삼을 수
-있습니다.
+You might be familiar with adding hover states to your controls using the CSS `:hover` *pseudo-class*. For example, you might use `:hover` on a link element to change its color or background when the mouse is over it. Similar to `:hover`, you can use the `:focus` pseudo-class to target an element when it has focus.
 
     /* At a minimum you can add a focus style that matches your hover style */
     :hover, :focus {
       background: #c0ffee;
     }
+    
 
-포커스 링을 제거하는 문제에 대한 다른 해결책으로, 요소에 동일한 마우스 오버 및 포커스 스타일을 지정하여
-키보드 사용자가 포커스가 어디에 있는지
-알 수 없는 문제를 해결할 수 있는 방법도 있습니다. 늘 그렇듯이, 접근성 환경을 개선하면
-모든 사용자의 사용 환경 역시 더 나아집니다.
+An alternative solution to the problem of removing the focus ring is to give your element the same hover and focus styles, which solves the "where's-the-focus?" problem for keyboard users. As usual, improving the accessibility experience improves everyone's experience.
 
-### 입력 모달리티
+### Input modality
 
-![포커스 링이 있는 네이티브 HTML 버튼](imgs/sign-up.png){: .attempt-right }
+![a native HTML button with a focus ring](imgs/sign-up.png){: .attempt-right }
 
-`button` 같은 네이티브 요소의 경우, 브라우저는 사용자 상호 작용이
-마우스나 키보드를 눌러 발생한 것인지 여부를 감지할 수 있으며, 보통은 키보드 상호 작용에 대해서만 포커스 링을
-표시합니다. 예를 들어, 마우스로 네이티브
-`button`을 클릭하면 포커스 링이 없지만 키보드로 탭하면
-포커스 링이 나타납니다.
+For native elements like `button`, browsers can detect whether user interaction occurred via the mouse or the keyboard press, and typically only display the focus ring for keyboard interaction. For example, when you click a native `button` with the mouse there is no focus ring, but when you tab to it with the keyboard the focus ring appears.
 
-이는 마우스 사용자는 스스로 어떤 요소를 클릭했는지 알고 있으므로
-포커스 링이 필요하지 않을 것이라는 논리에 따른 것입니다. 하지만 이와 동일한 동작을 구현하는
-단 하나의 브라우저 간 솔루션은 아직 없습니다. 따라서
-어떤 요소에 `:focus` 스타일을 지정할 경우
-사용자가 그 요소를 클릭하거나 키보드로 포커스할 때 스타일이 표시됩니다. 다음
-모조 버튼을 클릭하여 `:focus` 스타일이 항상 적용되는지 살펴보세요.
+The logic here is that mouse users are less likely to need the focus ring because they know what element they clicked. Unfortunately there isn't currently a single cross-browser solution that yields this same behavior. As a result, if you give any element a `:focus` style, that style will display when *either* the user clicks on the element or focuses it with the keyboard. Try clicking on this fake button and notice the `:focus` style is always applied.
 
     <style>
       fake-button {
@@ -86,276 +48,142 @@ CSS
         cursor: pointer;
         user-select: none;
       }
-
+    
       fake-button:focus {
         outline: none;
         background: pink;
       }
     </style>
     <fake-button tabindex="0">Click Me!</fake-button>
+    
 
 {% framebox height="80px" %}
-<style>
-  fake-button {
-    display: inline-block;
-    padding: 10px;
-    border: 1px solid black;
-    cursor: pointer;
-    user-select: none;
-  }
+<style>fake-button {display: inline-block;padding: 10px;border: 1px solid black;cursor: pointer;user-select: none;}fake-button:focus {outline: none;background: pink;}</style>
+<fake-button tabindex="0">Click Me!</fake-button> {% endframebox %}
 
-  fake-button:focus {
-    outline: none;
-    background: pink;
-  }
-</style>
-<fake-button tabindex="0">Click Me!</fake-button>
-{% endframebox %}
+This can be a bit annoying, and often times developer will resort to using JavaScript with custom controls to help differentiate between mouse and keyboard focus.
 
-이는 약간 성가신 일이 될 수 있는데, 개발자는 종종 사용자설정 컨트롤이 있는
-자바스크립트를 사용하여 마우스 포커스와 키보드 포커스를 구분하곤
-합니다.
+In Firefox, the `:-moz-focusring` CSS pseudo-class allows you to write a focus style that is only applied if the element is focused via the keyboard, quite a handy feature. While this pseudo-class is currently only supported in Firefox, [there is currently work going on to turn it into a standard](https://github.com/wicg/modality){: .external }.
 
-Firefox에서는 `:-moz-focusring` CSS 의사 클래스를 사용하여 키보드를 통해 요소를 포커스할 경우에만 적용되는 포커스 스타일을
-작성할 수 있는데, 꽤 편리한
-기능입니다. 지금은 이런 의사 클래스가 Firefox에서만 지원되지만,
-[현재 이를 표준화하는 작업이
-진행 중입니다](https://github.com/wicg/modality){: .external }.
+There is also [this great article by Alice Boxhall and Brian Kardell](https://www.oreilly.com/ideas/proposing-css-input-modality){: .external } that explores the topic of modality and contains prototype code for differentiating between mouse and keyboard input. You can use their solution today, and then include the focus ring pseudo-class later when it has more widespread support.
 
-[Alice Boxhall과 Brian
-Kardell이 쓴 문서](https://www.oreilly.com/ideas/proposing-css-input-modality){: .external }도 읽어보시기 바랍니다.
-모달리티를 주제로 자세하게 설명되어 있고 마우스 입력과 키보드 입력을
-구분하는 프로토타입 코드도 들어 있습니다. 지금 바로 이 솔루션을
-사용할 수 있으며, 이후 더욱 폭넓게 지원되는 시점이 오면 포커스 링 의사 클래스를
-포함하면 될 것입니다.
+## Styling states with ARIA
 
-## ARIA를 이용한 상태 스타일 지정
+When you build components, it's common practice to reflect their state, and thus their appearance, using CSS classes controlled with JavaScript.
 
-구성 요소를 빌드할 때는 보통 자바스크립트로 제어하는 CSS 클래스를 사용하여 구성 요소의 상태를 반영하여
-그 모양도 자연스럽게 반영합니다.
+For example, consider a toggle button that goes into a "pressed" visual state when clicked and retains that state until it is clicked again. To style the state, your JavaScript might add a `pressed` class to the button. And, because you want good semantics on all your controls, you would also set the `aria-pressed` state for the button to `true`.
 
-예를 들어, 클릭하면 '눌러진' 모습의 시각적 상태로 변하고
-다시 클릭할 때까지는 그 상태 그대로 유지하는 전환 버튼을 생각해 보세요. 상태의
-스타일을 지정하기 위해 자바스크립트가 버튼에 `pressed` 클래스를 추가할 수도 있습니다. 또한, 모든
-컨트롤에서 정상적인 의미 체계를 구현해야 할 것이므로 버튼에 대한
-`aria-pressed` 상태를 `true`로 설정합니다.
-
-여기서 채택하는 유용한 방법은 바로 클래스를 완전히 제거하고
-ARIA 속성만 사용하여 요소의 스타일을 지정하는 것입니다. 그러면 버튼을 누른 상태에 대한 CSS
-선택기를 아래에서
-
+A useful technique to employ here is to remove the class altogether, and just use the ARIA attributes to style the element. Now you can update the CSS selector for the pressed state of the button from this
 
     .toggle.pressed { ... }
     
 
-아래와 같이 업데이트할 수 있습니다.
-
+to this.
 
     .toggle[aria-pressed="true"] { ... }
     
 
-그러면 ARIA 상태와
-요소의 모양 사이에 논리적이고 의미 있는 관계가 생성되고 불필요한 여분의 코드도 없앨 수 있습니다.
+This creates both a logical and a semantic relationship between the ARIA state and the element's appearance, and cuts down on extra code as well.
 
-## 다중 기기 반응형 디자인
+## Multi-device responsive design
 
-최상의 다중 기기 사용 환경을 제공하려면
-반응적으로 디자인하는 것이 좋다는 점은 익히 알고 계시겠지만, 이런 디자인은
-접근성 향상에 기여하는 바도 큽니다.
+We know that it's a good idea to design responsively to provide the best multi-device experience, but responsive design also yields a win for accessibility.
 
-[Udacity.com](https://www.udacity.com/courses/all)과 같은 사이트를 생각해 보세요.
+Consider a site like [Udacity.com](https://www.udacity.com/courses/all):
 
-![100% 배율 상태의 Udacity.com](imgs/udacity.jpg)
+![Udacity.com at 100% magnification](imgs/udacity.jpg)
 
-작은 인쇄물을 읽는 데 어려움을 겪는 저시력 사용자는 예컨대
-화면 배율을 400%로 높여서 볼 수 있을 것입니다. 반응적으로 디자인한 이 사이트에서는 UI가 '더 작은 뷰포트'(실제로는 큰 페이지에서 더 작은 뷰포트)에 맞춰 저절로 재조정되는데,
-화면 배율을 조정해야 하는 데스크톱 사용자와
-모바일 스크린 리더 사용자에게도
-훌륭한 기능입니다. 그야말로 윈-윈 상황인 셈입니다. 다음은 같은 페이지를
-400%의 배율로 조정한 화면입니다.
+A low-vision user who has difficulty reading small print might zoom in the page, perhaps as much as 400%. Because the site is designed responsively, the UI will rearrange itself for the "smaller viewport" (actually for the larger page), which is great for desktop users who require screen magnification and for mobile screen reader users as well. It's a win-win. Here's the same page magnified to 400%:
 
-![400% 배율로 조정한 Udacity.com](imgs/udacity-zoomed.jpg)
+![Udacity.com at 400% magnification](imgs/udacity-zoomed.jpg)
 
-사실, 반응적으로 디자인하는 것만으로도 페이지가 '...텍스트 크기를 2배로 확대할 때 올바로 작동하고 읽을 수 있어야 한다'는 [WebAIM
-검사 목록의 규칙 1.4.4](http://webaim.org/standards/wcag/checklist#sc1.4.4){: .external }를
-준수할 수
-있습니다.
+In fact, just by designing responsively, we're meeting [rule 1.4.4 of the WebAIM checklist](http://webaim.org/standards/wcag/checklist#sc1.4.4){: .external }, which states that a page "...should be readable and functional when the text size is doubled."
 
-이 가이드에서 반응형 디자인의 모든 사항을 다루려는 것은 아니지만,
-반응적 사용 환경에
-유리하게 작용하고 사용자가 콘텐츠를 더욱 원활하게 사용할 수 있게 해줄 몇 가지 중요한 사항이 있습니다.
+Going over all of responsive design is outside the scope of this guide, but here are a few important takeaways that will benefit your responsive experience and give your users better access to your content.
 
- - 첫째, 항상 알맞은 `viewport` 메타 태그를 사용하세요.<br>
-   `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
-   <br>`width=device-width`로 설정하면
-   기기 독립적 픽셀이 화면의 너비와 일치하고
-   `initial-scale=1`로 설정하면 CSS 픽셀과 기기 독립적 픽셀 간에 1:1 관계로
-   설정됩니다. 이렇게 설정하면 브라우저에서
-   콘텐츠 크기가 화면 크기에 맞춰 조정되므로, 사용자에게 텍스트가 보기 불편하게 변형되는 것을
-   막을 수 있습니다.
+- First, make sure you always use the proper `viewport` meta tag.  
+    `<meta name="viewport" content="width=device-width, initial-scale=1.0">`   
+    Setting `width=device-width` will match the screen's width in device-independent pixels, and setting `initial-scale=1` establishes a 1:1 relationship between CSS pixels and device-independent pixels. Doing this instructs the browser to fit your content to the screen size, so users don't just see a bunch of scrunched-up text.
 
-![휴대폰 디스플레이에서 뷰포트 메타 태그를 사용하지 않은 경우와 사용한 경우의 비교](imgs/scrunched-up.jpg)
+![a phone display without and with the viewport meta tag](imgs/scrunched-up.jpg)
 
-Warning: 뷰포트 메타 태그를 사용할 때는
-maximum-scale=1이나 user-scaleable=no로 설정하지 않도록 주의하세요. 즉, 화면/축소할 필요가 있다면 사용자가 스스로 하도록 두세요!
+Warning: When using the viewport meta tag, make sure you don't set maximum-scale=1 or set user-scaleable=no. Let users zoom if they need to!
 
- - 유념해야 할 또 다른 기법은 반응적 그리드를 이용한 디자인입니다. Udacity
-   사이트에서 살펴본 바와 같이, 그리드를 이용한 디자인이란 페이지의 크기가 바뀔 때
-   콘텐츠가 리플로우하게 된다는 의미입니다. 하드 코딩한 픽셀 값 대신 퍼센트, em 또는 rem과 같은
-   상대 단위를 사용할 때 이런 레이아웃이 흔히
-   생성됩니다. 이런 식으로 처리할 때의 이점은 텍스트와 콘텐츠를 확대하고
-   페이지의 다른 항목은 축소할 수 있다는 점입니다. 따라서 배율 조정으로 레이아웃이 바뀌더라도
-   DOM 순서와 읽기 순서가 그대로 유지됩니다.
+- Another technique to keep in mind is designing with a responsive grid. As you saw with the Udacity site, designing with a grid means your content will reflow when the page changes size. Often these layouts are produced using relative units like percents, ems, or rems instead of hard-coded pixel values. The advantage of doing it this way is that text and content can enlarge and force other items down the page. So the DOM order and the reading order remain the same, even if the layout changes because of magnification.
 
- - 텍스트 크기와 같은 것에 대해서도 픽셀 값 대신 `em` 또는 `rem`과 같은
-   상대 단위를 사용해 보세요. 일부 브라우저는 사용자 기본 설정에서만
-   텍스트 크기 조정 기능을 지원하며, 텍스트에 픽셀 값을 사용할 경우에는 이 설정이
-   복사본에 영향을 주지 않습니다. 하지만 상대 단위를 전면적으로 사용한 경우에는
-   사이트 복사본이 업데이트되면서 사용자의 기본 설정을 반영하게 됩니다.
+- Also, consider using relative units like `em` or `rem` for things like text size, instead of pixel values. Some browsers support resizing text only in user preferences, and if you're using a pixel value for text, this setting will not affect your copy. If, however, you've used relative units throughout, then the site copy will update to reflect the user's preference.
 
- - 마지막으로, 휴대기기에 디자인이 표시될 때는 버튼이나 링크와
-   같은 대화형 요소가 충분히 크고 그 주변에 충분한 공간이 있는지
-   확인하여 실수로 다른 요소 위에 중첩되지 않고 쉽게 누를 수
-   있도록 해야 합니다. 이는 모든 사용자에게 이로운 점이겠지만, 특히
-   운동장애가 있는 사람에게 도움이 됩니다.
+- Finally, when your design is displayed on a mobile device, you should ensure that interactive elements like buttons or links are large enough, and have enough space around them, to make them easy to press without accidentally overlapping onto other elements. This benefits all users, but is especially helpful for anyone with a motor impairment.
 
-최소 권장 터치 대상 크기는 모바일 뷰포트이 올바로 설정된 사이트에서
-기기 독립적 픽셀 기준으로 약 48입니다. 예를 들어, 어떤 아이콘의
-너비와 높이가 24px에 불과할 수 있지만 안쪽 여백을 추가로 사용해
-탭 대상 크기를 48px까지 확대할 수 있습니다. 48x48픽셀의 면적은 약 9mmx9mm에 해당하며,
-사람의 손가락 끝이 화면에 닿는 면적과 비슷합니다.
+A minimum recommended touch target size is around 48 device independent pixels on a site with a properly set mobile viewport. For example, while an icon may only have a width and height of 24px, you can use additional padding to bring the tap target size up to 48px. The 48x48 pixel area corresponds to around 9mm, which is about the size of a person's finger pad area.
 
-![48픽셀 크기의 터치 대상 두 개를 보여주는 그림](imgs/touch-target.jpg)
+![a diagram showing a couple of 48 pixel touch targets](imgs/touch-target.jpg)
 
-또한, 터치 대상은 서로 가로 및 세로 방향으로 약 8픽셀 이상의 간격으로 떨어져 있어야 합니다.
-그래야 사용자가 손가락으로 한 탭 대상을
-누를 때 본의 아니게 다른 탭 대상을 누르게 되는 상황을 피할 수 있습니다.
+Touch targets should also be spaced about 8 pixels apart, both horizontally and vertically, so that a user's finger pressing on one tap target does not inadvertently touch another tap target.
 
-## 색상과 대비
+## Color and contrast
 
-시력이 좋은 사람은 다른 사람도 전부 자기처럼 색을 잘 구분하고
-글자를 쉽게 읽을 수 있을 것이라 생각하기 십상이지만, 물론 그건 사실이 아니죠.
-모든 이가 쉽게 접근할 수 있고 즐거움을 느끼는 디자인을 만들기 위해
-어떻게 색상과 대비를 효과적으로 사용할 수 있을지 살펴봅시다.
+If you have good vision, it's easy to assume that everyone perceives colors, or text legibility, the same way you do &mdash; but of course that's not the case. Let's wrap things up by looking at how we can effectively use color and contrast to create pleasant designs that are accessible to everyone.
 
-어렵지 않게 생각해 볼 수 있겠지만, 어떤 이에겐 쉽게 구분되는 색 조합이
-다른 누군가에겐 어렵거나 아예 불가능한 일일 수도 있습니다. 이는 보통 전경색과 배경색의 *광도* 간 관계인
-*색상과 대비*의 문제로
-귀결됩니다. 색상이 서로 유사하면 명암비가 낮고 색상 차이가 크게 날수록
-명암비가 높아집니다.
+As you might imagine, some color combinations that are easy for some people to read are difficult or impossible for others. This usually comes down to *color contrast*, the relationship between the foreground and background colors' *luminance*. When the colors are similar, the contrast ratio is low; when they are different, the contrast ratio is high.
 
-[WebAIM 가이드라인](http://webaim.org/standards/wcag/){: .external }에서는
-모든 텍스트에 대해 AA(최소) 명암비인 4.5:1을 권장합니다. 한 가지 예외는
-매우 큰 텍스트(기본 본문 텍스트보다 120~150% 이상 큰 텍스트)의 경우
-명암비를 3:1까지 낮출 수 있다는 점입니다. 아래에 표시된 명암비에 차이에
-따른 시각적 효과를 살펴보세요.
+The [WebAIM guidelines](http://webaim.org/standards/wcag/){: .external } recommend an AA (minimum) contrast ratio of 4.5:1 for all text. An exception is made for very large text (120-150% larger than the default body text), for which the ratio can go down to 3:1. Notice the difference in the contrast ratios shown below.
 
-![다양한 명암비의 비교](imgs/contrast-ratios.jpg)
+![comparison of various contrast ratios](imgs/contrast-ratios.jpg)
 
-레벨 AA에 대해 4.5:1의 명암비를 선택했습니다. 이 비율은
-시력이 약 20/40 정도인 사용자가 흔히 겪는 대비 민감도 상실을 보상해주기
-때문입니다. 20/40은 약 80세 연령의 사람들에게서
-보편적으로 측정되는 시력으로 알려져 있습니다. 시력이 나쁘거나 색각 이상이 있는 사용자를 위해
-본문 텍스트의 명암비를 7:1까지 높일 수 있습니다.
+The contrast ratio of 4.5:1 was chosen for level AA because it compensates for the loss in contrast sensitivity usually experienced by users with vision loss equivalent to approximately 20/40 vision. 20/40 is commonly reported as typical visual acuity of people at about age 80. For users with low vision impairments or color deficiencies, we can increase the contrast up to 7:1 for body text.
 
-Chrome용 [Accessibility DevTools
-확장 프로그램](https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb){: .external }을
-사용하여 명암비를 식별할 수 있습니다. 이 Chrome Devtools를
-사용하는 한 가지 이점은 현재 색상에 대해 AA 및 AAA(강화) 레벨의 대안을 제안해 준다는 점으로,
-제안되는 값을 클릭하면 앱에서 어떻게 나타날지 미리 볼 수 있습니다.
+You can use the [Accessibility DevTools extension](https://chrome.google.com/webstore/detail/accessibility-developer-t/fpkknkljclfencbdbgkenhalefipecmb){: .external } for Chrome to identify contrast ratios. One benefit of using the Chrome Devtools is that they will suggest AA and AAA (enhanced) alternatives to your current colors, and you can click the values to preview them in your app.
 
-색상/대비 감사 기능을 실행하려면 다음의 기본 절차를 따르세요.
+To run a color/contrast audit, follow these basic steps.
 
- 1. 확장 프로그램 설치 후, `Audits`를 클릭합니다.
- 1. `Accessibility`를 제외한 모든 항목을 선택 취소합니다.
- 1. `Audit Present State`를 클릭합니다.
- 1. 대비 관련 경고가 있는지 확인합니다.
+1. After installing the extension, click `Audits`
+2. Uncheck everything except `Accessibility`
+3. Click `Audit Present State`
+4. Note any contrast warnings
 
-![개발 도구의 대비 감사 대화상자](imgs/contrast-audit.png)
+![the devtools contrast audit dialog](imgs/contrast-audit.png)
 
-WebAIM 자체에서 편리한 [색상 대비
-검사기](http://webaim.org/resources/contrastchecker/){: .external }를 제공하므로, 이 도구를 사용해 색상 쌍의 대비를
-검사할 수 있습니다.
+WebAIM itself provides a handy [color contrast checker](http://webaim.org/resources/contrastchecker/){: .external } you can use to examine the contrast of any color pair.
 
-### 색상만으로 정보를 전달하지는 마세요
+### Don't convey information with color alone
 
-색각 이상을 가진 사용자 수가 약 3억 2천만 명이나 됩니다. 대략 남성 12명 중 1명,
-여성 200명 중 1명꼴로 어떤 형태로든 '색맹'을 겪고 있습니다. 즉,
-사용자 중 1/20(5%)이 개발자가 의도한 대로 사이트를 이용하지 못할 것이라는 뜻입니다.
-따라서 색상에 의존해 정보를 전달한다면 그 많은 수의 사용자에겐 제대로 정보가 전달되지 않게
-됩니다.
+There are roughly 320 million users with color vision deficiency. About 1 in 12 men and 1 in 200 women have some form of "color blindness"; that means about 1/20th, or 5%, of your users will not experience your site the way you intended. When we rely on color to convey information, we push that number to unacceptable levels.
 
-참고: '색맹'이라는 말은 색 구분에 문제가 있는 사람의 시력 조건을 묘사하기 위해 흔히 사용되는 용어지만,
-사실은 정말로 색맹인 사람은
-극소수입니다. 색각 이상이 있는 사람들은 대부분 일부 색상이나 대부분의 색상을 보고
-구분할 수 있지만, 빨간색과 녹색(가장 흔함), 갈색과 주황색,
-파란색과 자주색과 같은 특정 색상을 구분하는 데 어려움을 겪습니다.
+Note: The term "color blindness" is often used to describe a visual condition where a person has trouble distinguishing colors, but in fact very few people are truly color blind. Most people with color deficiencies can see some or most colors, but have difficulty differentiating between certain colors such as reds and greens (most common), browns and oranges, and blues and purples.
 
-예를 들어, 입력 양식에서 전화번호가 잘못되었음을 표시하기 위해
-전화번호에 빨간색 밑줄이 표시될 수 있을 겁니다. 하지만 색각 이상이 있는 사용자나 스크린 리더 사용자에게는
-설령 그 정보가 전달된다고 해도 제대로 전달되지 않습니다. 따라서 항상
-중요한 정보에는 사용자가 여러 경로를 통해 접근할 수 있도록 해야 합니다.
+For example, in an input form, a telephone number might be underlined in red to show that it is invalid. But to a color deficient or screen reader user, that information is not conveyed well, if at all. Thus, you should always try to provide multiple avenues for the user to access critical information.
 
-![오류가 빨간색 밑줄로 표시된 입력 양식](imgs/input-form1.png)
+![an input form with an error underlined in red](imgs/input-form1.png)
 
-[WebAIM 검사 목록의
-1.4.1](http://webaim.org/standards/wcag/checklist#sc1.4.1){: .external }에
-'콘텐츠를 전달하거나 시각적 요소를 구분할 유일한 방법으로
-색상을 사용하면 안 된다'고 규정되어 있습니다. 또한, 특정한 대비 요건을 충족하지 않는 한 '색상만으로 링크를 주변 텍스트와 구분하면 안 된다'고도
-규정되어
-있습니다. 검사 목록에서는 그 대신
-(CSS `text-decoration` 속성을 사용하여)
-밑줄과 같은 다른 표시기를 추가해 링크가 활성 상태일 때 이를 나타낼 것을 권장합니다.
+The [WebAIM checklist states in section 1.4.1](http://webaim.org/standards/wcag/checklist#sc1.4.1){: .external } that "color should not be used as the sole method of conveying content or distinguishing visual elements." It also notes that "color alone should not be used to distinguish links from surrounding text" unless they meet certain contrast requirements. Instead, the checklist recommends adding an additional indicator such as an underscore (using the CSS `text-decoration` property) to indicate when the link is active.
 
-이전의 예시를 쉽게 수정할 수 있는 한 가지 방법은 전화번호가 잘못되었으며 그 이유는 무엇인지 알려주는 추가 메시지를
-입력란에 추가하는 것입니다.
+An easy way to fix the previous example is to add an additional message to the field, announcing that it is invalid and why.
 
-![명확하게 하기 위한 오류 메시지가 추가된 입력 양식](imgs/input-form2.png)
+![an input form with an added error message for clarity](imgs/input-form2.png)
 
-앱을 빌드할 때 이런 사항을 염두에 두고 중요한 정보를 전달하는 데
-색상에 지나치게 의존하는 부분이 생기지 않도록
-주의하세요.
+When you're building an app, keep these sorts of things in mind and watch out for areas where you may be relying too heavily on color to convey important information.
 
-다양한 사람들에게 사이트가 어떤 모습으로 보일지 궁금하거나
-UI에 색상을 많이 사용할 경우 [NoCoffee Chrome
-확장 프로그램](https://chrome.google.com/webstore/detail/nocoffee/jjeeggmbnhckmgdhmgdckeigabjfbddl){: .external }을
-사용해 다양한 유형의 색맹을 비롯한 다양한 형태의 시각장애를
-시뮬레이션 해볼 수 있습니다.
+If you're curious about how your site looks to different people, or if you rely heavily on the use of color in your UI, you can use the [NoCoffee Chrome extension](https://chrome.google.com/webstore/detail/nocoffee/jjeeggmbnhckmgdhmgdckeigabjfbddl){: .external } to simulate various forms of visual impairment, including different types of color blindness.
 
-### 고대비 모드
+### High contrast mode
 
-사용자가 고대비 모드를 사용하여 전경색과 배경색을 반전시킬 수 있는데,
-이를 통해 텍스트를 더 돋보이게 하는 데 도움이 될 때가 많습니다. 시력이 나쁜
-사용자는 고대비 모드를 통해 페이지의 콘텐츠를 훨씬 더 쉽게
-탐색할 수 있습니다. 시스템에서 고대비 설정을 수행할 수 있는 몇 가지 방법이 있습니다.
+High-contrast mode allows a user to invert foreground and background colors, which often helps text stand out better. For someone with a low vision impairment, high-contrast mode can make it much easier to navigate the content on the page. There are a few ways to get a high-contrast setup on your machine.
 
-Mac OSX 및 Windows와 같은 운영체제에서는 시스템 레벨에 있는 모든 것에
-사용할 수 있는 고대비 모드를 제공합니다. 또는 사용자가
-[Chrome High Contrast
-확장 프로그램](https://chrome.google.com/webstore/detail/high-contrast/djcfdncoelnlbldjfhinnjlhdjlikmph){: .external }과
-같은 확장 프로그램을 설치하여 특정 앱에서만 고대비 모드를 사용하도록 할 수 있습니다.
+Operating systems like Mac OSX and Windows offer high-contrast modes that can be enabled for everything at the system level. Or users can install an extension, like the [Chrome High Contrast extension](https://chrome.google.com/webstore/detail/high-contrast/djcfdncoelnlbldjfhinnjlhdjlikmph){: .external } to enable high-contrast only in that specific app.
 
-고대비 설정을 활성화하고 애플리케이션에서 모든 UI가
-표시되고 사용 가능한 상태인지 확인하는 실습을 해보면 유용할 것입니다.
+A useful exercise is to turn on high-contrast settings and verify that all of the UI in your application is still visible and usable.
 
-예를 들어, 탐색 메뉴에서는 희미한 배경색을 사용하여 현재 어떤 페이지가 선택되어 있는지 표시할 수
-있을 것입니다. 고대비 확장 프로그램에서 이런 페이지를 보면
-희미한 배경색이 완전히 사라지고 그러면서
-사용자는 어떤 페이지가 활성 상태인지 알 수 있습니다.
+For example, a navigation bar might use a subtle background color to indicate which page is currently selected. If you view it in a high-contrast extension, that subtlety completely disappears, and with it goes the reader's understanding of which page is active.
 
-![고대비 모드의 탐색 메뉴](imgs/tab-contrast.png)
+![a navigation bar in high contrast mode](imgs/tab-contrast.png)
 
-이와 유사하게, 이전 과정의 예를 생각해 보면 잘못된 전화번호 입력란의
-빨간색 밑줄이 구분하기 힘든 파란색-녹색 조합으로 표시될 수도
-있습니다.
+Similarly, if you consider the example from the previous lesson, the red underline on the invalid phone number field might be displayed in a hard-to-distinguish blue-green color.
 
-![고대비 모드에서 오류 입력란이 있는 양식](imgs/high-contrast.jpg)
+![a form with an error field in high contrast mode](imgs/high-contrast.jpg)
 
-이전 과정에서 설명한 명암비 요건을 충족할 경우
-고대비 모드 지원에는 아무런 문제가 없을 것입니다. 하지만
-Chrome High Contrast 확장 프로그램을 설치하고
-페이지를 빠르게 훑어보면서 모든 것이 예상한 대로 올바로 작동하고 정상적인 모습인지만
-확인해 봐도 더욱 안심될 겁니다.
+If you are meeting the contrast ratios covered in the previous lessons you should be fine when it comes to supporting high-contrast mode. But for added peace of mind, consider installing the Chrome High Contrast extension and giving your page a once-over just to check that everything works, and looks, as expected.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

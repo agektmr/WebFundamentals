@@ -1,116 +1,74 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: アクセシビリティの画面フォーカスの概要
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Overview of screen focus in accessibility
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on:2016-10-04 #}
-{# wf_published_on:2016-10-04 #}
+# Introduction to Focus {: .page-title }
 
-# フォーカスの紹介 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+In this lesson we'll talk about *focus* and how you can manage it in your application. Focus refers to which control on the screen (an input item such as a field, checkbox, button, or link) currently receives input from the keyboard, and from the clipboard when you paste content.
 
+This is a great place to start learning about accessibility because we all know how to use a keyboard, it's easy to relate to and test, and it benefits virtually all users.
 
+Users with motor impairments, which could be anything from permanent paralysis to a sprained wrist, may rely on a keyboard or switch device to navigate your page, so a good focus strategy is critical to providing a good experience for them.
 
-このレッスンでは、*フォーカス*と、アプリケーションでフォーカスを管理する方法について説明します。フォーカスとは、現在キーボードからの入力を受信している画面上のコントロール（フィールド、チェックボックス、ボタン、リンクなどの入力アイテム）、またはコンテンツを貼り付けた場合は、クリップボードからの入力を現在受信している画面上のコントロールを意味します。
+And for the power users who know every keyboard shortcut on their machine, being able to quickly navigate your site with the keyboard alone will certainly make them more productive.
 
+Thus, a well implemented focus strategy ensures that everyone using your application has a better experience. We'll see in the upcoming lessons that the effort you put into focus is an important basis for supporting assistive technology users and, indeed, all users.
 
+## What is focus?
 
-すべてのユーザーがキーボードの使い方を知っており、関連付けやテストが簡単で、大半のユーザーにメリットがあるため、アクセシビリティについて学習する際は、まずフォーカスに注目することをお勧めします。
+Focus determines where keyboard events go in the page at any given moment. For instance, if you focus a text input field and begin typing, the input field receives the keyboard events and displays the characters you type. While it has focus, it will also receive pasted input from the clipboard.
 
+![keyboard focus in a text field](imgs/keyboard-focus.png)
 
+The currently focused item is often indicated by a *focus ring*, the style of which depends on both the browser and on any styling the page author has applied. Chrome, for instance, typically highlights focused elements with a blue border, whereas Firefox uses a dashed border.
 
-永久まひや手首の捻挫など、運動障害のあるユーザーは、キーボードを利用するか、デバイスを切り替えてページを操作します。そのため、こうしたユーザーに快適なエクスペリエンスを提供するには、優れたフォーカス戦略が重要です。
+![sign up button](imgs/sign-up.png)
 
+Some users operate their computer almost entirely with the keyboard or other input device. For those users, focus is critical; it's their primary means of reaching everything on the screen. For that reason, the Web AIM checklist states in section 2.1.1 that [all page functionality should be available using the keyboard](http://webaim.org/standards/wcag/checklist#sc2.1.1){: .external }, unless it's something you cannot do with a keyboard, such as freehand drawing.
 
+As a user, you can control which element is currently focused using `Tab`, `Shift+Tab`, or the arrow keys. On Mac OSX this works a little differently: while Chrome always lets you navigate with `Tab`, you need to press `Option+Tab` to change focus in other browsers like Safari. (You can change this setting in the Keyboard section of System Preferences.)
 
+![keyboard preferences dialog](imgs/system-prefs2.png)
 
-マシンのすべてのキーボード ショートカットを知っているパワーユーザーは、キーボードだけでサイトをすばやく操作できる機能があれば、確実に生産性が向上します。
+The order in which focus proceeds forward and backward through interactive elements via `Tab` is called, not surprisingly, the *tab order*. Ensuring that you design your page with a logical tab order is an important step that we'll cover later.
 
+## What is focusable?
 
+Built-in interactive HTML elements like text fields, buttons, and select lists are *implicitly focusable*, meaning they are automatically inserted into the tab order and have built-in keyboard event handling without developer intervention.
 
-したがって、フォーカス戦略をうまく実装することで、アプリケーションを使用するすべてのユーザーにより快適なエクスペリエンスを提供できます。支援技術のユーザー、実際にはすべてのユーザーをサポートする上で、フォーカスに注力することがいかに重要かを今後のレッスンで説明します。
+![implicitly focusable fields](imgs/implicitly-focused.png)
 
+But not all elements are focusable; paragraphs, divs, and various other page elements are not focused as you tab through the page, and that's by design. There's generally no need to focus something if the user can't interact with it.
 
+![not all elements are focusable](imgs/not-all-elements.png)
 
-##  フォーカスとは
+## Experiencing focus
 
-フォーカスは、任意の時点におけるキーボード イベントの行き先を決定します。たとえば、テキスト入力フィールドにフォーカスを合わせて入力を開始すると、入力フィールドはキーボード イベントを受信し、入力された文字を表示します。フォーカスがある間は、クリップボードから貼り付けられた入力も受信します。
+Let's try some of the focus techniques we just discussed. Using Chrome, go to this [airline site mockup page](http://udacity.github.io/ud891/lesson2-focus/01-basic-form/){: .external } and search for a specific ticket **using only keyboard input**. The page doesn't accept mouse input, so you can't fudge the exercise (not that we don't trust you ;-).
 
+![airline site mockup](imgs/airlinesite2.png)
 
-![テキスト フィールドのキーボード フォーカス](imgs/keyboard-focus.png)
+The ticket parameters you should specify are:
 
-現在フォーカスされているアイテムは、多くの場合、*フォーカス リング*で示されます。このスタイルは、ブラウザとページ作成者が適用したスタイル設定の両方に依存します。たとえば、Chrome では、通常、フォーカスされている要素が青色の枠でハイライト表示されますが、Firefox では破線が使用されます。
+- one way
+- to Melbourne
+- leaving on 12 October 2017 (10/12/2017)
+- returning on 23 October 2017 (10/23/2017)
+- window seat
+- do not want to receive promotional offers
 
+When you successfully complete the form with no input errors and activate the Search button, the form will simply clear and reset. Go ahead and complete the form, then come back.
 
-![サインアップ ボタン](imgs/sign-up.png)
+Let's examine how the form uses your keyboard input. Starting with your first few `Tab` presses, the browser highlights the navigation items for Flights, Hotels, and Rental Cars. As you continue to press `Tab` you proceed to the radiobutton group where you can choose from Round Trip, One Way, or Multi City using the arrow keys.
 
-一部のユーザーは、ほぼすべてのコンピュータ操作にキーボードまたはその他の入力デバイスを使用します。このようなユーザーにとって、フォーカスは画面上のあらゆる要素にアクセスする主要な手段であり、非常に重要なものです。このような理由から、WebAIM チェックリストのセクション 2.1.1 では、キーボードで処理できないもの（手書き図など）を除き、[すべてのページ機能をキーボードで使用できるようにする必要がある](http://webaim.org/standards/wcag/checklist#sc2.1.1){: .external }と明記しています。
+Continue through the name and address fields, filling in the required information. When you arrive at the destination select element, you can use the arrow keys to choose a city, or you can start typing to autocomplete the field. Similarly, in the date fields, you can use the arrow keys or just type a date.
 
+Selecting a seat type also relies on the arrow keys, or you can type "w", "a", or "n" to jump to a seat option. Then you can disable the promotional offers default by pressing the spacebar while the checkbox is focused. Finally, focus the Search button and press `Enter` to submit the form.
 
+It's very handy to interact with a form using just the keyboard and to not have to switch to the mouse and back to complete a task. Because all of the elements used in the form are native HTML tags with implicit focus, the form works fine with the keyboard, and you don't have to write any code to add or manage focus behavior.
 
+## Feedback {: #feedback }
 
-ユーザーは、`Tab`、`Shift+Tab`、または矢印キーを使用して、現在フォーカスされている要素を制御できます。Mac OSX では、この動作は少し異なります。Chrome では常に `Tab` でナビゲートできますが、Safari などの他のブラウザでは `Option+Tab` を押してフォーカスを変更する必要があります（この設定は、[System Preferences] の [Keyboard] セクションで変更できます）。
-
-
-![キーボード プリファレンスのダイアログ](imgs/system-prefs2.png)
-
-フォーカスが `Tab` でインタラクティブな要素を前後に移動する順序は、*タブオーダー*と呼ばれます。後ほど説明しますが、論理的なタブオーダーでページを設計することは重要なステップとなります。
-
-
-
-##  フォーカス可能とは
-
-テキスト フィールド、ボタン、選択リストなどの組み込みのインタラクティブな HTML 要素は、*暗黙的にフォーカスが可能*です。つまり、これらの要素は自動的にタブオーダーに追加され、デベロッパーが手を加えなくても最初からキーボード イベントを処理できるようになっています。
-
-
-
-![暗黙的にフォーカス可能なフィールド](imgs/implicitly-focused.png)
-
-ただし、すべての要素がフォーカス可能とは限りません。段落、div、その他のさまざまなページ要素は設計上、ページをタブで移動してもフォーカスされないような設計になっています。通常、ユーザーが操作できないものは、フォーカスする必要はありません。
-
-
-
-![すべての要素がフォーカス可能とは限らない](imgs/not-all-elements.png)
-
-##  フォーカスの使用
-
-説明したフォーカス技術の一部を試してみましょう。Chrome を使用して、この[航空会社サイトのモックアップ ページ](http://udacity.github.io/ud891/lesson2-focus/01-basic-form/){: .external }に移動し、**キーボード入力のみを使用して**特定のチケットを検索します。確実にキーボードで操作をしてもらうため、このページはマウス入力を受け付けないようになっています（皆さんを信頼していないわけではありません）。
-
-
-
-![航空会社サイトのモックアップ](imgs/airlinesite2.png)
-
-指定するチケット パラメータは次のとおりです。
-
- - 片道
- - メルボルン行き
- - 出発日は 2017 年 10 月 12 日（10/12/2017）
- - 帰着日は 2017 年 10 月 23 日（10/23/2017）
- - 窓側の座
- - プロモーション オファーは受け取らない
-
-入力エラーを出さずにフォーム入力を完了して、[Search] ボタンをアクティベートすると、フォームはクリアされ、リセットされます。先に進んでフォームを完了して、戻ります。
-
-
-フォームでどのようにキーボード入力が使用されるかを確認しましょう。まず `Tab` を数回押すと、Flights、Hotels、Rental Cars のナビゲーション アイテムがハイライト表示されます。引き続き `Tab` を押すと、ラジオボタン グループに進み、矢印キーを使用して Round Trip、One Way、Multi City の中から選択できます。
-
-
-
-名前と住所のフィールドに進み、必要な情報を入力します。行き先選択要素に到達すると、矢印キーを使用して都市を選択するか、入力を開始してフィールドをオートコンプリートできます。同様に、日付フィールドでも、矢印キーを使用するか日付を入力できます。
-
-
-
-座席タイプの選択には矢印キーを使用するか、「w」、「a」、または「n」を入力して座席オプションにジャンプできます。次に、プロモーション オファーのチェックボックスがフォーカスされている場合は、スペースバーを押してその既定値を無効にできます。最後に、[Search] ボタンをフォーカスし、`Enter` を押してフォームを送信します。
-
-
-キーボードのみを使用してフォームを操作できると非常に便利であり、いったんマウスに切り替えてからキーボードに戻ってタスクを完了する必要がありません。フォームで使用されているすべての要素は、暗黙的なフォーカスのあるネイティブ HTML タグであるため、フォームはキーボードで適切に動作し、フォーカス動作の追加や管理のためのコードを記述する必要はありません。
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

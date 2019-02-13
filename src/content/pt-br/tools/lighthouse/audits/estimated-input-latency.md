@@ -1,63 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Latência estimada de entrada".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Estimated Input Latency" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2016-10-05 #} {# wf_blink_components: N/A #}
 
-# Latência estimada de entrada  {: .page-title }
+# Estimated Input Latency {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-A capacidade de resposta da entrada é um fator importante na forma como os usuários percebem o desempenho
-de um aplicativo. Os aplicativos têm 100 ms para responder à entrada do usuário. Se a resposta demorar mais do que isso,
-o usuário considerará o aplicativo lento. Consulte [Medição de desempenho com o modelo
-RAIL](/web/fundamentals/performance/rail) para obter mais informações.
+Input responsiveness is a key factor in how users perceive the performance of your app. Apps have 100ms to respond to user input. Any longer than that, and the user perceives the app as laggy. See [Measure Performance with the RAIL Model](/web/fundamentals/performance/rail) for more information.
 
-Consulte a seção [O que é testado pela auditoria](#what) deste documento para saber porque
-o limite testado por esta auditoria é de 50 ms (em vez de
-100 ms, o limite recomendado pelo modelo RAIL).
+See [More information](#more-info) for an explanation of why this audit tests for a target score of 50ms (rather than 100ms, which is what the RAIL model recommends).
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Para que o aplicativo responda à entrada do usuário com mais rapidez, é necessário executar a forma
-de execução do código no navegador. Confira a série de técnicas descritas
-nos documentos sobre [Desempenho da renderização](/web/fundamentals/performance/rendering/).
- Essas dicas variam da transferência de computação para web workers a fim de
-liberar o encadeamento principal à refatoração de seletores do CSS para executar
-menos cálculos ou uso de propriedades CSS que minimizam a quantidade de
-operações que fazem uso intensivo do navegador.
+To make your app respond to user input faster, you need to optimize how your code runs in the browser. Check out the series of techniques outlined in the [Rendering Performance](/web/fundamentals/performance/rendering/) docs. These tips range from offloading computation to web workers in order to free up the main thread, to refactoring your CSS selectors to perform less calculations, to using CSS properties that minimize the amount of browser-intensive operations.
 
-Uma restrição importante desta auditoria: ela não é uma medição completa da
-latência de entrada. Como explicado na seção [O que este documento testa](#what)
-deste documento, esta auditoria não mede o tempo real que um aplicativo
-demora para responder a uma entrada do usuário. Em outras palavras, ela não mede se a resposta do aplicativo
-à entrada do usuário está visualmente completa.
+One important caveat of this audit is that it's not a complete measurement of input latency. As explained in the [More information](#more-info) section of this doc, this audit does not measure how long your app truly takes to respond to a user input. In other words, it does not measure that your app's response to the user's input is visually complete.
 
-Para medir isso manualmente, faça uma gravação com o
-Timeline do Chrome DevTools. Consulte [Como usar a ferramenta
-Timeline](/web/tools/chrome-devtools/evaluate-performance/timeline-tool) para obter mais
-ajuda. A ideia básica é iniciar uma gravação, executar a entrada do usuário que
-você quer medir, interromper a gravação e analisar o diagrama de chamas
-para garantir que todas as fases do [pipeline de
-pixels](/web/fundamentals/performance/rendering/#the_pixel_pipeline) sejam
-concluídas em até 50 ms.
+To measure this manually, make a recording with the Chrome DevTools Timeline. See [Do less main thread work](/web/tools/chrome-devtools/speed/get-started#main) for an example of the workflow. The basic idea is to start a recording, perform the user input that you want to measure, stop the recording, and then analyze the flame chart to ensure that all stages of [the pixel pipeline](/web/fundamentals/performance/rendering/#the_pixel_pipeline) are complete within 50ms.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-O modelo de desempenho RAIL recomenda que os aplicativos respondam à entrada do usuário em até
-100 ms, mas o limite usado pelo Lighthouse é 50 ms. Por quê?
+The RAIL performance model recommends that apps respond to user input within 100ms, whereas Lighthouse's target score is 50ms. Why?
 
-O motivo é que o Lighthouse usa uma métrica substituta para medir a eficiência da
-resposta do aplicativo à entrada do usuário: a disponibilidade do encadeamento principal. O Lighthouse
-supõe que o aplicativo precisa de 50 ms para responder completamente à entrada do usuário
-(de todas as execuções de JavaScript até a pintura física dos novos
-pixels na tela). Se o encadeamento principal ficar indisponível por 50 ms ou mais,
-não restará tempo suficiente para que o aplicativo conclua a resposta.
+The reason is that Lighthouse uses a proxy metric to measure how well your app responds to user input: availability of the main thread. Lighthouse assumes that your app needs 50ms to completely respond to the user's input (from performing any JavaScript executions to physically painting the new pixels to the screen). If your main thread is unavailable for 50ms or more, that does not leave enough time for your app to complete the response.
 
-Há uma probabilidade de 90% de que um usuário constatará uma latência de entrada com
-um valor igual ou inferior ao relatado pelo Lighthouse. Os 10% de usuários restantes podem esperar alguma
-latência adicional.
+There is a 90% probability a user would encounter input latency of the amount that Lighthouse reports, or less. 10% of users can expect additional latency.
 
+The timing of this audit is from First Meaningful Paint to the end of the [trace](https://www.chromium.org/developers/how-tos/trace-event-profiling-tool), which is roughly 5 seconds after the time to [Consistently Interactive](/web/tools/lighthouse/audits/consistently-interactive).
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

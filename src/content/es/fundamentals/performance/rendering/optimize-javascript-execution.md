@@ -1,37 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: JavaScript a menudo activa cambios visuales. Algunas veces, lo hace directamente mediante manipulaciones de estilo y, otras veces, mediante cálculos que generan cambios visuales, como la búsqueda o clasificación de datos. El JavaScript sincronizado incorrectamente o de larga ejecución puede ser una causa común de los problemas de rendimiento. Debes intentar minimizar su impacto siempre que sea posible.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: JavaScript often triggers visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that result in visual changes, like searching or sorting data. Badly-timed or long-running JavaScript is a common cause of performance issues. You should look to minimize its impact where you can.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>JavaScript #}
 
-# Optimización de la ejecución de JavaScript {: .page-title }
+# Optimize JavaScript Execution {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-JavaScript a menudo activa cambios visuales. Algunas veces,
-lo hace directamente mediante manipulaciones de estilo y, otras veces, mediante cálculos que
-generan cambios visuales, como la búsqueda o clasificación de datos. El JavaScript
-sincronizado incorrectamente o de larga ejecución puede ser una causa común de los problemas de rendimiento,
-y debes intentar minimizar su impacto siempre que sea posible.
+JavaScript often triggers visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that result in visual changes, like searching or sorting data. Badly-timed or long-running JavaScript is a common cause of performance issues. You should look to minimize its impact where you can.
 
-La generación de perfiles de rendimiento de JavaScript puede considerarse como una obra de arte, ya que el código JavaScript que escribes no se parece en nada al código que en realidad se ejecuta. En los navegadores modernos, se usan los compiladores JIT y toda clase de optimizaciones y trucos posibles para realizar pruebas y brindarte la ejecución más rápida posible, y esto modifica en gran medida la dinámica del código.
+JavaScript performance profiling can be something of an art, because the JavaScript you write is nothing like the code that is actually executed. Modern browsers use JIT compilers and all manner of optimizations and tricks to try and give you the fastest possible execution, and this substantially changes the dynamics of the code.
 
-Note: Si realmente deseas ver cómo funciona JIT en acción, debes consultar <a href='http://mrale.ph/irhydra/2/'>IRHydra<sup>2</sup> de Vyacheslav Egorov</a>. Allí se muestra el estado intermedio del código de JavaScript cuando el motor JavaScript de Chrome, V8, lo está optimizando.
+Note: If you really want to see JIT in action you should check out
+<a href='http://mrale.ph/irhydra/2/'>IRHydra<sup>2</sup> by Vyacheslav Egorov</a>. It shows the intermediate state of JavaScript code when Chrome’s JavaScript engine, V8, is optimizing it.
 
-No obstante, hay algunas medidas que definitivamente puedes tomar para que JavaScript se ejecute correctamente en tus apps.
+With all that said, however, there are some things you can definitely do to help your apps execute JavaScript well.
 
 ### TL;DR {: .hide-from-toc }
 
-* Evita utilizar setTimeout o setInterval para realizar actualizaciones visuales. En su lugar, utiliza siempre requestAnimationFrame.
-* Desplaza JavaScript de larga ejecución fuera de la cadena principal y hacia los Web Workers.
-* Utiliza microtareas para realizar cambios en el DOM en varios marcos.
-* Utiliza la escala de tiempo de Chrome DevTools y el generador de perfiles de JavaScript para evaluar el impacto de JavaScript.
+* Avoid setTimeout or setInterval for visual updates; always use requestAnimationFrame instead.
+* Move long-running JavaScript off the main thread to Web Workers.
+* Use micro-tasks to make DOM changes over several frames.
+* Use Chrome DevTools’ Timeline and JavaScript Profiler to assess the impact of JavaScript.
 
-## Usa `requestAnimationFrame` para los cambios visuales
+## Use `requestAnimationFrame` for visual changes
 
-Cuando se producen cambios visuales en la pantalla, te recomendamos que hagas tu trabajo en el momento adecuado para el navegador, que es justo al inicio del fotograma. La única forma de garantizar que tu JavaScript se ejecute al inicio de un fotograma es a través de `requestAnimationFrame`.
-
+When visual changes are happening on screen you want to do your work at the right time for the browser, which is right at the start of the frame. The only way to guarantee that your JavaScript will run at the start of a frame is to use `requestAnimationFrame`.
 
     /**
      * If run as a requestAnimationFrame callback, this
@@ -40,90 +33,85 @@ Cuando se producen cambios visuales en la pantalla, te recomendamos que hagas tu
     function updateScreen(time) {
       // Make visual updates here.
     }
-
+    
     requestAnimationFrame(updateScreen);
+    
 
+Frameworks or samples may use `setTimeout` or `setInterval` to do visual changes like animations, but the problem with this is that the callback will run at *some point* in the frame, possibly right at the end, and that can often have the effect of causing us to miss a frame, resulting in jank.
 
-En los fotogramas o los ejemplos se puede usar `setTimeout` o `setInterval` para introducir cambios visuales, como animaciones, pero el problema es que el callback se ejecutará en _algún momento_ en el fotograma (posiblemente justo al final) y eso, a menudo, puede causar la pérdida de un fotograma, lo cual genera un bloqueo.
+<img src="images/optimize-javascript-execution/settimeout.jpg" alt="setTimeout causing the browser to miss a frame." />
 
-<img src="images/optimize-javascript-execution/settimeout.jpg" alt="setTimeout hace que el navegador omita un fotograma.">
+In fact, jQuery used to use `setTimeout` for its `animate` behavior. It was changed to use `requestAnimationFrame` in version 3. If you are using older version of jQuery, you can [patch it to use `requestAnimationFrame`](https://github.com/gnarf/jquery-requestAnimationFrame), which is strongly advised.
 
-De hecho, actualmente el comportamiento predeterminado de `animate` en jQuery contempla el uso de `setTimeout`. Puedes [realizar revisiones para usar `requestAnimationFrame`](https://github.com/gnarf/jquery-requestAnimationFrame), algo que se recomienda enfáticamente.
+## Reduce complexity or use Web Workers
 
-## Reduce la complejidad o el uso de Web Workers
+JavaScript runs on the browser’s main thread, right alongside style calculations, layout, and, in many cases, paint. If your JavaScript runs for a long time, it will block these other tasks, potentially causing frames to be missed.
 
-JavaScript se ejecuta en la cadena principal del navegador, exactamente junto con los cálculos de estilo, el diseño y, en muchos casos, la pintura. Si tu JavaScript se ejecuta durante un período prolongado, bloqueará estas otras tareas y posiblemente ocasione la pérdida de fotogramas.
+You should be tactical about when JavaScript runs, and for how long. For example, if you’re in an animation like scrolling, you should ideally be looking to keep your JavaScript to something in the region of **3-4ms**. Any longer than that and you risk taking up too much time. If you’re in an idle period, you can afford to be more relaxed about the time taken.
 
-Debes ser estratégico respecto del momento en que JavaScript se ejecutará y el tiempo durante el cual esto se extenderá. Por ejemplo, si trabajas en una animación como el desplazamiento, sería ideal que mantuvieras el ajuste de tu JavaScript dentro del rango de **3 a 4 ms**. Cualquier valor superior hará que corras el riesgo de usar demasiado tiempo para esta tarea. Para un periodo de inactividad, podrás relajarte más respecto del tiempo requerido.
-
-En muchos casos, puedes mover el trabajo específico de cálculo a los [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/basic_usage) si, por ejemplo, no se requiere acceso al DOM. La manipulación o el cruce seguro de datos, como la clasificación o la búsqueda, a menudo son muy adecuados para este modelo, al igual que la carga y la generación de modelos.
-
+In many cases you can move pure computational work to [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/basic_usage), if, for example, it doesn’t require DOM access. Data manipulation or traversal, like sorting or searching, are often good fits for this model, as are loading and model generation.
 
     var dataSortWorker = new Worker("sort-worker.js");
     dataSortWorker.postMesssage(dataToSort);
-
+    
     // The main thread is now free to continue working on other things...
-
+    
     dataSortWorker.addEventListener('message', function(evt) {
        var sortedData = evt.data;
        // Update data on screen...
     });
+    
 
-
-
-No todas las tareas se pueden realizar correctamente en este modelo: los Web Workers no tienen acceso al DOM. En aquellos casos en los cuales tu trabajo se deba ejecutar en el subproceso principal, considera implementar un enfoque de procesamiento por lotes mediante el cual se segmente la tarea más grande en microtareas que en cada caso no duren más de algunos milisegundos y se ejecuten dentro de los controladores `requestAnimationFrame` en cada fotograma.
-
+Not all work can fit this model: Web Workers do not have DOM access. Where your work must be on the main thread, consider a batching approach, where you segment the larger task into micro-tasks, each taking no longer than a few milliseconds, and run inside of `requestAnimationFrame` handlers across each frame.
 
     var taskList = breakBigTaskIntoMicroTasks(monsterTaskList);
     requestAnimationFrame(processTaskList);
-
+    
     function processTaskList(taskStartTime) {
       var taskFinishTime;
-
+    
       do {
         // Assume the next task is pushed onto a stack.
         var nextTask = taskList.pop();
-
+    
         // Process nextTask.
         processTask(nextTask);
-
+    
         // Go again if there’s enough time to do the next task.
         taskFinishTime = window.performance.now();
       } while (taskFinishTime - taskStartTime < 3);
-
+    
       if (taskList.length > 0)
         requestAnimationFrame(processTaskList);
-
+    
     }
+    
 
+There are UX and UI consequences to this approach, and you will need to ensure that the user knows that a task is being processed, either by [using a progress or activity indicator](https://www.google.com/design/spec/components/progress-activity.html). In any case this approach will keep your app's main thread free, helping it to stay responsive to user interactions.
 
-Este enfoque tiene consecuencias para la experiencia y la interfaz de usuario, y deberás asegurarte de que el usuario sepa que una tarea se encuentra en proceso, ya sea [con un indicador de progreso o de actividad](https://www.google.com/design/spec/components/progress-activity.html). Cualquiera sea el caso, este enfoque mantendrá libre el subproceso principal de tu app para que sea adaptable ante las interacciones del usuario.
+## Know your JavaScript’s “frame tax”
 
-## Conoce el “impuesto al fotograma” de JavaScript
+When assessing a framework, library, or your own code, it’s important to assess how much it costs to run the JavaScript code on a frame-by-frame basis. This is especially important when doing performance-critical animation work like transitioning or scrolling.
 
-Cuando evalúas un fotograma, una biblioteca o tu propio código, es importante evaluar también la exigencia que supone ejecutar el código de JavaScript fotograma por fotograma. Esto es especialmente importante cuando se realizan trabajos de animación críticos para el rendimiento, como las transiciones o el desplazamiento.
+The Performance panel of Chrome DevTools is the best way to measure your JavaScript's cost. Typically you get low-level records like this:
 
-La mejor manera de medir el perfil de rendimiento y la exigencia de tu JavaScript es usar Chrome DevTools. Generalmente, obtendrás registros con bajo nivel de detalle que se ven de la siguiente manera:
+<img src="images/optimize-javascript-execution/low-js-detail.png"
+     alt="A performance recording in Chrome DevTools" />
 
-<img src="images/optimize-javascript-execution/low-js-detail.jpg" alt="Timeline de Chrome DevTools proporciona pocos detalles sobre la ejecución de JS.">
+The **Main** section provides a flame chart of JavaScript calls so you can analyze exactly which functions were called and how long each took.
 
-Si descubres que tienes JavaScript de larga ejecución, puedes habilitar el generador de perfiles de JavaScript en la parte superior de la interfaz de usuario de DevTools:
+Armed with this information you can assess the performance impact of the JavaScript on your application, and begin to find and fix any hotspots where functions are taking too long to execute. As mentioned earlier you should seek to either remove long-running JavaScript, or, if that’s not possible, move it to a Web Worker freeing up the main thread to continue on with other tasks.
 
-<img src="images/optimize-javascript-execution/js-profiler-toggle.jpg" alt="Habilitación del generador de perfiles de JS en DevTools.">
+See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/) to learn how to use the Performance panel.
 
-De este modo, se produce una sobrecarga de generación de perfiles en JavaScript. Por ello, debes asegurarte de habilitarlo únicamente cuando desees obtener información más detallada sobre las características del tiempo de ejecución de JavaScript. Con la casilla de verificación marcada, ahora puedes realizar las mismas acciones y obtener mucha más información sobre las funciones llamadas en tu JavaScript:
+## Avoid micro-optimizing your JavaScript
 
-<img src="images/optimize-javascript-execution/high-js-detail.jpg" alt="Timeline de Chrome DevTools proporciona muchos detalles de la ejecución de JS.">
+It may be cool to know that the browser can execute one version of a thing 100 times faster than another thing, like that requesting an element’s `offsetTop` is faster than computing `getBoundingClientRect()`, but it’s almost always true that you’ll only be calling functions like these a small number of times per frame, so it’s normally wasted effort to focus on this aspect of JavaScript’s performance. You'll typically only save fractions of milliseconds.
 
-Con esta información a tu disposición, puedes evaluar el impacto del rendimiento de JavaScript en tu aplicación y comenzar a detectar y corregir las hotspots en las cuales las funciones demoren tarden en ejecutarse. Como se mencionó anteriormente, debes intentar quitar el JavaScript de larga ejecución o, si esto no fuera posible, moverlo hacia un Web Worker para liberar la cadena principal y continuar con otras tareas.
+If you’re making a game, or a computationally expensive application, then you’re likely an exception to this guidance, as you’ll be typically fitting a lot of computation into a single frame, and in that case everything helps.
 
-## Evita la microoptimización de tu JavaScript
+In short, you should be very wary of micro-optimizations because they won’t typically map to the kind of application you’re building.
 
-Lo ideal sería saber que en el navegador se puede ejecutar una versión de un programa 100 veces más rápido que otro programa como, por ejemplo, que solicitar `offsetTop` de un elemento sea más rápido que calcular `getBoundingClientRect()`. No obstante, casi siempre es cierto que solo utilizará funciones como estas unas pocas veces por marco, por lo que generalmente es una pérdida de tiempo enfocarse en este aspecto del rendimiento de JavaScript. Generalmente, solo ahorrará fracciones de milisegundos.
+## Feedback {: #feedback }
 
-Si creas un juego o una aplicación de alta exigencia en términos de cálculo, tu caso será una excepción para esta orientación porque es muy probable que introduzcas muchos cálculos en un solo fotograma, y en ese caso todo servirá.
-
-En pocas palabras, debes ser muy cauteloso con las microoptimizaciones debido a que generalmente no se asignarán al tipo de aplicación que crees.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

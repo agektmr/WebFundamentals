@@ -1,193 +1,209 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Het identificeren en oplossen van knelpunten in de prestatie van het kritieke weergavepad vereist een goede kennis van de gebruikelijke struikelblokken. Laten we een praktijkgerichte rondleiding nemen en de gebruikelijke prestatiepatronen eruit lichten waarmee u uw pagina's kunt optimaliseren.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn to identify and resolve critical rendering path performance bottlenecks.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
-
-# Het kritieke weergavepad analyseren {: .page-title }
+# Analyzing Critical Rendering Path Performance {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Identifying and resolving critical rendering path performance bottlenecks requires good knowledge of the common pitfalls. Let's take a hands-on tour and extract common performance patterns that will help you optimize your pages.
 
-Het identificeren en oplossen van knelpunten in de prestatie van het kritieke weergavepad vereist een goede kennis van de gebruikelijke struikelblokken. Laten we een praktijkgerichte rondleiding nemen en de gebruikelijke prestatiepatronen eruit lichten waarmee u uw pagina's kunt optimaliseren.
+Optimizing the critical rendering path allows the browser to paint the page as quickly as possible: faster pages translate into higher engagement, more pages viewed, and [improved conversion](https://www.google.com/think/multiscreen/success.html). To minimize the amount of time a visitor spends viewing a blank screen, we need to optimize which resources are loaded and in which order.
 
+To help illustrate this process, let's start with the simplest possible case and incrementally build up our page to include additional resources, styles, and application logic. In the process, we'll optimize each case; we'll also see where things can go wrong.
 
+So far we've focused exclusively on what happens in the browser after the resource (CSS, JS, or HTML file) is available to process. We've ignored the time it takes to fetch the resource either from cache or from the network. We'll assume the following:
 
-Het doel van het kritieke weergavepad optimaliseren is om de browser de mogelijkheid te bieden de pagina zo snel mogelijk te kleuren: snellere pagina's zorgen voor grotere betrokkenheid, meer bekeken pagina's en [verbeterde conversie] (http://www.google.com/think/multiscreen/success.html){: .external }. Daarom willen we de tijd die een bezoeker naar een blanco scherm moet staren minimaliseren door een optimalisatie van welke bronnen worden geladen en in welke volgorde.
+* A network roundtrip (propagation latency) to the server costs 100ms.
+* Server response time is 100ms for the HTML document and 10ms for all other files.
 
-Ter illustratie van dit proces zullen we beginnen met het meest eenvoudige voorbeeld en zullen we onze pagina`s incrementeel opbouwen en extra bronnen, stijlen en app-structuur toevoegen. We zullen in dit proces ook zien waar het verkeerd kan gaan en hoe we elk van deze gevallen kunnen optimaliseren.
-
-Tot slot nog één ding voordat we van start gaan... Tot nu toe hebben we ons enkel gericht op wat er in de browser gebeurt wanneer de bron (CSS-, JS- of HTML-bestand) beschikbaar is voor verwerking. We hebben de tijd die nodig is om deze bestanden op te halen van het cache of netwerk genegeerd. In de volgende les zullen we gedetailleerd ingaan op hoe we het netwerkaspect van onze app kunnen optimaliseren, maar ondertussen (om alles realistischer te maken) zullen we van het volgende uitgaan:
-
-* Een netwerkroundtrip (propogatievertraging) naar de server kost 100 ms
-* De serverresponstijd is 100 ms voor het HTML-document en 10 ms voor alle andere bestanden
-
-## De Hallo wereld-ervaring
+## The hello world experience
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-We beginnen met basis HTML-opmaak en een enkele afbeelding, geen CSS of JavaScript. Dit is het meest eenvoudige voorbeeld. Laten we nu de `Network timeline` (Netwerktijdlijn) openen in Chrome DevTools en de volgende bronwaterval bekijken:
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom.png" class="center" alt="CRP">
+We'll start with basic HTML markup and a single image; no CSS or JavaScript. Let's open up our Network timeline in Chrome DevTools and inspect the resulting resource waterfall:
 
-Zoals verwacht kost het ongeveer 200 ms voordat het HTML-bestand is gedownload. Het transparante gedeelte van de blauwe lijn geeft de tijd aan die de browser heeft gewacht op het netwerk, dat wil zeggen dat er nog geen responsbytes zijn ontvangen. Het vaste gedeelte geeft de tijd aan die nodig is om de download te voltooien nadat de eerste responsbytes zijn ontvangen. In ons bovenstaande voorbeeld is de HTML-download minuscuul (<4 K), dus is er maar één roundtrip nodig om het volledige bestand op te halen. Daarom duurt het ongeveer 200 ms om het bestand op te halen, waarvan de helft van de tijd is gewacht op het netwerk en de andere helft op de serverrespons.
+<img src="images/waterfall-dom.png" alt="CRP" />
 
-Zodra de HTML-inhoud beschikbaar wordt, moet de browser de bytes parseren, omzetten in tokens en de DOM-boomstructuur opbouwen. Merk hierbij op dat Chrome DevTools heel handig de tijd weergeeft die de gebeurtenis DOMContentLoaded onderaan nodig heeft (216 ms). Dit komt ook overeen met de blauwe verticale lijn. Het gat tussen het einde van de HTML-download en de blauwe verticale lijn (DOMContentLoaded) staat voor de tijd die de browser nodig had om de DOM-boomstructuur te bouwen, in dit geval slecht een paar milliseconden.
+Note: Although this doc uses DevTools to illustrate CRP concepts, DevTools is currently not well-suited for CRP analysis. See [What about DevTools?](measure-crp#devtools) for more information.
 
-Let tot slot nog op iets interessants: onze `awesome-foto` heeft de gebeurtenis DOMContentloaded niet geblokkeerd. Het blijkt dus dat we de weergaveboomstructuur kunnen opbouwen en zelfs de pagina kunnen kleuren zonder dat er hoeft te worden gewacht op elk item van de pagina: **niet alle bronnen zijn essentieel om de snelle eerste weergave te bieden**. Wanneer we praten over het kritieke weergavepad, hebben we het normaal gesproken over de HTML-opmaak, CSS en JavaScript. Afbeeldingen blokkeren de initiële weergave van de pagina niet, hoewel we natuurlijk wel moeten zorgen dat de afbeeldingen ook zo snel mogelijk worden weergegeven.
+As expected, the HTML file took approximately 200ms to download. Note that the transparent portion of the blue line represents the length of time that the browser waits on the network without receiving any response bytes whereas the solid portion shows the time to finish the download after the first response bytes have been received. The HTML download is tiny (<4K), so all we need is a single roundtrip to fetch the full file. As a result, the HTML document takes approximately 200ms to fetch, with half the time spent waiting on the network and the other half waiting on the server response.
 
-De gebeurtenis `load` (ook bekend als `onload`) wordt geblokkeerd bij de afbeelding: DevTools geeft de `onload`-gebeurtenis aan op 335 ms. Misschien herinnert u zich nog de `onload`-gebeurtenis het punt markeert waarop **alle bronnen** die de pagina nodig heeft, zijn gedownload en verwerkt. Dit is het punt waarop de laadspinner kan stoppen met draaien en dit punt is gemarkeerd met de rode verticale lijn in de waterval.
+When the HTML content becomes available, the browser parses the bytes, converts them into tokens, and builds the DOM tree. Notice that DevTools conveniently reports the time for the DOMContentLoaded event at the bottom (216ms), which also corresponds to the blue vertical line. The gap between the end of the HTML download and the blue vertical line (DOMContentLoaded) is the time it takes the browser to build the DOM tree&mdash;in this case, just a few milliseconds.
 
+Notice that our "awesome photo" did not block the `domContentLoaded` event. Turns out, we can construct the render tree and even paint the page without waiting for each asset on the page: **not all resources are critical to deliver the fast first paint**. In fact, when we talk about the critical rendering path we are typically talking about the HTML markup, CSS, and JavaScript. Images do not block the initial render of the page&mdash;although we should also try to get the images painted as soon as possible.
 
-## JavaScript en CSS toevoegen aan de mix
+That said, the `load` event (also known as `onload`), is blocked on the image: DevTools reports the `onload` event at 335ms. Recall that the `onload` event marks the point at which **all resources** that the page requires have been downloaded and processed; at this point, the loading spinner can stop spinning in the browser (the red vertical line in the waterfall).
 
-Onze pagina `Hallo Wereld-ervaring` ziet er misschien eenvoudig uit aan de oppervlakte, maar voordat de pagina wordt weergeven, worden er een heleboel stappen uitgevoerd die u niet kunt zien. In de praktijk hebben we ook meer nodig dan alleen de HTML: het is waarschijnlijk dat we een CCS-stijldocument en één of meer scripts hebben om enige interactie aan onze pagina toe te voegen. Laten beide aan de mix toevoegen en kijken wat er gebeurt:
+## Adding JavaScript and CSS into the mix
+
+Our "Hello World experience" page seems simple but a lot goes on under the hood. In practice we'll need more than just the HTML: chances are, we'll have a CSS stylesheet and one or more scripts to add some interactivity to our page. Let's add both to the mix and see what happens:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_timing.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-_Voor het toevoegen van JavaScript en CSS:_
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_timing.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom.png" alt="DOM CRP" class="center">
+*Before adding JavaScript and CSS:*
 
-_Met JavaScript en CSS:_
+<img src="images/waterfall-dom.png" alt="DOM CRP" />
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" class="center">
+*With JavaScript and CSS:*
 
-Het toevoegen van externe CSS- en JavaScript-bestanden heeft ook twee extra aanvragen aan onze waterval toegevoegd. Deze zijn ongeveer tegelijkertijd door de browser verzonden. Dus tot zover gaat het goed. **Let er hierbij wel op dat er nu een veel kleiner tijdsverschil zit tussen de DOMContentLoaded en de 'onload'-gebeurtenissen. Wat is er gebeurd?**
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-* Anders dan bij ons eenvoudige HTML-voorbeeld moet nu ook het CSS-bestand worden opgehaald en geparseerd om het CSSOM op te bouwen, en we weten dat we zowel het DOM als het CSSOM nodig hebben om de weergaveboomstructuur op te bouwen.
-* Omdat we ook een parserblokkerend JavaScript-bestand in onze pagina hebben staan, wordt de gebeurtenis DOMContentLoaded geblokkeerd totdat het CSS-bestand is gedownload en geparseerd: het JavaScript kan het CSSOM opvragen, dus moet de opbouw worden geblokkeerd en wordt er gewacht op het CSS-bestand totdat we het JavaScript kunnen uitvoeren.
+Adding external CSS and JavaScript files adds two extra requests to our waterfall, all of which the browser dispatches at about the same time. However, **note that there is now a much smaller timing difference between the `domContentLoaded` and `onload` events.**
 
-**Wat gebeurt er als we ons externe script vervangen met een inline script?** Een onbenullige vraag zo op het eerste gezicht, maar het is eigenlijk een netelige situatie. Zelfs wanneer het script als inline script direct in de pagina wordt toegevoegd, is de enige betrouwbare manier waarop de browser kan weten wat de bedoeling van het script is, het script alsnog uit te voeren en zoals we inmiddels weten, kunnen we dat niet doen totdat het CSSOM is opgebouwd.  Kortom, inline JavaScript is ook parserblokkerend.
+What happened?
 
-Zal het inline script, ondanks de blokkering op CSS, zorgen dat de pagina sneller wordt weergegeven? Het laatste scenario was al ingewikkeld, maar dit scenario is zelfs nog erger. Laten kijken wat er gebeurt...
+* Unlike our plain HTML example, we also need to fetch and parse the CSS file to construct the CSSOM, and we need both the DOM and CSSOM to build the render tree.
+* Because the page also contains a parser blocking JavaScript file, the `domContentLoaded` event is blocked until the CSS file is downloaded and parsed: because the JavaScript might query the CSSOM, we must block the CSS file until it downloads before we can execute JavaScript.
 
-_Externe JavaScript:_
+**What if we replace our external script with an inline script?** Even if the script is inlined directly into the page, the browser can't execute it until the CSSOM is constructed. In short, inlined JavaScript is also parser blocking.
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" class="center">
+That said, despite blocking on CSS, does inlining the script make the page render faster? Let's try it and see what happens.
 
-_Inline JavaScript:_
+*External JavaScript:*
 
-<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM en inline JS" class="center">
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-Er wordt één aanvraag minder gedaan, maar onze `onload`- en `DOMContentLoaded`-tijden zijn in feite gelijk. Waarom is dat? Nou, zoals we weten, maakt het niet uit of het JavaScript inline of extern is, omdat de browser, zodra deze browser bij de scripttag aankomt, blokkeert en wacht totdat het CSSOM is opgebouwd. Daarnaast worden CSS en JavaScript in ons eerste voorbeeld parallel gedownload door de browser en is deze download ongeveer tegelijkertijd voltooid. Het resultaat is dat een inline JavaScript-code in dit geval niet veel helpt. Dus, zitten we nu vast en is er niets wat wij kunnen doen om onze pagina sneller te laten weergeven? Nee, we hebben verschillende strategieën tot onze beschikking.
+*Inlined JavaScript:*
 
-Bedenk ten eerste dat alle inline scripts parserblokkerend zijn, maar dat we voor externe scripts het sleutelwoord `async` kunnen zetten om de parser te deblokkeren. Laten we het inline script eruit halen en dit eens proberen:
+<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM, and inlined JS" />
+
+We are making one less request, but both our `onload` and `domContentLoaded` times are effectively the same. Why? Well, we know that it doesn't matter if the JavaScript is inlined or external, because as soon as the browser hits the script tag it blocks and waits until the CSSOM is constructed. Further, in our first example, the browser downloads both CSS and JavaScript in parallel and they finish downloading at about the same time. In this instance, inlining the JavaScript code doesn't help us much. But there are several strategies that can make our page render faster.
+
+First, recall that all inline scripts are parser blocking, but for external scripts we can add the "async" keyword to unblock the parser. Let's undo our inlining and give that a try:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-_Parserblokkerend (extern) JavaScript:_
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_async.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" class="center">
+*Parser-blocking (external) JavaScript:*
 
-_Asynchroon (extern) JavaScript:_
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, asynchroon JS" class="center">
+*Async (external) JavaScript:*
 
-Dat is veel beter. De gebeurtenis domContentLoaded begint kort nadat de HTML is geparseerd: de browser weet dat deze het JavaScript niet moet blokkeren en aangezien er geen andere parserblokkerende scripts zijn, kan de CSSOM-opbouw ook parallel plaatsvinden.
+<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, async JS" />
 
-Er is ook nog een andere aanpak die we kunnen proberen: zowel CCS als JavaScript inline toevoegen:
+Much better! The `domContentLoaded` event fires shortly after the HTML is parsed; the browser knows not to block on JavaScript and since there are no other parser blocking scripts the CSSOM construction can also proceed in parallel.
+
+Alternatively, we could have inlined both the CSS and JavaScript:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_inlined.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, inline CSS, inline JS" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_inlined.html){: target="_blank" .external }
 
-Merk hier op dat de tijd voor _domContentLoaded_ vrijwel hetzelfde is als in het vorige voorbeeld: in plaats van ons JavaScript als asynchroon te markeren, hebben we zowel het CSS als JS inline aan de pagina zelf toegevoegd. Hierdoor is onze HTML-pagina veel groter geworden, maar het voordeel is dat browser niet hoeft te wachten totdat een externe bron is opgehaald, alles staat al klaar in de pagina.
+<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, inline CSS, inline JS" />
 
-Zoals u ziet, is het optimaliseren van het kritieke weergavepad geen sinecure, zelfs met een zeer eenvoudige pagina. We moeten het afhankelijkheidsschema begrijpen tussen de verschillende bronnen, we moeten identificeren welke bronnen `kritiek` zijn en we moeten een keuze maken uit verschillende strategieën om deze bronnen aan de pagina toe te voegen. Er is geen eenduidige oplossing voor dit probleem: elke pagina is anders en u zult zelf een vergelijkbaar proces moeten doorlopen om uw eigen optimale strategie te ontdekken.
+Notice that the `domContentLoaded` time is effectively the same as in the previous example; instead of marking our JavaScript as async, we've inlined both the CSS and JS into the page itself. This makes our HTML page much larger, but the upside is that the browser doesn't have to wait to fetch any external resources; everything is right there in the page.
 
-Laten we nu kijken of we een stap terug kunnen nemen en een aantal algemene prestatiepatronen kunnen identificeren...
+As you can see, even with a very simple page, optimizing the critical rendering path is a non-trivial exercise: we need to understand the dependency graph between different resources, we need to identify which resources are "critical," and we must choose among different strategies for how to include those resources on the page. There is no one solution to this problem; each page is different. You need to follow a similar process on your own to figure out the optimal strategy.
 
+That said, let's see if we can step back and identify some general performance patterns.
 
-## Prestatiepatronen
+## Performance patterns
 
-De meest eenvoudige pagina bestaat enkel uit HTML-opmaak: geen CSS, geen JavaScript of andere soorten bronnen. Om deze pagina weer te geven moet de browser de aanvraag starten, wachten tot het HTML-bestand binnenkomt, dit parseren, het DOM opbouwen en tot slot de pagina weergeven op het scherm:
+The simplest possible page consists of just the HTML markup; no CSS, no JavaScript, or other types of resources. To render this page the browser has to initiate the request, wait for the HTML document to arrive, parse it, build the DOM, and then finally render it on the screen:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom.png" alt="Hallo wereld CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-**De tijd tussen T<sub>0</sub> en T<sub>1</sub> legt de netwerk- en serververwerkingstijden vast.** In het beste geval (als het HTML-bestand klein is) hebben we slechts één netwerkroundtrip nodig om het volledige document op te halen. Vanwege de manier waarop TCP-transportprotocols werken, kunnen voor grotere bestanden meerdere roundtrips nodig zijn. Dit is een onderwerp waar we in een latere les op terug zullen komen. **Daarom kunnen we zeggen dat de pagina hierboven, in het beste geval één roundtrip (minimum) kritiek weergavepad heeft.**
+<img src="images/analysis-dom.png" alt="Hello world CRP" />
 
-Laten we nu dezelfde pagina bekijken, maar met een extern CSS-bestand:
+**The time between T<sub>0</sub> and T<sub>1</sub> captures the network and server processing times.** In the best case (if the HTML file is small), just one network roundtrip fetches the entire document. Due to how the TCP transports protocols work, larger files may require more roundtrips. **As a result, in the best case the above page has a one roundtrip (minimum) critical rendering path.**
+
+Now, let's consider the same page but with an external CSS file:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css.html){: target="_blank" .external }
 
-Op deze manier hebben we weer een netwerkroundtrip nodig om het HTML-document op te halen en vervolgens vertelt de opgehaalde opmaak ons dat we ook het CSS-bestand nodig hebben: dit betekent dat de browsers terug naar de server moet gaan en het CSS moet ophalen voordat de pagina op het scherm kan worden weergegeven. **Het gevolg is dat de pagina minimaal twee roundtrips nodig heeft voordat deze kan worden weergegeven.** Hier geldt weer dat het CSS-bestand meerdere roundtrips nodig kan hebben, vandaar met nadruk op `minimaal`.
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-Laten we de termen definiëren die we gebruiken om het kritieke weergavepad te beschrijven:
+Once again, we incur a network roundtrip to fetch the HTML document, and then the retrieved markup tells us that we also need the CSS file; this means that the browser has to go back to the server and get the CSS before it can render the page on the screen. **As a result, this page incurs a minimum of two roundtrips before it can be displayed.** Once again, the CSS file may take multiple roundtrips, hence the emphasis on "minimum".
 
-* **Kritieke bron:** bron die de initiële weergave van de pagina kan blokkeren.
-* **Kritieke padlengte:** aantal roundtrips of de totale tijd die vereist is om alle kritieke bronnen op te halen.
-* **Kritieke bytes:** totaal aantal bytes dat vereist is om een eerste weergave van de pagina te krijgen, dit betekent de som van de grootte van alle opgehaalde bestanden voor alle kritieke bronnen.
-Ons eerste voorbeeld met een enkele HTML-pagina bevat een enkele kritieke bron (het HTML-bestand), de kritieke padlengte was ook gelijk aan één netwerkroundtrip (waarbij we aannemen dat het bestand klein is) en het totale aantal kritieke bytes was alleen de overdrachtsgrootte van het HTML-document zelf.
+Let's define the vocabulary we use to describe the critical rendering path:
 
-Laten we dit vergelijken met de kritieke padkenmerken van het HTML- en CSS-voorbeeld hierboven:
+* **Critical Resource:** Resource that could block initial rendering of the page.
+* **Critical Path Length:** Number of roundtrips, or the total time required to fetch all of the critical resources.
+* **Critical Bytes:** Total number of bytes required to get to first render of the page, which is the sum of the transfer filesizes of all critical resources. Our first example, with a single HTML page, contained a single critical resource (the HTML document); the critical path length was also equal to one network roundtrip (assuming file was small), and the total critical bytes was just the transfer size of the HTML document itself.
 
-<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" class="center">
+Now let's compare that to the critical path characteristics of the HTML + CSS example above:
 
-* **2** kritieke bronnen
-* **2** of meer roundtrips voor de minimale lengte voor het kritieke pad
-* **9** KB aan kritieke bytes
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-We hebben zowel de HTML als het CSS nodig om de weergaveboomstructuur op te bouwen. Daarom zijn zowel de HTML als het CSS kritieke bronnen. Het CSS wordt opgehaald nadat de browser het HTML-document heeft opgehaald. Hierdoor is de kritieke padlengte minimaal twee roundtrips. Deze twee bronnen bevatten samen totaal 9 KB aan kritieke bytes.
+* **2** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **9** KB of critical bytes
 
-Laten we nu een extra JavaScript-bestand aan de mix toevoegen.
+We need both the HTML and CSS to construct the render tree. As a result, both HTML and CSS are critical resources: the CSS is fetched only after the browser gets the HTML document, hence the critical path length is at minimum two roundtrips. Both resources add up to a total of 9KB of critical bytes.
+
+Now let's add an extra JavaScript file into the mix.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-We hebben app.js toegevoegd. Dit is een extern JavaScript-item op de pagina en zoals we weten, is dit een parserblokkerende (dat wil zeggen kritieke) bron. Het is zelfs nog erger: om het JavaScript-bestand uit te voeren, wordt het proces weer geblokkeerd terwijl we wachten op het CSSOM. Onthoud dat JavaScript het CSSOM kan aanvragen en dat de browser daarom pauzeert totdat `style.css` is gedownload en het CSSOM is opgebouwd.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css-js.png" alt="DOM, CSSOM, JavaScript CRP" class="center">
+We added `app.js`, which is both an external JavaScript asset on the page and a parser blocking (that is, critical) resource. Worse, in order to execute the JavaScript file we have to block and wait for CSSOM; recall that JavaScript can query the CSSOM and hence the browser pauses until `style.css` is downloaded and CSSOM is constructed.
 
-Als we in de praktijk kijken naar de `netwerkwaterval` van deze pagina, ziet u dat zowel de CSS- als de JavaScript-aanvragen op ongeveer dezelfde tijd worden geïnitieerd: de browser haalt de HTML op, ontdekt beide bronnen en initieert beide aanvragen. De pagina hierboven heeft daarom de volgende kritieke padkenmerken:
+<img src="images/analysis-dom-css-js.png" alt="DOM, CSSOM, JavaScript CRP" />
 
-* **3** kritieke bronnen
-* **2** of meer roundtrips voor de minimale lengte voor het kritieke pad
-* **11** KB aan kritieke bytes
+That said, in practice if we look at this page's "network waterfall," you'll see that both the CSS and JavaScript requests are initiated at about the same time; the browser gets the HTML, discovers both resources, and initiates both requests. As a result, the above page has the following critical path characteristics:
 
-We hebben nu drie kritieke bronnen die in het totaal 11 KB aan kritieke bytes opleveren, maar onze kritieke padlengte is nog altijd twee roundtrips omdat het CSS en het JavaScript parallel kunnen worden overdragen. **Het uitpluizen van de kenmerken van uw kritieke weergavepad betekent dat u kunt identificeren wat kritieke bronnen zijn en ook begrijpt hoe de browser het ophalen hiervan inplant.** Laten we verder gaan met ons voorbeeld...
+* **3** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **11** KB of critical bytes
 
-Na het gesprek met de site-ontwikkelaars begrepen we dat het JavaScript dat we aan onze pagina hebben toegevoegd, niet blokkerend hoeft te zijn: we hebben een aantal analyses en andere code tot onze beschikking die de weergave van onze pagina helemaal niet hoeven te blokkeren. Nu we dit weten, kunnen we het kenmerk 'async' aan de scripttag toevoegen om de parser te deblokkeren:
+We now have three critical resources that add up to 11KB of critical bytes, but our critical path length is still two roundtrips because we can transfer the CSS and JavaScript in parallel. **Figuring out the characteristics of your critical rendering path means being able to identify the critical resources and also understanding how the browser will schedule their fetches.** Let's continue with our example.
+
+After chatting with our site developers, we realize that the JavaScript we included on our page doesn't need to be blocking; we have some analytics and other code in there that doesn't need to block the rendering of our page. With that knowledge, we can add the "async" attribute to the script tag to unblock the parser:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css-js-async.png" alt="DOM, CSSOM, asynchroon JavaScript CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js_async.html){: target="_blank" .external }
 
-Het script asynchroon maken heeft een aantal voordelen:
+<img src="images/analysis-dom-css-js-async.png" alt="DOM, CSSOM, async JavaScript CRP" />
 
-* Het script is niet langer parserblokkerend en is ook geen onderdeel van het kritieke weergavepad
-* Omdat er geen andere kritieke scripts zijn, hoeft het CSS de gebeurtenis `domContentLoaded` niet te blokkeren
-* Hoe sneller de gebeurtenis domContentLoaded wordt gestart, hoe eerder de overige app-logistiek kan worden uitgevoerd
+An asynchronous script has several advantages:
 
-Hierdoor heeft onze geoptimaliseerde pagina opnieuw maar twee kritieke bronnen (HTLM en CSS) met een kritieke padlengte van minimaal twee roundtrips en totaal 9 KB aan kritieke bytes.
+* The script is no longer parser blocking and is not part of the critical rendering path.
+* Because there are no other critical scripts, the CSS doesn't need to block the `domContentLoaded` event.
+* The sooner the `domContentLoaded` event fires, the sooner other application logic can begin executing.
 
-Laten we tot slot zeggen dat het CSS-stijlblad alleen nodig was voor het afdrukken. Wat zou dat betekenen?
+As a result, our optimized page is now back to two critical resources (HTML and CSS), with a minimum critical path length of two roundtrips, and a total of 9KB of critical bytes.
+
+Finally, if the CSS stylesheet were only needed for print, how would that look?
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_nb_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM, niet-blokkerende CSS en asynchroon JavaScript CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_nb_js_async.html){: target="_blank" .external }
 
-Omdat de bron style.css alleen gebruikt wordt voor afdrukken, hoeft de browser hierbij niet te blokkeren om de pagina weer te geven. Daarom heeft de browser zodra de DOM-opbouw voltooid is, voldoende informatie om de pagina weer te geven. De pagina heeft hierdoor maar één kritieke bron (het HTML-document) en de minimale kritieke padlengte is één roundtrip.
+<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM, non-blocking CSS, and async JavaScript CRP" />
+
+Because the style.css resource is only used for print, the browser doesn't need to block on it to render the page. Hence, as soon as DOM construction is complete, the browser has enough information to render the page. As a result, this page has only a single critical resource (the HTML document), and the minimum critical rendering path length is one roundtrip.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

@@ -1,64 +1,44 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Bangun situs multi-perangkat Anda dari nol. Pelajari cara mempercepat development dan membuat situs yang dimuat cepat bersama serangkaian alat proses pembangunan.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-09-24 #}
+{# wf_updated_on: 2017-07-24 #} {# wf_published_on: 2014-09-24 #}
 
-# Siapkan Alat Pembangunan Anda {: .page-title }
+# Set Up Your Build Tools {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-Bangun situs multi-perangkat Anda dari nol. Pelajari cara mempercepat development dan membuat situs yang dimuat cepat bersama serangkaian alat proses pembangunan. Setiap situs harus memiliki versi development dan versi produksi.<br /><br />Versi development memiliki semua file HTML, CSS, JS dan file gambar yang membentuk situs Anda dalam format rapi yang akan membuat Anda senang menggunakannya.<br /><br />Versi produksi akan mengambil file-file ini, mengecilkannya, menyatukan / menggabungkannya dan mengoptimalkan berbagai file seperti gambar.
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %} Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools. Every site should have a development version and a production version.  
+  
+The development version has all the HTML, CSS, JS and image files that make up your site in a clean format that you are happy to work on.  
+  
+A production version will take these files, minify them, concatenate / merge them and optimize files like images.
 
-Developer web harus memikirkan jutaan hal sekaligus dan langkah pembangunan
-adalah salah satu yang paling penting, namun yang paling rumit dimulai.  Anda
-harus merencanakan semua tugas yang perlu diotomatisasi seperti: Kompresi
-gambar, minifikasi CSS, penggabungan JavaScript, pengujian responsif,
-pengujian unit, dan daftarnya terus berlanjut...
+Web developers have to think about a million things at once and the build step is one of the most critical, yet most cumbersome to get started with. You have to work out all the tasks that you need to automate such as: Image compression, CSS minification, JavaScript concatenation, Responsive testing, Unit testing, the list goes on...
 
-Ikuti panduan ini untuk mempelajari cara terbaik menyusun alur kerja sehingga
-situs yang sudah Anda buat mengikuti semua praktik terbaik sejak
-awal Anda memulainya.
-
+Follow this guide to learn the best way to structure your workflow so that the sites you create already follow all the best practices from the minute you start.
 
 ### TL;DR {: .hide-from-toc }
-- Alat proses pembangunan Anda harus mengoptimalkan kinerja; alat tersebut harus secara otomatis mengecilkan dan menggabungkan JavaScript, CSS, HTML, dan gambar.
-- Gunakan alat seperti LiveReload agar proses development Anda lebih lancar.
 
+* Your build process tools must optimize for performance; they should automatically minify and concatenate JavaScript, CSS, HTML, and images.
+* Use tools like LiveReload to make your development process smoother.
 
-Sebelum memulai pengkodean, Anda perlu mempertimbangkan cara mengoptimalkan dan membangun
-versi produksi situs Anda. Dengan menyiapkan alur kerja ini dari awal
-akan mencegah kejutan tidak menyenangkan di akhir proyek dan Anda bisa menambahkan alat
-ke dalam alur kerja yang mempercepat development, yang melakukan tugas-tugas monoton
-untuk Anda.
+Before you start coding, you need to consider how to optimize and build the production version of your site. Setting up this workflow from the start prevents any nasty surprises at the end of the project and you can add tools into your workflow that speed up your development, doing the monotonous tasks for you.
 
-## Apa yang dimaksud dengan proses pembangunan?
+## What is a build process?
 
-Proses pembangunan adalah serangkaian tugas yang dijalankan pada file proyek Anda, yang mengompilasi
-dan menguji kode selama development dan digunakan untuk membuat versi deployment
-situs Anda.  Proses pembangunan sebaiknya bukan serangkaian tugas yang Anda jalankan di akhir
-alur kerja development.
+A build process is a set of tasks which run over your projects files, compiling and testing code during development and used to create the deployment version of your site. Your build process shouldn't be a set of tasks you run at the end of your development workflow.
 
-Alat yang paling populer untuk mengimplementasikan proses pembangunan adalah
-[Gulp](http://gulpjs.com/){: .external } dan [Grunt](http://gruntjs.com/), keduanya adalah
-alat baris perintah. Jika Anda belum memiliki pengalaman menggunakannya, gunakan Gulp, kami menggunakannya untuk
-[Web Starter Kit](/web/tools/starter-kit/) dan menyarankan agar
-Anda melakukan hal yang sama.
+The most popular tools for implementing a build process are [Gulp](http://gulpjs.com/){: .external } and [Grunt](http://gruntjs.com/), both of which are command line tools. If you have no experience of either, use Gulp, we use it for [Web Starter Kit](/web/tools/starter-kit/) and recommend you do the same.
 
-Ada beberapa alat yang memiliki GUI dan mungkin sedikit lebih mudah dipahami
-namun kurang fleksibel.
+There are tools which have GUIs and may be a bit easier to get to grips with but will be less flexible.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Platform yang Didukung &amp; Nama Alat (Bantu)</th>
+      <th colspan="2">Supported Platforms &amp; Tool Name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Supported Platforms">OS X / Windows</td>
-      <td data-th="Gulp"><a href="http://alphapixels.com/prepros/">Prepros</a></td>
+      <td data-th="Gulp"><a href="https://prepros.io/">Prepros</a></td>
     </tr>
     <tr>
       <td data-th="Supported Platforms">OS X</td>
@@ -71,47 +51,31 @@ namun kurang fleksibel.
   </tbody>
 </table>
 
+## What tasks should be in a build process?
 
-## Tugas apa yang sebaiknya ada dalam proses pembangunan?
+In the following sections, we're going to look at the most common tasks you should have in your build process and recommend tasks for Grunt and Gulp.
 
-Di bagian berikut ini, kita akan melihat tugas paling umum yang
-sebaiknya Anda miliki dalam proses pembangunan dan tugas yang disarankan untuk Grunt dan Gulp.
+This requires a lot of trial and error to get each piece set-up the way you want and can be daunting if you are new to build processes.
 
-Ini memerlukan banyak uji coba agar masing-masing bagian bisa disiapkan sesuai yang diinginkan
-dan bisa menciutkan nyali jika Anda baru mengenal proses pembangunan.
+For a good example of a build process, check out the [getting started guide for Web Starter Kit](/web/fundamentals/getting-started/web-starter-kit/), which goes through how to use Web Starter Kit and explains what each of the commands in the Gulp file do. This can be used as a quick way to get set-up and then you can make changes if needed.
 
-Untuk contoh proses pembangunan yang baik, lihat [panduan memulai Web Starter
-Kit](/web/fundamentals/getting-started/web-starter-kit/),
-yang membahas cara menggunakan Web Starter Kit dan menjelaskan apa yang dilakukan setiap
-perintah di file Gulp. Ini bisa digunakan sebagai cara cepat untuk persiapan, kemudian
-Anda bisa membuat perubahan jika diperlukan.
+If you are looking to create your own build process and you're new to Gulp or Grunt, the quick start guides will be the best place to get into on installing and running your first build process:
 
-Jika Anda ingin membuat proses pembangunan sendiri dan masih baru dengan Gulp
-atau Grunt, panduan memulai cepat akan menjadi tempat terbaik untuk mulai memasang
-dan menjalankan proses pembangunan Anda yang pertama:
+* [Grunt Getting Started](http://gruntjs.com/getting-started)
+* [Gulp Getting Started](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)
 
-* [Memulai Grunt](http://gruntjs.com/getting-started)
-* [Memulai
-  Gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)
+### Use concatenation & minification for a faster site
 
-### Gunakan penggabungan & minifikasi agar situs lebih cepat
+For those unfamiliar with the terms concatenation and minification, concatenation means simply merging multiple files together, i.e. copying and pasting several files into one. The reason we do this is that it's more efficient for a browser to fetch one file, rather than lots of small files.
 
-Bagi mereka yang tidak familier dengan istilah penggabungan dan minifikasi,
-penggabungan berarti menggabungkan beberapa file bersama-sama, yaitu menyalin dan
-menempelkan sejumlah file menjadi satu. Alasan kami melakukannya adalah karena browser akan lebih
-efisien mengambil sebuah file, daripada mengambil banyak file kecil.
+Minification is the process of taking a file and making the overall number of characters less, without changing how the code works. A good example of this is removing comments, or taking a long variable name and making it smaller. This makes the file size smaller, leading to faster downloads.
 
-Minifikasi adalah proses mengambil file dan mengurangi jumlah
-karakter keseluruhan, tanpa mengubah cara kerja kode. Sebuah contoh yang bagus tentang hal ini adalah
-membuang komentar, atau mengambil nama variabel panjang dan membuatnya lebih kecil. Ini
-akan mengecilkan ukuran file, sehingga pengunduhan lebih cepat.
-
-Gunakan modul berikut untuk minifikasi:
+For minification, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">Tipe File</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
@@ -135,12 +99,12 @@ Gunakan modul berikut untuk minifikasi:
   </tbody>
 </table>
 
-Untuk penggabungan, gunakan yang berikut ini:
+For concatenation, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">Tipe File</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
@@ -148,28 +112,22 @@ Untuk penggabungan, gunakan yang berikut ini:
   <tbody>
     <tr>
       <td data-th="Type of File">CSS (Sass)</td>
-      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> atau <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> atau <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
+      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> or <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
+      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> or <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
     </tr>
     <tr>
       <td data-th="Type of File">JS</td>
       <td data-th="Gulp"><a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> atau <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
+      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> or <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
     </tr>
   </tbody>
 </table>
 
-**Catatan**: Anda bisa menggunakan Sass dengan memanfaatkan fitur 'import' ([Lihat Web Starter
-Kit untuk contohnya](https://github.com/google/web-starter-kit/blob/master/app/styles/main.scss)).
+### Optimize your images
 
-### Optimalkan gambar Anda
+Image optimization is an important step to help speed up your site; you'd be surprised how much smaller you can make an image without losing quality. Meta data is removed from the image as it's not needed by the browser to display the image, for example, information about the camera used to take the photo.
 
-Optimalisasi gambar merupakan langkah penting untuk membantu mempercepat situs; Anda akan
-terkejut dengan sejauh mana bisa memperkecil gambar tanpa kehilangan kualitas. Meta
-data dibuang dari gambar karena tidak diperlukan browser untuk menampilkan
-gambar, misalnya, informasi tentang kamera yang digunakan untuk mengambil foto.
-
-Untuk mengoptimalkan gambar, Anda bisa menggunakan modul ini.
+For optimizing images, you can use these modules.
 
 <table class="responsive">
   <thead>
@@ -185,11 +143,9 @@ Untuk mengoptimalkan gambar, Anda bisa menggunakan modul ini.
   </tbody>
 </table>
 
-### Jangan sampai salah dengan awalan vendor
+### Don't trip up with vendor prefixes
 
-Kadang-kadang sedikit membosankan saat menyertakan semua awalan vendor untuk CSS
-yang Anda gunakan. Gunakan auto-prefixer untuk menambahkan awalan yang perlu Anda
-sertakan secara otomatis:
+It can often become a bit tedious to include all the vendor prefixes for the CSS you use. Use an auto-prefixer to automatically add the prefixes you need to include:
 
 <table class="responsive">
   <thead>
@@ -205,16 +161,14 @@ sertakan secara otomatis:
   </tbody>
 </table>
 
-**Catatan**  
-Jika suka, Anda bisa menambahkan [paket Sublime untuk menambahkan awalan secara otomatis](/web/tools/setup/setup-editor#autoprefixer).
+**Note**  
+If you prefer, you can add a [Sublime package to do the auto-prefixing](/web/tools/setup/setup-editor#autoprefixer) for you.
 
+### Never leave your text editor with live reloading
 
-### Jangan biarkan editor teks Anda memuat ulang secara live
+Live reloading updates your site in your browser each time your make a change. After using it once, you won't be able to live without it.
 
-Pemuatan ulang secara live akan memperbarui situs di browser setiap kali Anda membuat perubahan.
-Setelah menggunakannya sekali, Anda tidak akan bisa melepaskannya lagi.
-
-Web Starter Kit menggunakan browser-sync untuk dukungan Live Reload.
+Web Starter Kit uses browser-sync for Live Reload support.
 
 <table class="responsive">
   <thead>
@@ -230,7 +184,4 @@ Web Starter Kit menggunakan browser-sync untuk dukungan Live Reload.
   </tbody>
 </table>
 
-Note: Jika Anda suka dengan gagasan Live Reloading, namun tidak ingin melakukan proses pembangunan, [Tulisan Addy Osmani pada HTML5Rocks](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/) membahas beragam alternatif (sebagian gratis dan sebagian berbayar).
-
-
-{# wf_devsite_translation #}
+Note: If you like the idea of Live Reloading, but don't want to have a build process, [Addy Osmani's write up on HTML5Rocks](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/) covers a range of alternatives (some free and some commercial).

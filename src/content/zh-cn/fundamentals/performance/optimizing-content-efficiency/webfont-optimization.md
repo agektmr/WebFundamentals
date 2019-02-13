@@ -1,387 +1,255 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 字体是实现良好的设计、品牌推广、可读性和无障碍功能的基础。 网页字体可实现所有上述目标以及其他目标：文本可选取、可搜索、可缩放并支持高 DPI，无论屏幕尺寸和分辨率如何，均可提供一致并且锐利的文本渲染。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-09-19 #}
-{# wf_blink_components: Blink>CSS #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2014-09-19 #} {# wf_blink_components: Blink>CSS #}
 
-# 网页字体优化 {: .page-title }
+# Web Font Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-字体是实现良好的设计、品牌推广、可读性和无障碍功能的基础。 网页字体可实现所有上述目标以及其他目标：文本可选取、可搜索、可缩放并支持高 DPI，无论屏幕尺寸和分辨率如何，均可提供一致并且锐利的文本渲染。
- 网页字体是实现良好的设计、用户体验和性能的关键所在。
+*This article contains contributions from [Monica Dinculescu](https://meowni.ca/posts/web-fonts/), [Rob Dodson](/web/updates/2016/02/font-display), and Jeff Posnick.*
 
+Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution. Webfonts are critical to good design, UX, and performance.
 
-网页字体优化是总体性能策略的一个关键部分。 每个字体都是一项附加资源，并且某些字体可能会阻塞文本的渲染，但不能仅仅因为网页使用了网页字体，就认为它只能降低渲染速度。
- 相反，如果对字体进行优化，再通过制定明智的策略对字体在网页上的加载和应用方式作出规定，就可以帮助减小网页总大小，并缩短网页渲染时间。
+Webfont optimization is a critical piece of the overall performance strategy. Each font is an additional resource, and some fonts may block rendering of the text, but just because the page is using webfonts doesn't mean that it has to render slower. On the contrary, optimized fonts, combined with a judicious strategy for how they are loaded and applied on the page, can help reduce the total page size and improve page rendering times.
 
-
-
-
-## 网页字体详解
+## Anatomy of a webfont
 
 ### TL;DR {: .hide-from-toc }
-* Unicode 字体可能包含数千种字形。
-* 字体格式有四种：WOFF2、WOFF、EOT 和 TTF。
-* 某些字体格式需要使用压缩。
 
+* Unicode fonts can contain thousands of glyphs.
+* There are four font formats: WOFF2, WOFF, EOT, and TTF.
+* Some font formats require the use of compression.
 
-*网页字体*是一个字形集合，而每个字形是描述字母或符号的矢量形状。
- 因此，特定字体文件的大小由两个简单变量决定：每个字形矢量路径的复杂程度和特定字体中字形的数量。
- 例如，Open Sans 是其中一种最流行的网页字体，包含 897 个字形，其中包括拉丁文、希腊文和西里尔文字符。
+A *webfont* is a collection of glyphs, and each glyph is a vector shape that describes a letter or symbol. As a result, two simple variables determine the size of a particular font file: the complexity of the vector paths of each glyph and the number of glyphs in a particular font. For example, Open Sans, which is one of the most popular webfonts, contains 897 glyphs, which include Latin, Greek, and Cyrillic characters.
 
+<img src="images/glyphs.png"  alt="Font glyph table" />
 
+When picking a font, it's important to consider which character sets are supported. If you need to localize your page content to multiple languages, you should use a font that can deliver a consistent look and experience to your users. For example, [Google's Noto font family](https://www.google.com/get/noto/){: .external } aims to support all the world's languages. Note, however, that the total size of Noto, with all languages included, results in a 1.1GB+ ZIP download.
 
-<img src="images/glyphs.png"  alt="字体字形表">
+Clearly, using fonts on the web requires careful engineering to ensure that the typography doesn't impede performance. Thankfully, the web platform provides all the necessary primitives, and the rest of this guide provides a hands-on look at how to get the best of both worlds.
 
-选取字体时，重要的是考虑它支持的字符集。 如果您需要将页面内容本地化成多种语言，就应该使用一种能够为用户带来一致的外观和体验的字体。
- 例如，[Google 的 Noto
-字体系列](https://www.google.com/get/noto/){: .external } 旨在支持全世界的语言。
-但请注意，Noto（含所有语言）ZIP 格式下载文件的总大小超过了
-1.1GB+。
+### Webfont formats
 
-显然，在网页上使用字体需要某些细致的设计，以确保字体不影响性能。
- 幸运的是，网络平台提供了所有必要的基元，本指南的其余部分将通过实际操作让您了解如何两全其美。
+Today there are four font container formats in use on the web: [EOT](https://en.wikipedia.org/wiki/Embedded_OpenType), [TTF](https://en.wikipedia.org/wiki/TrueType), [WOFF](https://en.wikipedia.org/wiki/Web_Open_Font_Format), and [WOFF2](https://www.w3.org/TR/WOFF2/){: .external }. Unfortunately, despite the wide range of choices, there isn't a single universal format that works across all old and new browsers: EOT is [IE only](http://caniuse.com/#feat=eot), TTF has [partial IE support](http://caniuse.com/#search=ttf), WOFF enjoys the widest support but is [not available in some older browsers](http://caniuse.com/#feat=woff), and WOFF 2.0 support is a [work in progress for many browsers](http://caniuse.com/#feat=woff2).
 
+So, where does that leave us? There isn't a single format that works in all browsers, which means that we need to deliver multiple formats to provide a consistent experience:
 
-### 网页字体格式
+* Serve WOFF 2.0 variant to browsers that support it.
+* Serve WOFF variant to the majority of browsers.
+* Serve TTF variant to old Android (below 4.4) browsers.
+* Serve EOT variant to old IE (below IE9) browsers.
 
-目前网络上使用的字体容器格式有四种：
-[EOT](https://en.wikipedia.org/wiki/Embedded_OpenType)、
-[TTF](https://en.wikipedia.org/wiki/TrueType)、
-[WOFF](https://en.wikipedia.org/wiki/Web_Open_Font_Format) 和
-[WOFF2](https://www.w3.org/TR/WOFF2/){: .external }。 遗憾的是，尽管选择范围很广，但仍然缺少在所有新旧浏览器上都能使用的单一通用格式：
-EOT 只有
-[IE 支持](http://caniuse.com/#feat=eot)，TTF 获得了[部分 IE 支持](http://caniuse.com/#search=ttf)，WOFF 获得了最广泛的支持，但[在某些较旧的浏览器上不受支持](http://caniuse.com/#feat=woff)，而 WOFF 2.0 支持[对许多浏览器来说尚未实现](http://caniuse.com/#feat=woff2)。
+Note: There's technically another container format, the [SVG font container](http://caniuse.com/svg-fonts), but IE and Firefox never supported it, and it is now deprecated in Chrome. As such, it's of limited use and it's intentionally omitted it in this guide.
 
+### Reducing font size with compression
 
+A font is a collection of glyphs, each of which is a set of paths describing the letter form. The individual glyphs are different, but they contain a lot of similar information that can be compressed with GZIP or a compatible compressor:
 
+* EOT and TTF formats are not compressed by default. Ensure that your servers are configured to apply [GZIP compression](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip) when delivering these formats.
+* WOFF has built-in compression. Ensure that your WOFF compressor is using optimal compression settings.
+* WOFF2 uses custom preprocessing and compression algorithms to deliver ~30% file-size reduction over other formats. For more information, see [the WOFF 2.0 evaluation report](http://www.w3.org/TR/WOFF20ER/){: .external }.
 
-那我们该怎么办？不存在在所有浏览器上都能使用的单一格式，这意味着我们需要提供多种格式才能实现一致的体验：
+Finally, it's worth noting that some font formats contain additional metadata, such as [font hinting](https://en.wikipedia.org/wiki/Font_hinting) and [kerning](https://en.wikipedia.org/wiki/Kerning) information that may not be necessary on some platforms, which allows for further file-size optimization. Consult your font compressor for available optimization options, and if you take this route, ensure that you have the appropriate infrastructure to test and deliver these optimized fonts to each browser. For example, [Google Fonts](https://fonts.google.com/) maintains 30+ optimized variants for each font and automatically detects and delivers the optimal variant for each platform and browser.
 
+Note: Consider using [Zopfli compression](http://en.wikipedia.org/wiki/Zopfli) for the EOT, TTF, and WOFF formats. Zopfli is a zlib compatible compressor that delivers ~5% file-size reduction over gzip.
 
-* 将 WOFF 2.0 变体提供给支持的浏览器。
-* 将 WOFF 变体提供给大多数浏览器。
-* 将 TTF 变体提供给旧版 Android（4.4 版以下）浏览器。
-* 将 EOT 变体提供给旧版 IE（IE9 版以下）浏览器。
-
-注：从技术上讲，还有另一种容器格式，即 <a href='http://caniuse.com/svg-fonts'>SVG
-字体容器</a>，但 IE 或 Firefox 从未为其提供支持，并且现在 Chrome 也放弃了对它的支持。 因此，它的用途很有限，本指南中有意将其忽略。
-
-
-### 通过压缩减小字体大小
-
-字体是字形的集合，其中的每个字形都是一组描述字母形状的路径。 各个字形不同，但它们仍然包含大量相似信息，这些信息可通过 GZIP 或兼容的压缩工具进行压缩：
-
-
-
-* EOT 和 TTF 格式默认情况下不进行压缩。 提供这些格式时，确保您的服务器配置为应用 [GZIP 压缩](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip)。
-* WOFF 具有内建压缩。 确保您的 WOFF 压缩工具使用了最佳压缩设置。
-* WOFF2 采用自定义预处理和压缩算法，提供的文件大小压缩率比其他格式高大约 30%。
- 如需了解详细信息，请参阅
-[WOFF 2.0 评估报告](http://www.w3.org/TR/WOFF20ER/){: .external }。
-
-最后，值得注意的是，某些字体格式包含附加的元数据，如[字体提示](https://en.wikipedia.org/wiki/Font_hinting)和[字距调整](https://en.wikipedia.org/wiki/Kerning)信息，这些信息在某些平台上可能并非必要信息，这样便可进一步优化文件大小。
- 查询您的字体压缩工具是否提供了优化选项，如果您这样做，请确保您有适合的基础架构来测试这些优化过的字体并将它们提供给每个特定浏览器。
- 例如，[Google
-Fonts](https://fonts.google.com/) 为每一种字体维护有 30 多种优化过的变体，并自动检测和提供适合每一个平台和浏览器的最佳变体。
-
-
-注：考虑使用 <a href='http://en.wikipedia.org/wiki/Zopfli'>Zopfli 压缩</a>处理
-EOT、TTF 和 WOFF 格式。 Zopfli 是一种兼容 zlib 的压缩工具，提供的文件大小压缩率比 gzip
-高大约 5%。
-
-## 通过 @font-face 定义字体系列
+## Defining a font family with @font-face
 
 ### TL;DR {: .hide-from-toc }
-* 利用 `format()` 提示指定多种字体格式。
-* 对大型 Unicode 字体进行子集内嵌以提高性能。 使用 Unicode-range 子集内嵌，并为较旧的浏览器提供手动子集内嵌回退。
-* 减少风格字体变体的数量以改进网页和文本渲染性能。
 
+* Use the `format()` hint to specify multiple font formats.
+* Subset large Unicode fonts to improve performance. Use Unicode-range subsetting and provide a manual subsetting fallback for older browsers.
+* Reduce the number of stylistic font variants to improve the page- and text-rendering performance.
 
-您可以通过 `@font-face` CSS at-rule 定义特定字体资源的位置、其样式特性及其应该用于的 Unicode 代码点。
- 可组合使用上述
-`@font-face 声明来构建“字体系列”，浏览器将使用该系列来评估哪些字体资源需要下载并应用到当前网页。
+The `@font-face` CSS at-rule allows you to define the location of a particular font resource, its style characteristics, and the Unicode codepoints for which it should be used. A combination of such `@font-face declarations can be used to construct a "font family," which the browser will use to evaluate which font resources need to be downloaded and applied to the current page.
 
+### Format selection
 
-### 格式选择
-
-每个 `@font-face` 声明都提供字体系列的名称，它充当多个声明的逻辑组、[字体属性](http://www.w3.org/TR/css3-fonts/#font-prop-desc)（如样式、粗细和拉伸）以及为字体资源指定位置优先级列表的 [src 描述符](http://www.w3.org/TR/css3-fonts/#src-desc)。
-
-
-
-
+Each `@font-face` declaration provides the name of the font family, which acts as a logical group of multiple declarations, [font properties](http://www.w3.org/TR/css3-fonts/#font-prop-desc) such as style, weight, and stretch, and the [src descriptor](http://www.w3.org/TR/css3-fonts/#src-desc), which specifies a prioritized list of locations for the font resource.
 
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome.woff2') format('woff2'),
+           url('/fonts/awesome.woff2') format('woff2'), 
            url('/fonts/awesome.woff') format('woff'),
            url('/fonts/awesome.ttf') format('truetype'),
            url('/fonts/awesome.eot') format('embedded-opentype');
     }
-
+    
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: italic;
       font-weight: 400;
       src: local('Awesome Font Italic'),
-           url('/fonts/awesome-i.woff2') format('woff2'),
+           url('/fonts/awesome-i.woff2') format('woff2'), 
            url('/fonts/awesome-i.woff') format('woff'),
            url('/fonts/awesome-i.ttf') format('truetype'),
            url('/fonts/awesome-i.eot') format('embedded-opentype');
     }
+    
 
+First, note that the above examples define a single *Awesome Font* family with two styles (normal and *italic*), each of which points to a different set of font resources. In turn, each `src` descriptor contains a prioritized, comma-separated list of resource variants:
 
-首先，请注意以上示例使用两种样式（normal
-和_italic_）来定义单个 _Awesome Font_ 系列，其中的每个样式均指向一个不同的字体资源集。 每个 `src`
-描述符则又包含一个用逗号分隔的资源变体优先级列表：
+* The `local()` directive allows you to reference, load, and use locally installed fonts.
+* The `url()` directive allows you to load external fonts, and are allowed to contain an optional `format()` hint indicating the format of the font referenced by the provided URL.
 
-* `local()` 指令用于引用、加载和使用安装在本地的字体。
-* `url()` 指令用于加载外部字体，它可以包含可选的
-`format()` 提示，指示由提供的网址引用的字体格式。
+Note: Unless you're referencing one of the default system fonts, it is rare for the user to have it locally installed, especially on mobile devices, where it is effectively impossible to "install" additional fonts. You should always start with a `local()` entry "just in case," and then provide a list of `url()` entries.
 
+When the browser determines that the font is needed, it iterates through the provided resource list in the specified order and tries to load the appropriate resource. For example, following the example above:
 
-注：除非您引用的是其中一种默认系统字体，用户很少将其安装在本地，特别是在移动设备上，在移动设备上“安装”
-附加字体实际上根本无法实现。 您始终应该从“以防万一”的 `local()` 条目入手，然后提供一个 `url()` 条目列表。
+1. The browser performs page layout and determines which font variants are required to render the specified text on the page.
+2. For each required font, the browser checks if the font is available locally.
+3. If the font is not available locally, the browser iterates over external definitions: 
+    * If a format hint is present, the browser checks if it supports the hint before initiating the download. If the browser doesn't support the hint, the browser advances to the next one.
+    * If no format hint is present, the browser downloads the resource.
 
+The combination of local and external directives with appropriate format hints allows you to specify all of the available font formats and let the browser handle the rest. The browser determines which resources are required and selects the optimal format.
 
-当浏览器确定需要字体时，它会按指定顺序循环访问提供的资源列表，并尝试加载相应的资源。
-例如，接着上面的示例：
+Note: The order in which the font variants are specified matters. The browser picks the first format it supports. Therefore, if you want the newer browsers to use WOFF2, then you should place the WOFF2 declaration above WOFF, and so on.
 
+### Unicode-range subsetting
 
-1. 浏览器执行页面布局并确定需要使用哪些字体变体来渲染网页上的指定文本。
-1. 对于每一种必需字体，浏览器会检查字体文件是否位于本地。
-1. 如果字体文件不在本地，则浏览器会遍历外部定义：
-    * 如果存在格式提示，则浏览器会在启动下载之前检查其是否支持提示。
- 如果浏览器不支持此提示，则会前进到下一格式提示。
-    * 如果不存在格式提示，则浏览器会下载资源。
+In addition to font properties such as style, weight, and stretch, the `@font-face` rule allows us to define a set of Unicode codepoints supported by each resource. This enables us to split a large Unicode font into smaller subsets (for example, Latin, Cyrillic, and Greek subsets) and only download the glyphs required to render the text on a particular page.
 
-您可以将本地和外部指令与相应的格式提示相结合来指定所有可用字体格式，其余工作交由浏览器进行处理。
- 浏览器确定需要哪些资源，并选择最佳格式。
+The [unicode-range descriptor](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range) allows you to specify a comma-delimited list of range values, each of which can be in one of three different forms:
 
+* Single codepoint (for example, `U+416`)
+* Interval range (for example, `U+400-4ff`): indicates the start and end codepoints of a range
+* Wildcard range (for example, `U+4??`): `?` characters indicate any hexadecimal digit
 
-注：字体变体的指定顺序很重要。 浏览器将选取其支持的第一种格式。
- 因此，如果您希望较新的浏览器使用 WOFF2，则应将 WOFF2
-声明置于 WOFF 之上，依此类推。
-
-### Unicode-range 子集内嵌
-
-除了样式、粗细和拉伸等字体属性外，还可以通过
-`@font-face` 规则定义各资源支持的
-Unicode 代码点集。 这样一来，便可将大型 Unicode 字体拆分成较小的子集（例如拉丁文、西里尔文和希腊文子集），并且只下载在特定网页上渲染文本所需的字形。
-
-
-
-您可以通过 [unicode-range 描述符](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range)指定一个用逗号分隔的范围值列表，其中的每个值都可能采用下列三种不同形式中的一种：
-
-
-
-* 单一代码点（例如 `U+416`）
-* 间隔范围（例如 `U+400-4ff`）：表示范围的开始代码点和结束代码点
-* 通配符范围（例如 `U+4??`）：`?` 字符表示任何十六进制数字
-
-例如，您可以将 Awesome Font 系列拆分成拉丁文和日文子集，其中的每个子集将由浏览器根据需要下载：
-
-
+For example, you can split your *Awesome Font* family into Latin and Japanese subsets, each of which the browser downloads on an as-needed basis:
 
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome-l.woff2') format('woff2'),
+           url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
            url('/fonts/awesome-l.ttf') format('truetype'),
            url('/fonts/awesome-l.eot') format('embedded-opentype');
-      unicode-range:U+000-5FF; /* Latin glyphs */
+      unicode-range: U+000-5FF; /* Latin glyphs */
     }
-
+    
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome-jp.woff2') format('woff2'),
+           url('/fonts/awesome-jp.woff2') format('woff2'), 
            url('/fonts/awesome-jp.woff') format('woff'),
            url('/fonts/awesome-jp.ttf') format('truetype'),
            url('/fonts/awesome-jp.eot') format('embedded-opentype');
-      unicode-range:U+3000-9FFF, U+ff??; /* Japanese glyphs */
+      unicode-range: U+3000-9FFF, U+ff??; /* Japanese glyphs */
     }
+    
 
+Note: Unicode-range subsetting is particularly important for Asian languages, where the number of glyphs is much larger than in Western languages and a typical "full" font is often measured in megabytes instead of tens of kilobytes.
 
-注：Unicode-range 子集内嵌对亚洲语言特别重要，因为在亚洲语言中，字形数量比西方语言多得多，标准的“完整”字体常常以兆字节而非千字节计量。
+The use of Unicode range subsets and separate files for each stylistic variant of the font allows you to define a composite font family that is both faster and more efficient to download. Visitors only download the variants and subsets they need, and they aren't forced to download subsets that they may never see or use on the page.
 
+That said, there's one small issue with unicode-range: [not all browser support it](http://caniuse.com/#feat=font-unicode-range) yet. Some browsers simply ignore the unicode-range hint and download all variants, while others may not process the `@font-face` declaration at all. To address this, you need to fall back to "manual subsetting" for older browsers.
 
+Because old browsers are not smart enough to select only the necessary subsets and cannot construct a composite font, you have to fall back to providing a single font resource that contains all the necessary subsets and hide the rest from the browser. For example, if the page is only using Latin characters, then you can strip other glyphs and serve that particular subset as a standalone resource.
 
-您可以通过使用 Unicode range 子集，以及为字体的每个样式变体使用单独的文件，定义一个下载起来更快速并且更高效的复合字体系列。
- 访问者将只下载其需要的变体和子集，并且不会强制他们下载可能永远不会在网页上看到或使用的子集。
+1. **How do you determine which subsets are needed?** 
+    * If the browser supports unicode-range subsetting, then it will automatically select the right subset. The page just needs to provide the subset files and specify appropriate unicode-ranges in the `@font-face` rules.
+    * If the browser doesn't support unicode-range subsetting, then the page needs to hide all unnecessary subsets; that is, the developer must specify the required subsets.
+2. **How do you generate font subsets?** 
+    * Use the open-source [pyftsubset tool](https://github.com/behdad/fonttools/){: .external } to subset and optimize your fonts.
+    * Some font services allow manual subsetting via custom query parameters, which you can use to manually specify the required subset for your page. Consult the documentation from your font provider.
 
+### Font selection and synthesis
 
+Each font family is composed of multiple stylistic variants (regular, bold, italic) and multiple weights for each style, each of which, in turn, may contain very different glyph shapes&mdash;for example, different spacing, sizing, or a different shape altogether.
 
-不过，unicode-range 也有一个小缺陷：[并非所有浏览器都为其提供支持](http://caniuse.com/#feat=font-unicode-range)。
- 某些浏览器会简单地忽略 unicode-range 提示并下载所有变体，另一些浏览器则可能根本不会处理 `@font-face` 声明。
- 要解决此问题，对于较旧的浏览器，您需要回退到“手动子集内嵌”。
+<img src="images/font-weights.png"  alt="Font weights" />
 
+For example, the above diagram illustrates a font family that offers three different bold weights: 400 (regular), 700 (bold), and 900 (extra bold). All other in-between variants (indicated in gray) are automatically mapped to the closest variant by the browser.
 
-由于旧浏览器因不够智能而无法只选择必要的子集，也无法构建复合字体，因此您必须回退以提供包含所有必要子集的单一字体资源，并向浏览器隐藏其余子集。
- 例如，如果网页只使用拉丁文字符，那么您可以去除其他字形，并将该特定子集作为一个独立资源提供。
+> When a weight is specified for which no face exists, a face with a nearby weight is used. In general, bold weights map to faces with heavier weights and light weights map to faces with lighter weights.
+> 
+> > [CSS3 font matching algorithm](http://www.w3.org/TR/css3-fonts/#font-matching-algorithm)
 
-
-
-1. **您如何确定需要哪些子集？**
-    * 如果浏览器支持 unicode-range 子集内嵌，则会自动选择正确的子集。
- 网页只需提供子集文件并在 `@font-face` 规则中指定相应的 unicode-range。
-    * 如果浏览器不支持 unicode-range 子集内嵌，则网页需要隐藏所有多余的子集，即开发者必须指定需要的子集。
-
-1. **您如何生成字体子集？**
-    - 使用开源的 [pyftsubset 工具](https://github.com/behdad/fonttools/){: .external } 对您的字体进行子集内嵌和优化。
-    - 某些字体服务允许通过自定义查询参数手动内嵌子集，您可以利用这些参数手动指定网页需要的子集。
- 请查阅您的字体提供商提供的文档。
-
-
-
-### 字体选择和合成
-
-每个字体系列都由多个样式变体（常规、加粗、倾斜）和适用于每个样式的多个粗细组成，其中的每个粗细又可能包含迥异的字形形状&mdash;例如不同的间距、大小调整或完全不同的形状。
-
-
-
-<img src="images/font-weights.png"  alt="字体粗细">
-
-例如，上图以图解方式说明了一个提供三种不同加粗粗细的字体系列：
-400（常规）、700（加粗）和 900（特粗）。 浏览器会将所有其他中间变体（以灰色表示）自动映射到最接近的变体。
-
-
-
-
-
-> 如果指定的某个粗细不存在对应的字体，则使用相近粗细的字体。 一般而言，加粗粗细映射到粗细较粗的字体，而较细粗细则映射到粗细较细的字体。
-
-
-> > <a href="http://www.w3.org/TR/css3-fonts/#font-matching-algorithm">CSS3
-字体匹配算法</a>
-
-
-
-_倾斜_变体也适用类似的逻辑。 字体设计者控制其将产生哪些变体，而您控制将在网页上使用哪些变体。
- 由于每个变体都会单独下载，因此最好将变体数量保持在较低水平。
- 例如，您可以为
-_Awesome Font_ 系列定义两种加粗变体：
-
+Similar logic applies to *italic* variants. The font designer controls which variants they will produce, and you control which variants you'll use on the page. Because each variant is a separate download, it's a good idea to keep the number of variants small. For example, you can define two bold variants for the *Awesome Font* family:
 
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 400;
       src: local('Awesome Font'),
-           url('/fonts/awesome-l.woff2') format('woff2'),
+           url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
            url('/fonts/awesome-l.ttf') format('truetype'),
            url('/fonts/awesome-l.eot') format('embedded-opentype');
-      unicode-range:U+000-5FF; /* Latin glyphs */
+      unicode-range: U+000-5FF; /* Latin glyphs */
     }
-
+    
     @font-face {
-      font-family:'Awesome Font';
+      font-family: 'Awesome Font';
       font-style: normal;
       font-weight: 700;
       src: local('Awesome Font'),
-           url('/fonts/awesome-l-700.woff2') format('woff2'),
+           url('/fonts/awesome-l-700.woff2') format('woff2'), 
            url('/fonts/awesome-l-700.woff') format('woff'),
            url('/fonts/awesome-l-700.ttf') format('truetype'),
            url('/fonts/awesome-l-700.eot') format('embedded-opentype');
-      unicode-range:U+000-5FF; /* Latin glyphs */
+      unicode-range: U+000-5FF; /* Latin glyphs */
     }
+    
 
+The above example declares the *Awesome Font* family that is composed of two resources that cover the same set of Latin glyphs (`U+000-5FF`) but offer two different "weights": normal (400) and bold (700). However, what happens if one of your CSS rules specifies a different font weight, or sets the font-style property to italic?
 
-上例声明的 _Awesome Font_ 系列由两项资源组成，它们涵盖同一拉丁文字形集 (`U+000-5FF`)，但提供两种不同的“粗细”：常规 (400) 和加粗
-(700)。
- 不过，如果您的其中一个 CSS 规则指定了一种不同的字体粗细，或者将 font-style 属性设置为 italic，那会怎么样？
+* If an exact font match isn't available, the browser substitutes the closest match.
+* If no stylistic match is found (for example, no italic variants were declared in the example above), then the browser synthesizes its own font variant.
 
+<img src="images/font-synthesis.png"  alt="Font synthesis" />
 
-- 如果未找到精确字体匹配项，浏览器将以最接近的匹配项替代。
-- 如果未找到样式匹配项（例如，在上例中未声明任何倾斜变体），则浏览器将合成其自己的字体变体。
+Warning: Authors should also be aware that synthesized approaches may not be suitable for scripts like Cyrillic, where italic forms are very different in shape. For proper fidelity in those scripts, use an actual italic font.
 
+The example above illustrates the difference between the actual vs. synthesized font results for Open Sans. All synthesized variants are generated from a single 400-weight font. As you can see, there's a noticeable difference in the results. The details of how to generate the bold and oblique variants are not specified. Therefore, the results vary from browser to browser, and are highly dependent on the font.
 
-<img src="images/font-synthesis.png"  alt="字体合成">
+Note: For best consistency and visual results, don't rely on font synthesis. Instead, minimize the number of used font variants and specify their locations, such that the browser can download them when they are used on the page. That said, in some cases a synthesized variant [may be a viable option](https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/), but be cautious in using synthesized variants.
 
-
-Warning: 字体创造者还应注意，合成方法可能不适用于西里尔文等文字系统，在这些文字系统中，斜体形式在形状方面非常不同。
- 要在这些文字系统中实现适当的保真度，请使用实际的斜体字体。
-
-
-上例以图解方式说明了 Open-Sans 的实际字体与 合成字体结果之间的差异。
- 所有合成变体都是依据单个 400 粗细的字体生成。 您可以看出，结果存在显著差异。
- 其中并未详细说明如何生成加粗和倾斜变体。
- 因此，结果将因浏览器的不同而发生变化，并且与字体的相关度极高。
-
-
-注：为获得最好的一致性和视觉效果，您不应该依赖字体合成， 而应最大限度减少使用的字体变体的数量并指定其位置，这样一来，只有在网页使用它们时，浏览器才会进行下载。
- 不过，在某些情况下，合成的变体<a
-href='https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/'>或许是可行的选择</a>，不过请谨慎使用。
-
-
-## 优化加载和渲染
+## Optimizing loading and rendering
 
 ### TL;DR {: .hide-from-toc }
-* 默认情况下，在构建渲染树之前会延迟字体请求，这可能会导致文本渲染延迟。
-* `<link rel="preload">`、CSS `font-display` 属性以及字体加载
-API 提供实现自定义字体加载和渲染策略所需的钩子，从而替换默认行为。
 
+* By default, font requests are delayed until the render tree is constructed, which can result in delayed text rendering.
+* `<link rel="preload">`, the CSS `font-display` property, and the Font Loading API provide the hooks needed to implementing custom font loading and rendering strategies, overriding the default behavior.
 
+A "full" webfont that includes all stylistic variants, which you may not need, plus all the glyphs, which may go unused, can easily result in a multi-megabyte download. To address this, the `@font-face` CSS rule is specifically designed to allow you to split the font family into a collection of resources: unicode subsets, distinct style variants, and so on.
 
-一个“完整”网页字体包括您可能不需要的所有样式变体，加上可能不会使用的所有字形，很容易就会产生几兆字节的下载。
- 为解决此问题，专门设计了
-`@font-face` CSS 规则，您可以利用该规则将字体系列拆分成一个由 unicode 子集、不同样式变体等资源组成的资源集合。
+Given these declarations, the browser figures out the required subsets and variants and downloads the minimal set required to render the text, which is very convenient. However, if you're not careful, it can also create a performance bottleneck in the critical rendering path and delay text rendering.
 
+### The default behavior
 
-鉴于这些声明，浏览器会确定需要的子集和变体，并下载渲染文本所需的最小集，非常方便。
- 但如果您不小心，它也可能会在关键渲染路径中形成性能瓶颈并延迟文本渲染。
+Lazy loading of fonts carries an important hidden implication that may delay text rendering: the browser must [construct the render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction), which is dependent on the DOM and CSSOM trees, before it knows which font resources it needs in order to render the text. As a result, font requests are delayed well after other critical resources, and the browser may be blocked from rendering text until the resource is fetched.
 
+<img src="images/font-crp.png"  alt="Font critical rendering path" />
 
+1. The browser requests the HTML document.
+2. The browser begins parsing the HTML response and constructing the DOM.
+3. The browser discovers CSS, JS, and other resources and dispatches requests.
+4. The browser constructs the CSSOM after all of the CSS content is received and combines it with the DOM tree to construct the render tree. 
+    * Font requests are dispatched after the render tree indicates which font variants are needed to render the specified text on the page.
+5. The browser performs layout and paints content to the screen. 
+    * If the font is not yet available, the browser may not render any text pixels.
+    * After the font is available, the browser paints the text pixels.
 
-### 默认行为
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text.
 
-字体延迟加载带有一个可能会延迟文本渲染的重要隐藏影响：浏览器必须[构建渲染树](/web/fundamentals/performance/critical-rendering-path/render-tree-construction)（它依赖 DOM 和 CSSOM 树），然后才能知道需要使用哪些字体资源来渲染文本。
- 因此，字体请求的处理将远远滞后于其他关键资源请求的处理，并且在提取资源之前，可能会阻止浏览器渲染文本。
+The next section describes a number of options for customizing this default behavior.
 
+### Preload your Webfont resources
 
-<img src="images/font-crp.png"  alt="字体关键渲染路径">
+If there's a high probability that your page will need a specific Webfont hosted at a URL you know in advance, you can take advantage of a new web platform feature: [`<link rel="preload">`](/web/fundamentals/performance/resource-prioritization).
 
-1. 浏览器请求 HTML 文档。
-1. 浏览器开始解析 HTML 响应和构建 DOM。
-1. 浏览器发现 CSS、JS 以及其他资源并分派请求。
-1. 浏览器在收到所有 CSS 内容后构建 CSSOM，然后将其与 DOM 树合并以构建渲染树。
-    - 在渲染树指示需要哪些字体变体在网页上渲染指定文本后，将分派字体请求。
-1. 浏览器执行布局并将内容绘制到屏幕上。
-    - 如果字体尚不可用，浏览器可能不会渲染任何文本像素。
-    - 字体可用之后，浏览器将绘制文本像素。
+It allows you to include an element in your HTML, usually as part of the `<head>`, that will trigger a request for the Webfont early in the critical rendering path, without having to wait for the CSSOM to be created.
 
-网页内容的首次绘制（可在渲染树构建后不久完成）与字体资源请求之间的“竞赛”产生了“空白文本问题”，出现该问题时，浏览器会在渲染网页布局时遗漏所有文本。
-
-
-
-
-下一节将说明自定义这种默认行为的各种选项。
-
-### 预加载网页字体资源
-
-您的页面很有可能需要您事先在知道的网址上托管特定的网页字体，如果确实如此，您可利用新的网络平台功能：[`<link rel="preload">`](/web/fundamentals/performance/resource-prioritization)。
-
-
-
-该功能允许您在 HTML 中纳入一个元素，而该元素通常作为
-`<head>` 的一部分，并在关键渲染路径中提早触发对网络字体的请求，而不必等待创建 CSSOM。
-
-
-`<link rel="preload">` 用于“提示”浏览器很快会需要给定的资源，但不会告知浏览器*如何*使用该资源。
-您需要将预加载与适当的 CSS `@font-face`
-定义协同使用，以指示浏览器如何处理给定的网络字体网址。
+`<link rel="preload">` serves as a "hint" to the browser that a given resource is going to be needed soon, but it doesn't tell the browser *how* to use it. You need to use preload in conjunction with an appropriate CSS `@font-face` definition in order to instruct the browser what do to with a given Webfont URL.
 
 ```html
 <head>
@@ -392,51 +260,37 @@ API 提供实现自定义字体加载和渲染策略所需的钩子，从而替�
 
 ```css
 @font-face {
-  font-family:'Awesome Font';
+  font-family: 'Awesome Font';
   font-style: normal;
   font-weight: 400;
   src: local('Awesome Font'),
-       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
        url('/fonts/awesome-l.woff') format('woff'),
        url('/fonts/awesome-l.ttf') format('truetype'),
        url('/fonts/awesome-l.eot') format('embedded-opentype');
-  unicode-range:U+000-5FF; /* Latin glyphs */
+  unicode-range: U+000-5FF; /* Latin glyphs */
 }
 ```
 
-并非所有浏览器都[支持 `<link rel="preload">`](https://caniuse.com/#feat=link-rel-preload)，在这些浏览器中，将会直接忽略 `<link rel="preload">`。
- 但是，所有支持预加载的浏览器也支持 WOFF2，因此您始终应该预加载这种格式。
+Not all browsers [support `<link rel="preload">`](https://caniuse.com/#feat=link-rel-preload), and in those browsers, `<link rel="preload">` will just be ignored. But every browser that supports preloading also supports WOFF2, so that's always the format that you should preload.
 
+Caution: Using `<link rel="preload">` will make an unconditional, high-priority request for the Webfont's URL, regardless of whether it actually ends up being needed on the page. If there's a reasonable chance that the remote copy of the Webfont won't be needed—for instance, because the `@font-face` definition includes a `local()` entry for a common font like Roboto—then using `<link rel="preload">` will result in a wasted request. Some browsers will display a warning in their Developer Tools Console when a resource is preloaded but not actually used.
 
+### Customize the text rendering delay
 
-Note: 使用 `<link rel="preload">` 将发出无条件的高优先级网络字体网址请求，而不考虑页面上最终是否实际需要该网络字体。
- 如果在合理的情况下，不需要网络字体的远程副本（例如，因为 `@font-face` 定义包含针对 Roboto 等常用字体的 `local()` 条目），那么使用
-`<link rel="preload">` 将会产生多余的请求。
- 预加载但不实际使用资源时，某些浏览器会在其开发者工具控制台中显示警告。
+While preloading makes it more likely that a Webfont will be available when a page's content is rendered, it offers no guarantees. You still need to consider how browsers behave when rendering text that uses a `font-family` which is not yet available.
 
+#### Browser behaviors
 
-
-### 自定义文本渲染延迟
-
-虽然预加载可以增加网络字体在页面内容渲染时可用的可能性，但并不保证一定如此。
- 您仍需要考虑所渲染的文本使用了尚未可用的 `font-family` 时浏览器的行为。
-
-
-
-#### 浏览器行为
-
-网页内容的首次绘制（可在渲染树构建后不久完成）与字体资源请求之间的“竞赛”产生了“空白文本问题”，出现该问题时，浏览器会在渲染网页布局时遗漏所有文本。
- 大部分浏览器在等待下载网络字体时会执行最大超时策略，超时之后将使用回退字体。
- 不过，各个浏览器的执行方式并不相同：
-
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text. Most browsers implement a maximum timeout that they'll wait for a Webfont to download, after which a fallback font will be used. Unfortunately, browsers differ on implementation:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Browser">浏览器</th>
-      <th data-th="Timeout">超时</th>
-      <th data-th="Fallback">回退</th>
-      <th data-th="Swap">交换</th>
+      <th data-th="Browser">Browser</th>
+      <th data-th="Timeout">Timeout</th>
+      <th data-th="Fallback">Fallback</th>
+      <th data-th="Swap">Swap</th>
     </tr>
   </thead>
   <tbody>
@@ -445,13 +299,13 @@ Note: 使用 `<link rel="preload">` 将发出无条件的高优先级网络字�
         <strong>Chrome 35+</strong>
       </td>
       <td data-th="Timeout">
-        3 秒
+        3 seconds
       </td>
       <td data-th="Fallback">
-        是
+        Yes
       </td>
       <td data-th="Swap">
-        是
+        Yes
       </td>
     </tr>
     <tr>
@@ -459,13 +313,13 @@ Note: 使用 `<link rel="preload">` 将发出无条件的高优先级网络字�
         <strong>Opera</strong>
       </td>
       <td data-th="Timeout">
-        3 秒
+        3 seconds
       </td>
       <td data-th="Fallback">
-        是
+        Yes
       </td>
       <td data-th="Swap">
-        是
+        Yes
       </td>
     </tr>
     <tr>
@@ -473,13 +327,13 @@ Note: 使用 `<link rel="preload">` 将发出无条件的高优先级网络字�
         <strong>Firefox</strong>
       </td>
       <td data-th="Timeout">
-        3 秒
+        3 seconds
       </td>
       <td data-th="Fallback">
-        是
+        Yes
       </td>
       <td data-th="Swap">
-        是
+        Yes
       </td>
     </tr>
     <tr>
@@ -487,13 +341,13 @@ Note: 使用 `<link rel="preload">` 将发出无条件的高优先级网络字�
         <strong>Internet Explorer</strong>
       </td>
       <td data-th="Timeout">
-        0 秒
+        0 seconds
       </td>
       <td data-th="Fallback">
-        是
+        Yes
       </td>
       <td data-th="Swap">
-        是
+        Yes
       </td>
     </tr>
     <tr>
@@ -501,208 +355,135 @@ Note: 使用 `<link rel="preload">` 将发出无条件的高优先级网络字�
         <strong>Safari</strong>
       </td>
       <td data-th="Timeout">
-        无超时
+        No timeout
       </td>
       <td data-th="Fallback">
-        不适用
+        N/A
       </td>
       <td data-th="Swap">
-        不适用
+        N/A
       </td>
     </tr>
   </tbody>
 </table>
 
-- Chrome 和 Firefox 的超时时间为 3 秒，在此之后，将会以回退字体来显示文本。
- 如果成功下载字体，那么最终会发生交换，并以期望的字体重新渲染文本。
-- Internet Explorer 的超时时间为零秒，这表示文本得以立即渲染。
- 如果所请求的字体尚不可用，那么将使用回退字体，之后在所请求的字体可用时将重新渲染该文本。
-- Safari 没有超时行为（或者至少并无超出网络超时基线的行为）。
+* Chrome and Firefox have a three second timeout after which the text is shown with the fallback font. If the font manages to download, then eventually a swap occurs and the text is re-rendered with the intended font.
+* Internet Explorer has a zero second timeout which results in immediate text rendering. If the requested font is not yet available, a fallback is used, and text is re-rendered later once the requested font becomes available.
+* Safari has no timeout behavior (or at least nothing beyond a baseline network timeout).
 
+To ensure consistency moving forward, the CSS Working Group has proposed a new `@font-face` descriptor, [`font-display`](https://drafts.csswg.org/css-fonts-4/#font-display-desc), and a corresponding property for controlling how a downloadable font renders before it is loaded.
 
-为确保之后的一致性，CSS 工作组已提议采用新的
-`@font-face` 描述符
-[`font-display`](https://drafts.csswg.org/css-fonts-4/#font-display-desc)，以及用于控制可下载字体在加载前如何渲染的相应属性。
+#### The font display timeline
 
+Similar to the existing font timeout behaviors that some browsers implement today, `font-display` segments the lifetime of a font download into three major periods:
 
+1. The first period is the **font block period**. During this period, if the font face is not loaded, any element attempting to use it must instead render with an invisible fallback font face. If the font face successfully loads during the block period, the font face is then used normally.
+2. The **font swap period** occurs immediately after the font block period. During this period, if the font face is not loaded, any element attempting to use it must instead render with a fallback font face. If the font face successfully loads during the swap period, the font face is then used normally.
+3. The **font failure period** occurs immediately after the font swap period. If the font face is not yet loaded when this period starts, it’s marked as a failed load, causing normal font fallback. Otherwise, the font face is used normally.
 
-#### 字体显示时间线
+Understanding these periods means you can use `font-display` to decide how your font should render depending on whether or when it was downloaded.
 
-与某些浏览器目前实施的现有字体超时行为相似，`font-display` 将字体下载生命周期分为三个主要期间：
+#### Using font-display
 
-
-
-1. 第一个期间为**字体阻止期**。 在此期间，如果字体未加载，则任何尝试使用字体的元素都必须改用不可见的回退字体来渲染。
- 如果字体在阻止期成功加载，则正常使用字体。
-2. 字体阻止期过后便是**字体交换期**。 在此期间，如果字体未加载，则任何尝试使用字体的元素都必须改用回退字体来渲染。
- 如果字体在交换期成功加载，则正常使用字体。
-3. 字体交换期之后便是**字体失败期**。
- 如果字体在此期间开始时尚未加载，则会将字体标记为加载失败，从而导致正常字体回退。
- 否则，正常使用字体。
-
-
-了解这些期间后，您即可使用 `font-display`，根据是否或何时下载字体，决定渲染字体的方式。
-
-
-#### 使用 font-display
-
-若要使用 `font-display` 属性，则为其添加 `@font-face` 规则：
+To work with the `font-display` property, add it your `@font-face` rules:
 
 ```css
 @font-face {
-  font-family:'Awesome Font';
+  font-family: 'Awesome Font';
   font-style: normal;
   font-weight: 400;
   font-display: auto; /* or block, swap, fallback, optional */
   src: local('Awesome Font'),
-       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
        url('/fonts/awesome-l.woff') format('woff'),
        url('/fonts/awesome-l.ttf') format('truetype'),
        url('/fonts/awesome-l.eot') format('embedded-opentype');
-  unicode-range:U+000-5FF; /* Latin glyphs */
+  unicode-range: U+000-5FF; /* Latin glyphs */
 }
 ```
 
-`font-display` 当前支持以下范围的值：
-`auto | block | swap | fallback | optional`。
+`font-display` currently supports the following range of values: `auto | block | swap | fallback | optional`.
 
-- **`auto`** 使用 user-agent 所用的字体显示策略。 大部分浏览器当前使用类似于 `block` 的默认策略。
+* **`auto`** uses whatever font display strategy the user-agent uses. Most browsers currently have a default strategy similar to `block`.
 
+* **`block`** gives the font face a short block period (3s is recommended in most cases) and an infinite swap period. In other words, the browser draws "invisible" text at first if the font is not loaded, but swaps the font face in as soon as it loads. To do this the browser creates an anonymous font face with metrics similar to the selected font but with all glyphs containing no "ink." This value should only be used if rendering text in a particular typeface is required for the page to be usable.
 
-- **`block`** 为字体指定较短的阻止期（在大部分情况下，建议值为 3 秒）以及无限的交换期。
- 换言之，字体未加载时，浏览器首先绘制“不可见”的文本，但在字体加载后立即交换字体。
+* **`swap`** gives the font face a zero second block period and an infinite swap period. This means the browser draws text immediately with a fallback if the font face isn’t loaded, but swaps the font face in as soon as it loads. Similar to `block`, this value should only be used when rendering text in a particular font is important for the page, but rendering in any font will still get a correct message across. Logo text is a good candidate for **swap** since displaying a company’s name using a reasonable fallback will get the message across but you’d eventually use the official typeface.
 
- 为此，浏览器将创建指标与所选字体相似的匿名字体，但所有字形皆不含“墨水”。
+* **`fallback`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a short swap period (three seconds is recommended in most cases). In other words, the font face is rendered with a fallback at first if it’s not loaded, but the font is swapped as soon as it loads. However, if too much time passes, the fallback will be used for the rest of the page’s lifetime. `fallback` is a good candidate for things like body text where you’d like the user to start reading as soon as possible and don’t want to disturb their experience by shifting text around as a new font loads in.
 
-只有在必须以特定字样渲染文本以使页面可用时，才应使用此值。
+* **`optional`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a zero second swap period. Similar to `fallback`, this is a good choice for when the downloading font is more of a "nice to have" but not critical to the experience. The `optional` value leaves it up to the browser to decide whether to initiate the font download, which it may choose not to do or it may do it as a low priority depending on what it thinks would be best for the user. This can be beneficial in situations where the user is on a weak connection and pulling down a font may not be the best use of resources.
 
+`font-display` is [gaining adoption](https://caniuse.com/#feat=css-font-rendering-controls) in many modern browsers. You can look forward to consistency in browser behavior as it becomes widely implemented.
 
-- **`swap`** 为字体指定零秒的阻止期，以及无限的交换期。
-这意味着字体未加载时，浏览器会立即以回退字体来绘制文本，但在字体加载后立即交换字体。
- 与 `block` 相似，仅当以特定字体渲染文本对于页面来说十分重要，但以任何字体渲染都可呈现正确的消息时，才应使用此值。
- 徽标文本非常适合于**交换**，因为使用合理的回退字体显示公司名称即可传达消息，但您最终会使用正式的字样。
+### The Font Loading API
 
+Used together, `<link rel="preload">` and the CSS `font-display` give developers a great deal of control over font loading and rendering, without adding in much overhead. But if you need additional customizations, and are willing to incur with the overhead introduced by running JavaScript, there is another option.
 
-
-- **`fallback`** 为字体指定极短的阻止期（在大部分情况下，建议值为 100 毫秒或更短）以及较短的交换期（在大部分情况下，建议值为 3 秒）。
- 换言之，字体未加载时，首先使用回退字体来渲染字体，但在字体加载后立即交换字体。
- 但是，如果经过的时间过长，则在页面剩余的生命周期中将使用回退字体。
- `fallback` 非常适合于正文等内容，对于这些内容，您希望用户尽快开始阅读，不想让新字体载入时发生的文本移动干扰其体验。
-
-
-
-- **`optional`** 为字体指定极短的阻止期（在大部分情况下，建议值为 100 毫秒或更短）以及零秒的交换期。
- 与 `fallback` 相似，此值非常适合在下载的字体可以“锦上添花”，
-但对于用户体验并非至关重要时使用。 `optional` 值让浏览器决定是否启动字体下载，而浏览器会从用户的角度出发，选择最适合的方案，即可能选择不下载，或以低优先级执行下载。
- 当用户的网络连接较差以及下载字体并非利用资源的最佳方式时，可以使用此方法。
-
-
-`font-display` 在许多现代浏览器中[获得采用](https://caniuse.com/#feat=css-font-rendering-controls)。
- 随着这种属性的实施范围越来越广，浏览器采取一致行为指日可待。
-
-
-
-### Font Loading API
-
-开发者可以将 `<link rel="preload">` 与 `font-display` 配合使用，以很好地控制字体加载与渲染，而不会增加很多开销。
- 但是，如果您需要进一步自定义，而且愿意承担运行 JavaScript 所引入的开销，还有一个选项可供选择。
-
-
-[Font Loading API](https://www.w3.org/TR/css-font-loading/) 提供一种脚本编程接口来定义和操纵 CSS 字体，追踪其下载进度，以及替换其默认延迟下载行为。
- 例如，如果您确定需要特定字体变体，您可以对其进行定义并指示浏览器立即提取字体资源：
-
-
+The [Font Loading API](https://www.w3.org/TR/css-font-loading/) provides a scripting interface to define and manipulate CSS font faces, track their download progress, and override their default lazyload behavior. For example, if you're sure that a particular font variant is required, you can define it and tell the browser to initiate an immediate fetch of the font resource:
 
     var font = new FontFace("Awesome Font", "url(/fonts/awesome.woff2)", {
-      style: 'normal', unicodeRange:'U+000-5FF', weight:'400'
+      style: 'normal', unicodeRange: 'U+000-5FF', weight: '400'
     });
-
+    
     // don't wait for the render tree, initiate an immediate fetch!
     font.load().then(function() {
       // apply the font (which may re-render text and cause a page reflow)
       // after the font has finished downloading
       document.fonts.add(font);
       document.body.style.fontFamily = "Awesome Font, serif";
-
-      // OR... by default the content is hidden,
+    
+      // OR... by default the content is hidden, 
       // and it's rendered after the font is available
       var content = document.getElementById("content");
       content.style.visibility = "visible";
-
-      // OR... apply your own render strategy here...
+    
+      // OR... apply your own render strategy here... 
     });
+    
 
+Further, because you can check the font status (via the [check()](https://www.w3.org/TR/css-font-loading/#font-face-set-check)) method and track its download progress, you can also define a custom strategy for rendering text on your pages:
 
-此外，由于您可以检查字体状态（通过
-[check()](https://www.w3.org/TR/css-font-loading/#font-face-set-check) 方法）并追踪其下载进度，因此您还可以为在网页上渲染文本定义自定义策略：
+* You can hold all text rendering until the font is available.
+* You can implement a custom timeout for each font.
+* You can use the fallback font to unblock rendering and inject a new style that uses the desired font after the font is available.
 
+Best of all, you can also mix and match the above strategies for different content on the page. For example, you can delay text rendering on some sections until the font is available, use a fallback font, and then re-render after the font download has finished, specify different timeouts, and so on.
 
-- 您可以在获得字体前暂停所有文本渲染。
-- 您可以为每种字体执行自定义超时策略。
-- 您可以利用回退字体解除渲染阻止，并在获得字体后注入使用所需字体的新样式。
+Note: The Font Loading API is still [under development in some browsers](http://caniuse.com/#feat=font-loading). Consider using the [FontLoader polyfill](https://github.com/bramstein/fontloader) or the [webfontloader library](https://github.com/typekit/webfontloader) to deliver similar functionality, albeit with even more overhead from an additional JavaScript dependency.
 
+### Proper caching is a must
 
-最重要的是，您还可以混用和匹配上述策略来适应网页上的不同内容。 例如，在获得字体前延迟某些部分的文本渲染；使用回退字体，然后在字体下载完成后进行重新渲染；指定不同的超时等等。
+Font resources are, typically, static resources that don't see frequent updates. As a result, they are ideally suited for a long max-age expiry - ensure that you specify both a [conditional ETag header](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags), and an [optimal Cache-Control policy](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control) for all font resources.
 
+If your web application uses a [service worker](/web/fundamentals/primers/service-workers/), serving font resources with a [cache-first strategy](/web/fundamentals/instant-and-offline/offline-cookbook/#cache-then-network) is appropriate for most use cases.
 
+You should not store fonts using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API); each of those has its own set of performance issues. The browser's HTTP cache provides the best and most robust mechanism to deliver font resources to the browser.
 
+## Optimization checklist
 
-注：在某些浏览器上，Font Loading API 仍<a href='http://caniuse.com/#feat=font-loading'>处于开发阶段</a>。
- 您可以考虑使用 <a
-href='https://github.com/bramstein/fontloader'>FontLoader polyfill</a> 或 <a
-href='https://github.com/typekit/webfontloader'>webfontloader 库</a>来提供类似功能，不过附加的 JavaScript 依赖关系会产生更多开销。
+Contrary to popular belief, the use of webfonts doesn't need to delay page rendering or have a negative impact on other performance metrics. The well-optimized use of fonts can deliver a much better overall user experience: great branding, improved readability, usability, and searchability, all while delivering a scalable multi-resolution solution that adapts well to all screen formats and resolutions. Don't be afraid to use webfonts.
 
+That said, a naive implementation may incur large downloads and unnecessary delays. You need to help the browser by optimizing the font assets themselves and how they are fetched and used on your pages.
 
-### 必须进行适当的缓存
+* **Audit and monitor your font use:** don't use too many fonts on your pages, and, for each font, minimize the number of used variants. This helps produce a more consistent and a faster experience for your users.
+* **Subset your font resources:** many fonts can be subset, or split into multiple unicode-ranges to deliver just the glyphs that a particular page requires. This reduces the file size and improves the download speed of the resource. However, when defining the subsets, be careful to optimize for font re-use. For example, don't download a different but overlapping set of characters on each page. A good practice is to subset based on script: for example, Latin, Cyrillic, and so on.
+* **Deliver optimized font formats to each browser:** provide each font in WOFF2, WOFF, EOT, and TTF formats. Make sure to apply GZIP compression to the EOT and TTF formats, because they are not compressed by default.
+* **Give precedence to `local()` in your `src` list:** listing `local('Font Name')` first in your `src` list ensures that HTTP requests aren't made for fonts that are already installed.
+* **Customize font loading and rendering using `<link rel="preload">`, `font-display`, or the Font Loading API:** default lazyloading behavior may result in delayed text rendering. These web platform features allow you to override this behavior for particular fonts, and to specify custom rendering and timeout strategies for different content on the page.
+* **Specify revalidation and optimal caching policies:** fonts are static resources that are infrequently updated. Make sure that your servers provide a long-lived max-age timestamp and a revalidation token to allow for efficient font reuse between different pages. If using a service worker, a cache-first strategy is appropriate.
 
-字体资源通常是不会频繁更新的静态资源。 因此，它们非常适合较长的 max-age 到期 - 确保您为所有字体资源同时指定了[条件 ETag
-标头](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags)和[最佳 Cache-Control
-策略](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control)。
+## Automated testing for web font optimization with Lighthouse {: #lighthouse }
 
+[Lighthouse](/web/tools/lighthouse) can help automate the process of making sure that you're following web font optimization best practices. Lighthouse is an auditing tool built by the Chrome DevTools team. You can run it as a Node module, from the command line, or from the Audits panel of Chrome DevTools. You tell Lighthouse what URL to audit, and then it runs a bunch of tests on the page, and gives you a report of what the page is doing well, and how it can improve.
 
+The following audits can help you make sure that your pages are continuing to follow web font optimization best practices over time:
 
+* [Enable text compression](/web/tools/lighthouse/audits/text-compression)
+* [Preload key requests](/web/tools/lighthouse/audits/preload)
+* [Uses inefficient cache policy on static assets](/web/tools/lighthouse/audits/cache-policy)
+* [All text remains visible during webfont loads](/web/updates/2016/02/font-display)
 
-如果您的网页应用使用 [Service Worker](/web/fundamentals/primers/service-workers/)，则使用[缓存优先策略](/web/fundamentals/instant-and-offline/offline-cookbook/#cache-then-network)提供字体资源适合于大部分用例。
-
-
-
-
-不应使用 [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) 或 [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) 来存储字体；这两者自身都有一些性能问题。
- 浏览器的 HTTP 缓存可以提供最佳且最可靠的机制来向浏览器提供字体资源。
-
-
-
-
-## 优化核对清单
-
-与普遍的观点相反，使用网页字体不需要延迟网页渲染，也不会对其他性能指标产生不良影响。
- 在充分优化的情况下使用字体可大幅提升总体用户体验：出色的品牌推广，改进的可读性、易用性和可搜索性，并一直提供可扩展的多分辨率解决方案，能够出色地适应各种屏幕格式和分辨率。
- 不要害怕使用网页字体！
-
-不过，直接实现可能招致下载内容庞大和不必要的延迟。 您需要通过对字体资产本身及其在网页上的提取和使用方式进行优化来为浏览器提供协助的环节。
-
-
-
-- **审核并监控您的字体使用情况：**不要在网页上使用过多字体，并且对于每一种字体，最大限度减少使用的变体数量。
- 这将有助于为您的用户带来更加一致且更加快速的体验。
-- **对您的字体资源进行子集内嵌：**许多字体都可进行子集内嵌，或者拆分成多个 unicode-range 以仅提供特定网页需要的字形。
- 这样即可减小文件大小，并提高资源的下载速度。
- 不过，在定义子集时要注意针对字体重复使用的情况进行优化。
- 例如，您一定不希望在每个网页上都下载不同但重叠的字符集。 最好根据文字系统（例如拉丁文、西里尔文等）进行子集内嵌。
-- **向每个浏览器提供优化过的字体格式：**每一种字体都应以 WOFF2、WOFF、EOT 和 TTF
-格式提供。 务必对 EOT 和 TTF 格式应用 GZIP 压缩，因为默认情况下不会对其进行压缩。
-- **在 `src` 列表中优先列出 `local()`：**在
-`src` 列表中首先列出 `local('Font Name')` 可确保不会针对已安装的字体发出 HTTP 请求。
-- **使用 `<link rel="preload">`、`font-display` 或 Font
-Loading API 来自定义字体加载和渲染：**默认的延迟加载行为可能会导致延迟渲染文本。 您可以通过这些网络平台功能为特定字体替换这一行为，以及为网页上的不同内容指定自定义渲染和超时策略。
-- **指定重新验证和最佳缓存策略：**字体是不经常更新的静态资源。
- 确保您的服务器提供长期的 max-age 时间戳和重新验证令牌，以实现不同网页之间高效的字体重复使用。
- 如果使用 Service Worker，则适合采用缓存优先策略。
-
-
-*感谢 [Monica Dinculescu](https://meowni.ca/posts/web-fonts/)、[Rob Dodson](/web/updates/2016/02/font-display) 和 Jeff Posnick 对本文所作的贡献。*
-
-
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

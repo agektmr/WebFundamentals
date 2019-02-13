@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:進入全屏模式。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Going fullscreen.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on:2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: Blink>Fullscreen #}
 
-# 打造全屏體驗 {: .page-title }
+# Making Fullscreen Experiences {: .page-title }
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="ZRqr5x73-ng"
@@ -13,45 +10,29 @@ description:進入全屏模式。
   </iframe>
 </div>
 
-我們有能力輕鬆打造出沉浸式全屏網站和應用，而就像網絡上的所有事物一樣，可以通過幾種方式來實現。這在時下顯得尤爲重要，因爲已有更多瀏覽器支持一種全屏啓動的“安裝型網絡應用”體驗。
-
-
-
+We have the ability to easily make immersive fullscreen websites and applications, but like anything on the web there are a couple of ways to do it. This is especially important now that more browsers are supporting an "installed web app" experience which launch fullscreen.
 
 <div class="clearfix"></div>
 
-## 讓應用或網站進入全屏模式
+## Getting your app or site fullscreen
 
-用戶或開發者可通過幾種方法讓網絡應用進入全屏模式。
+There are several ways that a user or developer can get a web app fullscreen.
 
-* 作爲對用戶手勢的響應請求瀏覽器進入全屏模式。
-* 將應用安裝到主屏幕。
-* 弄虛作假：自動隱藏地址欄。
+* Request the browser go fullscreen in response to a user gesture.
+* Install the app to the home screen.
+* Fake it: auto-hide the address bar.
 
-### 作爲對用戶手勢的響應請求瀏覽器進入全屏模式
+### Request the browser go fullscreen in response to a user gesture
 
-<a href="http://caniuse.com/#feat=fullscreen">並非所有平臺都相同</a>。iOS Safari 沒有全屏 API，但 Chrome（Android 版）、Firefox 和 IE 11+ 上則有相應的 API。您構建的大多數應用都是組合使用全屏規範提供的 JS API 和 CSS 選擇器。
-您在打造全屏體驗時需要在意的主要 JS API 如下：
+<a href="http://caniuse.com/#feat=fullscreen">Not all platforms are equal</a>. iOS Safari doesn't have a fullscreen API, but we do on Chrome on Android, Firefox, and IE 11+. Most applications you build will use a combination of the JS API and the CSS selectors provided by the fullscreen specification. The main JS API's that you need to care about when building a fullscreen experience are:
 
+* `element.requestFullscreen()` (currently prefixed in Chrome, Firefox, and IE) displays the element in fullscreen mode.
+* `document.exitFullscreen()` (currently prefixed in Chrome, Firefox and IE. Firefox uses `cancelFullScreen()` instead) cancels fullscreen mode.
+* `document.fullscreenElement` (currently prefixed in Chrome, Firefox, and IE) returns true if any of the elements are in fullscreen mode.
 
-* `element.requestFullscreen()`（目前在 Chrome、Firefox 和 IE 中添加前綴）：以全屏模式顯示元素。
+Note: You will notice that in the prefixed versions there is a lot of inconsistency between the casing of the 'S' in screen. This is awkward, but this is the problem with specs that are in flight.
 
-* `document.exitFullscreen()`（目前在 Chrome、Firefox 和 IE 中添加前綴。
-  Firefox 改用 `cancelFullScreen()`）：取消全屏模式。
-* `document.fullscreenElement`（目前在 Chrome、Firefox 和 IE 中添加前綴）：如有任何元素處於全屏模式，返回 true。
-
-
-Note: 您會注意到，在添加前綴的版本中，屏幕中“S”的大小寫處理存在大量不一致的情況。
-這很不雅觀，但也正是實行中規範存在的問題。
-
-
-應用進入全屏模式時，無法再使用瀏覽器的 UI 控件。
-這會改變用戶與所提供體驗的交互方式。
-全屏模式下的瀏覽器沒有 Forwards 和 Backwards 這樣的標準導航控件，也沒有 Refresh 按鈕這樣的出路。
-必須迎合這種情境。
-當瀏覽器進入全屏模式時，可以利用某些 CSS 選擇器來幫助您改變網站的樣式和呈現方式。
-
-
+When your app is fullscreen you no longer have the browser's UI controls available to you. This changes the way that users interact with your experience. They don't have the standard navigation controls such as Forwards and Backwards; they don't have their escape hatch that is the Refresh button. It's important to cater for this scenario. You can use some CSS selectors to help you change the style and presentation of your site when the browser enters fullscreen mode.
 
     <button id="goFS">Go fullscreen</button>
     <script>
@@ -60,24 +41,21 @@ Note: 您會注意到，在添加前綴的版本中，屏幕中“S”的大小�
           document.body.requestFullscreen();
       }, false);
     </script>
+    
 
-上例有點人爲的痕跡；我將供應商前綴使用方面的複雜性全都隱藏了起來。
+The above example is a little contrived; I've hidden all the complexity around the use of vendor prefixes.
 
+Note: Damn you, vendor prefixes!
 
-Note: 該死的供應商前綴！
-
-實際代碼要複雜得多。<a
-href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode">Mozilla 創建了</a>一個非常有用的腳本，您可以用它來切換全屏。
-如您所見，與指定 API 相比，供應商前綴的情況更爲複雜和繁瑣。即便是以下略加簡化的代碼，看上去仍顯複雜。
-
+The actual code is a lot more complex. [Mozilla has created](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode) a very useful script that you can use to toggle fullscreen. As you can see, the vendor prefix situation it is complex and cumbersome compared to the specified API. Even with the slightly simplified code below, it is still complex.
 
     function toggleFullScreen() {
       var doc = window.document;
       var docEl = doc.documentElement;
-
+    
       var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
       var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
+    
       if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
         requestFullScreen.call(docEl);
       }
@@ -85,46 +63,39 @@ href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_scre
         cancelFullScreen.call(doc);
       }
     }
+    
 
-我們這些網絡開發者痛恨複雜性。您可以使用的一個不錯的高級抽象 API 是 <a href="http://sindresorhus.com/screenfull.js"/>Sindre Sorhus 的</a> <ahref="https://github.com/sindresorhus/screenfull.js">Screenfull.js</a> 模塊，該模塊將兩個略有不同的 JS API 和供應商前綴統一成一個一致的 API。
+We web developers hate complexity. A nice high-level abstract API you can use is Sindre Sorhus'</a> [Screenfull.js](https://github.com/sindresorhus/screenfull.js) module which unifies the two slightly different JS API's and vendor prefixes into one consistent API.
 
+#### Fullscreen API Tips
 
-
-
-
-#### Fullscreen API 溫馨提示
-
-##### 讓文檔進入全屏模式
+##### Making the document fullscreen
 
 <figure class="attempt-right" style="max-width: 320px;">
   <img src="images/body.png">
-  <figcaption>圖 1：讓 body 元素進入全屏模式。</figcaption>
+  <figcaption>Figure 1: Fullscreen on the body element.</figcaption>
 </figure>
 
-
-讓 body 元素進入全屏模式是很自然的想法，但如果使用的是基於 WebKit 或 Blink 的渲染引擎，就會發現這會產生一種怪異的效果：將正文寬度縮減到能夠容納所有內容的最小尺寸。（Mozilla Gecko 不存在這個問題。）
+It is natural to think that you take the body element fullscreen, but if you are on a WebKit or Blink based rendering engine you will see it has an odd effect of shrinking the body width to the smallest possible size that will contain all the content. (Mozilla Gecko is fine.)
 
 <div class="clearfix"></div>
 
-<figure class="attempt-right" style="max-width: 320px;">
-<img src="images/document.png" >
-<figcaption>圖 2：讓 document 元素進入全屏模式。</figcaption>
-</figure>
+<figure class="attempt-right" style="max-width: 320px;"> 
 
-要修復此問題，請使用 document 元素替代 body 元素：
+<img src="images/document.png" />
+<figcaption>Figure 2: Fullscreen on the document element.</figcaption>
+</figure> 
+
+To fix this, use the document element instead of the body element:
 
     document.documentElement.requestFullscreen();
-
-
+    
 
 <div class="clearfix"></div>
 
+##### Making a video element fullscreen
 
-##### 讓 video 元素進入全屏模式
-
-讓 video 元素進入全屏模式與讓任何其他元素進入全屏模式的方法完全相同。
-只需調用 video 元素上的 `requestFullscreen` 方法。
-
+To make a video element fullscreen is exactly the same as making any other element fullscreen. You call the `requestFullscreen` method on the video element.
 
     <video id=videoElement></video>
     <button id="goFS">Go Fullscreen</button>
@@ -135,11 +106,9 @@ href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_scre
           videoElement.requestFullscreen();
       }, false);
     </script>
+    
 
-如果 `<video>` 元素未定義控件屬性，視頻進入全屏模式後用戶將無法對其進行控制。
-建議的對策是使用一個初級容器，將視頻和您希望用戶看到的控件包裝在這個容器內。
-
-
+If your `<video>` element doesn't have the controls attribute defined, there's no way for the user to control the video once they are fullscreen. The recommended way to do this is to have a basic container that wraps the video and the controls that you want the user to see.
 
     <div id="container">
       <video></video>
@@ -156,9 +125,9 @@ href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_scre
           container.requestFullscreen();
       }, false);
     </script>
+    
 
-這可以大幅提高靈活性，因爲您可以將 container 對象與 CSS 僞選擇器合併（例如，達到隱藏“goFS”按鈕的目的）。
-
+This gives you a lot more flexibility because you can combine the container object with the CSS pseudo selector (for example to hide the "goFS" button.)
 
     <style>
       #goFS:-webkit-full-screen #goFS {
@@ -174,76 +143,54 @@ href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_scre
         display: none;
       }
     </style>
+    
 
-按照這些模式，可以在檢測到全屏模式處於運行狀態時對用戶界面作出相應調整，例如：
+Using these patterns, you can detect when fullscreen is running and adapt your user interface appropriately, for example:
 
+* By providing a link back to the start page
+* By Providing a mechanism to close dialogs or travel backwards
 
-* 提供一個返回開始頁面的鏈接
-* 提供一種關閉對話框或回退的機制
+### Launching a page fullscreen from home screen
 
+Launching a fullscreen web page when the user navigates to it is not possible. Browser vendors are very aware that a fullscreen experience on every page load is a huge annoyance, therefore a user gesture is required to enter fullscreen. Vendors do allow users to "install" apps though, and the act of installing is a signal to the operating system that the user wants to launch as an app on the platform.
 
-### 從主屏幕以全屏模式啓動頁面
-
-無法實現在用戶導航到網頁時啓動全屏模式。瀏覽器供應商深知在每次頁面加載時都提供全屏體驗很令人討厭，因此會要求用戶通過手勢進入全屏模式。但供應商也的確允許用戶“安裝”應用，安裝行爲是向操作系統發出的一個信號，表示用戶想在平臺上以應用的形式啓動網頁。
-
-
-
-
-
-
-如下所述，在各主流移動平臺上，使用元標記或清單文件實現起來相當簡便。
-
+Across the major mobile platforms it is pretty easy to implement using either meta tags, or manifest files as follows.
 
 #### iOS
 
-自從 iPhone 發佈以來，用戶就一直能將網絡應用安裝到主屏幕，並以全屏模式啓動。
-
+Since the launch of the iPhone, users have been able to install Web Apps to the home screen and have them launch as full-screen web apps.
 
     <meta name="apple-mobile-web-app-capable" content="yes">
+    
 
-> 如果 content 設置爲 yes，則網絡應用以全屏模式運行；> 否則，不以全屏模式運行。
-默認行爲是使用 Safari 顯示網絡 > 內容。
-可以 > 利用 window.navigator.standalone 只讀布爾值 JavaScript 屬性 > 確定網頁是否以全屏模式顯示。<a href="https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html">Apple</a>
+> If content is set to yes, the web application runs in full-screen mode; otherwise, it does not. The default behavior is to use Safari to display web content. You can determine whether a webpage is displayed in full-screen mode using the window.navigator.standalone read-only Boolean JavaScript property. [Apple](https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html)
 
+#### Chrome for Android
 
-
-#### Chrome（Android 版）
-
-Chrome 團隊近期實現的一項功能可在用戶已將頁面添加到主屏幕的情況下指示瀏覽器以全屏模式啓動頁面。
-這與 iOS Safari 模式類似。
-
+The Chrome team has recently implemented a feature that tells the browser to launch the page fullscreen when the user has added it to the home screen. It is similar to the iOS Safari model.
 
     <meta name="mobile-web-app-capable" content="yes">
+    
 
-> 可以利用 Chrome（Android 版）的“Add to Home screen”菜單項 > 將網絡應用設置爲將應用快捷方式圖標添加到 > 設備的主屏幕，讓應用以全屏“應用模式”啓動。>  <a href="https://developers.chrome.com/multidevice/android/installtohomescreen">Google Chrome</a>
+> You can set up your web app to have an application shortcut icon added to a device's home screen, and have the app launch in full-screen "app mode" using Chrome for Android's "Add to Home screen" menu item. [Google Chrome](https://developers.chrome.com/multidevice/android/installtohomescreen)
 
+A better option is to use the Web App Manifest.
 
+#### Web App Manifest (Chrome, Opera, Firefox, Samsung)
 
+The [Manifest for Web applications](/web/fundamentals/web-app-manifest) is a simple JSON file that gives you, the developer, the ability to control how your app appears to the user in the areas that they would expect to see apps (for example the mobile home screen), direct what the user can launch and, more importantly, how they can launch it. In the future the manifest will give you even more control over your app, but right now we are just focusing on how your app can be launched. Specifically:
 
-更好的選擇是使用網絡應用清單。
+1. Telling the browser about your manifest
+2. Describing how to launch
 
-#### 網絡應用清單（Chrome、Opera、Firefox、Samsung）
-
-[網絡應用清單](/web/fundamentals/web-app-manifest)是一個簡單的 JSON 文件，使您（開發者）能夠控制在用戶可能看到應用的區域（例如手機主屏幕）中如何向用戶顯示應用，指示用戶可以啓動哪些功能，更重要的是說明啓動方法。未來，清單將讓您對應用進行更多控制，但現在我們只側重於如何啓動應用。
-
-具體而言：
-
-1. 將清單的相關信息告知瀏覽器
-2. 說明啓動方法
-
-在創建清單並託管在網站上之後，只需要從所有包含應用的頁面添加一個下面這樣的 link 標記：
-
+Once you have the manifest created and it is hosted on your site, all you need to do is add a link tag from all your pages that encompass your app, as follows:
 
     <link rel="manifest" href="/manifest.json">
+    
 
-Chrome（Android 版）從 38 版（2014 年 10 月）起就已支持清單，讓您能夠控制當網絡應用安裝到主屏幕時的顯示方式（通過 `short_name`、`name` 和 `icons` 屬性），以及當用戶點擊啓動圖標時應以何種方式啓動應用（通過 `start_url`、`display` 和 `orientation`）。
+Chrome has supported Manifests since version 38 for Android (October 2014) and it gives you the control over how your web app appears when it is installed to the home screen (via the `short_name`, `name` and `icons` properties) and how it should be launched when the user clicks on the launch icon (via `start_url`, `display` and `orientation`).
 
-
-
-
-
-清單示例如下所示。其中並未詳盡展示清單可能包含的內容。
-
+An example manifest is shown below. It doesn't show everything that can be in a manifest.
 
     {
       "short_name": "Kinlan's Amaze App",
@@ -259,233 +206,192 @@ Chrome（Android 版）從 38 版（2014 年 10 月）起就已支持清單，�
       "display": "standalone",
       "orientation": "landscape"
     }
+    
 
-此功能是完全漸進式的功能，可通過它爲支持該功能的瀏覽器用戶打造更好、集成度更高的體驗。
+This feature is entirely progressive and allows you create better, more integrated experiences for users of a browser that supports the feature.
 
+When a user adds your site or app to the home screen, there is an intent by the user to treat it like an app. This means you should aim to direct the user to the functionality of your app rather than a product landing page. For example, if the user is required to sign-in to your app, then that is a good page to launch.
 
-當用戶將網站或應用添加到主屏幕時，其意圖是將它當作應用對待。
-這意味着，您的目標應該是將用戶導向應用的功能而不是產品着陸頁。
-例如，如果用戶需要登錄應用，那麼它就是適合啓動的頁面。
+##### Utility apps
 
-
-
-##### 實用程序應用
-
-大多數實用程序應用都將立即受益於清單。對於您可能希望像移動平臺上的所有其他應用一樣獨立啓動的應用，要指示應用獨立啓動，請向網絡應用清單添加以下內容：
-
+The majority of utility apps will benefit from this immediately. For those apps you'll likely want them launched standalone just alike every other app on a mobile platform. To tell an app to launch standalone, add this the Web App Manifest:
 
     "display": "standalone"
+    
 
-##### 遊戲
+##### Games
 
-大多數遊戲都將立即受益於清單。絕大多數遊戲都希望強制按特定屏幕方向以全屏模式啓動。
+The majority of games will benefit from a manifest immediately. The vast majority of games will want to launch full-screen and forced a specific orientation.
 
-
-
-如果您開發的是縱向滾動遊戲或 Flappy Birds 之類的遊戲，那麼您很可能希望遊戲始終以縱向模式顯示。
-
+If you are developing a vertical scroller or a game like Flappy Birds then you will most likely want your game to always be in portrait mode.
 
     "display": "fullscreen",
     "orientation": "portrait"
+    
 
-如果與之相反，您開發的是益智遊戲或 X-Com 之類的遊戲，那麼您多半希望遊戲始終採用橫向屏幕方向。
-
+If on the other hand you are building a puzzler or a game like X-Com, then you will probably want the game to always use the landscape orientation.
 
     "display": "fullscreen",
     "orientation": "landscape"
+    
 
-##### 新聞網站
+##### News sites
 
-在大多數情況下，新聞網站提供純粹的內容型體驗。可以預見的是，大多數開發者不會想到爲新聞網站添加清單。
-可以通過清單定義啓動項（新聞網站的頭版）和啓動方式（全屏或正常瀏覽器標籤形式）。
+News sites in most cases are pure content-based experiences. Most developers naturally wouldn't think of adding a manifest to a news site. The manifest will let you define what to launch (the front page of your news site) and how to launch it (fullscreen or as a normal browser tab).
 
-
-
-是否選擇使用清單取決於您以及您認爲用戶喜歡以何種方式訪問您提供的體驗。
-如果希望網站具有您認爲應該具有的所有瀏覽器配色，可以將 display 設置爲 `browser`。
-
+The choice is up to you and how you think your users will like to access your experience. If you want your site to have all the browser chrome that you would expect a site to have, you can set the display to `browser`.
 
     "display": "browser"
+    
 
-如果希望新聞網站像大多數新聞中心型應用一樣提供應用般的體驗並從 UI 中移除所有網站式配色，可以通過將 display 設置爲 `standalone` 來實現。
-
-
+If you want your news site to feel like the majority of news-centric apps treat their experiences as apps and remove all web-like chrome from the UI, you can do this by setting display to `standalone`.
 
     "display": "standalone"
+    
 
-### 弄虛作假：自動隱藏地址欄
+### Fake it: auto-hide the address bar
 
-可通過像下面這樣自動隱藏地址欄來“僞造全屏模式”：
+You can "fake fullscreen" by auto-hiding the address bar as follows:
 
     window.scrollTo(0,1);
+    
 
-Note: 是朋友我才告訴你。辦法有是有，雖然有效，卻並非正途。
-還是不要使用爲好。&mdash; Paul
+Caution: I am telling you this as a friend. It exists. It is a thing, but it is a hack. Please don't use it. &mdash; Paul
 
-這是個相當簡單的方法，頁面加載時系統會指示瀏覽器地址欄讓開。
-遺憾的是，這種方法並未標準化，也未得到充分支持。
-此外還必須解決大量兼容性問題。
+This is a pretty simple method, the page loads and the browser bar is told to get out of the way. Unfortunately it is not standardized and not well supported. You also have to work around a bunch of quirks.
 
-例如，當用戶導航返回時，瀏覽器往往會在頁面上將地址欄恢復原位。
-如果使用 `window.scrollTo` 進行替換，會給用戶造成妨礙。
-要想解決此問題，需要將最後位置存儲在 localStorage 中，並處理邊緣情況（例如，當用戶在多個窗口中打開該頁面時）。
+For example browsers often restore the position on the page when the user navigates back to it. Using `window.scrollTo` overrides this, which annoys the user. To work around this you have to store the last position in localStorage, and deal with the edge cases (for example, if the user has the page open in multiple windows).
 
+## UX guidelines
 
+When you are building a site that takes advantage of full screen there are a number of potential user experience changes that you need to be aware of to be able to build a service your users will love.
 
-## 用戶體驗指導原則
+### Don't rely on navigation controls
 
-當您構建可充分利用全屏模式的網站時，需要注意若干潛在的用戶體驗變化，才能打造出得到用戶喜愛的服務。
+iOS does not have a hardware back button or refresh gesture. Therefore you must ensure that users can navigate throughout the app without getting locked in.
 
-
-
-### 不要依賴導航控件
-
-iOS 沒有硬件返回按鈕或刷新手勢。因此，必須確保用戶能在應用內四處導航而不被鎖入。
-
-
-在所有主流平臺上都可以輕鬆檢測到您是在全屏模式還是安裝模式下運行。
-
+You can detect if you are running in a fullscreen mode or an installed mode easily on all the major platforms.
 
 #### iOS
 
-在 iOS 上，可以利用 `navigator.standalone` 布爾值來確認用戶是否是從主屏幕啓動的。
-
+On iOS you can use the `navigator.standalone` boolean to see if the user has launched from the home screen or not.
 
     if(navigator.standalone == true) {
       // My app is installed and therefore fullscreen
     }
+    
 
-#### 網絡應用清單（Chrome、Opera、Samsung）
+#### Web App Manifest (Chrome, Opera, Samsung)
 
-以安裝應用形式啓動時，Chrome 並非運行在真正的全屏體驗下，因此 `document.fullscreenElement` 返回 null，並且 CSS 選擇器不起作用。
+When launching as an installed app, Chrome is not running in true fullscreen experience so `document.fullscreenElement` returns null and the CSS selectors don't work.
 
-
-
-當用戶通過在網站上使用手勢來請求全屏時，有標準 Fullscreen API 可以使用，其中包括下面這樣可調整 UI 來響應全屏狀態的 CSS 僞選擇器
-
-
+When the user requests fullscreen via a gesture on your site, the standard fullscreen API's are available including the CSS pseudo selector that lets you adapt your UI to react to the fullscreen state like the following
 
     selector:-webkit-full-screen {
       display: block; // displays the element only when in fullscreen
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-如果用戶從主屏幕啓動網站，`display-mode` 媒體查詢將按照網絡應用清單中的定義進行設置。
-在純粹全屏的情況下，其內容將是：
-
+If the users launches your site from the home screen the `display-mode` media query will be set to what was defined in the Web App Manifest. In the case of pure fullscreen it will be:
 
     @media (display-mode: fullscreen) {
-
+    
     }
+    
 
-如果用戶以獨立模式啓動應用，`display-mode` 媒體查詢將是 `standalone`：
-
+If the user launches the application in standalone mode, the `display-mode` media query will be `standalone`:
 
     @media (display-mode: standalone) {
-
+    
     }
-
+    
 
 #### Firefox
 
-當用戶通過網站請求全屏，或者用戶以全屏模式啓動應用時，所有標準 Fullscreen API 都可使用，其中包括下面這樣可調整 UI 來響應全屏狀態的 CSS 僞選擇器：
-
-
-
+When the user requests fullscreen via your site or the user launches the app in fullscreen mode all the standard fullscreen API's are available, including the CSS pseudo selector, which lets you adapt your UI to react to the fullscreen state like the following:
 
     selector:-moz-full-screen {
       display: block; // hides the element when not in fullscreen mode
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
 #### Internet Explorer
 
-在 IE 中，CSS 僞類缺少連字符，但在其他方面的作用與 Chrome 和 Firefox 類似。
-
+In IE the CSS pseudo class lacks a hyphen, but otherwise works similarly to Chrome and Firefox.
 
     selector:-ms-fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-#### 規範
+#### Specification
 
-規範中的拼寫匹配 IE 使用的語法。
+The spelling in the specification matches the syntax used by IE.
 
     selector:fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-### 保持用戶的全屏體驗
+### Keep the user in the fullscreen experience
 
-有時 Fullscreen API 可能有點吹毛求疵。瀏覽器供應商不想把用戶鎖定在全屏頁面中，因此他們開發了相應的機制，只要滿足條件，便可立即擺脫全屏模式。
+The fullscreen API can be a little finicky sometimes. Browser vendors don't want to lock users in a fullscreen page so they have developed mechanisms to break out of fullscreen as soon as they possibly can. This means you can't build a fullscreen website that spans multiple pages because:
 
-這意味着您無法讓構建的全屏網站跨越多個頁面，這是因爲：
+* Changing the URL programmatically by using `window.location =
+"http://example.com"` breaks out of fullscreen.
+* A user clicking on an external link inside your page will exit fullscreen.
+* Changing the URL via the `navigator.pushState` API will also break out of the fullscreen experience.
 
+You have two options if you want to keep the user in a fullscreen experience:
 
-* 利用 ‘window.location =  "http://example.com"` 以編程方式更改網址會擺脫全屏模式。
-* 用戶點擊頁面內的外部鏈接時將會退出全屏模式。
-* 通過 `navigator.pushState` API 更改網址也會擺脫全屏體驗。
+1. Use the installable web app mechanisms to go fullscreen.
+2. Manage your UI and app state using the # fragment.
 
-
-如果想保持用戶的全屏體驗，可以採用以下這兩個方案：
-
-1. 利用可安裝網絡應用機制進入全屏模式。
-2. 利用 # 片段管理 UI 和應用狀態。
-
-通過使用 #syntax 更新網址 (window.location = "#somestate") 以及偵聽 `window.onhashchange` 事件，可以利用瀏覽器自身的歷史堆棧管理應用狀態變化，允許用戶使用其硬件返回按鈕，或者利用如下 history API 提供簡單的編程返回按鈕體驗：
-
-
-
-
+By using the #syntax to update the url (window.location = "#somestate"), and listening to the `window.onhashchange` event you can use the browser's own history stack to manage changes in the application state, allow the user to use their hardware back buttons, or offer a simple programmatic back button experience by using the history API as follows:
 
     window.history.go(-1);
+    
 
-### 讓用戶選擇進入全屏模式的時機
+### Let the user choose when to go fullscreen
 
-沒有什麼比網站的意外行爲更讓用戶惱火。
-當用戶導航到網站時，不要試圖誘騙他們進入全屏模式。
+There is nothing more annoying to the user than a website doing something unexpected. When a user navigates to your site don't try and trick them into fullscreen.
 
+Don't intercept the first touch event and call `requestFullscreen()`.
 
-不要截取第一個觸摸事件並調用 `requestFullscreen()`。
+1. It is annoying.
+2. Browsers may decided to prompt the user at some point in the future about allowing the app to take up the fullscreen.
 
-1. 這很令人討厭。
-2. 瀏覽器可能決定在未來的某個時間點就允許應用佔據全屏提示用戶。
+If you want to launch apps fullscreen think about using the install experiences for each platform.
 
+### Don't spam the user to install your app to a home screen
 
-如果想以全屏模式啓動應用，可以考慮採用各平臺的安裝體驗。
+If you plan on offering a fullscreen experience via the installed app mechanisms be considerate to the user.
 
+* Be discreet. Use a banner or footer to let them know they can install the app.
+* If they dismiss the prompt, don't show it again.
+* On a users first visit they are unlikely to want to install the app unless they are happy with your service. Consider prompting them to install after a positive interaction on your site.
+* If a user visits your site regularly and they don't install the app, they are unlikely to install your app in the future. Don't keep spamming them.
 
-### 不要濫發信息騷擾用戶，讓他們將應用安裝到主屏幕
+## Conclusion
 
-如果計劃通過安裝應用機制提供全屏體驗，請爲用戶着想。
+While we don't have a fully standardized and implemented API, using some of the guidance presented in this article you can easily build experiences that take advantage of the user's entire screen, irrespective of the client.
 
+## Feedback {: #feedback }
 
-* 謹慎小心。利用橫幅或頁腳告知用戶他們可以安裝應用。
-
-* 如果他們關閉了提示，不要再次顯示。
-* 用戶首次訪問時，除非他們對您的服務感到滿意，否則可能並不想安裝應用。可以考慮在用戶與網站的交互產生了積極印象後再提示他們安裝。
-
-* 如果用戶經常訪問網站卻沒有安裝應用，那麼他們未來也不太可能安裝應用。不要不斷地濫發信息騷擾用戶。
-
-##  結論
-
-儘管我們尚未開發出完全標準化並且全面實現的 API，但利用這篇文章中提供的指引，無論使用什麼客戶端，您都可以輕鬆地打造出充分利用用戶整個屏幕的體驗。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

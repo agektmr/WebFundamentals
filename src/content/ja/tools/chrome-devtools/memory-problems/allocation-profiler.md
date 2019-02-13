@@ -1,70 +1,51 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Allocation Profiler Tool を使って、ガーベジ コレクションが正しく行われていないオブジェクトを探し、引き続きメモリを保持します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
-{# wf_updated_on:2015-07-08 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Allocation Profiler Tool の使い方 {: .page-title }
+# How to Use the Allocation Profiler Tool {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-Allocation Profiler Tool を使って、ガベージ コレクションが正しく行われていないオブジェクトを探し、引き続きメモリを保持します。
+{% include "web/_shared/contributors/megginkearney.html" %} Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
+## How the tool works
 
-## ツールの仕組み
+The **allocation profiler** combines the detailed snapshot information of the [heap profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots) with the incremental updating and tracking of the [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool). Similar to these tools, tracking objects’ heap allocation involves starting a recording, performing a sequence of actions, then stop the recording for analysis.
 
-**Allocation Profiler** は、スナップショットの詳細情報を表示する [ヒープ プロファイラ](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)
-と、時系列の記録を行う [Timeline パネル](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool)
-を組み合わせたものです。この 2 つのツールと同様、オブジェクトのヒープ割り当てを追跡するには、記録を開始し、一連のアクションを実行して記録を停止し、分析します。
+The tool takes heap snapshots periodically throughout the recording (as frequently as every 50 ms!) and one final snapshot at the end of the recording.
 
+![Allocation profiler](imgs/object-tracker.png)
 
+Note: The number after the @ is an object ID that persists among multiple snapshots taken. This allows precise comparison between heap states. Displaying an object's address makes no sense, as objects are moved during garbage collections.
 
+## Enable allocation profiler
 
-このツールでは、記録中に定期的（50 ミリ秒ごと）にヒープのスナップショットを取得し、記録終了時に最後のスナップショットを取得します。
+To begin using the allocation profiler:
 
-![Allocation Profiler](imgs/object-tracker.png)
+1. Make sure you have the latest [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html).
+2. Open the Developer Tools and click on the gear icon in the lower right.
+3. Now, open the Profiler panel, you should see a profile called "Record Heap Allocations"
 
-注: @ の後の数字はオブジェクト ID です。この ID は、スナップショットを複数取得しても変わりません。この ID を使えば、ヒープの状態変化を正確に比較できます。オブジェクトはガベージ コレクションの実行中に移動するため、オブジェクトのアドレスを表示しても意味がありません。
+![Record heap allocations profiler](imgs/record-heap.png)
 
-## Allocation Profiler を有効にする
+## Read a heap allocation profile
 
-Allocation Profiler の使用を開始するには、以下の手順を実行します。
+The heap allocation profile shows where objects are being created and identifies the retaining path. In the snapshot below, the bars at the top indicate when new objects are found in the heap.
 
-1. [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html) が最新であることを確認します。
-2. デベロッパー ツールを開き、右下にある歯車アイコンをクリックします。
-3. [Profiler] パネルが開き、プロファイルの種類として [Record Heap Allocations] が表示されます。
+The height of each bar corresponds to the size of the recently allocated objects, and the color of the bars indicate whether or not those objects are still live in the final heap snapshot. Blue bars indicate objects that are still live at the end of the timeline, Gray bars indicate objects that were allocated during the timeline, but have since been garbage collected:
 
-![Record Heap Allocations プロファイラ](imgs/record-heap.png)
+![Allocation profiler snapshot](imgs/collected.png)
 
-## ヒープ割り当てプロファイルの内容
+In the snapshot below, an action was performed 10 times. The sample program caches five objects, so the last five blue bars are expected. But the leftmost blue bar indicates a potential problem.
 
-ヒープ割り当てプロファイルでは、オブジェクトが作成される場所が示され、保持パスが特定されます。以下のスナップショットの上部にある縦線は、ヒープで新しいオブジェクトが見つかった時点を示します。
+You can then use the sliders in the timeline above to zoom in on that particular snapshot and see the objects that were recently allocated at that point:
 
+![Zoom in on snapshot](imgs/sliders.png)
 
-各縦線の高さは最近割り当てられたオブジェクトのサイズに対応し、縦線の色はそれらのオブジェクトが最後のヒープ スナップショットにも存在するかどうかを示します。青い縦線はタイムラインの終了時まで存在しているオブジェクトを示し、灰色の縦線はタイムライン中に割り当てられたオブジェクトのうち、ガベージ コレクションが行われたオブジェクトを示します。
+Clicking on a specific object in the heap will show its retaining tree in the bottom portion of the heap snapshot. Examining the retaining path to the object should give you enough information to understand why the object was not collected, and you can make the necessary code changes to remove the unnecessary reference.
 
+## View memory allocation by function {: #allocation-profiler }
 
+You can also view memory allocation by JavaScript function. See [Investigate memory allocation by function](index#allocation-profile) for more information.
 
+## Feedback {: #feedback }
 
-
-![Allocation Profiler のスナップショット](imgs/collected.png)
-
-以下のスナップショットでは、アクションが 10 回実行されています。サンプル プログラムでは 5 個のオブジェクトがキャッシュされるため、最後の 5 本の青い縦線は予想どおりですが、最も左にある青い縦線は問題が発生する恐れがあることを示しています。
-
-
-
-そこで上記のタイムラインのスライダーを使用して、この特定のスナップショットを拡大し、その時点で割り当てられていたオブジェクトを確認します。
-
-
-![スナップショットを拡大](imgs/sliders.png)
-
-ヒープ内の特定のオブジェクトをクリックすると、ヒープ スナップショットの下部に、保持ツリーが表示されます。オブジェクトへの保持パスを調べると、オブジェクトのガベージ コレクションが行われなかった理由を把握できるだけの情報が提供されるので、必要に応じてコードを変更し、不要な参照を削除します。
-
-## 関数ごとのメモリ割り当ての表示{: #allocation-profiler }
-
-また、JavaScript 関数ごとのメモリ割り当てを表示することもできます。詳細については、[関数ごとのメモリ割り当て状況の調査](index#allocation-profile) をご覧ください。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

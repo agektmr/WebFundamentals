@@ -1,127 +1,73 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:サイトに大量のイメージや動画があり、それを減らすことなくすべて使いたい場合、遅延読み込みは、まさに必要なテクニックかもしれません。最初のページ読み込み時間を短縮し、ページごとのペイロードを減らすことができます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: If your site has a ton of images and video, but you don't want to cut down on any of it, lazy loading might be just the technique you need to improve initial page load time and lower per-page payload.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-04-04 #}
-{# wf_blink_components: Blink>Image,Blink>HTML,Blink>JavaScript #}
+{# wf_updated_on: 2018-06-11 #} {# wf_published_on: 2018-04-04 #} {# wf_blink_components: Blink>Image,Blink>HTML,Blink>JavaScript #}
 
-# イメージと動画の遅延読み込み {: .page-title }
+# Lazy Loading Images and Video {: .page-title }
 
 {% include "web/_shared/contributors/jeremywagner.html" %}
 
-ウェブサイトの一般的なペイロードには、かなりの量の[イメージ](http://beta.httparchive.org/reports/state-of-images?start=earliest&end=latest)と[動画](http://beta.httparchive.org/reports/page-weight#bytesVideo)が含まれることがあります。
- プロジェクト関係者は、既存のアプリケーションからメディアリソースを減らすことなく使いたいと考えるかもしれません。
- このような状況では、特に関係者全員がサイトのパフォーマンスを向上させたいものの実現方法について意見が割れる場合、ジレンマが生じます。
-ここで便利なのが、遅延読み込みです。これは、コンテンツを減らすことなく、最初のページのペイロード_と_読み込み時間を短縮するソリューションです。
+The portion of [images](http://beta.httparchive.org/reports/state-of-images?start=earliest&end=latest) and [video](http://beta.httparchive.org/reports/page-weight#bytesVideo) in the typical payload of a website can be significant. Unfortunately, project stakeholders may be unwilling to cut any media resources from their existing applications. Such impasses are frustrating, especially when all parties involved want to improve site performance, but can't agree on how to get there. Fortunately, lazy loading is a solution that lowers initial page payload *and* load time, but doesn't skimp on content.
 
+## What is lazy loading?
 
-## 遅延読み込みとは
+Lazy loading is technique that defers loading of non-critical resources at page load time. Instead, these non-critical resources are loaded at the moment of need. Where images are concerned, "non-critical" is often synonymous with "off-screen". If you've used Lighthouse and examined some opportunities for improvement, you may have seen some guidance in this realm in the form of the [Offscreen Images audit](/web/tools/lighthouse/audits/offscreen-images):<figure> 
 
-遅延読み込みは、ページ読み込み時に重要でないリソースの読み込みを遅らせる手法です。
- 代わりに、重要でないリソースは必要なときに読み込まれます。
- イメージの場合、「重要でない」とはたいてい「オフスクリーン」と同義です。
- Lighthouse を使って改善項目について調べたことがあるなら、この分野のガイダンスを、次のような[オフスクリーン イメージ監査](/web/tools/lighthouse/audits/offscreen-images)という形で見たことがあるでしょう。
+<img srcset="images/offscreen-audit-2x.png 2x, images/offscreen-audit-1x.png 1x"
+src="images/offscreen-audit-1x.png" alt="A screenshot of the Offscreen Images
+Audit in Lighthouse." /> <figcaption>**Figure 1**. One of Lighthouse's performance audits is to identify off screen images, which are candidates for lazy loading.</figcaption> </figure> 
 
+You've probably already seen lazy loading in action, and it goes something like this:
 
+- You arrive at a page, and begin to scroll as you read content.
+- At some point, you scroll a placeholder image into the viewport.
+- The placeholder image is suddenly replaced by the final image.
 
+An example of image lazy loading can be found on the popular publishing platform [Medium](https://medium.com/), which loads lightweight placeholder images at page load, and replaces them with lazily-loaded images as they're scrolled into the viewport.<figure> 
 
-<figure>
-  <img srcset="images/offscreen-audit-2x.png 2x, images/offscreen-audit-1x.png 1x"
-src="images/offscreen-audit-1x.png" alt="Lighthouse のオフスクリーン イメージ監査のスクリーンショット">
-
-  <figcaption><b>図 1</b>。 Lighthouse のパフォーマンス監査の 1 つは、遅延読み込みの対象となるオフスクリーンのイメージを特定することです。</figcaption>
-
-</figure>
-
-おそらく遅延読み込みが実行されているのを見たことがあるでしょう。それは次のように行われます。
-
-
-- ページにアクセスし、コンテンツを読みながらスクロールし始めます。
-- スクロールしていくと、ある時点でビューポート内にプレースホルダ イメージが現れます。
-- すぐにプレースホルダ イメージが最終的なイメージに置き換えられます。
-
-イメージの遅延読み込みの例として、一般的な公開プラットフォーム [Medium](https://medium.com/) があります。これは、ページ読み込み時に軽量のプレースホルダ イメージを読み込み、スクロールによってイメージがビューポートに現れるときに、遅延読み込みされたイメージに置き換えます。
-
-
-
-
-<figure>
-  <img srcset="images/lazy-loading-example-2x.jpg 2x,
+<img srcset="images/lazy-loading-example-2x.jpg 2x,
 images/lazy-loading-example-1x.jpg 1x"
-src="images/lazy-loading-example-1x.jpg" alt="ブラウズ中の Medium ウェブサイトのスクリーンショット。遅延読み込みが実行されている。
- 左側はぼやけたプレースホルダ、右側は読み込まれたリソース。">
+src="images/lazy-loading-example-1x.jpg" alt="A screenshot of the website
+Medium in the browsing, demonstrating lazy loading in action. The blurry
+placeholder is on the left, and the loaded resource is on the right." /> <figcaption>**Figure 2**. An example of image lazy loading in action. A placeholder image is loaded at page load (left), and when scrolled into the viewport, the final image loads at the time of need.</figcaption> </figure> 
 
-  <figcaption><b>図 2</b>。 イメージ遅延読み込みが実行されている例。 ページの読み込み時にプレースホルダ イメージが読み込まれ（左）、ビューポートにスクロールされると、必要なタイミングで最終的なイメージが読み込まれます。</figcaption>
+If you're unfamiliar with lazy loading, you might be wondering just how useful the technique is, and what its benefits are. Read on to find out!
 
+## Why lazy load images or video instead of just *loading* them?
 
-</figure>
+Because it's possible you're loading stuff the user may never see. This is problematic for a couple reasons:
 
-遅延読み込みに詳しくない場合、このテクニックの有用性やメリットについて疑問に思うかもしれません。
- では、その点について説明します。
+- It wastes data. On unmetered connections, this isn't the worst thing that could happen (although you could be using that precious bandwidth for downloading other resources that are indeed going to be seen by the user). On limited data plans, however, loading stuff the user never sees could effectively be a waste of their money.
+- It wastes processing time, battery, and other system resources. After a media resource is downloaded, the browser must decode it and render its content in the viewport.
 
-## イメージや動画を単に_読み込む_のではなく、遅延読み込みをするのはなぜですか。
+When we lazy load images and video, we reduce initial page load time, initial page weight, and system resource usage, all of which have positive impacts on performance. In this guide, we'll cover some techniques and offer guidance for lazy loading images and video, as well as [a short list of some commonly used libraries](/web/fundamentals/performance/lazy-loading-guidance/images-and-video/#lazy_loading_libraries).
 
-それは、ユーザーに表示されないものを読み込んでいる可能性があるからです。 これにはいくつかの点で問題があります。
+## Lazy loading images
 
+Image lazy loading mechanisms are simple in theory, but the details are actually a bit finicky. Plus there are a couple of distinct use cases that can both benefit from lazy loading. Let's first start with lazy loading inline images in HTML.
 
-- データの無駄です。 定額制の接続では、これは最悪の問題になるわけではありません（ただし、その貴重な帯域幅を、実際にユーザーに表示される他のリソースのダウンロードに使用できるかもしれません）。
- 一方、データ量に上限のあるプランの場合、ユーザーに表示されないものを読み込むなら、実質的にデータ料金が無駄になる可能性があります。
-- 処理時間、バッテリー、その他のシステム リソースの無駄になります。 メディア リソースがダウンロードされた後、ブラウザはそれをデコードし、そのコンテンツをビューポートにレンダリングする必要があります。
+### Inline images
 
+The most common lazy loading candidates are images as used in `<img>` elements. When we lazy load `<img>` elements, we use JavaScript to check if they're in the viewport. If they are, their `src` (and sometimes `srcset`) attributes are populated with URLs to the desired image content.
 
+#### Using intersection observer
 
-イメージや動画を遅延読み込みすると、最初のページの読み込み時間、最初のページのデータ量、システム リソースの使用量を減らすことができ、すべてパフォーマンス向上につながります。
- このガイドでは、いくつかのテクニックを取り上げ、イメージや動画を遅延読み込みするためのガイダンスと、[一般的に使用されるライブラリの簡単なリスト](/web/fundamentals/performance/lazy-loading-guidance/images-and-video/#lazy_loading_libraries)を紹介します。
+If you've written lazy loading code before, you may have accomplished your task by using event handlers such as `scroll` or `resize`. While this approach is the most compatible across browsers, modern browsers offer a more performant and efficient way to do the work of checking element visibility via [the intersection observer API](/web/updates/2016/04/intersectionobserver).
 
+Note: Intersection observer is not supported in all browsers. If compatibility across browsers is crucial, be sure to read [the next section](#using_event_handlers_the_most_compatible_way), which shows you how to lazy load images using less performant (but more compatible!) scroll and resize event handlers.
 
-
-## イメージの遅延読み込み
-
-イメージの遅延読み込みのメカニズムは理論的には単純ですが、実際のしくみは少し複雑です。
- また、遅延読み込みが役立つ 2 つの異なるユースケースがあります。
- まず、HTML のインライン イメージの遅延読み込みから説明します。
-
-
-### インライン イメージ
-
-最も一般的な遅延読み込みの対象は、`<img>` 要素で使用されるイメージです。
-`<img>` 要素を遅延読み込みする場合、JavaScript を使用してそれらがビューポート内にあるかどうかを確認します。
- ビューポート内にある場合、その `src` 属性（場合によっては `srcset`）属性にはイメージ コンテンツへの URL が入力されています。
-
-
-#### Intersection Observer の使用
-
-以前に遅延読み込みコードを書いたことがある場合、`scroll` や `resize` のようなイベント ハンドラを使用したかもしれません。
- このアプローチは、あらゆるブラウザへの互換性が最も高い方法ですが、最近のブラウザでは、[Intersection Observer API](/web/updates/2016/04/intersectionobserver) によって要素の可視性を高性能かつ効率的にチェックすることができます。
-
-
-
-
-注: Intersection Observer はすべてのブラウザでサポートされているわけではありません。 ブラウザ間の互換性が重要な場合は、[次のセクション](#using_event_handlers_the_most_compatible_way)をご覧ください。そこでは、パフォーマンスの低い（ただし互換性が高い）スクロールとリサイズのイベント ハンドラを使用してイメージを遅延読み込みする方法を紹介します。
-
-
-
-
-
-Intersection Observer は、さまざまなイベント ハンドラに依存するコードよりも使いやすく読みやすい方法です。デベロッパーは要素の可視性を検出する複雑なコードを書く必要がなく、要素を監視する Intersection Observer を登録するだけでよいからです。
- デベロッパーが行うのは、要素が表示される場合に何をするかを決めるだけです。
- 遅延読み込みされた `<img>` 要素に対して、以下の基本的なマークアップ パターンを使用するとします。
-
+Intersection observer is easier to use and read than code relying on various event handlers, because developers only need to register an observer to watch elements rather than writing tedious element visibility detection code. All that's left to do for the developer is to decide what to do when an element is visible. Let's assume this basic markup pattern for our lazily loaded `<img>` elements:
 
 ```html
 <img class="lazy" src="placeholder-image.jpg" data-src="image-to-lazy-load-1x.jpg" data-srcset="image-to-lazy-load-2x.jpg 2x, image-to-lazy-load-1x.jpg 1x" alt="I'm an image!">
 ```
 
-このマークアップには、注目すべき 3 つの部分があります。
+There are three relevant pieces of this markup we should focus on:
 
-1. `class` 属性は、JavaScript での要素を選択します。
-2. `src` 属性は、ページが最初に読み込まれたときに表示されるプレースホルダ イメージを参照します。
-3. `data-src` 属性と `data-srcset` 属性は、要素がビューポートに入ったら読み込むイメージの URL を指定するプレースホルダ属性です。
+1. The `class` attribute, which is what we'll select the element with in JavaScript.
+2. The `src` attribute, which references a placeholder image that will appear when the page first loads.
+3. The `data-src` and `data-srcset` attributes, which are placeholder attributes containing the URL for the image we'll load once the element is in the viewport.
 
-
-では、JavaScript で Intersection Observer を使用し、このマークアップ パターンでイメージを遅延読み込みする方法を見てみましょう。
-
+Now let's see how we can use intersection observer in JavaScript to lazy load images using this markup pattern:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -149,41 +95,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-ドキュメントの `DOMContentLoaded` イベントでは、このスクリプトは `lazy` クラスを持つすべての `<img>` 要素について DOM に問い合わせます。
- Intersection Observer が利用可能な場合は、`img.lazy` 要素がビューポートに入ったときにコールバックを実行する新しい Observer を作成します。
+On the document's `DOMContentLoaded` event, this script queries the DOM for all `<img>` elements with a class of `lazy`. If intersection observer is available, we create a new observer that runs a callback when `img.lazy` elements enter the viewport. Check out [this CodePen example](https://codepen.io/malchata/pen/YeMyrQ) to see this code in action.
 
- [この CodePen の例](https://codepen.io/malchata/pen/YeMyrQ)で、実際のコードの動作を確認してください。
+Note: This code makes use of an intersection observer method named `isIntersecting`, which is unavailable in Edge 15's intersection observer implementation. As such, the lazy loading code above (and other similar code snippets) will fail. Consult [this GitHub issue](https://github.com/w3c/IntersectionObserver/issues/211) for guidance on a more complete feature detection conditional.
 
+The drawback of intersection observer, however, is that while [it has good support amongst browsers](https://caniuse.com/#feat=intersectionobserver), it's not universal. [You'll need to polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) browsers that don't support it, or as the above code suggests, detect if it's available and subsequently fall back to older, more compatible methods.
 
-注: このコードは、`isIntersecting` という名前の Intersection Observer メソッドを使用します。これは、Edge 15 の Intersection Observer の実装では使用できません。
- そのため、上記の遅延読み込みコード（およびその他の同様のコード スニペット）は失敗します。
- より詳しい機能検出条件のガイダンスについては、[こちらの GitHub の投稿](https://github.com/w3c/IntersectionObserver/issues/211)をご覧ください。
+#### Using event handlers (the most compatible way)
 
+While you *should* use intersection observer for lazy loading, your application requirements may be such that browser compatibility is critical. [You *can* polyfill intersection observer support](https://github.com/w3c/IntersectionObserver/tree/master/polyfill) (and this would be easiest), but you could also fall back to code using [`scroll`](https://developer.mozilla.org/en-US/docs/Web/Events/scroll), [`resize`](https://developer.mozilla.org/en-US/docs/Web/Events/resize), and possibly [`orientationchange`](https://developer.mozilla.org/en-US/docs/Web/Events/orientationchange) event handlers in concert with [`getBoundingClientRect`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect) to determine whether an element is in the viewport.
 
-
-しかし Intersection Observer の欠点は、[多くのブラウザでサポートされている](https://caniuse.com/#feat=intersectionobserver)ものの、汎用的ではないということです。
- サポート外のブラウザを [polyfill する](https://github.com/w3c/IntersectionObserver/tree/master/polyfill)か、または上記のコードが示すように、Intersection Observer が利用可能かどうかを検出し、必要ならより互換性のある古い方法を使用する必要があります。
-
-
-
-
-#### イベント ハンドラを使用する（最も互換性の高い方法）
-
-遅延読み込みのために Intersection Observer 使用する_必要がある_と同時に、ブラウザの互換性がアプリケーションの重要な要件である場合もあります。
- [Intersection Observer のサポートを polyfill することは_可能_](https://github.com/w3c/IntersectionObserver/tree/master/polyfill)（これが最も簡単）ですが、[`scroll`](https://developer.mozilla.org/en-US/docs/Web/Events/scroll)、[`resize`](https://developer.mozilla.org/en-US/docs/Web/Events/resize) や、おそらく [`orientationchange`](https://developer.mozilla.org/en-US/docs/Web/Events/orientationchange) イベント ハンドラを [`getBoundingClientRect`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect) と一緒に使用したコードで代替して、要素がビューポートにあるかどうかを判断することもできます。
-
-
-
-
-
-
-
-
-
-
-
-前述と同じマークアップ パターンで、以下の JavaScript は遅延読み込み機能を提供します。
-
+Assuming the same markup pattern from before, the following JavaScript provides the lazy loading functionality:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -224,37 +146,17 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-このコードは `scroll` イベント ハンドラの `getBoundingClientRect` を使用して、`img.lazy` 要素がビューポートにあるかどうかを確認します。
- `setTimeout` 呼び出しが処理を遅延させるために使用され、`active` 変数は関数呼び出しを制限するために使用される処理ステートを含んでいます。
- イメージが遅延読み込みされると、要素配列から削除されます。
- 要素配列の `length` が `0` になると、スクロール イベント ハンドラ コードは削除されます。
- [この CodePen の例](https://codepen.io/malchata/pen/mXoZGx)で、実際に動作しているこのコードを参照してください。
+This code uses `getBoundingClientRect` in a `scroll` event handler to check if any of `img.lazy` elements are in the viewport. A `setTimeout` call is used to delay processing, and an `active` variable contains the processing state which is used to throttle function calls. As images are lazy loaded, they're removed from the elements array. When the elements array reaches a `length` of `0`, the scroll event handler code is removed. See this code in action in [this CodePen example](https://codepen.io/malchata/pen/mXoZGx).
 
+While this code works in pretty much any browser, it has potential performance issues in that repetitive `setTimeout` calls can be wasteful, even if the code within them is throttled. In this example, a check is being run every 200 milliseconds on document scroll or window resize regardless of whether there's an image in the viewport or not. Plus, the tedious work of tracking how many elements are left to lazy load and unbinding the scroll event handler are left to the developer.
 
-このコードはほとんどすべてのブラウザで機能しますが、潜在的なパフォーマンスの問題があります。繰り返しの `setTimeout` 呼び出しは（呼び出し内のコードが制限されても）無駄になる可能性があります。
- この例では、ビューポートにイメージがあるかどうかにかかわらず、ドキュメントのスクロール時またはウィンドウのサイズ変更時に 200 ミリ秒ごとにチェックが実行されています。
- さらに、遅延読み込みの必要な要素の数を追跡し、スクロール イベント ハンドラをアンバインドするという面倒な作業は、デベロッパーが行わなければなりません。
+Simply put: Use intersection observer wherever possible, and fall back to event handlers if the widest possible compatibility is a critical application requirement.
 
+### Images in CSS
 
+While `<img>` tags are the most common way of using images on web pages, images can also be invoked via the CSS [`background-image`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-image) property (and other properties). Unlike `<img>` elements which load regardless of their visibility, image loading behavior in CSS is done with more speculation. When [the document and CSS object models](/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model) and [render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction) are built, the browser examines how CSS is applied to a document before requesting external resources. If the browser has determined a CSS rule involving an external resource doesn't apply to the document as it's currently constructed, the browser doesn't request it.
 
-まとめると、可能な限り Intersection Observer を使用し、できるだけ高い互換性がアプリケーションの重要な要件である場合はイベント ハンドラにフォールバックします。
-
-
-
-### CSS でのイメージ処理
-
-`<img>` タグは、ウェブページ上のイメージを使用する最も一般的な方法ですが、CSS
-[`background-image`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-image) プロパティ（およびその他のプロパティ）を経由してイメージを呼び出すこともできます。
- 可視性に関係なく読み込まれる `<img>` 要素とは異なり、CSS でのイメージ読み込み動作は推測に基づいて行われます。
- [ドキュメントと CSS オブジェクト モデル](/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model)および[レンダリング ツリー](/web/fundamentals/performance/critical-rendering-path/render-tree-construction)が構築されるとき、ブラウザは、外部リソースをリクエストする前に、CSS がドキュメントに適用される方法を検討します。
- 外部リソースに関する CSS ルールが現在構成中のドキュメントに適用されないと判断した場合、ブラウザはそれをリクエストしません。
-
-
-
-この推測に基づく振る舞いにより、CSS でのイメージのロードを延期できます。つまり、JavaScript を使用して、要素がビューポート内に配置されるタイミングを判断し、背景画像を呼び出すスタイルを適用するクラスを要素に適用します。
- これにより、イメージは初期ロード時ではなく必要なタイミングでダウンロードされます。
- たとえば、大きなヒーローの背景画像を含む要素を考えてみましょう。
-
+This speculative behavior can be used to defer the loading of images in CSS by using JavaScript to determine when an element is within the viewport, and subsequently applying a class to that element that applies styling invoking a background image. This causes the image to be downloaded at the time of need instead of at initial load. For example, let's take an element that contains a large hero background image:
 
 ```html
 <div class="lazy-background">
@@ -264,10 +166,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </div>
 ```
 
-この `div.lazy-background` 要素は通常、ある CSS によって呼び出されるヒーローの背景画像を含みます。
- しかし、この遅延読み込みの例では、`visible` クラスによって`div.lazy-background` 要素の `background-image` プロパティを分離できます。これは、ビューポートに配置されたときに要素に追加するクラスです。
-
-
+The `div.lazy-background` element would normally contain the hero background image invoked by some CSS. In this lazy loading example, however, we can isolate the `div.lazy-background` element's `background-image` property via a `visible` class that we'll add to the element when it's in the viewport:
 
 ```css
 .lazy-background {
@@ -279,9 +178,7 @@ document.addEventListener("DOMContentLoaded", function() {
 }
 ```
 
-ここから、JavaScript を使用して要素がビューポート内にあるかどうかを確認し（Intersection Observer を使用）、その時点で `div.lazy-background` 要素に `visible` クラスを追加し、これによりイメージが読み込まれます。
-
-
+From here, we'll use JavaScript to check if the element is in the viewport (with intersection observer!), and add the `visible` class to the `div.lazy-background` element at that time, which loads the image:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -304,23 +201,15 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-前述のとおり、Intersection Observer は現在すべてのブラウザでサポートされているわけではないため、代替ソリューションまたは polyfill を使用することができます。
-[この CodePen のデモ](https://codepen.io/malchata/pen/wyLMpR)で、実際のコードの動作を確認してください。
+As indicated earlier, you'll want to make sure you provide a fallback or a polyfill for intersection observer since not all browsers currently support it. Check out [this CodePen demo](https://codepen.io/malchata/pen/wyLMpR) to see this code in action.
 
+## Lazy loading video
 
-## 動画の遅延読み込み
+As with image elements, we can also lazy load video. When we load video in normal circumstances, we do so using the `<video>` element (although [an alternate method using `<img>`](https://calendar.perfplanet.com/2017/animated-gif-without-the-gif/) has emerged with limited implementation). *How* we lazy load `<video>` depends on the use case, though. Let's discuss a couple of scenarios that each require a different solution.
 
-イメージ要素と同様に、動画の遅延読み込みを行うこともできます。 通常の状況で動画を読み込むときは、この `<video>` 要素を使用します（ただし、一部の実装では [`<img>` を使用した別の方法](https://calendar.perfplanet.com/2017/animated-gif-without-the-gif/)があります）。
- `<video>` の遅延読み込みの_方法_はユースケースによって異なります。
- 異なるソリューションを必要とするいくつかのシナリオについて説明します。
+### For video that doesn't autoplay
 
-
-### 自動再生されない動画の場合
-
-ユーザーによって再生が開始される動画（自動再生_されない_動画）の場合は、`<video>` 要素に [`preload` 属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload)を指定することができます。
-
-
-
+For videos where playback is initiated by the user (i.e., videos that *don't* autoplay), specifying the [`preload` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-preload) on the `<video>` element may be desirable:
 
 ```html
 <video controls preload="none" poster="one-does-not-simply-placeholder.jpg">
@@ -329,46 +218,27 @@ document.addEventListener("DOMContentLoaded", function() {
 </video>
 ```
 
-ここで、`preload` 属性に `none` の値を使用して、ブラウザが動画データを事前に_何も_プリロードしないようにします。
- スペースを確保するために、`poster` 属性を使用して `<video>` 要素にプレースホルダを指定します。
- これは、動画を読み込むデフォルトの動作がブラウザによって異なる場合があるためです。
+Here, we use a `preload` attribute with a value of `none` to prevent browsers from preloading *any* video data. To occupy the space, we use the `poster` attribute to give the `<video>` element a placeholder. The reason for this is that default behaviors for loading video can vary from browser to browser:
 
+- In Chrome, the default for `preload` used to be `auto`, but as of Chrome 64, it now defaults to `metadata`. Even so, on the desktop version of Chrome, a portion of the video may be preloaded using the `Content-Range` header. Firefox, Edge and Internet Explorer 11 behave similarly.
+- As with Chrome on desktop, 11.0 desktop versions of Safari will preload a range of the video. In version 11.2 (currently Safari's Tech Preview version), only the video metadata is preloaded. [In Safari on iOS, videos are never preloaded](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/AudioandVideoTagBasics/AudioandVideoTagBasics.html#//apple_ref/doc/uid/TP40009523-CH2-SW9).
+- When [Data Saver mode](https://support.google.com/chrome/answer/2392284) is enabled, `preload` defaults to `none`.
 
-- Chrome では `preload` のデフォルトは `auto` 自動でしたが、Chrome 64 では、デフォルトが `metadata` になりました。
- ただし、デスクトップ版の Chrome では、動画の一部が `Content-Range` ヘッダーを使用してプリロードされる場合があります。
- Firefox、Edge、Internet Explorer 11 も同様に動作します。
-- デスクトップ版の Chrome と同様、Safari 11.0 のデスクトップ版もさまざまな動画をプリロードします。
- バージョン 11.2（現時点では Safari の Tech Preview バージョン）では、動画メタデータのみがプリロードされます。
- [iOS の Safari では、動画はプリロードされません](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/AudioandVideoTagBasics/AudioandVideoTagBasics.html#//apple_ref/doc/uid/TP40009523-CH2-SW9)。
-- [データセーバー モード](https://support.google.com/chrome/answer/2392284)が有効な場合、`preload` はデフォルト値の `none` になります。
+Because browser default behaviors with regard to `preload` are not set in stone, being explicit is probably your best bet. In this cases where the user initiates playback, using `preload="none"` is the easiest way to defer loading of video on all platforms. The `preload` attribute isn't the only way to defer the loading of video content. [*Fast Playback with Video Preload*](/web/fundamentals/media/fast-playback-with-video-preload) may give you some ideas and insight into working with video playback in JavaScript.
 
+Unfortunately, it doesn't prove useful when we want to use video in place of animated GIFs, which we'll cover next.
 
-`preload` に関するブラウザのデフォルト動作は決まっていないため、明示的に設定することをお勧めします。
- ユーザーが再生を開始するこのケースでは、すべてのプラットフォームで動画の読み込みを遅らせる最も簡単な方法は `preload="none"` を使用することです。
- `preload` 属性は、動画コンテンツの読み込みを遅らせる唯一の方法ではありません。
- JavaScript で動画再生を処理するアイデアやヒントについては、[_動画プリロードによる高速再生_](/web/fundamentals/media/fast-playback-with-video-preload)をご覧ください。
+### For video acting as an animated GIF replacement
 
+While animated GIFs enjoy wide use, they're subpar to video equivalents in a number of ways, particularly in output file size. Animated GIFs can stretch into the range of several megabytes of data. Videos of similar visual quality tend to be far smaller.
 
+Using the `<video>` element as a replacement for animated GIF is not as straightforward as the `<img>` element. Inherent in animated GIFs are these three behaviors:
 
-残念ながら、この方法はアニメーション GIF の代わりに動画を使用する場合は役に立ちません。その点について以下に説明します。
+1. They play automatically when loaded.
+2. They loop continuously ([though that's not always the case](https://davidwalsh.name/prevent-gif-loop)).
+3. They don't have an audio track.
 
-
-### アニメーション GIF の代替の動画の場合
-
-アニメーション GIF は広く使用されていますが、特に出力ファイルのサイズなど、さまざまな点で動画に劣ります。
- アニメーション GIF は、数メガバイトのデータになることがあります。
- たいてい、同じような画質の動画ははるかに小さくなります。
-
-
-アニメーション GIF の代わりに `<video>` 要素を使用するのは、`<img>` 要素のように単純ではありません。
- アニメーション GIF には、次の 3 つの特徴があります。
-
-
-1. 読み込み時に自動的に再生される。
-2. 継続的にループする（[例外もあります](https://davidwalsh.name/prevent-gif-loop))。
-3. オーディオ トラックがない。
-
-これを `<video>` 要素を使用して行う場合、以下のようになります。
+Achieving this with the `<video>` element looks something like this:
 
 ```html
 <video autoplay muted loop playsinline>
@@ -377,12 +247,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </video>
 ```
 
-`autoplay`、`muted`、`loop` の各属性は一目瞭然です。
-[iOS で自動再生するには `playsinline` が必要です](https://webkit.org/blog/6784/new-video-policies-for-ios/)。
- 現在、あらゆるプラットフォームで機能する、GIF の代替としての動画を利用できます。
- では、どうしたらそれを遅延読み込みできるでしょうか？[Chrome は動画を遅延読み込みします](https://www.google.com/url?q=https://developers.google.com/web/updates/2017/03/chrome-58-media-updates%23offscreen&sa=D&ust=1521096956530000&usg=AFQjCNHPv7wM_yxmkOWKA0sZ-MXYKUdUXg)が、すべてのブラウザでこの最適化された動作を利用できるわけではありません。
-対象端末やアプリケーションの要件によっては、この点を自分で処理しなければならない場合もあります。
- まず、次のように `<video>` マークアップを修正します。
+The `autoplay`, `muted`, and `loop` attributes are self-explanatory. [`playsinline` is necessary for autoplaying to occur in iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/). Now we have a serviceable video-as-GIF replacement that works across platforms. But how to go about lazy loading it? [Chrome will lazy load video for you](https://www.google.com/url?q=https://developers.google.com/web/updates/2017/03/chrome-58-media-updates%23offscreen&sa=D&ust=1521096956530000&usg=AFQjCNHPv7wM_yxmkOWKA0sZ-MXYKUdUXg), but you can't count on all browsers to provide this optimized behavior. Depending on your audience and application requirements, you may need to take matters into your own hands. To start, modify your `<video>` markup accordingly:
 
 ```html
 <video autoplay muted loop playsinline width="610" height="254" poster="one-does-not-simply.jpg">
@@ -391,10 +256,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </video>
 ```
 
-[`poster` 属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-poster)が追加されているのに気付くでしょう。これは、動画が遅延読み込みされるまで `<video>` 要素のスペースに表示されるプレースホルダを指定することができます。
- 上述の `<img>` の遅延読み込みの例と同様に、各 `<source>` 要素の `data-src` 属性に動画の URL を指定します。
- そこから、上述の Intersection Observer ベースのイメージ遅延読み込みの例に似た JavaScript を使用します。
-
+You'll notice the addition of the [`poster` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#attr-poster), which lets you specify a placeholder to occupy the `<video>` element's space until the video is lazy loaded. As with our `<img>` lazy loading examples from before, we stash the video URL in the `data-src` attribute on each `<source>` element. From there, we'll use some JavaScript similar to the earlier intersection observer-based image lazy loading examples:
 
 ```javascript
 document.addEventListener("DOMContentLoaded", function() {
@@ -425,117 +287,57 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 ```
 
-`<video>` 要素を遅延読み込みする場合、すべての子 `<source>` 要素を反復処理し、それらの `data-src` 属性を `src` 属性に切り替える必要があります。
- それが完了したら、要素の `load` メソッドを呼び出して動画の読み込みをトリガーする必要があります。その後、メディアは`autoplay` 属性に従って自動的に再生を開始します。
+When we lazy load a `<video>` element, we need to iterate through all of the child `<source>` elements and flip their `data-src` attributes to `src` attributes. Once we've done that, we need to trigger loading of the video by calling the element's `load` method, after which the media will begin playing automatically per the `autoplay` attribute.
 
+Using this method, we have a video solution that emulates animated GIF behavior, but doesn't incur the same intensive data usage as animated GIFs do, and we get to lazy load that content.
 
+## Lazy loading libraries
 
+If you're not so concerned about *how* lazy loading works under the hood and just want to pick a library and go (and there's no shame in that!), there's plenty of options to choose from. Many libraries use a markup pattern similar to the ones demonstrated in this guide. Here are some lazy loading libraries you may find useful:
 
-この方法により、アニメーション GIF の動作をエミュレートする動画ソリューションが得られます。これは、アニメーション GIF のように集中的なデータ使用を発生させることなく、そのコンテンツを遅延読み込みすることができます。
+- [lazysizes](https://github.com/aFarkas/lazysizes) is a full-featured lazy loading library that lazy loads images and iframes. The pattern it uses is quite similar to the code examples shown here in that it automatically binds to a `lazyload` class on `<img>` elements, and requires you to specify image URLs in `data-src` and/or `data-srcset` attributes, the contents of which are swapped into `src` and/or `srcset` attributes, respectively. It uses intersection observer (which you can polyfill), and can be extended with [a number of plugins](https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo) to do things like lazy load video.
+- [lozad.js](https://github.com/ApoorvSaxena/lozad.js) is a super lightweight option that uses intersection observer only. As such, it's highly performant, but will need to be polyfilled before you can use it on older browsers.
+- [blazy](https://github.com/dinbror/blazy) is another such option that bills itself as a lightweight lazy loader (weighing in at 1.4 KB). As with lazysizes, it doesn't need any third party utilities to load, and works for IE7+. Unfortunately, it doesn't use intersection observer.
+- [yall.js](https://github.com/malchata/yall.js) is a library I wrote that uses IntersectionObserver and falls back to event handlers. It's compatible with IE11 and major browsers.
+- If you're seeking a React-specific lazy loading library, you might consider [react-lazyload](https://github.com/jasonslyvia/react-lazyload). While it doesn't use intersection observer, it *does* provide a familiar method of lazy loading images for those accustomed to developing applications with React.
 
+Each of these lazy loading libraries is well documented, with plenty of markup patterns for your various lazy loading endeavors. If you're not one to tinker, grab a library and go. It will take the least amount of effort.
 
+## What can go wrong
 
-## 遅延読み込み用ライブラリ
+While lazy loading images and video have positive and measurable performance benefits, it's not a task to be taken lightly. If you get it wrong, there could be unintended consequences. As such, it's important to keep the following concerns in mind:
 
-遅延読み込みが内部で_どのように_機能しているのかは重要でなく、ただライブラリを使用して実行したい場合（何も恥ずかしいことではありません！）、選択肢はたくさんあります。
- 多くのライブラリは、このガイドで説明しているものと似たマークアップ パターンを使用します。
- 以下の遅延読み込みライブラリが役立つかもしれません。
+### Mind the fold
 
+It may be tempting to lazy load every single media resource on the page with JavaScript, but you need to resist this temptation. Anything resting above the fold shouldn't be lazy loaded. Such resources should be considered critical assets, and thus should be loaded normally.
 
-- [lazysizes](https://github.com/aFarkas/lazysizes) は、イメージと iframe を遅延読み込みするフル機能の遅延読み込みライブラリです。
- 使用されるパターンは、ここに示すコード例と非常によく似ています。つまり、`<img>` 要素上の `lazyload` クラスに自動的にバインドし、`data-src` 属性や `data-srcset` 属性にイメージ URL を指定する必要があり、そのコンテンツがそれぞれ `src` 属性や `srcset` 属性にスワップされます。
- これは Intersection Observer （またはその polyfill）を使用し、[多くのプラグイン](https://github.com/aFarkas/lazysizes#available-plugins-in-this-repo)で動画の遅延読み込みのように動作するよう拡張できます。
-- [lozad.js](https://github.com/ApoorvSaxena/lozad.js) は、Iintersection Observer のみを使用する超軽量のオプションです。
- そのため非常に高性能ですが、古いブラウザで使用するには polyfill が必要です。
-- [blazy](https://github.com/dinbror/blazy) は、別の軽量（1.4 KB）遅延ローダです。
- lazysizes と同様に、読み込みにサードパーティのユーティリティを必要とせず、IE7+ でも動作します。
-ただし、Intersection Observer を使用できません。
-- [yall.js](https://github.com/malchata/yall.js) は、Intersection Observer を使用し、イベント ハンドラにフォールバックするライブラリで、私が書いたものです。
- これは IE11 や他の主要なブラウザと互換性があります。
-- React に特化した遅延読み込みライブラリを探しているなら、[react-lazyload](https://github.com/jasonslyvia/react-lazyload) を検討してください。
- これは Intersection Observer を使用しませんが、React を使ったアプリケーションの開発に慣れている場合には、イメージの遅延読み込みを行う慣れた方法です。
+The primary argument for loading critical media resources the usual way in lieu of lazy loading is that lazy loading delays the loading of those resources until after the DOM is interactive when scripts have finished loading and begin execution. For images below the fold, this is fine, but it would be faster to load critical resources above the fold with a standard `<img>` element.
 
+Of course, where the fold lies is not so clear these days when websites are viewed on so many screens of varying sizes. What lies above the fold on a laptop may well lie *below* it on mobile devices. There's no bulletproof advice for addressing this optimally in every situation. You'll need to conduct an inventory of your page's critical assets, and load those images in typical fashion.
 
-
-これらの遅延読み込みライブラリは、それぞれドキュメント化されており、さまざまな遅延読み込みのためのマークアップ パターンが豊富にあります。
- 自分で手を加えたいのでない限り、ライブラリを利用するのが早道です。
- 最小限の労力で済みます。
-
-## うまくいかない原因
-
-イメージや動画の遅延読み込みによって確かにパフォーマンスが向上しますが、簡単に行えるタスクではありません。
- 正しく行われない場合、意図しない結果が生じる可能性があります。
- そのため、次の点に注意することが重要です。
-
-
-### ファースト ビューに注意する
-
-ページ上のすべてのメディア リソースを JavaScript で遅延読み込みしたいという誘惑にかられますが、注意が必要です。
- スクロールしなくても見える範囲にあるものは、遅延読み込みすべきではありません。
- そのようなリソースは重要なアセットとみなし、通常どおりに読み込む必要があります。
-
-
-主な理由として、遅延読み込みでは、スクリプトが読み込みを終了して実行を開始し DOM が対話的になるまで、そのような重要なメディア・リソースの読み込みが遅延されるためです。
- スクロールせずに見える範囲より下にあるイメージの場合は問題ありませんが、ファースト ビューで表示される重要なリソースの場合、標準の `<img>` 要素を使用したほうが速く読み込むことができます。
-
-
-もちろん、最近はウェブサイトがさまざまなサイズの画面で表示されるため、スクロールせずに見える範囲を容易に特定できません。
- ノートパソコンではファーストビューで表示されるものも、モバイル端末ではスクロールしないと表示されない可能性があります。
- あらゆる状況でこれに対処するための絶対確実なアドバイスはありません。
- ページの重要なアセットの一覧を作成し、それらのイメージを通常の方法で読み込む必要があります。
-
-
-
-さらに、遅延読み込みをトリガーするためのしきい値として、ファーストビューの範囲を厳密に指定したくない場合があります。
- ファーストビューの範囲よりも少し下にバッファ ゾーンを設定するほうが都合がよいかもしれません。ユーザーがスクロールしてビューポート内にイメージが現れるより前に、余裕を持ってイメージの読み込みを始められるからです。
- たとえば Intersection Observer API では、新しい `IntersectionObserver` インスタンスを作成するときに、オプション オブジェクトに `rootMargin` プロパティを指定できます。
- これにより、要素に効果的にバッファを与え、要素がビューポートに現れる前に遅延読み込み動作をトリガーできます。
-
-
+Additionally, you may not want to be so strict about the fold line as the threshold for triggering lazy loading. It may be more ideal for your purposes to establish a buffer zone some distance below the fold so that images begin loading well before the user scrolls them into the viewport. For example, The intersection observer API allows you to specify a `rootMargin` property in an options object when you create a new `IntersectionObserver` instance. This effectively gives elements a buffer, which triggers lazy loading behavior before the element is in the viewport:
 
 ```javascript
 let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
   // Lazy loading image code goes here
 }, {
-  rootMargin:"0px 0px 256px 0px"
+  rootMargin: "0px 0px 256px 0px"
 });
 ```
 
-`rootMargin` の値が、CSS の `margin` プロパティで指定した値と似ているのに気付かれるでしょう。
-この例では、監視要素（デフォルトではブラウザのビューポートですが、`root` プロパティを使用して特定の要素に変更可能）の下の境界を 256 ピクセル分広げています。
- これは、イメージ要素がビューポートの 256 ピクセル以内にあるときにコールバック関数が実行されることを意味します。つまり、ユーザーに実際に表示される前にイメージの読み込みが開始します。
+If the value for `rootMargin` looks similar to values you'd specify for a CSS `margin` property, that's because it is! In this case, we're broadening the bottom margin of the observing element (the browser viewport by default, but this can be changed to a specific element using the `root` property) by 256 pixels. That means the callback function will execute when an image element is within 256 pixels of the viewport, meaning that the image will begin to load before the user actually sees it.
 
+To achieve this same effect using scroll event handling code, simply adjust your `getBoundingClientRect` check to include a buffer, and you'll get the same effect in browsers that don't support intersection observer.
 
+### Layout shifting and placeholders
 
-スクロール イベント処理コードを使用してこれと同じ効果を得るには、単に `getBoundingClientRect` チェックを調整してバッファを含めます。これにより、Intersection Observer をサポートしていないブラウザでも同じ効果が得られます。
+Lazy loading media can cause shifting in the layout if placeholders aren't used. These changes can be disorienting for users and trigger expensive DOM layout operations that consume system resources and contribute to jank. At a minimum, consider using a solid color placeholder occupying the same dimensions as the target image, or techniques such as [LQIP](http://www.guypo.com/introducing-lqip-low-quality-image-placeholders) or [SQIP](https://github.com/technopagan/sqip) that hint at the content of a media item before it loads.
 
+For `<img>` tags, `src` should initially point to a placeholder until that attribute is updated with the final image URL. Use the `poster` attribute in a `<video>` element to point to a placeholder image. Additionally, use `width` and `height` attributes on both `<img>` and `<video>` tags. This ensures that transitioning from placeholders to final images won't change the rendered size of the element as media loads.
 
+### Image decoding delays
 
-### レイアウト シフトとプレースホルダ
-
-プレースホルダを用しない場合、メディアを遅延読み込みするとレイアウトがずれることがあります
-これはユーザーにとって混乱を招くだけでなく、システム リソースを消費してゴミの一因となる高コストの DOM レイアウト操作を引き起こす可能性があります。
- 少なくとも、ターゲット イメージと同じサイズを占める無地のプレースホルダや、メディア アイテムを読み込む前にそのコンテンツのヒントを与える [LQIP](http://www.guypo.com/introducing-lqip-low-quality-image-placeholders/) や [SQIP](https://github.com/technopagan/sqip) などのテクニックを使用することを検討してください。
-
-
-
-
-
-
-`<img>` タグの場合、`src` 属性が最終イメージ URL で更新されるまで、最初はその属性がプレースホルダを指す必要があります。
- プレースホルダ イメージを指すには、`<video>` 要素の `poster` 属性を使用します。
- さらに、`<img>` と `<video>` タグの両方で、`width` 属性と `height` 属性を使用します。
- これにより、メディアのロード時にプレースホルダから最終イメージに遷移する際に、要素のレンダリング サイズが変更されることはありません。
-
-
-
-### イメージ デコーディングの遅延
-
-大きなイメージを JavaScript でロードして DOM にドロップすると、メインスレッドが動かなくなり、デコード中にユーザー インターフェースが短時間応答しなくなる可能性があります。
- イメージを DOM に挿入する前に [`decode` メソッドを使用して非同期的にイメージをデコードする](https://medium.com/dailyjs/image-loading-with-image-decode-b03652e7d2d2)と、この問題がなくなる場合があります。
-ただし、これは現時点でどこでも利用できるわけではなく、遅延読み込みロジックも複雑になります。
- 使用する場合は、この点をチェックする必要があります。 以下は、フォールバックで `Image.decode()` を使用する方法を示しています。
-
+Loading large images in JavaScript and dropping them into the DOM can tie up the main thread, causing the user interface to be unresponsive for a short period of time while decoding occurs. [Asynchronously decoding images using the `decode` method](https://medium.com/dailyjs/image-loading-with-image-decode-b03652e7d2d2) prior to inserting them into the DOM can cut down on this sort of jank, but beware: It's not available everywhere yet, and it adds complexity to lazy loading logic. If you want to use it, you'll need to check for it. Below shows how you might use `Image.decode()` with a fallback:
 
 ```javascript
 var newImage = new Image();
@@ -552,23 +354,13 @@ if ("decode" in newImage) {
 }
 ```
 
-[この CodePen リンク](https://codepen.io/malchata/pen/WzeZGW)で、この例のようなコードの動作を確認してください。
- 大部分のイメージがかなり小さい場合、それほど効果はないかもしれませんが、大きなイメージを遅延読み込みして DOM に挿入する場合、ジャンクを減らすのに役立ちます。
+Check out [this CodePen link](https://codepen.io/malchata/pen/WzeZGW) to see code similar to this example in action. If most of your images are fairly small, this may not do much for you, but it can certainly help cut down on jank when lazy loading large images and inserting them into the DOM.
 
+### When stuff doesn't load
 
+Sometimes media resources will fail to load for one reason or another and errors occur. When might this happen? It depends, but here's one hypothetical scenario for you: You have an HTML caching policy for a short period of time (e.g., five minutes), and the user visits the site *or* a user has a left a stale tab open for a long period of time (e.g., several hours) and comes back to read your content. At some point in this process, a redeployment occurs. During this deployment, an image resource's name changes due to hash-based versioning, or is removed altogether. By the time the user lazy loads the image, the resource is unavailable, and thus fails.
 
-### 読み込まれない場合
-
-メディア リソースが何らかの理由で読み込みに失敗し、エラーが発生することがあります。
- これはどのような場合に生じるのでしょうか？いろいろなケースがありますが、たとえば次のようなシナリオを仮定して考えましょう。
-HTML キャッシュ ポリシーが短期間（たとえば 5 分）だとします。そして、ユーザーがサイトにアクセスするか、_または_古いタブを長時間（たとえば数時間）開いたままにしたとします。それから、あなたのコンテンツを読むために戻ってきます。
-このプロセスのある時点で、再デプロイメントが行われます。 このデプロイメント中、イメージ リソースの名前はハッシュ ベースのバージョニングにより変更されるか、完全に削除されます。
- ユーザーがイメージを遅延読み込みするまでにリソースは使用不可になり、失敗します。
-
-
-これが発生するのは比較的まれなことですが、遅延読み込みが失敗した場合のバックアップ計画を立てるのはよいことです。
- イメージの場合、解決策は次のようになります。
-
+While these are relatively rare occurrences, it may behoove you to have a backup plan if lazy loading fails. For images, such a solution may look something like this:
 
 ```javascript
 var newImage = new Image();
@@ -582,20 +374,13 @@ newImage.onload = function(){
 };
 ```
 
-エラー発生時に実行する内容は、アプリケーションによって異なります。 たとえば、イメージのプレースホルダ領域をボタンで置き換えてユーザーがイメージを再度読み込めるようにしたり、イメージのプレースホルダ領域に単にエラー メッセージを表示したりできます。
+What you decide to do in the event of an error depends on your application. For example, you could replace the image placeholder area with a button that allows the user to attempt to load the image again, or simply display an error message in the image placeholder area.
 
+Other scenarios could arise as well. Whatever you do, it's never a bad idea to signal to the user when an error has occurred, and possibly give them an action to take if something goes awry.
 
+### JavaScript availability
 
-
-他のシナリオも考えられます。 いずれにしても、エラーが発生したときにユーザーに通知し、問題が発生した場合の対処方法をユーザーに提供するのはよいことです。
-
-
-
-### JavaScript の可用性
-
-JavaScript が常に利用可能であると考えないでください。 イメージを遅延読み込みする場合は、JavaScript が利用できない場合にイメージを表示する `<noscript>` マークアップを使用することを検討してください。
- 最も単純なフォールバックの例は、JavaScript がオフになっている場合に `<noscript>` 要素を使用してイメージを提供することです。
-
+It shouldn't be assumed that JavaScript is always available. If you're going to lazy load images, consider offering `<noscript>` markup that will show images in case JavaScript is unavailable. The simplest possible fallback example involves using `<noscript>` elements to serve images if JavaScript is turned off:
 
 ```html
 <!-- An image that eventually gets lazy loaded by JavaScript -->
@@ -606,24 +391,19 @@ JavaScript が常に利用可能であると考えないでください。 イ�
 </noscript>
 ```
 
-JavaScript がオフになっている場合、プレースホルダ イメージと `<noscript>` 要素に含まれるイメージの_両方_が表示されます。
- これを回避するには、`<html>` タグに `no-js` のクラスを次のように指定します。
-
+If JavaScript is turned off, users will see *both* the placeholder image and the image contained with the `<noscript>` elements. To get around this, we can place a class of `no-js` on the `<html>` tag like so:
 
 ```html
 <html class="no-js">
 ```
 
-次に、`<link>` タグを介してスタイルシートがリクエストされる前に、JavaScript がオンの場合に `<html>` 要素から `no-js` クラスを削除する 1 行のインライン スクリプトを `<head>` に配置します。
-
-
+Then we place one line of inline script in the `<head>` before any style sheets are requested via `<link>` tags that removes the `no-js` class from the `<html>` element if JavaScript is on:
 
 ```html
 <script>document.documentElement.classList.remove("no-js");</script>
 ```
 
-最後に、以下のように CSS を使用して、JavaScript を使用できない場合は lazy クラスの要素を単に隠すことができます。
-
+Finally, we can use some CSS to simply hide elements with a class of lazy when JavaScript is unavailable like so:
 
 ```css
 .no-js .lazy {
@@ -631,27 +411,12 @@ JavaScript がオフになっている場合、プレースホルダ イメー�
 }
 ```
 
-これで、プレースホルダ イメージの読み込みを防ぐことはできませんが、問題を回避できます。
- JavaScript がオフになっている場合でも、ユーザーはプレースホルダ イメージ以上のものを表示できます。プレースホルダだけ表示されて、意味のあるイメージ コンテンツが何も表示されないよりはよいでしょう。
+This doesn't prevent placeholder images from loading, but the outcome is more desirable. People with JavaScript turned off get something more than placeholder images, which is better than placeholders and no meaningful image content at all.
 
+## Conclusion
 
+Used with care, lazy loading images and video can seriously lower the initial load time and page payloads on your site. Users won't incur unnecessary network activity and processing costs of media resources they may never see, but they can still view those resources if they want.
 
-## まとめ
+As far as performance improvement techniques go, lazy loading is reasonably uncontroversial. If you have a lot of inline imagery in your site, it's a perfectly fine way to cut down on unnecessary downloads. Your site's users and project stakeholders will appreciate it!
 
-注意して使用すると、イメージや動画の遅延読み込みにより、サイトでの初期ロード時間とページのペイロードが大幅に減少する可能性があります。
- ユーザーには、不要なネットワーク アクティビティやメディアリソースの処理コストが発生せず、必要に応じてそれらのリソースを表示することもできます。
-
-
-
-パフォーマンス改善のテクニックに関して言えば、遅延読み込みの効果は明らかです。
- サイトにたくさんのインライン イメージがあるなら、不必要なダウンロードを減らすための最良の方法です。
- サイトのユーザーとプロジェクト関係者からも評価されることでしょう。
-
-
-_[François
-Beaufort](/web/resources/contributors/beaufortfrancois)、Dean Hume、[Ilya
-Grigork](/web/resources/contributors/ilyagrigorik)、[Paul
-Irish](/web/resources/contributors/paulirish)、[Addy
-Osmani](/web/resources/contributors/addyosmani)、[Jeff
-Posnick](/web/resources/contributors/jeffposnick)、そして Martin Schierle の貴重なフィードバックにより、この記事の質を大幅に向上させることができました。深く感謝いたします。_
-
+*Special thanks to [François Beaufort](/web/resources/contributors/beaufortfrancois), Dean Hume, [Ilya Grigork](/web/resources/contributors/ilyagrigorik), [Paul Irish](/web/resources/contributors/paulirish), [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff Posnick](/web/resources/contributors/jeffposnick), and Martin Schierle for their valuable feedback, which significantly improved the quality of this article.*

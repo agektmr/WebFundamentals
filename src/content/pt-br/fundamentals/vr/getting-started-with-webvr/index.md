@@ -1,164 +1,166 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Aprenda a criar uma cena WebGL com o Three.js e adicionar recursos da WebVR.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to take a WebGL scene in Three.js and add WebVR capabilities.
 
-{# wf_updated_on: 2016-12-12 #}
-{# wf_published_on: 2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# Primeiros passos com a WebVR {: .page-title }
+# Getting Started with WebVR {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/mscales.html" %}
+{% include "web/_shared/webxr-status.html" %}
 
-Aviso: a WebVR ainda é experimental e, por isso, está sujeita a mudanças.
+In this guide we will be exploring the WebVR APIs, and using them to enhance a simple WebGL scene built with [Three.js](https://threejs.org/). For production work, however, you may want to starting with existing solutions, like [WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate). If you’re totally new to Three.js, you can use this [handy starting guide](https://aerotwist.com/tutorials/getting-started-with-three-js/). The community is also extremely supportive, so if you get stuck, definitely give them a shout.
 
-Nesta guia, falaremos sobre as WebVR APIs e como usá-las para melhorar uma cena WebGL simples criada com o [Three.js](https://threejs.org/). Porém, para trabalho de produção, pode ser uma boa ideia começar com soluções que já existem, como o [Boilerplate do WebVR](https://github.com/borismus/webvr-boilerplate). Se for sua primeira vez com o Three.js, use este [guia prático de início](https://aerotwist.com/tutorials/getting-started-with-three-js/). A comunidade também ajuda bastante, então se você parar em um obstáculo, use a ajuda deles.
+Let’s start with [a scene that puts a box inside a wireframe room](https://googlechrome.github.io/samples/web-vr/hello-world/), the code for which is on the [Google Chrome samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-Vamos começar com [uma cena que coloca uma caixa dentro de um espaço delineado](https://googlechrome.github.io/samples/web-vr/hello-world/), cujo código está no [repositório de exemplos do Google Chrome](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
+![WebGL Scene running on Chrome desktop](./img/desktop.jpg)
 
-![Cena WebGL em execução no Chrome para área de trabalho](./img/desktop.jpg)
+### A small note on support
 
-### Uma pequena observação sobre suporte
+WebVR is available in Chrome 56+ behind a runtime flag. Enabling the flag (head to `chrome://flags` and search for "WebVR") will allow you to build and test your VR work locally. If you want to support WebVR for your visitors, you can opt into an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md), which will allow you to have WebVR enabled for your origin.
 
-A WebVR está disponível no Chrome 56+ por trás de um sinalizador de tempo de execução. Ativar o sinalizador (siga para `chrome://flags` e busque "WebVR") permitirá compilar e testar seu trabalho de RV localmente. Se quiser oferecer suporte a WebVR para seus visitantes, inscreva-se em um [Teste na origem](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md) para ter a WebVR disponível para a sua origem.
+You can also use the [Web VR polyfill](https://github.com/googlevr/webvr-polyfill), but bear in mind that there are significant performance penalties when using polyfills. You should definitely test on your target devices, and avoid shipping anything that does not keep up with the device’s refresh rate. A poor or variable frame rate can result in significant discomfort for the people using your experience!
 
-Você ainda pode usar o [polyfill da WebVR](https://github.com/googlevr/webvr-polyfill), mas lembre-se de que há queda de desempenho considerável quando se usa polyfills. Você com certeza deve testar nos dispositivos com que almeja trabalhar e evitar enviar algo que não acompanhe a taxa de atualização do dispositivo. Uma taxa de quadros variável ou ruim pode gerar desconforto significativo para as pessoas que usam a sua experiência!
+For more information, take a look at [the WebVR Status](../status/) page.
 
-Para saber mais, dê uma olhada na página do [status da WebVR](../status/).
+## Get access to VR Displays
 
-## Obter acesso a exibições de RV
-
-Então, com uma cena WebGL, o que preciso fazer para fazê-la trabalhar com a WebVR? Bem, em primeiro lugar, precisamos consultas o navegador para descobrir se há alguma exibição de RV disponível, o que podemos fazer com navigator.getVRDisplays().
+So with a WebGL scene, what do we need to do get it working with WebVR? Well, firstly we need to query the browser to discover if there are any VR displays available, which we can do with `navigator.getVRDisplays()`.
 
     navigator.getVRDisplays().then(displays => {
       // Filter down to devices that can present.
       displays = displays.filter(display => display.capabilities.canPresent);
-
+    
       // If there are no devices available, quit out.
       if (displays.length === 0) {
         console.warn('No devices available able to present.');
         return;
       }
-
+    
       // Store the first display we find. A more production-ready version should
       // allow the user to choose from their available displays.
       this._vr.display = displays[0];
       this._vr.display.depthNear = DemoVR.CAMERA_SETTINGS.near;
       this._vr.display.depthFar = DemoVR.CAMERA_SETTINGS.far;
     });
+    
 
-Há alguns pontos que merecem atenção nesse código.
+There are a few things to notice in this code.
 
-1. **Nem todo dispositivo pode "apresentar" para um dispositivo de realidade virtual.** Há dispositivos que permitem, digamos, uso de acelerômetro ou uma pseudoexperiência de RV, mas não fazer uso de um HMD. Para esses dispositivos, o booleano canPresent será falso, e é algo que deve ser verificado.
+1. **Not every device can "present" to a Head Mounted Display.** There are devices which allow for — say — accelerometer usage, or a pseudo-VR experience, but do not make use of an HMD. For those devices the canPresent boolean will be false, and it’s something to be checked.
 
-2. **É possível que não haja dispositivos de RV disponíveis.** Devemos buscar criar experiências que funcionem muito bem em aparelhos que não oferecem RV e tratar a disponibilidade de RV como Progressive Enhancement.
+2. **There may be no VR devices available.** We should aim to create experiences that work just fine for non-VR settings, and treat the availability of VR as Progressive Enhancement.
 
-3. **É possível que haja muitos dispositivos de RV disponíveis. **Igualmente, é perfeitamente possível que alguém tenha diversos dispositivos de RV disponíveis e, por isso, devemos, na medida do possível, deixar o usuário escolher o dispositivo mais adequado para ele.
+3. **There may be several VR devices available. **Equally it’s perfectly possible that someone will have multiple VR devices available, and we should allow for that if at all possible, letting them choose the most appropriate.
 
-## Instale uma extensão de emulação da WebVR do Chrome DevTools
+## Install a WebVR Emulation Chrome DevTools Extension
 
-Talvez você se depare com um momento em que não tem um dispositivo compatível com RV para testar o seu trabalho. Se esse for o caso, a ajuda está a caminho. Jaume Elias criou uma [extensão do Chrome DevTools que emula um dispositivo de RV](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil).
+Perhaps you find yourself not having a VR-capable device to test against. If that’s the case, help is at hand! Jaume Elias has created a [Chrome DevTools Extension which emulates a VR device](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil).
 
-![Emulação da WebVR com a extensão do Chrome de Jaume Elias](./img/webvr-emulation.jpg)
+![Emulating WebVR with Jaume Elias's Chrome Extension](./img/webvr-emulation.jpg)
 
-Embora sempre seja melhor testar em dispositivos reais (especialmente para testes de desempenho), ter essa extensão em mãos pode ajudar a depurar rapidamente durante as compilações.
+While it’s always preferable to test on real devices (especially for performance testing!) having this extension to hand can help you quickly debug during your builds.
 
-## Solicite apresentação pelo dispositivo
+## Request presentation from the device
 
-Para começar a apresentar em "modo RV", temos que solicitá-lo pelo dispositivo:
+To begin presenting in "VR mode", we have to request it from the device:
 
     this._vr.display.requestPresent([{
       source: this._renderer.domElement
     }]);
+    
 
-`requestPresent` obtém uma matriz do que as [especificações da WebVR](https://w3c.github.io/webvr/#vrlayer) chamam de "VRLayers", que, na verdade, é um encapsulador de um elemento "Canvas" fornecido ao dispositivo de RV. No fragmento de código acima, pegamos o elemento "Canvas" — `WebGLRenderer.domElement` — fornecido por Three.js e o passamos como a propriedade de origem de uma única VRLayer. Em troca, `requestPresent` dará a você uma [Promessa](/web/fundamentals/getting-started/primers/promises), que se cumprirá se a solicitação for bem-sucedida, se não, será rejeitada.
+`requestPresent` takes an array of what the [Web VR spec](https://w3c.github.io/webvr/#vrlayer) calls "VRLayers", which is essentially a wrapper around a Canvas element given to the VR device. In the code snippet above we’re taking the Canvas element — `WebGLRenderer.domElement` — provided by Three.js, and passing it in as the source property of a single VRLayer. In return, `requestPresent` will give you a [Promise](/web/fundamentals/getting-started/primers/promises), which will resolve if the request is successful, and will reject if not.
 
-## Delineie sua cena de RV
+## Draw your VR scene
 
-Até que enfim! Agora estamos prontos para apresentar ao usuário uma cena em RV, o que é muito legal!
+Finally, we’re ready to present the user with a VR scene, which is really exciting!
 
-![A cena WebVR em execução em um Pixel](../img/getting-started-with-webvr.jpg)
+![The WebVR scene running on a Pixel](../img/getting-started-with-webvr.jpg)
 
-Primeiro, vamos falar sobre o que precisamos fazer.
+Firstly let’s talk about what we need to do.
 
-* Garantir que usemos o retorno de chamada de `requestAnimationFrame` do dispositivo.
-* Solicitar o "pose", a orientação e as informações dos olhos atuais pelo dispositivo de RV.
-* Dividir nosso contexto WebGL em duas metades: uma para cada olho, e delineá-las.
+* Ensure we use the device’s `requestAnimationFrame()` callback.
+* Request the current pose, orientation, and eye information from the VR device.
+* Split our WebGL context into two halves, one for each eye, and draw each.
 
-Por que precisamos usar um `requestAnimationFrame` diferente do fornecido com o objeto "window"? Porque estamos trabalhando com uma exibição cuja taxa de atualização pode ser diferente da máquina que a hospeda! Se o fone de ouvido tiver uma taxa de atualização de 120 Hz, precisaremos gerar quadros de acordo com essa taxa, mesmo que a máquina host atualize a tela a 60 Hz. A WebVR API considera isso fornecendo uma `requestAnimationFrame` API diferente para chamar. No caso de um dispositivo móvel, normalmente só há uma exibição (e atualmente no Android, a taxa de atualização é de 60 Hz) mas, mesmo assim, devemos usar a API correta para deixar nosso código preparado para o futuro e com a compatibilidade mais ampla possível.
+Why do we need to use a different `requestAnimationFrame()` to the one provided with the window object? Because we’re working with a display whose refresh rate may differ from the host machine! If the headset has a refresh rate of 120Hz, we need to generate frames according to that rate, even if the host machine refreshes its screen at 60Hz. The WebVR API accounts for that by giving us a different `requestAnimationFrame()` API to call. In the case of a mobile device, there is typically only one display (and on Android today the refresh rate is 60Hz). Even so we should use the correct API to make our code future-proof and as broadly compatible as possible.
 
     _render () {
       // Use the VR display's in-built rAF (which can be a diff refresh rate to
       // the default browser one).  _update will call _render at the end.
-
+    
       this._vr.display.requestAnimationFrame(this._update);
       …
     }
+    
 
-Em seguida, precisamos solicitar as informações sobre a posição da cabeça da pessoa, sua rotação e todas as outras informações necessárias para podermos fazer a delineação corretamente, o que fazemos com `getFrameData()`.
+Next, we need to request the information about where the person’s head is, its rotation, and any other information we need to be able to do the drawing correctly, which we do with `getFrameData()`.
 
     // Get all the latest data from the VR headset and dump it into frameData.
     this._vr.display.getFrameData(this._vr.frameData);
+    
 
-`getFrameData()` obterá um objeto em que pode colocar as informações de que precisamos. Precisamos de um objeto `VRFrameData`, que podemos criar com `new VRFrameData()`.
+`getFrameData()` takes an object on which it can place the information we need. It needs to be a `VRFrameData` object, which we can create with `new VRFrameData()`.
 
     this._vr.frameData = new VRFrameData();
+    
 
-Há muita informação interessante nos dados de quadro, vamos dar olhada rápida neles.
+There’s lots of interesting information in the frame data, so let’s take a quick look over that.
 
-* **timestamp**. A marcação de tempo da atualização do dispositivo. Esse valor começa em 0 na primeira vez que getFrameData é invocado na exibição em RV.
+* **timestamp**. The timestamp of the update from the device. This value starts at 0 the first time getFrameData() is invoked on the VR display.
 
-* **leftProjectionMatrix** e **rightProjectionMatrix**. Essas são as matrizes da câmera que consideram a perspectiva dos olhos na cena. Falaremos mais sobre elas em breve.
+* **leftProjectionMatrix** and **rightProjectionMatrix**. These are the matrices for the camera that account for the perspective of the eyes in the scene. We’ll talk more about these in a moment.
 
-* **leftViewMatrix** e **rightViewMatrix**. Essas são outras duas matrizes que fornecem uma estimativa da localização de cada olho na cena.
+* **leftViewMatrix** and **rightViewMatrix**. These are two more matrices that provide about the location of each eye in the scene.
 
-Se você está começando com 3D, as matrizes de projeção e as matrizes de vista-modelo podem parecer assustadoras. Embora tenha um pouco de matemática por trás do que elas fazem, tecnicamente não precisamos saber exatamente como elas funcionam, saber que funcionam já está de bom tamanho.
+If you’re new to 3D work Projection matrices and Model-View matrices can appear daunting. While there is some math behind what these do, we don’t technically need to know exactly how they work, more what they do.
 
-* **Matrizes de projeção.** São usadas para criar a impressão de perspectiva dentro da cena. Normalmente fazem isso distorcendo a escala dos objetos da cena à medida que se afastam dos olhos.
+* **Projection Matrices.** These are used to create an impression of perspective within a scene. They typically do this by distorting the scale of objects in the scene as they move further away from the eye.
 
-* **Matrizes de vista-modelo.** Usadas para posicionar um objeto no espaço 3D. Pela forma com que elas funcionam, você pode criar imagens de cena e concentrar-se nas imagens, multiplicando a matriz de cada nódulo e chegando à matriz de vista-modelo final para o objeto em questão.
+* **Model-View Matrices.** These are used to position an object in 3D space. Because of the way matrices work you can create scene graphs and work your way down the graph, multiplying each node’s matrix, arriving at the final model-view matrix for the object in question.
 
-Há muitos guias bons na web que explicam as matrizes de projeção e de vista-modelo com muito mais detalhes, por isso, dê uma buscada no Google se quiser ter mais conhecimento.
+There are many good guides around the web that explain Projection and Model-View matrices in much more depth, so have a google around if you want to get more background information.
 
-## Assuma o controla da renderização da cena
+## Take control of the scene rendering
 
-Já que já temos as matrizes de que precisamos, vamos delinear a vista para o olho esquerdo. Para começar, precisaremos instruir o Three.js a não apagar o contexto WebGL sempre que chamarmos a renderização, senão precisaríamos delinear duas vezes e não queremos perder a imagem do olho esquerdo quando delinearmos para o direito.
+Since we have the matrices we need, let’s draw the view for the left eye. To begin with we will need to tell Three.js not to clear out the WebGL context every time we call render, since we need to draw twice and we don’t want to lose the image for the left eye when we draw it for the right.
 
     // Make sure not to clear the renderer automatically, because we will need
     // to render it ourselves twice, once for each eye.
     this._renderer.autoClear = false;
-
+    
     // Clear the canvas manually.
     this._renderer.clear();
+    
 
-Em seguida, vamos configurar o renderizador para só delinear a metade esquerda:
+Next let’s set the renderer to only draw the left half:
 
     this._renderer.setViewport(
         0, // x
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-Esse código assume que o contexto GL é tela cheia (`window.inner*`), o que é muito bom para RV. Agora, podemos conectar as duas matrizes para o olho esquerdo.
+This code assumes that the GL context is full screen (`window.inner*`), which is a pretty good bet for VR. We can now plug in the two matrices for the left eye.
 
     const lViewMatrix = this._vr.frameData.leftViewMatrix;
     const lProjectionMatrix = this._vr.frameData.leftProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(lProjectionMatrix);
     this._scene.matrix.fromArray(lViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-Tem alguns detalhes da implementação que são importantes.
+There are a couple of implementation details that are important.
 
-* **Movemos tudo, menos a câmera.** Pode parecer um pouco esquisito se você nunca se deparou com isso antes, mas é comum nos trabalhos gráficos deixar a câmera na origem (0, 0, 0) e mover todo o resto. Sem querer virar filósofo agora, mas se eu me mover 10 metros à frente, foi eu quem se moveu 10 metros à frente ou o mundo se moveu 10 metros para trás? É uma questão de ponto de vista, e não importa muito de uma perspectiva matemática qual das duas possibilidades realmente ocorre. Como a WebVR API retorna o "*inverso da matriz de modelo do olho", esperamos aplicá-lo ao mundo (`this._scene` no código), não à câmera em si.
+* **We move the world, not the camera.** It may seem a little odd if you’ve not encountered it before, but it’s common in graphics work to leave the camera at the origin (0, 0, 0) and move the world. Without getting too philosophical, if I move 10 metres forward did I move 10 metres forward or did the world move 10 metres backward? It’s relative to your point-of-view, and it doesn’t matter from a mathematical perspective which one we do. Since the WebVR API returns the "*inverse* of the model matrix of the eye" we’re expected to apply it to the world (`this._scene` in our code) not the camera itself.
 
-* **Devemos atualizar a matriz manualmente depois que alterarmos seus valores.** O Three.js armazena valores muito pesados em cache (o que é ótimo para o desempenho), mas isso significa que você *precisa* informá-lo de que algo mudou para ver as mudanças aplicadas. É possível fazer isso com o método `updateMatrixWorld()`, que assume um booleano para garantir que os cálculos se propaguem até a imagem da cena.
+* **We must manually update the matrix after we change its values.** Three.js caches values very heavily (which is great for performance!), but that means that you *must* tell it that something has changed in order to see changes. This is done with the `updateMatrixWorld()` method, which takes a boolean for ensuring the calculations propagate down the scene graph.
 
-Estamos quase lá! A última etapa é repetir o processo para o olho direito. Aqui, apagaremos os cálculos de profundidade do renderizador após delinearmos a vista para o olho esquerdo, já que não queremos que eles afetem a renderização da vista do olho direito. Em seguida, atualizamos a janela de visualização para o lado direito e delineamos a cena novamente.
+We’re nearly there! The final step is repeat the process for the right eye. Here we’ll clear the renderer’s depth calculations after drawing the view for the left eye, since we don’t want it to affect the rendering of the right eye’s view. Then we update the viewport to be the right hand side, and draw the scene again.
 
     // Ensure that left eye calcs aren't going to interfere with right eye ones.
     this._renderer.clearDepth();
@@ -167,53 +169,57 @@ Estamos quase lá! A última etapa é repetir o processo para o olho direito. Aq
         0, // y
         window.innerWidth * 0.5,
         window.innerHeight);
+    
 
-Agora, podemos conectar as duas matrizes para o olho direito.
+We can now plug in the two matrices for the right eye.
 
     const rViewMatrix = this._vr.frameData.rightViewMatrix;
     const rProjectionMatrix = this._vr.frameData.rightProjectionMatrix;
-
+    
     // Update the scene and camera matrices.
     this._camera.projectionMatrix.fromArray(rProjectionMatrix);
     this._scene.matrix.fromArray(rViewMatrix);
-
+    
     // Tell the scene to update (otherwise it will ignore the change of matrix).
     this._scene.updateMatrixWorld(true);
     this._renderer.render(this._scene, this._camera);
+    
 
-E acabou! Na verdade, ainda não...
+And we’re done! Actually, not quite...
 
-## Instrua o dispositivo a atualizar
+## Tell the device to update
 
-Se você parar por aqui, perceberá que a exibição nunca se atualiza. Isso acontece porque podemos fazer várias renderizações ao contexto WebGL, e o HMD não sabe quando realmente deve atualizar sua própria exibição. Não é uma boa ideia atualizar depois, digamos, que a imagem de cada um dos olhos for renderizada. Por isso, assumimos o controle disso nós mesmos chamando submitFrame.
+If you run things as they stand you’ll notice that the display never updates. This is because we can do a bunch of rendering to the WebGL context, and the HMD doesn’t know when to actually update its own display. It’s inefficient to update after — say — each individual eye’s image is rendered. So we take control of that ourselves by calling submitFrame.
 
     // Call submitFrame to ensure that the device renders the latest image from
     // the WebGL context.
     this._vr.display.submitFrame();
+    
 
-Com esse código, *agora sim* acabou. Se quiser ver a versão final, não se esqueça de conferir o [repositório de exemplos do Google Chrome](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
+With that code we really *are* done this time. If you want the final version, don’t forget you can check out the [Google Chrome Samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/hello-world).
 
-## Conclusões e materiais de apoio
+## Closing thoughts and resources
 
-A WebVR é uma ferramenta realmente incrível para adicionar imersão ao conteúdo, e usar bibliotecas como o Three.js facilita muito o desenvolvimento com a WebGL. No entanto, alguns pontos importantes que devem ser lembrados.
+WebVR is a really awesome way to add immersion to your content, and using libraries like Three.js makes it much easier to get going with WebGL. There are some important things to remember, though.
 
-* **Crie em Progressive Enhancement desde o início.** Como mencionamos diversas vezes nesse guia, é importante criar uma boa base de experiência, sobre a qual você pode aplicar a WebVR. Muitas experiências podem ser implementadas com controle de mouse/toque e ser atualizadas por meio dos controles de acelerômetro, até se transformarem em experiências de RV totalmente desenvolvidas. Maximizar o público-alvo sempre vale a pena.
+* **Build in Progressive Enhancement from the start.** As we’ve mentioned several times, it’s important to build a good base level experience onto which you can layer WebVR. While billions of people can reach your page only a few million can see your VR content. Many experiences can be implemented with mouse / touch control, and can upgrade through accelerometer controls, to fully-fledged VR experiences. Maximizing your audience is always worthwhile.
 
-* **Lembre-se de que você vai renderizar a cena duas vezes.** Pode ser necessário pensar sobre o Nível de detalhe (LOD, na sigla em inglês) e outras técnicas para garantir que, quando renderizar a cena duas vezes, ela reduza a carga de trabalho para o CPU e a GPU. Acima de tudo, você deve manter uma taxa de quadros sólida! Nenhum malabarismo ou efeito é importante para alguém se sentindo extremamente desconfortável e enjoado!
+* **Remember you’re going to render your scene twice.** You may need to think about Level of Detail (LOD) and other techniques to ensure that when you render the scene twice it scales down the computation workload for the CPU and GPU. Above all else you must maintain a solid frame rate! No amount of showbiz is worth someone feeling extreme discomfort from motion sickness!
 
-* **Teste em um dispositivo real.** Esse ponto tem relação com o anterior. Você deve tentar obter dispositivos reais para testar o que está criando, principalmente se está pensando em trabalhar com dispositivos móveis. Como dizem por aí: ["seu notebook é um verdadeiro enganador"](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405).
+* **Test on a real device.** This is related to the previous point. You should try and get a hold of real devices on which you can test what you’re building, especially if you’re targeting mobile devices. As the saying goes, ["your laptop is a filthy liar"](https://youtu.be/4bZvq3nodf4?list=PLNYkxOF6rcIBTs2KPy1E6tIYaWoFcG3uj&t=405).
 
-Enquanto estamos aqui, há uma vastidão de recursos por aí para dar a você um início bem animador quando se trata de criar conteúdo para WebVR:
+While we’re here, there are plenty of resources out there to give you a flying start when it comes to making WebVR content:
 
-* **[VRView](https://github.com/googlevr/vrview)**. Essa biblioteca ajuda a incorporar fotos e vídeos panorâmicos de 360º.
+* **[VRView](https://github.com/googlevr/vrview)**. This library helps you embed 360-degree panoramic photos and videos.
 
-* **[Boilerplate da WebVR](https://github.com/borismus/webvr-boilerplate)**. Para começar a usar a WebVR e o Three.js
+* **[WebVR Boilerplate](https://github.com/borismus/webvr-boilerplate)**. For getting started with WebVR and Three.js
 
-* **[Polyfill da WebVR](https://github.com/googlevr/webvr-polyfill)**. Para preencher as APIs necessárias para a WebVR. Lembre-se de que há quedas de desempenho quando se usa polyfills, então, embora eles forneçam funcionalidade, talvez seus usuários fiquem mais felizes com a sua experiência sem RV.
+* **[WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)**. To back-fill required APIs for WebVR. Please remember that there are performance penalties for using polyfills, so while this does provide functionality your users may be better off with your non-VR experience.
 
-* **[Ray-Input](https://github.com/borismus/ray-input)**. Uma biblioteca para ajudar a gerenciar os vários tipos de interação para dispositivos de RV e outros, como por mouse, toque e controladores de jogo de RV.
+* **[Ray-Input](https://github.com/borismus/ray-input)**. A library to help you handle the various types of input for VR- and non-VR-devices, such as mouse, touch, and VR Gamepad controllers.
 
-Agora é só partir para o abraço e criar RVs insanas!
+Now go and make some awesome VR!
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

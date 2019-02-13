@@ -1,62 +1,44 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:從頭開始構建您的多設備網站。瞭解如何使用一套構建流程工具加快開發速度和創建快速加載的網站。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2014-09-24 #}
+{# wf_updated_on: 2017-07-24 #} {# wf_published_on: 2014-09-24 #}
 
-# 設置構建工具 {: .page-title }
+# Set Up Your Build Tools {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-從頭開始構建您的多設備網站。瞭解如何使用一套構建流程工具加快開發速度和創建快速加載的網站。每個網站均應有一個開發版本和一個生產版本。<br /><br />開發版本具有構成網站的所有 HTML、CSS、JS 和圖像文件，且格式清爽，便於您處理。<br /><br />生產版本將提取並縮小這些文件，然後對這些文件（如圖像）加以串連/合併和優化。
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %} Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools. Every site should have a development version and a production version.  
+  
+The development version has all the HTML, CSS, JS and image files that make up your site in a clean format that you are happy to work on.  
+  
+A production version will take these files, minify them, concatenate / merge them and optimize files like images.
 
-網絡開發者必須同時考慮很多事情，構建步驟就是一開始要處理的最重要也是最棘手的事情之一。
-您必須弄清楚所有需要自動化的任務，例如：
-圖像壓縮、CSS 縮小、JavaScript 串連、響應測試、單元測試，不一而足。
+Web developers have to think about a million things at once and the build step is one of the most critical, yet most cumbersome to get started with. You have to work out all the tasks that you need to automate such as: Image compression, CSS minification, JavaScript concatenation, Responsive testing, Unit testing, the list goes on...
 
-
-
-按照本指南瞭解構建工作流的最佳方法，從而確保您創建的網站從開始構建之時即遵循了所有最佳做法。
-
-
-
+Follow this guide to learn the best way to structure your workflow so that the sites you create already follow all the best practices from the minute you start.
 
 ### TL;DR {: .hide-from-toc }
-- 您的構建流程工具必須針對性能進行優化；它們應能夠自動縮小和串連 JavaScript、CSS、HTML 和圖像。
-- 使用 LiveReload 等工具，以使開發流程更順暢。
 
+* Your build process tools must optimize for performance; they should automatically minify and concatenate JavaScript, CSS, HTML, and images.
+* Use tools like LiveReload to make your development process smoother.
 
-開始編碼之前，需要考慮如何優化和構建網站的生產版本。
-從頭開始設置此工作流可以避免項目結束時出現任何糟糕的意外，而且您可以將工具添加到工作流中爲您執行單調枯燥的任務，從而加快開發速度。
+Before you start coding, you need to consider how to optimize and build the production version of your site. Setting up this workflow from the start prevents any nasty surprises at the end of the project and you can add tools into your workflow that speed up your development, doing the monotonous tasks for you.
 
+## What is a build process?
 
+A build process is a set of tasks which run over your projects files, compiling and testing code during development and used to create the deployment version of your site. Your build process shouldn't be a set of tasks you run at the end of your development workflow.
 
+The most popular tools for implementing a build process are [Gulp](http://gulpjs.com/){: .external } and [Grunt](http://gruntjs.com/), both of which are command line tools. If you have no experience of either, use Gulp, we use it for [Web Starter Kit](/web/tools/starter-kit/) and recommend you do the same.
 
-## 什麼是構建流程？
-
-構建流程是一組針對項目文件運行的任務，主要是在開發期間編譯和測試代碼，以及用於創建網站開發版本。構建流程不應是一組在開發工作流結束時運行的任務。
-
-
-實現構建流程最熱門的工具是 [Gulp](http://gulpjs.com/){: .external } 和 [Grunt](http://gruntjs.com/)，二者都是命令行工具。
-
-如果您對這兩款工具都沒有使用經驗，請使用 Gulp，我們在 [Web Starter Kit](/web/tools/starter-kit/) 中就是使用它，因此建議您也使用它。
-
-
-
-很多工具都具有 GUI，而且可能更容易掌握，但不是很靈活。
-
+There are tools which have GUIs and may be a bit easier to get to grips with but will be less flexible.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">支持的平臺和工具名稱</th>
+      <th colspan="2">Supported Platforms &amp; Tool Name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Supported Platforms">OS X / Windows</td>
-      <td data-th="Gulp"><a href="http://alphapixels.com/prepros/">Prepros</a></td>
+      <td data-th="Gulp"><a href="https://prepros.io/">Prepros</a></td>
     </tr>
     <tr>
       <td data-th="Supported Platforms">OS X</td>
@@ -69,42 +51,31 @@ description:從頭開始構建您的多設備網站。瞭解如何使用一套�
   </tbody>
 </table>
 
+## What tasks should be in a build process?
 
-## 構建流程中應執行哪些任務？
+In the following sections, we're going to look at the most common tasks you should have in your build process and recommend tasks for Grunt and Gulp.
 
-在下文中，我們將介紹在構建流程中應執行的最常見任務，以及在使用 Grunt 和 Gulp 時我們建議執行的任務。
+This requires a lot of trial and error to get each piece set-up the way you want and can be daunting if you are new to build processes.
 
+For a good example of a build process, check out the [getting started guide for Web Starter Kit](/web/fundamentals/getting-started/web-starter-kit/), which goes through how to use Web Starter Kit and explains what each of the commands in the Gulp file do. This can be used as a quick way to get set-up and then you can make changes if needed.
 
-這需要執行大量試錯工作，以按照您希望的方式完成一切設置，如果您不熟悉構建流程，這可能會令您感到氣餒。
+If you are looking to create your own build process and you're new to Gulp or Grunt, the quick start guides will be the best place to get into on installing and running your first build process:
 
+* [Grunt Getting Started](http://gruntjs.com/getting-started)
+* [Gulp Getting Started](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)
 
-要獲取一個好的構建流程示例，請查閱[Web Starter Kit 入門指南](/web/fundamentals/getting-started/web-starter-kit/)，該指南詳細介紹瞭如何使用 Web Starter Kit，並解釋了 Gulp 文件中每個命令的作用。您可以將此示例作爲快速設置方式，然後根據需要加以更改。
+### Use concatenation & minification for a faster site
 
+For those unfamiliar with the terms concatenation and minification, concatenation means simply merging multiple files together, i.e. copying and pasting several files into one. The reason we do this is that it's more efficient for a browser to fetch one file, rather than lots of small files.
 
-如果您想要創建自己的構建流程，但又不熟悉 Gulp 和 Grunt，此快速入門指南將是您瞭解如何安裝和運行您的首個構建流程的最佳途徑：
+Minification is the process of taking a file and making the overall number of characters less, without changing how the code works. A good example of this is removing comments, or taking a long variable name and making it smaller. This makes the file size smaller, leading to faster downloads.
 
-
-
-* [Grunt 入門指南](http://gruntjs.com/getting-started)
-* [Gulp 入門指南](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)
-
-
-### 使用串連和縮小功能以構建更快速的網站
-
-對於不熟悉串連和縮小這兩個術語的開發者，串連就是指將多個文件合併在一起，例如將多個文件複製粘貼到一個文件中。我們這樣做的原因是它更爲有效，因爲瀏覽器只需獲取一個文件，而不是很多小文件。
-
-
-縮小是指提取文件並減少總字符數、但不更改代碼工作方式的過程。
-刪除註釋或提取一個長變量名稱並縮小該名稱就是一個很好的例子。
-這樣可以減小文件大小，從而加快下載速度。
-
-
-對於縮小，使用以下插件：
+For minification, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">文件類型</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
@@ -128,12 +99,12 @@ description:從頭開始構建您的多設備網站。瞭解如何使用一套�
   </tbody>
 </table>
 
-對於串連，使用以下插件：
+For concatenation, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">文件類型</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
@@ -141,33 +112,27 @@ description:從頭開始構建您的多設備網站。瞭解如何使用一套�
   <tbody>
     <tr>
       <td data-th="Type of File">CSS (Sass)</td>
-      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> 或 <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> 或 <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
+      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> or <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
+      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> or <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
     </tr>
     <tr>
       <td data-th="Type of File">JS</td>
       <td data-th="Gulp"><a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> 或 <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
+      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> or <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
     </tr>
   </tbody>
 </table>
 
-**注**：您可以通過利用“導入”功能來使用 Sass（[請參見 Web Starter Kit 中的示例](https://github.com/google/web-starter-kit/blob/master/app/styles/main.scss)）。
+### Optimize your images
 
+Image optimization is an important step to help speed up your site; you'd be surprised how much smaller you can make an image without losing quality. Meta data is removed from the image as it's not needed by the browser to display the image, for example, information about the camera used to take the photo.
 
-### 優化圖像
-
-圖像優化是幫助加快網站速度的一個重要步驟；在不損害圖像質量的情況下縮小圖片的幅度會讓您大吃一驚．
-元數據會從圖像中刪除，因爲瀏覽器不需要元數據即可顯示圖像，例如有關拍攝照片所用相機的信息。
-
-
-
-對於圖像優化，您可以使用以下模塊。
+For optimizing images, you can use these modules.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Gulp 和 Grunt</th>
+      <th colspan="2">Gulp &amp; Grunt</th>
     </tr>
   </thead>
   <tbody>
@@ -178,16 +143,14 @@ description:從頭開始構建您的多設備網站。瞭解如何使用一套�
   </tbody>
 </table>
 
-### 別因供應商前綴而出紕漏
+### Don't trip up with vendor prefixes
 
-爲您使用的 CSS 包含所有供應商前綴通常是有點單調的任務。
-使用前綴自動補全工具自動添加需要包含的前綴：
-
+It can often become a bit tedious to include all the vendor prefixes for the CSS you use. Use an auto-prefixer to automatically add the prefixes you need to include:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Gulp 和 Grunt</th>
+      <th colspan="2">Gulp vs Grunt</th>
     </tr>
   </thead>
   <tbody>
@@ -198,32 +161,27 @@ description:從頭開始構建您的多設備網站。瞭解如何使用一套�
   </tbody>
 </table>
 
-**注**
-如果您喜歡，您可以添加 [Sublime 軟件包來執行前綴自動補全工作](/web/tools/setup/setup-editor#autoprefixer)。
+**Note**  
+If you prefer, you can add a [Sublime package to do the auto-prefixing](/web/tools/setup/setup-editor#autoprefixer) for you.
 
+### Never leave your text editor with live reloading
 
-### 切勿使文本編輯器處於實時重新加載狀態
+Live reloading updates your site in your browser each time your make a change. After using it once, you won't be able to live without it.
 
-實時重新加載會在您每次做出更改後在瀏覽器中更新您的網站。只要使用一次，就再也離不開它了。
-
-
-Web Starter Kit 使用 browser-sync 提供實時重新加載支持。
+Web Starter Kit uses browser-sync for Live Reload support.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Gulp 和 Grunt</th>
+      <th colspan="2">Gulp vs Grunt</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Gulp"><a href="http://www.browsersync.io/docs/gulp/">browser-sync</a></td>
-      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> 和 <a href="https://github.com/gruntjs/grunt-contrib-watch">grunt-contrib-watch</a></td>
+      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> & <a href="https://github.com/gruntjs/grunt-contrib-watch">grunt-contrib-watch</a></td>
     </tr>
   </tbody>
 </table>
 
-Note: 如果您喜歡實時重新加載這一想法，但不想有構建流程，請參閱 [Addy Osmani 撰寫的有關 HTML5Rocks 的文章](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/)，其中介紹了各種替代方案（有些是免費的，有些是商業的）。
-
-
-{# wf_devsite_translation #}
+Note: If you like the idea of Live Reloading, but don't want to have a build process, [Addy Osmani's write up on HTML5Rocks](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/) covers a range of alternatives (some free and some commercial).

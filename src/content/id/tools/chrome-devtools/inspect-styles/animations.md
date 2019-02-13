@@ -1,160 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Memeriksa dan mengubah animasi dengan Chrome DevTools Animation Inspector.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
-{# wf_updated_on: 2016-05-02 #}
-{# wf_published_on: 2016-05-02 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2016-05-02 #} {# wf_blink_components: Platform>DevTools #}
 
-# Memeriksa animasi {: .page-title }
+# Inspect animations {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Memeriksa dan mengubah animasi dengan Chrome DevTools
-Animation Inspector.
+Inspect and modify animations with the Chrome DevTools Animation Inspector.
 
 ![animation inspector](imgs/animation-inspector.png)
 
-
 ### TL;DR {: .hide-from-toc }
-- Merekam animasi dengan membuka Animation Inspector. Alat ini secara otomatis mendeteksi animasi dan mengelompokkannya.
-- Memeriksa animasi dengan memperlambat, memutar ulang, atau melihat kode sumbernya.
-- Mengubah animasi dengan mengubah pengaturan waktu, penundaan, durasi, atau offset keyframe.
 
+* Capture animations by opening the Animation Inspector. It automatically detects animations and sorts them into groups.
+* Inspect animations by slowing them down, replaying them, or viewing their source code.
+* Modify animations by changing their timing, delay, duration, or keyframe offsets.
 
-## Ringkasan {:#overview}
+## Overview {:#overview}
 
-Chrome DevTools Animation Inspector memiliki dua tujuan utama. 
+The Chrome DevTools Animation Inspector has two main purposes.
 
-* Memeriksa animasi. Jika Anda ingin memperlambat, memutar ulang, atau memeriksa 
-  kode sumber untuk grup animasi. 
-* Mengubah animasi. Jika Anda ingin mengubah pengaturan waktu, penundaan, durasi, 
-  atau offset keyframe grup animasi. Pengeditan bezier dan pengeditan 
-  keyframe saat ini tidak didukung. 
+* Inspecting animations. You want to slow down, replay, or inspect the source code for an animation group. 
+* Modifying animations. You want to modify the timing, delay, duration, or keyframe offsets of an animation group. Bezier editing and keyframe editing are currently not supported. 
 
-Animation Inspector mendukung animasi CSS,
-transisi CSS, dan animasi web. Animasi `requestAnimationFrame` 
-saat ini tidak didukung.
+The Animation Inspector supports CSS animations, CSS transitions, and web animations. `requestAnimationFrame` animations are currently not supported.
 
-### Apa itu grup animasi?
+### What's an animation group?
 
-Grup animasi adalah sekelompok animasi yang 
-*tampaknya* saling berkaitan. Saat ini, web belum memiliki konsep nyata
-animasi grup, sehingga desainer animasi dan developer harus membuat 
-dan mengatur waktu masing-masing animasi sehingga tampak seperti satu efek 
-visual yang menyatu. Animation Inspector memprediksi animasi mana yang berkaitan berdasarkan 
-waktu mulai (tanpa memperhitungkan penundaan, dan seterusnya) dan mengelompokkan semuanya secara berdampingan.
-Dengan kata lain, serangkaian animasi yang semuanya dipicu di blok skrip yang sama 
-dikelompokkan bersama, tetapi jika asinkron, akan dikelompokkan 
-secara terpisah. 
+An animation group is a group of animations that *appear* to be related to each other. Currently, the web has no real concept of a group animation, so motion designers and developers have to compose and time individual animations so that they appear to be one coherent visual effect. The Animation Inspector predicts which animations are related based on start time (excluding delays, and so on) and groups them all side-by-side. In other words, a set of animations all triggered in the same script block are grouped together, but if they're asynchronous then they're grouped separately.
 
-## Memulai
+## Get started
 
-Ada dua cara untuk membuka Animation Inspector:
+There are two ways to open the Animation Inspector:
 
-* Buka panel **Styles** (di panel **Elements**) dan tekan tombol 
-  **Animations** (![tombol 
-  animations](imgs/animations-button.png){:.inline}). 
-* Buka Menu Command dan ketikkan `Drawer: Show Animations`. 
+* Go to the **Styles** pane (on the **Elements** panel) and press the **Animations** button (![animations 
+button](imgs/animations-button.png){:.inline}). 
+* Open the Command Menu and type `Drawer: Show Animations`. 
 
-Animation Inspector akan terbuka sebagai tab di sebelah Console Drawer. Karena
-ini merupakan tab Panel Samping, Anda bisa menggunakannya dari panel DevTools mana saja. 
+The Animation Inspector opens up as a tab next to the Console Drawer. Since it's a Drawer tab, you can use it from any DevTools panel.
 
-![Animation Inspector Kosong](imgs/empty-ai.png)
+![Empty Animation Inspector](imgs/empty-ai.png)
 
-Animation Inspector dikelompokkan menjadi empat bagian utama (atau panel). Panduan
-ini mengacu ke setiap panel sebagai berikut:
+The Animation Inspector is grouped into four main sections (or panes). This guide refers to each pane as follows:
 
-1. **Controls**. Dari sini, Anda bisa membersihkan semua Grup Animasi 
-   yang saat ini direkam, atau mengubah kecepatan Grup Animasi yang saat ini dipilih.
-2. **Overview**. Pilih Grup Animasi di sini untuk diperiksa 
-   dan ubah di panel **Details**.
-3. **Timeline**. Jeda dan mulai animasi dari sini, atau masuk ke titik tertentu 
-   di animasi.
-4. **Details**. Periksa dan ubah Grup Animasi
-   yang saat ini dipilih. 
+1. **Controls**. From here you can clear all currently captured Animation Groups, or change the speed of the currently selected Animation Group. 
+2. **Overview**. Select an Animation Group here to inspect and modify it in the **Details** pane.
+3. **Timeline**. Pause and start an animation from here, or jump to a specific point in the animation.
+4. **Details**. Inspect and modify the currently selected Animation Group. 
 
-![Animation Inspector anotasi](imgs/annotated-animation-inspector.png)
+![annotation Animation Inspector](imgs/annotated-animation-inspector.png)
 
-Untuk merekam animasi, cukup lakukan interaksi yang memicu
-animasi saat Animation Inspector terbuka. Jika animasi dipicu 
-saat laman dimuat, Anda bisa membantu Animation Inspector untuk mendeteksi animasi dengan 
-memuat ulang laman. 
+To capture an animation, just perform the interaction that triggers the animation while the Animation Inspector is open. If an animation is triggered on page load, you can help the Animation Inspector detect the animation by reloading the page.
 
 <video src="animations/capture-animations.mp4"
        autoplay loop muted controls></video>
 
-## Memeriksa animasi {:#inspect}
+## Inspect animations {:#inspect}
 
-Setelah Anda merekam animasi, ada beberapa cara untuk memutar ulang:
+Once you've captured an animation, there are a few ways to replay it:
 
-* Arahkan kursor ke atas gambar kecilnya di panel **Overview** untuk melihat pratinjaunya.
-* Pilih Grup Animasi dari panel **Overview** (sehingga ditampilkan
-  di panel **Details**) dan tekan tombol **replay**
-  (![tombol replay](imgs/replay-button.png){:.inline}). Animasi diputar ulang
-  di tampilan yang terlihat.
-  Klik tombol **animation speed** (![tombol 
-  animation speed](imgs/animation-speed-buttons.png){:.inline}) untuk mengubah kecepatan 
-  pratinjau Grup Animasi yang saat ini dipilih. Anda bisa menggunakan bilah vertikal 
-  merah untuk mengubah posisi Anda saat ini. 
-* Klik dan seret bilah vertikal merah untuk menghapus animasi tampilan yang terlihat. 
+* Hover over its thumbnail in the **Overview** pane to view a preview of it.
+* Select the Animation Group from the **Overview** pane (so that it's displayed in the **Details** pane) and press the **replay** button (![replay button](imgs/replay-button.png){:.inline}). The animation is replayed in the viewport. Click on the **animation speed** buttons (![animation speed 
+buttons](imgs/animation-speed-buttons.png){:.inline}) to change the preview speed of the currently selected Animation Group. You can use the red vertical bar to change your current position. 
+* Click and drag the red vertical bar to scrub the viewport animation. 
 
-### Menampilkan detail animasi
+### View animation details
 
-Setelah Anda merekam Grup Animasi, klik grup itu dari panel **Overview** 
-untuk melihat detailnya. Dalam panel **Details** setiap animasi ditampilkan
-di baris masing-masing. 
+Once you've captured an Animation Group, click on it from the **Overview** pane to view its details. In the **Details** pane each individual animation gets its own row.
 
-![detail grup animasi](imgs/animation-group-details.png)
+![animation group details](imgs/animation-group-details.png)
 
-Arahkan ke atas animasi untuk menyorotinya di tampilan yang terlihat. Klik animasi itu
-untuk memilihnya di panel **Elements**. 
+Hover over an animation to highlight it in the viewport. Click on the animation to select it in the **Elements** panel.
 
-![arahkan ke atas animasi untuk menyorotinya di 
-tampilan yang terlihat](imgs/highlight-animation.png)
+![hover over animation to highlight it in 
+viewport](imgs/highlight-animation.png)
 
-Bagian animasi paling kiri yang lebih gelap adalah definisinya. Di sebelah kanan,
-bagian yang lebih terang menggambarkan iterasinya. Misalnya, di 
-tangkapan layar berikut, bagian dua dan tiga menggambarkan iterasi bagian satu. 
+The leftmost, darker section of an animation is its definition. The right, more faded section represents iterations. For example, in the screenshot below, sections two and three represent iterations of section one.
 
-![diagram iterasi animasi](imgs/animation-iterations.png)
+![diagram of animation iterations](imgs/animation-iterations.png)
 
-Jika dua elemen menggunakan animasi yang sama, Animation 
-Inspector menandai kedua elemen tersebut dengan warna yang sama. Warna ini sendiri acak dan 
-tidak bermakna apa-apa.
-Misalnya, di tangkapan layar berikut, dua elemen `div.eye.left::after` 
-dan `div.eye.right::after` menggunakan animasi yang sama (`eyes`), 
-sebagaimana elemen `div.feet::before` dan `div.feet::after`. 
+If two elements have the same animation applied to them, the Animation Inspector assigns them the same color. The color itself is random and has no significance. For example, in the screenshot below the two elements `div.eye.left::after` and `div.eye.right::after` have the same animation (`eyes`) applied to them, as do the `div.feet::before` and `div.feet::after` elements.
 
-![animasi diberi kode warna](imgs/color-coded-animations.png)
+![color-coded animations](imgs/color-coded-animations.png)
 
-## Mengubah animasi {:#modify}
+## Modify animations {:#modify}
 
-Ada tiga cara untuk mengubah animasi dengan Animation Inspector:
+There are three ways you can modify an animation with the Animation Inspector:
 
-* Durasi animasi.
-* Pengaturan waktu keyframe.
-* Penundaan waktu mulai.
+* Animation duration.
+* Keyframe timings.
+* Start time delay.
 
-Untuk bagian ini, misalkan tangkapan layar berikut menggambarkan animasi
-asli:
+For this section suppose that the screenshot below represents the original animation:
 
-![animasi asli sebelum diubah](imgs/modify-original.png)
+![original animation before modification](imgs/modify-original.png)
 
-Untuk mengubah durasi animasi, klik dan seret lingkaran pertama atau 
-terakhir.
+To change the duration of an animation, click and drag the first or last circle.
 
-![durasi diubah](imgs/modify-duration.png)
+![modified duration](imgs/modify-duration.png)
 
-Jika animasi mendefinisikan aturan keyframe, aturan tersebut digambarkan sebagai
-lingkaran dalam berwarna putih. Klik dan seret salah satu lingkaran ini untuk mengubah pengaturan waktu 
-keyframe.
+If the animation defines any keyframe rules, then these are represented as white inner circles. Click and drag one of these to change the timing of the keyframe.
 
-![keyframe diubah](imgs/modify-keyframe.png)
+![modified keyframe](imgs/modify-keyframe.png)
 
-Untuk menambahkan penundaan pada animasi, klik dan seret di mana pun kecuali 
-di lingkaran. 
+To add a delay to an animation, click and drag it anywhere except the circles.
 
-![penundaan diubah](imgs/modify-delay.png)
+![modified delay](imgs/modify-delay.png)
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,110 +1,87 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Polymer Starter Kit.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Polymer Starter Kit.
 
-{# wf_published_on: 2015-01-01 #}
-{# wf_updated_on: 2016-09-12 #}
+{# wf_published_on: 2015-01-01 #} {# wf_updated_on: 2016-09-12 #}
 
 # Polymer Starter Kit {: .page-title }
 
-[Descargar Polymer Starter Kit](https://github.com/polymerelements/polymer-starter-kit/releases){: .button .button-primary }
+[Download Polymer Starter Kit](https://github.com/polymerelements/polymer-starter-kit/releases){: .button .button-primary }
 
-## ¿Qué es Polymer Starter Kit?
+## What is the Polymer Starter Kit?
 
-[Polymer Starter Kit](https://github.com/PolymerElements/polymer-starter-kit){: .external }
-es un punto de inicio para compilar apps por medio de un diseño basado en paneles laterales. El diseño 
-es suministrado por los elementos de `app-layout`.
+The [Polymer Starter Kit](https://github.com/PolymerElements/polymer-starter-kit){: .external } is a starting point for building apps using a drawer-based layout. The layout is provided by `app-layout` elements.
 
-Esta plantilla, junto con el conjunto de herramientas `polymer-cli`, también demuestra el uso
-del "patrón PRPL". Este patrón permite una primera entrega y una interacción rápida
-con el contenido en la ruta inicial solicitada por el usuario, junto con una
-navegación posterior rápida, gracias al almacenamiento previo en caché de los componentes restantes requeridos por la app y
-cargándolos progresivamente a demanda a medida que el usuario navega a través de la app.
+This template, along with the `polymer-cli` toolchain, also demonstrates use of the "PRPL pattern" This pattern allows fast first delivery and interaction with the content at the initial route requested by the user, along with fast subsequent navigation by pre-caching the remaining components required by the app and progressively loading them on-demand as the user navigates through the app.
 
-El patrón PRPL, en resumen:
+The PRPL pattern, in a nutshell:
 
-* **Push** de los componentes requeridos para la ruta inicial
-* **Representación** de la ruta inicial a la mayor brevedad posible
-* **Almacenamiento previo en caché** de los componentes para las rutas restantes
-* **Carga diferida** y actualización progresiva de las siguientes rutas bajo demanda
+* **Push** components required for the initial route
+* **Render** initial route ASAP
+* **Pre-cache** components for remaining routes
+* **Lazy-load** and progressively upgrade next routes on-demand
 
-### ¿Estás migrando desde Polymer Starter Kit v1?
+### Migrating from Polymer Starter Kit v1?
 
-[Consulta la publicación de nuestro blog sobre las novedades de PSK2 y cómo hacer una migración](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html){: .external }
+[Check out our blog post that covers what's changed in PSK2 and how to migrate!](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html){: .external }
 
-## Configuración
+## Setup
 
-### Requisitos previos
+### Prerequisites
 
-Instalar [polymer-cli](https://github.com/Polymer/polymer-cli){: .external }:
+Install [polymer-cli](https://github.com/Polymer/polymer-cli){: .external }:
 
     npm install -g polymer-cli
+    
 
-### Inicializar el proyecto desde la plantilla
+### Initialize project from template
 
     mkdir my-app
     cd my-app
     polymer init starter-kit
+    
 
-### Iniciar el servidor de desarrollo
+### Start the development server
 
-Este comando funciona con la app en `http://localhost:8080` y proporciona el enrutamiento URL básico
-para la app:
+This command serves the app at `http://localhost:8080` and provides basic URL routing for the app:
 
     polymer serve --open
+    
 
+### Build
 
-### Compilar
+This command performs HTML, CSS, and JS minification on the application dependencies, and generates a service-worker.js file with code to pre-cache the dependencies based on the entrypoint and fragments specified in `polymer.json`. The minified files are output to the `build/unbundled` folder, and are suitable for serving from a HTTP/2+Push compatible server.
 
-Este comando hace la reducción de HTML, CSS y JS en las dependencias
-de la app, y genera un archivo service-worker.js con un código para almacenar previamente en caché las
-dependencias según el punto de entrada y los fragmentos especificados en `polymer.json`.
-Los archivos reducidos se envían a la carpeta `build/unbundled`, y son adecuados
-para utilizarse desde un servidor HTTP/2+Push compatible.
-
-Además, el comando crea una carpeta `build/bundled` de reserva,
-generada por medio del agrupamiento de fragmentos, ideal para utilizarse desde servidores compatibles no
-H2/push o para clientes que no admiten H2/Push.
+In addition the command also creates a fallback `build/bundled` folder, generated using fragment bundling, suitable for serving from non H2/push-compatible servers or to clients that do not support H2/Push.
 
     polymer build
+    
 
-### Vista previa de la compilación
+### Preview the build
 
-Este comando se usa con la versión reducida de la app en `http://localhost:8080`
-en estado no agrupado, como la usaría un servidor compatible con push.
+This command serves the minified version of the app at `http://localhost:8080` in an unbundled state, as it would be served by a push-compatible server:
 
     polymer serve build/unbundled
+    
 
-Este comando se usa con la versión reducida de la app en `http://localhost:8080`
-generada por medio del agrupamiento de fragmentos:
+This command serves the minified version of the app at `http://localhost:8080` generated using fragment bundling:
 
     polymer serve build/bundled
+    
 
-### Ejecutar pruebas
+### Run tests
 
-Este comando ejecutará el
-[Comprobador de componentes web](https://github.com/Polymer/web-component-tester){: .external } contra los
-navegadores actualmente instalados en tu máquina.
+This command will run [Web Component Tester](https://github.com/Polymer/web-component-tester){: .external } against the browsers currently installed on your machine.
 
     polymer test
+    
 
-### Agregar una vista nueva
+### Adding a new view
 
-Puedes extender la app mediante la incorporación de nuevas vistas que se cargarán a pedido;
-p. ej., en base a una ruta, o para suministrar progresivamente secciones no críticas
-de la app.  Cada fragmento nuevo cargado a pedido se debe agregar a la
-lista de `fragments` del archivo `polymer.json` incluido.  De esta manera, se garantiza que
-estos componentes y sus dependencias sean agregados a la lista de componentes
-almacenados previamente en caché (y habrá nuevos grupos creados en la compilación `bundled` de reserva).
+You can extend the app by adding more views that will be demand-loaded e.g. based on the route, or to progressively render non-critical sections of the application. Each new demand-loaded fragment should be added to the list of `fragments` in the included `polymer.json` file. This will ensure those components and their dependencies are added to the list of pre-cached components (and will have bundles created in the fallback `bundled` build).
 
-## Próximos pasos
+## Next Steps
 
-Consulta la [guía de introducción](https://www.polymer-project.org/1.0/start/toolbox/set-up){: .external }
+Check out the [getting started guide](https://www.polymer-project.org/1.0/start/toolbox/set-up){: .external }
 
-## Más información
+## Learn More
 
-Para obtener más información, ver el código, enviar un problema o participar, consulta
-nuestro informe Git en [https://github.com/polymerelements/polymer-starter-kit](https://github.com/polymerelements/polymer-starter-kit){: .external }
-
-
-{# wf_devsite_translation #}
+To learn more, see the code, submit an issue, or to get involved, check out our Git repo at <https://github.com/polymerelements/polymer-starter-kit>{: .external }

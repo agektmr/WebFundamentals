@@ -1,113 +1,103 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Frequentemente, o JavaScript é o acionador de mudanças visuais. Algumas vezes, de forma direta, por meio de manipulações de estilo; outras, seus cálculos resultam em mudanças visuais, como pesquisa ou classificação de alguns dados. JavaScript delonga execução ou no momento errado pode ser uma causa comum de problemas de desempenho e, por isso, você deve buscar minimizar seu impacto ao máximo.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: JavaScript is often the trigger for visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that will result in visual changes, like searching or sorting some data. Badly-timed or long-running JavaScript can be a common cause of performance issues, and you should look to minimize its impact where you can.
 
-{# wf_updated_on: 2015-03-20 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>CSS #}
 
-# Reduzir o escopo e a complexidade dos cálculos de estilo {: .page-title }
+# Reduce the Scope and Complexity of Style Calculations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Alterar o DOM, seja por meio da adição ou remoção de elementos, alteração de atributos, 
-classes ou por animação, sempre fará o navegador recalcular 
-o estilo dos elementos e, em muitos casos, diagramar a página (ou recriar o fluxo dela) ou de partes 
-dela. Esse processo é chamado de <em>cálculo de estilo computado</em>.
+Changing the DOM, through adding and removing elements, changing attributes, classes, or through animation, will all cause the browser to recalculate element styles and, in many cases, layout (or reflow) the page, or parts of it. This process is called *computed style calculation*.
 
-A primeira parte do cálculo de estilos é criar um conjunto de seletores correspondentes. Basicamente, o navegador faz isso descobrindo quais classes, pseudosseletores e IDs se aplicam a um determinado elemento.
+The first part of computing styles is to create a set of matching selectors, which is essentially the browser figuring out which classes, pseudo-selectors and IDs apply to any given element.
 
-A segunda parte do processo envolve obter todas as regras de estilo dos seletores correspondentes e descobrir os estilos finais do elemento. No Blink (mecanismo de renderização do Chrome e Opera), esses processos são, no momento, basicamente equivalentes em custo:
+The second part of the process involves taking all the style rules from the matching selectors and figuring out what final styles the element has. In Blink (Chrome and Opera's rendering engine) these processes are, today at least, roughly equivalent in cost:
 
-> Aproximadamente 50% do tempo para se calcular o estilo computado de um elemento é usado para relacionar seletores, e a outra metade é usada para construir o RenderStyle (representação do estilo computado) das regras relacionadas.
-> Rune Lillesveen, Opera / [Invalidação de estilo no Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/view)
+> Roughly 50% of the time used to calculate the computed style for an element is used to match selectors, and the other half of the time is used for constructing the RenderStyle (computed style representation) from the matched rules. Rune Lillesveen, Opera / [Style Invalidation in Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/view)
 
 ### TL;DR {: .hide-from-toc }
 
-* Reduza a complexidade dos seletores. Use uma metodologia orientada a classes, como o BEM.
-* Reduza o número de elementos para os quais o estilo deve ser calculado.
+* Reduce the complexity of your selectors; use a class-centric methodology like BEM.
+* Reduce the number of elements on which style calculation must be calculated.
 
-## Reduza a complexidade dos seletores
+## Reduce the complexity of your selectors
 
-No caso mais simples, você referencia um elemento no CSS com apenas uma classe:
-
+In the simplest case you reference an element in your CSS with just a class:
 
     .title {
       /* styles */
     }
+    
 
-
-Mas, com o crescimento do projeto, o CSS provavelmente ficará mais complexo e você poderá ter seletores como este:
-
+But, as any project grows, it will likely result in more complex CSS, such that you may end up with selectors that look like this:
 
     .box:nth-last-child(-n+1) .title {
       /* styles */
     }
+    
 
-
-Para saber quais estilos precisam ser aplicados, o navegador deve perguntar "este é um elemento com uma classe de título que tem um elemento principal que é justamente o elemento menos enésimo filho mais 1 com uma classe de caixa?" Descobrir isso _pode_ demorar muito, dependendo do seletor usado e do navegador. O comportamento pretendido do seletor pode ser mudado para uma classe:
-
+In order to know that the styles need to apply the browser has to effectively ask “is this an element with a class of title which has a parent who happens to be the minus nth child plus 1 element with a class of box?” Figuring this out *can* take a lot of time, depending on the selector used and the browser in question. The intended behavior of the selector could instead be changed to a class:
 
     .final-box-title {
       /* styles */
     }
+    
 
+You can take issue with the name of the class, but the job just got a lot simpler for the browser. In the previous version, in order to know, for example, that the element is the last of its type, the browser must first know everything about all the other elements and whether the are any elements that come after it that would be the nth-last-child, which is potentially a lot more expensive than simply matching up the selector to the element because its class matches.
 
-Você pode não gostar do nome da classe, mas o trabalho fica muito mais simples para o navegador. Na versão anterior, para saber, por exemplo, se o elemento é o último do seu tipo, o navegador deve primeiro saber tudo sobre todos os outros elementos e se há algum elemento depois dele que seria o enésimo último filho. Isso possivelmente é muito mais caro do que simplesmente relacionar o seletor ao elemento porque a classe corresponde.
+## Reduce the number of elements being styled
 
-## Reduza o número de elementos sendo estilizados
-Outra consideração de desempenho, que é geralmente _o fator mais importante para muitas atualizações de estilo_, é o grande volume de trabalho necessário quando um elemento muda.
+Another performance consideration, which is typically *the more important factor for many style updates*, is the sheer volume of work that needs to be carried out when an element changes.
 
-Em termos gerais, o custo do pior caso de cálculo de estilo dos elementos computados é o número de elementos multiplicado pela contagem do seletor, porque a correspondência de cada elemento precisa ser verificada pelo menos uma vez em cada estilo.
+In general terms, the worst case cost of calculating the computed style of elements is the number of elements multiplied by the selector count, because each element needs to be at least checked once against every style to see if it matches.
 
-Observação: anteriormente, se fosse feita uma mudança de classe, digamos, no elemento do corpo, todos os estilos computados dos secundários da página teriam que ser recalculados. Felizmente, isso não é mais necessário. Alguns navegadores mantêm uma pequena coleção de regras exclusivas para cada elemento que, se mudada, força o recálculo dos estilos do elemento. Isso significa que pode ou não ser necessário recalcular um elemento, dependendo de onde ele está na árvore e do que especificamente foi alterado.
+Note: It used to be the case that if you changed a class on -- say -- the body element, that all the children in the page would need to have their computed styles recalculated. Thankfully that is no longer the case; some browsers instead maintain a small collection of rules unique to each element that, if changed, cause the element’s styles to be recalculated. That means that an element may or may not need to be recalculated depending on where it is in the tree, and what specifically got changed.
 
-Muitas vezes, os cálculos de estilo podem ser direcionados diretamente a alguns elementos, em vez de invalidar toda a página. Em navegadores modernos, isso não tende a ser um problema, porque ele não precisa verificar todos os elementos possivelmente afetados por uma mudança. Por outro lado, navegadores mais antigos não são necessariamente otimizados para essas tarefas. Onde possível, **reduza o número de elementos invalidados**.
+Style calculations can often be targeted to a few elements directly rather than invalidating the page as a whole. In modern browsers this tends to be much less of an issue, because the browser doesn’t necessarily need to check all the elements potentially affected by a change. Older browsers, on the other hand, aren’t necessarily as optimized for such tasks. Where you can you should **reduce the number of invalidated elements**.
 
-Observação: Se você estiver utilizando Web Components, vale a pena notar que os cálculos de estilo são um pouco diferentes, já que, por padrão, os estilos não cruzam o limite do Shadow DOM e seus escopos são componentes individuais, em vez de a árvore como um todo. De forma geral, no entanto, o mesmo conceito é aplicado: árvores menores com regras mais simples são processadas com maior eficiência do que árvores grandes ou regras complexas.
+Note: If you’re into Web Components it’s worth noting that style calculations here are a little different, since by default styles do not cross the Shadow DOM boundary, and are scoped to individual components rather than the tree as a whole. Overall, however, the same concept still applies: smaller trees with simpler rules are more efficiently processed than large trees or complex rules.
 
-## Meça o consumo do recálculo do seu estilo
+## Measure your Style Recalculation Cost
 
-A forma mais fácil e mais rápida de medir o consumo dos recálculos de estilo é usando o modo "Timeline" do Chrome DevTools. Para começar, abra o DevTools, acesse a guia Timeline, clique em Record e interaja com o site. Quando a gravação for interrompida, será exibida uma imagem como esta:
+The easiest and best way to measure the cost of style recalculations is to use Chrome DevTools’ Timeline mode. To begin, open DevTools, go to the Timeline tab, hit record and interact with your site. When you stop recording you’ll see something like the image below.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/long-running-style.jpg"  alt="DevTools mostrando cálculos de estilo de longa execução.">
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/long-running-style.jpg"  alt="DevTools showing long-running style calculations." />
 
-A faixa no topo indica os quadros por segundo. Se existirem barras acima da linha inferior (a linha de 60 fps), elas indicarão a existência de quadros de longa execução.
+The strip at the top indicates frames per second, and if you see bars going above the lower line, the 60fps line, then you have long running frames.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/frame-selection.jpg"  alt="Aproximar zoom de uma área problemática no Chrome DevTools.">
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/frame-selection.jpg"  alt="Zooming in on a trouble area in Chrome DevTools." />
 
-Se você tiver um quadro de longa duração durante uma interação, como rolagem ou alguma outra interação, será necessário examiná-lo mais detalhadamente.
+If you have a long running frame during some interaction like scrolling, or some other interaction, then it bears further scrutiny.
 
-Se você tiver um grande bloco roxo, como no caso acima, clique no registro para obter mais detalhes.
+If you have a large purple block, as in the case the above, click the record to get more details.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/style-details.jpg"  alt="Obter detalhes de cálculos de estilo de longa execução.">
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/style-details.jpg"  alt="Getting the details of long-running style calculations." />
 
-Nessa captura, há um evento Recalculate Style de longa execução que demora um pouco mais de 18 ms e ocorre justamente durante uma rolagem, causando uma trepidação perceptível na experiência.
+In this grab there is a long-running Recalculate Style event that is taking just over 18ms, and it happens to be taking place during a scroll, causing a noticeable judder in the experience.
 
-Se você clicar no evento, verá uma pilha de chamadas, que indica com precisão o local no JavaScript que aciona a mudança de estilo. Além disso, você receberá o número de elementos afetados pela mudança (neste caso, um pouco mais de 400 elementos) e quanto tempo foi gasto na execução dos cálculos de estilo. Você pode usar essas informações para tentar encontrar uma correção para o código.
+If you click the event itself you are given a call stack, which pinpoints the place in your JavaScript that is responsible for triggering the style change. In addition to that, you also get the number of elements that have been affected by the change (in this case just over 400 elements), and how long it took to perform the style calculations. You can use this information to start trying to find a fix in your code.
 
-## Use bloco, elemento, modificador
+## Use Block, Element, Modifier
 
-As abordagens à codificação, como o [BEM (bloco, elemento, modificador)](https://bem.info/){: .external }, na realidade, incorporam os benefícios de desempenho da correspondência de seletores acima porque recomendam uma única classe para tudo e, além disso, se uma hierarquia for necessária, será incorporada ao nome da classe:
-
+Approaches to coding like [BEM (Block, Element, Modifier)](https://bem.info/){: .external } actually bake in the selector matching performance benefits above, because it recommends that everything has a single class, and, where you need hierarchy, that gets baked into the name of the class as well:
 
     .list { }
     .list__list-item { }
+    
 
-
-Se você precisar de um modificador, como acima, onde queremos fazer algo especial para o último filho, poderá adicioná-lo da seguinte forma:
-
+If you need some modifier, like in the above where we want to do something special for the last child, you can add that like so:
 
     .list__list-item--last-child {}
+    
 
+If you’re looking for a good way to organize your CSS, BEM is a really good starting point, both from a structure point-of-view, but also because of the simplifications of style lookup.
 
-Se você estiver procurando uma boa forma de organizar o CSS, o BEM é um ótimo ponto de partida do ponto de vista estrutural e também por conta das simplificações na pesquisa de estilo.
+If you don’t like BEM, there are other ways to approach your CSS, but the performance considerations should be assessed alongside the ergonomics of the approach.
 
-Se você não gosta do BEM, há outras formas de abordar o CSS, mas as considerações de desempenho devem ser avaliadas junto com a ergonomia da abordagem.
+## Resources
 
-## Recursos
+* [Style invalidation in Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/edit)
+* [BEM (Block, Element, Modifier)](https://bem.info/){: .external }
 
-* [Invalidação de estilo no Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/edit)
-* [BEM (bloco, elemento, modificador)](https://bem.info/){: .external }
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

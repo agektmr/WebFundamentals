@@ -1,503 +1,510 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 이 코드랩에서는 새로운 DevTools Application 패널을 사용하여 서비스 워커를 디버그하는 방법을 배울 수 있습니다. 푸시 알림을 시뮬레이션하여 구독이 올바로 설정되어 있는지 확인하는 방법도 살펴보겠습니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: In this codelab, you'll learn how to debug a service worker using the new DevTools Application panel. You'll also learn how to simulate a Push notification to verify your subscription is properly setup.
 
-{# wf_updated_on: 2016-10-19 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# 서비스 워커 디버깅 {: .page-title }
+# Debugging Service Workers {: .page-title }
 
 {% include "web/_shared/contributors/robdodson.html" %}
 
+## Introduction
 
+Service Workers give developers the amazing ability to handle spotty networks and create truly offline-first web apps. But being a new technology means they can sometimes be difficult to debug, especially as we wait for our tools to catch up.
 
-## 소개
+This codelab will walk you through creating a basic Service Worker and demonstrate how to use the new Application panel in Chrome DevTools to debug and inspect your worker.
 
-
-
-
-서비스 워커는 다루기 까다로운 네트워크를 적절히 다루고 진정한 오프라인 최초의 웹 앱을 만들 수 있는 놀라운 능력을 개발자에게 부여해 줍니다. 하지만 새로운 기술이란 때로는 디버그하기 어려울 수 있다는 뜻이고, 특히 우리가 사용하는 여러 가지 디버그 도구가 이런 신기술에 적응해 업그레이드되기를 기다려야 하는 상황이라면 더욱 그렇습니다.
-
-이 코드랩에서는 기본적인 서비스 워커를 만드는 과정을 살펴보고 Chrome DevTools에서 새로운 Application 패널을 사용하여 워커를 디버그하고 검사하는 방법을 보여 드리겠습니다.
-
-### 어떤 앱을 만들어 볼까요?
+### What are we going to be building?
 
 ![6ffdd0864a80600.png](img/6ffdd0864a80600.png)
 
-이 코드랩에서는 매우 간단한 Progressive Web App 작업을 해보면서 문제가 발생할 때 자체 애플리케이션에서 사용할 수 있는 기술을 익힙니다.
+In this code lab you'll work with an extremely simple progressive web app and learn techniques you can employ in your own applications when you encounter issues.
 
-이 코드랩은 도구 사용법을 가르치는 데 초점이 맞춰져 있으므로 실험 중간에 언제든 필요하면 멈추셔도 됩니다. 코드를 이리저리 조작해 보고 페이지를 새로 고쳐보고 새 탭을 여는 등, 자유롭게 실험해 보세요. 디버깅 도구를 익히는 최선의 방법은 코드를 이곳저곳 망가뜨린 후 직접 하나하나 뜯어고치는 방법입니다.
+Because this code lab is focused on teaching you tools, feel free to stop at various points and experiment. Play with the code, refresh the page, open new tabs, etc. The best way to learn debugging tools is just to break things and get your hands dirty fixing them.
 
-### 배울 내용
+### What you'll learn
 
-* Application 패널을 이용한 서비스 워커 검사 방법
-* Cache 및 IndexedDB 탐색 방법
-* 다양한 네트워크 상태 시뮬레이션 방법
-* 디버거 명령문과 중단점을 사용한 서비스 워커 디버그 방법
-* 푸시 이벤트 시뮬레이션 방법
+* How to inspect a Service Worker with the Application panel
+* How to explore the Cache and IndexedDB
+* How to simulate different network conditions
+* How to use debugger statements and breakpoints to debug a Service Worker
+* How to simulate Push events
 
-### 필요한 사항
+### What you'll need
 
-* Chrome 52 이상
-* [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)을 설치하거나 본인이 직접 선택한 웹 서버를 사용하세요.
-* 샘플 코드
-* 텍스트 편집기
-* HTML, CSS 및 자바스크립트에 대한 기본 지식
+* Chrome 52 or above
+* Install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), or use your own web server of choice.
+* The sample code
+* A text editor
+* Basic knowledge of HTML, CSS and JavaScript
 
-이 코드랩은 서비스 워커 디버깅에 초점을 맞추고 있으므로 서비스 워커를 사용한 작업에 어느 정도 사전 지식이 있다는 전제하에 진행하겠습니다. 일부 개념은 대충 지나가거나(예: 스타일 또는 관련성이 없는 자바스크립트) 간단히 복사하여 붙여넣을 수 있도록 코드 블록이 제공됩니다. 서비스 워커를 처음 사용하는 개발자라면 꼭 [API 입문서를 검토](/web/fundamentals/primers/service-worker/)한 후 진행하세요.
+This codelab is focused on debugging Service Workers and assumes some prior knowledge of working with Service Workers. Some concepts are glossed over or code blocks (for example styles or non-relevant JavaScript) are provided for you to simply copy and paste. If you are new to Service Workers be sure to [read through the API Primer](/web/fundamentals/primers/service-worker/) before proceeding.
 
+## Getting set up
 
-## 준비 작업
+### Download the Code
 
+You can download all of the code for this codelab, by clicking the following button:
 
+[Download source code](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
 
+Unpack the downloaded zip file. This will unpack a root folder (`debugging-service-workers-master`), which contains one folder for each step of this codelab, along with all of the resources you will need.
 
-### 코드 다운로드
+The `step-NN` folders contain the desired end state of each step of this codelab. They are there for reference. We'll be doing all our coding work in the directory called `work`.
 
-다음 버튼을 클릭하면 이 코드랩을 위한 코드를 전부 다운로드할 수 있습니다.
+### Install and verify web server
 
-[링크](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
+While you're free to use your own web server, this codelab is designed to work well with the Chrome Web Server. If you don't have that app installed yet, you can install it from the Chrome Web Store.
 
-다운로드한 zip 파일을 푸세요. 그러면 루트 폴더(`debugging-service-workers-master`)가 풀릴 것이고, 그 안에 이 코드랩의 각 단계마다 필요한 폴더 하나씩과 그 과정에서 필요한 모든 리소스가 들어 있습니다.
+[Install Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
 
-`step-NN` 폴더에는 코드랩의 각 단계에서 도달하고자 하는 최종 완성 코드가 들어 있으므로 참조하실 수 있습니다. 모든 코딩 작업은 `work` 디렉토리에서 수행하겠습니다.
+After installing the Web Server for Chrome app, click on the Apps shortcut on the bookmarks bar:
 
-### 웹 서버 설치 및 인증
+![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)<aside class="key-point">
 
-자체 웹 서버를 사용해도 되지만 이 코드랩은 Chrome Web Server에서 잘 돌아가도록 고안되어 있습니다. 이 앱을 아직 설치하지 않으셨다면 Chrome 웹 스토어에서 설치할 수 있습니다.
+<p>More help:  <a href="https://support.google.com/chrome_webstore/answer/3060053?hl=en">Add and open Chrome apps</a></p>
 
-[링크](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
+</aside> 
 
-Web Server for Chrome 앱을 설치한 후 북마크바에서 Apps 단축키를 클릭하세요. 
-
-![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)
-
-확인하는 창에서 Web Server 아이콘을 클릭하세요. 
+In the ensuing window, click on the Web Server icon:
 
 ![dc07bbc9fcfe7c5b.png](img/dc07bbc9fcfe7c5b.png)
 
-그러면 아래 대화상자가 나타나는데, 여기서 로컬 웹 서버를 구성할 수 있습니다.
+You'll see this dialog next, which allows you to configure your local web server:
 
 ![433870360ad308d4.png](img/433870360ad308d4.png)
 
-__choose folder__ 버튼을 클릭하고 `work` 폴더를 선택하세요. 그러면 웹 서버 대화상자에 강조표시된 URL을 통해(__Web Server URL(s)__ 섹션) 진행 중인 작업을 제공할 수 있습니다.
+Click the **choose folder** button, and select the `work` folder. This will enable you to serve your work in progress via the URL highlighted in the web server dialog (in the **Web Server URL(s)** section).
 
-아래 그림과 같이, Options 아래에서 'Automatically show index.html' 옆에 있는 확인란을 선택하세요.
+Under Options, check the box next to "Automatically show index.html", as shown below:
 
 ![8937a38abc57e3.png](img/8937a38abc57e3.png)
 
-그런 다음, 'Web Server: STARTED'라는 레이블로 표시된 전환 버튼을 왼쪽으로 밀었다가 다시 오른쪽으로 밀어 서버를 중지했다가 다시 시작하세요.
+Then stop and restart the server by sliding the toggle labeled "Web Server: STARTED" to the left and then back to the right.
 
 ![daefd30e8a290df5.png](img/daefd30e8a290df5.png)
 
-이제는 웹브라우저에서 작업 사이트를 방문하세요(강조표시된 Web Server URL을 클릭). 그러면 다음과 같은 페이지가 나타날 것입니다.
+Now visit your work site in your web browser (by clicking on the highlighted Web Server URL) and you should see a page that looks like this:
 
 ![693305d127d9fe80.png](img/693305d127d9fe80.png)
 
-이 앱은 아직은 뭔가 흥미로운 점이 전혀 없는 상태입니다. 이어지는 단계에서 기능을 추가하면서 앱이 오프라인에서 작동하는지 확인해 볼 것입니다. 
+Obviously, this app is not yet doing anything interesting. We'll add functionality so we can verify it works offline in subsequent steps.<aside class="key-point">
 
+<p>From this point forward, all testing/verification should be performed using this web server setup. You'll usually be able to get away with simply refreshing your test browser tab.</p>
 
-## Application 탭 소개
+</aside> 
 
+## Introducing the Application tab
 
+### Inspecting the Manifest
 
+Building a Progressive Web Apps requires tying together a number of different core technologies, including Service Workers and Web App Manifests, as well as useful enabling technologies, like the Cache Storage API, IndexedDB, and Push Notifications. To make it easy for developers to get a coordinated view of each of these technologies the Chrome DevTools has incorporated inspectors for each in the new Application panel.
 
-### 매니페스트 검사
+* Open the Chrome DevTools and click on the tab that says **Application**
 
-Progressive Web App을 빌드하려면 서비스 워커와 웹 앱 매니페스트를 포함한 여러 가지 핵심 기술뿐 아니라, Cache Storage API, IndexedDB 및 푸시 알림과 같은 유용한 지원 기술을 함께 묶어야 합니다. 개발자가 이런 각각의 기술에 대해 어렵지 않게 균형 있는 시각으로 바라볼 수 있도록 하기 위해, Chrome DevTools에는 새로운 Application 패널에 각 기술에 대한 검사 기능이 통합되어 있습니다.
+![5d18df60c53a0420.png](img/5d18df60c53a0420.png)
 
-* Chrome DevTools를 열고 __Application__ 탭을 클릭하세요.
+Look in the sidebar and notice **Manifest** is currently highlighted. This view shows important information related to the `manifest.json` file such as its application name, start URL, icons, etc.
 
-![b380532368b4f56c.png](img/b380532368b4f56c.png)
-
-사이드바를 보면 __Manifest__가 현재 강조표시되어 있는 것이 보일 것입니다. 이 뷰는 애플리케이션 이름, 시작 URL, 아이콘 등, `manifest.json` 파일과 관련된 중요한 정보를 보여줍니다.
-
-이 코드랩에서 다루지는 않겠지만, 사용자의 홈 화면에 앱을 추가하는 경험을 시뮬레이션하는 데 사용할 수 있는 __Add to homescreen__ 버튼이 있습니다.
+Although we won't be covering it in this codelab, note that there is an **Add to homescreen** button which can be used to simulate the experience of adding the app to the user's homescreen.
 
 ![56508495a6cb6d8d.png](img/56508495a6cb6d8d.png)
 
-### 서비스 워커 검사
+### Inspecting the Service Workers
 
-과거에는 서비스 워커를 검사하려면 Chrome 내부를 뒤져야 했는데, 분명히 그다지 사용자 친화적 환경은 아니었던 셈입니다. 하지만 이제는 새로운 __Application__ 탭의 등장으로 그 모든 것이 바뀌었습니다!
+In the past, inspecting a Service Worker required poking around in Chrome internals and was definitely not the most user friendly experience. All of that changes with the new **Application** tab!
 
-* 현재 선택되어 있는 __Manifest__ 항목 아래에서 __Service Workers__ 메뉴 항목을 클릭하세요.
+* Click on the **Service Workers** menu item below the currently selected **Manifest** item
 
-![3dea544e6b44979d.png](img/3dea544e6b44979d.png)
+![d4eeba0a3c66a04.png](img/d4eeba0a3c66a04.png)
 
-__Service Workers__ 뷰는 현재 기준에서 활성 상태인 서비스 워커에 대한 정보를 제공합니다. 위쪽 행을 따라 다음과 같은 일련의 확인란이 있습니다.
+The **Service Workers** view provides information about Service Workers which are active in the current origin. Along the top row there are a series of checkboxes.
 
-* __Offline __- 네트워크에서 연결이 끊긴 상태를 시뮬레이션합니다. 이를 통해 서비스 워커 페치 핸들러가 올바로 작동하는지 빠르게 확인할 수 있습니다.
-* __Update on reload__ - 기존의 서비스 워커를 강제로 새로운 서비스 워커로 바꿉니다(개발자가 `service-worker.js`에 대한 업데이트를 만든 경우). 일반적으로 브라우저는 사용자가 현재 사이트를 포함하는 탭을 전부 닫을 때까지 기다린 후 새로운 서비스 워커로 업데이트할 것입니다.
-* __Bypass for network__ - 브라우저가 모든 활성 서비스 워커를 무시하고 네트워크에서 리소스를 가져오도록 강제 적용합니다. 이는 CSS 또는 자바스크립트 작업을 하고 싶은데 서비스 워커가 우연히 이전 파일을 캐시하여 반환하지 않을까 하는 걱정을 떨쳐버리고 싶은 경우에 매우 유용합니다.
-* __Show all__ - 출처에 상관없이 모든 활성 서비스 워커의 목록을 표시합니다.
+* **Offline** - Will simulate being disconnected from the network. This can be useful to quickly verify that your Service Worker fetch handlers are working properly.
+* **Update on reload** - Will force the current Service Worker to be replaced by a new Service Worker (if the developer has made updates to their `service-worker.js`). Normally the browser will wait until a user closes all tabs that contain the current site before updating to a new Service Worker.
+* **Bypass for network** - Will force the browser to ignore any active Service Worker and fetch resources from the network. This is extremely useful for situations where you want to work on CSS or JavaScript and not have to worry about the Service Worker accidentally caching and returning old files.
+* **Show all** - Will show a list of all active Service Workers regardless of the origin.
 
-아래에는 현재 활성 서비스 워커(하나가 있는 경우)와 관련된 정보가 나와 있습니다. 가장 유용한 필드 중 하나는 서비스 워커의 현재 상태를 표시하는 __Status__ 필드입니다. 이번에 이 앱을 처음으로 시작하는 것이고 현재 서비스 워커가 올바로 설치되어 활성화되었으므로, 모든 것이 정상적임을 나타내는 녹색 원을 표시합니다.
+Below that you will see information relating to the current active Service Worker (if there is one). One of the most useful fields is the **Status** field, which shows the current state of the Service Worker. Since this is the first time starting the app, the current Service Worker has successfully installed and been activated, so it displays a green circle to indicate everything's good.<aside class="key-point">
 
-녹색 상태 표시기 옆에 ID 번호가 있습니다. 이 번호는 현재 활성 상태인 서비스 워커의 ID입니다. 잠시 후 비교해봐야 하므로 이 ID를 잘 기억하거나 적어 두세요.
+<p>If you had installed a service worker on this localhost port previously, you will see an orange circle as well, indicating that the new service worker is waiting to activate. If this is the case, click <strong>skipWaiting</strong>.</p>
 
-* 텍스트 편집기에서 `service-worker.js` 파일을 엽니다.
+</aside> 
 
-현재 서비스 워커의 코드는 두 개의 콘솔 로그가 전부로, 무척 간단합니다.
+Note the ID number next to the green status indicator. That's the ID for the currently active Service Worker. Remember it or write it down as we'll use it for a comparison in just a moment.
+
+* In your text editor, open the `service-worker.js` file
+
+The code for the current Service Worker is quite simple, just a couple of console logs.
 
     self.addEventListener('install', function(event) {
       console.log('Service Worker installing.');
     });
     
     self.addEventListener('activate', function(event) {
-      console.log('Service Worker activating.');  
-    });
-
-DevTools로 다시 전환해 Console을 살펴보면 두 로그가 모두 올바로 출력된 사실을 확인할 수 있습니다.
-
-![5fcfd389f5357c09.png](img/5fcfd389f5357c09.png)
-
-`service-worker.js`의 코드를 업데이트하여 수명 주기를 거치며 어떻게 변하는지 살펴봅시다.
-
-* `service-worker.js`에서 새로운 메시지를 포함하도록 주석을 업데이트합니다.
-
-    self.addEventListener('install', function(event) {
-      console.log('A *new* Service Worker is installing.');
+      console.log('Service Worker activating.');
     });
     
-    self.addEventListener('activate', function(event) {
-      console.log('Finally active. Ready to start serving content!');  
-    });
 
-* 페이지를 새로 고치고 DevTools에서 콘솔을 엽니다.
+If you switch back to the DevTools and look in the Console you can see that both logs have been output successfully.
 
-콘솔에 `A *new* Service Worker is installing.`이라는 로그가 기록되지만 활성 상태의 새로운 서비스 워커에 대한 두 번째 메시지는 표시되지 않습니다.
+![a8c1d1bb2a14eb24.png](img/a8c1d1bb2a14eb24.png)
 
-* DevTools에서 Application 탭으로 전환합니다.
+Let's update the code for the `service-worker.js` to watch it go through a lifecycle change.
 
-Application 탭에는 이제 두 개의 상태 표시기가 있으며, 두 서비스 워커의 상태를 각각 나타냅니다.
+* Update the comments in `service-worker.js` so they contain new messages
+    
+    self.addEventListener('install', function(event) { console.log('A *new* Service Worker is installing.'); });
+    
+    self.addEventListener('activate', function(event) { console.log('Finally active. Ready to start serving content!'); });
 
-![2e41dbf21437944c.png](img/2e41dbf21437944c.png)
+* Refresh the page and open the console in DevTools
 
-첫 번째 서비스 워커의 ID를 기록해 두세요. 이 ID는 원래 서비스 워커 ID와 일치해야 합니다. 새로운 서비스 워커를 설치하면 사용자가 다음에 해당 페이지를 방문할 때까지는 이전 워커가 활성 상태로 남습니다.
+The console logs `A *new* Service Worker is installing.` but doesn't show the 2nd message about the new Service Worker being active.
 
-두 번째 상태 표시기는 방금 편집한 새로운 서비스 워커를 표시합니다. 지금은 대기 상태에 있습니다.
+* Switch to the Application tab in DevTools
 
-새로운 서비스 워커를 강제로 활성화하는 한 가지 쉬운 방법은 바로 __skipWaiting__ 버튼을 사용하는 것입니다.
+In the Application tab there are now two status indicators, each representing the state of our two Service Workers.
+
+![67548710d5ca4936.png](img/67548710d5ca4936.png)
+
+Note the ID of the first Service Worker. It should match the original Service Worker ID. When you install a new Service Worker, the previous worker remains active until the next time the user visits the page.
+
+The second status indicator shows the new Service Worker we just edited. Right now it's in a waiting state.<aside class="key-point">
+
+<p><strong>Try it!</strong></p>
+
+<p>If a user has multiple tabs open for the same page, it will continue using the old Service Worker until those tabs are closed. Try opening a few more tabs and visiting this same page and notice how the Application panel still shows the old Service Worker as active.</p>
+
+</aside> 
+
+An easy way to force the new Service Worker to activate is with the **skipWaiting** button.
 
 ![7a60e9ceb2db0ad2.png](img/7a60e9ceb2db0ad2.png)
 
-* skipWaiting 버튼을 클릭하고 콘솔로 전환합니다.
+* Click the skipWaiting button and then switch to the Console
 
-이제 `activate` 이벤트 핸들러에서 생성된 메시지가 콘솔에 기록되는 것을 볼 수 있습니다.
+Note that the console now logs the message from the `activate` event handler:
 
-`Finally active. Ready to start serving content!`
+`Finally active. Ready to start serving content!`<aside class="key-point">
 
+<p><strong>Skip waiting</strong></p>
 
-## 캐시 탐색
+<p>Having to click the <code>skipWaiting</code> button all the time can get a little annoying. If you'd like your Service Worker to force itself to become active you can include the line <code>self.skipWaiting()</code> in the <code>install</code> event handler. You can learn more about the <code>skipWaiting</code> method in  <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-skipwaiting">the Service Workers spec</a>.</p>
 
+</aside> 
 
+## Exploring the cache
 
+Managing your own offline file cache with a Service Worker is an incredible super power. The new **Application** panel has a number of useful tools for exploring and modifying your stored resources which can be very helpful during development time.
 
-서비스 워커를 사용하여 자신의 오프라인 파일 캐시를 관리하는 기능은 엄청나게 강력한 힘을 발휘합니다. 새로운 __Application__ 패널에는 저장된 리소스를 탐색하고 수정하는 데 유용한 여러 가지 도구가 있는데, 이들은 개발 기간 동안 매우 유용하게 쓰일 수 있습니다.
+### Add caching to your Service Worker
 
-### 서비스 워커에 캐싱 추가
+Before you can inspect the cache you'll need to write a little code to store some files. Pre-caching files during the Service Worker's install phase is a useful technique to guarantee that crucial resources are available to user if they happen to go offline. Let's start there.
 
-작은 코드를 하나 작성해서 몇몇 파일에 저장한 후 해당 캐시를 검사할 수 있습니다. 서비스 워커 설치 단계 중에 파일을 미리 캐시하는 기술은 매우 중요한 리소스가 우연히 오프라인 상태로 전환될 경우에도 사용자가 계속 리소스를 사용할 수 있도록 보장하는 데 유용합니다. 바로 그 지점에서 시작해 봅시다.
-
-* `service-worker.js`를 업데이트하기 전에 DevTools __Application__ 패널을 열고 __Service Workers__ 메뉴로 이동한 후 __Update on reload__ 확인란을 선택합니다.
+* Before updating the `service-worker.js`, open the DevTools **Application** panel, navigate to the **Service Workers** menu, and check the box that says **Update on reload**
 
 ![d4bcfb0983246797.png](img/d4bcfb0983246797.png)
 
-이런 유용한 방법으로 강제로 페이지가 최신 서비스 워커를 사용하도록 강제할 수 있으므로, 서비스 워커를 변경하고 싶을 때마다 __skipWaiting__ 옵션을 클릭할 필요가 없습니다.
+This useful trick will force the page to use whatever Service Worker is the latest, so you don't have to click the **skipWaiting** option every time you want to make changes to your Service Worker.
 
-* 그 다음, 다음과 같은 형태가 되도록 `service-worker.js`에서 코드를 업데이트합니다.
+* Next, update the code in `service-worker.js` so it looks like this
 
-```
-var CACHE_NAME = 'my-site-cache-v1';
-var urlsToCache = [
-  '/',
-  '/styles/main.css',
-  '/scripts/main.js',
-  '/images/smiley.svg'
-];
+    var CACHE_NAME = 'my-site-cache-v1';
+    var urlsToCache = [
+      '/',
+      '/styles/main.css',
+      '/scripts/main.js',
+      '/images/smiley.svg'
+    ];
+    
+    self.addEventListener('install', function(event) {
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
+    self.addEventListener('activate', function(event) {
+      console.log('Finally active. Ready to start serving content!');
+    });
+    
 
-self.addEventListener('install', function(event) {
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
+* Refresh the page
 
-self.addEventListener('activate', function(event) {
-  console.log('Finally active. Ready to start serving content!');  
-});
-```
+In the Application panel you might notice a warning shows up. This seems scary but it's just telling you that your old Service Worker was forcibly updated. Since that was the intention, this is totally O.K., but it can serve as a useful warning so you don't forget to turn the checkbox off when you're done editing the `service-worker.js` file.
 
-* 페이지를 새로 고칩니다.
+![c6363ac5b51e06b1.png](img/c6363ac5b51e06b1.png)
 
-Application 패널에서 Error가 나타날 수도 있습니다. 뭔가 큰 잘못이라도 있나 싶기도 하겠지만, __details__ 버튼을 클릭하면 이전 서비스 워커가 강제로 업데이트되었음을 알려주는 __Application__ 패널일 뿐입니다. 의도적으로 그렇게 한 것이므로 아무 상관이 없지만, `service-worker.js` 파일 편집을 마쳤을 때 확인란의 선택을 해제하는 것을 잊지 않도록 경고하는 유용한 역할을 해줄 수 있습니다.
+### Inspecting Cache Storage
 
-![a039ca69d2179199.png](img/a039ca69d2179199.png)
+Notice that the **Cache Storage** menu item in the **Application** panel now has a caret indicating it can be expanded. If you don't see it, right click on **Cache Storage** and choose **Refresh Caches** (this doesn't actually do anything to the caches, it just updates the DevTools UI).
 
-### Cache Storage 검사
+* Click to expand the **Cache Storage** menu, then click on `my-site-cache-v1`
 
-__Application__ 패널의 __Cache Storage__ 메뉴 항목에 이제는 메뉴를 펼칠 수 있음을 나타내는 캐럿이 있습니다.
+![7990023bd9e8fe7a.png](img/7990023bd9e8fe7a.png)
 
-* __Cache Storage__ 메뉴를 클릭하여 펼친 후 `my-site-cache-v1`을 클릭하세요.
-
-![af2b3981c63b1529.png](img/af2b3981c63b1529.png)
-
-여기서 서비스 워커가 캐시한 파일을 전부 볼 수 있습니다. 캐시에서 파일을 삭제해야 할 경우 파일을 마우스 오른쪽 버튼으로 클릭하고 컨텍스트 메뉴에서 __delete__ 옵션을 선택하면 됩니다. 마찬가지로 `my-site-cache-v1`을 마우스 오른쪽 버튼으로 클릭하고 delete를 선택하여 전체 캐시를 삭제할 수 있습니다.
+Here you can see all of the files cached by the Service Worker. If you need to remove a file from the cache you can right-click on it and select the **delete** option from the context menu. Similarly, you can delete the entire cache by right-clicking on `my-site-cache-v1` and choosing delete.
 
 ![5c8fb8f7948066e6.png](img/5c8fb8f7948066e6.png)
 
-### 슬레이트 정리
+### Cleaning the slate
 
-이미 눈치채셨을 수도 있겠지만 __Cache Storage__ 외에도 Local Storage, Session Storage, IndexedDB, Web SQL, Cookies, Application Cache("AppCache")를 포함하여, 저장된 리소스와 관련된 다른 여러 가지 메뉴 항목이 있습니다. 이런 각각의 리소스를 전부 한 패널에서 세분화하여 제어할 수 있으므로 무척 유용합니다. 하지만 저장된 리소스를 전부 삭제하고 싶을 때 각 메뉴 항목으로 일일이 이동하여 콘텐츠를 삭제해야 한다면 무척 지루한 일이 될 것입니다. 그 대신, __Clear storage__ 옵션을 사용하여 한꺼번에 슬레이트를 정리할 수 있습니다. 참고로, 이렇게 하면 모든 서비스 워커가 등록 취소된다는 점에도 유의하세요.
+As you may have noticed, along with **Cache Storage**, there are a number of other menu items related to stored resources, including: Local Storage, Session Storage, IndexedDB, Web SQL, Cookies, and Application Cache ("AppCache"). Having granular control of each of these resources all in one panel is extremely useful! But if you were in a scenario where you wanted to delete all of the stored resources it would be pretty tedious to have to visit each menu item and delete their contents. Instead, you can use the **Clear storage** option to clean the slate in one fell swoop (note that this will also unregister any Service Workers).
 
-* __Clear storage__ 메뉴 옵션을 선택하세요.
-* 저장된 리소스를 전부 삭제하려면 __Clear site data__ 버튼을 클릭하세요.
+* Select the **Clear storage** menu option
+* Click the **Clear selected** button to delete all stored resources
 
-![59838a73a2ea2aaa.png](img/59838a73a2ea2aaa.png)
+![744eb12fec050d31.png](img/744eb12fec050d31.png)
 
-뒤로 이동하여 `my-site-cache-v1`을 클릭하면 저장된 파일이 전부 삭제되었음을 확인할 수 있을 것입니다.
+If you go back to **Cache Storage** you'll now see that all the stored files have been deleted.
 
-![317d24238f05e69c.png](img/317d24238f05e69c.png)
+![3d8552f02b82f4d5.png](img/3d8552f02b82f4d5.png)<aside class="key-point">
 
-__톱니바퀴 아이콘__
+<p><strong>TIP:</strong> You can also use a new Incognito window for testing and debugging Service Workers. When the Incognito window is closed, Chrome will remove any cached data or installed Service Worker, ensuring that you always start from a clean state.</p>
 
-서비스 워커는 자체적으로 네트워크를 요청할 수 있으므로, 워커 자체에서 시작된 네트워크 트래픽을 식별하는 데 유용할 수 있습니다.
+</aside> 
 
-* `my-site-cache-v1`이 여전히 비어 있는 상태에서 Network 패널로 전환합니다.
-* 페이지를 새로 고칩니다.
+**What's with the gear?**
 
-Network 패널에서 `main.css`와 같은 파일에 대해 처음에 요청한 사항들이 보이고, 그 다음에 같은 자산을 가져오는 것으로 보이는 두 번째 요청들이 나타나는데 여기에는 톱니바퀴 아이콘이 앞에 붙어 있습니다.
+Because the Service Worker is able to make its own network requests, it can be useful to identify network traffic which originated from the worker itself.
 
-![2ba393cf3d41e087.png](img/2ba393cf3d41e087.png)
+* While `my-site-cache-v1` is still empty, switch over to the Network panel
+* Refresh the page
 
-톱니바퀴 아이콘은 요청이 서비스 워커 자체에서 비롯된 것임을 나타냅니다. 특히, 이런 요청은 오프라인 캐시를 채우기 위해 서비스 워커의 `install` 핸들러에서 생성되는 요청입니다.
+In the Network panel, you should see an initial set of request for files like `main.css`, followed by a second round of requests, prefixed with a gear icon, which seem to fetch the same assets.
 
+![8daca914fe2d9dc7.png](img/8daca914fe2d9dc7.png)
 
-## 다양한 네트워크 상태 시뮬레이션
+The gear icon signifies that these requests came from the Service Worker itself. Specifically, these are the requests being made by the Service Worker's `install` handler to populate the offline cache.<aside class="key-point">
 
+<p><strong>Learn More</strong>: For a deeper understanding of the Network panel identifies Service Worker traffic take a look at  <a href="http://stackoverflow.com/a/33655173/385997">this StackOverflow discussion</a>.</p>
 
+</aside> 
 
+## Simulating different network conditions
 
-서비스 워크의 강력한 기능 중 하나는 오프라인 상태일 때도 사용자에게 캐시된 콘텐츠를 제공하는 기능입니다. 모든 것이 계획한 대로 작동하는지 확인하기 위해 Chrome에서 제공하는 네트워크 제한 도구 몇 가지를 테스트해 봅시다.
+One of the killer features of Service Workers is their ability to serve cached content to users even when they're offline. To verify everything works as planned, let's test out some of the network throttling tools that Chrome provides.
 
-### 오프라인 상태에서 요청에 대응
+### Serving requests while offline
 
-오프라인 콘텐츠를 제공하려면 `service-worker.js`에 `fetch` 핸들러를 추가해야 합니다.
+In order to serve offline content, you'll need to add a `fetch` handler to your `service-worker.js`
 
-* `activate` 핸들러 바로 뒤에 있는 `service-worker.js`에 다음 코드를 추가합니다.
+* Add the following code to `service-worker.js` just after the `activate` handler
 
-```
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-```
+    self.addEventListener('fetch', function(event) {
+      event.respondWith(
+        caches.match(event.request)
+          .then(function(response) {
+            // Cache hit - return response
+            if (response) {
+              return response;
+            }
+            return fetch(event.request);
+          }
+        )
+      );
+    });
+    
 
-* __Application__ 패널로 전환하고 __Update on reload__가 계속 선택되어 있는지 확인합니다.
-* 새로운 서비스 워커를 설치하려면 페이지를 새로 고칩니다.
-* __Update on reload__를 선택 취소합니다.
-* __Offline__을 선택합니다.
+* Switch to the **Application** panel and verify that **Update on reload** is still checked
+* Refresh the page to install the new Service Worker
+* Uncheck **Update on reload**
+* Check **Offline**
 
-그러면 __Application__ 패널이 다음과 같은 모습이 될 것입니다.
+Your **Application** panel should look like this now:
 
-![873b58278064b627.png](img/873b58278064b627.png)
+![54d7f786f2a8838e.png](img/54d7f786f2a8838e.png)
 
-__Network__ 패널에는 이제 오프라인 상태임을 나타내는 노란색 경고 기호가 있음을 알 수 있습니다. 이 기호는 네트워크를 이용해 개발 작업을 계속 진행하려면 이 확인란을 선택 취소해야 한다는 것을 알려줍니다.
+Notice the **Network** panel now has a yellow warning sign to indicate that you're offline (and to remind you that you'll want to uncheck that checkbox if you want to continue developing with the network).
 
-`fetch` 핸들러가 마련되었고 앱이 __Offline__으로 설정되어 있으므로, 이제 준비는 끝났습니다. 페이지를 새로 고치세요. 모든 것이 정상적으로 작동하면 설령 네트워크에서 아무런 응답이 없더라도 사이트 콘텐츠를 계속 확인해야 합니다. __Network__ 패널로 전환하여 Cache Storage에서 모든 리소스가 제공되고 있는지 확인할 수 있습니다. __Size__ 열에는 이런 리소스의 출처가 `(from Service Worker)`라고 표시되어 있습니다. 이는 바로 서비스 워커가 요청을 가로채어 네트워크를 거치는 대신 캐시에서 응답을 제공했음을 알려주는 신호입니다.
+With your `fetch` handler in place, and your app set to **Offline**, now is the moment of truth. Refresh the page and if all goes well you should continue to see site content, even though nothing is coming from the network. You can switch to the **Network** panel to verify that all of the resources are being served from Cache Storage. Notice in the **Size** column it says these resources are coming `(from Service Worker)`. That's the signal that tells us the Service Worker intercepted the request, and served a response from the cache instead of hitting the network.
 
-![a6f485875ca088db.png](img/a6f485875ca088db.png)
+![96f2065b2f0adece.png](img/96f2065b2f0adece.png)
 
-(새로운 서비스 워커나 `manifest.json`의 경우처럼) 실패한 요청이 있을 것입니다. 하지만 이미 예상한 일이므로 전혀 신경 쓰지 마세요.
+You'll notice that there are failed requests (like for a new Service Worker or `manifest.json`). That's totally fine and expected.
 
-### 느리거나 완전히 먹통이 된 네트워크 테스트
+### Testing slow or flaky networks
 
-사용자들은 여기저기 이동하면서 너무나도 다양한 환경과 상황에서 휴대기기를 사용하므로 늘 다양한 연결 상태 사이를 오가고 있는 셈입니다. 뿐만 아니라, 지구촌 곳곳에는 아직도 3G와 2G 네트워크 속도가 기준으로 되어 있는 곳도 많습니다. 힘들여 개발한 앱이 이런 소비자들에게도 잘 작동할지 확인하려면 연결 속도가 느린 조건에서도 기능을 수행하는지 테스트해야 합니다.
+Because we use our mobile devices in a plethora of different contexts, we're constantly moving between various states of connectivity. There are also many parts of the world where 3G and 2G speeds are the norm. To verify that our app works well for these consumers, we should test that it is performant even on a slower connection.
 
-먼저, 서비스 워커가 작동하지 않을 때 속도가 느린 네트워크에서 애플리케이션이 어떻게 작동하는지 시뮬레이션해 봅시다.
+To start, let's simulate how the application works on a slow network when the Service Worker is not in play.
 
-* __Application__ 패널에서 __Offline__을 선택 취소합니다.
-* __Bypass for network__를 선택합니다.
+* From the **Application** panel, uncheck **Offline**
+* Check **Bypass for network**
 
-![739dc5811e4aa937.png](img/739dc5811e4aa937.png)
+![d9ea0e24a6ef374e.png](img/d9ea0e24a6ef374e.png)
 
-__Bypass for network__ 옵션을 선택하면 네트워크 요청을 해야 할 때 서비스 워커를 건너뛰라고 브라우저에 알려주게 됩니다. 즉, Cache Storage에서 아무것도 올 수 없게 될 것이고 이는 마치 아무런 서비스 워커도 설치하지 않은 것처럼 될 것이라는 의미입니다.
+The **Bypass for network** option will tell the browser to skip our service worker when it needs to make a network request. This means nothing will be able to come from Cache Storage, it will be as if we have no Service Worker installed at all.
 
-* 그 다음, __Network__ 패널로 전환합니다.
-* __Network Throttle__ 드롭다운을 사용하여 네트워크 속도를 `Regular 2G`로 설정합니다.
+* Next, switch to the **Network** panel
+* Use the **Network Throttle** dropdown to set the network speed to `Regular 2G`
 
-__Network Throttle__ 드롭다운은 __Network__ 패널의 오른쪽 위, __Network__ 패널의 자체 __Offline__ 확인란 오른쪽에 있습니다. 이 드롭다운은 기본적으로 `No throttling`으로 설정되어 있습니다.
+The **Network Throttle** dropdown is located in the top right of the **Network** panel, right next to the **Network** panel's own **Offline** checkbox. By default it is set to `No throttling`.
 
-![c59b54a853215598.png](img/c59b54a853215598.png)
+![662a15b44afb6633.png](img/662a15b44afb6633.png)
 
-* 속도를 `Regular 2G`로 설정한 상태에서 페이지를 새로 고칩니다.
+* With the speed set to `Regular 2G`, refresh the page
 
-응답 시간이 갑자기 증가하는 게 보이죠? 이제는 각 자산을 다운로드하는 데 수백 밀리초 정도 걸립니다.
+Notice the response times jump way up! Now each asset takes several hundred milliseconds to download.
 
-![70e461338a0bb051.png](img/70e461338a0bb051.png)
+![9774a4c588a6604c.png](img/9774a4c588a6604c.png)
 
-그럼, 여기서 서비스 워커를 작동시켜 어떤 차이가 있는지 살펴봅시다.
+Let's see how things differ with our Service Worker back in play.
 
-* 네트워크는 그대로 `Regular 2G`로 설정한 상태에서 __Application__ 탭으로 다시 전환합니다.
-* __Bypass for network__ 확인란을 선택 취소합니다.
-* __Network__ 패널로 다시 전환합니다.
-* 페이지를 새로 고칩니다.
+* With the network still set to `Regular 2G`, switch back to the **Application** tab
+* Uncheck the **Bypass for network** checkbox
+* Switch back to the **Network** panel
+* Refresh the page
 
-그러면 응답 시간이 놀랍도록 빠른 리소스당 수 밀리초 정도의 수준으로 단축됩니다. 네트워크 속도가 느린 환경의 사용자에게 이런 변화는 낮과 밤의 차이만큼이나 엄청나죠!
+Now our response times jump down to a blazing fast few milliseconds per resource. For users on slower networks this is a night and day difference!
 
-![f0f6d3b0a1b1f18d.png](img/f0f6d3b0a1b1f18d.png)
+![44253f3de0e694b8.png](img/44253f3de0e694b8.png)<aside class="warning">
 
+<p>Before proceeding make sure you set the <strong>Network Throttle</strong> back to <code>No throttling</code></p>
 
-## 결국 자바스크립트일 뿐
+</aside> 
 
+## Remember, it's just JavaScript
 
+Service Workers can feel like magic, but under the hood they're really just regular JavaScript files. This means you can use existing tools like `debugger` statements and breakpoints to debug them.
 
+### Working with the debugger
 
-서비스 워커가 마법처럼 느껴질 수도 있겠지만, 그 이면을 잘 살펴보면 그저 일반적인 자바스크립트 파일일 뿐입니다. 즉, `debugger` 명령문과 중단점 같은 기존 도구를 사용하여 디버그할 수 있다는 뜻입니다.
+Many developers rely on good old `console.log()` when they have an issue in their app. But there's a much more powerful tool available in the toolbox: `debugger`.
 
-### 디버거를 이용한 작업
+Adding this one line to your code will pause execution and open up the **Sources** panel in the DevTools. From here you can step through functions, inspect objects, and even use the console to run commands against the current scope. This can be especially useful for debugging a cranky Service Worker.
 
-많은 개발자들은 앱에 문제가 있을 때 오랜 친구 같은 `console.log()`를 애용합니다. 하지만 도구 상자에서 `debugger`라는 훨씬 더 강력한 도구를 사용할 수 있습니다.
+To test it out, let's debug our `install` handler.
 
-코드에 이 한 줄을 추가하는 것만으로도 실행을 일시 중지하고 DevTools에서 __Sources__ 패널을 열 수 있습니다. 여기서부터 함수를 단계별로 진행하면서 객체를 검사하고, 심지어 콘솔을 사용해 현재 범위에 대해 명령을 실행할 수도 있습니다. 이 도구는 까다로운 서비스 워커를 디버그하는 데 특히 유용할 수 있습니다.
+* Add a `debugger` statement to the beginning of your `install` handler in `service-worker.js`
 
-테스트를 위해 `install` 핸들러를 디버그해 봅시다.
+    self.addEventListener('install', function(event) {
+      debugger;
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
 
-* `service-worker.js`에서 `install` 핸들러 시작 부분에 `debugger` 명령문을 추가합니다.
+* Refresh the page
 
-```
-self.addEventListener('install', function(event) {
-  debugger;
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
-```
+The application will pause execution and switch panels over to **Sources** where the `debugger` statement is now highlighted in `service-worker.js`.
 
-* __Application__ 패널에서 페이지를 새로 고칩니다.
-* __skipWaiting__을 클릭하여 새로운 서비스 워커를 활성화합니다.
-* `fetch` 핸들러를 실행할 수 있도록 페이지를 다시 새로 고칩니다.
+![2f20258491acfaa8.png](img/2f20258491acfaa8.png)<aside class="key-point">
 
-애플리케이션이 실행을 일시 중지하고 패널을 __Sources__로 전환합니다. 이때 `service-worker.js`에서 `debugger` 명령문이 강조표시됩니다.
+<p><strong>Learn More</strong>: A full explanation of the <strong>Sources</strong> panel is outside the scope of this codelab but you can  <a href="/web/tools/chrome-devtools/debug/">learn more about the debugging capabilities of the DevTools</a> on the Google Developers site.</p>
 
-![d960b322c020d6cc.png](img/d960b322c020d6cc.png)
+</aside> 
 
-이 뷰에서 사용할 수 있는 매우 많은 유용한 도구들이 있습니다. 그중 하나가 __Scope__ 검사기인데, 현재 함수의 범위에서 객체의 현재 상태를 확인해 봅시다.
+There are a ton of useful tools available in this view. One such tool is the **Scope** inspector, which let's us see the current state of objects in the current function's scope.
 
-* `event: ExtendableEvent` 드롭다운을 클릭합니다.
+* Click on the `event: InstallEvent` dropdown
 
-![5116146f838a566.png](img/5116146f838a566.png)
+![3fa715abce820cea.png](img/3fa715abce820cea.png)
 
-여기서 현재 범위 내 객체에 대한 유용한 모든 종류의 정보를 알아볼 수 있습니다. 예를 들어, `type` 필드를 살펴보면 현재 이벤트 객체가 `install` 이벤트용임을 확인할 수 있습니다.
+From here you can learn all sorts of useful information about the current in-scope objects. For instance, looking at the `type` field you can verify that the current event object is for the `install` event.
 
-### 중단점을 대신 사용
+* when you've finished exploring the **Scope** inspector, press the Resume button
 
-__Sources__ 패널에서 코드를 이미 검사 중이라면 실제 파일에 `debugger` 명령문을 추가하는 것에 비해 중단점을 설정하는 것이 더 쉽다는 생각이 들 수도 있습니다. 중단점은 비슷한 목적을 지니고 있지만(실행을 중지하고 그 상태로 고정시켜 주므로 앱을 검사할 수 있음) DevTools 자체 내에서 설정할 수 있습니다.
+![97cd70fb204fa26b.png](img/97cd70fb204fa26b.png)
 
-중단점을 설정하려면 애플리케이션 실행을 중단시키고 싶은 줄 번호를 클릭해야 합니다.
+This allows the script to resume executing after the break. Finally, let's complete the activation of the new service worker.
 
-* __Sources__ 패널에서 `service-worker.js`의 25번 줄까지 아래로 스크롤하고 줄 번호를 클릭합니다.
+* Return to the **Service Workers** section of the **Application** panel
+* Click on **skipWaiting** to activate the new Service Worker
 
-![da7b5f76723ca525.png](img/da7b5f76723ca525.png)
+### Using breakpoints instead
 
-그러면 `fetch` 핸들러의 시작 부분에 중단점이 설정되므로 이벤트 객체를 검사할 수 있습니다.
+If you're already inspecting your code in the **Sources** panel, you may find it easier to set a breakpoint, versus adding `debugger` statements to your actual files. A breakpoint serves a similar purpose (it freezes execution and lets you inspect the app) but it can be set from within DevTools itself.
 
-* 페이지를 새로 고칩니다.
+To set a breakpoint you need to click the line number where you'd like the application to halt execution.
 
-`debugger` 명령문을 사용했을 때와 유사하게, 중단점이 있는 줄에서 실행이 중지된 것을 볼 수 있습니다. 이는 곧 앱을 통과하는 `FetchEvent` 객체를 검사하고 이런 객체가 요청하는 리소스가 무엇인지 확인할 수 있다는 뜻입니다.
+* From the **Sources** panel, scroll down to line 39 of `service-worker.js` and click on the line number
 
-* __Scope__ 검사기에서 `event` 객체를 펼칩니다.
-* `request` 객체를 펼칩니다.
-* `url` 속성을 확인합니다.
+![dabccb06c7231b3e.png](img/dabccb06c7231b3e.png)
+
+This will set a breakpoint at the beginning of the `fetch` handler so you can inspect its event object.
+
+* Refresh the page
+
+Notice that, similar to when you used the `debugger` statement, execution has now stopped on the line with the breakpoint. This means you can now inspect the `FetchEvent` objects passing through your app and determine what resources they were requesting.
+
+* In the **Scope** inspector, expand the `event` object
+* Expand the `request` object
+* Note the `url` property
 
 ![f9b0c00237b4400d.png](img/f9b0c00237b4400d.png)
 
-이 `FetchEvent`가 `http://127.0.0.1:8887/`(`index.html`)에서 리소스를 요청하고 있었음을 알 수 있습니다. 이 앱은 수많은 `fetch` 요청을 처리할 것이므로, 중단점을 제자리에 남겨두고 실행을 계속할 수 있습니다. 이를 통해 앱을 통과할 때의 `FetchEvent`를 각각 검사할 수 있습니다. 앱에서 이루어지는 모든 요청을 세분화하여 볼 수 있는 매우 유용한 방법입니다.
+You can see that this `FetchEvent` was requesting the resource at `http://127.0.0.1:8887/`, which is our `index.html`. Because the app will handle many `fetch` requests, you can leave the breakpoint in place and resume execution. This will let you inspect each `FetchEvent` as it passes through the app. A very useful technique for getting a fine grained look at all the requests in your app.
 
-* __Resume__ 버튼을 눌러 스크립트 실행을 계속 진행하도록 허용합니다.
+* Press the **Resume** button to allow script execution to continue
 
-![ce7b5e8df4e8bc07.png](img/ce7b5e8df4e8bc07.png)
+![66b08c42b47a9987.png](img/66b08c42b47a9987.png)
 
-잠시 후에 같은 중단점에서 실행이 일시 중지됩니다. `event.request.url` 속성을 확인하세요. 참고로, 지금은 `http://127.0.0.1:8887/styles/main.css`를 표시합니다. 이런 식으로 계속 진행하면 `smiley.svg`, `main.js`, 그리고 마지막으로 `manifest.json`를 요청하는 과정을 볼 수 있습니다.
+After a moment, execution will pause on the same breakpoint. Check the `event.request.url` property and note it now displays `http://127.0.0.1:8887/styles/main.css`. You can continue in this way to watch it request `smiley.svg`, `main.js`, and finally the `manifest.json`.
 
+When you are finished exploring, remove any breakpoints and comment out the `debugger` call so that they don't interfere with the rest of the lab.
 
-## 푸시 알림 테스트
+## Testing Push notifications
 
+Push notifications are an important part of creating an engaging experience. Because notifications require coordination between an application server, a messaging service (like Google Cloud Messaging), and your Service Worker, it can be useful to test the Service Worker in isolation first to verify it is setup properly.
 
+### Adding Push support
 
+You may have noticed a button in the center of the application asking for the user to **Subscribe for Push Notifications**. This button is already wired up to request the Push notification permission from the user when clicked.
 
-푸시 알림은 참여도를 높이는 환경을 만드는 데 중요한 기능입니다. 알림 메시지를 보내려면 애플리케이션 서버, 메시징 서비스(예: Google 클라우드 메시징) 및 서비스 워커 간의 조정이 필수적이기 때문에, 먼저 서비스 워커만 따로 떼어놓고 테스트하여 올바로 설정되어 있는지 확인하는 것이 유익할 수 있습니다.
+![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)<aside class="warning">
 
-### 푸시 지원 추가
+<p>The code used to set up this Push subscription is just for demo purposes and should not be used in production. For a thorough guide on setting up Push notifications  <a href="/web/fundamentals/engage-and-retain/push-notifications/">see this post</a> on the Google Developers site.</p>
 
-애플리케이션 가운데 부분에 사용자에게 __Subscribe for Push Notifications__를 요청하는 버튼이 있습니다. 이 버튼은 클릭했을 때 사용자에게서 푸시 알림 권한을 요청하도록 이미 설정되어 있습니다.
+</aside> 
 
-![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)
+The only remaining step is to add support for the `push` event to `service-worker.js`.
 
-유일하게 남아 있는 단계는 `push` 이벤트를 위한 지원을 `service-worker.js`에 추가하는 작업입니다.
+* Open `service-worker.js` and add the following lines after the `fetch` handler
 
-* `service-worker.js`를 열고 `fetch` 핸들러 뒤에 다음 줄을 추가합니다.
+    self.addEventListener('push', function(event) {
+      var title = 'Yay a message.';
+      var body = 'We have received a push message.';
+      var icon = '/images/smiley.svg';
+      var tag = 'simple-push-example-tag';
+      event.waitUntil(
+        self.registration.showNotification(title, {
+          body: body,
+          icon: icon,
+          tag: tag
+        })
+      );
+    });
+    
 
-```
-self.addEventListener('push', function(event) {  
-  var title = 'Yay a message.';  
-  var body = 'We have received a push message.';  
-  var icon = '/images/smiley.svg';  
-  var tag = 'simple-push-example-tag';
-  event.waitUntil(  
-    self.registration.showNotification(title, {  
-      body: body,  
-      icon: icon,  
-      tag: tag  
-    })  
-  );  
-});
-```
+With the handler in place it's easy to simulate a Push event.
 
-핸들러가 있으면 푸시 이벤트를 쉽게 시뮬레이션할 수 있습니다.
-
-* __Application__ 패널을 엽니다.
-* 페이지를 새로 고칩니다. 새로운 서비스 워커가 보이면 `waiting` 단계로 들어가 __skipWaiting__ 버튼을 클릭합니다.
-* __Subscribe to Push Notifications__ 버튼을 클릭합니다.
-* 권한 프롬프트를 수락합니다.
+* Open the **Application** panel
+* Refresh the page, when you see the new Service Worker enter the `waiting` phase, click on the **skipWaiting** button
+* Click on the **Subscribe to Push Notifications** button in the app
+* Accept the permission prompt
 
 ![a8a8fa8d35b0667a.png](img/a8a8fa8d35b0667a.png)
 
-* 마지막으로, __Update__와 __Unregister__ 옆에 있는 __Push__ 버튼을 클릭합니다.
+* Finally, click the **Push** button, next to **Update** and **Unregister** back in the **Application** tab
 
 ![eacd4c5859f5f3ff.png](img/eacd4c5859f5f3ff.png)
 
-이제 화면 오른쪽 위에 푸시 알림이 나타나는 것이 보일 것입니다. 이 알림은 서비스 워커가 `push` 이벤트를 정상적으로 처리 중임을 확인해 줍니다.
+You should now see a Push notification appear in the top right of the screen, confirming that the Service Worker is handling `push` events as expected.
 
 ![b552ed129bc6cdf6.png](img/b552ed129bc6cdf6.png)
 
-멋지게 해내셨어요!
+Nice work!
 
-이제 도구 상자에 자신 있게 사용할 수 있는 몇 가지 디버깅 도구가 구비되어 있으므로 프로젝트를 진행하면서 발생하는 어떤 문제라도 해결할 준비가 되셨을 것입니다. 따라서 각자가 직접 훌륭하고 근사한 Progressive Web App을 빌드할 일만 남았습니다!
+Now that you have some debugging tools in your toolbox, you should be well equipped to fix-up any issues that arise in your project. The only thing left is for you to get out there and build the next amazing Progressive Web App!
 
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-
-
-
-## 문제가 있거나 의견이 있으세요? {: .hide-from-toc }
-언제든 망설이지 말고 
-[문제](https://github.com/googlecodelabs/debugging-service-workers/issues)를 제출해 주시면 코드랩에서 더욱 나은 서비스를 제공하는 데 큰 도움이 될 것입니다. 감사합니다!
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlecodelabs/debugging-service-workers/issues) today. And thanks!

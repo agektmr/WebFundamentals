@@ -1,132 +1,126 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
+{# wf_updated_on: 2018-08-30 #} {# wf_published_on: 2014-05-06 #} {# wf_blink_components: Blink>Image #}
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-05-06 #}
-{# wf_blink_components: Blink>Image #}
-
-# 画像の最適化 {: .page-title }
+# Image Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-ウェブページ上のダウンロード容量の大半を画像が占めることはよくあり、表示スペースのかなりの部分を画像が占有することも少なくありません。 そのため、画像を最適化することでウェブサイトの容量の大幅な削減とパフォーマンスの改善につながることがよくあります。ブラウザでダウンロードする必要がある容量が少ないほど、クライアントの帯域幅における競合は減り、ブラウザで有効なコンテンツをダウンロードして画面に表示するまでの時間も短縮されます。
+Images often account for most of the downloaded bytes on a web page and also often occupy a significant amount of visual space. As a result, optimizing images can often yield some of the largest byte savings and performance improvements for your website: the fewer bytes the browser has to download, the less competition there is for the client's bandwidth and the faster the browser can download and render useful content on the screen.
 
-画像の最適化は芸術でもあり科学でもあります。つまり、個々の画像を最も適切に圧縮する方法について明白な正解がないという点では芸術であり、画像のサイズを大幅に削減できる非常に高度な技術やアルゴリズムがたくさんあるという点では科学なのです。 画像に合った最適な設定を見つけるには、フォーマット機能、エンコード データのコンテンツ、画質、ピクセル数など、多くの観点で入念な分析が必要です。
+Image optimization is both an art and science: an art because there is no one definitive answer for how best to compress an individual image, and a science because there are many well developed techniques and algorithms that can significantly reduce the size of an image. Finding the optimal settings for your image requires careful analysis along many dimensions: format capabilities, content of encoded data, quality, pixel dimensions, and more.
 
-## 画像の除去と置換
-
-### TL;DR {: .hide-from-toc }
-- 不要な画像リソースを除外します
-- 可能な場合は CSS3 エフェクトを利用します
-- 画像にテキストをエンコードせず、ウェブフォントを使います
-
-
-最初に検討すべきことは、必要な効果を出すために画像が本当に必要かどうかということです。 優れたデザインとは、シンプルであると同時に常に最高のパフォーマンスを発揮するものです。 画像は HTML、CSS、JavaScript などページ上の他のアセットと比べて大きな容量を占めることが多いため、画像リソースを省くことができれば、必ず最高の最適化戦略になります。 一方、画像を適切に使用すれば、数千文字を費やすより多くの情報を伝えることもできます。そのバランスをどう取るかはウェブ デベロッパー次第です。
-
-次に、別の技術を使って、目的とする結果をもっと効率よく出力できないかを検討します。
-
-* **CSS エフェクト**（グラデーション、シャドウなど）や CSS アニメーションを使えば、解像度やズームのレベルにかかわらず、常に鮮明に表示される、解像度に依存しないアセットを、通常、画像ファイルに必要な容量の何分の 1 かで生成できます。
-* **ウェブフォント**を使用すると、美しい書体を利用できるだけでなく、テキストの選択、検索、サイズ変更の機能も維持されるため、ユーザビリティが大幅に向上します。
-
-活かし画像アセットにエンコード テキストを含めている場合は、一旦立ち止まって再検討してください。 優れたタイポグラフィーは良いデザイン、ブランディング、読みやすさという点では重要ですが、画像内テキストはユーザー エクスペリエンスを低下させます。テキストの選択、検索、ズーム、アクセスができないうえ、DPI の大きい端末にも適していません。 ウェブフォントを使うには[独自の最適化](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/)が必要ですが、これはテキストを表示するための最適な手法であり、上述の懸念はすべて解消されます。
-
-
-## ベクター画像と ラスター画像
+## Eliminating and replacing images
 
 ### TL;DR {: .hide-from-toc }
-- 幾何学的図形で構成された画像にはベクター画像が最適です
-- ベクター画像はズームや解像度の影響を受けません
-- ふぞろいな形や細部の多い複雑なシーンにはラスター画像を使用する必要があります
 
+* Eliminate unnecessary image resources
+* Leverage CSS3 effects where possible
+* Use web fonts instead of encoding text in images
 
-目的のエフェクトを実現するために画像を使うのが最適であると判明したら、次の重要な選択は、適切な画像形式を選ぶことです。
+The very first question you should ask yourself is whether an image is, in fact, required to achieve the effect you are after. Good design is simple and will also always yield the best performance. If you can eliminate an image resource, which often requires a large number of bytes relative to HTML, CSS, JavaScript and other assets on the page, then that is always the best optimization strategy. That said, a well-placed image can also communicate more information than a thousand words, so it is up to you to find that balance.
+
+Next, you should consider if there is an alternative technology that could deliver the desired results, but in a more efficient manner:
+
+* **CSS effects** (gradients, shadows, etc.) and CSS animations can be used to produce resolution-independent assets that always look sharp at every resolution and zoom level, often at a fraction of the bytes required by an image file.
+* **Web fonts** enable use of beautiful typefaces while preserving the ability to select, search, and resize text - a significant improvement in usability.
+
+If you ever find yourself encoding text in an image asset, stop and reconsider. Great typography is critical to good design, branding, and readability, but text-in-images delivers a poor user experience: the text is not selectable, not searchable, not zoomable, not accessible, and not friendly for high-DPI devices. The use of web fonts requires its [own set of optimizations](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/), but it addresses all of these concerns and is always a better choice for displaying text.
+
+## Vector vs. Raster images
+
+### TL;DR {: .hide-from-toc }
+
+* Vector images are ideal for images that consist of geometric shapes
+* Vector images are zoom and resolution-independent
+* Raster images should be used for complex scenes with lots of irregular shapes and details
+
+Once you've determined that an image is, in fact, the optimal format to achieve the desired effect, the next critical choice is to select the appropriate format:
 
 <div class="attempt-left">
   <figure>
-    <img src="images/vector-zoom.png" alt="ズームされたベクター画像">
-    <figcaption>ズームされたベクター画像</figcaption>
+    <img src="images/vector-zoom.png" alt="Zoomed-in vector image">
+    <figcaption>Zoomed-in vector image</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/raster-zoom.png" alt="ズームされたラスター画像">
-    <figcaption>ズームされたラスター画像</figcaption>
+    <img src="images/raster-zoom.png" alt="Zoomed-in raster image">
+    <figcaption>Zoomed-in raster image</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-* [ベクター グラフィック](https://en.wikipedia.org/wiki/Vector_graphics)では、線、点、ポリゴンを使って画像を表します。
-* [ラスター グラフィック](https://en.wikipedia.org/wiki/Raster_graphics)では、長方形のグリッドに含まれた各ピクセルの値を個々にエンコードすることで画像を表します。
+* [Vector graphics](https://en.wikipedia.org/wiki/Vector_graphics) use lines, points, and polygons to represent an image.
+* [Raster graphics](https://en.wikipedia.org/wiki/Raster_graphics) represent an image by encoding the individual values of each pixel within a rectangular grid.
 
-形式ごとに、それぞれ長所と短所があります。 ベクター形式は、単純な幾何学的図形で構成される画像（ロゴ、テキスト、アイコンなど）に最適です。解像度とズームの設定にかかわらず鮮明に結果が表示されるため、高解像度画面やさまざまなサイズで表示する必要があるアセットに理想的な形式です。
+Each format has its own set of pros and cons. Vector formats are ideally suited for images that consist of simple geometric shapes (for example, logos, text, icons, and so on), and deliver sharp results at every resolution and zoom setting, which makes them an ideal format for high-resolution screens and assets that need to be displayed at varying sizes.
 
-ただし、ベクター形式は、シーンが複雑な場合（写真など）には適していません。すべての形状を表現するには SVG マークアップの量が極めて多くなることがあり、それでも「写真と変わらないリアルさ」で出力できないことがあります。 このような場合は、GIF、PNG、JPEG などのラスター画像形式や、JPEG-XR、WebP などの最新の形式のいずれかを使用することをおすすめします。
+However, vector formats fall short when the scene is complicated (for example, a photo): the amount of SVG markup to describe all the shapes can be prohibitively high and the output may still not look "photorealistic". When that's the case, that's when you should be using a raster image format such as GIF, PNG, JPEG, or one of the newer formats such as JPEG-XR and WebP.
 
-ラスター画像には、ベクター画像のように解像度やズームを問わないという便利な特性はありません。ラスター画像を拡大すると、ギザギザしてぼやけたグラフィックになります。 そのため、ユーザーに最適なエクスペリエンスを提供するには、さまざまな解像度のラスター画像を複数バージョン保存しなければならないことがあります。
+Raster images do not have the same nice properties of being resolution or zoom independent - when you scale up a raster image you'll see jagged and blurry graphics. As a result, you may need to save multiple versions of a raster image at various resolutions to deliver the optimal experience to your users.
 
-
-## 高解像度画面の影響
+## Implications of high-resolution screens
 
 ### TL;DR {: .hide-from-toc }
-- 高解像度画面では 1 つの CSS ピクセルに複数のデバイス ピクセルが対応します
-- 高解像度画像では、必要なピクセル数とバイト数が膨大になります
-- 画像最適化テクニックは解像度にかかわらず同じです
 
+* High resolution screens have multiple device pixels per CSS pixel
+* High resolution images require significantly higher number of pixels and bytes
+* Image optimization techniques are the same regardless of resolution
 
-画像のピクセルについて議論するときは、ピクセルの種別、すなわち CSS ピクセルとデバイス ピクセルを区別する必要があります。 1 つの CSS ピクセルには複数のデバイス ピクセルが含まれていることがあります。たとえば、1 つの CSS ピクセルがそのまま 1 つのデバイス ピクセルに対応することもあれば、複数のデバイス ピクセルに対応していることもあります。 ここで重要なのは、デバイス ピクセルの数が多いほど、画面上のコンテンツが詳細まで鮮明に表示されるという点です。
+When we talk about image pixels, we need to distinguish between different kinds of pixels: CSS pixels and device pixels. A single CSS pixel may contain multiple device pixels - for example, a single CSS pixel may correspond directly to a single device pixel, or may be backed by multiple device pixels. What's the point? Well, the more device pixels there are, the finer the detail of the displayed content on the screen.
 
-<img src="images/css-vs-device-pixels.png"  alt="CSS ピクセルとデバイス ピクセル">
+<img src="images/css-vs-device-pixels.png"  alt="CSS vs device pixels" />
 
-高 DPI（HiDPI）画面では美しい出力を得られる一方で、明白な代償が 1 つあります。デバイス ピクセルの数が多いという利点を活かすためには、精細な画像アセットが必要です。 幸い、ベクター画像は解像度にかかわらず鮮明にレンダリングできるため、この処理に最適です。より詳細にレンダリングするうえで処理コストが高くなることはあっても、ベースとなるアセットは同じであり、解像度に依存しません。
+High DPI (HiDPI) screens produce beautiful results, but there is one obvious tradeoff: our image assets require more detail in order to take advantage of the higher device pixel counts. The good news is, vector images are ideally suited for this task, as they can be rendered at any resolution with sharp results - we might incur a higher processing cost to render the finer detail, but the underlying asset is the same and is resolution independent.
 
-一方、ラスター画像では、ピクセル単位で画像データをエンコードするため、非常に厄介な問題が生じます。 つまり、ピクセルの数が多いほど、ラスター画像のファイルサイズも大きくなるのです。 一例として、100 x 100（CSS）ピクセルで表示される写真アセットで違いを見てみましょう。
+On the other hand, raster images pose a much larger challenge because they encode image data on a per-pixel basis. Hence, the larger the number of pixels, the larger the filesize of a raster image. As an example, let's consider the difference between a photo asset displayed at 100x100 (CSS) pixels:
 
 <table>
+  
 <thead>
   <tr>
-    <th>画面解像度</th>
-    <th>合計ピクセル数</th>
-    <th>未圧縮ファイルサイズ（ピクセルあたり 4 バイト）</th>
+    <th>Screen resolution</th>
+    <th>Total pixels</th>
+    <th>Uncompressed filesize (4 bytes per pixel)</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="resolution">1x</td>
   <td data-th="total pixels">100 x 100 = 10,000</td>
-  <td data-th="filesize">40,000 バイト</td>
+  <td data-th="filesize">40,000 bytes</td>
 </tr>
 <tr>
   <td data-th="resolution">2x</td>
   <td data-th="total pixels">100 x 100 x 4 = 40,000</td>
-  <td data-th="filesize">160,000 バイト</td>
+  <td data-th="filesize">160,000 bytes</td>
 </tr>
 <tr>
   <td data-th="resolution">3x</td>
   <td data-th="total pixels">100 x 100 x 9 = 90,000</td>
-  <td data-th="filesize">360,000 バイト</td>
+  <td data-th="filesize">360,000 bytes</td>
 </tr>
-</tbody>
 </table>
 
-物理的な画面の解像度を 2 倍にすると、合計ピクセル数は 4 倍になります。水平方向のピクセル数 x 2 に垂直方向のピクセル数 x 2 を乗算するためです。 したがって、「2x」画面で必要なピクセル数はそのまま 2 倍になるのではなく、4 倍になります。
+When we double the resolution of the physical screen, the total number of pixels increases by a factor of four: double the number of horizontal pixels, times double the number of vertical pixels. Hence, a "2x" screen not just doubles, but quadruples the number of required pixels!
 
-これは、現実的にはどのような意味を持つでしょうか。高解像度画面では美しい画像を提供できるため、製品の大きな売りになります。 ただし、高解像度画面には高解像度画像も必要です。ベクター画像は解像度に依存せず、常に鮮明な結果が出力されるので、可能な限りベクター画像の利用をおすすめします。ラスター画像が必要な場合は、[`srcset` および `picture`](/web/fundamentals/design-and-ux/responsive/images#images-in-markup) を利用して、画像ごとに複数のバージョンを提供して最適化します。
+So, what does this mean in practice? High resolution screens enable us to deliver beautiful images, which can be a great product feature. However, high resolution screens also require high-resolution images: prefer vector images whenever possible as they are resolution independent and always deliver sharp results, and if a raster image is required, deliver and optimize multiple variants of each image with the help of [`srcset` and `picture`](/web/fundamentals/design-and-ux/responsive/images#images-in-markup).
 
-## ベクター画像の最適化
+## Optimizing vector images
 
 ### TL;DR {: .hide-from-toc }
-- SVG は XML ベースの画像形式です
-- サイズを削減するには SVG ファイルを縮小する必要があります
-- SVG ファイルは GZIP で圧縮する必要があります
 
+* SVG is an XML-based image format
+* SVG files should be minified to reduce their size
+* SVG files should be compressed with GZIP
 
-最新のブラウザはすべて Scalable Vector Graphics（SVG）をサポートしています。これは、2 次元グラフィック用の XML ベースの画像形式です。SVG マークアップをページに直接埋め込むことも、外部リソースとして使用することもできます。 そして、SVG ファイルの作成はほとんどのベクターベースの描画ソフトウェアで可能です。また、任意のテキスト エディタで直接手作業で作成することもできます。
-
+All modern browsers support Scalable Vector Graphics (SVG), which is an XML-based image format for two-dimensional graphics: we can embed the SVG markup directly on the page, or as an external resource. In turn, an SVG file can be created by most vector-based drawing software, or by hand and directly in your favorite text editor.
 
     <?xml version="1.0" encoding="utf-8"?>
-    <!-- Generator:Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version:6.00 Build 0)  -->
+    <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
     <svg version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
        x="0px" y="0px" viewBox="0 0 612 792" xml:space="preserve">
     <g id="XMLID_1_">
@@ -135,40 +129,40 @@ book_path: /web/fundamentals/_book.yaml
       </g>
     </g>
     </svg>
+    
 
+The above example renders a simple circle shape with a black outline and red background and was exported from Adobe Illustrator. As you can tell, it contains a lot of metadata, such as layer information, comments, and XML namespaces that are often unnecessary to render the asset in the browser. As a result, it is always a good idea to minify your SVG files by running through a tool like [svgo](https://github.com/svg/svgo).
 
-上記の例では、シンプルな円形が黒の輪郭線に赤い背景でレンダリングされます。これは Adobe Illustrator からエクスポートされたものです。 おわかりのように、このファイルには、レイヤ情報、コメント、XML 名前空間など、ブラウザでアセットをレンダリングする際には必要ない多くのメタデータが含まれています。 このため、[svgo](https://github.com/svg/svgo) などのツールを使って SVG ファイルを縮小化することが常に推奨されます。
+Case in point, svgo reduces the size of the above SVG file generated by Illustrator by 58%, taking it from 470 to 199 bytes. Further, because SVG is an XML-based format, we can also apply GZIP compression to reduce its transfer size - make sure your server is configured to compress SVG assets!
 
-たとえば、svgo を使用すると、Illustrator で生成された上記の SVG ファイルはサイズが 58% 縮小されて、470 バイトから 199 バイトになります。 さらに、SVG は XML ベースの形式なので、GZIP 圧縮を適用して転送サイズを縮小することもできます。サーバーが SVG アセットを圧縮するように設定されていることを確認してください。
-
-
-## ラスター画像の最適化
+## Optimizing raster images
 
 ### TL;DR {: .hide-from-toc }
-- ラスター画像はピクセルのグリッドです
-- ピクセルごとにカラー情報と透過度情報をエンコードします
-- 画像圧縮ツールでは、さまざまな技術でピクセルあたりの必要ビット数を削減して画像のファイルサイズを縮小します
 
+* A raster image is a grid of pixels
+* Each pixel encodes color and transparency information
+* Image compressors use a variety of techniques to reduce the number of required bits per pixel to reduce file size of the image
 
-ラスター画像は、単純に個々の「ピクセル」で構成された 2 次元グリッドです。たとえば、100 x 100 ピクセルの画像は 10,000 個のピクセルが並んだものです。 そして、各ピクセルには「[RGBA](https://en.wikipedia.org/wiki/RGBA_color_space)」値が格納されています。（R）は赤、（G）は緑、（B）は青、（A）はアルファ（透明度）のチャンネルです。
+A raster image is simply a 2-dimensional grid of individual "pixels" - for example, a 100x100 pixel image is a sequence of 10,000 pixels. In turn, each pixel stores the "[RGBA](https://en.wikipedia.org/wiki/RGBA_color_space)" values: (R) red channel, (G) green channel, (B) blue channel, and (A) alpha (transparency) channel.
 
-内部処理で、ブラウザはチャンネルごとに 256 の値（シェード）を割り当てます。これは、チャンネルあたり 8 ビット（2^8 = 256）、ピクセルあたり 4 バイト（4 チャンネル x 8 ビット = 32 ビット = 4 バイト）になります。 そのため、グリッドの寸法がわかれば、ファイルサイズを簡単に計算できます。
+Internally, the browser allocates 256 values (shades) for each channel, which translates to 8 bits per channel (2 ^ 8 = 256), and 4 bytes per pixel (4 channels x 8 bits = 32 bits = 4 bytes). As a result, if we know the dimensions of the grid we can easily calculate the filesize:
 
-* 100 x 100 ピクセルの画像は 10,000 ピクセルで構成される
-* 10,000 ピクセル x 4 バイト= 40,000 バイト
-* 40,000 バイト / 1024 = 39 KB
+* 100 x 100px image is composed of 10,000 pixels
+* 10,000 pixels x 4 bytes = 40,000 bytes
+* 40,000 bytes / 1024 = 39 KB
 
-注: 余談になりますが、サーバーからクライアントにデータを転送するときの画像形式によらず、画像をブラウザでデコードする場合はピクセルごとにメモリが必ず 4 バイト使用されます。 これは、画像が大きい場合や、メモリの空き容量が少ない端末（低価格のモバイル端末など）の場合に、重大な制約になるおそれがあります。
+Note: As an aside, regardless of the image format used to transfer the data from the server to the client, when the image is decoded by the browser, each pixel always occupies 4 bytes of memory. This can be an important constraint for large images and devices which do not have a lot of available memory - for example, low-end mobile devices.
 
 <table>
+  
 <thead>
   <tr>
-    <th>寸法</th>
-    <th>ピクセル数</th>
-    <th>ファイルサイズ</th>
+    <th>Dimensions</th>
+    <th>Pixels</th>
+    <th>File size</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="dimensions">100 x 100</td>
   <td data-th="pixels">10,000</td>
@@ -194,196 +188,188 @@ book_path: /web/fundamentals/_book.yaml
   <td data-th="pixels">640,000</td>
   <td data-th="file size">2500 KB</td>
 </tr>
-</tbody>
 </table>
 
-100 x 100 ピクセルの画像で 39 KB であればたいしたことはないと思えるかもしれませんが、画像が大きくなるとファイルサイズは急激に肥大化し、画像アセットのダウンロードに時間も通信コストもかかるようになります。 幸い、これまでの説明は「未圧縮」の画像形式についてです。 では、画像ファイルのサイズを縮小するにはどうしたらよいでしょうか。
+39KB for a 100x100 pixel image may not seem like a big deal, but the filesize quickly explodes for larger images and makes image assets both slow and expensive to download. Thankfully, what we've described so far is the "uncompressed" image format. What could we do to reduce the image file size?
 
-シンプルな戦略の 1 つは、画像の「ビット深度」をチャンネルあたり 8 ビットからさらに小さいカラーパレットに縮小することです。チャンネルあたり 8 ビットでは、1 つのチャンネルに 256 の値が割り当てられ、合計で 16,777,216（256 ^ 3）色になります。 パレットを 256 色に減らすとどうなるでしょうか。RGB チャンネルには合計 8 ビットのみで済むため、ピクセルあたり即座に 2 バイト削減できます。つまり、元のピクセルあたり 4 バイトの形式からすると 50% の圧縮となります。
+One simple strategy is to reduce the "bit-depth" of the image from 8 bits per channel to a smaller color palette: 8 bits per channel gives us 256 values per channel and 16,777,216 (256 ^ 3) colors in total. What if we reduced the palette to 256 colors? Then we would only need 8 bits in total for the RGB channels and immediately save two bytes per pixel -- that's 50% compression savings over our original 4 bytes per pixel format!
 
-<img src="images/artifacts.png"  alt="圧縮による画像の乱れ">
+<img src="images/artifacts.png"  alt="Compression artifacts" />
 
-注: 左から右に（PNG）: 32 ビット（1,600 万色）、7 ビット（128 色）、5 ビット（32 色）。 徐々に色が変わる複雑なシーン（グラデーション、空など）では、5 ビット アセットの場合に空にピクセルが出現するなど、圧縮による画像の乱れを避けるためには大きいカラーパレットが必要です。 逆に、限られた色しか使用していない画像に大きいパレットを使うと、貴重な容量を浪費することになります。
+Note: Left to right (PNG): 32-bit (16M colors), 7-bit (128 colors), 5-bit (32 colors). Complex scenes with gradual color transitions (gradients, sky, etc.) require larger color palettes to avoid visual artifacts such as the pixelated sky in the 5-bit asset. On the other hand, if the image only uses a few colors, then a large palette is simply wasting precious bits!
 
-ここまでは個々のピクセルに格納されているデータの最適化を行いましたが、次は少し高度な内容に移り、隣接するピクセルについて考えてみましょう。空や、繰り返しのテクスチャなど、多くの画像（特に写真）では隣接するピクセルの色が似ていることがわかります。 この情報を有効に活用すれば、圧縮ツールは「[差分符号化](https://en.wikipedia.org/wiki/Delta_encoding)」を適用でき、ピクセルごとに値を保存するのではなく、隣接するピクセルとの差分を保存できます。隣接するピクセルが同じであれば、差分は「ゼロ」で、1 ビットを保存するだけで済みます。しかし、これで終わりではありません。
+Next, once we've optimized the data stored in individual pixels we could get more clever and look at nearby pixels as well: turns out, many images, and especially photos, have many nearby pixels with similar colors - for example, the sky, repeating textures, and so on. Using this information to our advantage the compressor can apply "[delta encoding](https://en.wikipedia.org/wiki/Delta_encoding)" where instead of storing the individual values for each pixel, we can store the difference between nearby pixels: if the adjacent pixels are the same, then the delta is "zero" and we only need to store a single bit! But why stop there...
 
-人間の目の感度は色ごとに異なっています。色のパレットを増減することにより、感度の違いを考慮して色のエンコードを最適化することができます。
-「隣接する」ピクセルは 2 次元のグリッドを構成します。つまり、各ピクセルには複数の隣接ピクセルがあります。この点を活かして差分エンコードをさらに改善できます。
-直接隣接するピクセルのみに注目するのではなく、隣接するピクセルで構成されたより大きなブロックに注目し、それぞれのブロックを異なる設定でエンコードします。 他にもさまざまな技術があります。
+The human eye has different level of sensitivity to different colors: we can optimize our color encoding to account for this by reducing or increasing the palette for those colors. "Nearby" pixels form a two dimensional grid, which means that each pixel has multiple neighbors: we can use this fact to further improve delta encoding. Instead of looking at just the immediate neighbors for each pixel, we can look at larger blocks of nearby pixels and encode different blocks with different settings. And so on...
 
-このように、画像の最適化はすぐに込み入った話になり（これが楽しい人もあるでしょう）、学問や商用の研究が活発に行われている分野です。 画像が占める容量は大きいため、優れた画像圧縮技術の開発には大きな価値があります。興味のある方は、[Wikipedia のページ](https://en.wikipedia.org/wiki/Image_compression)をご覧ください。また、実践例については、[WebP 圧縮技術に関するホワイトペーパー](/speed/webp/docs/compression)をご覧ください。
+As you can tell, image optimization gets complicated quickly (or fun, depending on your perspective), and is an active area of academic and commercial research. Images occupy a lot of bytes and there is a lot of value in developing better image compression techniques! If you're curious to learn more, head to the [Wikipedia page](https://en.wikipedia.org/wiki/Image_compression), or check out the [WebP compression techniques whitepaper](/speed/webp/docs/compression) for a hands-on example.
 
-繰り返しになりますが、どの方法も優れている反面、非常に学術的です。これらは、ページ上の画像を最適化するうえで、どのように役立つのでしょうか。新しい圧縮技術を発明する立場にはなくても、問題の全体像を理解することは重要です。つまり RGBA ピクセル、ビット深度、さまざまな最適化技法などの理解です。 各種ラスター画像形式の詳細な説明に入る前に、こうした概念をすべて理解し、留意することが大切です。
+So, once again, this is all great, but also very academic: how does it help us optimize images on our pages? Well, we are definitely not in a position to invent new compression techniques, but it's important to understand the shape of the problem: RGBA pixels, bit-depth, and various optimization techniques. All of these concepts are critical to understand and keep in mind before we dive into the discussions of various raster image formats.
 
-
-## 可逆画像圧縮と非可逆画像圧縮
+## Lossless vs lossy image compression
 
 ### TL;DR {: .hide-from-toc }
-- 人間の目の仕組み上、画像は非可逆圧縮の有力候補です
-- 画像最適化は、非可逆圧縮および可逆圧縮の一種です
-- 画像形式の違いとは、画像を最適化するために非可逆アルゴリズムと可逆アルゴリズムのどちらをどう使うかの違いです
-- すべての画像に合った最適な形式や「画質の設定」は存在しません。特定の圧縮ツールと画像コンテンツの組み合わせに応じて、固有の出力が生成されます
 
+* Due to how our eyes work, images are great candidates for lossy compression
+* Image optimization is a function of lossy and lossless compression
+* Differences in image formats are due to the difference in how and which lossy and lossless algorithms are used to optimize the image
+* There is no single best format or "quality setting" for all images: each combination of particular compressor and image contents produce a unique output
 
-ページのソースコードや実行可能ファイルなど、特定の種類のデータの場合は、圧縮しても元の情報が変わらず、失われないことが大切です。データが 1 ビットでも損失したり間違っていたりすると、ファイルの中味の意味がまったく変わり、もっと悪ければ、完全に壊れてしまうこともあります。 一方で画像、音声、動画など、その他のデータの場合は、元のデータの表現と「ほぼ」合っていればまったく問題ありません。
+For certain types of data, such as source code for a page, or an executable file, it is critical that a compressor does not alter or lose any of the original information: a single missing or wrong bit of data could completely change the meaning of the contents of the file, or worse, break it entirely. For some other types of data, such as images, audio, and video, it may be perfectly acceptable to deliver an "approximate" representation of the original data.
 
-実際、人間の目の仕組み上、画像のファイルサイズを縮小するために各ピクセルの情報を一部省いてしまっても、通常はまったく差し支えがありません。たとえば、人間の目は色によって感度が異なるため、色によってはわずかなビット数でエンコードできます。 そのため、通常の画像最適化パイプラインは次の 2 つの大きな手順で構成されます。
+In fact, due to how the eye works, we can often get away with discarding some information about each pixel in order to reduce the filesize of an image - for example, our eyes have different sensitivity to different colors, which means that we can use fewer bits to encode some colors. As a result, a typical image optimization pipeline consists of two high level steps:
 
-1. 一部のピクセルデータを除去する「[非可逆](https://en.wikipedia.org/wiki/Lossy_compression)」フィルタで画像を処理する
-1. ピクセルデータを圧縮する「[可逆](https://en.wikipedia.org/wiki/Lossless_compression)」フィルタで画像を処理する
+1. Image is processed with a "[lossy](https://en.wikipedia.org/wiki/Lossy_compression)" filter that eliminates some pixel data
+2. Image is processed with a "[lossless](https://en.wikipedia.org/wiki/Lossless_compression)" filter that compresses the pixel data
 
-**1 つ目の手順は省略可能です。具体的なアルゴリズムは特定の画像形式によって異なりますが、重要なのは、どの画像も非可逆圧縮手順を実施してサイズを圧縮できる点を理解することです。**実際、GIF、PNG、JPEG など、さまざまな画像形式の違いは、非可逆手順と可逆手順を適用する際に使う（または省略する）具体的なアルゴリズムの組み合わせによるものです。
+**The first step is optional, and the exact algorithm will depend on the particular image format, but it is important to understand that any image can undergo a lossy compression step to reduce its size.** In fact, the difference between various image formats, such as GIF, PNG, JPEG, and others, is in the combination of the specific algorithms they use (or omit) when applying the lossy and lossless steps.
 
-では、非可逆最適化と可逆最適化の「最適な」設定とはどのようなものでしょうか。その答えは、画像のコンテンツや、ファイルサイズと非可逆圧縮による画像の乱れのバランスをどう取るのかといった独自の基準によって異なります。非可逆最適化を省略し、複雑な細かい点まで厳密に表現する必要がある場合もあれば、非可逆最適化を積極的に適用して画像アセットのファイルサイズを縮小する場合もあります。  つまり独自の判断と状況によるため、いつでも使える万能の設定はありません。
+So, what is the "optimal" configuration of lossy and lossless optimization? The answer depends on the image contents and your own criteria such as the tradeoff between filesize and artifacts introduced by lossy compression: in some cases you may want to skip lossy optimization to communicate intricate detail in its full fidelity, and in others you may be able to apply aggressive lossy optimization to reduce the filesize of the image asset. This is where your own judgment and context need to come into play - there is no one universal setting.
 
-<img src="images/save-for-web.png" class="attempt-right" alt="ウェブ用に保存">
+<img src="images/save-for-web.png" class="attempt-right" alt="Save for web" />
 
-実践的な例をあげると、JPEG などの非可逆形式を扱う場合、一般的に圧縮ツールではカスタマイズ可能な「画質」設定が用意されています（Adobe Photoshop の「Save for Web」機能で表示される画質スライダなど）。通常は、1～100 の値で、非可逆アルゴリズムと可逆アルゴリズムの固有の組み合わせである内部処理を制御します。 最良の結果を得るには、画像でさまざまな画質の設定を試し、思い切って画質を下げてみましょう。多くの場合、表示される結果は非常に良好で、ファイルサイズも大幅に削減されます。
+As a hands-on example, when using a lossy format such as JPEG, the compressor will typically expose a customizable "quality" setting (for example, the quality slider provided by the "Save for Web" functionality in Adobe Photoshop), which is typically a number between 1 and 100 that controls the inner workings of the specific collection of lossy and lossless algorithms. For best results, experiment with various quality settings for your images, and don't be afraid to dial down the quality - the visual results are often very good and the filesize savings can be quite large.
 
-注: 異なる画像形式の画質レベルは、画像のエンコードに使用するアルゴリズムが違いうため、単純に比較することはできません。画質 90 の JPEG と画質 90 の WebP では、生成される結果は大きく異なります。 実際、画像形式と画質レベルが同じでも、圧縮ツールの実装に応じて表示結果が異なることがあります。
+Note: Note that quality levels for different image formats are not directly comparable due to differences in algorithms used to encode the image: quality 90 JPEG will produce a very different result than a quality 90 WebP. In fact, even quality levels for the same image format may produce visibly different output based on implementation of the compressor!
 
-
-## 適切な画像形式の選択
+## Selecting the right image format
 
 ### TL;DR {: .hide-from-toc }
-- 最初に適切な汎用の形式（GIF、PNG、JPEG）を選択します
-- 各形式において、画質やパレットサイズなどの最適な設定を探して選択します
-- 最新のクライアント向けに WebP アセットや JPEG XR アセットを追加することを検討してください
 
+* Start by selecting the right universal format: GIF, PNG, JPEG
+* Experiment and select the best settings for each format: quality, palette size, etc.
+* Consider adding WebP and JPEG XR assets for modern clients
 
-さまざまな非可逆圧縮アルゴリズムと可逆圧縮アルゴリズムに加えて、画像形式に応じて、アニメーション、透明度（アルファ）チャンネルなど、異なる機能がサポートされています。 そのため、特定の画像の「適切な形式」を選択するとは、希望どおりの結果が表示され、しかも機能要件を満たす形式を選択する、ということになります。
-
+In addition to different lossy and lossless compression algorithms, different image formats support different features such as animation and transparency (alpha) channels. As a result, the choice of the "right format" for a particular image is a combination of desired visual results and functional requirements.
 
 <table>
+  
 <thead>
   <tr>
-    <th>形式</th>
-    <th>透明度</th>
-    <th>アニメーション</th>
-    <th>ブラウザ</th>
+    <th>Format</th>
+    <th>Transparency</th>
+    <th>Animation</th>
+    <th>Browser</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/Graphics_Interchange_Format">GIF</a></td>
-  <td data-th="transparency">対応</td>
-  <td data-th="animation">対応</td>
-  <td data-th="browser">すべて</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a></td>
-  <td data-th="transparency">対応</td>
-  <td data-th="animation">非対応</td>
-  <td data-th="browser">すべて</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">No</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG">JPEG</a></td>
-  <td data-th="transparency">非対応</td>
-  <td data-th="animation">非対応</td>
-  <td data-th="browser">すべて</td>
+  <td data-th="transparency">No</td>
+  <td data-th="animation">No</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG_XR">JPEG XR</a></td>
-  <td data-th="transparency">対応</td>
-  <td data-th="animation">対応</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
   <td data-th="browser">IE</td>
 </tr>
 <tr>
   <td data-th="format"><a href="http://en.wikipedia.org/wiki/WebP">WebP</a></td>
-  <td data-th="transparency">対応</td>
-  <td data-th="animation">対応</td>
-  <td data-th="browser">Chrome、Opera、Android</td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
+  <td data-th="browser">Chrome, Opera, Android</td>
 </tr>
-</tbody>
 </table>
 
-幅広くサポートされている画像形式は、GIF、PNG、JPEG の 3 つです。 これらの形式の他に、WebP、JPEG XR などの新しい形式にも対応しているブラウザもあります。最新の形式では、全体的な圧縮率が向上し、機能の数も増えています。 それでは、どの形式を使用すべきでしょうか。
+There are three universally supported image formats: GIF, PNG, and JPEG. In addition to these formats, some browsers also support newer formats such as WebP and JPEG XR, which offer better overall compression and more features. So, which format should you use?
 
-<img src="images/format-tree.png"  alt="ウェブ用に保存">
+<img src="images/format-tree.png"  alt="Save for web" />
 
-1. **アニメーションが必要ですか。その場合、一般的な選択肢は GIF のみです。**
-    * GIF ではカラーパレットが最大で 256 色に制限されるため、ほとんどの画像にとって魅力のない選択肢となります。 さらに、パレットが小さい画像の場合は PNG-8 のほうが高圧縮率になります。 このため、GIF はアニメーションが必要な場合に限り適切な選択肢です。
-1. **最高解像度で精細さを維持する必要がありますか。その場合、PNG を使用します。**
-    * PNG では、カラーパレットのサイズ選択以外は、非可逆圧縮アルゴリズムは適用されません。 このため、最高画質の画像が出力されますが、他の形式よりもファイルサイズが著しく大きくなるという代償も伴います。 そのため慎重に使用してください。
-    * 画像アセットに幾何学的図形で構成された画像が含まれている場合は、ベクター（SVG）形式に変換することを検討してください。
-    * 画像アセットにテキストが含まれている場合は、再検討してください。 画像内のテキストは、選択も、検索も、「ズーム」もできません。 カスタマイズした外観を（ブランディングなどの理由で）出力する必要がある場合は、代わりにウェブフォントを使用してください。
-1. **写真、スクリーンショット、または同様の画像アセットを最適化していますか。その場合、JPEG を使用します。**
-    * JPEG では、非可逆最適化と可逆最適化を組み合わせて画像アセットのファイルサイズを削減します。 JPEG の画質レベルをいくつか試して、アセットに合った最適な画質と ファイルサイズのバランスを見つけてください。
+1. **Do you need animation? If so, GIF is the only universal choice.** 
+    * GIF limits the color palette to at most 256 colors, which makes it a poor choice for most images. Further, PNG-8 delivers better compression for images with a small palette. As a result, GIF is the right answer only when animation is required.
+2. **Do you need to preserve fine detail with highest resolution? Use PNG.** 
+    * PNG does not apply any lossy compression algorithms beyond the choice of the size of the color palette. As a result, it will produce the highest quality image, but at a cost of significantly higher filesize than other formats. Use judiciously.
+    * If the image asset contains imagery composed of geometric shapes, consider converting it to a vector (SVG) format!
+    * If the image asset contains text, stop and reconsider. Text in images is not selectable, searchable, or "zoomable". If you need to convey a custom look (for branding or other reasons), use a web font instead.
+3. **Are you optimizing a photo, screenshot, or a similar image asset? Use JPEG.** 
+    * JPEG uses a combination of lossy and lossless optimization to reduce filesize of the image asset. Try several JPEG quality levels to find the best quality vs. filesize tradeoff for your asset.
 
-最後に、アセットごとの最適な画像形式と設定を決定したら、WebP や JPEG XR でエンコードした別バージョンを追加することを検討してください。 この 2 つの形式はどちらも新しいため、残念ながら（まだ）すべてのブラウザで広くサポートされているわけではありませんが、新しいクライアントであれば大幅なサイズ削減を実現できます。たとえば、WebP では、同等の JPEG 画像よりも平均で[ファイルサイズを 30% 縮小](/speed/webp/docs/webp_study)できます。
+Finally, once you've determined the optimal image format and its settings for each of your assets, consider adding an additional variant encoded in WebP and JPEG XR. Both of these formats are new, and unfortunately are not (yet) universally supported by all browsers, but they can nonetheless provide significant savings for newer clients - for example, on average, WebP delivers a [30% filesize decrease](/speed/webp/docs/webp_study) over a comparable JPEG image.
 
-WebP も JPEG XR も幅広くサポートされてはいないため、アプリケーションやサーバーに別のロジックを追加して適切なリソースを提供する必要があります。
+Since neither WebP and JPEG XR are universally supported, you will need to add additional logic to your application or servers to serve the appropriate resource:
 
-* 一部の CDN では、JPEG XR や WebP の配信を含め、画像の最適化をサービスとして提供しています。
-* 一部のオープンソースのツール（Apache 向けまたは Nginx 向けの PageSpeed など）を使用して、適切なアセットの最適化、変換、提供を自動化できます。
-* アプリケーション ロジックを追加して、クライアントを検出し、クライアントでサポートしている形式を確認することで、利用できる最適な形式で画像を提供できます。
+* Some CDNs provide image optimization as a service, including JPEG XR and WebP delivery.
+* Some open-source tools (for example, PageSpeed for Apache or Nginx) automate the optimization, conversion, and serving of appropriate assets.
+* You can add additional application logic to detect the client, check which formats they support, and serve the best available image format.
 
-最後になりますが、Webview を使ってネイティブ アプリケーションでコンテンツをレンダリングすると、クライアントを完全に制御できるため、WebP を使うだけで済みます。Facebook、Google+ など多くのサービスでは WebP を使って画像をすべてアプリケーション内で配信しています。削減される容量は、この労力に完全に見合っています。 WebP の詳細については、2013 年度 Google I/O の [WebP: Deploying Faster, Smaller, and More Beautiful Images](https://www.youtube.com/watch?v=pS8udLMOOaE) のプレゼンテーションをご覧ください。
+Finally, note that if you are using a Webview to render content in your native application, then you have full control of the client and can use WebP exclusively! Facebook, Google+ and many others use WebP to deliver all of their images within their applications - the savings are definitely worth it. To learn more about WebP, checkout the [WebP: Deploying Faster, Smaller, and More Beautiful Images](https://www.youtube.com/watch?v=pS8udLMOOaE) presentation from Google I/O 2013.
 
+## Tools and parameter tuning
 
-## ツールとパラメータの調整
-
-すべての画像に当てはまる完璧な画像形式、ツール、最適化パラメータのセットはありません。 最良の結果を得るには、画像のコンテンツ、画像の表示要件とその他の技術要件に応じて、形式や設定を選ぶ必要があります。
+There is no one perfect image format, tool, or a set of optimization parameters that apply to all images. For best results you will have to pick the format and its settings depending on the contents of the image, and its visual and other technical requirements.
 
 <table>
+  
 <thead>
   <tr>
-    <th>ツール</th>
-    <th>説明</th>
+    <th>Tool</th>
+    <th>Description</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="tool"><a href="http://www.lcdf.org/gifsicle/">gifsicle</a></td>
-  <td data-th="description">GIF 画像を作成して最適化</td>
+  <td data-th="description">create and optimize GIF images</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://jpegclub.org/jpegtran/">jpegtran</a></td>
-  <td data-th="description">JPEG 画像を最適化</td>
+  <td data-th="description">optimize JPEG images</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://optipng.sourceforge.net/">optipng</a></td>
-  <td data-th="description">可逆 PNG 最適化</td>
+  <td data-th="description">lossless PNG optimization</td>
 </tr>
 <tr>
   <td data-th="tool"><a href="http://pngquant.org/">pngquant</a></td>
-  <td data-th="description">非可逆 PNG 最適化</td>
+  <td data-th="description">lossy PNG optimization</td>
 </tr>
-</tbody>
 </table>
 
+Don't be afraid to experiment with parameters of each compressor. Dial down the quality, see how it looks, then rinse, lather and repeat. Once you've found a good set of settings, you can apply them to other similar images on your site, but don't assume that all images must be compressed with the same settings.
 
-各圧縮ツールのパラメータを思い切って試してみましょう。 画質レベルを下げ、表示を確認し、調整する作業を繰り返してください。 適切な設定の組み合わせが見つかったら、サイト上にある他の同様の画像に適用できます。ただし、すべての画像を同じ設定で圧縮しなければならないわけではありません。
-
-
-## スケーリングした画像アセットの配信
+## Delivering scaled image assets
 
 ### TL;DR {: .hide-from-toc }
-- スケーリングしたアセットを配信することは、最も単純で最も効果的な最適化の 1 つです
-- オーバーヘッドが大きくなるので、大容量のアセットには十分注意してください
-- 表示サイズに合わせて画像の倍率を変更することで不要なピクセルの数を削減します
 
+* Delivering scaled assets is one of the simplest and most effective optimizations
+* Pay close attention to large assets as they result in high overhead
+* Reduce the number of unnecessary pixels by scaling your images to their display size
 
-画像の最適化は次の 2 つの基準に要約できます。各画像ピクセルをエンコードするために使うバイト数の最適化と、合計ピクセル数の最適化です。画像のファイルサイズは、合計ピクセル数と、各ピクセルをエンコードするために使うバイト数を乗算した値に過ぎません。 実に単純です。
+Image optimization boils down to two criteria: optimizing the number of bytes used to encode each image pixel, and optimizing the total number of pixels: the filesize of the image is simply the total number of pixels times the number of bytes used to encode each pixel. Nothing more, nothing less.
 
-<img src="images/resized-image.png" class="attempt-right" alt="サイズ変更された画像">
+<img src="images/resized-image.png" class="attempt-right" alt="Resized image" />
 
-このため、最もシンプルで最も効果的な画像の最適化技法の 1 つは、目的のサイズでアセットをブラウザに表示するのに必要とされる数を超えるピクセルを送信しないようにすることです。 これは簡単に聞こえるかもしれません。しかし、残念ながら大部分のページは画像アセットが多く、この基準を満たしていません。通常は、大容量のアセットを配信し、ブラウザにアセットの拡大縮小を委ね（これは、CPU リソースの無駄使いにもつながります）、解像度を下げて表示しています。
+As a result, one of the simplest and most effective image optimization techniques is to ensure that we are not shipping any more pixels than needed to display the asset at its intended size in the browser. Sounds simple, right? Unfortunately, most pages fail this test for many of their image assets: typically, they ship larger assets and rely on the browser to rescale them - which also consumes extra CPU resources - and display them at a lower resolution.
 
-注: Chrome DevTools で画像要素にカーソルを合わせると、画像アセットの「実」サイズと「表示」サイズの両方が表示されます。 上記の例では、300 x 260 ピクセルの画像がダウンロードされていますが、表示されるときはクライアント上でサイズが（245 x 212 ピクセルに）縮小されています。
+Note: Hovering over the image element in Chrome DevTools reveals both the "natural" and "display" sizes of the image asset. In above example the 300x260 pixel image is downloaded but is then downscaled (245x212) on the client when it is displayed.
 
-不要なピクセルを配信して、ブラウザだけに画像のサイズ変更をまかせることによるオーバーヘッドは、ページのレンダリングに必要な合計バイト数を削減して最適化するという大きなチャンスを逃したことを意味します。 さらにサイズ変更は、画像を縮小した後のピクセル数だけでなく、画像の実サイズにも依存します。
+The overhead of shipping unnecessary pixels, only to have the browser rescale the image on our behalf, is a big missed opportunity to reduce and optimize the total number of bytes required to render the page. Further, note that resizing is not simply a function of the number of pixels by which the image is reduced by, but also of its natural size.
 
 <table>
+  
 <thead>
   <tr>
-    <th>画面解像度</th>
-    <th>実サイズ</th>
-    <th>表示サイズ（CSS ピクセル）</th>
-    <th>不要ピクセル数</th>
+    <th>Screen resolution</th>
+    <th>Natural size</th>
+    <th>Display size (CSS px)</th>
+    <th>Unnecessary pixels</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="resolution">1x</td>
   <td data-th="natural">110 x 110</td>
@@ -420,25 +406,24 @@ WebP も JPEG XR も幅広くサポートされてはいないため、アプリ
   <td data-th="display">800 x 800</td>
   <td data-th="overhead">1620 x 1620 - (2 x 800) x (2 x 800) = 64400</td>
 </tr>
-</tbody>
 </table>
 
-上記のすべてのケースで、表示サイズは各画面解像度に対して必要なアセットより「10 CSS ピクセル小さいだけ」です。 ただし、画像の表示寸法が大きくなるほど、余分なピクセル数と、それに伴うオーバーヘッドは著しく増大します。このため、すべてのアセットを正確な表示サイズで配信することはできないかもしれませんが、**不要なピクセルの数を最小限に抑え、特に大きいアセットは表示サイズにできる限り近づけて配信するよう心掛ける必要があります。**
+Note that in all of the cases above the display size is "only 10 CSS pixels smaller" than the required asset for each screen resolution. However, the number of extra pixels, and their associated overhead, rises rapidly as the display dimensions of the image increase! As a result, while you may not be able to guarantee that every single asset is delivered at the exact display size, **you should ensure that the number of unnecessary pixels is minimal, and that your large assets in particular are delivered as close as possible to their display size.**
 
-## 画像最適化チェックリスト
+## Image optimization checklist
 
-画像の最適化は芸術でもあり科学でもあります。つまり、個々の画像を最も適切に圧縮する方法について明白な正解がないという点では芸術であり、画像のサイズを大幅に削減するために役立つ非常に高度な技術やアルゴリズムがあるという点では科学なのです。
+Image optimization is both an art and a science: an art because there is no one definitive answer for how to best compress an individual image, and a science because there are well-developed techniques and algorithms that can help significantly reduce the size of an image.
 
-以下に、画像の最適化に取り組むうえで留意すべきおすすめの方法やテクニックを紹介します。
+Some tips and techniques to keep in mind as you work on optimizing your images:
 
-* **ベクター形式を優先する:** ベクター画像は解像度やスケールに依存しないため、複数端末、高解像度の環境に最適です。
-* **SVG アセットを縮小して圧縮する:** ほとんどの描画アプリケーションでは、多くの場合、削除可能な不要なメタデータを含んだ XML マークアップを生成します。SVG アセットの GZIP 圧縮を適用するようにサーバーが設定されていることを確認してください。
-* **最適なラスター画像形式を選ぶ:** 機能要件を判別し、それぞれの特定のアセットに適した形式を選択してください。
-* **ラスター形式に最適な画質設定を試す:** 思い切って「画質」設定のレベルを下げましょう。多くの場合、結果は非常に良好で、バイト数も大幅に削減されます。
-* **不要な画像メタデータを削除する:** 多くのラスター画像には、地理情報、カメラ情報など、アセットに関する不要なメタデータが含まれています。 適切なツールを使用してこのデータを取り除いてください。
-* **スケーリングした画像を提供する:** サーバー上の画像のサイズを変更し、「表示」サイズを画像の「実」サイズにできるだけ近づけることを心掛けてください。 大きい画像はサイズ変更に伴うオーバーヘッドの大半を占めているため、特に注意してください。
-* **自動化を徹底する:** 自動化されたツールやインフラストラクチャに予算をかけ、画像アセットのすべてが必ず最適化されるようにしてください。
+* **Prefer vector formats:** vector images are resolution and scale independent, which makes them a perfect fit for the multi-device and high-resolution world.
+* **Minify and compress SVG assets:** XML markup produced by most drawing applications often contains unnecessary metadata which can be removed; ensure that your servers are configured to apply GZIP compression for SVG assets.
+* **Pick best raster image format:** determine your functional requirements and select the one that suits each particular asset.
+* **Experiment with optimal quality settings for raster formats:** don't be afraid to dial down the "quality" settings, the results are often very good and byte savings are significant.
+* **Remove unnecessary image metadata:** many raster images contain unnecessary metadata about the asset: geo information, camera information, and so on. Use appropriate tools to strip this data.
+* **Serve scaled images:** resize images on the server and ensure that the "display" size is as close as possible to the "natural" size of the image. Pay close attention to large images in particular, as they account for largest overhead when resized!
+* **Automate, automate, automate:** invest into automated tools and infrastructure that will ensure that all of your image assets are always optimized.
 
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

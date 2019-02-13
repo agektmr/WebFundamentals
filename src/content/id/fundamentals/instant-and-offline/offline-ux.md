@@ -1,408 +1,222 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Panduan untuk mendesain pengalaman web bagi jaringan yang lambat dan offline.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A guide to designing web experiences for slow networks and offline.
 
-{# wf_updated_on: 2016-11-10 #}
-{# wf_published_on: 2016-11-10 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-10 #} {# wf_blink_components: N/A #}
 
-# Pertimbangan UX Offline {: .page-title }
+# Offline UX Considerations {: .page-title }
 
 {% include "web/_shared/contributors/mustafa.html" %}
 
-Artikel ini akan mengamati beberapa pertimbangan desain yang dibutuhkan untuk menciptakan
-pengalaman hebat di jaringan yang lambat dan offline.
+This article will take a look at multiple design considerations needed to create a great experience on both slow networks and offline.
 
-Kualitas koneksi jaringan bisa dipengaruhi oleh sejumlah faktor
-seperti:
+The quality of a network connection can be affected by a number of factors such as:
 
-* Jangkauan jaringan yang buruk dari penyedia. 
-* Kondisi cuaca yang ekstrem.
-* Pemadaman listrik.
-* Pengguna yang bepergian ke “zona mati” seperti gedung yang memblokir
-  koneksi jaringan mereka. 
-* Bepergian dengan kereta dan memasuki terowongan.
-* Koneksi Internet dikelola oleh pihak ketiga dan diberi jangka waktu kapan
-  akan aktif atau tidak aktif, seperti di bandara atau hotel.
-* Kebiasaan budaya yang mengharuskan akses internet terbatas atau tidak ada pada
-  waktu-waktu atau hari-hari tertentu.
+* Poor coverage of a provider. 
+* Extreme weather conditions.
+* Power outages.
+* Users travelling into “dead zones” such as buildings that block their network connections. 
+* Travelling on a train and going through a tunnel.
+* Internet connection is managed by a third party and time boxed when it will be active or inactive like in an airport or hotel.
+* Cultural practises that require limited or no internet access at specific times or days.
 
-Sasaran Anda adalah menyediakan pengalaman bagus yang akan mengurangi dampak perubahan
-konektivitas. 
+Your goal is to provide a good experience that lessens the impact of changes in connectivity.
 
-## Apa yang akan ditampilkan kepada pengguna bila mereka memiliki koneksi jaringan yang buruk?
+## What to show your users when they have a bad network connection?
 
-Pertanyaan pertama yang harus diajukan adalah: seperti apa koneksi jaringan
-yang sukses dan gagal? Koneksi yang sukses adalah pengalaman
-online normal pada aplikasi Anda. Akan tetapi, kegagalan koneksi bisa berupa status offline
-aplikasi Anda serta bagaimana perilaku aplikasi bila ada jaringan yang tersendat.
+The first question that must be asked is: what does success and failure of a network connection look like? A successful connection is your app's normal online experience. The failure of a connection, however, can be both the offline state of your app as well how the app behaves when there is a laggy network.
 
-Bila memikirkan tentang koneksi jaringan yang sukses atau gagal, Anda perlu
-menanyakan pada diri sendiri beberapa pertanyaan UX yang penting ini:
+When thinking about the success or failure of a network connection you need to ask yourself these important UX questions:
 
-* Berapa lama Anda menunggu untuk menentukan sukses atau gagalnya koneksi? 
-* Apa yang bisa Anda lakukan selagi menentukan sukses atau gagalnya? 
-* Apa yang harus Anda lakukan bila terjadi kegagalan?
-* Bagaimana Anda memberi tahu pengguna mengenai hal di atas?
+* How long do you wait to determine the success or failure of a connection? 
+* What can you do while success or failure is being determined? 
+* What should you do in the event of failure?
+* How do you inform the user of the above?
 
-### Beri tahu pengguna mengenai status saat ini dan perubahan status
+### Inform users of their current state and change of state
 
-Beri tahu pengguna kedua tindakan yang tetap bisa mereka ambil bila mengalami
-kegagalan jaringan dan status aplikasi saat ini. Misalnya, sebuah notifikasi
-bisa berbunyi seperti ini:
+Inform the user of both the actions they can still take when they have a network failure and the current state of the application. For example, a notification could say:
 
-> “You seem to have a bad network connection. [Not to worry!] Messages will be
-“sent when the network is restored.”
+> “You seem to have a bad network connection. [Not to worry!] Messages will be “sent when the network is restored.”<figure class="attempt-left"> 
 
-<figure class="attempt-left">
-  <img src="images/emojoy-toast-message.png" alt="Emojoy, aplikasi perpesanan emoji yang memberi tahu pengguna bila terjadi perubahan status.">
-  <figcaption>
-    Beri tahu pengguna dengan jelas bila terjadi perubahan status, sesegera mungkin.
-  </figcaption>
-</figure>
-<figure class="attempt-right">
-  <img src="images/io-toast-message.png" alt="Aplikasi I/O 2016 yang memberi tahu pengguna bila terjadi perubahan status.">
-  <figcaption>
-    Aplikasi Google I/O yang menggunakan desain material "toast" untuk memberi tahu pengguna bila aplikasi sedang offline.
-  </figcaption>
-</figure>
+![Emojoy, the emoji messaging app informing the user when a change in state occurs.](images/emojoy-toast-message.png) <figcaption> Clearly inform the user when a change in state occurs as soon as possible. </figcaption> </figure> <figure class="attempt-right"> ![The I/O 2016 app informing the user when a change in state occurs.](images/io-toast-message.png) <figcaption> The Google I/O app used a material design "toast" to let the user know when it was offline. </figcaption> </figure> 
 
-<div class="clearfix"></div>
+<div class="clearfix">
+</div>
 
-### Koneksi jaringan diperbaiki atau dipulihkan
+### Network connection improves or is restored
 
-<figure class="attempt-right">
-  <img src="images/weather-app.png" alt="Contoh aplikasi cuaca.">
-  <figcaption>
-    Sebagian aplikasi, seperti aplikasi cuaca ini, membutuhkan pembaruan otomatis karena data lama tidak digunakan oleh pengguna.
-  </figcaption>
-</figure>
+How you deal with informing the user once their network connection has improved will depend largely on your application. For apps that require update information displayed as a priority such as a stock market app, auto-updating and notifying the user as soon as possible is crucial.
 
-Cara Anda memberi tahu pengguna setelah koneksi jaringan mereka diperbaiki
-akan sangat bergantung pada aplikasi Anda. Bagi aplikasi yang mengharuskan
-informasi pembaruan ditampilkan sebagai prioritas, misalnya aplikasi pasar saham, pembaruan otomatis
-dan memberi tahu pengguna secepatnya adalah hal yang krusial.
+It is recommended that you let the user know that your web app has been updated "in the background" by using a visual cue such as a material design toast element. This involves detecting both the initial registration of your service worker and that there's been an update to the service worker-managed content. You can see a code example of this <a 
+href="https://github.com/GoogleChrome/sw-precache/blob/master/demo/app/js/service-worker-registration.js#L29">function at work here</a>.
 
-<div class="clearfix"></div>
+One example of this would be <a href="https://www.chromestatus.com/features"> www.chromestatus.com</a>which posts a note to the user when the app has been updated.<figure> 
 
-Anda juga dapat menampilkan waktu terakhir aplikasi diperbarui sepanjang waktu di
-tempat yang mudah terlihat. Hal ini juga berguna untuk aplikasi konversi mata uang, misalnya.
+<img class="attempt-right" 
+  src="images/weather-app.png" 
+  alt="An example of a weather app." /> <img class="attempt-left" 
+  src="images/chrome-status-app-updated.png" 
+  alt="Chrome Status uses a toast" /> <figcaption class="clearfix" style="clear:both;"> Some apps, like the weather app, need to auto update as old data is not of use to the user. Where Chrome Status lets the user know when content has been updated via a material design toast element. </figcaption> </figure> 
 
-<figure>
-  <img class="attempt-left" src="images/material-money-rates-out-of-date.png" alt="Aplikasi Material Money yang kedaluwarsa">
-  <img class="attempt-right" src="images/material-money-rates-updated.png" alt="Material Money telah diperbarui">
-  <figcaption class="clearfix">
-    Material Money menampilkan mata uang terkini bila memungkinkan dan memberi tahu
-    pengguna bila aplikasi belum diperbarui.
-  </figcaption>
-</figure>
+<div class="clearfix">
+</div>
 
-Aplikasi lainnya seperti aplikasi berita bisa menampilkan notifikasi sederhana yang memberi tahu
-pengguna bahwa ada materi lebih baru, dengan fungsi ketuk-untuk-perbarui. Alasan
-melakukannya adalah jika pengguna saat ini membaca artikel, pembaruan otomatis akan
-menyegarkan laman dan mereka akan kehilangan posisi membaca terakhir.
+You may also show the last time the app was updated at all times in a prominent space. This would also be useful for a currency converter app, for example.<figure> 
 
+<img class="attempt-left" 
+  src="images/material-money-rates-out-of-date.png" 
+  alt="Material money app that is out-of-date" /> <img class="attempt-right" 
+  src="images/material-money-rates-updated.png" 
+  alt="Material money has been updated" /> <figcaption class="clearfix" style="clear:both;"> Material Money shows the latest currency where possible and notifies the user when the app hasn’t been updated. </figcaption> </figure> 
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-normal.png" alt="Contoh aplikasi berita, Tailpiece saat dalam keadaan normal">
-  <img class="attempt-right" src="images/tailpiece-tap-to-update.png" alt="Contoh aplikasi berita, Tailpiece bila sudah siap diperbarui">
-  <figcaption class="clearfix">
-    Tailpiece, koran online, akan mengunduh berita terkini secara otomatis namun
-    memungkinkan pengguna menyegarkan secara manual sehingga mereka tidak kehilangan posisi di artikel.
-  </figcaption>
-</figure>
+Other applications such as a news app could show a simple notification informing the user that there is newer content, with a tap-to-update function. The reason for doing that is if a user is currently reading an article an auto-update would refresh the page and they would lose where they were reading last.<figure> 
 
-### Status kontekstual dan mode menjelajah
+<img class="attempt-left" 
+  src="images/tailpiece-normal.png" 
+  alt="Example news app, Tailpiece in its normal state" /> <img class="attempt-right" 
+  src="images/tailpiece-tap-to-update.png" 
+  alt="Example news app, Tailpiece when its ready to be updated" /> <figcaption class="clearfix" style="clear:both;"> Tailpiece, an online newspaper will auto download the latest news but allow the users to refresh manually so they do not lose their place in the article. </figcaption> </figure> 
 
-Setiap bagian UI dapat memiliki konteks dan fungsionalitasnya sendiri yang akan berubah,
-bergantung pada apakah memerlukan koneksi yang berhasil atau tidak. Salah satu contohnya adalah
-situs e-niaga yang bisa dijelajahi offline walaupun tombol Beli dan harga
-dinonaktifkan hingga koneksinya pulih.
+### Contextual states and browse mode
 
-Bentuk status kontekstual lainnya bisa menyertakan data. Misalnya, aplikasi
-keuangan Robinhood memungkinkan pengguna membeli saham serta menggunakan warna dan grafik
-untuk memberi tahu pengguna bila pasar sudah buka. Keseluruhan antarmuka berubah jadi putih
-kemudian jadi abu-abu bila pasar tutup. Bila nilai saham bertambah atau
-berkurang, masing-masing widget saham akan berubah jadi hijau atau merah, bergantung pada
-statusnya.
+Each bit of UI may have its own context and functionality that will change depending on if it requires a successful connection. One example would be an e-commerce site that can be browsed offline through the Buy button and pricing is disabled until a connection has been reestablished.
 
-### Didiklah pengguna agar mereka memahami apa yang dimaksud dengan model offline
+Other forms of contextual states could include data. For example, the financial application Robinhood allows users to buy stock and uses color and graphics to notify the user when the market is open. The whole interface turns white and then grays out when the market closes. When the value of stock increases or decreases, each individual stock widget turns green or red depending on its state.
 
-Offline adalah model mental baru bagi semua orang. Anda perlu mendidik pengguna tentang
-perubahan apa yang akan terjadi bila mereka tidak memiliki koneksi. Beri tahu mereka tempat
-menyimpan data besar dan berikan setelan untuk mengubah perilaku default. Pastikan
-Anda menggunakan komponen multidesain UI seperti bahasa informatif, ikon,
-notifikasi, warna dan gambar untuk menyampaikan gagasan ini secara kolektif, bukan
-mengandalkan satu perangkat desain, seperti ikon itu sendiri, untuk memberi tahu
-keseluruhan cerita.
+### Educate the user so they understand what the offline model is
 
-## Menyediakan pengalaman offline secara default 
+Offline is a new mental model for everyone. You need to educate your users about what changes will occur when they don’t have a connection. Inform them of where large data is saved and give them settings to change the default behavior. Make sure you use multiple UI design components such as informative language, icons, notifications, color and imagery to convey these ideas collectively rather than relying on one design device, such as an icon on its own, to tell the whole story.
 
-Jika aplikasi Anda tidak memerlukan banyak data, maka simpan data itu di cache secara default. Pengguna bisa
-menjadi semakin frustrasi jika mereka hanya bisa mengakses data dengan
-koneksi jaringan. Cobalah membuat pengalaman sestabil mungkin. Koneksi yang
-tidak stabil akan membuat aplikasi Anda terkesan tidak bisa dipercaya, sehingga aplikasi
-yang bisa mengurangi dampak kegagalan jaringan akan dirasa ajaib oleh pengguna.
+## Providing an offline experience by default
 
-Situs berita bisa memanfaatkan pengunduhan dan penyimpanan otomatis
-materi berita terbaru hari ini sehingga pengguna bisa membaca berita hari ini tanpa koneksi,
-mungkin sambil mengunduh teks tanpa gambar artikel. Juga adaptasikan dengan
-perilaku pengguna jadi jika bagian olahraga adalah yang biasanya mereka tampilkan, mungkin
-jadikan ini sebagai data prioritas yang diunduh.
+If your app doesn't require much data, then cache that data by default. Users can become increasingly frustrated if they can only access their data with a network connection. Try to make the experience as stable as possible. An unstable connection will make your app feel untrustworthy, where an app that lessens the impact of a network failure will feel magical to the user.
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-offline.png" alt="Tailpiece memberi tahu pengguna bahwa mereka sedang offline dengan beragam widget desain">
-  <img class="attempt-right" src="images/tailpiece-offline-sidebar.png" alt="Tailpiece memiliki gambar navigasi yang menampilkan bagian apa saja yang siap untuk penggunaan offline.">
-  <figcaption class="clearfix">
-    Jika perangkat sedang offline, Tailpiece akan memberi tahu pengguna dengan sebuah pesan status
-    yang memungkinkan mereka mengetahui bahwa mereka tetap bisa menggunakan aplikasi.
-  </figcaption>
-</figure>
+News sites could benefit from auto downloading and saving the latest news content of the day so a user could read today's news without a connection, perhaps downloading the text without the article images. Also adapt with the user's behavior so if the sports section is what they typically view, perhaps make this the priority data that is downloaded.<figure> 
 
-## Memberi tahu pengguna bila aplikasi siap untuk digunakan secara offline 
+<img 
+  class="attempt-left" 
+  src="images/tailpiece-offline.png" 
+  alt="Tailpiece informs the user that they are offline with various design widgets" /> <img class="attempt-right" 
+  src="images/tailpiece-offline-sidebar.png" 
+  alt="Tailpiece has a navigational draw that shows what sections are ready for offline use." /> <figcaption class="clearfix"> If the device is offline Tailpiece will notify the user with a status message letting them know that they can still use the app. </figcaption> </figure> 
 
-Bila sebuah aplikasi web dimuat pertama kali, Anda perlu menunjukkan kepada pengguna apakah aplikasi tersebut siap
-untuk digunakan secara offline. Lakukan ini dengan
-[widget yang menyediakan masukan singkat](https://material.google.com/components/snackbars-toasts.html "widget that provides brief feedback")
-tentang suatu operasi melalui pesan di bagian bawah layar, 
-misalnya bila suatu bagian telah disinkronkan atau file data telah diunduh.
+## Inform the user when the app is ready for offline consumption
 
-Pikirkan lagi bahasa yang Anda gunakan untuk memastikan bahasa itu cocok dengan
-pengguna Anda. Pastikan perpesanan diberikan sama di semua instance
-penggunaannya. Istilah offline umumnya disalahpahami oleh pengguna yang gaptek jadi
-gunakan bahasa berbasis aksi yang bisa dikaitkan oleh pengguna Anda.
+When a web app first loads you need to indicate to the user if it is ready for offline use. Do this with a [widget that provides brief feedback](https://material.google.com/components/snackbars-toasts.html "widget that provides brief feedback") about an operation through a message at the bottom of the screen, for example when a section has been synced or a data file has downloaded.
 
+Again think of the language you are using to make sure it is fit for your audience. Ensure the messaging is given the same in all instances where it’s used. The term offline is generally misunderstood by a non-techie audience so use action based language that your audience can relate to.<figure> 
 
-<figure>
-  <img class="attempt-left" src="images/io-offline-ready.png" alt="Aplikasi I/O offline">
-  <img class="attempt-right" src="images/chome-offline.png" alt="Situs Chrome Status sedang offline">
-  <figcaption class="clearfix">
-    Baik aplikasi Google I/O 2016 maupun situs Chrome Status memberi tahu pengguna bila
-    aplikasi siap untuk penggunaan offline.
-  </figcaption>
-</figure>
+<img class="attempt-left" src="images/io-offline-ready.png" alt="I/O app offline" /> <img class="attempt-right" src="images/chome-offline.png" alt="Chrome Status site is offline" /> <figcaption class="clearfix" style="clear:both;"> Both the Google I/O 2016 app and Chrome Status site notify the user when the app is ready for offline use. </figcaption> </figure> 
 
-### Jadikan 'simpan untuk offline' sebagai bagian antarmuka yang kentara bagi aplikasi yang banyak menggunakan data
+### Make 'save for offline' an obvious part of the interface for data heavy apps
 
-Jika sebuah aplikasi menggunakan data dalam jumlah besar, pastikan ada switch
-atau pin untuk menambahkan item bagi penggunaan offline, bukan mengunduh otomatis, kecuali jika
-pengguna secara spesifik meminta perilaku ini lewat menu setelan. Pastikan
-UI unduh atau pin tidak terhalang oleh elemen UI lain dan
-fitur terlihat jelas oleh pengguna.
+If an application uses large amounts of data, make sure that there is a switch or pin to add an item for offline use rather than auto downloading, unless a user has specifically asked for this behavior via a settings menu. Make sure that the pin or download UI is not obscured by other UI elements and that the feature is obvious to the user.
 
+One example would be a music player that requires large data files. The user is aware of the associated data cost, but is also aware that they may want to use the player when they are offline. Downloading music for later use requires the user to plan ahead, so education about this may be required during onboarding.
 
-Salah satu contoh adalah pemutar musik yang memerlukan file data besar. Pengguna
-menyadari biaya data yang bersangkutan, juga menyadari bahwa mereka mungkin ingin menggunakan
-pemutar tersebut saat sedang offline. Mengunduh musik untuk digunakan nanti mengharuskan
-pengguna merencanakan terlebih dahulu, jadi edukasi tentang hal ini mungkin diperlukan selama
-orientasi.
+### Clarify what is accessible offline
 
-### Klarifikasi apa yang bisa diakses secara offline 
+Be clear as to the option you are providing. You may need to show a tab or setting that shows an “offline library”, so the user can easily see what they have stored on their phone and what needs to be saved. Make sure the settings are concise and be clear where the data will be stored and who has access to it.
 
-Perjelas mengenai opsi yang Anda sediakan. Anda mungkin perlu menampilkan tab atau
-setelan yang menampilkan “perpustakaan offline”, jadi pengguna bisa dengan mudah melihat apa
-yang telah mereka simpan di ponsel dan apa yang perlu disimpan. Pastikan setelan
-ringkas dan jelas di mana data akan disimpan dan siapa yang bisa mengaksesnya.
+### Show the actual cost of an action
 
-### Tampilkan biaya sesungguhnya dari suatu aksi
+Many users equate offline capability with 'downloading'. Users in countries where network connections regularly fail or aren't available often share content with other users, or save content for offline use when they have connectivity.
 
-Banyak pengguna yang menyamakan kemampuan offline dengan 'mengunduh'. Pengguna di negara-negara
-yang koneksi jaringannya sering gagal atau tidak tersedia sering berbagi materi
-dengan pengguna lain, atau menyimpan materi untuk penggunaan offline saat mereka memiliki konektivitas.
+Users on data plans may avoid downloading large files for fear of cost, so you may also want to display an associated cost so users can make an active comparison for a specific file or task. For example, if the music app above could detect if the user is on a data plan and show the file size so that users can see the true cost of a file.
 
-Pengguna yang memiliki paket data mungkin menghindari pengunduhan file besar karena takut dengan biayanya, jadi Anda
-mungkin perlu juga menampilkan biaya terkait agar pengguna bisa membuat
-perbandingan aktif untuk file atau tugas yang spesifik.  Misalnya, jika aplikasi musik di atas
-bisa mendeteksi apakah pengguna sedang menggunakan paket data dan menampilkan ukuran file agar
-pengguna bisa melihat biaya file sesungguhnya.
+### Help prevent hacked experiences
 
-### Bantu mencegah pengalaman yang diretas 
+Often users hack an experience without realizing they are doing it. For example before cloud sharing apps like Google Drive, it was common for users to save large files and attach them to emails so they could carry on editing from a different device. It is important not to be pulled into their hacked experience but rather look at what they are trying to achieve. In other words instead of thinking of how you can make attaching a large attachment more user friendly, solve the problem of sharing large files across multiple devices.
 
-Sering kali pengguna meretas pengalaman tanpa menyadarinya. Misalnya
-sebelum ada aplikasi berbagi lewat awan seperti Google Drive, umumnya pengguna menyimpan
-file besar dan melampirkannya ke email sehingga mereka bisa melanjutkan pengeditan dari
-perangkat berbeda. Jangan terbawa ke dalam pengalaman yang mereka retas, melainkan
-perhatikan apa yang berusaha mereka capai. Dengan kata lain, sebagai ganti memikirkan
-bagaimana Anda bisa membuat penyertaan lampiran besar lebih ramah pengguna, lebih baik pecahkan
-masalah berbagi file besar di banyak perangkat.
+## Transferable experience from one device to another
 
-## Pengalaman yang bisa ditransfer dari satu perangkat ke perangkat lainnya
+When making an experience with a flaky network connection, seek for it to sync correctly once the connection improves so that the experience is transferable. For example, imagine a travel app losing a network connection mid-way through a booking. When the connection is reestablished, the app syncs with the user's account and then they can continue their booking on their desktop device. Not being able to transfer experiences is incredibly jarring to users.
 
-Saat membuat suatu pengalaman dengan koneksi jaringan yang tidak bisa diandalkan, usahakan menyinkronkan
-dengan benar setelah koneksi diperbaiki sehingga pengalaman bisa ditransfer.
-Misalnya, bayangkan suatu aplikasi perjalanan yang koneksi jaringannya terputus di saat sedang memproses
-pemesanan. Bila koneksi pulih, aplikasi akan menyinkronkan dengan akun pengguna
-dan mereka kemudian bisa melanjutkan pemesanan di perangkat desktop. Ketidakmampuan
-mentransfer pengalaman (aktivitas) adalah hal yang sangat menyakitkan pada pengguna.
+Inform the user of the current state of their data, for example, if the app has managed to sync or not. Educate them where possible but try not to overburden them with messaging.
 
-Beri tahu pengguna mengenai status data mereka saat ini, misalnya aplikasi telah
-berhasil menyinkronkan atau tidak. Didiklah mereka bila memungkinkan, namun usahakan tidak membebani
-mereka dengan perpesanan.
+## Create inclusive design experiences
 
-## Buat pengalaman desain yang inklusif 
+When designing seek to be inclusive by providing meaningful design devices, simple language, standard iconography, and meaningful imagery that will guide the user to complete the action or task rather than hinder their progress.
 
-Saat mendesain, usahakan inklusif dengan menyediakan perangkat desain penting,
-bahasa sederhana, ikonografi standar, dan gambar penting yang akan memandu
-pengguna menyelesaikan aksi atau tugas, daripada mengganggu kemajuan mereka.
+### Let simple concise language be a guide
 
-### Jadikan bahasa ringkas dan sederhana sebagai panduan
-
-UX yang baik bukan cuma antarmuka yang didesain dengan baik. Ini meliputi alur yang diambil pengguna
-serta bahasa yang digunakan dalam aplikasi. Hindari menggunakan jargon teknologi saat
-menjelaskan status aplikasi atau masing-masing komponen UI. Perhatikan bahwa
-frasa “aplikasi offline” mungkin tidak menjelaskan status aplikasi saat ini kepada pengguna.
+Good UX is not just about a well designed interface. It includes the flow a user takes as well as the language used in the app. Avoid using tech jargon when explaining the state of the app or individual UI components. Consider that the phrase “app offline” might not convey to the user the current state of the app.
 
 <div class="attempt-left">
-  <figure>
-    <img src="images/download.png" alt="Contoh ikon Download adalah contoh yang baik">
-    <figcaption class="success">
-      <b>LAKUKAN</b>: Gunakan bahasa dan gambar yang menjelaskan aksi.
-     </figcaption>
-  </figure>
+  <figure> <img src="images/download.png" alt="Download icon example is a good example" /> <figcaption class="success"> <b>DO</b>: Use language and imagery that describes the action. </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img src="images/service-worker-ready.png" alt="Contoh ikon Service Worker adalah contoh yang jelek">
-    <figcaption class="warning">
-      <b>JANGAN</b>: Hindari istilah abstrak yang mungkin tidak dapat diakses. 
-     </figcaption>
-  </figure>
+  <figure> <img src="images/service-worker-ready.png" alt="Service worker icon example is a bad example" /> <figcaption class="warning"> <b>DON'T</b>: Avoid abstract terms that may not be accessible. </figcaption> </figure>
 </div>
-<div class="clearfix"></div>
 
+<div class="clearfix">
+</div>
 
-### Gunakan beberapa perangkat desain untuk membuat pengalaman pengguna yang bisa diakses
+### Use multiple design devices to create accessible user experiences
 
-Gunakan bahasa, warna dan komponen visual untuk memperagakan perubahan status atau
-status saat ini. Cuma menggunakan warna untuk memperagakan status mungkin tidak akan diperhatikan oleh
-pengguna, dan mungkin tidak bisa diakses oleh pengguna yang memiliki cacat penglihatan.
-Juga, naluri bawaan desainer adalah menggunakan UI abu-abu untuk menyatakan offline,
-namun hal ini bisa memiliki banyak makna di web. UI abu-abu juga digunakan untuk menyatakan
-bahwa suatu elemen dinonaktifkan, misalnya elemen masukan di formulir. Ini bisa menyebabkan
-kebingungan jika Anda HANYA menggunakan warna untuk menyatakan status.
+Use language, color, and visual components to demonstrate a change of state or current status. Solely using color to demonstrate state may not be noticed by the user and may be inaccessible to users who suffer from visual disabilities. Also, the gut instinct for designers is to use grayed UI to represent offline, but this can have a loaded meaning on the web. Grayed UI is also used to mean that an element is disabled, such as input elements on a form. This can cause confusion if you ONLY use color to depict state.
 
-Untuk mencegah kesalahpahaman, nyatakan status berbeda kepada pengguna dalam beberapa
-cara: misalnya dengan warna, label, dan komponen UI.
+To prevent misunderstandings, express different states to the user in multiple ways: for example with color, labels and UI components.
 
 <div class="attempt-left">
-  <figure>
-    <img src="images/accessibility_color7_do.png" alt="Contoh bagus yang menggunakan warna dan teks untuk menampilkan kesalahan.">
-    <figcaption class="success">
-      <b>LAKUKAN</b>: Gunakan campuran elemen desain untuk menyampaikan arti
-     </figcaption>
-  </figure>
+  <figure> <img 
+    src="images/accessibility_color7_do.png" 
+    alt="Good example that uses color and text to show an error." /> <figcaption class="success"> <b>DO</b>: Use a mixture of design elements to convey meaning </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img src="images/accessibility_color8_dont.png" alt="Contoh buruk hanya menggunakan warna.">
-    <figcaption class="warning">
-      <b>JANGAN</b>: Hanya gunakan warna untuk menjelaskan apa yang sedang terjadi.
-     </figcaption>
-  </figure>
+  <figure> <img src="images/accessibility_color8_dont.png" alt="Bad example only using color." /> <figcaption class="warning"> <b>DON'T</b>: Only use color to describe what is happening. </figcaption> </figure>
 </div>
 
-<div class="clearfix"></div>
+<div class="clearfix">
+</div>
 
-### Gunakan ikon untuk menyampaikan arti 
+### Use icons that convey meaning
 
-Pastikan informasi disampaikan dengan benar melalui label pesan teks yang bermakna
-begitu juga dengan ikon. Ikon sendiri bisa menjadi problematik, karena konsep offline di
-web relatif baru. Pengguna bisa salah memahami ikon yang digunakan. Misalnya,
-menggunakan disket floppy untuk menyimpan bisa dipahami oleh generasi lama, namun
-para pengguna muda yang tidak pernah melihat disket bisa bingung dengan metafora tersebut.
-Demikian pula, ikon menu 'hamburger' diketahui membingungkan pengguna bila
-ditampilkan tanpa label.
+Make sure that information is conveyed correctly with meaningful text labels as well as icons. Icons alone can be problematic, since the concept of offline on the web is relatively new. Users may misunderstand icons used on their own. For example, using a floppy disc for save makes sense to an older generation but young users who have never seen a floppy disc may be confused by the metaphor. Likewise, the 'hamburger' menu icon has been known to confuse users when presented without a label.
 
+When introducing an offline icon try to remain consistent with the industry standard visual (if one exists) as well as providing a text label and description. For example, saving for offline might be a typical download icon or perhaps if the action involves syncing it could be a syncing icon. Some actions may be interpreted as saving for offline rather than demonstrating a network's status. Think of the action you are trying to convey rather than presenting the user with an abstract concept. For example, save or download data would be action based.
 
-Saat memperkenalkan ikon offline, cobalah tetap konsisten dengan
-visual standar industri (jika ada) serta menyediakan label teks dan
-keterangan. Misalnya, menyimpan untuk offline mungkin berupa ikon unduh yang sudah umum atau
-barangkali jika aksi melibatkan sinkronisasi maka bisa berupa ikon sinkronisasi. Sebagian tindakan
-mungkin akan ditafsirkan sebagai menyimpan untuk offline bukannya memperagakan
-status jaringan. Pikirkan aksi yang Anda coba sampaikan, bukan menyajikan
-konsep abstrak kepada pengguna. Misalnya, simpan atau unduh data akan berbasis
-aksi.
+<img src="images/download-icons-examples.png" alt="Various icon examples that convey offline" />
 
-<img src="images/download-icons-exampels.png" alt="Beragam contoh ikon yang menyampaikan makna offline">
+Offline can mean a number of things depending on the context, such as download, export, pin etc.. For more inspiration checkout the [material design icon set](https://material.io/icons/ "material design icon set")
 
-Offline bisa berarti banyak hal, bergantung pada konteks, misalnya unduh, 
-ekspor, pin, dll.. Untuk inspirasi selengkapnya, periksa
-[set ikon desain material](https://material.io/icons/ "material design icon set")
+### Use skeleton layouts with other feedback mechanisms
 
-### Gunakan layout kerangka dengan mekanisme masukan lainnya 
+A skeleton layout is essentially a wireframe version of your app that displays while content is being loaded. This helps demonstrate to the user that content is about to be loaded. Consider also using a preloader UI as well, with a text label informing the user that the app is loading. One example would be to pulsate the wireframe content giving the app the feeling that it is alive and loading. This reassures the user that something is happening and helps prevent resubmissions or refreshes of your app.<figure> 
 
-Layout kerangka pada dasarnya adalah versi wireframe dari aplikasi Anda yang ditampilkan
-saat materi sedang dimuat. Ini membantu memperagakan kepada pengguna bahwa materi
-akan dimuat. Pertimbangkan juga menggunakan UI preloader, bersama
-label teks yang memberi tahu pengguna bahwa aplikasi sedang dimuat. Salah satu contoh adalah
-mengembangkempiskan materi wireframe sehingga memberi kesan aplikasi hidup dan
-sedang dimuat. Ini akan meyakinkan pengguna bahwa sesuatu sedang terjadi dan membantu mencegah
-pengiriman ulang atau penyegaran aplikasi Anda.
+<img class="attempt-left" src="images/tailpiece-skel-article.png" alt="Skeleton layout example" /> <img class="attempt-right" src="images/tailpiece-normal.png" alt="loaded article example" /> <figcaption class="clearfix"> Before and after of a skeleton layout. </figcaption> </figure> 
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-skel-article.png" alt="Contoh layout kerangka">
-  <img class="attempt-right" src="images/tailpiece-normal.png" alt="contoh artikel yang dimuat">
-  <figcaption class="clearfix">
-    Sebelum dan setelah layout kerangka.
-  </figcaption>
-</figure>
+### Don’t block content
 
-### Jangan blokir materi
+In some applications, a user might trigger an action such as creating a new document. Some apps will try to connect to a server in order to sync the new document and to demonstrate this they display an intrusive loading modal dialog that covers the entire screen. This may work fine if the user has a stable network connection, but if the network is unstable they won’t be able to escape from this action and the UI effectively blocks them from doing anything else. Network requests that block content should be avoided. Allow the user to continue to browse your app and queue tasks that will be performed and synced once the connection has improved.
 
-Di sebagian aplikasi, pengguna mungkin memicu suatu aksi misalnya membuat
-dokumen baru. Sebagian aplikasi akan mencoba menghubungkan ke server agar dapat menyinkronkan
-dokumen baru dan untuk memperagakannya, mereka menampilkan dialog modal pemuatan intrusif
-yang mencakup seluruh layar. Hal ini mungkin berfungsi dengan baik jika pengguna memiliki
-koneksi jaringan yang stabil, namun jika jaringan tidak stabil, mereka tidak akan bisa lari dari
-aksi ini dan UI secara efektif memblokirnya dari melakukan hal lain.
-Permintaan jaringan yang memblokir materi seharusnya dihindari. Perbolehkan pengguna
-melanjutkan menjelajah aplikasi Anda dan mengantre tugas yang akan dilaksanakan dan disinkronkan
-setelah koneksi diperbaiki.
+Demonstrate the state of an action by providing your users with feedback. For example, if a user is editing a doc, consider changing the feedback design so it is visibly different from when they are online but still shows that their file was “saved” and will sync when they have a network connection. This will educate the user about the different states available and reassure them that their task or action has been stored. This has the added benefit of the user growing more confident using your application.
 
-Peragakan status tindakan dengan menyediakan masukan kepada pengguna. Misalnya,
-jika pengguna mengedit dokumen, pertimbangkan mengubah desain masukan sehingga
-terlihat berbeda dari saat online namun tetap menunjukkan bahwa file
-mereka telah “disimpan” dan akan disinkronkan bila mereka mendapatkan koneksi jaringan. Hal ini akan mengajarkan kepada
-pengguna tentang beragam status yang tersedia dan meyakinkan mereka bahwa tugas
-atau aksi mereka telah disimpan. Hal ini memiliki manfaat tambahan berupa pengguna yang semakin
-percaya diri dalam menggunakan aplikasi Anda.
+## Designing for the next billion
 
-## Mendesain untuk miliaran pengguna berikutnya
+In many regions, low end devices are commonplace, connectivity is unreliable and, for many users, data is unaffordable. You will need to earn user trust by being transparent and frugal with data. Think about ways to help users on poor connections and simplify the interface to help speed up tasks. Always try to ask users before downloading data-heavy content.
 
-Di banyak region, perangkat kelas-bawah adalah hal umum, konektivitas tidak dapat diandalkan
-dan, bagi banyak pengguna, data tidak terjangkau. Anda nanti perlu mendapatkan kepercayaan pengguna dengan
-bersikap transparan dan hemat dengan data. Pikirkan tentang berbagai cara untuk membantu pengguna yang memiliki
-koneksi jelek dan sederhanakan antarmuka untuk membantu mempercepat tugas. Cobalah selalu menanyakan kepada
-pengguna sebelum mengunduh materi yang sarat-data.
+Offer low bandwidth options for users on laggy connections. So if the network connection is slow, provide small assets. Offer an option to choose high or low quality assets.
 
-Tawarkan opsi bandwidth rendah untuk pengguna yang koneksinya lambat. Jadi jika koneksi jaringan
-lambat, sediakan aset kecil. Tawarkan opsi untuk memilih aset berkualitas
-tinggi atau rendah.
+## Conclusion
 
-## Kesimpulan
+Education is key to this as users are unfamiliar with these concepts. Try to create associations with things that are familiar, e.g downloading for later use is the same as offlining data.
 
-Edukasi adalah kunci dalam hal ini karena pengguna tidak familier dengan berbagai konsep ini. Cobalah untuk
-membuat asosiasi dengan hal-hal yang sudah familier, mis. mengunduh untuk digunakan nanti
-adalah sama dengan data offline.
+When designing for unstable network connections, use these:
 
+* Think how you design for the success, failure and instability of a network connection.
+* Data may be expensive, so be considerate to the user.
+* For most users globally, the tech environment is almost exclusively mobile.
+* Low end devices are commonplace, with limited storage, memory and processing power and, small displays and lower touchscreen quality. Make sure performance is a part of your design process. 
+* Allow users to browse your application when they are offline.
+* Inform users of their current state and of changes in states.
+* Try to provide offline by default if your app doesn't require much data.
+* If the app is data-heavy, educate users about how they can download for offline use.
+* Make experiences transferable between devices.
+* Utilize language, icons, imagery, typography and color to express ideas to the user collectively.
+* Provide reassurance and feedback to help the user.
 
-Saat mendesain untuk koneksi jaringan yang tidak stabil, gunakan ini: 
+## Feedback {: #feedback }
 
-* Pikirkan bagaimana Anda mendesain untuk koneksi jaringan yang
-  sukses, gagal, dan tidak stabil.
-* Data mungkin mahal, jadi bersikaplah tenggang rasa kepada pengguna.
-* Bagi sebagian besar pengguna global, lingkungan teknologi hampir semua mobile secara eksklusif.
-* Perangkat kelas-bawah adalah hal yang sudah umum, dengan storage, memori dan daya 
-  pemrosesan yang terbatas serta, tampilan kecil dan kualitas layar sentuh yang lebih rendah. Pastikan kinerja 
-  adalah bagian dari proses desain Anda. 
-* Perbolehkan pengguna menjelajah aplikasi Anda saat mereka offline.
-* Beri tahu pengguna mengenai status mereka saat ini dan perubahan status.
-* Cobalah menyediakan offline secara default jika aplikasi Anda tidak memerlukan banyak data.
-* Jika aplikasi sarat data, didiklah pengguna tentang cara mengunduh untuk
-  penggunaan offline.
-* Buatlah agar pengalaman dapat ditransfer antar perangkat.
-* Manfaatkan bahasa, ikon, gambar, tipografi dan warna untuk mengekspresikan gagasan kepada 
-  pengguna secara kolektif.
-* Berikan keyakinan dan masukan untuk membantu pengguna.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

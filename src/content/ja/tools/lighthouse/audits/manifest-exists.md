@@ -1,40 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「マニフェストを使用する」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Exists" Lighthouse audit.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on:2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-#  マニフェストを使用する {: .page-title }
+# Manifest Exists {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ウェブアプリ マニフェストは、ユーザーのホーム画面にウェブアプリを追加可能にするためのウェブ テクノロジーです。
-この機能は、一般的に「Add to Homescreen (A2HS)」と呼ばれます。
+The Web App Manifest is the web technology that enables you to add your web app to a user's homescreen. This feature is commonly referred to as "Add to Homescreen (A2HS)".
 
+## Recommendations {: #recommendations }
 
-##  監査に合格する方法 {: #how }
+For a hands-on, step-by-step guide on adding A2HS support in an existing application, check out the following codelab: [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
-既存のアプリに A2HS 機能を追加する方法については、実践形式のコードラボ、[ユーザーのホーム画面にウェブアプリを追加する](https://codelabs.developers.google.com/codelabs/add-to-home-screen)
-で順を追って説明しています。
+For a more loosely-structured guide that goes into more depth about Web App Manifests, see [Improve User Experiences with a Web App Manifest](/web/fundamentals/web-app-manifest).
 
+Use what you learn in these guides to add A2HS support in your own web app.
 
-ウェブアプリ マニフェストに関するより詳細な情報については、[ウェブアプリ マニフェストを使用してユーザー エクスペリエンスを改善する](/web/fundamentals/web-app-manifest)ためのガイドをご覧ください。
+You can emulate and test A2HS events in Chrome DevTools. See the following section for more help: [Web App Manifest](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest).
 
+## More information {: #more-info }
 
+Lighthouse fetches the manifest and verifies that it has data. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
-これらのガイドで学習した内容をもとに、自身のウェブアプリに A2HS 機能を追加してください。
+## Feedback {: #feedback }
 
-
-Chrome DevTools では A2HS イベントをエミュレートし、テストすることができます。さらに詳しい情報については、[ウェブアプリ マニフェスト](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest)をご覧ください。
-
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse ではマニフェストを取得して、データがあるか検証します。なお、Lighthouse
-で取得するマニフェストは、Chrome がページで使用するマニフェストとは別のファイルであるため、正確な結果が出ない場合があります。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

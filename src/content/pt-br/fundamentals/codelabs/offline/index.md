@@ -1,272 +1,285 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Saiba como integrar um service worker a um aplicativo existente para que o aplicativo funcione off-line.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to integrate a service worker into an existing application to make the application work offline.
 
-{# wf_auto_generated #}
-{# wf_updated_on: 2016-11-09 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# Adicionar um Service Worker e Off-line ao seu App da Web {: .page-title }
+# Adding a Service Worker and Offline into your Web App {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
+## Overview
 
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-Visão geral do ## 
+In this codelab, you learn how to integrate a service worker into an existing application to make the application work offline. The application is called [Air Horner](https://airhorner.com). Click the horn and it makes a sound.
 
+#### What you'll learn
 
+* How to add a basic service worker to an existing project.
+* How to simulate offline mode and inspect and debug a service worker with Chrome DevTools.
+* A simple offline caching strategy.
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+#### What you'll need
 
-Neste codelab, você aprenderá a integrar um service worker a um aplicativo existente para que o aplicativo funcione off-line. O aplicativo se chama  [Air Horner](https://airhorner.com). Clique na buzina e ela faz um som.
+* Chrome 52 or above.
+* A basic understanding of [Promises](/web/fundamentals/getting-started/primers/promises), Git, and Chrome DevTools.
+* The sample code.
+* A text editor.
+* A local web server. If you want to use the web server described in this codelab, you need Python installed on your command line.
 
-#### O que você aprenderá
+## Get the sample code
 
-* Como adicionar um service worker básico a um projeto existente
-* Como simular o modo off-line e inspecionar e depurar um service worker com Chrome DevTools.
-* Uma estratégia simples para o armazenamento em cache off-line.
-
-#### O que será necessário
-
-* Chrome 52 ou superior.
-* Conhecimentos básicos sobre [Promises](/web/fundamentals/getting-started/primers/promises), Git e Chrome DevTools.
-* O exemplo de código.
-* Um editor de texto.
-* Um servidor da Web local. Se deseja usar o servidor de Web descrito neste codelab, você precisa do Python instalado em sua linha de comando.
-
-
-## Obtenha o exemplo de código
-
-
-
-Clone o repositório do GitHub pela linha de comando sobre SSH:
+Clone the GitHub repository from the command line over SSH:
 
     $ git clone git@github.com:GoogleChrome/airhorn.git
+    
 
-Ou HTTPS:
+Or HTTPS:
 
     $ git clone https://github.com/GoogleChrome/airhorn.git
+    
 
+## Run the sample app
 
-## Execute o exemplo de aplicativo
+First, let's see what the finished sample app looks like (hint: it's amazing).
 
-
-
-Primeiro, vejamos qual a aparência do aplicativo de exemplo acabado (dica: é incrível). 
-
-Certifique-se de que você esteja na ramificação correta (final), verificando a ramificação `master`.
+Make sure you are on the correct (final) branch by checking out the `master` branch.
 
     $ git checkout master
+    
 
-Execute o site a partir de um servidor de Web local.  Você pode usar qualquer servidor de Web, mas pelo resto deste codelab vamos supor que esteja usando `SimpleHTTPServer` do Python na porta 3000, portanto o aplicativo estará disponível em `localhost:3000`.
+Run the site from a local web server. You can use any web server, but for the rest of this codelab we'll assume that you're using Python's `SimpleHTTPServer` on port 3000, so the app will be available from `localhost:3000`.
 
     $ cd app
     $ python -m SimpleHTTPServer 3000
+    <aside class="key-point">
 
-Abra o site no Chrome. Você deve ver: ![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+<p>This repository has one main folder <strong>"app"</strong>. This folder contains the static assets (HTML, CSS, and JavaScript) that you will use for this project.</p>
 
+</aside> 
 
-## Teste o aplicativo
+Open up the site in Chrome. You should see: ![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
+## Test the app
 
+Click the horn. It should make a sound.
 
-Clique na buzina. Ela deve fazer um som.
+Now, you're going to simulate going offline using Chrome DevTools.
 
-Agora, você vai simular ficar off-line usando Chrome DevTools.
-
-Abra o DevTools, vá ao painel __Application__, e ative a caixa de seleção __Offline__. Na imagem abaixo, o cursor está parado sobre a caixa de seleção. 
+Open DevTools, go to the **Application** panel, and enable the **Offline** checkbox. In the screenshot below the mouse is hovering over the checkbox.
 
 ![479219dc5f6ea4eb.png](img/479219dc5f6ea4eb.png)
 
-Após clicar na caixa de seleção, observe o ícone de aviso (triângulo amarelo com ponto de exclamação) ao lado da guia __Network__ do painel. Isto indica que você está off-line. 
+After clicking the checkbox note the warning icon (yellow triangle with exclamation mark) next to the **Network** panel tab. This indicates that you're offline.
 
-Para provar que você está off-line, vá para [https://google.com](https://google.com). Você deve ver a mensagem de erro "não há conexão com a Internet" do Chrome. 
+To prove that you're offline, go to <https://google.com>. You should see Chrome's "there is no Internet connection" error message.
 
-Agora, volte para o seu aplicativo. Embora esteja off-line, a página ainda deve atualizar totalmente. Você ainda deve conseguir usar a buzina.
+Now, go back to your app. Although you're offline, the page should still fully reload. You should be able to use the horn still.
 
-O motivo para ele funcionar off-line é a base deste codelab: suporte off-line com o service worker.
+The reason this works offline is the basis of this codelab: offline support with service worker.
 
+## Build the starter app
 
-## Compile o aplicativo inicial
+You are now going to remove all offline support from the application and you are going to learn how to use a service worker to add the offline support back into the application
 
-
-
-Agora você vai remover todo o suporte off-line do aplicativo e vai aprender como usar um service worker para adicionar o suporte off-line de volta ao aplicativo
-
-Confira a versão "quebrada" do aplicativo que não tem o service worker implementado.
+Check out the "broken" version of the app that does not have the service worker implemented.
 
     $ git checkout code-lab
+    
 
-Volte ao painel __Application__ do DevTools e desative a caixa de seleção __Offline__, para voltar a ficar online.
+Go back to the **Application** panel of DevTools and disable the **Offline** checkbox, so that you're back online.
 
-Execute a página. O aplicativo deve funcionar da forma esperada.
+Run the page. The app should work as expected.
 
-Agora, use DevTools para simular o modo off-line novamente (ativando a caixa de seleção  __Offline__ no painel __Application__). __Atenção!__ Se não sabe muito sobre service workers, você está prestes a ver um comportamento inesperado.
+Now, use DevTools to simulate offline mode again (by enabling the **Offline** checkbox in the **Application** panel). **Heads up!** If you don't know much about service workers, you're about to see some unexpected behavior.
 
-O que você espera ver? Bem, como está off-line e esta versão do aplicativo não tem service worker, seria de esperar ver a mensagem de erro "não há conexão com a Internet" típica do Chrome.
+What do you expect to see? Well, because you're offline and because this version of the app has no service worker, you'd expect to see the typical "there is no Internet connection" error message from Chrome.
 
-Mas o que você realmente vê é ... um aplicativo off-line totalmente funcional!
+But what you actually see is... a fully-functional offline app!
 
-![9246b0abd8d860da.png](img/9246b0abd8d860da.png)
+![3ec8737c20a475df.png](img/3ec8737c20a475df.png)
 
-O que aconteceu? Bem, lembre-se de que ao começar este codelab, você experimentou a versão concluída do aplicativo. Quando aquela versão foi executada, o aplicativo realmente instalou um service worker. Esse service worker agora está sendo executado automaticamente toda vez que você executa o aplicativo. Uma vez que um service worker é instalado para um escopo, como `localhost:3000` (você vai aprender mais sobre escopo na próxima seção), esse service worker é iniciado automaticamente toda vez que se acessa o escopo, a menos que você o exclua programática ou manualmente. 
+What happened? Well, recall that when you began this codelab, you tried out the completed version of the app. When you ran that version, the app actually installed a service worker. That service worker is now automatically running every time that you run the app. Once a service worker is installed to a scope such as `localhost:3000` (you'll learn more about scope in the next section), that service worker automatically starts up every time that you access the scope, unless you programmatically or manually delete it.
 
-Para corrigir isso, vá para o painel __Application__ do DevTools, clique na guia __Service Workers__ e, em seguida, clique no botão __Unregister__. Na imagem abaixo, o cursor está parado sobre o botão. 
+To fix this, go to the **Application** panel of DevTools, click on the **Service Workers** tab, and then click the **Unregister** button. In the screenshot below the mouse is hovering over the button.
 
 ![837b46360756810a.png](img/837b46360756810a.png)
 
-Agora, antes de atualizar o site, certifique-se de que você ainda está usando DevTools para simular o modo off-line. Atualize a página, e ela deve exibir a mensagem de erro "não há conexão com a Internet", como esperado.
+Now, before you reload the site, make sure that you're still using DevTools to simulate offline mode. Reload the page, and it should show you the "there is no Internet connection" error message as expected.
 
 ![da11a350ed38ad2e.png](img/da11a350ed38ad2e.png)
 
+## Register a service worker on the site
 
-## Registre um service worker no site
+Now it's time to add offline support back into the app. This consists of two steps:
 
+1. Create a JavaScript file that will be the service worker.
+2. Tell the browser to register the JavaScript file as the "service worker".
 
+First, create a blank file called `sw.js` and place it in the `/app` folder.<aside class="key-point">
 
-Agora é hora de adicionar suporte off-line de volta ao aplicativo. Isso consiste em dois passos:
+<p><strong>The location of the service worker is important! </strong>For security reasons, a service worker can only control the pages that are in its same directory or its subdirectories. This means that if you place the service worker file in a scripts directory it will only be able to interact with pages in the scripts directory or below.</p>
 
-1. Crie um arquivo JavaScript que será o service worker.
-2. Instrua o navegador a registrar o arquivo JavaScript como o "service worker".
+</aside> 
 
-Primeiro, crie um arquivo vazio chamado `sw.js` e coloque-o na pasta `/app`. 
+Now open `index.html` and add the following code to the bottom of `<body>`.
 
-Agora, abra `index.html` e adicione o código a seguir na parte inferior de `<body>`.
+    <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker
+               .register('/sw.js')
+               .then(function() { console.log("Service Worker Registered"); });
+    }
+    </script>
+    
 
-```
-<script>
-if('serviceWorker' in navigator) {
-  navigator.serviceWorker
-           .register('/sw.js')
-           .then(function() { console.log("Service Worker Registered"); });
-}
-</script>
-```
+The script checks if the browser supports service workers. If it does, then it registers our currently blank file `sw.js` as the service worker, and then logs to the Console.
 
-O script verifica se o navegador suporta service workers. Se suportar, ele registra o nosso arquivo `sw.js` atualmente em branco como o service worker, e, em seguida, registra para o console.
-
-Antes de executar seu site novamente, volte para DevTools e olhe a guia __Service Workers__ do painel __Application__. Ela deve ser atualmente vazia, o que significa que o site não tem service workers instalados. 
+Before you run your site again, go back to DevTools and look at the **Service Workers** tab of the **Application** panel. It should currently be empty, meaning the site has no service workers installed.
 
 ![37d374c4b51d273.png](img/37d374c4b51d273.png)
 
-Certifique-se de que a caixa de seleção __Offline__ no DevTools esteja desativada. Atualize sua página novamente. Como a página é carregada, você pode ver que um service worker está registrado.
+Make sure that the **Offline** checkbox in DevTools is disabled. Reload your page again. As the page loads, you can see that a service worker is registered.
 
 ![b9af9805d4535bd3.png](img/b9af9805d4535bd3.png)
 
-Ao lado do rótulo __Source__, você pode ver um link para o código-fonte do service worker registrado. 
+Next to the **Source** label you can see a link to the source code of the registered service worker.
 
 ![3519a5068bc773ea.png](img/3519a5068bc773ea.png)
 
-Se quiser inspecionar o service worker atualmente instalado para uma página, clique no link. Isso vai exibir o código-fonte do service worker no painel __Sources__ do DevTools. Por exemplo, clique no link agora, e você deve ver um arquivo vazio. 
+If you ever want to inspect the currently-installed service worker for a page, click on the link. This will show you the source code of the service worker in the **Sources** panel of DevTools. For example, click on the link now, and you should see an empty file.
 
 ![dbc14cbb8ca35312.png](img/dbc14cbb8ca35312.png)
 
+## Install the site assets
 
-## Instale os ativos do site
+With the service worker registered, the first time a user hits the page an `install` event is triggered. This event is where you want to cache your page assets.
 
+Add the following code to sw.js.
 
+    importScripts('/cache-polyfill.js');
+    
+    
+    self.addEventListener('install', function(e) {
+     e.waitUntil(
+       caches.open('airhorner').then(function(cache) {
+         return cache.addAll([
+           '/',
+           '/index.html',
+           '/index.html?homescreen=1',
+           '/?homescreen=1',
+           '/styles/main.css',
+           '/scripts/main.min.js',
+           '/sounds/airhorn.mp3'
+         ]);
+       })
+     );
+    });
+    
 
-Com o service worker registrado, na primeira vez que um usuário acessar a página, um evento `install` é acionado. Este evento é o local onde você deseja armazenar em cache os ativos da sua página.
+The first line adds the Cache polyfill. This polyfill is already included in the repository. We need to use the polyfill because the Cache API is not yet fully supported in all browsers. Next comes the `install` event listener. The `install` event listener opens the `caches` object and then populates it with the list of resources that we want to cache. One important thing about the `addAll` operation is that it's all or nothing. If one of the files is not present or fails to be fetched, the entire `addAll` operation fails. A good application will handle this scenario.
 
-Adicione o código a seguir ao sw.js.
+The next step is to program our service worker to return the intercept the requests to any of these resources and use the `caches` object to return the locally stored version of each resource.
 
-```
-importScripts('/cache-polyfill.js');
+<
 
+aside markdown="1" class="key-point">
 
-self.addEventListener('install', function(e) {
- e.waitUntil(
-   caches.open('airhorner').then(function(cache) {
-     return cache.addAll([
-       '/',
-       '/index.html',
-       '/index.html?homescreen=1',
-       '/?homescreen=1',
-       '/styles/main.css',
-       '/scripts/main.min.js',
-       '/sounds/airhorn.mp3'
-     ]);
-   })
- );
-});
-```
+<h4>Frequently Asked Questions</h4>
 
-A primeira linha adiciona o Cache polyfill. Este polyfill já está incluído no repositório. Precisamos usar o polyfill porque a API Cache ainda não é totalmente suportada em todos os navegadores. Em seguida, vem o ouvinte de evento `install`. O ouvinte de evento `install` abre o objeto `caches` e, em seguida, o preenche com a lista de recursos que queremos armazenar em cache. Uma coisa importante sobre a operação `addAll` é que ela é tudo ou nada. Se um dos arquivos não estiver presente ou não for buscado, toda a operação `addAll` falha. Um bom aplicativo cuidará desse cenário.
+<ul>
+  
+<li>Where is the polyfill?</li>
+<li><a href="https://github.com/coonsta/cache-polyfill">https://github.com/coonsta/cache-polyfill</a> </li>
+<li>Why do I need to polyfill?</li>
+<li>Currently Chrome and other browsers don't yet fully support the <code>addAll</code> method (<strong>note:</strong> Chrome 46 will be compliant).</li>
+<li>Why do you have ?homescreen=1</li>
+  
+  <li>
+    
+<p>URLs with query string parameters are treated as individual URLs and need to be cached separately.</p>
+</aside>
+  </li>
+</ul>
 
-O próximo passo é programar nosso service worker para retornar a interceptação das solicitações de qualquer um desses recursos e usar o objeto `caches` para retornar a versão armazenada localmente de cada recurso.
+## Intercept the web page requests
 
+One powerful feature of service workers is that, once a service worker controls a page, it can intercept every request that the page makes and decide what to do with the request. In this section you are going to program your service worker to intercept requests and return the cached versions of assets, rather than going to the network to retrieve them.
 
-## Intercepte as solicitações da página da Web
+The first step is to attach an event handler to the `fetch` event. This event is triggered for every request that is made.
 
+Add the following code to the bottom of your `sw.js` to log the requests made from the parent page.
 
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    });
+    
 
-Um recurso poderoso dos service workers é que, uma vez que um service worker controla uma página, ele pode interceptar todas as solicitações que a página faz e decidir o que fazer com a solicitação. Nesta seção você vai programar o service worker para interceptar solicitações e retornar as versões em cache de ativos, em vez de ir para a rede para recuperá-los.
+Let's test this out. **Heads up!** You're about to see some more unexpected service worker behavior.
 
-A primeira etapa é anexar um gerenciador de eventos ao evento `fetch`. Esse evento é acionado para todas as solicitações realizadas.
-
-Adicione o código a seguir ao à parte inferior do seu `sw.js` para registrar as solicitações feitas a partir da página principal.
-
-Vamos testar isso. __Atenção!__ Você está prestes a ver mais algum comportamento inesperado do service worker. 
-
-Abra DevTools e vá para o painel __Application__. A caixa de seleção __Offline__ deve estar desativada. Pressione a tecla `Esc` para abrir a gaveta __Console__ na parte inferior da sua janela DevTools. Sua janela DevTools deve ser semelhante à imagem a seguir:
+Open DevTools and go to the **Application** panel. The **Offline** checkbox should be disabled. Press the `Esc` key to open the **Console** drawer at the bottom of your DevTools window. Your DevTools window should look similar to the following screenshot:
 
 ![c96de824be6852d7.png](img/c96de824be6852d7.png)
 
-Atualize sua página agora e veja a janela de DevTools novamente. Para começar, esperamos ver várias solicitações registradas no Console, mas isso não está acontecendo. Em segundo lugar, no painel __Service Worker__ podemos ver que o __Status__ mudou:
+Reload your page now and look at the DevTools window again. For one, we're expecting to see a bunch of requests logged to the Console, but that's not happening. For two, in the **Service Worker** pane we can see that the **Status** has changed:
 
 ![c7cfb6099e79d5aa.png](img/c7cfb6099e79d5aa.png)
 
-No __Status__ há um novo service worker esperando para ativar. Este deve ser o novo service worker que inclui as alterações que acabamos de fazer. Então, por algum motivo, o antigo service worker que instalamos (que era apenas um arquivo em branco) ainda está controlando a página. Se clicar no link `sw.js` ao lado de __Source__ você pode verificar que o antigo service worker ainda está em execução. 
+In the **Status** there's a new service worker that's waiting to activate. That must be the new service worker that includes the changes that we just made. So, for some reason, the old service worker that we installed (which was just a blank file) is still controlling the page. If you click on the `sw.js` link next to **Source** you can verify that the old service worker is still running.<aside class="key-point">
 
-Para corrigir esse inconveniente, ative a caixa de seleção __Update on reload__.
+<p>This behavior is by design. Check out  <a href="/web/fundamentals/primers/service-worker/update-a-service-worker">Update a Service Worker</a> to learn more about the service worker lifecycle.</p>
+
+</aside> 
+
+To fix this inconvenience, enable the **Update on reload** checkbox.
 
 ![26f2ae9a805bc69b.png](img/26f2ae9a805bc69b.png)
 
-Quando esta caixa de seleção está ativada, DevTools sempre atualiza o service worker a cada atualização da página. Isso é muito útil ao se desenvolver um service worker ativamente.
+When this checkbox is enabled, DevTools always updates the service worker on every page reload. This is very useful when actively developing a service worker.
 
-Atualize a página agora e você pode ver que um novo service worker está instalado e que os URLs de solicitação estão sendo registrados no Console, como esperado.
+Reload the page now and you can see that a new service worker is installed and that the request URLs are being logged to the Console, as expected.
 
 ![53c23650b131143a.png](img/53c23650b131143a.png)
 
-Agora você precisa decidir o que fazer com todas essas solicitações. Por padrão, se você não fizer nada, a solicitação é transmitida para a rede e a resposta é retornada para a página da Web.
+Now you need to decide what to do with all of those requests. By default, if you don't do anything, the request is passed to the network and the response is returned to the web page.
 
-Para que seu aplicativo funcione off-line, você precisa coletar a solicitação do cache se ela estiver disponível.
+To make your application work offline you need to pull the request from the cache, if it is available.
 
-Atualize seu ouvinte de evento de busca para coincidir com o código abaixo.
+Update your fetch event listener to match the code below.
 
-O método `event.respondWith()` informa ao navegador para avaliar o resultado do evento no futuro. `caches.match(event.request)` leva a atual solicitação da web que ativou o evento de busca e procura no cache por um recurso que corresponda. A correspondência é realizada verificando a string do URL. O método `match` retorna uma promessa que resolve, mesmo se o arquivo não for encontrado no cache. Isso significa que você tem uma escolha sobre o que fazer. Em nosso caso simples, quando o arquivo não é encontrado, você deve `fetch` o mesmo da rede e retorná-lo ao navegador.
+    self.addEventListener('fetch', function(event) {
+     console.log(event.request.url);
+    
+     event.respondWith(
+       caches.match(event.request).then(function(response) {
+         return response || fetch(event.request);
+       })
+     );
+    });
+    
 
-Este é o caso mais simples; existem muitos outros cenários de armazenamento em cache. Por exemplo, é possível armazenar em cache de forma incremental todas as respostas de solicitações que anteriormente não estavam armazenadas para que, no futuro, todas sejam retornadas do cache. 
+The `event.respondWith()` method tells the browser to evaluate the result of the event in the future. `caches.match(event.request)` takes the current web request that triggered the fetch event and looks in the cache for a resource that matches. The match is performed by looking at the URL string. The `match` method returns a promise that resolves even if the file is not found in the cache. This means that you get a choice about what you do. In your simple case, when the file is not found, you simply want to `fetch` it from the network and return it to the browser.
 
+This is the simplest case; there are many other caching scenarios. For example, you could incrementally cache all responses for previously uncached requests, so in the future they are all returned from the cache.
 
-## Parabéns!
+## Congratulations!
 
+You now have offline support. Reload your page while still online to update your service worker to the latest version, and then use DevTools to go into offline mode. Reload your page again, and you should have a fully-functional offline air horn!
 
+#### What we've covered
 
-Agora você tem suporte off-line. Atualize a página enquanto ainda está online para atualizar o service worker para a última versão, e depois use DevTools para entrar em modo off-line. Atualizar a página novamente, e você deve ter uma buzina de ar off-line totalmente funcional!
+* How to add a basic service worker to an existing project.
+* How to use Chrome DevTools to simulate offline mode and to inspect and debug service workers.
+* A simple offline caching strategy.
 
-#### Tópicos abordados
+#### Next Steps
 
-* Como adicionar um service worker básico a um projeto existente
-* Como usar Chrome DevTools para simular o modo off-line e para inspecionar e depurar service workers.
-* Uma estratégia simples para o armazenamento em cache off-line.
+* Learn how to easily add robust [offline support with Polymer offline elements](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0)
+* Explore more [advanced caching techniques](https://jakearchibald.com/2014/offline-cookbook/)
 
-#### Próximas etapas
+#### Learn More
 
-* Saiba como adicionar facilmente  [suporte off-line com elementos Polymer off-line](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0) robusto
-* Explore mais [técnicas avançadas de armazenamento em cache](https://jakearchibald.com/2014/offline-cookbook/)
+* [Introduction to service worker](/web/fundamentals/primers/service-worker/)
 
-#### Saiba mais
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-*  [Introdução ao service worker](/web/fundamentals/primers/service-worker/?hl=en)
-
-
-
-
-
-## Encontrou um problema ou tem feedback? {: .hide-from-toc }
-Ajude-nos a melhorar nossos codelabs reportando um 
-[problema](https://github.com/googlesamples/io2015-codelabs/issues) hoje. E obrigado!
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlesamples/io2015-codelabs/issues) today. And thanks!

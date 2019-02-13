@@ -1,279 +1,214 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:在本交互式教程中使用 Chrome DevTools 調試 JavaScript 入門。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to use Chrome DevTools to find and fix JavaScript bugs.
 
-{# wf_updated_on:2017-01-04 #}
-{# wf_published_on:2017-01-04 #}
+{# wf_blink_components: Platform>DevTools #} {# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-04 #}
 
-<style>
-.devtools-inline {
-  max-height: 1em;
-  vertical-align: middle;
-}
-</style>
+{% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-<!-- TODO
-     make demo responsive
--->
-
-# 在 Chrome DevTools 中調試 JavaScript 入門 {: .page-title }
+# Get Started with Debugging JavaScript in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-本交互式教程循序漸進地教您在 Chrome DevTools 中調試 JavaScript 的基本工作流程。
-雖然教程介紹的是如何調試一種具體問題，但您學到的一般工作流程對調試各種類型的 JavaScript 錯誤均有幫助。
+This tutorial teaches you the basic workflow for debugging any JavaScript issue in DevTools. Read on, or watch the video version of this tutorial, below.
+
+<div class="video-wrapper-full-width">
+  <iframe class="devsite-embedded-youtube-video" data-video-id="H0XScE08hy8"
+          data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
+  </iframe>
+</div>
+
+## Step 1: Reproduce the bug {: #reproduce }
+
+Finding a series of actions that consistently reproduces a bug is always the first step to debugging.
+
+1. Click **Open Demo**. The demo opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/debug-js/get-started"
+   target="devtools"
+   rel="noopener noreferrer"> <button>Open Demo</button> </a>
+
+2. Enter `5` in the **Number 1** text box.
+
+3. Enter `1` in the **Number 2** text box.
+4. Click **Add Number 1 and Number 2**. The label below the button says `5 + 1 = 51`. The result should be `6`. This is the bug you're going to fix.
+    
+    <figure> 
+    
+    ![The result of 5 + 1 is 51. It should be 6.](imgs/bug.png) <figcaption> **Figure 1**. The result of 5 + 1 is 51. It should be 6. </figcaption> </figure>
+
+## Step 2: Get familiar with the Sources panel UI {: #sources-ui }
+
+DevTools provides a lot of different tools for different tasks, such as changing CSS, profiling page load performance, and monitoring network requests. The **Sources** panel is where you debug JavaScript.
+
+1. Open DevTools by pressing <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux). This shortcut opens the **Console** panel.
+    
+    <figure> 
+    
+    ![The Console panel.](imgs/console.png) <figcaption> **Figure 2**. The **Console** panel </figcaption> </figure>
+2. Click the **Sources** tab.
+    
+    <figure> 
+    
+    ![The Sources panel.](imgs/sources.png) <figcaption> **Figure 3**. The **Sources** panel </figcaption> </figure>
+
+The **Sources** panel UI has 3 parts:
+
+<figure>
+  <img src="imgs/sources-annotated.png" alt="The 3 parts of the Sources panel UI."/>
+  <figcaption>
+    <b>Figure 4</b>. The 3 parts of the <b>Sources</b> panel UI
+  </figcaption>
+</figure>
+
+1. The **File Navigator** pane. Every file that the page requests is listed here.
+2. The **Code Editor** pane. After selecting a file in the **File Navigator** pane, the contents of that file are displayed here.
+3. The **JavaScript Debugging** pane. Various tools for inspecting the page's JavaScript. If your DevTools window is wide, this pane is displayed to the right of the **Code Editor** pane.
+
+## Step 3: Pause the code with a breakpoint {: #event-breakpoint }
+
+A common method for debugging a problem like this is to insert a lot of `console.log()` statements into the code, in order to inspect values as the script executes. For example:
+
+<pre class="prettyprint">function updateLabel() {
+  var addend1 = getNumber1();
+  <strong>console.log('addend1:', addend1);</strong>
+  var addend2 = getNumber2();
+  <strong>console.log('addend2:', addend2);</strong>
+  var sum = addend1 + addend2;
+  <strong>console.log('sum:', sum);</strong>
+  label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;
+}</pre>
+
+The `console.log()` method may get the job done, but **breakpoints** can get it done faster. A breakpoint lets you pause your code in the middle of its execution, and examine all values at that moment in time. Breakpoints have a few advantages over the `console.log()` method:
+
+* With `console.log()`, you need to manually open the source code, find the relevant code, insert the `console.log()` statements, and then reload the page in order to see the messages in the Console. With breakpoints, you can pause on the relevant code without even knowing how the code is structured.
+* In your `console.log()` statements you need to explicitly specify each value that you want to inspect. With breakpoints, DevTools shows you the values of all variables at that moment in time. Sometimes there are variables affecting your code that you're not even aware of.
+
+In short, breakpoints can help you find and fix bugs faster than the `console.log()` method.
+
+If you take a step back and think about how the app works, you can make an educated guess that the incorrect sum (`5 + 1 = 51`) gets computed in the `click` event listener that's associated to the **Add Number 1 and Number 2** button. Therefore, you probably want to pause the code around the time that the `click` listener executes. **Event Listener Breakpoints** let you do exactly that:
+
+1. In the **JavaScript Debugging** pane, click **Event Listener Breakpoints** to expand the section. DevTools reveals a list of expandable event categories, such as **Animation** and **Clipboard**.
+2. Next to the **Mouse** event category, click **Expand** ![Expand
+icon](/web/tools/chrome-devtools/images/expand.png){: .devtools-inline}. DevTools reveals a list of mouse events, such as **click** and **mousedown**. Each event has a checkbox next to it.
+3. Check the **click** checkbox. DevTools is now set up to automatically pause when *any* `click` event listener executes.
+    
+    <figure> 
+    
+    ![The click checkbox is enabled.](imgs/get-started-click-breakpoint.png) <figcaption> **Figure 5**. The **click** checkbox is enabled </figcaption> </figure>
+4. Back on the demo, click **Add Number 1 and Number 2** again. DevTools pauses the demo and highlights a line of code in the **Sources** panel. DevTools should be paused on this line of code:
+    
+    
+    
+    <pre class="prettyprint">function onClick() {</pre>
+    If you're paused on a different line of code, press **Resume Script Execution** ![Resume
+ Script Execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.cdt-inl} until you're paused on the correct line.
+    
+    <aside class="note"> **Note**: If you paused on a different line, you have a browser extension that registers a `click` event listener on every page that you visit. You were paused in the extension's `click` listener. If you use Incognito Mode to \[browse in private\]\[incognito\], which disables all extensions, you can see that you pause on the correct line of code every time. </aside>
 
+**Event Listener Breakpoints** are just one of many types of breakpoints available in DevTools. It's worth memorizing all the different types, because each type ultimately helps you debug different scenarios as quickly as possible. See [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints) to learn when and how to use each type.
 
+## Step 4: Step through the code {: #code-stepping }
 
-如果您使用 `console.log()` 來查找和修正代碼中的錯誤，可以考慮改用本教程介紹的工作流程。
-其速度快得多，也更有效。
+One common cause of bugs is when a script executes in the wrong order. Stepping through your code enables you to walk through your code's execution, one line at a time, and figure out exactly where it's executing in a different order than you expected. Try it now:
 
+1. On the **Sources** panel of DevTools, click **Step into next function call** ![Step into next function call](/web/tools/chrome-devtools/images/step-into.png){:.devtools-inline} to step through the execution of the `onClick()` function, one line at a time. DevTools highlights the following line of code:
+    
+    
+    
+    <pre class="prettyprint">if (inputsAreEmpty()) {</pre>
+2. Click **Step over next function call** ![Step over next function
+call](/web/tools/chrome-devtools/images/step-over.png){:.devtools-inline}. DevTools executes `inputsAreEmpty()` without stepping into it. Notice how DevTools skips a few lines of code. This is because `inputsAreEmpty()` evaluated to false, so the `if` statement's block of code didn't execute.
 
-## 第 1 步：重現錯誤 {: #step-1 }
+That's the basic idea of stepping through code. If you look at the code in `get-started.js`, you can see that the bug is probably somewhere in the `updateLabel()` function. Rather than stepping through every line of code, you can use another type of breakpoint to pause the code closer to the probable location of the bug.
 
-重現錯誤始終是調試的第一步。“重現錯誤”是指找到一系列總是能導致錯誤出現的操作。
+## Step 5: Set a line-of-code breakpoint {: #line-breakpoint }
 
-您可能需要多次重現錯誤，因此要儘量避免任何多餘的步驟。
+Line-of-code breakpoints are the most common type of breakpoint. When you've got a specific line of code that you want to pause on, use a line-of-code breakpoint:
 
+1. Look at the last line of code in `updateLabel()`:
+    
+    
+    
+    <pre class="prettyprint">label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;</pre>
+2. To the left of the code you can see the line number of this particular line of code, which is **32**. Click on **32**. DevTools puts a blue icon on top of **32**. This means that there is a line-of-code breakpoint on this line. DevTools now always pauses before this line of code is executed.
 
-請按照以下說明重現您要在本教程中修正的錯誤。
+3. Click **Resume script execution** ![Resume script
+execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.devtools-inline}. The script continues executing until it reaches line 32. On lines 29, 30, and 31, DevTools prints out the values of `addend1`, `addend2`, and `sum` to the right of each line's semi-colon.
+    
+    <figure> 
+    
+    ![DevTools pauses on the line-of-code breakpoint on line 32.](imgs/line-of-code-breakpoint.png) <figcaption> **Figure 6**. DevTools pauses on the line-of-code breakpoint on line 32 </figcaption> </figure>
 
+## Step 6: Check variable values {: #check-values }
 
-1. 點擊 **Open Demo**。演示頁面在新標籤中打開。
+The values of `addend1`, `addend2`, and `sum` look suspicious. They're wrapped in quotes, which means that they're strings. This is a good hypothesis for the explaining the cause of the bug. Now it's time to gather more information. DevTools provides a lot of tools for examining variable values.
 
-     <a href="https://googlechrome.github.io/devtools-samples/debug-js/get-started"
-       target="devtools"
-       rel="noopener noreferrer">
-       <button>Open Demo</button>
-     </a>
+### Method 1: The Scope pane {: #scope }
 
-1. 在演示頁面上，輸入 `5` 作爲 **Number 1**。
-1. 輸入 `1` 作爲 **Number 2**。
-1. 點擊 **Add Number 1 and Number 2**。
-1. 查看輸入和按鈕下方的標籤。上面顯示的是 `5 + 1 = 51`。
+When you're paused on a line of code, the **Scope** pane shows you what local and global variables are currently defined, along with the value of each variable. It also shows closure variables, when applicable. Double-click a variable value to edit it. When you're not paused on a line of code, the **Scope** pane is empty.
 
-啊嗚。這個結果是錯誤的。正確結果應爲 `6`。這就是您要修正的錯誤。
+<figure>
+  <img src="imgs/scope-pane.png"
+    alt="The Scope pane."/>
+  <figcaption>
+    <b>Figure 7</b>. The <b>Scope</b> pane
+  </figcaption>
+</figure>
 
+### Method 2: Watch Expressions {: #watch-expressions }
 
-## 第 2 步：使用斷點暫停代碼
+The **Watch Expressions** tab lets you monitor the values of variables over time. As the name implies, Watch Expressions aren't just limited to variables. You can store any valid JavaScript expression in a Watch Expression. Try it now:
 
-DevTools 讓您可以暫停執行中的代碼，並對暫停時刻的*所有*變量值進行檢查。
-用於暫停代碼的工具稱爲**斷點**。
-立即試一試：
+1. Click the **Watch** tab.
+2. Click **Add Expression** ![Add Expression](/web/tools/chrome-devtools/javascript/imgs/add-expression.png){:.devtools-inline}.
+3. Type `typeof sum`.
+4. Press <kbd>Enter</kbd>. DevTools shows `typeof sum: "string"`. The value to the right of the colon is the result of your Watch Expression.
+    
+    <figure> 
+    
+    ![The Watch Expression pane.](imgs/get-started-watch-expression.png) <figcaption> **Figure 8**. The Watch Expression pane (bottom-right), after creating the `typeof sum` Watch Expression. If your DevTools window is large, the Watch Expression pane is on the right, above the **Event Listener Breakpoints** pane. </figcaption> </figure>
 
-1. 按 <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) 或 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>（Windows、Linux）在演示頁面上打開 DevTools。
+As suspected, `sum` is being evaluated as a string, when it should be a number. You've now confirmed that this is the cause of the bug.
 
-1. 點擊 **Sources** 標籤。
+### Method 3: The Console {: #console }
 
-<!-- TODO add a screenshot.Don't create the screenshot until demo design is
-     finished.Add it here rather than previous screenshot in case Sources
-     is hidden -->
+In addition to viewing `console.log()` messages, you can also use the Console to evaluate arbitrary JavaScript statements. In terms of debugging, you can use the Console to test out potential fixes for bugs. Try it now:
 
-1. 點擊 **Event Listener Breakpoints** 將該部分展開。DevTools 顯示一個包含 **Animation** 和 **Clipboard** 等可展開事件類別的列表。
+1. If you don't have the Console drawer open, press <kbd>Escape</kbd> to open it. It opens at the bottom of your DevTools window.
+2. In the Console, type `parseInt(addend1) + parseInt(addend2)`. This statement works because you are paused on a line of code where `addend1` and `addend2` are in scope.
+3. Press <kbd>Enter</kbd>. DevTools evaluates the statement and prints out `6`, which is the result you expect the demo to produce.
+    
+    <figure> 
+    
+    ![The Console drawer, after evaluating parseInt(addend1) + parseInt(addend2).](imgs/get-started-console.png) <figcaption> **Figure 9**. The Console drawer, after evaluating `parseInt(addend1) + parseInt(addend2)`. </figcaption> </figure>
 
+## Step 7: Apply a fix {: #apply-fix }
 
+You've found a fix for the bug. All that's left is to try out your fix by editing the code and re-running the demo. You don't need to leave DevTools to apply the fix. You can edit JavaScript code directly within the DevTools UI. Try it now:
 
-<!-- TODO or maybe add it here -->
+1. Click **Resume script execution** ![Resume script
+execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.devtools-inline}.
+2. In the **Code Editor**, replace line 31, `var sum = addend1 + addend2`, with `var sum = parseInt(addend1) + parseInt(addend2)`.
+3. Press <kbd>Command</kbd>+<kbd>S</kbd> (Mac) or <kbd>Control</kbd>+<kbd>S</kbd> (Windows, Linux) to save your change.
+4. Click **Deactivate breakpoints** ![Deactivate
+breakpoints](/web/tools/chrome-devtools/images/deactivate-breakpoints-button.png){:.devtools-inline}. It changes blue to indicate that it's active. While this is set, DevTools ignores any breakpoints you've set.
+5. Try out the demo with different values. The demo now calculates correctly.
 
-1. 在 **Mouse** 事件類別旁，點擊 **Expand** ![Expand 圖標](/web/tools/chrome-devtools/images/expand.png){: .devtools-inline}。DevTools 顯示一個包含 **click** 等 Mouse 事件的列表，事件旁有相應的複選框。
-1. 選中 **click** 複選框。
+Caution: This workflow only applies a fix to the code that is running in your browser. It won't fix the code for all users that visit your page. To do that, you need to fix the code that's on your servers.
 
-     <figure>
-       <img src="imgs/get-started-click-breakpoint.png"
-         alt="DevTools 在演示頁面上打開，Sources 面板獲得焦點，click 事件偵聽器斷點處於啓用狀態。"
-       <figcaption>
-         <b>圖 1</b>：DevTools 在演示頁面上打開，Sources 面板獲得焦點，click 事件偵聽器斷點處於啓用狀態。
-         如果 DevTools 窗口較大，則 <b>Event Listener Breakpoints</b> 窗格位於右側，而不是像屏幕截圖中那樣位於左下方。</figcaption>
-     </figure>
+## Next steps {: #next-steps }
 
-1. 返回至演示頁面，再次點擊 **Add Number 1 and Number 2**。DevTools 暫停演示並在 **Sources** 面板中突出顯示一行代碼。
-   DevTools 突出顯示的是下面這行代碼：
+Congratulations! You now know how to make the most of Chrome DevTools when debugging JavaScript. The tools and methods you learned in this tutorial can save you countless hours.
 
-       `function onClick() {`
+This tutorial only showed you two ways to set breakpoints. DevTools offers many other ways, including:
 
-當您選中 **click** 複選框時，就是在所有 `click` 事件上設置了一個基於事件的斷點。
-點擊了*任何*節點，並且該節點具有 `click` 處理程序時，DevTools 會自動暫停在該節點 `click` 處理程序的第一行。
+* Conditional breakpoints that are only triggered when the condition that you provide is true.
+* Breakpoints on caught or uncaught exceptions.
+* XHR breakpoints that are triggered when the requested URL matches a substring that you provide.
 
+See [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints) to learn when and how to use each type.
 
+There's a couple of code stepping controls that weren't explained in this tutorial. See [Step over line of code](/web/tools/chrome-devtools/javascript/reference#stepping) to learn more.
 
-Note: 這不過是 DevTools 提供的衆多斷點類型中的一種。應使用的斷點類型取決於您要調試的問題類型。
+## Feedback {: #feedback }
 
-
-[resume]: /web/tools/chrome-devtools/images/resume-script-execution.png
-
-## 第 3 步：單步調試代碼
-
-一個常見的錯誤原因是腳本執行順序有誤。
-可以通過單步調試代碼一次一行地檢查代碼執行情況，準確找到執行順序異常之處。立即試一試：
-
-1. 在 DevTools 的 **Sources** 面板上，點擊 **Step into next function call** ![單步執行到下一個函數調用中][into]{:.devtools-inline}，一次一行地單步調試 `onClick()` 函數的執行。DevTools 突出顯示下面這行代碼：
-
-       `if (inputsAreEmpty()) {` 
-
-1. 點擊 **Step over next function call** ![單步執行時越過下一個函數調用][over]{:.devtools-inline}。
-DevTools 執行 `inputsAreEmpty()` 但不進入它。
-請注意 DevTools 是如何跳過幾行代碼的。
-   這是因爲 `inputsAreEmpty()` 求值結果爲 false，所以 `if` 語句的代碼塊未執行。
-
-
-這就是單步調試代碼的基本思路。如果您看一下 `get-started.js` 中的代碼，就能發現錯誤多半出在 `updateLabel()` 函數的某處。您可以不必單步調試每一行代碼，而是使用另一種斷點在靠近錯誤位置的地方暫停代碼。
-
-
-
-[into]: /web/tools/chrome-devtools/images/step-into.png
-[over]: /web/tools/chrome-devtools/images/step-over.png
-
-## 第 4 步：設置另一個斷點
-
-代碼行斷點是最常見的斷點類型。如果您想在執行到某一行代碼時暫停，請使用代碼行斷點。立即試一試：
-
-1. 看一下 `updateLabel()` 中的最後一行代碼，其內容類似於：
-
-       `label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;`
-
-1. 在這行代碼的左側，可以看到這行代碼的行號：
-**32**。點擊 **32**。DevTools 會在 **32** 上放置一個藍色圖標。
-這意味着這行代碼上有一個代碼行斷點。
-   DevTools 現在總是會在執行這行代碼之前暫停。
-1. 點擊 **Resume script execution** ![繼續執行腳本][resume]{:.devtools-inline}。
-腳本繼續執行，直至到達您設置了斷點的代碼行。
-1. 看一下 `updateLabel()` 中已執行的代碼行。
-
-   DevTools 打印輸出 `addend1`、`addend2` 和 `sum` 的值。
-
-`sum` 的值疑似有問題。其求值結果本應是數字，而實際結果卻是字符串。
-這可能就是造成錯誤的原因。
-
-## 第 5 步：檢查變量值
-
-另一種常見的錯誤原因是，變量或函數產生的值異常。
-許多開發者都利用 `console.log()` 來了解值隨時間變化的情況，但 `console.log()` 可能單調乏味而又效率低下，原因有兩個。
-其一，您可能需要手動編輯大量調用 `console.log()` 的代碼。
-其二，由於您不一定知曉究竟哪一個變量與錯誤有關，因此可能需要對許多變量進行記錄。
-
-
-DevTools 爲 `console.log()` 提供的其中一個替代工具是監視表達式。可以使用監視表達式來監視變量值隨時間變化的情況。顧名思義，監視表達式的監視對象不僅限於變量。您可以將任何有效的 JavaScript 表達式存儲在監視表達式中。
-立即試一試：
-
-1. 在 DevTools 的 **Sources** 面板上，點擊 **Watch**。該部分隨即展開。
-1. 點擊 **Add Expression** ![添加表達式][add]{:.devtools-inline}。
-1. 鍵入 `typeof sum`。
-1. 按 <kbd>Enter</kbd>。DevTools 顯示 `typeof sum: "string"`。冒號右側的值就是監視表達式的結果。
-
-
-     <figure>
-       <img src="imgs/get-started-watch-expression.png"
-         alt="“監視表達式”窗格。"
-       <figcaption>
-         <b>圖 1</b>：創建  <code>typeof sum</code> 監視表達式後的“監視表達式”窗格（右下方）。
-         如果 DevTools 窗口較大，則“監視表達式”窗格位於右側，<b>Event Listener Breakpoints</b> 窗格的上方。</figcaption>
-     </figure>
-
-正如猜想的那樣，`sum` 的求值結果本應是數字，而實際結果卻是字符串。
-這就是演示頁面錯誤的原因。
-
-DevTools 爲 `console.log()` 提供的另一個替代工具是 Console。可以使用 Console 對任意 JavaScript 語句求值。開發者通常利用 Console 在調試時覆蓋變量值。在您所處的情況下，Console 可幫助您測試剛發現的錯誤的潛在解決方法。
-立即試一試：
-
-1. 如果您尚未打開 Console 抽屜，請按 <kbd>Escape</kbd> 將其打開。
-它會在 DevTools 窗口底部打開。
-1. 在 Console 中，鍵入 `parseInt(addend1) + parseInt(addend2)`。
-1. 按 <kbd>Enter</kbd>。DevTools 對語句求值並打印輸出 `6`，即您預料演示頁面會產生的結果。
-
-
-     <figure>
-       <img src="imgs/get-started-console.png"
-         alt="對一個語句求值後的 Console 抽屜。"
-       <figcaption>
-         <b>圖 1</b>：對  <code>parseInt(addend1) + parseInt(addend2)</code> 求值後的 Console 抽屜。</figcaption>
-     </figure>
-
-[add]: /web/tools/chrome-devtools/javascript/imgs/add-expression.png
-
-## 第 6 步：應用修正
-
-您已找到錯誤的潛在解決方法。剩下的工作就是編輯代碼後重新運行演示頁面來測試修正效果。
-您不必離開 DevTools 就能應用修正。
-您可以直接在 DevTools UI 內編輯 JavaScript 代碼。
-立即試一試：
-
-1. 在 DevTools 的 **Sources** 面板上的代碼編輯器中，將 `var sum = addend1 + addend2` 替換爲 `var sum = parseInt(addend1) + parseInt(addend2);`。它就是您當前暫停位置上面那行代碼。
-1. 按 <kbd>Command</kbd>+<kbd>S</kbd> (Mac) 或 <kbd>Ctrl</kbd>+<kbd>S</kbd>（Windows、Linux）保存更改。代碼的背景色變爲紅色，這表示在 DevTools 內更改了腳本。
-1. 點擊 **Deactivate breakpoints** ![停用斷點][deactivate]{:.devtools-inline}。它變爲藍色，表示處於活動狀態。
-如果進行了此設置，DevTools 會忽略您已設置的任何斷點。
-1. 點擊 **Resume script execution** ![繼續執行腳本][resume]{:.devtools-inline}。
-1. 使用不同的值測試演示頁面。現在演示頁面應能正確計算求和。
-
-
-切記，此工作流程只對運行在瀏覽器中的代碼應用修正。
-它不會爲所有運行您的頁面的用戶修正代碼。
-要實現該目的，您需要修正運行在提供頁面的服務器上的代碼。
-
-
-[deactivate]: /web/tools/chrome-devtools/images/deactivate-breakpoints-button.png
-
-## 後續步驟
-
-恭喜！現在您已掌握了在 DevTools 中調試 JavaScript 的基礎知識。
-
-本教程只向您介紹了兩種設置斷點的方法。DevTools 還提供了許多其他方法，其中包括：
-
-
-* 僅在滿足您指定的條件時觸發的條件斷點。
-* 發生已捕獲或未捕獲異常時觸發的斷點。
-* 當請求的網址與您提供的子字符串匹配時觸發的 XHR 斷點。
-
-
-<a class="gc-analytics-event"
-   data-category="DevTools / Debug JS / Get Started / Next Steps / Breakpoints"
-   href="add-breakpoints" target="_blank"
-   rel="noopener noreferrer"><button>爲我演示所有斷點</button></a>
-
-有幾個代碼單步執行控件在本教程中未予說明。
-請點擊以下鏈接，瞭解有關它們的更多信息。
-
-<a class="gc-analytics-event"
-   data-category="DevTools / Debug JS / Get Started / Next Steps / Breakpoints"
-   href="step-code#stepping_in_action" target="_blank"
-   rel="noopener noreferrer"><button>我想要掌握代碼單步調試知識</button></a>
-
-## 反饋
-
-請通過回答下列問題幫助我們改進本教程。
-
-{% framebox width="auto" height="auto" %}
-
-<p>您是否已成功完成本教程？</p>
-
-<button class="gc-analytics-event"
-        data-category="DevTools / JS / Get Started"
-        data-label="Completed / Yes">支持</button>
-
-<button class="gc-analytics-event"
-        data-category="DevTools / JS / Get Started"
-        data-label="Completed / No">不支持</button>
-
-<p>本教程是否包含您在尋找的信息？</p>
-
-<button class="gc-analytics-event"
-        data-category="DevTools / JS / Get Started"
-        data-label="Relevant / Yes">支持</button>
-
-<button class="gc-analytics-event"
-        data-category="DevTools / JS / Get Started"
-        data-label="Relevant / No">不支持</button>
-
-<p>教程是否過長？</p>
-
-<button class="gc-analytics-event"
-        data-category="DevTools / JS / Get Started"
-        data-label="Too Long / Yes">支持</button>
-
-<button class="gc-analytics-event"
-        data-category="DevTools / JS / Get Started"
-        data-label="Too Long / No">不支持</button>
-
-{% endframebox %}
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

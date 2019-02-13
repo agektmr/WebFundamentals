@@ -1,152 +1,142 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pobieranie przez sieć jest powolne i kosztowne: długie odpowiedzi na zapytania wymagają od klienta i serwera wielu kolejnych cykli wymiany danych, co blokuje na pewien czas przeglądarkę, ponadto przyczynia się do zwiększenia opłat za transfer. Z tego względu zdolność do buforowania i ponownego wykorzystania poprzednio pobranych zasobów jest kluczowym aspektem optymalizacji wydajności.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Caching and reusing previously fetched resources is a critical aspect of optimizing for performance.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>Network #}
 
-{# wf_updated_on: 2014-01-04 #}
-{# wf_published_on: 2013-12-31 #}
-
-# Buforowanie HTTP {: .page-title }
+# HTTP Caching {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Fetching something over the network is both slow and expensive. Large responses require many roundtrips between the client and server, which delays when they are available and when the browser can process them, and also incurs data costs for the visitor. As a result, the ability to cache and reuse previously fetched resources is a critical aspect of optimizing for performance.
 
+The good news is that every browser ships with an implementation of an HTTP cache. All you need to do is ensure that each server response provides the correct HTTP header directives to instruct the browser on when and for how long the browser can cache the response.
 
-Pobieranie przez sieć jest powolne i kosztowne: długie odpowiedzi na zapytania wymagają od klienta i serwera wielu kolejnych cykli wymiany danych, co blokuje na pewien czas przeglądarkę, ponadto przyczynia się do zwiększenia opłat za transfer. Z tego względu zdolność do buforowania i ponownego wykorzystania poprzednio pobranych zasobów jest kluczowym aspektem optymalizacji wydajności.
+Note: If you are using a WebView to fetch and display web content in your application, you might need to provide additional configuration flags to ensure that the HTTP cache is enabled, its size is set to a reasonable number to match your use case, and the cache is persisted. Check the platform documentation and confirm your settings.
 
+<img src="images/http-request.png"  alt="HTTP request" />
 
+When the server returns a response, it also emits a collection of HTTP headers, describing its content-type, length, caching directives, validation token, and more. For example, in the above exchange, the server returns a 1024-byte response, instructs the client to cache it for up to 120 seconds, and provides a validation token ("x234dff") that can be used after the response has expired to check if the resource has been modified.
 
-Dobra wiadomość &ndash; w każdej przeglądarce zaimplementowano pamięć podręczną HTTP. Tak więc wystarczy, że upewnimy się, że w każdej odpowiedzi serwera zamieszczane są poprawne dyrektywy nagłówka HTTP, a przeglądarka będzie wiedzieć, kiedy i jak długo buforować odpowiedź.
-
-Note: Jeśli do pobierania i wyświetlania treści w swojej aplikacji używasz widoku Webview, może być konieczne określenie dodatkowych ustawień konfiguracji zapewniających, że buforowanie HTTP jest włączone, jego rozmiar jest uzasadniony w danym zastosowaniu, a pamięć podręczna zostanie utrwalona. Zapoznaj się z dokumentacją platformy i upewnij się, że ustawienia są poprawne.
-
-<img src="images/http-request.png" class="center" alt="Żądanie HTTP">
-
-Gdy serwer zwraca odpowiedź, przesyła również zestaw nagłówków HTTP z opisem typu treści, jej długością, dyrektywami buforowania, tokenem walidacji i innymi informacjami. Na przykład w trakcie powyższej wymiany informacji serwer zwraca odpowiedź 1024-bajtową, poleca klientowi jej buforowanie przez 120 sekund i przesyła token walidacji (`x234dff`), którego po wygaśnięciu odpowiedzi można użyć do sprawdzenia, czy zasób został zmodyfikowany.
-
-
-## Walidacja buforowanych odpowiedzi za pomocą tokenów ETag
+## Validating cached responses with ETags
 
 ### TL;DR {: .hide-from-toc }
-- Token walidacji jest przekazywany przez serwer za pomocą nagłówka ETag HTTP
-- Token walidacji umożliwia efektywne sprawdzanie, czy zasób zaktualizowano: transfer danych nie następuje, jeśli zasób się nie zmienił.
 
+* The server uses the ETag HTTP header to communicate a validation token.
+* The validation token enables efficient resource update checks: no data is transferred if the resource has not changed.
 
-Załóżmy, że od pierwszego pobrania upłynęło 120 sekund i przeglądarka chce wysłać nowe żądanie pobrania tego samego zasobu. Najpierw przeglądarka sprawdzi lokalną pamięć podręczną i znajdzie poprzednią odpowiedź, której niestety nie można użyć, ponieważ już `wygasła`. W tej chwili mogłaby po prostu wysłać nowe żądanie i pobrać nową pełną odpowiedź, ale to sposób nieefektywny, ponieważ jeśli zasób nie uległ zmianie, nie ma potrzeby pobierania dokładnie tych samych danych, już obecnych w pamięci podręcznej.
+Assume that 120 seconds have passed since the initial fetch and the browser has initiated a new request for the same resource. First, the browser checks the local cache and finds the previous response. Unfortunately, the browser can't use the previous response because the response has now expired. At this point, the browser could dispatch a new request and fetch the new full response. However, that’s inefficient because if the resource hasn't changed, then there's no reason to download the same information that's already in cache!
 
-Do rozwiązania tego problemu służy token walidacji określony w nagłówku ETag: serwer generuje i zwraca pewien token, który zazwyczaj stanowi skrót lub określony w inny sposób cyfrowy odcisk zawartości pliku. Klient nie musi znać sposobu generacji odcisku cyfrowego, musi go tylko wysłać do serwera w następnym żądaniu: jeśli odcisk cyfrowy pozostaje taki sam, zasób się nie zmienił, a jego pobranie nie jest konieczne.
+That’s the problem that validation tokens, as specified in the ETag header, are designed to solve. The server generates and returns an arbitrary token, which is typically a hash or some other fingerprint of the contents of the file. The client doesn't need to know how the fingerprint is generated; it only needs to send it to the server on the next request. If the fingerprint is still the same, then the resource hasn't changed and you can skip the download.
 
-<img src="images/http-cache-control.png" class="center" alt="Przykład dyrektywy Cache-Control protokołu HTTP">
+<img src="images/http-cache-control.png"  alt="HTTP Cache-Control example" />
 
-W powyższym przykładzie klient automatycznie zapewnia token ETag w nagłówku żądania `If-None-Match` protokołu HTTP, serwer weryfikuje token względem aktualnego zasobu i, jeśli ten się nie zmienił, zwraca odpowiedź `304 Not Modified` informującą przeglądarkę, że odpowiedź z pamięci podręcznej nie zmieniła się, a jej ważność można przedłużyć na kolejne 120 sekund. Zwróć uwagę, że nie trzeba ponownie pobierać odpowiedzi &ndash; pozwala to oszczędzić czas i łącze.
+In the preceding example, the client automatically provides the ETag token in the "If-None-Match" HTTP request header. The server checks the token against the current resource. If the token hasn't changed, the server returns a "304 Not Modified" response, which tells the browser that the response it has in cache hasn't changed and can be renewed for another 120 seconds. Note that you don't have to download the response again, which saves time and bandwidth.
 
-W jaki sposób jako programista witryn internetowych możesz efektywnie wykorzystać ponowną walidację? Przeglądarka wykonuje całą pracę za nas: automatycznie wykrywa, czy poprzednio określono token walidacji i dołącza go do żądania wychodzącego, a następnie w oparciu o odpowiedź z serwera aktualizuje sygnatury czasowe pamięci podręcznej. **Musimy jedynie zapewnić, że serwer rzeczywiście wysyła wymagane tokeny ETag: w dokumentacji sprawdź, jakie ustawienia konfiguracji są wymagane.**
+As a web developer, how do you take advantage of efficient revalidation? The browser does all the work on our behalf. The browser automatically detects if a validation token has been previously specified, it appends the validation token to an outgoing request, and it updates the cache timestamps as necessary based on the received response from the server. **The only thing left to do is to ensure that the server is providing the necessary ETag tokens. Check your server documentation for the necessary configuration flags.**
 
-Note: Wskazówka: projekt HTML5 Boilerplate zawiera <a href='https://github.com/h5bp/server-configs'>przykładowe pliki konfiguracyjne</a> dla wszystkich najpopularniejszych serwerów. Zawierają one szczegółowe komentarze odnośnie do każdego znacznika i ustawienia konfiguracji: znajdź stosowny serwer na liście, wyszukaj odpowiednie ustawienia i je skopiuj albo upewnij się, że serwer jest skonfigurowany z użyciem zalecanych ustawień.
+Note: Tip: The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. Find your favorite server in the list, look for the appropriate settings, and copy/confirm that your server is configured with the recommended settings.
 
-
-## Dyrektywa Cache-Control
+## Cache-Control
 
 ### TL;DR {: .hide-from-toc }
-- Każdy zasób może określić swoją politykę buforowania za pomocą nagłówka Cache-Control protokołu HTTP
-- Dyrektywy Cache-Control kontrolują, kto może buforować odpowiedź, w jakich warunkach i jak długo
 
+* Each resource can define its caching policy via the Cache-Control HTTP header.
+* Cache-Control directives control who can cache the response, under which conditions, and for how long.
 
-Najlepszym żądaniem jest żądanie, które nie wymaga komunikacji z serwerem: lokalna kopia odpowiedzi pozwala wyeliminować czas oczekiwania na odpowiedź przez sieć i uniknąć opłat za transfer danych. Specyfikacja HTTP pozwala serwerowi zwrócić [kilka różnych dyrektyw Cache-Control](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) umożliwiających kontrolę sposobu i długości buforowania poszczególnych odpowiedzi przez przeglądarkę i inne bufory pośredniej pamięci podręcznej.
+From a performance optimization perspective, the best request is a request that doesn't need to communicate with the server: a local copy of the response allows you to eliminate all network latency and avoid data charges for the data transfer. To achieve this, the HTTP specification allows the server to return [Cache-Control directives](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) that control how, and for how long, the browser and other intermediate caches can cache the individual response.
 
-Note: Definicję nagłówka Cache-Control określono w specyfikacji HTTP/1.1. Zastępuje on wcześniejsze nagłówki (np. Expires) służące do określania polityki buforowania odpowiedzi. Wszystkie nowoczesne przeglądarki obsługują nagłówek Cache-Control, dlatego stanowi on wszystko, czego będziemy potrzebować.
+Note: The Cache-Control header was defined as part of the HTTP/1.1 specification and supersedes previous headers (for example, Expires) used to define response caching policies. All modern browsers support Cache-Control, so that's all you need.
 
-<img src="images/http-cache-control-highlight.png" class="center" alt="Przykład dyrektywy Cache-Control protokołu HTTP">
+<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control example" />
 
-### "no-cache" i "no-store"
+### "no-cache" and "no-store"
 
-Dyrektywa "no-cache" wskazuje, że zwróconej odpowiedzi nie można użyć przy kolejnym żądaniu zasobu o tym samym adresie URL bez wcześniejszego sprawdzenia na serwerze, czy odpowiedź się nie zmieniła. W efekcie, jeśli obecny jest poprawny token walidacji (ETag), dyrektywa no-cache wymusza dodatkowe zwalidowanie zbuforowanej odpowiedzi, co pozwala wyeliminować pobieranie niezmodyfikowanego zasobu.
+"no-cache" indicates that the returned response can't be used to satisfy a subsequent request to the same URL without first checking with the server if the response has changed. As a result, if a proper validation token (ETag) is present, no-cache incurs a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.
 
-W odróżnieniu od powyższej dyrektywa `no-store` jest o wiele prostsza, ponieważ po prostu zabrania przeglądarce i wszystkim buforom pamięci podręcznej przechowywać jakiekolwiek wersje zwracanych odpowiedzi &ndash; np. zawierających dane prywatne lub bankowe. Za każdym razem, gdy użytkownik zażąda tego zasobu, do serwera wysyłane będzie żądanie i pobierana pełna odpowiedź.
+By contrast, "no-store" is much simpler. It simply disallows the browser and all intermediate caches from storing any version of the returned response&mdash;for example, one containing private personal or banking data. Every time the user requests this asset, a request is sent to the server and a full response is downloaded.
 
-### Odpowiedź publiczna a prywatna
+### "public" vs. "private"
 
-Po oznaczeniu odpowiedzi jako `public` będzie można ją buforować, nawet jeśli jest z nią związane uwierzytelnianie HTTP i nawet jeśli kod stanu odpowiedzi wskazuje, że normalnie buforować jej nie można. Zazwyczaj oznaczanie odpowiedzi jako `public` nie jest konieczne, ponieważ zamieszczone informacje odnośnie do buforowania (takie jak `max-age`) wskazują, że
-tę odpowiedź należy buforować.
+If the response is marked as "public", then it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn't normally cacheable. Most of the time, "public" isn't necessary, because explicit caching information (like "max-age") indicates that the response is cacheable anyway.
 
-Inaczej niż w powyższym przypadku, przeglądarka może buforować odpowiedzi typu `private`, ale zazwyczaj są one przeznaczone dla jednego użytkownika i dlatego zabronione jest ich buforowanie w pośrednich pamięciach podręcznych &ndash; np. stronę HTML z prywatnymi informacjami użytkownika może buforować przeglądarka użytkownika, ale nie sieć CDN.
+By contrast, the browser can cache "private" responses. However, these responses are typically intended for a single user, so an intermediate cache is not allowed to cache them. For example, a user's browser can cache an HTML page with private user information, but a CDN can't cache the page.
 
-### `max-age`
+### "max-age"
 
-Ta dyrektywa określa maksymalny czas trwania zezwolenia na ponowne wykorzystanie od momentu wysłania żądania &ndash; np. `max-age=60` oznacza, że odpowiedź można zbuforować i ponownie jej używać przez kolejne 60 sekund.
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request. For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
 
-## Określanie optymalnej polityki Cache-Control
+## Defining optimal Cache-Control policy
 
-<img src="images/http-cache-decision-tree.png" class="center" alt="Schemat wyboru opcji buforowania">
+<img src="images/http-cache-decision-tree.png"  alt="Cache decision tree" />
 
-Postępując według powyższego schematu decyzji, ustal optymalną politykę buforowania dla konkretnego zasobu lub zestawu zasobów wymaganych przez Twoją aplikację. W idealnym przypadku powinno buforować się jak najwięcej odpowiedzi u klienta, przez najdłuższy możliwy okres czasu i udostępniać tokeny walidacji dla każdej odpowiedzi w celu zagwarantowania efektywnej ponownej walidacji.
+Follow the decision tree above to determine the optimal caching policy for a particular resource, or a set of resources, that your application uses. Ideally, you should aim to cache as many responses as possible on the client for the longest possible period, and provide validation tokens for each response to enable efficient revalidation.
 
-<table>
+<table class="responsive">
+  
 <thead>
   <tr>
-    <th width="30%">Dyrektywy Cache-Control</th>
-    <th>Wyjaśnienie</th>
+    <th colspan="2">Cache-Control directives &amp; Explanation</th>
   </tr>
 </thead>
 <tr>
   <td data-th="cache-control">max-age=86400</td>
-  <td data-th="wyjaśnienie">Odpowiedź może zostać zbuforowana przez przeglądarkę i inne bufory pośredniej pamięci podręcznej (tzn. pozostanie `publiczna`) przez 1 dzień (60 sekund x 60 minut x 24 godziny)</td>
+  <td data-th="explanation">Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).</td>
 </tr>
 <tr>
   <td data-th="cache-control">private, max-age=600</td>
-  <td data-th="wyjaśnienie">Odpowiedź może zostać zbuforowana przez przeglądarkę klienta przez jedynie 10 minut (60 sekund x 10 minut)</td>
+  <td data-th="explanation">Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).</td>
 </tr>
 <tr>
   <td data-th="cache-control">no-store</td>
-  <td data-th="wyjaśnienie">Odpowiedzi nie wolno buforować; trzeba pobierać pełną odpowiedź przy każdym żądaniu.</td>
+  <td data-th="explanation">Response is not allowed to be cached and must be fetched in full on every request.</td>
 </tr>
 </table>
 
-Według projektu HTTP Archive, wśród najpopularniejszych 300 000 witryn (według rankingu Alexa) [prawie połowa wszystkich pobieranych odpowiedzi może być buforowana](http://httparchive.org/trends.php#maxage0) przez przeglądarki, co zapewnia duże oszczędności przy powtórnych odwiedzinach danej strony. Oczywiście nie oznacza to, że dla konkretnej aplikacji dokładnie 50% zasobów będzie buforowanych: w przypadku niektórych witryn będzie to 90% i więcej, w przypadku innych wiele prywatnych i szybko dezaktualizujących się danych nie będzie nigdy buforowane.
+According to HTTP Archive, among the top 300,000 sites (by Alexa rank), the browser can cache [nearly half of all the downloaded responses](http://httparchive.org/trends.php#maxage0), which is a huge savings for repeat pageviews and visits. Of course, that doesn’t mean that your particular application can cache 50% of the resources. Some sites can cache more than 90% of their resources, while other sites might have a lot of private or time-sensitive data that can’t be cached at all.
 
-**Audytuj swoje strony i wyszukuj zasoby, które mogą zostać zbuforowane. Pilnuj, by były dla nich zwracane odpowiednie nagłówki Cache-Control i ETag.**
+**Audit your pages to identify which resources can be cached and ensure that they return appropriate Cache-Control and ETag headers.**
 
-
-## Unieważnianie i aktualizacja zbuforowanych odpowiedzi
+## Invalidating and updating cached responses
 
 ### TL;DR {: .hide-from-toc }
-- Lokalnie zbuforowane odpowiedzi są używane do momentu `wygaśnięcia` zasobu
-- Umieszczenie odcisku cyfrowego zawartości pliku w adresie URL pozwala wymusić u klienta aktualizację do nowej wersji odpowiedzi
-- Aplikacja może uzyskać najwyższą wydajność, określając własną hierarchię buforowania
 
+* Locally cached responses are used until the resource "expires."
+* Embedding a file content fingerprint in the URL enables you to force the client to update to a new version of the response.
+* Each application needs to define its own cache hierarchy for optimal performance.
 
-Wszystkie żądania HTTP generowane przez przeglądarkę są najpierw kierowane do pamięci podręcznej przeglądarki, co umożliwia sprawdzenie obecności w pamięci podręcznej ważnej odpowiedzi, której można użyć w odpowiedzi na żądanie HTTP. Po znalezieniu pasującej odpowiedzi jest ona odczytywana z pamięci podręcznej; w ten sposób eliminuje się opóźnienia przesyłania przez sieć i opłaty za transfer danych. **Jednak co zrobić, jeśli chcemy zaktualizować lub unieważnić odpowiedź w pamięci podręcznej?**
+All HTTP requests that the browser makes are first routed to the browser cache to check whether there is a valid cached response that can be used to fulfill the request. If there's a match, the response is read from the cache, which eliminates both the network latency and the data costs that the transfer incurs.
 
-Załóżmy na przykład, że poleciliśmy przeglądarkom użytkowników buforowanie arkusza stylów CSS przez 24 godziny (max-age=86400), ale nasz projektant właśnie zaktualizował arkusz i chcemy go od razu udostępnić wszystkim użytkownikom. Jak powiadomić wszystkich użytkowników z przestarzałą kopią arkusza CSS w pamięci podręcznej, by ją odświeżyli? To podchwytliwe pytanie &ndash; nie jest to możliwe, przynajmniej nie bez zmiany adresu URL zasobu.
+**However, what if you want to update or invalidate a cached response?** For example, suppose you've told your visitors to cache a CSS stylesheet for up to 24 hours (max-age=86400), but your designer has just committed an update that you'd like to make available to all users. How do you notify all the visitors who have what is now a "stale" cached copy of your CSS to update their caches? You can't, at least not without changing the URL of the resource.
 
-Po zbuforowaniu odpowiedzi przez przeglądarkę wersja ta jest używana do momentu utraty ważności określonego wartością max-age lub expires albo do momentu usunięcia jej z pamięci podręcznej z jakiegoś innego powodu &ndash; np. wyczyszczenia przez użytkownika. Z tego powodu może się zdarzyć, że podczas konstruowania strony różni użytkownicy będą korzystać z różnych wersji pliku; użytkownicy z właśnie pobranym zasobem będą używać nowej wersji, użytkownicy z wcześniej zbuforowanym (ale nadal ważnym) zasobem będą używać starszej wersji.
+After the browser caches the response, the cached version is used until it's no longer fresh, as determined by max-age or expires, or until it is evicted from cache for some other reason&mdash; for example, the user clearing their browser cache. As a result, different users might end up using different versions of the file when the page is constructed: users who just fetched the resource use the new version, while users who cached an earlier (but still valid) copy use an older version of its response.
 
-**Jak najlepiej pogodzić ze sobą te dwa różne podejścia: buforowanie po stronie klienta i szybkie aktualizacje?** Można po prostu zmienić adres URL zasobu i wymusić na użytkowniku pobranie nowego zasobu przy każdej zmianie jego zawartości. Zazwyczaj wykonuje się to przez zamieszczenie w nazwie pliku cyfrowego odcisku jego zawartości lub numer wersji &ndash; np. style.**x234dff**.css.
+**How do you get the best of both worlds: client-side caching and quick updates?** You change the URL of the resource and force the user to download the new response whenever its content changes. Typically, you do this by embedding a fingerprint of the file, or a version number, in its filename&mdash;for example, style.**x234dff**.css.
 
-<img src="images/http-cache-hierarchy.png" class="center" alt="Hierarchia pamięci podręcznej">
+<img src="images/http-cache-hierarchy.png"  alt="Cache hierarchy" />
 
-Możliwość określania polityki buforowania dla każdego zasobu osobno pozwala tworzyć `hierarchie buforowania` dające kontrolę nie tylko nad długością okresu buforowania, ale również szybkością udostępniania nowych wersji użytkownikom. Przeanalizujmy powyższy przykład:
+The ability to define per-resource caching policies allows you to define "cache hierarchies" that allow you to control not only how long each is cached for, but also how quickly visitors see new versions. To illustrate this, analyze the above example:
 
-* Znaczniki HTML opatrzono dyrektywą `no-cache`, co oznacza, że przeglądarka będzie przy każdym żądaniu sprawdzać ważność dokumentu i pobierać jego ostatnią wersję, jeśli treść uległa zmianie. Ponadto w adresach URL zasobów CSS i JavaScript w znacznikach HTML zamieszczono odciski cyfrowe: jeśli zawartość tych plików się zmieni, zmienią się również znaczniki HTML strony, co pociągnie za sobą pobranie odpowiedzi.
-* Zezwolono na buforowanie kodu CSS przez przeglądarki i bufory pośredniej pamięci podręcznej (np. sieci CDN), a ich datę ważności określono na 1 rok. Zwróć uwagę, że można bez obaw używać długich okresów ważności, takich jak 1 rok, ponieważ w nazwie pliku zamieszczamy jego odcisk cyfrowy: w przypadku aktualizacji kodu CSS adres URL również ulegnie zmianie.
-* W przypadku skryptu JavaScript określono okres ważności o długości 1 roku, ale skrypt oznaczono jako prywatny, być może dlatego, że zawiera pewne prywatne dane użytkowników, których buforowanie przez sieć CDN jest niewskazane.
-* Obraz ma być buforowany bez stosowania wersji ani unikalnego odcisku cyfrowego, a jego datę ważności określono na 1 dzień.
+* The HTML is marked with "no-cache", which means that the browser always revalidates the document on each request and fetches the latest version if the contents change. Also, within the HTML markup, you embed fingerprints in the URLs for CSS and JavaScript assets: if the contents of those files change, then the HTML of the page changes as well and a new copy of the HTML response is downloaded.
+* The CSS is allowed to be cached by browsers and intermediate caches (for example, a CDN), and is set to expire in 1 year. Note that you can use the "far future expires" of 1 year safely because you embed the file fingerprint in its filename: if the CSS is updated, the URL changes as well.
+* The JavaScript is also set to expire in 1 year, but is marked as private, perhaps because it contains some private user data that the CDN shouldn’t cache.
+* The image is cached without a version or unique fingerprint and is set to expire in 1 day.
 
-Połączenie tokenów ETag, dyrektyw Cache-Control i unikalnych adresów URL pozwala wykorzystać najlepsze cechy wszystkich rozwiązań: długie okresy ważności, możliwość kontroli nad miejscem buforowania odpowiedzi i aktualizacje na żądanie.
+The combination of ETag, Cache-Control, and unique URLs allows you to deliver the best of all worlds: long-lived expiration times, control over where the response can be cached, and on-demand updates.
 
-## Buforowanie &ndash; lista czynności
+## Caching checklist
 
-Nie istnieje jedna najlepsza polityka konfiguracji pamięci podręcznej. Zależnie od charakterystyki ruchu sieciowego, typu przesyłanych danych i wymagań aplikacji odnośnie do ważności danych może być konieczne określenie i skonfigurowanie osobnych ustawień odpowiednich dla konkretnych zasobów, jak również ogólnej `hierarchii buforowania`.
+There's no one best cache policy. Depending on your traffic patterns, type of data served, and application-specific requirements for data freshness, you must define and configure the appropriate per-resource settings, as well as the overall "caching hierarchy."
 
-Niektóre wskazówki i techniki, o których trzeba pamiętać przy określaniu strategii buforowania:
+Some tips and techniques to keep in mind as you work on caching strategy:
 
-1. **Używaj spójnej metody tworzenia adresów URL:** przy przesyłaniu tej samej treści pod różnymi adresami URL będzie ona pobierana i przechowywana wiele razy. Wskazówka: pamiętaj, że w przypadku adresów URL [rozróżniana jest wielkość liter](http://www.w3.org/TR/WD-html40-970708/htmlweb.html){: .external }.
-2. **Upewnij się, że serwer udostępnia token walidacji (ETag):** tokeny eliminują potrzebę transferu tych samych danych przy braku zmian zasobu na serwerze.
-3. **Określ, które zasoby mogą być buforowane przez pośredników:** dobrymi kandydatami do buforowania przez sieci CDN i innych pośredników są odpowiedzi identyczne dla wszystkich użytkowników.
-4. **Określ optymalny okres ważności pamięci podręcznej dla każdego zasobu:** różne zasoby mogą wymagać różnych okresów ważności. Przeprowadź audyt i ustal odpowiednią wartość max-age dla każdego zasobu.
-5. **Określ najlepszą hierarchię buforowania w swojej witrynie:** częstotliwość pobierania aktualizacji przez klientów można kontrolować dzięki połączeniu adresów URL i cyfrowych odcisków zasobów z krótkim czasem ważności lub brakiem buforowania dokumentów HTML.
-6. **Unikaj chaosu:** niektóre zasoby są aktualizowane częściej niż inne. Jeśli istnieje szczególna część zasobu (np. funkcja JavaScript lub zestaw stylów CSS), która jest często aktualizowana, rozważ dostarczanie tego kodu w osobnym pliku. Takie postępowanie pozwoli na pobieranie pozostałej treści (np. kodu biblioteki nie zmieniającej się zbyt często) z pamięci podręcznej i ograniczy ilość danych pobieranych podczas aktualizacji.
+* **Use consistent URLs:** if you serve the same content on different URLs, then that content will be fetched and stored multiple times. Tip: note that [URLs are case sensitive](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
+* **Ensure that the server provides a validation token (ETag):** validation tokens eliminate the need to transfer the same bytes when a resource has not changed on the server.
+* **Identify which resources can be cached by intermediaries:** those with responses that are identical for all users are great candidates to be cached by a CDN and other intermediaries.
+* **Determine the optimal cache lifetime for each resource:** different resources may have different freshness requirements. Audit and determine the appropriate max-age for each one.
+* **Determine the best cache hierarchy for your site:** the combination of resource URLs with content fingerprints and short or no-cache lifetimes for HTML documents allows you to control how quickly the client picks up updates.
+* **Minimize churn:** some resources are updated more frequently than others. If there is a particular part of a resource (for example, a JavaScript function or a set of CSS styles) that is often updated, consider delivering that code as a separate file. Doing so allows the remainder of the content (for example, library code that doesn't change very often), to be fetched from cache and minimizes the amount of downloaded content whenever an update is fetched.
 
+## Feedback {: .hide-from-toc }
 
+{% include "web/_shared/helpful.html" %}
 
-
+<div class="clearfix"></div>

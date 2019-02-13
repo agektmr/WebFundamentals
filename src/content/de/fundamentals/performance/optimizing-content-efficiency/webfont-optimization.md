@@ -1,75 +1,71 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Die Typografie ist eine grundlegende Voraussetzung für gutes Design und Branding sowie Lesbarkeit und Zugänglichkeit. Webschriftarten erfüllen die obigen Bedingungen und bieten noch mehr: Der Text ist skalierbar, kann durchsucht, vergrößert und verkleinert werden und unterstützt hohe DPI-Werte. Außerdem liefern diese Schriftarten eine konstante und scharfe Textdarstellung unabhängig von der Bildschirmgröße und -auflösung. 
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution.
 
-{# wf_updated_on: 2014-09-29 #}
-{# wf_published_on: 2014-09-19 #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2014-09-19 #} {# wf_blink_components: Blink>CSS #}
 
-# Optimierung von Webschriftarten {: .page-title }
+# Web Font Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Die Typografie ist eine grundlegende Voraussetzung für gutes Design und Branding sowie Lesbarkeit und Zugänglichkeit. Webschriftarten erfüllen die obigen Bedingungen und bieten noch mehr: Der Text ist skalierbar, kann durchsucht, vergrößert und verkleinert werden und unterstützt hohe DPI-Werte. Außerdem liefern diese Schriftarten eine konstante und scharfe Textdarstellung unabhängig von der Bildschirmgröße und -auflösung. Webschriftarten sind für gutes Design, gute Nutzererfahrung und hohe Leistung erforderlich.
+*This article contains contributions from [Monica Dinculescu](https://meowni.ca/posts/web-fonts/), [Rob Dodson](/web/updates/2016/02/font-display), and Jeff Posnick.*
 
+Typography is fundamental to good design, branding, readability, and accessibility. Webfonts enable all of the above and more: the text is selectable, searchable, zoomable, and high-DPI friendly, providing consistent and sharp text rendering regardless of the screen size and resolution. Webfonts are critical to good design, UX, and performance.
 
-Die Optimierung von Webschriftarten ist ein entscheidender Bestandteil der gesamten Leistungsstrategie. Jede Schriftart ist eine zusätzliche Ressource und einige Schriftarten blockieren möglicherweise das Rendern des Textes, aber nur weil die Seite Webschriftarten verwendet, heißt dies nicht, dass sie langsamer gerendert werden muss. Im Gegenteil: Eine optimierte Schriftart in Kombination mit einer sinnvollen Strategie für das Laden und Anwenden auf der Seite kann zur Verringerung der gesamten Seitengröße beitragen und die Rendering-Zeiten verkürzen.
+Webfont optimization is a critical piece of the overall performance strategy. Each font is an additional resource, and some fonts may block rendering of the text, but just because the page is using webfonts doesn't mean that it has to render slower. On the contrary, optimized fonts, combined with a judicious strategy for how they are loaded and applied on the page, can help reduce the total page size and improve page rendering times.
 
-## Aufbau einer Webschriftart
-
-### TL;DR {: .hide-from-toc }
-- Unicode-Schriftarten können Tausende von Glyphen enthalten.
-- Es gibt vier Schriftformate: WOFF2, WOFF, EOT und TTF.
-- Einige Schriftformate erfordern die GZIP-Komprimierung.
-
-
-Eine Webschriftart ist eine Sammlung von Glyphen und jede Glyphe ist eine Vektorform, die einen Buchstaben oder ein Symbol repräsentiert. Dies führt dazu, dass die Größe einer bestimmten Schriftartdatei durch zwei einfache Variablen bestimmt wird: die Komplexität des Vektorpfads der einzelnen Glyphen und die Anzahl der Glyphen in einer bestimmten Schriftart. Open Sans, eine der beliebtesten Webschriftarten, enthält beispielsweise 897 Glyphen, u. a. lateinische, griechische und kyrillische Zeichen.
-
-<img src="images/glyphs.png" class="center" alt="Glyphentabelle für Schriftarten">
-
-Bei Auswahl einer Schriftart ist es wichtig, zu berücksichtigen, welche Zeichensätze unterstützt werden. Wenn Ihre Seiteninhalte in mehreren Sprachen lokalisiert werden müssen, sollten Sie eine Schriftart verwenden, die den Nutzern ein einheitliches Aussehen und eine konsistente Erfahrung bietet. Die [Schriftartfamilie Noto von Google](https://www.google.com/get/noto/) strebt beispielsweise die Unterstützung aller Sprachen auf der Welt an. Beachten Sie jedoch, dass die Gesamtgröße von Noto mit allen Sprachen einen ZIP-Download von mehr als 130 MB mit sich bringt! 
-
-Es liegt auf der Hand, dass die Verwendung von Schriftarten im Internet eine sorgfältige Codierung erfordert, um sicherzugehen, dass die Typografie nicht die Leistung beeinträchtigt. Auf der Webplattform finden Sie alle erforderlichen Grundlagen und im weiteren Verlauf des Leitfadens wird praktisch dargestellt, wie das Beste von beidem erreicht werden kann.
-
-### Formate von Webschriftarten
-
-Derzeit werden vier Formate von Schriftartcontainern im Internet verwendet: [EOT](http://en.wikipedia.org/wiki/Embedded_OpenType), [TTF](http://de.wikipedia.org/wiki/TrueType), [WOFF](http://de.wikipedia.org/wiki/Web_Open_Font_Format) und [WOFF2](http://www.w3.org/TR/WOFF2/). Trotz der großen Auswahl gibt es leider kein einzelnes universelles Format, das in allen alten und neuen Browsern funktioniert: EOT eignet sich [nur für den IE](http://caniuse.com/#feat=eot), TTF bietet [partielle IE-Unterstützung](http://caniuse.com/#search=ttf), WOFF verfügt über die breiteste Unterstützung, ist aber [in einigen älteren Browsern nicht verfügbar](http://caniuse.com/#feat=woff) und die WOFF 2.0-Unterstützung [ist für viele Browser noch nicht implementiert](http://caniuse.com/#feat=woff2).
-
-Was bedeutet das für uns? Es gibt kein einziges Format, das in allen Browsern funktioniert, d. h., es müssen mehrere Formate bereitgestellt werden, um eine einheitliche Erfahrung zu bieten:
-
-* Liefern Sie die WOFF 2.0-Variante für Browser, die diese unterstützen.
-* Liefern Sie die WOFF-Variante für die Mehrzahl der Browser.
-* Liefern Sie die TTF-Variante für alte Android-Browser (vor 4.4).
-* Liefern Sie die EOT-Variante für alte IE-Browser (vor IE9).
-^
-
-Note: Eigentlich gibt es auch den <a href='http://caniuse.com/svg-fonts'>SVG-Schriftart-Container</a>, aber dieser wurde nie von IE oder Firefox unterstützt und mittlerweile auch nicht mehr von Chrome. Deshalb hat er nur eingeschränkten Nutzen und wird in diesem Leitfaden nicht behandelt.
-
-### Schriftgröße per Komprimierung reduzieren
-
-Eine Schriftart ist eine Sammlung von Glyphen, von denen jede eine Reihe von Pfaden zur Beschreibung der Buchstabenform darstellt. Die einzelnen Glyphen unterscheiden sich natürlich, aber ungeachtet dessen enthalten sie eine Vielzahl ähnlicher Informationen, die mit GZIP oder einem kompatiblen Komprimierungsprogramm minimiert werden können: 
-
-* Die Formate EOT und TTF werden standardmäßig nicht komprimiert: Achten Sie darauf, dass Ihre Server für die Anwendung der [GZIP-Komprimierung](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip) konfiguriert sind, wenn Sie diese Formate bereitstellen.
-* WOFF verfügt über eine integrierte Komprimierung. Achten Sie darauf, dass Ihr WOFF-Komprimierungsprogramm die optimalen Komprimierungseinstellungen verwendet. 
-* WOFF2 nutzt spezifische Vorverarbeitungs- und Komprimierungsalgorithmen für eine Verringerung der Dateigröße um ca. 30 % gegenüber anderen Formaten, siehe [Bericht](http://www.w3.org/TR/WOFF20ER/).
-
-Darüber hinaus ist es beachtenswert, dass einige Schriftartformate zusätzliche Metadaten wie zum Beispiel Informationen zum [Hinting](http://http://de.wikipedia.org/wiki/Hint) und zur [Unterschneidung](http://http://de.wikipedia.org/wiki/Unterschneidung_%28Typografie%29) beinhalten, die auf manchen Plattformen nicht benötigt werden, was eine weitere Optimierung der Dateigröße ermöglicht. Informieren Sie sich über die verfügbaren Optimierungsoptionen Ihres Schriftart-Komprimierungsprogramms und achten Sie darauf, wenn Sie diesen Weg verfolgen, dass Sie über die geeignete Infrastruktur zum Testen und zur Übermittlung dieser optimierten Schriftarten an die einzelnen Browser verfügen, z. B. stellt Google Fonts mehr als 30 optimierte Varianten für jede Schriftart bereit und erkennt und liefert die optimale Variante für jede Plattform und jeden Browser.
-
-Note: Ziehen Sie die Verwendung der <a href='http://en.wikipedia.org/wiki/Zopfli'>Zopfli-Komprimierung</a> für die Formate EOT, TTF und WOFF in Betracht. Zopfli ist ein mit ZLIB kompatibles Komprimierungsprogramm, das die Dateigröße gegenüber GZIP um ca. weitere 5 % reduziert.
-
-## Schriftartfamilie mit @font-face definieren
+## Anatomy of a webfont
 
 ### TL;DR {: .hide-from-toc }
-- Verwenden Sie den Hinweis `format()`, um mehrere Schriftformate anzugeben.
-- Unterteilen Sie große Unicode-Schriftarten, um die Leistung zu verbessern: Nutzen Sie die Unicode-Bereichsunterteilung und sehen Sie eine manuelle Ausweichlösung zur Unterteilung für ältere Browser vor.
-- Reduzieren Sie die Zahl der stilistischen Schriftvarianten, um die Leistung bei der Seiten- und Textwiedergabe zu verbessern.
 
+* Unicode fonts can contain thousands of glyphs.
+* There are four font formats: WOFF2, WOFF, EOT, and TTF.
+* Some font formats require the use of compression.
 
-Die CSS-at-Regel @font-face gestattet es, den Speicherort einer bestimmten Schriftartressource, deren Style-Eigenschaften und die Unicode-Codepoints festzulegen, für die sie verwendet werden soll. Über eine Kombination solcher @font-face-Deklarationen kann eine `Schriftartfamilie` erstellt werden, die der Browser zur Beurteilung heranzieht, welche Schriftartressourcen herunterzuladen sind und auf die aktuelle Seite angewendet werden müssen. Wir wollen uns nun genauer ansehen, wie das intern vor sich geht.
+A *webfont* is a collection of glyphs, and each glyph is a vector shape that describes a letter or symbol. As a result, two simple variables determine the size of a particular font file: the complexity of the vector paths of each glyph and the number of glyphs in a particular font. For example, Open Sans, which is one of the most popular webfonts, contains 897 glyphs, which include Latin, Greek, and Cyrillic characters.
 
-### Format auswählen
+<img src="images/glyphs.png"  alt="Font glyph table" />
 
-Jede @font-face-Deklaration beinhaltet den Namen der Schriftartfamilie, die eine logische Gruppe aus mehreren Deklarationen darstellt, außerdem die [Schriftarteigenschaften](http://www.w3.org/TR/css3-fonts/#font-prop-desc) wie Stil, Stärke und Streckung sowie den [SRC-Descriptor](http://www.w3.org/TR/css3-fonts/#src-desc), der eine priorisierte Liste der Speicherorte für die Schriftartressource angibt.
+When picking a font, it's important to consider which character sets are supported. If you need to localize your page content to multiple languages, you should use a font that can deliver a consistent look and experience to your users. For example, [Google's Noto font family](https://www.google.com/get/noto/){: .external } aims to support all the world's languages. Note, however, that the total size of Noto, with all languages included, results in a 1.1GB+ ZIP download.
 
+Clearly, using fonts on the web requires careful engineering to ensure that the typography doesn't impede performance. Thankfully, the web platform provides all the necessary primitives, and the rest of this guide provides a hands-on look at how to get the best of both worlds.
+
+### Webfont formats
+
+Today there are four font container formats in use on the web: [EOT](https://en.wikipedia.org/wiki/Embedded_OpenType), [TTF](https://en.wikipedia.org/wiki/TrueType), [WOFF](https://en.wikipedia.org/wiki/Web_Open_Font_Format), and [WOFF2](https://www.w3.org/TR/WOFF2/){: .external }. Unfortunately, despite the wide range of choices, there isn't a single universal format that works across all old and new browsers: EOT is [IE only](http://caniuse.com/#feat=eot), TTF has [partial IE support](http://caniuse.com/#search=ttf), WOFF enjoys the widest support but is [not available in some older browsers](http://caniuse.com/#feat=woff), and WOFF 2.0 support is a [work in progress for many browsers](http://caniuse.com/#feat=woff2).
+
+So, where does that leave us? There isn't a single format that works in all browsers, which means that we need to deliver multiple formats to provide a consistent experience:
+
+* Serve WOFF 2.0 variant to browsers that support it.
+* Serve WOFF variant to the majority of browsers.
+* Serve TTF variant to old Android (below 4.4) browsers.
+* Serve EOT variant to old IE (below IE9) browsers.
+
+Note: There's technically another container format, the [SVG font container](http://caniuse.com/svg-fonts), but IE and Firefox never supported it, and it is now deprecated in Chrome. As such, it's of limited use and it's intentionally omitted it in this guide.
+
+### Reducing font size with compression
+
+A font is a collection of glyphs, each of which is a set of paths describing the letter form. The individual glyphs are different, but they contain a lot of similar information that can be compressed with GZIP or a compatible compressor:
+
+* EOT and TTF formats are not compressed by default. Ensure that your servers are configured to apply [GZIP compression](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#text-compression-with-gzip) when delivering these formats.
+* WOFF has built-in compression. Ensure that your WOFF compressor is using optimal compression settings.
+* WOFF2 uses custom preprocessing and compression algorithms to deliver ~30% file-size reduction over other formats. For more information, see [the WOFF 2.0 evaluation report](http://www.w3.org/TR/WOFF20ER/){: .external }.
+
+Finally, it's worth noting that some font formats contain additional metadata, such as [font hinting](https://en.wikipedia.org/wiki/Font_hinting) and [kerning](https://en.wikipedia.org/wiki/Kerning) information that may not be necessary on some platforms, which allows for further file-size optimization. Consult your font compressor for available optimization options, and if you take this route, ensure that you have the appropriate infrastructure to test and deliver these optimized fonts to each browser. For example, [Google Fonts](https://fonts.google.com/) maintains 30+ optimized variants for each font and automatically detects and delivers the optimal variant for each platform and browser.
+
+Note: Consider using [Zopfli compression](http://en.wikipedia.org/wiki/Zopfli) for the EOT, TTF, and WOFF formats. Zopfli is a zlib compatible compressor that delivers ~5% file-size reduction over gzip.
+
+## Defining a font family with @font-face
+
+### TL;DR {: .hide-from-toc }
+
+* Use the `format()` hint to specify multiple font formats.
+* Subset large Unicode fonts to improve performance. Use Unicode-range subsetting and provide a manual subsetting fallback for older browsers.
+* Reduce the number of stylistic font variants to improve the page- and text-rendering performance.
+
+The `@font-face` CSS at-rule allows you to define the location of a particular font resource, its style characteristics, and the Unicode codepoints for which it should be used. A combination of such `@font-face declarations can be used to construct a "font family," which the browser will use to evaluate which font resources need to be downloaded and applied to the current page.
+
+### Format selection
+
+Each `@font-face` declaration provides the name of the font family, which acts as a logical group of multiple declarations, [font properties](http://www.w3.org/TR/css3-fonts/#font-prop-desc) such as style, weight, and stretch, and the [src descriptor](http://www.w3.org/TR/css3-fonts/#src-desc), which specifies a prioritized list of locations for the font resource.
 
     @font-face {
       font-family: 'Awesome Font';
@@ -78,10 +74,10 @@ Jede @font-face-Deklaration beinhaltet den Namen der Schriftartfamilie, die eine
       src: local('Awesome Font'),
            url('/fonts/awesome.woff2') format('woff2'), 
            url('/fonts/awesome.woff') format('woff'),
-           url('/fonts/awesome.ttf') format('ttf'),
-           url('/fonts/awesome.eot') format('eot');
+           url('/fonts/awesome.ttf') format('truetype'),
+           url('/fonts/awesome.eot') format('embedded-opentype');
     }
-
+    
     @font-face {
       font-family: 'Awesome Font';
       font-style: italic;
@@ -89,43 +85,41 @@ Jede @font-face-Deklaration beinhaltet den Namen der Schriftartfamilie, die eine
       src: local('Awesome Font Italic'),
            url('/fonts/awesome-i.woff2') format('woff2'), 
            url('/fonts/awesome-i.woff') format('woff'),
-           url('/fonts/awesome-i.ttf') format('ttf'),
-           url('/fonts/awesome-i.eot') format('eot');
+           url('/fonts/awesome-i.ttf') format('truetype'),
+           url('/fonts/awesome-i.eot') format('embedded-opentype');
     }
+    
 
+First, note that the above examples define a single *Awesome Font* family with two styles (normal and *italic*), each of which points to a different set of font resources. In turn, each `src` descriptor contains a prioritized, comma-separated list of resource variants:
 
-Beachten Sie zunächst, dass in den obigen Beispielen eine einzige Schriftartfamilie _Awesome Font_ mit zwei Schriftstilen (normal und _italic_) definiert wird, die jeweils auf eine andere Gruppe an Schriftartressourcen verweisen. Jeder SRC-Descriptor enthält wiederum eine priorisierte, kommagetrennte Liste mit Ressourcenvarianten: 
+* The `local()` directive allows you to reference, load, and use locally installed fonts.
+* The `url()` directive allows you to load external fonts, and are allowed to contain an optional `format()` hint indicating the format of the font referenced by the provided URL.
 
-* Mithilfe der Anweisung `local()` können wir lokal installierte Schriftarten referenzieren, laden und verwenden.
-* Mithilfe der Anweisung `url()` können wir externe Schriftarten laden und einen optionalen Hinweis `format()` aufnehmen, der das Format der Schriftart angibt, auf die die vorgesehene URL verweist.
+Note: Unless you're referencing one of the default system fonts, it is rare for the user to have it locally installed, especially on mobile devices, where it is effectively impossible to "install" additional fonts. You should always start with a `local()` entry "just in case," and then provide a list of `url()` entries.
 
+When the browser determines that the font is needed, it iterates through the provided resource list in the specified order and tries to load the appropriate resource. For example, following the example above:
 
-Note: Wenn Sie nicht auf einen der Standard-Systemschriftarten zurückgreifen, haben die Nutzer in der Praxis die entsprechenden Schriftarten selten lokal installiert, insbesondere auf Mobilgeräten, wo es faktisch unmöglich ist, zusätzliche Schriftarten zu `installieren`. Aus diesem Grund sollten Sie stets eine Liste mit externen Speicherorten für Schriftarten bereitstellen.
+1. The browser performs page layout and determines which font variants are required to render the specified text on the page.
+2. For each required font, the browser checks if the font is available locally.
+3. If the font is not available locally, the browser iterates over external definitions: 
+    * If a format hint is present, the browser checks if it supports the hint before initiating the download. If the browser doesn't support the hint, the browser advances to the next one.
+    * If no format hint is present, the browser downloads the resource.
 
-Wenn der Browser feststellt, dass die Schriftart benötigt wird, arbeitet er die bereitgestellte Ressourcenliste in der angegebenen Reihenfolge ab und versucht, die entsprechende Ressource zu laden. Gemäß dem obigen Beispiel geschieht das wie folgt:
+The combination of local and external directives with appropriate format hints allows you to specify all of the available font formats and let the browser handle the rest. The browser determines which resources are required and selects the optimal format.
 
-1. Der Browser führt das Seitenlayout aus und bestimmt, welche Schriftartvarianten für die Darstellung des vorgegebenen Texts auf der Seite benötigt werden.
-2. Für jede erforderliche Schriftart prüft der Browser, ob diese lokal verfügbar ist.
-3. Wenn die Datei lokal nicht verfügbar ist, arbeitet der Browser die externen Definitionen ab:
-  * Ist ein Formathinweis vorhanden, prüft der Browser, ob er das Format unterstützt, bevor er den Download einleitet, andernfalls geht er zur nächsten Schriftart über.
-  * Ist kein Formathinweis vorhanden, lädt er die Ressource herunter.
+Note: The order in which the font variants are specified matters. The browser picks the first format it supports. Therefore, if you want the newer browsers to use WOFF2, then you should place the WOFF2 declaration above WOFF, and so on.
 
-Die Kombination aus lokalen und externen Anweisungen mit entsprechenden Formathinweisen ermöglicht es uns, alle verfügbaren Schriftartformate anzugeben und dem Browser die übrige Arbeit zu überlassen: Der Browser ermittelt, welche Ressourcen erforderlich sind und wählt das optimale Format aus.
+### Unicode-range subsetting
 
-Note: Es kommt auf die Reihenfolge an, in der die Schriftvarianten angegeben werden. Der Browser wählt das erste unterstützte Format aus. Wenn Sie also wünschen, dass die neueren Browser WOFF2 verwenden, ist die WOFF2-Deklaration vor WOFF anzuordnen und so weiter.
+In addition to font properties such as style, weight, and stretch, the `@font-face` rule allows us to define a set of Unicode codepoints supported by each resource. This enables us to split a large Unicode font into smaller subsets (for example, Latin, Cyrillic, and Greek subsets) and only download the glyphs required to render the text on a particular page.
 
-### Unterteilung in Unicode-Bereiche
+The [unicode-range descriptor](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range) allows you to specify a comma-delimited list of range values, each of which can be in one of three different forms:
 
-Neben den Schrifteigenschaften wie Stil, Stärke und Streckung können wir mit der @font-face-Regel ein Gruppe von Unicode-Codepoints definieren, die von jeder Ressource unterstützt werden. Auf diese Weise ist es möglich, eine große Unicode-Schriftart in kleinere Untergruppen, z. B. für lateinische, kyrillische und griechische Zeichen, aufzuteilen und nur die Glyphen herunterzuladen, die für die Darstellung des Texts auf einer bestimmten Seite erforderlich sind.
+* Single codepoint (for example, `U+416`)
+* Interval range (for example, `U+400-4ff`): indicates the start and end codepoints of a range
+* Wildcard range (for example, `U+4??`): `?` characters indicate any hexadecimal digit
 
-Mit dem [Unicode-Bereichs-Descriptor](http://www.w3.org/TR/css3-fonts/#descdef-unicode-range) können wir eine kommagetrennte Liste von Bereichswerten angeben, von denen jeder in einer von drei verschiedenen Formen vorliegen kann:
-
-* Einzelner Codepoint, z. B. U+416)
-* Intervallbereich, z. B. U+400-4ff): kennzeichnet die Start- und End-Codepoints eines Bereichs
-* Platzhalterbereich, z. B. U+4??): Die Zeichen `?` zeigen eine hexadezimale Ziffer an .
-
-Wir können unsere Schriftart _Awesome Font_ zum Beispiel in lateinische und japanische Untergruppen aufteilen, die vom Browser je nach Bedarf heruntergeladen werden: 
-
+For example, you can split your *Awesome Font* family into Latin and Japanese subsets, each of which the browser downloads on an as-needed basis:
 
     @font-face {
       font-family: 'Awesome Font';
@@ -134,8 +128,8 @@ Wir können unsere Schriftart _Awesome Font_ zum Beispiel in lateinische und jap
       src: local('Awesome Font'),
            url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
-           url('/fonts/awesome-l.ttf') format('ttf'),
-           url('/fonts/awesome-l.eot') format('eot');
+           url('/fonts/awesome-l.ttf') format('truetype'),
+           url('/fonts/awesome-l.eot') format('embedded-opentype');
       unicode-range: U+000-5FF; /* Latin glyphs */
     }
     
@@ -146,43 +140,40 @@ Wir können unsere Schriftart _Awesome Font_ zum Beispiel in lateinische und jap
       src: local('Awesome Font'),
            url('/fonts/awesome-jp.woff2') format('woff2'), 
            url('/fonts/awesome-jp.woff') format('woff'),
-           url('/fonts/awesome-jp.ttf') format('ttf'),
-           url('/fonts/awesome-jp.eot') format('eot');
+           url('/fonts/awesome-jp.ttf') format('truetype'),
+           url('/fonts/awesome-jp.eot') format('embedded-opentype');
       unicode-range: U+3000-9FFF, U+ff??; /* Japanese glyphs */
     }
     
 
+Note: Unicode-range subsetting is particularly important for Asian languages, where the number of glyphs is much larger than in Western languages and a typical "full" font is often measured in megabytes instead of tens of kilobytes.
 
-Note: Die Unterteilung in Unicode-Bereiche ist besonders für asiatische Sprachen wichtig, bei denen die Anzahl der Glyphen wesentlich höher ist als in westlichen Sprachen und eine typische `komplette` Schriftart oftmals in Megabyte anstatt in Kilobyte angegeben wird!
+The use of Unicode range subsets and separate files for each stylistic variant of the font allows you to define a composite font family that is both faster and more efficient to download. Visitors only download the variants and subsets they need, and they aren't forced to download subsets that they may never see or use on the page.
 
-Mithilfe von Unicode-Bereichsuntergruppen und separaten Dateien für jede stilistische Variante der Schriftart können wir eine kombinierte Schriftartfamilie definieren, die schneller und effizienter heruntergeladen werden kann. Die Besucher laden dann nur die Varianten und Untergruppen herunter, die diese Schriftartfamilie benötigt, und sie sind nicht gezwungen, Untergruppen herunterzuladen, die sie womöglich auf der Seite niemals sehen oder verwenden. 
+That said, there's one small issue with unicode-range: [not all browser support it](http://caniuse.com/#feat=font-unicode-range) yet. Some browsers simply ignore the unicode-range hint and download all variants, while others may not process the `@font-face` declaration at all. To address this, you need to fall back to "manual subsetting" for older browsers.
 
-Es soll jedoch nicht verschwiegen werden, dass Unicode-Bereiche einen kleinen Haken haben: [Sie werden noch nicht von allen Browsern unterstützt](http://caniuse.com/#feat=font-unicode-range). Einige Browser ignorieren den Unicode-Bereichshinweis einfach und laden alle Varianten herunter, während andere die @font-face-Deklaration überhaupt nicht verarbeiten. Wir lösen dieses Problem, indem wir bei älteren Browsern auf die `manuelle Unterteilung` ausweichen.
+Because old browsers are not smart enough to select only the necessary subsets and cannot construct a composite font, you have to fall back to providing a single font resource that contains all the necessary subsets and hide the rest from the browser. For example, if the page is only using Latin characters, then you can strip other glyphs and serve that particular subset as a standalone resource.
 
-Da alte Browser nicht ausreichend intelligent sind, um nur die benötigten Untergruppen auszuwählen und keine kombinierte Schriftart erstellen können, weichen wir auf die Bereitstellung einer einzelnen Schriftartressource aus, die alle notwendigen Untergruppen enthält und verbergen den Rest vor dem Browser. Wenn die Seite zum Beispiel nur lateinische Schriftzeichen verwendet, können wir andere Glyphen entfernen und diese spezielle Untergruppe als eigenständige Ressource übermitteln. 
+1. **How do you determine which subsets are needed?** 
+    * If the browser supports unicode-range subsetting, then it will automatically select the right subset. The page just needs to provide the subset files and specify appropriate unicode-ranges in the `@font-face` rules.
+    * If the browser doesn't support unicode-range subsetting, then the page needs to hide all unnecessary subsets; that is, the developer must specify the required subsets.
+2. **How do you generate font subsets?** 
+    * Use the open-source [pyftsubset tool](https://github.com/behdad/fonttools/){: .external } to subset and optimize your fonts.
+    * Some font services allow manual subsetting via custom query parameters, which you can use to manually specify the required subset for your page. Consult the documentation from your font provider.
 
-1. **Wie bestimmen wir, welche Untergruppen benötigt werden?** 
-  - Wenn die Unterteilung in Unicode-Bereiche vom Browser unterstützt wird, wählt dieser die richtige Untergruppe automatisch aus. Die Seite muss lediglich die Untergruppendateien bereitstellen und die passenden Unicode-Bereiche in den @font-face-Regeln angeben.
-  - Wenn der Unicode-Bereich nicht unterstützt wird, muss die Seite alle unnötigen Untergruppen ausblenden, d. h., es ist Aufgabe des Entwicklers, die erforderlichen Untergruppen anzugeben.
-2. **Wie erzeugen wir Schriftart-Untergruppen?**
-  - Verwenden Sie das Open-Source-Tool [pyftsubset](https://github.com/behdad/fonttools/blob/master/Lib/fontTools/subset.py#L16) für die Unterteilung und Optimierung Ihrer Schriftarten.
-  - Einige Schriftartdienste gestatten die manuelle Unterteilung über benutzerdefinierte Abfrageparameter, mit denen die erforderliche Untergruppe für Ihre Seite manuell angegeben werden kann - schlagen Sie in der Dokumentation Ihres Schriftartanbieters nach.
+### Font selection and synthesis
 
+Each font family is composed of multiple stylistic variants (regular, bold, italic) and multiple weights for each style, each of which, in turn, may contain very different glyph shapes&mdash;for example, different spacing, sizing, or a different shape altogether.
 
-### Schriftartauswahl und -synthese
+<img src="images/font-weights.png"  alt="Font weights" />
 
-Jede Schriftartfamilie besteht aus mehreren stilistischen Varianten (normal, fett, kursiv) und mehreren Schriftstärken für jeden Stil, von denen jeder wiederum sehr unterschiedliche Glyphenformen aufweisen kann, z. B. unterschiedliche Abstände, Größen oder eine komplett andere Form. 
+For example, the above diagram illustrates a font family that offers three different bold weights: 400 (regular), 700 (bold), and 900 (extra bold). All other in-between variants (indicated in gray) are automatically mapped to the closest variant by the browser.
 
-<img src="images/font-weights.png" class="center" alt="Schriftstärken">
+> When a weight is specified for which no face exists, a face with a nearby weight is used. In general, bold weights map to faces with heavier weights and light weights map to faces with lighter weights.
+> 
+> > [CSS3 font matching algorithm](http://www.w3.org/TR/css3-fonts/#font-matching-algorithm)
 
-Das Diagramm oben zeigt zum Beispiel eine Schriftartfamilie mit drei unterschiedlichen Schriftstärken: 400 (normal), 700 (fett) und 900 (extra fett). Alle anderen Varianten dazwischen (grau dargestellt) werden vom Browser automatisch der ähnlichsten Variante zugeordnet. 
-
-
-> Wenn eine Stärke angegeben ist, für die keine Schrift vorhanden ist, wird eine Schrift mit ähnlicher Stärke verwendet. Grundsätzlich werden Fettformatierungen Schriften mit höherer Stärke und helle Formatierungen Schriften mit geringerer Stärke zugeordnet.
-> > <a href="http://www.w3.org/TR/css3-fonts/#font-matching-algorithm">Algorithmus für CSS3-Schriftartenzuordnung</a>
-
-Die entsprechende Logik gilt für kursive Varianten. Der Schriftart-Designer steuert, welche Varianten erstellt werden, und wir steuern, welche Varianten wir auf der Seite verwenden. Da jede Variante einen separaten Download darstellt, empfiehlt es sich, die Zahl der Varianten zu begrenzen. Wir können zum Beispiel zwei Fettschrift-Varianten für unsere Schriftartfamilie _Awesome Font_ festlegen: 
-
+Similar logic applies to *italic* variants. The font designer controls which variants they will produce, and you control which variants you'll use on the page. Because each variant is a separate download, it's a good idea to keep the number of variants small. For example, you can define two bold variants for the *Awesome Font* family:
 
     @font-face {
       font-family: 'Awesome Font';
@@ -191,8 +182,8 @@ Die entsprechende Logik gilt für kursive Varianten. Der Schriftart-Designer ste
       src: local('Awesome Font'),
            url('/fonts/awesome-l.woff2') format('woff2'), 
            url('/fonts/awesome-l.woff') format('woff'),
-           url('/fonts/awesome-l.ttf') format('ttf'),
-           url('/fonts/awesome-l.eot') format('eot');
+           url('/fonts/awesome-l.ttf') format('truetype'),
+           url('/fonts/awesome-l.eot') format('embedded-opentype');
       unicode-range: U+000-5FF; /* Latin glyphs */
     }
     
@@ -203,126 +194,296 @@ Die entsprechende Logik gilt für kursive Varianten. Der Schriftart-Designer ste
       src: local('Awesome Font'),
            url('/fonts/awesome-l-700.woff2') format('woff2'), 
            url('/fonts/awesome-l-700.woff') format('woff'),
-           url('/fonts/awesome-l-700.ttf') format('ttf'),
-           url('/fonts/awesome-l-700.eot') format('eot');
+           url('/fonts/awesome-l-700.ttf') format('truetype'),
+           url('/fonts/awesome-l-700.eot') format('embedded-opentype');
       unicode-range: U+000-5FF; /* Latin glyphs */
     }
     
 
-Mit dem obigen Beispiel wird die Schriftartfamilie _Awesome Font_ deklariert, die aus zwei Ressourcen mit demselben Satz an lateinischen Glyphen (U+000-5FF) besteht, aber zwei verschiedene Stärken anbietet: normal (400) und fett (700). Wie verhält es sich jedoch, wenn eine unserer CSS-Regeln eine andere Schriftstärke angibt oder die Schriftstileigenschaft auf kursiv setzt?
+The above example declares the *Awesome Font* family that is composed of two resources that cover the same set of Latin glyphs (`U+000-5FF`) but offer two different "weights": normal (400) and bold (700). However, what happens if one of your CSS rules specifies a different font weight, or sets the font-style property to italic?
 
-* Wenn eine genau übereinstimmende Schriftart nicht verfügbar ist, ersetzt der Browser diese durch diejenige mit der ähnlichsten Übereinstimmung.
-* Wird keine stilistische Übereinstimmung gefunden, z. B. weil wir wie im obigen Beispiel keine kursiven Varianten deklariert haben, erstellt der Browser eine eigene Schriftartvariante. 
+* If an exact font match isn't available, the browser substitutes the closest match.
+* If no stylistic match is found (for example, no italic variants were declared in the example above), then the browser synthesizes its own font variant.
 
-<img src="images/font-synthesis.png" class="center" alt="Schriftartsynthese">
+<img src="images/font-synthesis.png"  alt="Font synthesis" />
 
-> Die Autoren sollten sich darüber im Klaren sein, dass synthetisierte Ansätze sich womöglich für Skripte in kyrillischer Schrift nicht eignen, bei denen die kursiven Formen stark abweichen. Es ist immer besser, eine originale Kursivschrift zu verwenden, als auf eine synthetische Version zurückzugreifen.
-> > <a href="http://www.w3.org/TR/css3-fonts/#propdef-font-style">CSS3-Schriftartstil</a>
+Warning: Authors should also be aware that synthesized approaches may not be suitable for scripts like Cyrillic, where italic forms are very different in shape. For proper fidelity in those scripts, use an actual italic font.
 
+The example above illustrates the difference between the actual vs. synthesized font results for Open Sans. All synthesized variants are generated from a single 400-weight font. As you can see, there's a noticeable difference in the results. The details of how to generate the bold and oblique variants are not specified. Therefore, the results vary from browser to browser, and are highly dependent on the font.
 
-Im obigen Beispiel wird der Unterschied zwischen originalen und synthetisierten Schriftartresultaten für Open-Sans aufgezeigt. Alle synthetisierten Varianten wurden dabei aus einer einzigen Schrift mit der Stärke 400 erzeugt. Wie Sie sehen, bestehen bei den Ergebnissen keine erkennbaren Unterschiede. Die Erzeugung von fetten und kursiven Varianten ist nicht im Detail vorgegeben. Deshalb unterscheiden sich die Resultate bei den verschiedenen Browsern und hängen außerdem stark von der jeweiligen Schriftart ab.
+Note: For best consistency and visual results, don't rely on font synthesis. Instead, minimize the number of used font variants and specify their locations, such that the browser can download them when they are used on the page. That said, in some cases a synthesized variant [may be a viable option](https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/), but be cautious in using synthesized variants.
 
-Note: Im Sinne einer optimalen Konsistenz und bestmöglicher visueller Resultate sollten Sie sich nicht auf die Schriftartsynthese verlassen. Minimieren Sie stattdessen die Anzahl der verwendeten Schriftvarianten und geben Sie deren Speicherort an, damit der Browser diese herunterladen kann, wenn sie auf der Seite benötigt werden. Unter Berücksichtigung der obigen Ausführungen <a href='https://www.igvita.com/2014/09/16/optimizing-webfont-selection-and-synthesis/'>kann in manchen Fällen eine synthetisierte Variante eine gangbare Option darstellen</a>. Dies ist allerdings sorgfältig zu prüfen.
-
-
-## Laden und Rendern optimieren
+## Optimizing loading and rendering
 
 ### TL;DR {: .hide-from-toc }
-- Schriftartanforderungen werden verzögert, bis die Rendering-Baumstruktur erstellt ist, was zu einer verzögerten Textwiedergabe führen kann.
-- Das Font Loading API ermöglicht die Implementierung von Strategien zum Laden und Rendern von Schriftarten, die das standardmäßige langsame Laden (Lazy Loading) von Schriftarten umgehen.
-- Mit der Inline-Ersetzung kann das standardmäßige Lazy Loading von Schriftarten in älteren Browsern umgangen werden.
 
+* By default, font requests are delayed until the render tree is constructed, which can result in delayed text rendering.
+* `<link rel="preload">`, the CSS `font-display` property, and the Font Loading API provide the hooks needed to implementing custom font loading and rendering strategies, overriding the default behavior.
 
-Eine `komplette` Webschriftart, die alle stilistischen Varianten und alle Glyphen umfasst, die wir möglicherweise nicht brauchen, kann ohne Weiteres einen Download von mehreren Megabytes bedeuten. Aus diesem Grund wurde eigens die CSS-Regel @font-face konzipiert, mit der wir die Schriftartfamilie in eine Sammlung von Ressourcen aufteilen können, die Unicode-Untergruppen, spezielle Stilvarianten usw. umfasst. 
+A "full" webfont that includes all stylistic variants, which you may not need, plus all the glyphs, which may go unused, can easily result in a multi-megabyte download. To address this, the `@font-face` CSS rule is specifically designed to allow you to split the font family into a collection of resources: unicode subsets, distinct style variants, and so on.
 
-Anhand dieser Deklarationen bestimmt der Browser die erforderlichen Untergruppen und Varianten und lädt die minimalen Bestandteile, die für die Wiedergabe des Texts benötigt werden. Dieses Verhalten ist zwar sehr komfortabel, kann aber bei mangelnder Sorgfalt zu einem Leistungsengpass im kritischen Rendering-Pfad führen und die Textwiedergabe verzögern - und das wollen wir ja unbedingt vermeiden! 
+Given these declarations, the browser figures out the required subsets and variants and downloads the minimal set required to render the text, which is very convenient. However, if you're not careful, it can also create a performance bottleneck in the critical rendering path and delay text rendering.
 
-### Webschriftarten und kritischer Rendering-Pfad
+### The default behavior
 
-Das Lazy Loading von Schriftarten hat eine wichtige verborgene Auswirkung, die die Textwiedergabe verzögern kann: Der Browser muss [die Rendering-Baumstruktur erstellen](/web/fundamentals/performance/critical-rendering-path/render-tree-construction), die von den DOM- und CSSOM-Baumstrukturen abhängt, bevor klar ist, welche Schriftartressourcen für das Rendern des Texts benötigt werden. Das hat zur Folge, dass Schriftarten wesentlich später als andere kritische Ressourcen angefordert werden und der Browser eventuell an der Textwiedergabe gehindert wird, bis die jeweilige Ressource abgerufen wurde.
+Lazy loading of fonts carries an important hidden implication that may delay text rendering: the browser must [construct the render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction), which is dependent on the DOM and CSSOM trees, before it knows which font resources it needs in order to render the text. As a result, font requests are delayed well after other critical resources, and the browser may be blocked from rendering text until the resource is fetched.
 
-<img src="images/font-crp.png" class="center" alt="Kritischer Rendering-Pfad für Schriftarten">
+<img src="images/font-crp.png"  alt="Font critical rendering path" />
 
-1. Der Browser fordert ein HTML-Dokument an.
-2. Der Browser beginnt mit dem Parsen der HTML-Antwort und mit der Erstellung des DOM.
-3. Der Browser erkennt CSS-, JS- und andere Ressourcen und versendet Anforderungen.
-4. Der Browser erstellt nach dem Erhalt aller CSS-Inhalte das CSSOM und verbindet es mit der DOM-Baumstruktur, um die Rendering-Baumstruktur zu erzeugen.
-  * Die Schriftartanforderungen werden ausgegeben, sobald durch die Rendering-Baumstruktur angezeigt wird, welche Schriftartvarianten für die Wiedergabe des vorgegebenen Texts auf der Seite benötigt werden.
-5. Der Browser führt das Layout aus und stellt die Inhalte auf dem Bildschirm dar.
-  * Wenn die Schriftart noch nicht verfügbar ist, kann der Browser keine Textpixel rendern.
-  * Sobald die Schriftart verfügbar ist, rendert der Browser die Textpixel.
+1. The browser requests the HTML document.
+2. The browser begins parsing the HTML response and constructing the DOM.
+3. The browser discovers CSS, JS, and other resources and dispatches requests.
+4. The browser constructs the CSSOM after all of the CSS content is received and combines it with the DOM tree to construct the render tree. 
+    * Font requests are dispatched after the render tree indicates which font variants are needed to render the specified text on the page.
+5. The browser performs layout and paints content to the screen. 
+    * If the font is not yet available, the browser may not render any text pixels.
+    * After the font is available, the browser paints the text pixels.
 
-Das `Rennen` zwischen dem ersten Rendern des Seiteninhalts, das kurz nach der Erstellung der Rendering-Baumstruktur erfolgen kann, und der Anforderung der Schriftartressource ist für das `Leertextproblem` verantwortlich, bei dem der Browser das Seitenlayout ohne Text darstellt. Das tatsächliche Verhalten unterscheidet sich bei den verschiedenen Browsern:
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text.
 
-* Safari hält das Rendern des Texts an, bis der Schriftartdownload abgeschlossen ist.
-* Chrome und Firefox halten die Schriftartdarstellung bis zu 3 Sekunden an und nutzen dann eine Ausweich-Schriftart. Sobald der Schriftartdownload abgeschlossen ist, rendern sie den Text erneut mit der heruntergeladenen Schriftart.
-* IE stellt sofort die Ausweich-Schriftart dar, wenn die angeforderte Schriftart noch nicht verfügbar ist und rendert diese erneut, sobald der Schriftartdownload abgeschlossen ist.
+The next section describes a number of options for customizing this default behavior.
 
-Es gibt gute Argumente für und gegen die unterschiedlichen Rendering-Strategien: Manche finden das erneute Rendern holprig, während andere sofortige Resultate vorziehen und sich nicht am erneuten Seitenaufbau stören, sobald der Schriftartdownload abgeschlossen ist. Diese Diskussion wollen wir hier aber nicht führen. Wichtig ist, dass beim Lazy Loading die Anzahl der Bytes geringer wird, sich aber die Textwiedergabe potenziell verzögert. Wir wollen uns nun damit befassen, wie wir dieses Verhalten optimieren können.
+### Preload your Webfont resources
 
-### Schriftart-Rendering mit dem Font Loading API optimieren
+If there's a high probability that your page will need a specific Webfont hosted at a URL you know in advance, you can take advantage of a new web platform feature: [`<link rel="preload">`](/web/fundamentals/performance/resource-prioritization).
 
-Das [Font Loading API](http://dev.w3.org/csswg/css-font-loading/) bietet eine Scripting-Oberfläche für die Definition und Bearbeitung von CSS-Schriftarten, die Verfolgung des Downloadfortschritts und die Umgehung des standardmäßigen Lazy Loading-Verhaltens. Wenn wir beispielsweise sicher sind, dass eine bestimmte Schriftvariante benötigt wird, können wir diese definieren und den Browser anweisen, den sofortigen Abruf der Schriftartressource einzuleiten:
+It allows you to include an element in your HTML, usually as part of the `<head>`, that will trigger a request for the Webfont early in the critical rendering path, without having to wait for the CSSOM to be created.
 
+`<link rel="preload">` serves as a "hint" to the browser that a given resource is going to be needed soon, but it doesn't tell the browser *how* to use it. You need to use preload in conjunction with an appropriate CSS `@font-face` definition in order to instruct the browser what do to with a given Webfont URL.
+
+```html
+<head>
+  <!-- Other tags... -->
+  <link rel="preload" href="/fonts/awesome-l.woff2" as="font">
+</head>
+```
+
+```css
+@font-face {
+  font-family: 'Awesome Font';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Awesome Font'),
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
+       url('/fonts/awesome-l.woff') format('woff'),
+       url('/fonts/awesome-l.ttf') format('truetype'),
+       url('/fonts/awesome-l.eot') format('embedded-opentype');
+  unicode-range: U+000-5FF; /* Latin glyphs */
+}
+```
+
+Not all browsers [support `<link rel="preload">`](https://caniuse.com/#feat=link-rel-preload), and in those browsers, `<link rel="preload">` will just be ignored. But every browser that supports preloading also supports WOFF2, so that's always the format that you should preload.
+
+Caution: Using `<link rel="preload">` will make an unconditional, high-priority request for the Webfont's URL, regardless of whether it actually ends up being needed on the page. If there's a reasonable chance that the remote copy of the Webfont won't be needed—for instance, because the `@font-face` definition includes a `local()` entry for a common font like Roboto—then using `<link rel="preload">` will result in a wasted request. Some browsers will display a warning in their Developer Tools Console when a resource is preloaded but not actually used.
+
+### Customize the text rendering delay
+
+While preloading makes it more likely that a Webfont will be available when a page's content is rendered, it offers no guarantees. You still need to consider how browsers behave when rendering text that uses a `font-family` which is not yet available.
+
+#### Browser behaviors
+
+The "race" between the first paint of page content, which can be done shortly after the render tree is built, and the request for the font resource is what creates the "blank text problem" where the browser might render page layout but omits any text. Most browsers implement a maximum timeout that they'll wait for a Webfont to download, after which a fallback font will be used. Unfortunately, browsers differ on implementation:
+
+<table>
+  <thead>
+    <tr>
+      <th data-th="Browser">Browser</th>
+      <th data-th="Timeout">Timeout</th>
+      <th data-th="Fallback">Fallback</th>
+      <th data-th="Swap">Swap</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-th="Browser">
+        <strong>Chrome 35+</strong>
+      </td>
+      <td data-th="Timeout">
+        3 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Opera</strong>
+      </td>
+      <td data-th="Timeout">
+        3 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Firefox</strong>
+      </td>
+      <td data-th="Timeout">
+        3 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Internet Explorer</strong>
+      </td>
+      <td data-th="Timeout">
+        0 seconds
+      </td>
+      <td data-th="Fallback">
+        Yes
+      </td>
+      <td data-th="Swap">
+        Yes
+      </td>
+    </tr>
+    <tr>
+      <td data-th="Browser">
+        <strong>Safari</strong>
+      </td>
+      <td data-th="Timeout">
+        No timeout
+      </td>
+      <td data-th="Fallback">
+        N/A
+      </td>
+      <td data-th="Swap">
+        N/A
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+* Chrome and Firefox have a three second timeout after which the text is shown with the fallback font. If the font manages to download, then eventually a swap occurs and the text is re-rendered with the intended font.
+* Internet Explorer has a zero second timeout which results in immediate text rendering. If the requested font is not yet available, a fallback is used, and text is re-rendered later once the requested font becomes available.
+* Safari has no timeout behavior (or at least nothing beyond a baseline network timeout).
+
+To ensure consistency moving forward, the CSS Working Group has proposed a new `@font-face` descriptor, [`font-display`](https://drafts.csswg.org/css-fonts-4/#font-display-desc), and a corresponding property for controlling how a downloadable font renders before it is loaded.
+
+#### The font display timeline
+
+Similar to the existing font timeout behaviors that some browsers implement today, `font-display` segments the lifetime of a font download into three major periods:
+
+1. The first period is the **font block period**. During this period, if the font face is not loaded, any element attempting to use it must instead render with an invisible fallback font face. If the font face successfully loads during the block period, the font face is then used normally.
+2. The **font swap period** occurs immediately after the font block period. During this period, if the font face is not loaded, any element attempting to use it must instead render with a fallback font face. If the font face successfully loads during the swap period, the font face is then used normally.
+3. The **font failure period** occurs immediately after the font swap period. If the font face is not yet loaded when this period starts, it’s marked as a failed load, causing normal font fallback. Otherwise, the font face is used normally.
+
+Understanding these periods means you can use `font-display` to decide how your font should render depending on whether or when it was downloaded.
+
+#### Using font-display
+
+To work with the `font-display` property, add it your `@font-face` rules:
+
+```css
+@font-face {
+  font-family: 'Awesome Font';
+  font-style: normal;
+  font-weight: 400;
+  font-display: auto; /* or block, swap, fallback, optional */
+  src: local('Awesome Font'),
+       url('/fonts/awesome-l.woff2') format('woff2'), /* will be preloaded */ 
+       url('/fonts/awesome-l.woff') format('woff'),
+       url('/fonts/awesome-l.ttf') format('truetype'),
+       url('/fonts/awesome-l.eot') format('embedded-opentype');
+  unicode-range: U+000-5FF; /* Latin glyphs */
+}
+```
+
+`font-display` currently supports the following range of values: `auto | block | swap | fallback | optional`.
+
+* **`auto`** uses whatever font display strategy the user-agent uses. Most browsers currently have a default strategy similar to `block`.
+
+* **`block`** gives the font face a short block period (3s is recommended in most cases) and an infinite swap period. In other words, the browser draws "invisible" text at first if the font is not loaded, but swaps the font face in as soon as it loads. To do this the browser creates an anonymous font face with metrics similar to the selected font but with all glyphs containing no "ink." This value should only be used if rendering text in a particular typeface is required for the page to be usable.
+
+* **`swap`** gives the font face a zero second block period and an infinite swap period. This means the browser draws text immediately with a fallback if the font face isn’t loaded, but swaps the font face in as soon as it loads. Similar to `block`, this value should only be used when rendering text in a particular font is important for the page, but rendering in any font will still get a correct message across. Logo text is a good candidate for **swap** since displaying a company’s name using a reasonable fallback will get the message across but you’d eventually use the official typeface.
+
+* **`fallback`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a short swap period (three seconds is recommended in most cases). In other words, the font face is rendered with a fallback at first if it’s not loaded, but the font is swapped as soon as it loads. However, if too much time passes, the fallback will be used for the rest of the page’s lifetime. `fallback` is a good candidate for things like body text where you’d like the user to start reading as soon as possible and don’t want to disturb their experience by shifting text around as a new font loads in.
+
+* **`optional`** gives the font face an extremely small block period (100ms or less is recommended in most cases) and a zero second swap period. Similar to `fallback`, this is a good choice for when the downloading font is more of a "nice to have" but not critical to the experience. The `optional` value leaves it up to the browser to decide whether to initiate the font download, which it may choose not to do or it may do it as a low priority depending on what it thinks would be best for the user. This can be beneficial in situations where the user is on a weak connection and pulling down a font may not be the best use of resources.
+
+`font-display` is [gaining adoption](https://caniuse.com/#feat=css-font-rendering-controls) in many modern browsers. You can look forward to consistency in browser behavior as it becomes widely implemented.
+
+### The Font Loading API
+
+Used together, `<link rel="preload">` and the CSS `font-display` give developers a great deal of control over font loading and rendering, without adding in much overhead. But if you need additional customizations, and are willing to incur with the overhead introduced by running JavaScript, there is another option.
+
+The [Font Loading API](https://www.w3.org/TR/css-font-loading/) provides a scripting interface to define and manipulate CSS font faces, track their download progress, and override their default lazyload behavior. For example, if you're sure that a particular font variant is required, you can define it and tell the browser to initiate an immediate fetch of the font resource:
 
     var font = new FontFace("Awesome Font", "url(/fonts/awesome.woff2)", {
       style: 'normal', unicodeRange: 'U+000-5FF', weight: '400'
     });
     
-    font.load(); // don't wait for render tree, initiate immediate fetch!
-    
-    font.ready().then(function() {
-      // apply the font (which may rerender text and cause a page reflow)
-      // once the font has finished downloading
+    // don't wait for the render tree, initiate an immediate fetch!
+    font.load().then(function() {
+      // apply the font (which may re-render text and cause a page reflow)
+      // after the font has finished downloading
       document.fonts.add(font);
       document.body.style.fontFamily = "Awesome Font, serif";
     
-      // OR... by default content is hidden, and rendered once font is available
+      // OR... by default the content is hidden, 
+      // and it's rendered after the font is available
       var content = document.getElementById("content");
       content.style.visibility = "visible";
     
-      // OR... apply own render strategy here... 
+      // OR... apply your own render strategy here... 
     });
     
 
-Weil wir den Schriftstatus mit der Methode [check()](http://dev.w3.org/csswg/css-font-loading/#font-face-set-check)) überprüfen und den jeweiligen Downloadfortschritt verfolgen können, ist es darüber hinaus möglich, eine angepasste Strategie für die Wiedergabe von Text auf unseren Seiten festzulegen: 
+Further, because you can check the font status (via the [check()](https://www.w3.org/TR/css-font-loading/#font-face-set-check)) method and track its download progress, you can also define a custom strategy for rendering text on your pages:
 
-* Wir können das Rendern des gesamten Textes anhalten, bis die Schriftart verfügbar ist.
-* Wir können für jede Schriftart ein benutzerdefiniertes Zeitlimit implementieren.
-* Wir können mithilfe der Ausweich-Schriftart die Rendering-Blockade aufheben und einen neuen Stil einfügen, der die gewünschte Schriftart nutzt, sobald sie verfügbar ist.
+* You can hold all text rendering until the font is available.
+* You can implement a custom timeout for each font.
+* You can use the fallback font to unblock rendering and inject a new style that uses the desired font after the font is available.
 
-Das Beste ist: Wir können die obigen Strategien auch mischen und an unterschiedliche Seiteninhalte anpassen, z. B. das Text-Rendering in bestimmten Bereichen bis zur Verfügbarkeit der Schriftart anhalten, eine Ausweich-Schriftart nutzen und dann erneut rendern, sobald der Schriftartdownload abgeschlossen ist, verschiedene Zeitlimits festlegen und so weiter. 
+Best of all, you can also mix and match the above strategies for different content on the page. For example, you can delay text rendering on some sections until the font is available, use a fallback font, and then re-render after the font download has finished, specify different timeouts, and so on.
 
-Note: Das Font Loading API <a href='http://caniuse.com/#feat=font-loading'>ist für manche Browser noch in der Entwicklungsphase</a>. Ziehen Sie die Verwendung des <a href='https://github.com/bramstein/fontloader'>FontLoader-Polyfills</a> oder der <a href='https://github.com/typekit/webfontloader'>Webfontloader-Bibliothek</a> in Betracht, um eine ähnliche Funktionalität bereitzustellen, allerdings mit dem Nachteil einer zusätzlichen JavaScript-Abhängigkeit.
+Note: The Font Loading API is still [under development in some browsers](http://caniuse.com/#feat=font-loading). Consider using the [FontLoader polyfill](https://github.com/bramstein/fontloader) or the [webfontloader library](https://github.com/typekit/webfontloader) to deliver similar functionality, albeit with even more overhead from an additional JavaScript dependency.
 
-### Schriftart-Rendering durch Inline-Ersetzung optimieren
+### Proper caching is a must
 
-Eine einfache alternative Strategie, um mithilfe des Font Loading API das `Leertext-Problem` zu umgehen, besteht darin, die Schriftartinhalte inline in ein CSS-Stylesheet einzubetten:
+Font resources are, typically, static resources that don't see frequent updates. As a result, they are ideally suited for a long max-age expiry - ensure that you specify both a [conditional ETag header](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags), and an [optimal Cache-Control policy](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control) for all font resources.
 
-* CSS-Stylesheets mit passenden Medienabfragen werden vom Browser mit hoher Priorität automatisch heruntergeladen, weil sie für die Erstellung des CSSOM benötigt werden.
-* Die Inline-Einbettung von Schriftartdaten in ein CSS-Stylesheet zwingt den Browser dazu, die Schriftart mit hoher Priorität herunterzuladen, ohne auf die Rendering-Baumstruktur zu warten und stellt somit eine manuelle Umgehung des standardmäßigen Lazy Loading-Verhaltens dar.
+If your web application uses a [service worker](/web/fundamentals/primers/service-workers/), serving font resources with a [cache-first strategy](/web/fundamentals/instant-and-offline/offline-cookbook/#cache-then-network) is appropriate for most use cases.
 
-Zwar ist die Inlining-Strategie nicht so flexibel und gestattet es uns nicht, benutzerdefinierte Zeitlimits oder Rendering-Ansätze für unterschiedliche Inhalte zu definieren, aber es ist eine einfache und robuste Lösung, die mit allen Browsern funktioniert. Isolieren Sie für optimale Resultate die Inline-Schriftarten in ein eigenständiges Stylesheet und stellen Sie sie mit einer langen Ablaufdauer (max-age) bereit. Auf diese Weise zwingen Sie die Besucher bei der Aktualisierung Ihres CSS nicht dazu, die Schriftarten erneut herunterzuladen. 
+You should not store fonts using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API); each of those has its own set of performance issues. The browser's HTTP cache provides the best and most robust mechanism to deliver font resources to the browser.
 
-Note: Nutzen Sie die Inline-Ersetzung selektiv! Vergegenwärtigen Sie sich, dass der Grund, warum @font-face ein Lazy Loading-Verhalten nutzt, die Vermeidung des Downloads unnötiger Schriftvarianten und Untergruppen ist. Ebenso wird das Anwachsen Ihres CSS-Codes über eine aggressive Inline-Ersetzung sich negativ auf den <a href='/web/fundamentals/performance/critical-rendering-path/'>kritischen Rendering-Pfad</a> auswirken - der Browser müssen den gesamten CSS-Code herunterladen, bevor er das CSSOM erstellt, die Rendering-Baumstruktur erzeugt und den Seiteninhalt auf dem Bildschirm darstellt.
+## Optimization checklist
 
-### Wiederverwendung von Schriftarten mit HTTP-Caching optimieren
+Contrary to popular belief, the use of webfonts doesn't need to delay page rendering or have a negative impact on other performance metrics. The well-optimized use of fonts can deliver a much better overall user experience: great branding, improved readability, usability, and searchability, all while delivering a scalable multi-resolution solution that adapts well to all screen formats and resolutions. Don't be afraid to use webfonts.
 
-Schriftartressourcen sind typischerweise statische Ressourcen, die nicht häufig aktualisiert werden. Aus diesem Grund eignen sie sich hervorragend für eine lange Ablaufdauer (max-age). Geben Sie sowohl einen [bedingten ETag-Header](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#validating-cached-responses-with-etags) als auch eine [optimale Cache-Control-Richtlinie](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control) für alle Schriftartressourcen an. 
-    
-Es ist nicht nötig, Schriftarten im localStorage oder mit anderen Methoden zu speichern - diese führen alle zu Leistungseinbußen. Der HTTP-Cachespeicher des Browsers stellt in Kombination mit dem Font Loading API bzw. der Webfontloader-Bibliothek das beste und stabilste Verfahren zur Übermittlung von Schriftartressourcen an den Browser dar.
+That said, a naive implementation may incur large downloads and unnecessary delays. You need to help the browser by optimizing the font assets themselves and how they are fetched and used on your pages.
 
+* **Audit and monitor your font use:** don't use too many fonts on your pages, and, for each font, minimize the number of used variants. This helps produce a more consistent and a faster experience for your users.
+* **Subset your font resources:** many fonts can be subset, or split into multiple unicode-ranges to deliver just the glyphs that a particular page requires. This reduces the file size and improves the download speed of the resource. However, when defining the subsets, be careful to optimize for font re-use. For example, don't download a different but overlapping set of characters on each page. A good practice is to subset based on script: for example, Latin, Cyrillic, and so on.
+* **Deliver optimized font formats to each browser:** provide each font in WOFF2, WOFF, EOT, and TTF formats. Make sure to apply GZIP compression to the EOT and TTF formats, because they are not compressed by default.
+* **Give precedence to `local()` in your `src` list:** listing `local('Font Name')` first in your `src` list ensures that HTTP requests aren't made for fonts that are already installed.
+* **Customize font loading and rendering using `<link rel="preload">`, `font-display`, or the Font Loading API:** default lazyloading behavior may result in delayed text rendering. These web platform features allow you to override this behavior for particular fonts, and to specify custom rendering and timeout strategies for different content on the page.
+* **Specify revalidation and optimal caching policies:** fonts are static resources that are infrequently updated. Make sure that your servers provide a long-lived max-age timestamp and a revalidation token to allow for efficient font reuse between different pages. If using a service worker, a cache-first strategy is appropriate.
 
-## Optimierungscheckliste
+## Automated testing for web font optimization with Lighthouse {: #lighthouse }
 
-Im Gegensatz zur gängigen Meinung verzögern Webschriftarten nicht notwendigerweise die Seitendarstellung oder wirken sich negativ auf andere Leistungsmesswerte aus. Ein optimierter Einsatz von Schriftarten kann zu einer wesentlich besseren Nutzererfahrung beitragen: hervorragendes Branding sowie verbesserte Lesbarkeit, Nutzbarkeit und Durchsuchbarkeit bei gleichzeitiger Bereitstellung einer Lösung mit multiplen Auflösungen, die sich an alle Bildschirmformate anpasst. Schrecken Sie nicht vor der Verwendung von Webschriftarten zurück! 
+[Lighthouse](/web/tools/lighthouse) can help automate the process of making sure that you're following web font optimization best practices. Lighthouse is an auditing tool built by the Chrome DevTools team. You can run it as a Node module, from the command line, or from the Audits panel of Chrome DevTools. You tell Lighthouse what URL to audit, and then it runs a bunch of tests on the page, and gives you a report of what the page is doing well, and how it can improve.
 
-Allerdings kann eine naive Implementierung zu großen Downloads und unnötigen Verzögerungen führen. Deshalb ist es erforderlich, das Optimierungs-Toolkit zu überarbeiten und den Browser bei der Optimierung der Schriftartressourcen und deren Abruf sowie bei der Verwendung auf unseren Seiten zu unterstützen. 
+The following audits can help you make sure that your pages are continuing to follow web font optimization best practices over time:
 
-1. **Schriftartnutzung überprüfen und überwachen:** Verwenden Sie nicht zu viele Schriftarten auf Ihren Seiten und minimieren Sie für jede Schriftart die Zahl der verwendeten Varianten. Dies ermöglicht die Bereitstellung einer einheitlicheren und schnelleren Nutzererfahrung.
-2. **Schriftartressourcen unterteilen:** Viele Schriftarten können unterteilt oder in mehrere Unicode-Bereiche aufgeteilt werden, damit nur die Glyphen übertragen werden, die von einer bestimmten Seite benötigt werden. Damit wird die Dateigröße reduziert und die Downloadgeschwindigkeit der Ressource erhöht. Achten Sie bei der Festlegung der Untergruppen darauf, eine Optimierung für die erneute Schriftartverwendung durchzuführen, z. B., wenn Sie keinen anderen, überlappenden Zeichensatz auf den einzelnen Seiten herunterladen möchten. Es hat sich bewährt, eine Unterteilung auf Skriptbasis, z. B. für lateinische, kyrillische Zeichensätze usw., durchzuführen.
-3. **Optimierte Schriftartformate für jeden Browser bereitstellen:** Jede Schriftart sollte in den Formaten WOFF2, WOFF, EOT und TTF geliefert werden. Wenden Sie die GZIP-Komprimierung auf die Formate EOT und TTF an, da diese standardmäßig nicht komprimiert werden.
-4. **Richtlinien für Revalidierung und optimales Caching vorgeben:** Schriftarten sind statische Ressourcen, die nicht häufig aktualisiert werden. Achten Sie darauf, dass Ihre Server einen max-age-Zeitstempel mit langer Lebensdauer und ein Revalidierungstoken vorsehen, um eine effiziente Wiederverwendung von Schriftarten auf verschiedenen Seiten zu gestatten.
-5. **Font Loading API zur Optimierung des kritischen Rendering-Pfads nutzen:** Das standardmäßige Lazy Loading-Verhalten kann zu einem verzögerten Rendern von Text führen. Das Font Loading API gestattet die Außerkraftsetzung dieses Verhaltens bei bestimmten Schriftarten und die Festlegung benutzerdefinierter Strategien für das Rendering und die Zeitüberschreitung bei unterschiedlichen Seiteninhalten. Für ältere Browser, die das API nicht unterstützen, können Sie die Webfontloader-JavaScript-Bibliothek oder die CSS-Inlining-Strategie nutzen.
+* [Enable text compression](/web/tools/lighthouse/audits/text-compression)
+* [Preload key requests](/web/tools/lighthouse/audits/preload)
+* [Uses inefficient cache policy on static assets](/web/tools/lighthouse/audits/cache-policy)
+* [All text remains visible during webfont loads](/web/updates/2016/02/font-display)
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

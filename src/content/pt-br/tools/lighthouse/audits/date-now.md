@@ -1,35 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "Site não usa Date.now() em seus próprios scripts".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Date.now() In Its Own Scripts" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# Site não usa Date.now() em seus próprios scripts  {: .page-title }
+# Avoids Date.now() In Its Own Scripts {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Se você usar `Date.now()` para medir tempo, em vez disso, considere usar
-`performance.now()`. O `performance.now()` oferece uma resolução maior de
-timestamp e é sempre incrementado a uma taxa constante, independentemente
-do relógio do sistema, que pode ser ajustado ou distorcido manualmente.
+If you're using `Date.now()` to measure time, consider using `performance.now()` instead. `performance.now()` provides a higher timestamp resolution, and always increases at a constant rate that is independent of the system clock, which can be adjusted or manually skewed.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-No seu relatório, o Lighthouse lista todas as instâncias de `Date.now()`
-que encontrou em **URLs**. Substitua todas essas chamadas por `performance.now()`.
+In your report, Lighthouse lists every instance of `Date.now()` that it finds under **URLs**. Replace each of these calls with `performance.now()`.
 
-Consulte [`performance.now()`][MDN] para obter mais informações sobre a API.
+See [`performance.now()`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) for more information on the API.
 
-[MDN]: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse reports every instance of `Date.now()` that it finds from scripts that are on the same host as the page. Scripts from other hosts are excluded, because Lighthouse assumes that you don't have control over these scripts. So, there may be other scripts using `Date.now()` on your page, but these won't show up in your Lighthouse report.
 
-O Lighthouse relata todas as instâncias de `Date.now()` encontradas em
-scripts no mesmo host da página. Os scripts de outros hosts são
-excluídos, pois o Lighthouse assume que você não tem controle sobre
-eles. Portanto, podem existir outros scripts que usam `Date.now()` na página,
-mas eles não serão exibidos no relatório do Lighthouse.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

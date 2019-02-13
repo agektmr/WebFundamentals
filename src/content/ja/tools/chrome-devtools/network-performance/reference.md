@@ -1,12 +1,8 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools の [Network] パネル機能の包括的リファレンス。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: A comprehensive reference of Chrome DevTools Network panel features.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-08-23 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %} 
 
 <style>
 figcaption {
@@ -14,836 +10,708 @@ figcaption {
 }
 </style>
 
-[ui]: #ui-overview
-[requests]: #requests
-[overview]: #overview
+ 
 
-# ネットワーク分析リファレンス {: .page-title }
+# Network Analysis Reference {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Chrome DevTools のネットワーク分析機能のこの包括的なリファレンスで、ページがどのように読み込まれるかを分析する新しい方法をご覧ください。
+Discover new ways to analyze how your page loads in this comprehensive reference of Chrome DevTools network analysis features.
 
+Note: This reference is based on Chrome 58. If you use another version of Chrome, the UI and features of DevTools may be different. Check `chrome://help` to see what version of Chrome you're running.
 
-注: このリファレンスは Chrome 58 に基づいています。別のバージョンの Chrome を使用している場合、DevTools の UI と機能が異なる場合があります。
- どのバージョンの Chrome を実行しているかを確認するには、`chrome://help` をチェックしてください。
+## Record network requests {: #record }
 
-
-## ネットワーク リクエストの記録 {: #record }
-
-デフォルトでは、DevTools が開いている限り、DevTools はすべてのネットワーク リクエストを [Network] パネルに記録します。
-
+By default, DevTools records all network requests in the Network panel, so long as DevTools is open.
 
 <figure>
-  <img src="imgs/network.png" alt="[Network] パネル。">
+  <img src="imgs/network.png" alt="The Network panel.">
   <figcaption>
-    <b>図 1</b>。 [Network] パネル</figcaption>
-
+    <b>Figure 1</b>. The Network panel
+  </figcaption>
 </figure>
 
-### ネットワーク リクエストの記録の停止 {: #stop-recording }
+### Stop recording network requests {: #stop-recording }
 
-リクエストの記録を停止するには:
+To stop recording requests:
 
-* [Network] パネルで [**Stop recording network log**] ![Stop recording network log](imgs/record-on.png) をクリックします。
-{: .devtools-inline } それは灰色に変わり、DevTools がリクエストの記録を停止したことを示します。
-* [Network] パネルにフォーカスを設定した状態で、<kbd>Command キー</kbd>+<kbd>E</kbd>（Mac）または <kbd>Control キー</kbd>+<kbd>E</kbd>（Windows、Linux）を押します。
+* Click **Stop recording network log** ![Stop recording network
+log](imgs/record-on.png){: .devtools-inline } on the Network panel. It turns grey to indicate that DevTools is no longer recording requests.
+* Press <kbd>Command</kbd>+<kbd>E</kbd> (Mac) or <kbd>Control</kbd>+<kbd>E</kbd> (Windows, Linux) while the Network panel is in focus.
 
+### Clear requests {: #clear }
 
-
-### リクエストのクリア {: #clear }
-
-リクエスト表からすべてのリクエストをクリアするために、[Network] パネルで [**Clear**] ![Clear][clear]をクリックします。{:.devtools-inline}
-
+Click **Clear** ![Clear](imgs/clear-requests.png){:.devtools-inline} on the Network panel to clear all requests from the Requests table.
 
 <figure>
-  <img src="imgs/clear.svg" alt="[Clear] ボタン。">
+  <img src="imgs/clear.svg" alt="The Clear button.">
   <figcaption>
-    <b>図 2</b>。 青い枠で示されている [Clear]</figcaption>
-
+    <b>Figure 2</b>. Clear, outlined in blue
+  </figcaption>
 </figure>
 
-[clear]: imgs/clear-requests.png
+### Save requests across page loads {: #preserve-log }
 
-### ページの読み込み後もリクエストを保存 {: #preserve-log }
-
-ページの読み込み後もリクエストを保存するには、[Network] パネルで [**Preserve log**] チェックボックスをオンにします。
- DevTools は、[**Preserve log**] を無効にするまで、すべてのリクエストを保存します。
-
+To save requests across page loads, check the **Preserve log** checkbox on the Network panel. DevTools saves all requests until you disable **Preserve log**.
 
 <figure>
-  <img src="imgs/preserve-log.svg" alt="[Preserve Log] チェックボックス。">
+  <img src="imgs/preserve-log.svg" alt="The Preserve Log checkbox.">
   <figcaption>
-    <b>図 3</b>。 青い枠で示されている [Preserve Log] チェックボックス</figcaption>
-
+    <b>Figure 3</b>. The Preserve Log checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-### ページの読み込み中のスクリーンショットの取得 {: #screenshots }
+### Capture screenshots during page load {: #screenshots }
 
-ページの読み込みを待機する間にユーザーに表示されるものを分析するために、スクリーンショットを取得します。
+Capture screenshots to analyze what users see as they wait for your page to load.
 
+To enable screenshots, click **Capture screenshots** ![Capture
+screenshots](imgs/capture-screenshots.png){: .devtools-inline } on the Network panel. It turns blue when enabled.
 
-スクリーンショットを有効にするには、[Network] パネルで [**Capture screenshots**] ![Capture screenshots][capture] をクリックします。
-{: .devtools-inline } 有効になると青色に変わります。
+Reload the page while the Network panel is in focus to capture screenshots.
 
+Once captured, you can interact with screenshots in the following ways:
 
-スクリーンショットを取得するために [Network] パネルにフォーカスを設定した状態で、ページを再読み込みします。
-
-取得したスクリーンショットは、以下の方法で操作できます。
-
-* スクリーンショットにカーソルを合わせると、スクリーンショットが取得された時点が表示されます。
- [Overview] ペインには黄色い線が表示されます。
-* スクリーンショットのサムネイルをクリックすると、スクリーンショットが取得された後に発生したリクエストを除外できます。
-* サムネイルをダブルクリックすると、拡大できます。
+* Hover over a screenshot to view the point at which that screenshot was captured. A yellow line appears on the Overview pane.
+* Click a screenshot's thumbnail to filter out any requests that occurred after the screenshot was captured.
+* Double-click a thumbnail to zoom in on it.
 
 <figure>
   <img src="imgs/screenshot-hover.png"
-       alt="スクリーンショットにカーソルを合わせる。">
+       alt="Hovering over a screenshot.">
   <figcaption>
-    <b>図 4</b>。 スクリーンショットにカーソルを合わせる。 [Overview] ペインの黄色の縦線とウォーターフォールはスクリーンショットが取得された時点を表しています。
-
-
+    <b>Figure 4</b>. Hovering over a screenshot. The yellow, vertical line
+    in the Overview pane and the Waterfall represent the time at which the
+    screenshot was captured.
   </figcaption>
 </figure>
 
-[capture]: imgs/capture-screenshots.png
+### Replay XHR request {: #replay-xhr }
 
-### XHR リクエストのリプレイ {: #replay-xhr }
-
-XHR リクエストをリプレイするには、リクエスト表でリクエストを右クリックし、[**Replay XHR**] を選択します。
-
+To replay an XHR request, right-click the request in the Requests table and select **Replay XHR**.
 
 <figure>
-  <img src="imgs/replay-xhr.png" alt="[Replay XHR] の選択。">
+  <img src="imgs/replay-xhr.png" alt="Selecting Replay XHR.">
   <figcaption>
-    <b>図 5</b>。 [Replay XHR] の選択</figcaption>
-
+    <b>Figure 5</b>. Selecting Replay XHR
+  </figcaption>
 </figure>
 
-## 読み込み動作の変更
+## Change loading behavior
 
-### ブラウザのキャッシュを無効にすることによる、初回訪問者のエミュレート {: #disable-cache}
+### Emulate a first-time visitor by disabling the browser cache {: #disable-cache}
 
-初めてサイトを訪問するユーザーのエクスペリエンスをエミュレートするには、[**Disable cache**] チェックボックスをオンにします。
- DevTools により、ブラウザのキャッシュが無効にされます。 リクエストは再アクセスの際にブラウザのキャッシュから提供されるので、これは、初めてのユーザーのエクスペリエンスをより正確にエミュレートします。
-
-
+To emulate how a first-time user experiences your site, check the **Disable cache** checkbox. DevTools disables the browser cache. This more accurately emulates a first-time user's experience, because requests are served from the browser cache on repeat visits.
 
 <figure>
-  <img src="imgs/disable-cache.svg" alt="[Disable Cache] チェックボックス。">
+  <img src="imgs/disable-cache.svg" alt="The Disable Cache checkbox.">
   <figcaption>
-    <b>図 6</b>。 青い枠で示されている [Disable Cache] チェックボックス</figcaption>
-
+    <b>Figure 6</b>. The Disable Cache checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-#### [Network Conditions] ドロワーからブラウザのキャッシュを無効にする {: #disable-cache-network-conditions }
+#### Disable the browser cache from the Network Conditions drawer {: #disable-cache-network-conditions }
 
-他の DevTools パネルで作業している間にキャッシュを無効にする場合は、[Network Conditions] ドロワーを使用します。
+If you want to disable the cache while working in other DevTools panels, use the Network Conditions drawer.
 
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Check or uncheck the **Disable cache** checkbox.
 
-1. [[Network Conditions] ドロワー](#network-conditions)を開きます。
-1. [**Disable Cache**] チェックボックスをオンまたはオフにします。
+### Manually clear the browser cache {: #clear-cache}
 
-### ブラウザのキャッシュの手動でのクリア {: #clear-cache}
-
-ブラウザのキャッシュを手動でクリアする場合は、いつでも、リクエスト表の任意の場所を右クリックして [**Clear Browser Cache**] を選択します。
-
+To manually clear the browser cache at any time, right-click anywhere in the Requests table and select **Clear Browser Cache**.
 
 <figure>
   <img src="imgs/clear-browser-cache.png"
-       alt="[Clear Browser Cache] の選択。">
+       alt="Selecting Clear Browser Cache.">
   <figcaption>
-    <b>図 7</b>。 [Clear Browser Cache] の選択</figcaption>
-
+    <b>Figure 7</b>. Selecting Clear Browser Cache
+  </figcaption>
 </figure>
 
-### オフラインでのエミュレート {: #offline }
+### Emulate offline {: #offline }
 
-[プログレッシブ ウェブアプリ][pwa]と呼ばれる新しい種類のウェブアプリがあります。これは [Service Worker][sw] を利用してオフラインで動作できます。
- この種のアプリを構築する場合、データ接続のない端末を簡単にシミュレートできると便利です。
+There's a new class of web apps, called [Progressive Web Apps](/web/progressive-web-apps/), which can function offline with the help of [service workers](/web/fundamentals/getting-started/primers/service-workers). When you're building this type of app, it's useful to be able to quickly simulate a device that has no data connection.
 
-
-
-[**Offline**] チェックボックスをオンにして、完全にオフラインのネットワーク エクスペリエンスをシミュレートします。
-
+Check the **Offline** checkbox to simulate a completely offline network experience.
 
 <figure>
   <img src="imgs/offline.svg"
-       alt="[Offline] チェックボックス">
+       alt="The Offline checkbox">
   <figcaption>
-    <b>図 8</b>。 青い枠で示されている [Offline] チェックボックス</figcaption>
-
+    <b>Figure 8</b>. The Offline checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-[pwa]: /web/progressive-web-apps/
-[sw]: /web/fundamentals/getting-started/primers/service-workers
+### Emulate slow network connections {: #throttling }
 
-### 低速ネットワーク接続のエミュレート {: #throttling }
-
-[**Network Throttling**] メニューから 2G、3G、およびその他の接続速度をエミュレートします。
-
+Emulate 2G, 3G, and other connection speeds from the **Network Throttling** menu.
 
 <figure>
   <img src="imgs/network-panel-throttling-menu.svg"
-       alt="[Network Throttling] メニュー。">
+       alt="The Network Throttling menu.">
   <figcaption>
-    <b>図 9</b>。 青い枠で示されている [Network Throttling] メニュー。</figcaption>
-
+    <b>Figure 9</b>. The Network Throttling menu, outlined in blue
+  </figcaption>
 </figure>
 
-Regular または Good 2G などのさまざまなプリセットから選択できます。 [Network Throttling] メニューを開いて、[**Custom**] > [**Add**] を選択することにより、独自のカスタム プリセットを追加することもできます。
+You can select from a variety of presets, such as Regular or Good 2G. You can also add your own custom presets by opening the Network Throttling menu and selecting **Custom** > **Add**.
 
+DevTools displays a warning icon next to the **Network** tab to remind you that throttling is enabled.
 
+#### Emulate slow network connections from the Network Conditions drawer {: #throttling-network-conditions }
 
-DevTools では、スロットリングが有効であることを示すために、[**Network**] タブの横に警告アイコンを表示します。
+If you want to throttle the network connection while working in other DevTools panels, use the Network Conditions drawer.
 
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Select your desired connection speed from the **Network Throttling** menu.
 
-#### [Network Conditions] ドロワーから低速ネットワーク接続をエミュレートする {: #throttling-network-conditions }
+### Manually clear browser cookies {: #clear-cookies }
 
-他の DevTools パネルで作業している間にネットワーク接続をスロットリングする場合は、[Network Conditions] ドロワーを使用します。
-
-
-1. [[Network Conditions] ドロワー](#network-conditions)を開きます。
-1. [**Network Throttling**] メニューから希望の接続速度を選択します。
-
-### ブラウザの cookie の手動でのクリア {: #clear-cookies }
-
-ブラウザの cookie を手動でクリアする場合は、いつでも、リクエスト表の任意の場所を右クリックして、[**Clear Browser Cookies**] を選択します。
-
+To manually clear browser cookies at any time, right-click anywhere in the Requests table and select **Clear Browser Cookies**.
 
 <figure>
   <img src="imgs/clear-browser-cookies.png"
-       alt="[Clear Browser Cookies] の選択。">
+       alt="Selecting Clear Browser Cookies.">
   <figcaption>
-    <b>図 10</b>。 [Clear Browser Cookies] の選択</figcaption>
-
+    <b>Figure 10</b>. Selecting Clear Browser Cookies
+  </figcaption>
 </figure>
 
-### ユーザー エージェントのオーバーライド {: #user-agent }
+### Override the user agent {: #user-agent }
 
-ユーザー エージェントを手動でオーバーライドするには:
+To manually override the user agent:
 
-1. [[Network Conditions] ドロワー](#network-conditions)を開きます。
-1. [**Select automatically**] チェックボックスをオフにします。
-1. メニューからユーザー エージェント オプションを選択するか、テキスト ボックスにカスタム オプションを入力します。
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Uncheck **Select automatically**.
+3. Choose a user agent option from the menu, or enter a custom one in the text box.
 
+## Filter requests {: #filter }
 
-## リクエストのフィルタ処理 {: #filter }
+### Filter requests by properties {: #filter-by-property }
 
-### プロパティでのリクエストのフィルタ処理 {: #filter-by-property }
+Use the **Filter** text box to filter requests by properties, such as the domain or size of the request.
 
-[**Filter**] テキスト ボックスを使用して、ドメインまたはリクエストのサイズなどのプロパティでリクエストをフィルタ処理します。
-
-
-テキスト ボックスが表示されない場合、おそらく [Filters] ペインが非表示になっています。
-[[Filters] ペインの非表示](#hide-filters)をご覧ください。
+If you can't see the text box, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
 <figure>
-  <img src="imgs/filter-text-box.svg" alt="[Filters]テキスト ボックス。">
+  <img src="imgs/filter-text-box.svg" alt="The Filters text box.">
   <figcaption>
-    <b>図 11</b>。 青い枠で示されている [Filters] テキスト ボックス</figcaption>
-
+    <b>Figure 11</b>. The Filters text box, outlined in blue
+  </figcaption>
 </figure>
 
-各プロパティをスペースで区切ることで、複数のプロパティを同時に使用できます。
- たとえば、`mime-type:image/gif larger-than:1K` は 1 KB より大きいすべての GIF を表示します。
- これらの複数のプロパティ フィルタは AND 演算と同等です。
- OR 演算は現在サポートされていません。
+You can use multiple properties simultaneously by separating each property with a space. For example, `mime-type:image/gif larger-than:1K` displays all GIFs that are larger than one kilobyte. These multi-property filters are equivalent to AND operations. OR operations are currently not supported.
 
+Below is a complete list of supported properties.
 
-以下は、サポートされているプロパティの完全なリストです。
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
-* `domain`。 指定したドメインのリソースのみを表示します。 複数のドメインを含めるには、ワイルドカード文字（`*`）を使用します。
- たとえば、`*.com` はドメイン名が `.com` で終わるすべてのドメインのリソースを表示します。
- DevTools では、見つかったすべてのドメインを含むオートコンプリート ドロップダウン メニューが設定されます。
-* `has-response-header`。 指定した HTTP レスポンス ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべてのレスポンス ヘッダーを含むオートコンプリート ドロップダウンが設定されます。
-* `is`。 `is:running` を使用して、`WebSocket` リソースを検索します。
-* `larger-than`。 指定したサイズ（バイト単位）よりも大きいリソースを表示します。
- 値 `1000` を設定するのと値 `1k` を設定するのは同じです。
-* `method`。 指定した HTTP メソッドの種類で取得されたリソースを表示します。
- DevTools では、見つかったすべての HTTP メソッドを含むドロップダウンが設定されます。
-* `mime-type`。 指定した MIME タイプのリソースを表示します。 DevTools では、見つかったすべての MIME タイプを含むドロップダウンが設定されます。
-* `mixed-content`。 すべての混在コンテンツ リソース（`mixed-content:all`）または現在表示されている混在コンテンツ リソースのみ（`mixed-content:displayed`）を表示します。
-* `scheme`。 保護されていない HTTP （`scheme:http`）または保護されている HTTPS （`scheme:https`）を経由して取得されたリソースを表示します。
-* `set-cookie-domain`。 指定した値と一致する `Domain` 属性を持つ `Set-Cookie` ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべての Cookie ドメインを含むオートコンプリート ドロップダウンが設定されます。
-* `set-cookie-name`。 指定した値と一致する名前を持つ `Set-Cookie` ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべての Cookie 名を含むオートコンプリート ドロップダウンが設定されます。
-* `set-cookie-value`。 指定した値と一致する値を持つ `Set-Cookie` ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべての Cookie 値を含むオートコンプリート ドロップダウンが設定されます。
-* `status-code`。 指定したコードと一致する HTTP ステータス コードを持つリソースだけを表示します。
- DevTools では、見つかったすべてのステータス コードを含むオートコンプリート ドロップダウン メニューが設定されます。
+### Filter requests by type {: #filter-by-type }
 
+To filter requests by request type, click the **XHR**, **JS**, **CSS**, **Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest**, or **Other** (any other type not listed here) buttons on the Network panel.
 
-### タイプでのリクエストのフィルタ処理 {: #filter-by-type }
+If you can't see these buttons, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
-リクエスト タイプでリクエストをフィルタ処理するには、[Network] パネルで、[**XHR**]、[**JS**]、[**CSS**]、[**Img**]、[**Media**]、[**Font**]、[**Doc**]、[**WS**] （WebSocket）、[**Manifest**]、または [**Other**] （ここにリストされていないその他のタイプ）ボタンをクリックします。
-
-
-
-これらのボタンが表示されない場合、おそらく [Fillter] ペインが非表示になっています。
-[[Filters] ペインの非表示](#hide-filters)をご覧ください。
-
-複数のタイプのフィルタを同時に使用可能にするには、<kbd>Command</kbd> キー（Mac）または <kbd>Control</kbd> キー（Windows、Linux）を押したままクリックします。
-
+To enable multiple type filters simultaneously, hold <kbd>Command</kbd> (Mac) or <kbd>Control</kbd> (Windows, Linux) and then click.
 
 <figure>
   <img src="imgs/multi-type-filter.png"
-       alt="タイプフィルタを使用して、JS、CSS、および Doc （文書）リソースを表示する。">
-
+       alt="Using the Type filters to display JS, CSS, and Doc[ument]
+            resources.">
   <figcaption>
-    <b>図 12</b>。 タイプフィルタを使用して、JS、CSS、および Doc （文書）リソースを表示する。
-
+    <b>Figure 12</b>. Using the Type filters to display JS, CSS, and Doc[ument]
+    resources.
   </figcaption>
 </figure>
 
-### 時間でのリクエストのフィルタ処理 {: #filter-by-time }
+### Filter requests by time {: #filter-by-time }
 
-[Overview] ペインで、クリックして左または右にドラッグすることで、そのタイムフレーム中にアクティブであったリクエストのみを表示します。
- フィルタの時間も含まれます。 ハイライト表示されている時間中にアクティブであったリクエストがすべて表示されます。
-
+Click and drag left or right on the Overview pane to only display requests that were active during that time frame. The filter is inclusive. Any request that was active during the highlighted time is shown.
 
 <figure>
   <img src="imgs/overview-filter.png"
-       alt="2500ms 周辺でアクティブではなかったリクエストの除外。">
+       alt="Filtering out any requests that weren't active around 2500ms.">
   <figcaption>
-    <b>図 13</b>。 2500ms 周辺でアクティブではなかったリクエストの除外</figcaption>
-
-
+    <b>Figure 13</b>. Filtering out any requests that weren't active around
+    2500ms
+  </figcaption>
 </figure>
 
-### データ URL の非表示
+### Hide data URLs
 
-[データ URL][data-uris] は、他のドキュメントに埋め込まれている小さなファイルです。 リクエスト表に示されているリクエストのうち、`data:` で始まるものがすべてデータ URL です。
+[Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) are small files embedded into other documents. Any request that you see in the Requests table that starts with `data:` is a data URL.
 
-
-
-[**Hide data URLs**] チェックボックスをオンにして、これらのリクエストを非表示にします。
+Check the **Hide data URLs** checkbox to hide these requests.
 
 <figure>
-  <img src="imgs/hide-data-urls.svg" alt="[Hide Data URLs] チェックボックス。">
+  <img src="imgs/hide-data-urls.svg" alt="The Hide Data URLs checkbox.">
   <figcaption>
-    <b>図 14</b>。 [Hide Data URLs] チェックボックス</figcaption>
-
+    <b>Figure 14</b>. The Hide Data URLs checkbox
+  </figcaption>
 </figure>
 
-[data-uris]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+## Sort requests
 
-## リクエストの並べ替え
+By default, the requests in the Requests table are sorted by initiation time, but you can sort the table using other criteria.
 
-デフォルトでは、リクエスト表のリクエストは開始時間で並べ替えられていますが、他の基準を使用して表を並べ替えることができます。
+### Sort by column {: #sort-by-column }
 
+Click the header of any column in the Requests to sort requests by that column.
 
-### 列順で並べ替え {: #sort-by-column }
+### Sort by activity phase {: #sort-by-activity }
 
-リクエストの任意の列のヘッダーをクリックして、その列でリクエストを並べ替えます。
+To change how the Waterfall sorts requests, right-click the header of the Requests table, hover over **Waterfall**, and select one of the following options:
 
+* **Start Time**. The first request that was initiated is at the top.
+* **Response Time**. The first request that started downloading is at the top.
+* **End Time**. The first request that finished is at the top.
+* **Total Duration**. The request with the shortest connection setup and request / response is at the top.
+* **Latency**. The request that waited the shortest time for a response is at the top.
 
-### アクティビティ フェーズ順で並べ替え {: #sort-by-activity }
-
-ウォーターフォールでのリクエストの並べ替え方法を変更するには、リクエスト表のヘッダーを右クリックし、カーソルを [**Waterfall**] に合わせ、以下のオプションのうちの 1 つを選択します。
-
-
-
-* **Start Time**。 最初に開始されたリクエストが先頭になります。
-* **Response Time**。 最初にダウンロードを開始したリクエストが先頭になります。
-* **End Time**。 最初に終了したリクエストが先頭になります。
-* **Total Duration**。 接続セットアップおよびリクエスト / レスポンスが最も短いリクエストが先頭になります。
-* **Latency**。 レスポンスの待機時間が最も短いリクエストが先頭になります。
-
-
-これらの説明は、各オプションがそれぞれ最短から最長にランク付けされていることが前提です。
- [**Waterfall**] 列のヘッダーをクリックすると、順序が逆になります。
+These descriptions assume that each respective option is ranked from shortest to longest. Clicking on the **Waterfall** column's header reverses the order.
 
 <figure>
   <img src="imgs/waterfall-total-duration.png"
-       alt="合計時間によるウォーターフォールの並べ替え。">
+       alt="Sorting the Waterfall by total duration.">
   <figcaption>
-    <b>図 15</b>。 合計時間によるウォーターフォールの並べ替え。 棒グラフの色の薄い部分は待機に費やした時間です。
- 色の濃い部分は、バイトのダウンロードに費やした時間です。
-
+    <b>Figure 15</b>. Sorting the Waterfall by total duration. The lighter
+    portion of each bar is time spent waiting. The darker portion is time
+    spent downloading bytes.
   </figcaption>
 </figure>
 
-## リクエストの分析 {: #analyze }
+## Analyze requests {: #analyze }
 
-DevTools が開いている限り、[Network] パネルにすべてのリクエストのログが記録されます。
-[Network] パネルを使用して、リクエストを分析します。
+So long as DevTools is open, it logs all requests in the Network panel. Use the Network panel to analyze requests.
 
-### リクエストのログの表示 {: #requests }
+### View a log of requests {: #requests }
 
-リクエスト表を使用して、DevTools が開いている間に行われたすべてのリクエストのログを表示します。
- リクエストをクリックするか、カーソルを合わせると、それらについての詳細情報が表示されます。
-
+Use the Requests table to view a log of all requests made while DevTools has been open. Clicking or hovering over requests reveals more information about them.
 
 <figure>
   <img src="imgs/requests-table.svg"
-       alt="リクエスト表。">
+       alt="The Requests table.">
   <figcaption>
-    <b>図 16</b>。 青い枠で示されているリクエスト表</figcaption>
-
+    <b>Figure 16</b>. The Requests table, outlined in blue
+  </figcaption>
 </figure>
 
-リクエスト表は、デフォルトで以下の列を表示します。
+The Requests table displays the following columns by default:
 
-* **Name**。 リソースのファイル名または ID。
-* **Status**。 HTTP ステータス コード。
-* **Type**。 リクエストされたリソースの MIME タイプ。
-* **Initiator**。 以下のオブジェクトまたはプロセスがリクエストを開始できます。
-    * **Parser**。 Chrome の HTML パーサー。
-    * **Redirect**。 HTTP リダイレクト。
-    * **Script**。 JavaScript 関数。
-    * **Other**。 リンクを使ってページを移動したり、アドレスバーに URL を入力するなどの他のいくつかのプロセスまたは操作。
-* **Size**。 サーバーから配信された時のレスポンス ヘッダーとレスポンス本文の合計サイズ。
-* **Time**。 リクエスト開始からレスポンスの最終バイトを受け取るまでにかかった合計時間。
-* [**Waterfall**](#waterfall)。 各リクエストの操作の視覚的詳細。
+* **Name**. The filename of, or an identifier for, the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The following objects or processes can initiate requests: 
+    * **Parser**. Chrome's HTML parser.
+    * **Redirect**. An HTTP redirect.
+    * **Script**. A JavaScript function.
+    * **Other**. Some other process or action, such as navigating to a page via a link or entering a URL in the address bar.
+* **Size**. The combined size of the response headers plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* [**Waterfall**](#waterfall). A visual breakdown of each request's activity.
 
-#### 列の追加または削除 {: #columns }
+#### Add or remove columns {: #columns }
 
-リクエスト表のヘッダーを右クリックして、それを非表示または表示するオプションを選択します。
- 現在表示されているオプションには、それらの横にチェックマークがあります。
+Right-click the header of the Requests table and select an option to hide or show it. Currently displayed options have checkmarks next to them.
 
 <figure>
   <img src="imgs/add-column.png"
-       alt="リクエスト表への列の追加。">
+       alt="Adding a column to the Requests table.">
   <figcaption>
-    <b>図 17</b>。 リクエスト表への列の追加。
+    <b>Figure 17</b>. Adding a column to the Requests table.
   </figcaption>
 </figure>
 
-#### カスタム列の追加 {: #custom-columns }
+#### Add custom columns {: #custom-columns }
 
-リクエスト表にカスタム列を追加するには、リクエスト表のヘッダーを右クリックし、[**Response Headers**] > [**Manage Header Columns**] を選択します。
-
+To add a custom column to the Requests table, right-click the header of the Requests table and select **Response Headers** > **Manage Header Columns**.
 
 <figure>
   <img src="imgs/custom-column.png"
-       alt="リクエスト表にカスタム列を追加。">
+       alt="Adding a custom column to the Requests table.">
   <figcaption>
-    <b>図 18</b>。 リクエスト表にカスタム列を追加。
+    <b>Figure 18</b>. Adding a custom column to the Requests table.
   </figcaption>
 </figure>
 
-### 各リクエストの相対的なタイミングの表示 {: #waterfall }
+### View the timing of requests in relation to one another {: #waterfall }
 
-ウォーターフォールを使用して、各リクエストの相対的なタイミングを表示します。
-デフォルトでは、ウォーターフォールはリクエストの開始時間を基準に並べられています。
-つまり、左側のリクエストは、右側のリクエストより早く開始されています。
+Use the Waterfall to view the timing of requests in relation to one another. By default, the Waterfall is organized by the start time of the requests. So, requests that are farther to the left started earlier than those that are farther to the right.
 
-
-ウォーターフォールを並べ替える別の方法については、[アクティビティ フェーズ順で並べ替え](#sort-by-activity)をご覧ください。
-
+See [Sort by activity phase](#sort-by-activity) to see the different ways that you can sort the Waterfall.
 
 <figure>
   <img src="imgs/waterfall.png"
-       alt="[Requests] ペインの [Waterfall] 列。">
+       alt="The Waterfall column of the Requests pane.">
   <figcaption>
-    <b>図 19</b>。 [Requests] ペインの [Waterfall] 列。
+    <b>Figure 19</b>. The Waterfall column of the Requests pane.
   </figcaption>
 </figure>
 
-### WebSocket 接続のフレームの分析 {: #frames }
+### Analyze the frames of a WebSocket Connection {: #frames }
 
-WebSocket 接続のフレームを表示するには:
+To view the frames of a WebSocket connection:
 
-1. リクエスト表の [**Name**] 列にある、WebSocket 接続の URL をクリックします。
-1. [**Frames**] タブをクリックします。 表には、最後の 100 フレームが表示されます。
+1. Click the URL of the WebSocket connection, under the **Name** column of the Requests table.
+2. Click the **Frames** tab. The table shows the last 100 frames.
 
-表を更新するには、リクエスト表の [**Name**] 列にある WebSocket 接続の名前を再度クリックしてください。
-
+To refresh the table, re-click the name of the WebSocket connection under the **Name** column of the Requests table.
 
 <figure>
   <img src="imgs/frames.svg"
-       alt="[Frames] タブ。">
+       alt="The Frames tab.">
   <figcaption>
-    <b>図 20</b>。 青い枠で示されている [Frames] タブ</figcaption>
-
+    <b>Figure 20</b>. The Frames tab, outlined in blue
+  </figcaption>
 </figure>
 
-表には、以下の 3 つの列が含まれています。
+The table contains three columns:
 
-* **Data**。 メッセージ ペイロード。 メッセージが書式なしテキストの場合、ここに表示されます。
- バイナリ オペコードの場合、この列にはオペコードの名前とコードが表示されます。
- サポートされるオペコードは以下のとおりです。継続フレーム、バイナリ フレーム、接続クローズ フレーム、Ping フレーム、および Pong フレーム。
-* **Length**。 メッセージ ペイロードの長さ（バイト単位）。
-* **Time**。 メッセージが送受信された時間。
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this column displays the opcode's name and code. The following opcodes are supported: Continuation Frame, Binary Frame, Connection Close Frame, Ping Frame, and Pong Frame.
+* **Length**. The length of the message payload, in bytes.
+* **Time**. The time when the message was received or sent.
 
-以下のように、メッセージは種類に応じて色分けされます。
+Messages are color-coded according to their type:
 
-* 発信テキスト メッセージは薄い緑。
-* 着信テキスト メッセージは白。
-* WebSocket オペコードは薄い黄色。
-* エラーは薄い赤。
+* Outgoing text messages are light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-### レスポンス本文のプレビューの表示 {: #preview }
+### View a preview of a response body {: #preview }
 
-レスポンス本文のプレビューを表示するには:
+To view a preview of a response body:
 
-1. リクエスト表の [**Name**] 列にある、リクエストの URL をクリックします。
-1. [**Preview**] タブをクリックします。
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Preview** tab.
 
-このタブは、主にイメージを表示するのに便利です。
+This tab is mostly useful for viewing images.
 
 <figure>
   <img src="imgs/preview.svg"
-       alt="[Preview] タブ。">
+       alt="The Preview tab.">
   <figcaption>
-    <b>図 21</b>。 青い枠で示されている [Preview] タブ</figcaption>
-
+    <b>Figure 21</b>. The Preview tab, outlined in blue
+  </figcaption>
 </figure>
 
-### レスポンス本文の表示 {: #response }
+### View a response body {: #response }
 
-リクエストへのレスポンス本文を表示するには:
+To view the response body to a request:
 
-1. リクエスト表の [**Name**] 列にある、リクエストの URL をクリックします。
-1. [**Response**] タブをクリックします。
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Response** tab.
 
 <figure>
   <img src="imgs/response.svg"
-       alt="[Response] タブ。">
+       alt="The Response tab.">
   <figcaption>
-    <b>図 22</b>。 青い枠で示されている [Response] タブ</figcaption>
-
+    <b>Figure 22</b>. The Response tab, outlined in blue
+  </figcaption>
 </figure>
 
-### HTTP ヘッダーの表示 {: #headers }
+### View HTTP headers {: #headers }
 
-リクエストについての HTTP ヘッダーデータを表示するには:
+To view HTTP header data about a request:
 
-1. リクエスト表の [**Name**] 列にある、リクエストの URL をクリックします。
-1. [**Headers**] タブをクリックします。
+1. Click on the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Headers** tab.
 
 <figure>
   <img src="/web/tools/chrome-devtools/images/headers.svg"
-       alt="[Headers] タブ。">
+       alt="The Headers tab.">
   <figcaption>
-    <b>図 23</b>. 青い枠で示されている [Headers] タブ</figcaption>
-
+    <b>Figure 23</b>. The Headers tab, outlined in blue
+  </figcaption>
 </figure>
 
-#### HTTP ヘッダーソースの表示 {: #header-source }
+#### View HTTP header source {: #header-source }
 
-デフォルトでは、[Headers] タブにはヘッダー名がアルファベット順に表示されます。 HTTP ヘッダー名を受信した順に表示するには:
+By default, the Headers tab shows header names alphabetically. To view the HTTP header names in the order they were received:
 
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Click **view source**, next to the **Request Header** or **Response Header** section.
 
-1. 対象のリクエストの [**Headers**] タブを開きます。 [HTTP ヘッダーの表示](#headers)をご覧ください。
-1. [**Request Header**] または [**Response Header**] セクションの横にある [**view source**] をクリックします。
+### View query string parameters {: #query-string }
 
+To view the query string parameters of a URL in a human-readable format:
 
-### クエリ文字列パラメータの表示 {: #query-string }
-
-URL のクエリ文字列パラメータを人の読める形式で表示するには:
-
-1. 対象のリクエストの [**Headers**] タブを開きます。 [HTTP ヘッダーの表示](#headers)をご覧ください。
-1. [**Query String Parameters**] セクションに移動します。
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Go to the **Query String Parameters** section.
 
 <figure>
-  <img src="imgs/query-string.svg" alt="[Query String Parameters] セクション。">
+  <img src="imgs/query-string.svg" alt="The Query String Parameters section.">
   <figcaption>
-    <b>図 24</b>. 青い枠で示されている [Query String Parameters] セクション</figcaption>
-
+    <b>Figure 24</b>. The Query String Parameters section, outlined in blue
+  </figcaption>
 </figure>
 
-#### クエリ文字列パラメータ ソースの表示 {: #query-string-source }
+#### View query string parameters source {: #query-string-source }
 
-リクエストのクエリ文字列パラメータ ソースを表示するには:
+To view the query string parameter source of a request:
 
-1. [Query String Parameters] セクションに移動します。 [クエリ文字列パラメータの表示](#query-string)をご覧ください。
-1. [**view source**] をクリックします。
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view source**.
 
-#### URL エンコードされたクエリ文字列パラメータの表示 {: #query-string-encodings }
+#### View URL-encoded query string parameters {: #query-string-encodings }
 
-クエリ文字列パラメータを人の読める形式で、エンコードを保持したまま表示するには:
+To view query string parameters in a human-readable format, but with encodings preserved:
 
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view URL encoded**.
 
-1. [Query String Parameters] セクションに移動します。 [クエリ文字列パラメータの表示](#query-string)をご覧ください。
-1. [**view URL encoded**] をクリックします。
+### View cookies {: #cookies }
 
-### Cookie の表示 {: #cookies }
+To view the cookies sent in a request's HTTP header:
 
-リクエストの HTTP ヘッダーで送信された Cookie を表示するには:
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Cookies** tab.
 
-1. リクエスト表の [**Name**] 列にある、リクエストの URL をクリックします。
-1. [**Cookies**] タブをクリックします。
-
-各列の説明については、[項目](/web/tools/chrome-devtools/manage-data/cookies#fields)をご覧ください。
-
+See [Fields](/web/tools/chrome-devtools/manage-data/cookies#fields) for a description of each of the columns.
 
 <figure>
   <img src="imgs/cookies.svg"
-       alt="[Cookies] タブ。">
+       alt="The Cookies tab.">
   <figcaption>
-    <b>図 25</b>. 青い枠で示されている [Cookies] タブ</figcaption>
-
+    <b>Figure 25</b>. The Cookies tab, outlined in blue
+  </figcaption>
 </figure>
 
-### リクエストのタイミングの詳細の表示 {: #timing }
+### View the timing breakdown of a request {: #timing }
 
-リクエストのタイミングの詳細を表示するには:
+To view the timing breakdown of a request:
 
-1. リクエスト表の [**Name**] 列にある、リクエストの URL をクリックします。
-1. [**Timing**] タブをクリックします。
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Timing** tab.
 
-このデータにアクセスするより迅速な方法については、[タイミングの詳細のプレビュー](#timing-preview)をご覧ください。
+See [Preview a timing breakdown](#timing-preview) for a faster way to access this data.
 
-
-[Timing] タブに表示される各フェーズについて詳しくは、[タイミングの詳細フェーズの説明](#timing-explanation)をご覧ください。
-
+See [Timing breakdown phases explained](#timing-explanation) for more information about each of the phases that you may see in the Timing tab.
 
 <figure>
-  <img src="imgs/timing.svg" alt="[Timing] タブ。">
+  <img src="imgs/timing.svg" alt="The Timing tab.">
   <figcaption>
-    <b>図 26</b>. 青い枠で示されている [Timing] タブ</figcaption>
-
+    <b>Figure 26</b>. The Timing tab, outlined in blue
+  </figcaption>
 </figure>
 
-各フェーズについての詳細は以下のとおりです。
+Here's more information about each of the phases.
 
-このビューにアクセスする別の方法については、[タイミングの詳細の表示](#timing-breakdown)をご覧ください。
+See [View timing breakdown](#timing-breakdown) for another way to access this view.
 
+#### Preview a timing breakdown {: #timing-preview }
 
-#### タイミングの詳細のプレビュー {: #timing-preview }
+To view a preview of the timing breakdown of a request, hover over the request's entry in the **Waterfall** column of the Requests table.
 
-リクエストのタイミングの詳細のプレビューを表示するには、リクエスト表の [**Waterfall**] 列のリクエストのエントリにカーソルを合わせます。
-
-
-カーソルを合わせずに、このデータにアクセスする方法については、[リクエストのタイミングの詳細の表示](#timing)をご覧ください。
-
+See [View the timing breakdown of a request](#timing) for a way to access this data that does not require hovering.
 
 <figure>
   <img src="imgs/waterfall-hover.png"
-       alt="リクエストのタイミングの詳細のプレビュー。">
+       alt="Previewing the timing breakdown of a request.">
   <figcaption>
-    <b>図 27</b>. リクエストのタイミングの詳細のプレビュー。</figcaption>
-
+    <b>Figure 27</b>. Previewing the timing breakdown of a request
+  </figcaption>
 </figure>
 
-#### タイミングの詳細フェーズの説明 {: #timing-explanation }
+#### Timing breakdown phases explained {: #timing-explanation }
 
-[Timing] タブに表示される各フェーズについての詳細は以下のとおりです。
+Here's more information about each of the phases you may see in the Timing tab:
 
+* **Queueing**. The browser queues requests when: 
+    * There are higher priority requests.
+    * There are already six TCP connections open for this origin, which is the limit. Applies to HTTP/1.0 and HTTP/1.1 only.
+    * The browser is briefly allocating space in the disk cache
+* **Stalled**. The request could be stalled for any of the reasons described in **Queueing**.
+* **DNS Lookup**. The browser is resolving the request's IP address.
+* **Proxy negotiation**. The browser is negotiating the request with a [proxy server](https://en.wikipedia.org/wiki/Proxy_server).
+* **Request sent**. The request is being sent.
+* **ServiceWorker Preparation**. The browser is starting up the service worker.
+* **Request to ServiceWorker**. The request is being sent to the service worker.
+* **Waiting (TTFB)**. The browser is waiting for the first byte of a response. TTFB stands for Time To First Byte. This timing includes 1 round trip of latency and the time the server took to prepare the response.
+* **Content Download**. The browser is receiving the response.
+* **Receiving Push**. The browser is receiving data for this response via HTTP/2 Server Push.
+* **Reading Push**. The browser is reading the local data previously received.
 
-* **Queueing**。 以下の場合にブラウザがリクエストをキューイングします。
-    * 優先度の高いリクエストがある。
-    * このオリジン用に開かれている 6 つの TCP 接続（これが上限です）がすでにある。
- HTTP/1.0 および HTTP/1.1 にのみ適用されます。
-    * ブラウザがディスク キャッシュにスペースを一時的に割り当てている。
-* **Stalled**。
- [**Queueing**] で説明されている理由のためリクエストが滞る可能性があります。
-* **DNS Lookup**。 ブラウザがリクエストの IP アドレスを解決しています。
-* **Proxy negotiation**。 ブラウザがリクエストを[プロキシ サーバー](https://en.wikipedia.org/wiki/Proxy_server)とネゴシエーションしています。
-* **Request sent**。 リクエストが送信されています。
-* **ServiceWorker Preparation**。 ブラウザが Service Worker を起動しています。
-* **Request to ServiceWorker**。 リクエストが Service Worker に送信されています。
-* **Waiting (TTFB)**。 ブラウザがレスポンスの最初のバイトを待機しています。
-  TTFB は最初のバイトを受け取るまでの時間（Time To First Byte）の略です。 このタイミングには、1 往復のレイテンシとサーバーがレスポンスを準備するのにかかった時間が含まれています。
-* **Content Download**。 ブラウザがレスポンスを受信しています。
-* **Receiving Push**。 ブラウザは、HTTP/2 サーバー プッシュを介してこのレスポンスのデータを受信しています。
-* **Reading Push**。 ブラウザは以前に受信したローカルデータを読み取っています。
+### View initiators and dependencies {: #initiators-dependencies }
 
-### 開始元と依存関係の表示 {: #initiators-dependencies }
-
-リクエストの開始元と依存関係を表示するには、<kbd>Shift</kbd> キーを押しながら、リクエスト表のリクエストにカーソルを合わせます。
- DevTools は開始元を緑に、依存関係を赤に設定します。
-
+To view the initiators and dependencies of a request, hold <kbd>Shift</kbd> and hover over the request in the Requests table. DevTools colors initiators green, and dependencies red.
 
 <figure>
   <img src="imgs/initiators-dependencies.png"
-       alt="リクエストの開始元と依存関係の表示。">
+       alt="Viewing the initiators and dependencies of a request.">
   <figcaption>
-    <b>図 28</b>. リクエストの開始元と依存関係の表示</figcaption>
-
+    <b>Figure 28</b>. Viewing the initiators and dependencies of a request
+  </figcaption>
 </figure>
 
-リクエスト表が時系列順に並べられている場合、カーソルを合わせているリクエストの上にある、最初の緑色のリクエストが依存関係の開始元です。
- その上に別の緑色のリクエストがある場合、そのリクエストが開始元の開始元です。
- さらに上にある場合も同様です。
+When the Requests table is ordered chronologically, the first green request above the request that you're hovering over is the initiator of the dependency. If there's another green request above that, that higher request is the initiator of the initiator. And so on.
 
-### load イベントの表示 {: #load }
+### View load events {: #load }
 
-DevTools では、[Nerwork] パネルの複数の場所に `DOMContentLoaded` および `load` イベントのタイミングを表示します。
- `DOMContentLoaded` イベントは青色、`load` イベントは赤色で表示されます。
-
+DevTools displays the timing of the `DOMContentLoaded` and `load` events in multiple places on the Network panel. The `DOMContentLoaded` event is colored blue, and the `load` event is red.
 
 <figure>
   <img src="imgs/load-events.svg"
-       alt="[Network] パネルの DOMContentLoaded および load イベントの場所。">
+       alt="The locations of the DOMContentLoaded and load events on the Network panel.">
   <figcaption>
-    <b>図 29</b>. [Network] パネルの <code>DOMContentLoaded</code> および <code>load</code> イベントの場所</figcaption>
-
-
+    <b>Figure 29</b>. The locations of the <code>DOMContentLoaded</code> and
+    <code>load</code> events in the Network panel
+  </figcaption>
 </figure>
 
-### リクエストの合計数の表示 {: #total-number }
+### View the total number of requests {: #total-number }
 
-リクエストの合計数は、[Network] パネルの下部にある [Summary] ペインに示されます。
+The total number of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-
-Note: この数は、DevTools が開かれて以来ログに記録されたリクエストのみを追跡しています。
- 他のリクエストが DevTools が開かれる前に発生した場合、それらのリクエストは含められません。
-
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-requests.svg"
-       alt="DevTools が開かれて以来のリクエストの合計数">
+       alt="The total number of requests since DevTools was opened">
   <figcaption>
-    <b>図 30</b>. DevTools が開かれて以来のリクエストの合計数</figcaption>
-
+    <b>Figure 30</b>. The total number of requests since DevTools was opened
+  </figcaption>
 </figure>
 
-### 合計ダウンロード サイズの表示 {: #total-size }
+### View the total download size {: #total-size }
 
-リクエストの合計ダウンロード サイズは、[Network] パネルの下部にある [Summary] ペインに示されます。
+The total download size of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-
-Note: この数は、DevTools が開かれて以来ログに記録されたリクエストのみを追跡しています。
- 他のリクエストが DevTools が開かれる前に発生した場合、それらのリクエストは含められません。
-
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-size.svg"
-       alt="リクエストの合計ダウンロード サイズ">
+       alt="The total download size of requests">
   <figcaption>
-    <b>図 31</b>. リクエストの合計ダウンロード サイズ</figcaption>
-
+    <b>Figure 31</b>. The total download size of requests
+  </figcaption>
 </figure>
 
-ブラウザが解凍した後のリソースのサイズを確認するには、[リソースの未圧縮サイズの表示](#uncompressed)をご覧ください。
+See [View the uncompressed size of a resource](#uncompressed) to see how large resources are after the browser uncompresses them.
 
+### View the stack trace that caused a request {: #initiator-stack-trace }
 
-### リクエストが行われたスタック トレースの表示 {: #initiator-stack-trace }
-
-JavaScript ステートメントが原因でリソースがリクエストされた場合、[**Initiator**] 列にカーソルを合わせると、そのリクエストが行われたスタック トレースを表示できます。
-
+When a JavaScript statement causes a resource to be requested, hover over the **Initiator** column to view the stack trace leading up to the request.
 
 <figure>
   <img src="imgs/initiator-stack.png"
-       alt="リソースのリクエストが行われたスタック トレース">
+       alt="The stack trace leading up to a resource request">
   <figcaption>
-    <b>図 32</b>. リソースのリクエストが行われたスタック トレース</figcaption>
-
-</figure>
-
-### リソースの未圧縮サイズの表示 {: #uncompressed }
-
-[**Use Large Request Rows**] ![Use Large Request Rows](imgs/large-resource-rows-button.png) をクリックして、
-{:.inline-icon} [**Size**] 列の下の値を確認します。
-
-
-<figure>
-  <img src="imgs/large-request-rows.png"
-       alt="未圧縮リソースの例。">
-  <figcaption>
-    <b>図 33</b>. ネットワーク経由で送信された <code>jquery-bundle.js</code> ファイルの圧縮後のサイズは <code>30.9 KB</code> ですが、未圧縮サイズは <code>86.3 KB</code> です。
-
-
+    <b>Figure 32</b>. The stack trace leading up to a resource request
   </figcaption>
 </figure>
 
-## リクエスト データのエクスポート {: #export }
+### View the uncompressed size of a resource {: #uncompressed }
 
-### すべてのネットワーク リクエストの HAR ファイルへの保存 {: #save-as-har }
+Click **Use Large Request Rows** ![Use Large Request
+Rows](imgs/large-resource-rows-button.png){:.inline-icon} and then look at the bottom value of the **Size** column.
 
-すべてのネットワーク リクエストを HAR ファイルに保存するには:
+<figure>
+  <img src="imgs/large-request-rows.png"
+       alt="An example of uncompressed resources.">
+  <figcaption>
+    <b>Figure 33</b>. The compressed size of the <code>jquery-bundle.js</code> file
+    that was sent over the network was <code>30.9 KB</code>, whereas the uncompressed size was
+    <code>86.3 KB</code>
+  </figcaption>
+</figure>
 
-1. リクエスト表で任意のリクエストを右クリックします。
-1. [**Save as HAR with Content**] を選択します。 DevTools は、DevTools が開かれて以来発生したすべてのリクエストを HAR ファイルに保存します。
- リクエストをフィルタ処理したり、1 つのリクエストだけを保存する方法はありません。
+## Export requests data {: #export }
 
+### Save all network requests to a HAR file {: #save-as-har }
 
-HAR ファイルを取得すると、分析のためにそれを DevTools にインポートし直すことができます。 これには、単にリクエスト表に HAR ファイルをドラッグ アンド ドロップします。
- [HAR Analyzer][HAR Analyzer]{: .external } も参照してください。
+To save all network requests to a HAR file:
 
-[HAR Analyzer]: https://toolbox.googleapps.com/apps/har_analyzer/
+1. Right-click any request in the Requests table.
+2. Select **Save as HAR with Content**. DevTools saves all requests that have occurred since you opened DevTools to the HAR file. There is no way to filter requests, or to save just a single request.
+
+Once you've got a HAR file, you can import it back into DevTools for analysis. Just drag-and-drop the HAR file into the Requests table. See also [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/){: .external }.
 
 <figure>
   <img src="imgs/save-as-har.png"
-       alt="[Save as HAR with Content] の選択。">
+       alt="Selecting Save as HAR with Content.">
   <figcaption>
-    <b>図 34</b>. [<b>Save as HAR with Content</b>] の選択
+    <b>Figure 34</b>. Selecting <b>Save as HAR with Content</b>
   </figcaption>
 </figure>
 
-### 1 つ以上のリクエストのクリップボードへのコピー {: #copy }
+### Copy one or more requests to the clipboard {: #copy }
 
-リクエスト表の [**Name**] 列で、リクエストを右クリックし、[**Copy**] にカーソルを合わせ、以下のオプションのいずれかを選択します。
+Under the **Name** column of the Requests table, right-click a request, hover over **Copy**, and select one of the following options:
 
-
-* **Copy Link Address**。 リクエストの URL をクリップボードにコピーします。
-* **Copy Response**。 レスポンス本文をクリップボードにコピーします。
-* **Copy as cURL**。 リクエストを cURL コマンドとしてコピーします。
-* **Copy All as HAR**。 すべてのリクエストを一連の cURL コマンドとしてコピーします。
-* **Copy All as HAR**。 すべてのリクエストを HAR データとしてコピーします。
-
-<figure>
-  <img src="imgs/copy.png" alt="[Copy Response] の選択。">
-  <figcaption>
-    <b>図 35</b>. [Copy Response] の選択</figcaption>
-
-</figure>
-
-## [Network] パネルのレイアウトの変更
-
-重要なセクションに集中するために、[Network] パネルの UI のセクションを展開するか、折りたたみます。
-
-
-### [Filters] ペインの非表示 {: #hide-filters }
-
-デフォルトでは、DevTools には [[Filters] ペイン](#filters)が表示されています。
-[**Filter**] ![Filter][filter] をクリックしてそれを非表示にします。{: .devtools-inline }
+* **Copy Link Address**. Copy the request's URL to the clipboard.
+* **Copy Response**. Copy the response body to the clipboard.
+* **Copy as cURL**. Copy the request as a cURL command.
+* **Copy All as cURL**. Copy all requests as a chain of cURL commands.
+* **Copy All as HAR**. Copy all requests as HAR data.
 
 <figure>
-  <img src="imgs/hide-filters.svg" alt="[Hide Filters] ボタン">
+  <img src="imgs/copy.png" alt="Selecting Copy Response.">
   <figcaption>
-    <b>図 36</b>. 青い枠で示されている [Hide Filters]</figcaption>
-
+    <b>Figure 35</b>. Selecting Copy Response
+  </figcaption>
 </figure>
 
-[filter]: imgs/filters.png
+## Change the layout of the Network panel
 
-### 大きいリクエスト行の使用 {: #request-rows }
+Expand or collapse sections of the Network panel UI to focus on what's important to you.
 
-ネットワーク リクエスト表により広い空間が必要な場合は、大きい行を使用します。
- 列によっては、大きい行を使用した場合、追加の情報も示されます。
- たとえば、[**Size**] 列の下の値はリクエストの未圧縮サイズです。
+### Hide the Filters pane {: #hide-filters }
 
+By default, DevTools shows the [Filters pane](#filters). Click **Filter** ![Filter](imgs/filters.png){: .devtools-inline } to hide it.
+
+<figure>
+  <img src="imgs/hide-filters.svg" alt="The Hide Filters button">
+  <figcaption>
+    <b>Figure 36</b>. Hide Filters, outlined in blue
+  </figcaption>
+</figure>
+
+### Use large request rows {: #request-rows }
+
+Use large rows when you want more whitespace in your network requests table. Some columns also provide a little more information when using large rows. For example, the bottom value of the **Size** column is the uncompressed size of a request.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="[Requests] ペインの大きいリクエスト行の例。">
+       alt="An example of large request rows in the Requests pane.">
   <figcaption>
-    <b>図 37</b>. [Requests] ペインの大きいリクエスト行の例</figcaption>
-
+    <b>Figure 37</b>. An example of large request rows in the Requests pane
+  </figcaption>
 </figure>
 
-[**Use large request rows**] ![Use large request rows][large] をクリックして、大きい行を使用可能にします。
-{:.devtools-inline}
-
-[large]: imgs/large-resource-rows-button.png
+Click **Use large request rows** ![Use large request
+rows](imgs/large-resource-rows-button.png){:.devtools-inline} to enable large rows.
 
 <figure>
-  <img src="imgs/large-request-rows.svg" alt="[Large Request Rows] ボタン">
+  <img src="imgs/large-request-rows.svg" alt="The Large Request Rows button">
   <figcaption>
-    <b>図 38</b>. 青い枠で示されている [Large Request Rows]</figcaption>
-
+    <b>Figure 38</b>. Large Request Rows, outlined in blue
+  </figcaption>
 </figure>
 
-### [Overview] ペインの非表示 {: #hide-overview }
+### Hide the Overview pane {: #hide-overview }
 
-デフォルトでは、DevTools では [[Overview] ペイン](#overview)が表示されています。
-[**Hide overview**] ![Hide overview][hide]{:.devtools-inline} をクリックしてそれを非表示にします。
+By default, DevTools shows the [Overview pane](#overview). Click **Hide overview** ![Hide overview](imgs/hide-overview.png){:.devtools-inline} to hide it.
 
 <figure>
-  <img src="imgs/hide-overview.svg" alt="[Hide Overview] ボタン">
+  <img src="imgs/hide-overview.svg" alt="The Hide Overview button">
   <figcaption>
-    <b>図 39</b>. 青い枠で示されている [Hide Overview]</figcaption>
-
+    <b>Figure 39</b>. Hide Overview, outlined in blue
+  </figcaption>
 </figure>
 
-[hide]: imgs/hide-overview.png
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Siempre debes proteger todos tus sitios web con HTTPS, aunque en ellos no se controlan comunicaciones confidenciales. HTTPS proporciona seguridad crítica e integridad de datos para tus sitios web y las personas que confían a tus sitios web su información personal.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should always protect all of your websites with HTTPS, even if they don’t handle sensitive communications. HTTPS provides critical security and data integrity both for your websites and for the people that entrust your websites with their personal information.
 
-{# wf_updated_on: 2016-08-22 #}
-{# wf_published_on: 2015-11-23 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-11-23 #} {# wf_blink_components: Internals>Network>SSL #}
 
-# Por qué HTTPS es importante {: .page-title }
+# Why HTTPS Matters {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
@@ -15,69 +12,32 @@ description: Siempre debes proteger todos tus sitios web con HTTPS, aunque en el
   </iframe>
 </div>
 
-Siempre debes proteger todos tus sitios web con HTTPS, aunque en ellos no se
-controlen comunicaciones confidenciales. Además de proporcionar seguridad crítica e integridad
-de datos para tus sitios web y para la información personal de tus usuarios, HTTPS es
-un requisito para varias funciones del navegador nuevo, en especial las que se requieren para
-[progressive web apps](/web/progressive-web-apps/).
+You should always protect all of your websites with HTTPS, even if they don’t handle sensitive communications. Aside from providing critical security and data integrity for both your websites and your users' personal information, HTTPS is a requirement for many new browser features, particularly those required for [progressive web apps](/web/progressive-web-apps/).
 
 ### TL;DR {: .hide-from-toc }
 
-* Los intrusos, ofensivos e inofensivos, explotan todos los recursos desprotegidos que circulan entre tus sitios web y los usuarios.
-* Muchos intrusos observan comportamientos globales para identificar tus usuarios. 
-* HTTPS no bloquea simplemente el uso incorrecto de tu sitio web. También es un requisito para varias funciones de última generación y una tecnología instrumental para capacidades similares a las de la app como procesos de trabajo. 
+* Intruders both malignant and benign exploit every unprotected resource between your websites and users.
+* Many intruders look at aggregate behaviors to identify your users.
+* HTTPS doesn't just block misuse of your website. It's also a requirement for many cutting-edge features and an enabling technology for app-like capabilities such as service workers.
 
-## HTTPS protege la integridad de tu sitio web 
+## HTTPS protects the integrity of your website
 
-HTTPS ayuda a evitar que intrusos interfieran en las comunicaciones 
-entre tus sitios web y los navegadores de los usuarios. Por intrusos, nos referimos a 
-atacantes con intenciones maliciosas y a empresas legítimas, pero entrometidas, 
-como los ISP o los hoteles que disponen anuncios en páginas.
+HTTPS helps prevent intruders from tampering with the communications between your websites and your users’ browsers. Intruders include intentionally malicious attackers, and legitimate but intrusive companies, such as ISPs or hotels that inject ads into pages.
 
-Los intrusos explotan las comunicaciones desprotegidas para engañar a los usuarios y lograr que 
-proporcionen información confidencial o instalen software malicioso, o para colocar sus propios 
-anuncios en tus recursos. Por ejemplo, algunas terceras partes insertan 
-anuncios en sitios web que potencialmente tienen la capacidad de echar a perder la experiencia del usuario y 
-crear vulnerabilidades de seguridad.
+Intruders exploit unprotected communications to trick your users into giving up sensitive information or installing malware, or to insert their own advertisements into your resources. For example, some third parties inject advertisements into websites that potentially break user experiences and create security vulnerabilities.
 
-Los intrusos explotan todos los recursos desprotegidos que circulan entre 
-tus sitios web y los usuarios. Imágenes, cookies, secuencias de comandos, HTML... todos se pueden 
-explotar. Las intrusiones pueden producirse en cualquier punto de la red, como 
-una máquina de un usuario, una hotspot Wi-Fi y un ISP comprometido, por nombrar algunos. 
+Intruders exploit every unprotected resource that travels between your websites and your users. Images, cookies, scripts, HTML … they’re all exploitable. Intrusions can occur at any point in the network, including a user’s machine, a Wi-Fi hotspot, or a compromised ISP, just to name a few.
 
-## HTTPS protege la privacidad y seguridad de los usuarios
+## HTTPS protects the privacy and security of your users
 
-HTTPS evita que los intrusos puedan escuchar pasivamente las
-comunicaciones entre tus sitios web y los usuarios.
+HTTPS prevents intruders from being able to passively listen to communications between your websites and your users.
 
-Un concepto erróneo común sobre HTTPS es creer que los únicos sitios web 
-que necesitan HTTPS son aquellos en los que se controlan comunicaciones delicadas. Toda 
-solicitud desprotegida de HTTP puede revelar información sobre los 
-comportamientos y las identidades de los usuarios. Si bien una visita a uno de 
-tus sitios web desprotegidos podría parecer inofensiva, algunos intrusos observan 
-el total de las actividades de navegación de los usuarios para deducir sus 
-comportamientos e intenciones y para 
-[eliminar la anonimidad](https://en.wikipedia.org/wiki/De-anonymization){: .external}
-de sus identidades. Por ejemplo, es posible que 
-empleados divulguen, sin darse cuenta, información confidencial sobre condiciones de salud a los 
-empleadores con solo leer artículos médicos desprotegidos.
+One common misconception about HTTPS is that the only websites that need HTTPS are those that handle sensitive communications. Every unprotected HTTP request can potentially reveal information about the behaviors and identities of your users. Although a single visit to one of your unprotected websites may seem benign, some intruders look at the aggregate browsing activities of your users to make inferences about their behaviors and intentions, and to [de-anonymize](https://en.wikipedia.org/wiki/De-anonymization){: .external} their identities. For example, employees might inadvertently disclose sensitive health conditions to their employers just by reading unprotected medical articles.
 
-## HTTPS es el futuro de la web
+## HTTPS is the future of the web
 
-Para la ejecución de nuevas y potentes funciones de las plataformas web, como la toma de fotografías o grabación de
-audio con `getUserMedia()`, o la habilitación de experiencias de apps sin conexión con procesos de trabajo
-de servicio, se requieren permisos explícitos de los
-usuarios. Además, muchas otras API más antiguas se están actualizando para exigir permiso
-de ejecución; por ejemplo, la
-API de
-[ubicación geográfica](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation){: .external}. HTTPS es un componente clave de los flujos de trabajo de permisos, tanto para estas
-funciones nuevas como para las API actualizadas.
+Powerful, new web platform features, such as taking pictures or recording audio with `getUserMedia()`, enabling offline app experiences with service workers, or building progressive web apps, require explicit permission from the user before executing. Many older APIs are also being updated to require permission to execute, such as the [geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation){: .external} API. HTTPS is a key component to the permission workflows for both these new features and updated APIs.
 
+## Feedback {: #feedback }
 
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

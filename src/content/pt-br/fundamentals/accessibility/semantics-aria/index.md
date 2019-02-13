@@ -1,108 +1,65 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Introdução a ARIA e semântica HTML não-nativa
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to ARIA and non-native HTML semantics
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Introduction to ARIA {: .page-title }
 
-# Introdução a ARIA {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+So far, we've encouraged using native HTML elements because they give you focus, keyboard support, and built-in semantics, but there are times when a simple layout and native HTML won't do the job. For example, currently there's no standardized HTML element for a very common UI construct, the pop-up menu. Nor is there an HTML element that provides a semantic characteristic such as "the user needs to know about this as soon as possible".
 
+In this lesson, then, we'll explore how to express semantics that HTML can't express on its own.
 
+The [Web Accessibility Initiative's Accessible Rich Internet Applications specification](https://www.w3.org/TR/wai-aria/){: .external } (WAI-ARIA, or just ARIA) is good for bridging areas with accessibility issues that can't be managed with native HTML. It works by allowing you to specify attributes that modify the way an element is translated into the accessibility tree. Let's look at an example.
 
-Até agora, incentivamos o uso de elementos HTML nativos, porque eles fornece foco,
- suporte a teclado e semântica incorporada, mas há momentos em que
- um simples layout e HTML nativo não dão conta do trabalho. Por exemplo, atualmente não há
-nenhum elemento HTML padronizado para uma construção de IU muito comum, no menu pop-up. Nem
-existe um elemento HTML que fornece uma característica semântica, como
-"o usuário precisa saber sobre o mais rapidamente possível".
-
-Portanto, nesta lição, vamos explorar a forma de expressar a semântica que o HTML não consegue
-expressar por conta própria.
-
-A [especificação dos Aplicativos Ricos Acessíveis de Internet da Iniciativa para
-Acessibilidade da Web](https://www.w3.org/TR/wai-aria/){: .external } (WAI-ARIA, ou apenas
-ARIA) é boa para áreas de transição com problemas de acessibilidade que não podem ser geridos
-com HTML nativo. Ela funciona permitindo que você especifique atributos que modificam
-a forma como um elemento se traduz na árvore de acessibilidade. Vejamos um
-exemplo.
-
-No snippet a seguir, usamos um item da lista como uma espécie de caixa personalizada. A classe
-"caixa de seleção" de CSS fornece ao elemento as características visuais necessárias.
-
+In the following snippet, we use a list item as a kind of custom checkbox. The CSS "checkbox" class gives the element the required visual characteristics.
 
     <li tabindex="0" class="checkbox" checked>
       Receive promotional offers
     </li>
     
 
-Embora isso funcione bem para usuários que enxergam, um leitor de tela não
- dará nenhuma indicação de que o elemento deve ser uma caixa de seleção,
-portanto, usuários de baixa visão podem perder o elemento inteiramente.
+While this works fine for sighted users, a screen reader will give no indication that the element is meant to be a checkbox, so low-vision users may miss the element entirely.
 
-Porém, usando atributos de ARIA, podemos dar ao elemento a informação que falta
-para que o leitor de tela possa interpretá-la corretamente. Aqui, adicionamos os atributos `role` e
-`aria-checked` para identificar explicitamente o elemento como uma caixa de seleção e
-para especificar que ela é marcada por padrão. O item da lista agora será adicionado à árvore de
-acessibilidade e um leitor de tela o reportará corretamente como uma caixa de seleção.
-
+Using ARIA attributes, however, we can give the element the missing information so the screen reader can properly interpret it. Here, we've added the `role` and `aria-checked` attributes to explicitly identify the element as a checkbox and to specify that it is checked by default. The list item will now be added to the accessibility tree and a screen reader will correctly report it as a checkbox.
 
     <li tabindex="0" class="checkbox" role="checkbox" checked aria-checked="true">
       Receive promotional offers
     </li>
     
 
-Observação: Trataremos da lista de atributos ARIA e quando usá-los [mais tarde](#what-can-aria-do).
+Note: We'll cover the list of ARIA attributes and when to use them [later](#what-can-aria-do).
 
-ARIA funciona alterando e aumentando a árvore de acessibilidade padrão do DOM.
+ARIA works by changing and augmenting the standard DOM accessibility tree.
 
-![a árvore de acessibilidade padrão do DOM](imgs/acctree1.jpg){: .attempt-right }
+![the standard DOM accessibility tree](imgs/acctree1.jpg){: .attempt-right }
 
-![a árvore de acessibilidade aumentada de ARIA](imgs/acctree2.jpg){: .attempt-right }
+![the ARIA augmented accessibility tree](imgs/acctree2.jpg){: .attempt-right }
 
-Embora ARIA nos permita sutilmente (ou mesmo radicalmente) modificar a
- árvore de acessibilidade para qualquer elemento na página, esta é a única coisa que ela muda. **ARIA
-aumenta nenhum comportamento inerente do elemento**; ela não torna o elemento
-focalizável nem lhe atribui ouvintes de eventos de teclado. Isso ainda faz parte de nossa
-tarefa de desenvolvimento.
+Although ARIA allows us to subtly (or even radically) modify the accessibility tree for any element on the page, that is the only thing it changes. **ARIA doesn't augment any of the element's inherent behavior**; it won't make the element focusable or give it keyboard event listeners. That is still part of our development task.
 
-É importante compreender que não há necessidade de redefinir a
-semântica padrão. Independentemente de seu uso, um elemento HTML padrão `<input type="checkbox">`
-não precisa de um atributo ARIA adicional `role="checkbox"` para ser
- anunciado corretamente.
+It's important to understand that there is no need to redefine default semantics. Regardless of its use, a standard HTML `<input type="checkbox">` element doesn't need an additional `role="checkbox"` ARIA attribute to be correctly announced.
 
-Também é importante notar que certos elementos HTML têm restrições sobre quais
-funções e atributos de ARIA podem ser usados neles. Por exemplo, um elemento `<input
-type="text">` padrão pode não ter nenhuma função/atributo adicional aplicado a ele.
+It's also worth noting that certain HTML elements have restrictions on what ARIA roles and attributes can be used on them. For example, a standard `<input
+type="text">` element may not have any additional role/attribute applied to it.
 
->Veja [ARIA em espec HTML](https://www.w3.org/TR/html-aria/#sec-strong-native-semantics){: .external }
-para mais informações.
+> See the [ARIA in HTML spec](https://www.w3.org/TR/html-aria/#sec-strong-native-semantics){: .external } for more information.
 
-Vejamos que outras capacidades ARIA tem para oferecer.
+Let's see what other capabilities ARIA has to offer.
 
-## O que ARIA pode fazer?
+## What can ARIA do?
 
-Como você viu no exemplo de caixa de seleção, ARIA pode modificar a semântica existente de elementos
-ou adicionar semântica a elementos nos quais não existe semântica nativa. Ela também pode
-expressar padrões semânticos que não existem em HTML, como um menu ou um
-painel de guia. ARIA frequentemente nos permite criar elementos do tipo widget que não seriam
-possíveis com HTML simples.
+As you saw with the checkbox example, ARIA can modify existing element semantics or add semantics to elements where no native semantics exist. It can also express semantic patterns that don't exist at all in HTML, like a menu or a tab panel. Often, ARIA lets us create widget-type elements that wouldn't be possible with plain HTML.
 
- - Por exemplo, ARIA pode adicionar rótulo extra e texto de descrição que
-sejam expostos somente a APIs de tecnologia assistiva.<br>
+- For example, ARIA can add extra label and description text that is only exposed to assistive technology APIs.  
+    
 
 <div class="clearfix"></div>
-      
+
     <button aria-label="screen reader only label"></button>
+    
 
-
- - ARIA pode expressar relações semânticas entre elementos que ampliam a
-conexão padrão pai/filho, como uma barra de rolagem personalizada que controla
-uma região específica.
+- ARIA can express semantic relationships between elements that extend the standard parent/child connection, such as a custom scrollbar that controls a specific region.
 
 <div class="clearfix"></div>
 
@@ -110,55 +67,31 @@ uma região específica.
     <div id="main">
     . . .
     </div>
-
     
 
- - E ARIA pode tornar partes da página "vivas", para que informem imediatamente
-à tecnologia assistiva quando mudarem.
+- And ARIA can make parts of the page "live", so they immediately inform assistive technology when they change.
 
 <div class="clearfix"></div>
 
     <div aria-live="true">
       <span>GOOG: $400</span>
     </div>
-
     
-Um dos aspectos centrais do sistema ARIA é a sua coleção de *funções*. Uma função,
-em termos de acessibilidade, equivale a um indicador de abreviação para
-um padrão específico de IU. ARIA fornece um vocabulário de padrões que podem ser usados por meio do atributo `role`
-em qualquer elemento de HTML.
 
-Quando aplicamos `role="checkbox"` no exemplo anterior, estávamos informando
-à tecnologia assistiva que o elemento deve seguir o padrão "caixa de seleção". Ou seja,
-estamos garantindo que ele terá um estado selecionado (marcado ou não marcado),
-e que o estado pode ser alternado usando o mouse ou a barra de espaço, exatamente
-como um elemento de caixa de seleção HTML padrão.
+One of the core aspects of the ARIA system is its collection of *roles*. A role in accessibility terms amounts to a shorthand indicator for a particular UI pattern. ARIA provides a vocabulary of patterns we can use via the `role` attribute on any HTML element.
 
-Na verdade, como as interações por teclado são apresentadas de forma tão proeminente
-ao se usar leitor de tela, é muito importante certificar que, ao se criar um widget personalizado, o atributo
-`role`seja sempre aplicado no mesmo lugar que o atributo `tabindex`
-; isso garante que os eventos de teclado vão para o lugar certo e que, quando
-o foco é colocado em um elemento, sua função seja transmitida com precisão.
+When we applied `role="checkbox"` in the previous example, we were telling assistive technology that the element should follow the "checkbox" pattern. That is, we're guaranteeing that it will have a checked state (either checked or not checked), and that the state may be toggled using the mouse or the spacebar, just like a standard HTML checkbox element.
 
-A [espec ARIA](https://www.w3.org/TR/wai-aria/){: .external } descreve uma
-taxonomia de valores possíveis para o atributo `role` e atributos ARIA
-associados que podem ser utilizados em conjunto com essas funções Esta é a melhor
-fonte de informações definitivas sobre como os funções e atributos ARIA
-funcionam em conjunto e como eles podem ser utilizados de uma forma que seja
-suportada por navegadores e tecnologias assistivas.
+In fact, because keyboard interactions feature so prominently in screen reader usage, it's very important to make sure that, when creating a custom widget, the `role` attribute is always applied in the same place as the `tabindex` attribute; this ensures that keyboard events go to the right place and that when focus lands on an element its role is conveyed accurately.
 
-![uma lista de todas as funções ARIA disponíveis](imgs/aria-roles.jpg)
+The [ARIA spec](https://www.w3.org/TR/wai-aria/){: .external } describes a taxonomy of possible values for the `role` attribute and associated ARIA attributes that may be used in conjunction with those roles. This is the best source of definitive information about how the ARIA roles and attributes work together and how they can be used in a way that is supported by browsers and assistive technologies.
 
-No entanto, a especificação é muito densa; um lugar mais acessível para começar é
-o [documento de Práticas de autoria ARIA](https://www.w3.org/TR/wai-aria-practices-1.1/){: .external }
-, que explora as melhores práticas para usar as funções e propriedades ARIA
-disponíveis.
+![a list of all the available ARIA roles](imgs/aria-roles.jpg)
 
-ARIA também oferece funções que são marcos de referência e ampliam as opções disponíveis no HTML5. Consulte a especificação
-[Padrões de Design de Funções que
-são Marcos de Referência](https://www.w3.org/TR/wai-aria-practices-1.1#kbd_layout_landmark_XHTML){: .external }
- para obter mais informações.
+However, the spec is very dense; a more approachable place to start is the [ARIA Authoring Practices document](https://www.w3.org/TR/wai-aria-practices-1.1/){: .external } , which explores best practices for using the available ARIA roles and properties.
 
+ARIA also offers landmark roles that extend the options available in HTML5. See the [Landmark Roles Design Patterns](https://www.w3.org/TR/wai-aria-practices-1.1#kbd_layout_landmark_XHTML){: .external } spec for more information.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,36 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Manfaatkan Console API untuk mengukur waktu eksekusi dan menghitung eksekusi pernyataan.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Take advantage of the Console API to measure execution times and count statement executions.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mengukur dan menghitung eksekusi {: .page-title }
+# Measure and count executions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Manfaatkan Console API untuk mengukur waktu eksekusi dan menghitung eksekusi pernyataan.
-
+Take advantage of the Console API to measure execution times and count statement executions.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan <code>console.time()</code> dan <code>console.timeEnd()</code> untuk melacak waktu yang dihabiskan antar titik eksekusi kode.
-- Gunakan <code>console.count()</code> untuk menghitung berapa kali string yang sama diteruskan ke sebuah fungsi.
 
+- Use `console.time()` and `console.timeEnd()` to track time elapsed between code execution points.
+- Use `console.count()` to count how many times the same string is passed to a function.
 
-## Mengukur waktu eksekusi
+## Measure execution times
 
-Metode [`time()`](./console-reference#consoletimelabel) memulai timer baru dan sangat berguna untuk mengukur berapa lama waktu yang diperlukan. Teruskan sebuah string ke metode untuk memberi nama pada marker.
+The [`time()`](./console-reference#consoletimelabel) method starts a new timer and is very useful to measure how long something took. Pass a string to the method to give the marker a name.
 
-Bila ingin menghentikan timer, panggil [`timeEnd()`](./console-reference#consoletimeendlabel) dan teruskan padanya string yang sama dengan yang diteruskan ke initializer.
+When you want to stop the timer, call [`timeEnd()`](./console-reference#consoletimeendlabel) and pass it the same string passed to the initializer.
 
-Selanjutnya konsol akan mencatat label dan waktu yang dihabiskan ke log bila metode `timeEnd()` dipicu.
+The console then logs the label and time elapsed when the `timeEnd()` method fires.
 
-### Contoh dasar
+### Basic example
 
-Di sini, kita mengukur inisialisasi jutaan Larik baru:
-
+Here, we measure the initialization of a million new Arrays:
 
     console.time("Array initialize");
     var array= new Array(1000000);
@@ -40,31 +33,28 @@ Di sini, kita mengukur inisialisasi jutaan Larik baru:
     console.timeEnd("Array initialize");
     
 
-Di Console, hasilnya seperti berikut ini:
-![Waktu yang dihabiskan](images/track-executions-time-duration.png)
+Which outputs the following in the Console: ![Time elapsed](images/track-executions-time-duration.png)
 
-### Timer pada Timeline
+### Timers on the Timeline
 
-Bila perekaman [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) terjadi selama operasi `time()`, timeline juga akan diberi anotasi. Gunakan ini bila ingin melacak apa yang dilakukan aplikasi Anda dan dari mana asalnya.
+When a [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) recording is taking place during a `time()` operation, it annotates the timeline as well. Use it when you want to trace what your application does and where it comes from.
 
-Penampilan anotasi pada Timeline dari `time()`:
+How an annotation on the timeline looks from `time()`:
 
-![Anotasi waktu di timeline](images/track-executions-time-annotation-on-timeline.png)
+![Time annotation on timeline](images/track-executions-time-annotation-on-timeline.png)
 
-### Menandai Timeline
+### Marking the Timeline
 
-*Catatan: Metode `timeStamp()` hanya berfungsi apabila perekaman Timeline recording sedang berlangsung.*
+*Note: The `timeStamp()` method only functions while a Timeline recording is in progress.*
 
-[Panel Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) menyediakan ringkasan lengkap mengenai di mana saja mesin menghabiskan waktunya.
-Anda bisa menambahkan tanda ke timeline dari konsol dengan [`timeStamp()`](./console-reference#consoletimestamplabel). Ini adalah cara sederhana untuk mengkorelasikan kejadian di aplikasi Anda dengan kejadian lainnya.
+The [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) provides a complete overview of where the engine spends time. You can add a mark to the timeline from the console with the [`timeStamp()`](./console-reference#consoletimestamplabel). This is a simple way to correlate events in your application with other events.
 
-`timeStamp()` memberi anotasi pada Timeline di tempat-tempat berikut:
+The `timeStamp()` annotates the Timeline in the following places:
 
-- Garis vertikal kuning di rangkuman Timeline dan tampilan detail.
-- Ia menambahkan catatan ke daftar kejadian.
+- A yellow vertical line in the Timeline's summary and details view.
+- It adds a record to the list of events.
 
-Contoh kode berikut ini:
-
+The following example code:
 
     function AddResult(name, result) {
         console.timeStamp("Adding result");
@@ -74,16 +64,15 @@ Contoh kode berikut ini:
     }
     
 
-Menghasilkan stempel waktu Timeline berikut:
+Results in the following Timeline timestamps:
 
-![Stempel waktu di timeline](images/track-executions-timestamp2.png)
+![Timestamps in the timeline](images/track-executions-timestamp2.png)
 
-## Menghitung eksekusi pernyataan
+## Counting statement executions
 
-Gunakan metode `count()` untuk mencatat ke log string yang diberikan bersama berapa kali string yang sama telah diberikan. Bila pernyataan yang persis diberikan ke `count()` pada baris yang sama, angkanya akan bertambah.
+Use the `count()` method to log a provided string along with the number of times the same string has been provided. When the exact statement is given to `count()` on the same line, the number is incremented.
 
-Contoh kode menggunakan `count()` dengan beberapa konten dinamis:
-
+Example code of using `count()` with some dynamic content:
 
     function login(user) {
         console.count("Login called for user " + user);
@@ -102,11 +91,10 @@ Contoh kode menggunakan `count()` dengan beberapa konten dinamis:
     login(users[0]);
     
 
-Keluaran contoh kode:
+Output of the code sample:
 
-![keluaran contoh console.count()](images/track-executions-console-count.png)
+![console.count() example output](images/track-executions-console-count.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

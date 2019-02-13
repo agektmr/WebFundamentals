@@ -1,177 +1,141 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Kebanyakan browser dan perangkat memiliki akses ke lokasi geografis pengguna. Pelajari cara menggunakan lokasi pengguna di situs dan aplikasi Anda.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Most browsers and devices have access to the user's geographic location. Learn how to work with the user's location in your site and apps.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Location #}
 
-# Lokasi Pengguna {: .page-title }
+# User Location {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-Geolocation API memungkinkan Anda menemukan, dengan persetujuan pengguna, lokasi pengguna tersebut. Anda bisa menggunakan fungsionalitas ini untuk hal-hal seperti memandu pengguna ke tujuan mereka dan memberi geotag pada materi buatan pengguna; misalnya, menandai tempat pengambilan foto.
+The Geolocation API lets you discover, with the user's consent, the user's location. You can use this functionality for things like guiding a user to their destination and geo-tagging user-created content; for example, marking where a photo was taken.
 
-Geolocation API juga memungkinkan Anda mengetahui di mana pengguna berada
-dan mengikutinya saat mereka bergerak, selalu dengan persetujuan pengguna (dan hanya saat laman dibuka). Ini 
-menciptakan banyak kasus penggunaan yang menarik, misalnya mengintegrasikan dengan sistem backend untuk menyiapkan urutan kumpulan jika pengguna dekat dengannya.
+The Geolocation API also lets you see where the user is and keep tabs on them as they move around, always with the user's consent (and only while the page is open). This creates a lot of interesting use cases, such as integrating with backend systems to prepare an order for collection if the user is close by.
 
-Anda perlu mengetahui banyak hal saat menggunakan Geolocation API. Panduan ini membimbing Anda melalui beberapa kasus penggunaan umum dan solusi.
+You need to be aware of many things when using the Geolocation API. This guide walks you through the common use cases and solutions.
 
-Note: Sejak Chrome 50, [Geolocation API hanya bekerja pada konteks aman (HTTPS)](/web/updates/2016/04/geolocation-on-secure-contexts-only). Jika situs Anda ditampung pada asal yang tidak aman (misalnya `HTTP`), maka semua permintaan lokasi pengguna **tidak lagi** berfungsi.
+Note: As of Chrome 50, the [Geolocation API only works on secure contexts (HTTPS)](/web/updates/2016/04/geolocation-on-secure-contexts-only). If your site is hosted on a non-secure origin (such as `HTTP`), any requests for the user's location **no longer** function.
 
 ### TL;DR {: .hide-from-toc }
 
-* Gunakan geolokasi bila bermanfaat bagi pengguna.
-* Mintalah izin sebagai respons jelas pada isyarat pengguna. 
-* Gunakan deteksi fitur jika browser pengguna tidak mendukung geolokasi.
-* Jangan sekadar mempelajari cara mengimplementasikan geolokasi; pelajari cara terbaik untuk menggunakan geolokasi.
-* Uji geolokasi bersama situs Anda.
+* Use geolocation when it benefits the user.
+* Ask for permission as a clear response to a user gesture. 
+* Use feature detection in case a user's browser doesn't support geolocation.
+* Don't just learn how to implement geolocation; learn the best way to use geolocation.
+* Test geolocation with your site.
 
-## Kapan menggunakan geolokasi
+## When to use geolocation
 
-*  Menemukan posisi pengguna yang paling dekat dengan lokasi fisik tertentu untuk menyesuaikan 
-   pengalaman pengguna.
-*  Menyesuaikan informasi (seperti berita) sesuai lokasi pengguna.
-*  Menampilkan posisi pengguna pada peta.
-*  Memberi tag pada data yang dibuat dalam aplikasi Anda dengan lokasi pengguna 
-   (yaitu, memberi geotag pada gambar).
+* Find where the user is closest to a specific physical location to tailor the user experience.
+* Tailor information (such as news) to the user's location.
+* Show the position of a user on a map.
+* Tag data created inside your application with the user's location (that is, geo-tag a picture).
 
-## Minta izin secara bertanggung jawab
+## Ask permission responsibly
 
-Penelitian pengguna terbaru [menunjukkan](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf)
-bahwa pengguna tidak percaya dengan situs yang hanya meminta pengguna untuk memberikan posisi
-mereka saat pemuatan laman. Jadi, apa praktik terbaiknya?
+Recent user studies [have shown](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf) that users are distrustful of sites that simply prompt the user to give away their position on page load. So what are the best practices?
 
-### Asumsikan pengguna tidak memberikan lokasi mereka.
+### Assume users will not give you their location
 
-Banyak pengguna tidak mau memberikan lokasi
-mereka, sehingga Anda perlu mengadopsi gaya development defensif.
+Many of your users won't want to give you their location, so you need to adopt a defensive development style.
 
-1.  Tangani semua kesalahan keluar dari geolocation API sehingga Anda bisa mengadaptasikan situs
-    Anda untuk kondisi ini.
-2.  Bersikaplah jelas dan eksplisit tentang mengapa Anda membutuhkan lokasi pengguna.
-3.  Gunakan solusi fallback jika diperlukan.
+1. Handle all errors out of the geolocation API so that you can adapt your site to this condition.
+2. Be clear and explicit about your need for the location.
+3. Use a fallback solution if needed.
 
-### Gunakan fallback jika diperlukan geolokasi
+### Use a fallback if geolocation is required
 
-Kami menyarankan agar situs atau aplikasi Anda tidak memerlukan
-akses ke lokasi pengguna saat ini. Akan tetapi, jika situs atau aplikasi Anda
-memerlukan lokasi pengguna saat ini, ada solusi pihak ketiga yang memungkinkan Anda memperoleh
-tebakan terbaik untuk lokasi orang saat ini.
+We recommend that your site or application not require access to the user's current location. However, if your site or application requires the user's current location, there are third-party solutions that allow you to obtain a best guess of where the person currently is.
 
-Solusi ini bekerja dengan melihat alamat IP pengguna dan memetakannya
-ke alamat fisik yang terdaftar dengan database RIPE. Semua lokasi ini
-sering kali tidak begitu akurat, biasanya memberi Anda posisi 
-hub telekomunikasi atau menara BTS yang paling dekat dengan pengguna. Dalam banyak
-kasus, bahkan mungkin tidak begitu akurat, terutama jika pengguna berada pada VPN
-atau layanan proxy lainnya.
+These solutions often work by looking at the user's IP address and mapping that to the physical addresses registered with the RIPE database. These locations are often not very accurate, normally giving you the position of the telecommunications hub or cell phone tower that is nearest to the user. In many cases, they might not even be that accurate, especially if the user is on VPN or some other proxy service.
 
-### Selalu meminta akses ke lokasi pada setiap isyarat pengguna
+### Always request access to location on a user gesture
 
-Pastikan pengguna memahami mengapa Anda meminta lokasi mereka, dan apa
-manfaat yang mereka dapatkan. Memintanya secara langsung di beranda saat 
-situs sedang memuat akan menjadikan pengalaman pengguna yang buruk.
+Make sure that users understand why you’re asking for their location, and what the benefit to them will be. Asking for it immediately on the homepage as the site loads results in a poor user experience.
 
 <div class="attempt-left">
   <figure>
     <img src="images/sw-navigation-good.png">
     <figcaption class="success">
-      <b>LAKUKAN</b>: Selalu minta akses ke lokasi berdasarkan isyarat pengguna.
+      <b>DO</b>: Always request access to location on a user gesture.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-navigation-bad.png">
     <figcaption class="warning">
-      <b>JANGAN</b>: Memintanya di laman beranda saat situs sedang dimuat; hal ini akan mengakibatkan pengalaman pengguna yang buruk.
+      <b>DON'T</b>: Ask for it on the homepage, as the site loads; this results in a poor user experience.
     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Sebagai gantinya, berikan pengguna ajakan bertindak yang jelas atau indikasi bahwa
-operasi akan memerlukan akses ke lokasi mereka. Pengguna kemudian bisa lebih mudah menghubungkan peringatan sistem untuk akses dengan aksi
-yang baru saja dimulai.
+Instead, give the user a clear call to action or an indication that an operation will require access to their location. The user can then more easily associate the system prompt for access with the action just initiated.
 
-### Berikan indikasi yang jelas bahwa sebuah aksi akan meminta lokasi mereka
+### Give a clear indication that an action will request their location
 
-[Dalam sebuah penelitian oleh tim Google AdWords](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf),
-ketika pengguna diminta untuk memesan kamar hotel di Boston untuk konferensi mendatang
-di sebuah situs hotel tertentu, mereka langsung dikonfirmasi untuk berbagi lokasi
-GPS setelah mengetuk ajakan bertindak "Find and Book" di laman beranda.
+[In a study by the Google Ads team](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf), when a user was asked to book a hotel room in Boston for an upcoming conference on one particular hotels site, they were prompted to share their GPS location immediately after tapping the "Find and Book" call to action on the homepage.
 
-Dalam beberapa kasus, pengguna menjadi frustrasi karena tidak memahami mengapa mereka
-ditunjukkan hotel di San Francisco padahal mereka ingin memesan kamar di
-Boston.
+In some cases, the user became frustrated because they didn't understand why they were being shown hotels in San Francisco when they wanted to book a room in Boston.
 
-Pengalaman yang lebih baik adalah memastikan pengguna memahami mengapa Anda meminta
-lokasi mereka. Tambahkan penanda yang dikenal baik dan sudah umum pada banyak
-perangkat, seperti pengukur jarak, atau ajakan bertindak eksplisit seperti 
-“Find Near Me”.
+A better experience is to make sure users understand why you’re asking them for their location. Add a well-known signifier that is common across devices, such as a range finder, or an explicit call to action such as “Find Near Me.”
 
 <div class="attempt-left">
   <figure>
     <img src="images/indication.png">
     <figcaption>
-      Gunakan pengukur jarak
+      Use a range finder
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/nearme.png">
     <figcaption>
-      Ajakan bertindak spesifik untuk Find near me  
+      A specific call to action to find near me  
     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### Mendorong pengguna dengan halus agar memberikan izin ke lokasi mereka
+### Gently nudge users to grant permission to their location
 
-Anda tidak memiliki akses ke apa pun yang sedang dilakukan pengguna. Anda mengetahui
-dengan persis kapan pengguna tidak memperbolehkan akses ke lokasi mereka namun Anda tidak tahu
-kapan mereka memberi Anda akses; Anda hanya mengetahui bahwa Anda memperoleh akses bila ada hasil
-yang muncul.
+You don't have access to anything users are doing. You know exactly when users disallow access to their locations but you don't know when they grant you access; you only know you obtained access when results appear.
 
-Praktik yang baik adalah "menyenggol" pengguna untuk mengambil tindakan jika
-Anda ingin mereka melakukan tindakan.
+It's good practice to "nudge" users into action if you need them to complete the action.
 
-Kami merekomendasikan: 
+We recommend:
 
-1.  Siapkan timer yang akan terpicu setelah periode singkat;
-    5 detik adalah nilai yang bagus.
-2.  Jika Anda mendapatkan pesan kesalahan, tampilkan pesan kepada pengguna.
-3.  Jika Anda mendapatkan respons positif, nonaktifkan timer dan proses hasilnya.
-4.  Jika setelah waktu tunggu Anda tidak mendapat respons positif,
-    tampilkan notifikasi kepada pengguna.
-5.  Jika respons datang belakangan dan notifikasi masih ada,
-    buang dari layar.
+1. Set up a timer that triggers after a short period; 5 seconds is a good value.
+2. If you get an error message, show a message to the user.
+3. If you get a positive response, disable the timer and process the results.
+4. If, after the timeout, you haven't gotten a positive response, show a notification to the user.
+5. If the response comes in later and the notification is still present, remove it from the screen.
 
 <div style="clear:both;"></div>
 
     button.onclick = function() {
       var startPos;
-      var element = document.getElementById("nudge");
-
+      var nudge = document.getElementById("nudge");
+    
       var showNudgeBanner = function() {
         nudge.style.display = "block";
       };
-
+    
       var hideNudgeBanner = function() {
         nudge.style.display = "none";
       };
-
+    
       var nudgeTimeoutId = setTimeout(showNudgeBanner, 5000);
-
+    
       var geoSuccess = function(position) {
         hideNudgeBanner();
         // We have the location, don't display banner
         clearTimeout(nudgeTimeoutId); 
-
+    
         // Do magic with location
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -183,18 +147,18 @@ Kami merekomendasikan:
             // The user didn't accept the callout
             showNudgeBanner();
             break;
+        }
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
     };
+    
 
-## Dukungan browser
+## Browser support
 
-Mayoritas browser kini mendukung Geolocation API namun kebiasaan yang baik
-adalah selalu memeriksa dukungan sebelum melakukan apa pun.
+The majority of browsers now support the Geolocation API but it's a good practice to always check for support before you do anything.
 
-Anda bisa dengan mudah memeriksa kompatibilitas dengan melakukan pengujian keberadaan
-objek geolokasi:
+You can easily check for compatibility by testing for the presence of the geolocation object:
 
     // check for Geolocation support
     if (navigator.geolocation) {
@@ -203,13 +167,11 @@ objek geolokasi:
     else {
       console.log('Geolocation is not supported for this Browser/OS.');
     }
+    
 
+## Determining the user's current location
 
-## Menentukan lokasi pengguna saat ini
-
-Geolocation API menawarkan metode "satu-aksi" sederhana untuk memperoleh lokasi
-pengguna: `getCurrentPosition()`. Panggilan ke metode ini akan secara asinkron
-melaporkan lokasi pengguna saat ini.
+The Geolocation API offers a simple, "one-shot" method to obtain the user's location: `getCurrentPosition()`. A call to this method asynchronously reports on the user's current location.
 
     window.onload = function() {
       var startPos;
@@ -220,64 +182,40 @@ melaporkan lokasi pengguna saat ini.
       };
       navigator.geolocation.getCurrentPosition(geoSuccess);
     };
+    
 
+If this is the first time that an application on this domain has requested permissions, the browser typically checks for user consent. Depending on the browser, there may also be preferences to always allow&mdash;or disallow&mdash;permission lookups, in which case the confirmation process is bypassed.
 
-Jika ini adalah pertama kalinya sebuah aplikasi pada domain meminta
-izin, browser biasanya akan memeriksa persetujuan pengguna. Bergantung pada
-browser, mungkin juga terdapat preferensi untuk selalu memperbolehkan&mdash;atau melarang&mdash;pencarian izin, sehingga proses konfirmasi akan dilangkahi.
+Depending on the location device your browser is using, the position object might actually contain a lot more than just latitude and longitude; for example, it might include an altitude or a direction. You can't tell what extra information that location system uses until it actually returns the data.
 
-Bergantung pada perangkat lokasi yang digunakan browser Anda, objek posisi
-mungkin sebenarnya berisi lebih banyak dari sekadar lintang dan bujur;
-misalnya, mungkin meliputi ketinggian atau arah. Anda tidak bisa
-mengetahui informasi tambahan apa yang digunakan sistem lokasi hingga
-data benar-benar dikembalikan.
+## Watching the user's location
 
-## Mengamati lokasi pengguna
+The Geolocation API allows you to obtain the user's location (with user consent) with a single call to `getCurrentPosition()`.
 
-Geolocation API memungkinkan Anda untuk mendapatkan lokasi pengguna (dengan persetujuan
-pengguna) dengan panggilan tunggal ke `getCurrentPosition()`.  
+If you want to continually monitor the user's location, use the Geolocation API method, `watchPosition()`. It operates in a similar way to `getCurrentPosition()`, but it fires multiple times as the positioning software:
 
-Jika Anda ingin terus-menerus memantau lokasi pengguna, gunakan metode Geolocation
-API, `watchPosition()`. Ini beroperasi dengan cara yang hampir sama dengan
-`getCurrentPosition()`, namun akan terpicu beberapa kali sebagai perangkat lunak
-pemosisian:
+1. Gets a more accurate lock on the user.
+2. Determines that the user's position is changing.
+    
+    var watchId = navigator.geolocation.watchPosition(function(position) { document.getElementById('currentLat').innerHTML = position.coords.latitude; document.getElementById('currentLon').innerHTML = position.coords.longitude; });
 
-1.  Mendapatkan penguncian yang lebih akurat pada pengguna.
-2.  Menentukan apakah posisi pengguna berubah.
- 
+### When to use geolocation to watch the user's location
 
-    var watchId = navigator.geolocation.watchPosition(function(position) {
-      document.getElementById('currentLat').innerHTML = position.coords.latitude;
-      document.getElementById('currentLon').innerHTML = position.coords.longitude;
-    });
+* You want to obtain a more precise lock on the user location.
+* Your application needs to update the user interface based on new location information.
+* Your application needs to update business logic when the user enters a certain defined zone.
 
-### Kapan menggunakan geolokasi untuk mengamati lokasi pengguna
+## Best practices when using geolocation
 
-*  Anda tentunya ingin mendapatkan penguncian yang lebih akurat pada lokasi pengguna.
-*  Aplikasi Anda harus melakukan pembaruan antarmuka pengguna berdasarkan informasi 
-   lokasi yang baru.
-*  Aplikasi Anda harus perlu memperbarui logika bisnis bila pengguna memasuki zona tertentu
-   yang didefinisikan.
+### Always clear up and conserve battery
 
+Watching for changes to a geolocation is not a free operation. While operating systems might be introducing platform features to let applications hook in to the geo subsystem, you, as a web developer, have no idea what support the user's device has for monitoring the user's location, and, while you're watching a position, you are engaging the device in a lot of extra processing.
 
-## Praktik terbaik saat menggunakan geolokasi
+After you no longer need to track the user's position, call `clearWatch` to turn off the geolocation systems.
 
-### Selalu membersihkan dan menghemat baterai
+### Handle errors gracefully
 
-Mengamati perubahan geolokasi bukanlah operasi yang gratis. Walaupun
-sistem operasi mungkin memperkenalkan fitur platform untuk memungkinkan aplikasi
-menghubungkan ke subsistem geografis, Anda sebagai developer web, tidak tahu dukungan apa
-yang dimiliki perangkat pengguna untuk memantau lokasi pengguna, dan selagi Anda mengamati
-suatu posisi, Anda melibatkan perangkat dalam banyak pemrosesan ekstra.
-
-Setelah Anda tidak perlu lagi melacak posisi pengguna, panggil `clearWatch` untuk menonaktifkan
-sistem geolokasi.
-
-###  Tangani kesalahan dengan cara halus
-
-Sayangnya, tidak semua pencarian lokasi berhasil. Mungkin GPS tidak
-bisa ditemukan atau pengguna tiba-tiba menonaktifkan pencarian lokasi. Jika terjadi kesalahan,
-argumen opsional kedua untuk `getCurrentPosition()` akan dipanggil, sehingga Anda bisa memberi tahu pengguna di dalam callback:
+Unfortunately, not all location lookups are successful. Perhaps a GPS could not be located or the user has suddenly disabled location lookups. In the event of an error, a second, optional argument to `getCurrentPosition()` is called so that you can notify the user inside the callback:
 
     window.onload = function() {
       var startPos;
@@ -296,24 +234,20 @@ argumen opsional kedua untuk `getCurrentPosition()` akan dipanggil, sehingga And
       };
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
     };
+    
 
+### Reduce the need to start geolocation hardware
 
-### Kurangi kebutuhan untuk memulai perangkat keras geolokasi
+For many use cases, you don't need the user's most up-to-date location; you just need a rough estimate.
 
-Untuk banyak kasus penggunaan, Anda tidak membutuhkan lokasi terbaru pengguna;
-Anda cuma perlu perkiraan kasar.
-
-Gunakan properti opsional `maximumAge` untuk memberi tahu browser agar menggunakan
-hasil geolokasi yang baru diperoleh. Hal ini tidak hanya mengembalikan lebih cepat jika pengguna telah
-meminta data sebelumnya, namun juga mencegah browser memulai
-antarmuka perangkat keras geolokasinya seperti triangulasi WiFi atau GPS.
+Use the `maximumAge` optional property to tell the browser to use a recently obtained geolocation result. This not only returns more quickly if the user has requested the data before, but it also prevents the browser from starting its geolocation hardware interfaces such as Wifi triangulation or the GPS.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
         maximumAge: 5 * 60 * 1000,
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -327,22 +261,21 @@ antarmuka perangkat keras geolokasinya seperti triangulasi WiFi atau GPS.
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
+### Don't keep the user waiting, set a timeout
 
-### Jangan biarkan pengguna menunggu, atur waktu tunggu
-
-Kecuali jika Anda telah menyetel waktu tunggu, permintaan posisi saat ini mungkin tidak akan pernah kembali.
-
+Unless you set a timeout, your request for the current position might never return.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
          timeout: 10 * 1000
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -356,27 +289,23 @@ Kecuali jika Anda telah menyetel waktu tunggu, permintaan posisi saat ini mungki
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
+### Prefer a coarse location over a fine-grained location
 
-### Utamakan lokasi kasar daripada lokasi yang sangat detail
+If you want to find the nearest store to a user, it's unlikely that you need 1-meter precision. The API is designed to give a coarse location that returns as quickly as possible.
 
-Jika Anda ingin menemukan toko terdekat dengan pengguna, kemungkinan Anda tidak membutuhkan
-tingkat presisi 1 meter. API ini dirancang untuk memberikan lokasi 
-kasar yang dikembalikan secepat mungkin.
-
-Jika Anda membutuhkan presisi tingkat tinggi, boleh saja mengganti setelan default
-dengan opsi `enableHighAccuracy`. Gunakan ini sesekali: hal ini lebih lambat
-diatasi dan menggunakan baterai lebih banyak.
+If you do need a high level of precision, it's possible to override the default setting with the `enableHighAccuracy` option. Use this sparingly: it's slower to resolve and uses more battery.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
         enableHighAccuracy: true
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -390,12 +319,12 @@ diatasi dan menggunakan baterai lebih banyak.
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
-
-## Emulasikan geolokasi dengan Chrome DevTools {: #devtools }
+## Emulate geolocation with Chrome DevTools {: #devtools }
 
 <div class="attempt-right">
   <figure id="fig1">
@@ -403,22 +332,19 @@ diatasi dan menggunakan baterai lebih banyak.
   </figure>
 </div>
 
-Setelah menyiapkan geolokasi, Anda perlu:
+Once you've got geolocation set up, you'll want to:
 
-* Uji cara kerja aplikasi Anda di beberapa geolokasi berbeda.
-* Verifikasi apakah aplikasi Anda mengalami degradasi secara halus bila geolokasi tidak tersedia.
+* Test out how your app works in different geolocations.
+* Verify that your app degrades gracefully when geolocation is not available.
 
-Anda bisa melakukan keduanya dari Chrome DevTools.
+You can do both from Chrome DevTools.
 
-[Buka Chrome DevTools](/web/tools/chrome-devtools/#open) kemudian
-[buka Console Drawer](/web/tools/chrome-devtools/console/#open_as_drawer).
+[Open Chrome DevTools](/web/tools/chrome-devtools/#open) and then [open the Console Drawer](/web/tools/chrome-devtools/console/#open_as_drawer).
 
-[Buka menu Console Drawer](/web/tools/chrome-devtools/settings#drawer-tabs)
-dan klik opsi **Sensors** untuk menampilkan Sensors Drawer.
+[Open the Console Drawer menu](/web/tools/chrome-devtools/settings#drawer-tabs) and click the **Sensors** option to show the Sensors Drawer.
 
-Dari sini Anda bisa mengganti lokasi ke kota besar preset,
-memasukkan lokasi khusus, atau menonaktifkan geolokasi dengan menyetel penggantian
-ke **Location unavailable**.
+From here you can override the location to a preset major city, enter a custom location, or disable geolocation by setting the override to **Location unavailable**.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

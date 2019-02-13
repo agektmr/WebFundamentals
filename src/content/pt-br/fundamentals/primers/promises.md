@@ -1,198 +1,138 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: "As promessas simplificam cálculos postergados e assíncronos. Uma promessa representa uma operação ainda não concluída."
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: "Promises simplify deferred and asynchronous computations. A promise represents an operation that hasn't completed yet."
 
-{# wf_published_on: 2013-12-16 #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_blink_components: Blink>JavaScript #}
+{# wf_published_on: 2013-12-16 #} {# wf_updated_on: 2018-12-14 #} {# wf_blink_components: Blink>JavaScript #}
 
-# Promessas em JavaScript: uma introdução {: .page-title }
+# JavaScript Promises: an Introduction {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-Desenvolvedores, preparem-se para um momento importantíssimo na história do
-desenvolvimento da Web.
+Developers, prepare yourself for a pivotal moment in the history of web development.
 
-<em>[Soam os tambores]</em>
+<em>[Drumroll begins]</em>
 
-As promessas agora são um recurso nativo no JavaScript!
+Promises have arrived natively in JavaScript!
 
-<em>[Fogos de artifício explodem, papéis brilhantes caem, a multidão enlouquece]</em>
+<em>[Fireworks explode, glittery paper rains from above, the crowd goes wild]</em>
 
-Nesse momento, você está em uma destas categorias:
+At this point you fall into one of these categories:
 
-* As pessoas comemoram à sua volta, mas você não sabe bem o motivo
- dessa confusão. Talvez você nem mesmo tenha certeza do que é uma "promessa". Você gostaria de dar de ombros, mas o
- peso do papel brilhante é muito pesado. Se for isso, não
- se preocupe. Eu demorei uma eternidade para entender porque deveria me preocupar com tudo
- isso. Provavelmente, você deve começar [pelo início](#whats-all-the-fuss-about).
-* Você soca o ar! Demorou, certo? Você já usou essas tais promessas antes,
- mas está incomodado que todas as implementações têm APIs um pouco diferentes.
-  Qual é a API para a versão oficial do JavaScript? Você provavelmente deve
- começar com a [terminologia](#promise-terminology).
-* Você já conhecia tudo isso e acha ridículas essas pessoas pulando sem parar,
- como se fosse novidade para elas. Curta sua superioridade por alguns momentos e
- vá direto para a [referência da API](#promise-api-reference).
+* People are cheering around you, but you're not sure what all the fuss is about. Maybe you're not even sure what a "promise" is. You'd shrug, but the weight of glittery paper is weighing down on your shoulders. If so, don't worry about it, it took me ages to work out why I should care about this stuff. You probably want to begin at the [beginning](#whats-all-the-fuss-about).
+* You punch the air! About time right? You've used these Promise things before but it bothers you that all implementations have a slightly different API. What's the API for the official JavaScript version? You probably want to begin with the [terminology](#promise-terminology).
+* You knew about this already and you scoff at those who are jumping up and down like it's news to them. Take a moment to bask in your own superiority, then head straight to the [API reference](#promise-api-reference).
 
-## Por que todo esse estardalhaço? {: #whats-all-the-fuss-about }
+## What's all the fuss about? {: #whats-all-the-fuss-about }
 
-O JavaScript usa um único thread. Isso significa que duas partes de um script não podem ser executadas ao
-mesmo tempo. É preciso fazer isso em sequência. O JavaScript
-compartilha um thread com muitos outros itens que variam de navegador para
-navegador. Porém, o JavaScript normalmente está na mesma fila das atividades de pintura, atualização
-de estilos e tratamento das ações dos usuários (como destaque de texto e interação
-com controles dos formulários). Uma atividade em uma dessas ações retarda as demais.
+JavaScript is single threaded, meaning that two bits of script cannot run at the same time; they have to run one after another. In browsers, JavaScript shares a thread with a load of other stuff that differs from browser to browser. But typically JavaScript is in the same queue as painting, updating styles, and handling user actions (such as highlighting text and interacting with form controls). Activity in one of these things delays the others.
 
-Você, como ser humano, usa vários threads. Você pode digitar com vários dedos,
-dirigir e conversar ao mesmo tempo. A única função
-bloqueadora com que temos de lidar é o espirro, quando todas as atividades em andamento devem
-ser suspensas pela duração dele. Isso é muito irritante,
-principalmente quando você está dirigindo e tentando manter uma conversa. Você não
-quer escrever um código que espirre.
+As a human being, you're multithreaded. You can type with multiple fingers, you can drive and hold a conversation at the same time. The only blocking function we have to deal with is sneezing, where all current activity must be suspended for the duration of the sneeze. That's pretty annoying, especially when you're driving and trying to hold a conversation. You don't want to write code that's sneezy.
 
-Você provavelmente usou eventos e callbacks para evitar isso. Veja os eventos:
+You've probably used events and callbacks to get around this. Here are events:
 
     var img1 = document.querySelector('.img-1');
-
+    
     img1.addEventListener('load', function() {
       // woo yey image loaded
     });
-
+    
     img1.addEventListener('error', function() {
       // argh everything's broken
     });
+    
 
+This isn't sneezy at all. We get the image, add a couple of listeners, then JavaScript can stop executing until one of those listeners is called.
 
-Não há nenhum espirro aqui. Obtemos a imagem, adicionamos alguns listeners e o
-JavaScript pode interromper a execução até que algum deles seja chamado.
-
-No exemplo acima, é possível que os eventos tenham ocorrido
-antes de começarmos a ouvi-los. Portanto, precisamos resolver isso usando
-a property "complete" das imagens:
+Unfortunately, in the example above, it's possible that the events happened before we started listening for them, so we need to work around that using the "complete" property of images:
 
     var img1 = document.querySelector('.img-1');
-
+    
     function loaded() {
       // woo yey image loaded
     }
-
+    
     if (img1.complete) {
       loaded();
     }
     else {
       img1.addEventListener('load', loaded);
     }
-
+    
     img1.addEventListener('error', function() {
       // argh everything's broken
     });
+    
 
-Essa técnica não captura as imagens que tiveram erros antes de começarmos a
-ouvi-las. O DOM não oferece essa funcionalidade. Além disso, nesse exemplo
-carregamos uma imagem. Tudo fica ainda mais complexo quando queremos saber quando um conjunto
-de imagens foi carregado.
+This doesn't catch images that error'd before we got a chance to listen for them; unfortunately the DOM doesn't give us a way to do that. Also, this is loading one image, things get even more complex if we want to know when a set of images have loaded.
 
+## Events aren't always the best way
 
-## Eventos nem sempre são a melhor maneira
-
-Os eventos são ótimos para coisas que ocorrem várias vezes com o mesmo
-objeto&mdash;keyup, touchstart etc. Com esses eventos, não importa
-o que aconteceu antes do listener ser anexado. Mas quando falamos de conclusão/falha
-assíncronos, o ideal é algo assim:
+Events are great for things that can happen multiple times on the same object&mdash;keyup, touchstart etc. With those events you don't really care about what happened before you attached the listener. But when it comes to async success/failure, ideally you want something like this:
 
     img1.callThisIfLoadedOrWhenLoaded(function() {
       // loaded
     }).orIfFailedCallThis(function() {
       // failed
     });
-
+    
     // and…
     whenAllTheseHaveLoaded([img1, img2]).callThis(function() {
       // all loaded
     }).orIfSomeFailedCallThis(function() {
       // one or more failed
     });
+    
 
-É isso o que as promessas fazem, mas com nomes melhores. Se elementos de uma imagem HTML tivessem um método
-"ready" que retornasse uma promessa, poderíamos fazer isto:
+This is what promises do, but with better naming. If HTML image elements had a "ready" method that returned a promise, we could do this:
 
     img1.ready().then(function() {
       // loaded
     }, function() {
       // failed
     });
-
+    
     // and…
     Promise.all([img1.ready(), img2.ready()]).then(function() {
       // all loaded
     }, function() {
       // one or more failed
     });
+    
 
+At their most basic, promises are a bit like event listeners except:
 
-Na essência, as promessas são um pouco semelhantes aos listeners de eventos, exceto que:
+* A promise can only succeed or fail once. It cannot succeed or fail twice, neither can it switch from success to failure or vice versa.
+* If a promise has succeeded or failed and you later add a success/failure callback, the correct callback will be called, even though the event took place earlier.
 
-* Uma promessa só pode ser concluída ou falhar uma vez. Ela não pode ser concluída ou falhar duas vezes,
- nem alternar entre conclusão e falha ou vice-versa.
-* Se uma promessa for concluída ou falhar, e você adicionar posteriormente um callback
- de conclusão/falha, o retorno correto será chamado, mesmo que o evento tenha ocorrido
- anteriormente.
+This is extremely useful for async success/failure, because you're less interested in the exact time something became available, and more interested in reacting to the outcome.
 
-Isso é extremamente útil para conclusão/falha assíncronos, já que você não está muito
-interessado no momento exato da disponibilidade de algo, mas
-na reação a um resultado.
+## Promise terminology {: #promise-terminology }
 
+[Domenic Denicola](https://twitter.com/domenic) proof read the first draft of this article and graded me "F" for terminology. He put me in detention, forced me to copy out [States and Fates](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md) 100 times, and wrote a worried letter to my parents. Despite that, I still get a lot of the terminology mixed up, but here are the basics:
 
-## Terminologia das promessas {: #promise-terminology }
+A promise can be:
 
-[Domenic Denicola](https://twitter.com/domenic) examinou a primeira versão
-deste artigo e me atribuiu nota zero para terminologia. Ele me colocou em quarentena,
-me obrigou a copiar
-[Estados e destinos](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md)
-100 vezes e escreveu uma carta preocupada para meus pais. Apesar disso, eu ainda
-me confundo com a terminologia, mas os termos básicos são descritos a seguir.
+* **fulfilled** - The action relating to the promise succeeded
+* **rejected** - The action relating to the promise failed
+* **pending** - Hasn't fulfilled or rejected yet
+* **settled** - Has fulfilled or rejected
 
-Uma promessa pode ser:
+[The spec](https://www.ecma-international.org/ecma-262/#sec-promise-objects) also uses the term **thenable** to describe an object that is promise-like, in that it has a `then` method. This term reminds me of ex-England Football Manager [Terry Venables](https://en.wikipedia.org/wiki/Terry_Venables) so I'll be using it as little as possible.
 
-* **fulfilled**: a ação relacionada à promessa foi concluída
-* **rejected**: ocorreu uma falha na ação relacionada à promessa
-* **pending**: a ação ainda não foi realizada ou rejeitada
-* **settled**: a ação foi concluída ou rejeitada
+## Promises arrive in JavaScript!
 
-
-[A especificação](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects)
-também usa o termo **thenable** para descrever um objeto semelhante à promessa,
-já que tem um método `then`. Esse termo me lembra do ex-dirigente do futebol inglês,
-[Terry Venables](https://en.wikipedia.org/wiki/Terry_Venables). Por
-isso, vou usá-lo o menos possível.
-
-
-## As promessas chegaram ao JavaScript!
-
-As promessas já existem há algum tempo na forma de bibliotecas, como:
+Promises have been around for a while in the form of libraries, such as:
 
 * [Q](https://github.com/kriskowal/q)
 * [when](https://github.com/cujojs/when)
 * [WinJS](https://msdn.microsoft.com/en-us/library/windows/apps/br211867.aspx)
 * [RSVP.js](https://github.com/tildeio/rsvp.js)
 
-Essas bibliotecas e as promessas do JavaScript compartilham um comportamento comum e padronizado,
-denominado [Promises/A+](https://github.com/promises-aplus/promises-spec). Se
-você usa jQuery, ele tem algo semelhante chamado de
-[Deferreds](https://api.jquery.com/category/deferred-object/). No entanto, os
-Deferreds não são compatíveis com Promise/A+, o que os torna
-[sutilmente diferentes e menos úteis](https://thewayofcode.wordpress.com/tag/jquery-deferred-broken/). Por
-isso, fique atento. O jQuery também tem
-[um tipo de promessa](https://api.jquery.com/Types/#Promise), mas é somente um
-subconjunto de Deferreds e possui os mesmos problemas.
+The above and JavaScript promises share a common, standardized behaviour called [Promises/A+](https://github.com/promises-aplus/promises-spec). If you're a jQuery user, they have something similar called [Deferreds](https://api.jquery.com/category/deferred-object/). However, Deferreds aren't Promise/A+ compliant, which makes them [subtly different and less useful](https://thewayofcode.wordpress.com/tag/jquery-deferred-broken/), so beware. jQuery also has [a Promise type](https://api.jquery.com/Types/#Promise), but this is just a subset of Deferred and has the same issues.
 
-Embora as implementações de promessas sigam um comportamento padronizado, existem
-diferenças gerais entre as APIs. As APIs das promessas do JavaScript são semelhantes às do RSVP.js.
-Veja como criar uma promessa:
+Although promise implementations follow a standardized behaviour, their overall APIs differ. JavaScript promises are similar in API to RSVP.js. Here's how you create a promise:
 
     var promise = new Promise(function(resolve, reject) {
       // do a thing, possibly async, then…
-
+    
       if (/* everything turned out fine */) {
         resolve("Stuff worked!");
       }
@@ -200,131 +140,86 @@ Veja como criar uma promessa:
         reject(Error("It broke"));
       }
     });
+    
 
+The promise constructor takes one argument, a callback with two parameters, resolve and reject. Do something within the callback, perhaps async, then call resolve if everything worked, otherwise call reject.
 
-O construtor de promessas aceita um argumento, um callback com dois parâmetros,
-“resolver” e “rejeitar”. Faça algo dentro do callback, talvez algo assíncrono, e chame
-“resolver” se tudo tiver funcionado bem. Caso contrário, chame “rejeitar”.
+Like `throw` in plain old JavaScript, it's customary, but not required, to reject with an Error object. The benefit of Error objects is they capture a stack trace, making debugging tools more helpful.
 
-Assim como o `throw` no JavaScript simples, é comum, mas não obrigatório, chamar
-“rejeitar” com um objeto Error. A vantagem dos objetos Error é que eles capturam um
-rastreamento de pilha, aumentando a utilidade das ferramentas de depuração.
-
-Veja como usar essa promessa:
+Here's how you use that promise:
 
     promise.then(function(result) {
       console.log(result); // "Stuff worked!"
     }, function(err) {
       console.log(err); // Error: "It broke"
     });
+    
 
+`then()` takes two arguments, a callback for a success case, and another for the failure case. Both are optional, so you can add a callback for the success or failure case only.
 
-`then()` aceita dois argumentos: um callback para a conclusão e outro
-para a falha. Ambos são opcionais. Portanto, você pode adicionar um callback somente para a
-conclusão ou só para a falha.
+JavaScript promises started out in the DOM as "Futures", renamed to "Promises", and finally moved into JavaScript. Having them in JavaScript rather than the DOM is great because they'll be available in non-browser JS contexts such as Node.js (whether they make use of them in their core APIs is another question).
 
-As promessas do JavaScript começaram no DOM como "Futures", foram renomeadas para "Promises" e,
-finalmente, movidas para o JavaScript. É ótimo elas estarem no JavaScript, em vez de no
-DOM, já que ficam disponíveis em contextos JS fora do navegador, como
-Node.js, independentemente de serem usadas ou não nas APIs essenciais.
+Although they're a JavaScript feature, the DOM isn't afraid to use them. In fact, all new DOM APIs with async success/failure methods will use promises. This is happening already with [Quota Management](https://dvcs.w3.org/hg/quota/raw-file/tip/Overview.html#idl-def-StorageQuota), [Font Load Events](http://dev.w3.org/csswg/css-font-loading/#font-face-set-ready), [ServiceWorker](https://github.com/slightlyoff/ServiceWorker/blob/cf459d473ae09f6994e8539113d277cbd2bce939/service_worker.ts#L17), [Web MIDI](https://webaudio.github.io/web-midi-api/#widl-Navigator-requestMIDIAccess-Promise-MIDIOptions-options), [Streams](https://github.com/whatwg/streams#basereadablestream), and more.
 
-Embora sejam um recurso do JavaScript, o DOM pode usá-las sem nenhum problema. Na
-verdade, todas as novas APIs do DOM com métodos de conclusão/falha usarão promessas.
-Isso já está acontecendo com
-[Gerenciamento de cota](https://dvcs.w3.org/hg/quota/raw-file/tip/Overview.html#idl-def-StorageQuota),
-[Eventos de carregamento de fonte](http://dev.w3.org/csswg/css-font-loading/#font-face-set-ready),
-[ServiceWorker](https://github.com/slightlyoff/ServiceWorker/blob/cf459d473ae09f6994e8539113d277cbd2bce939/service_worker.ts#L17),
-[Web MIDI](https://webaudio.github.io/web-midi-api/#widl-Navigator-requestMIDIAccess-Promise-MIDIOptions-options),
-[Streams](https://github.com/whatwg/streams#basereadablestream) e mais.
+## Browser support & polyfill
 
+There are already implementations of promises in browsers today.
 
-## Compatibilidade de navegadores &amp; e polyfill
+As of Chrome 32, Opera 19, Firefox 29, Safari 8 & Microsoft Edge, promises are enabled by default.
 
-Já existem implementações de promessas nos navegadores atuais.
+To bring browsers that lack a complete promises implementation up to spec compliance, or add promises to other browsers and Node.js, check out [the polyfill](https://github.com/jakearchibald/ES6-Promises#readme) (2k gzipped).
 
-A partir das versões Chrome 32, Opera 19, Firefox 29, Safari 8 &amp; Microsoft Edge,
-as promessas são ativadas por padrão.
+## Compatibility with other libraries
 
-Para adicionar compatibilidade com a especificação
-a navegadores que não têm uma implementação completa de promessas ou para incluir promessas em outros navegadores e ao Node.js, confira o
-[polyfill](https://github.com/jakearchibald/ES6-Promises#readme)
-(2 kb comprimido com GZIP).
+The JavaScript promises API will treat anything with a `then()` method as promise-like (or `thenable` in promise-speak *sigh*), so if you use a library that returns a Q promise, that's fine, it'll play nice with the new JavaScript promises.
 
-
-## Compatibilidade com outras bibliotecas
-
-A API de promessas do JavaScript considera qualquer coisa que tenha um método `then()` como semelhante a uma
-promessa (ou `thenable` na terminologia de promessas – _suspiro_). Portanto, se você usar uma biblioteca
-que retorna uma promessa do Q, não há problema, ela funcionará corretamente com as novas promessas do
-JavaScript.
-
-Embora, como já mencionado, os Deferreds do jQuery sejam um tanto... inúteis.
-Você pode usar “cast” para transformá-los em promessas padrão, o que é bom fazer
-o quanto antes:
-
+Although, as I mentioned, jQuery's Deferreds are a bit … unhelpful. Thankfully you can cast them to standard promises, which is worth doing as soon as possible:
 
     var jsPromise = Promise.resolve($.ajax('/whatever.json'))
+    
 
-
-Aqui, o `$.ajax` do jQuery retorna um Deferred. Como ele tem um método `then()`,
-`Promise.resolve()` pode transformá-lo em uma promessa do JavaScript. No entanto,
-algumas vezes os Deferreds passam vários argumentos aos callbacks relacionados, por exemplo:
+Here, jQuery's `$.ajax` returns a Deferred. Since it has a `then()` method, `Promise.resolve()` can turn it into a JavaScript promise. However, sometimes deferreds pass multiple arguments to their callbacks, for example:
 
     var jqDeferred = $.ajax('/whatever.json');
-
+    
     jqDeferred.then(function(response, statusText, xhrObj) {
       // ...
     }, function(xhrObj, textStatus, err) {
       // ...
     })
+    
 
-
-
-Já as promessas do JS ignoram qualquer argumento além do primeiro:
-
+Whereas JS promises ignore all but the first:
 
     jsPromise.then(function(response) {
       // ...
     }, function(xhrObj) {
       // ...
     })
+    
 
+Thankfully this is usually what you want, or at least gives you access to what you want. Also, be aware that jQuery doesn't follow the convention of passing Error objects into rejections.
 
+## Complex async code made easier
 
-É isso o que precisamos normalmente ou, pelo menos, nos dá acesso ao
-que queremos. Além disso, é importante notar que o jQuery não segue a convenção de
-passar objetos Error nas rejeições.
+Right, let's code some things. Say we want to:
 
+1. Start a spinner to indicate loading
+2. Fetch some JSON for a story, which gives us the title, and urls for each chapter
+3. Add title to the page
+4. Fetch each chapter
+5. Add the story to the page
+6. Stop the spinner
 
-## Simplificar o código assíncrono complexo
+… but also tell the user if something went wrong along the way. We'll want to stop the spinner at that point too, else it'll keep on spinning, get dizzy, and crash into some other UI.
 
-OK, vamos escrever código. Digamos que você queira fazer o seguinte:
+Of course, you wouldn't use JavaScript to deliver a story, [serving as HTML is faster](https://jakearchibald.com/2013/progressive-enhancement-is-faster/), but this pattern is pretty common when dealing with APIs: Multiple data fetches, then do something when it's all done.
 
-1. Iniciar um controle giratório para indicar um carregamento
-1. Buscar algum JSON para uma história que nos dará o título e URLs para cada capítulo
-1. Adicionar o título à página
-1. Buscar cada capítulo
-1. Adicionar a história à página
-1. Interromper o controle giratório
+To start with, let's deal with fetching data from the network:
 
-Além disso, informar ao usuário se ocorreu algum erro durante o processamento. Nesse caso, devemos
-interromper o controle giratório. Caso contrário, ele continuará a girar, ficará
-tonto e falhará em outra IU.
+## Promisifying XMLHttpRequest
 
-Normalmente, você não usaria JavaScript para exibir uma história, já que
-[é mais rápido fazer isso com HTML](https://jakearchibald.com/2013/progressive-enhancement-is-faster/).
-No entanto, esse padrão é muito comum quando usamos APIs: Várias buscas
-de dados e fazer alguma coisa quando elas forem concluídas.
-
-Para começar, vamos buscar dados da rede:
-
-## Transformar XMLHttpRequest em promessa
-
-As APIs antigas serão atualizadas para usarem as promessas, se for possível em modo de compatibilidade
-inversa. `XMLHttpRequest` é a opção principal. Enquanto isso,
-escreveremos uma função simples para fazer uma solicitação GET:
-
-
+Old APIs will be updated to use promises, if it's possible in a backwards compatible way. `XMLHttpRequest` is a prime candidate, but in the mean time let's write a simple function to make a GET request:
 
     function get(url) {
       // Return a new promise.
@@ -332,7 +227,7 @@ escreveremos uma função simples para fazer uma solicitação GET:
         // Do the usual XHR stuff
         var req = new XMLHttpRequest();
         req.open('GET', url);
-
+    
         req.onload = function() {
           // This is called even on 404 etc
           // so check the status
@@ -346,124 +241,108 @@ escreveremos uma função simples para fazer uma solicitação GET:
             reject(Error(req.statusText));
           }
         };
-
+    
         // Handle network errors
         req.onerror = function() {
           reject(Error("Network Error"));
         };
-
+    
         // Make the request
         req.send();
       });
     }
+    
 
-
-Agora, vamos usá-la:
+Now let's use it:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }, function(error) {
       console.error("Failed!", error);
     })
+    
 
+Now we can make HTTP requests without manually typing `XMLHttpRequest`, which is great, because the less I have to see the infuriating camel-casing of `XMLHttpRequest`, the happier my life will be.
 
-Já podemos fazer solicitações HTTP sem digitar manualmente `XMLHttpRequest`. Isso é ótimo, já que o melhor é ficar longe da
-confusão entre maiúsculas e minúsculas de `XMLHttpRequest`.
+## Chaining
 
+`then()` isn't the end of the story, you can chain `then`s together to transform values or run additional async actions one after another.
 
-## Encadear
+### Transforming values
 
-O `then()` não é o final da história. Você pode encadear métodos `then` para
-transformar valores ou executar mais ações assíncronas em sequência.
-
-
-### Transformar valores
-Você pode transformar valores simplesmente retornando o novo valor:
+You can transform values simply by returning the new value:
 
     var promise = new Promise(function(resolve, reject) {
       resolve(1);
     });
-
+    
     promise.then(function(val) {
       console.log(val); // 1
       return val + 2;
     }).then(function(val) {
       console.log(val); // 3
     })
+    
 
-
-Como exemplo prático, voltaremos para:
+As a practical example, let's go back to:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     })
+    
 
-
-
-A resposta é JSON, mas o que estamos recebendo no momento é um texto simples. Poderíamos
-alterar nossa função get para usar o
-[`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#responseType) do JSON,
-mas também podemos resolver isso com promessas:
+The response is JSON, but we're currently receiving it as plain text. We could alter our get function to use the JSON [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#responseType), but we could also solve it in promises land:
 
     get('story.json').then(function(response) {
       return JSON.parse(response);
     }).then(function(response) {
       console.log("Yey JSON!", response);
     })
+    
 
-
-
-Como `JSON.parse()` aceita um único argumento e retorna um valor transformado,
-podemos criar um atalho:
+Since `JSON.parse()` takes a single argument and returns a transformed value, we can make a shortcut:
 
     get('story.json').then(JSON.parse).then(function(response) {
       console.log("Yey JSON!", response);
     })
+    
 
-
-Na verdade, seria bem fácil usar uma função `getJSON()`:
+In fact, we could make a `getJSON()` function really easily:
 
     function getJSON(url) {
       return get(url).then(JSON.parse);
     }
+    
 
-`getJSON()` continua retornando uma promessa, que busca um URL e analisa
-a resposta como JSON.
+`getJSON()` still returns a promise, one that fetches a url then parses the response as JSON.
 
+### Queuing asynchronous actions
 
-### Enfileirar ações assíncronas
+You can also chain `then`s to run async actions in sequence.
 
-Também é possível encadear métodos `then` para executar ações assíncronas em sequência.
-
-Quando você retorna algum item de um callback de `then()`, ocorre algo mágico.
-Se você retornar um valor, o próximo `then()` será chamado com ele. No entanto, se
-você retornar algo semelhante a uma promessa, ela bloqueará o próximo `then()`, que somente
-será chamado quando essa promessa for definida (conclusão/falha). Por exemplo:
+When you return something from a `then()` callback, it's a bit magic. If you return a value, the next `then()` is called with that value. However, if you return something promise-like, the next `then()` waits on it, and is only called when that promise settles (succeeds/fails). For example:
 
     getJSON('story.json').then(function(story) {
       return getJSON(story.chapterUrls[0]);
     }).then(function(chapter1) {
       console.log("Got chapter 1!", chapter1);
     })
+    
 
+Here we make an async request to `story.json`, which gives us a set of URLs to request, then we request the first of those. This is when promises really start to stand out from simple callback patterns.
 
-
-Aqui, fazemos uma solicitação assíncrona para `story.json`, que retorna um conjunto de
-URLs a serem solicitados. Em seguida, solicitamos o primeiro URL. É aí que as promessas
-começam realmente a se destacar de simples padrões de callback.
-
-Você pode até criar um método de atalho para obter capítulos:
+You could even make a shortcut method to get chapters:
 
     var storyPromise;
-
+    
     function getChapter(i) {
       storyPromise = storyPromise || getJSON('story.json');
-
+    
       return storyPromise.then(function(story) {
         return getJSON(story.chapterUrls[i]);
       })
     }
-
+    
     // and using it is simple:
     getChapter(0).then(function(chapter) {
       console.log(chapter);
@@ -471,53 +350,40 @@ Você pode até criar um método de atalho para obter capítulos:
     }).then(function(chapter) {
       console.log(chapter);
     })
+    
 
+We don't download `story.json` until `getChapter` is called, but the next time(s) `getChapter` is called we reuse the story promise, so `story.json` is only fetched once. Yay Promises!
 
-Não fazemos o download de `story.json` até que `getChapter` seja chamado, mas nas próximas
-chamadas de `getChapter`, reutilizaremos a promessa da história. Assim, a busca de `story.json`
-será feita só uma vez. Viva às promessas!
+## Error handling
 
-
-## Gerenciamento de erros
-
-Como vimos anteriormente, `then()` aceita dois argumentos, um
-para conclusão e outro para falha (ou “atender” e “rejeitar”, na terminologia de promessas):
+As we saw earlier, `then()` takes two arguments, one for success, one for failure (or fulfill and reject, in promises-speak):
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }, function(error) {
       console.log("Failed!", error);
     })
+    
 
-
-Você também pode usar `catch()`:
-
+You can also use `catch()`:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }).catch(function(error) {
       console.log("Failed!", error);
     })
+    
 
-
-Não há nada especial sobre o `catch()`, é somente uma outra forma mais legível de
-`then(undefined, func)`. Observe que os dois exemplos de
-código acima não se comportam da mesma forma. O último é equivalente a:
+There's nothing special about `catch()`, it's just sugar for `then(undefined, func)`, but it's more readable. Note that the two code examples above do not behave the same, the latter is equivalent to:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }).then(undefined, function(error) {
       console.log("Failed!", error);
     })
+    
 
-
-A diferença é sutil, mas extremamente útil. As rejeições de promessa pulam
-para o próximo método `then()` com um callback de rejeição (ou `catch()`, que
-é equivalente). Com `then(func1, func2)`, são
-chamadas `func1` ou `func2`, mas nunca ambas. No entanto, com `then(func1).catch(func2)`, ambas serão
-chamadas se `func1` rejeitar o método, já que são etapas diferentes na cadeia. Veja
-o exemplo a seguir:
-
+The difference is subtle, but extremely useful. Promise rejections skip forward to the next `then()` with a rejection callback (or `catch()`, since it's equivalent). With `then(func1, func2)`, `func1` or `func2` will be called, never both. But with `then(func1).catch(func2)`, both will be called if `func1` rejects, as they're separate steps in the chain. Take the following:
 
     asyncThing1().then(function() {
       return asyncThing2();
@@ -534,33 +400,27 @@ o exemplo a seguir:
     }).then(function() {
       console.log("All done!");
     })
+    
 
-
-
-O fluxo acima é bastante semelhante ao try/catch normal do JavaScript. Erros que
-ocorrem em um "try" vão imediatamente para o bloqueio `catch()`. Veja a seguir o
-fluxograma do código acima (adoro fluxogramas):
-
+The flow above is very similar to normal JavaScript try/catch, errors that happen within a "try" go immediately to the `catch()` block. Here's the above as a flowchart (because I love flowcharts):
 
 <div style="position: relative; padding-top: 93%;">
   <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden"
    src="imgs/promise-flow.svg" frameborder="0" allowtransparency="true"></iframe>
 </div>
 
+Follow the blue lines for promises that fulfill, or the red for ones that reject.
 
-Siga as linhas azuis para promessas atendidas ou vermelhas para as
-rejeitadas.
+### JavaScript exceptions and promises
 
-### Exceções e promessas do JavaScript
-As rejeições acontecem quando uma promessa é recusada explicitamente, mas também implicitamente
-, se um erro for acionado no callback do construtor:
+Rejections happen when a promise is explicitly rejected, but also implicitly if an error is thrown in the constructor callback:
 
     var jsonPromise = new Promise(function(resolve, reject) {
       // JSON.parse throws an error if you feed it some
       // invalid JSON, so this implicitly rejects:
       resolve(JSON.parse("This ain't JSON"));
     });
-
+    
     jsonPromise.then(function(data) {
       // This never happens:
       console.log("It worked!", data);
@@ -568,13 +428,11 @@ As rejeições acontecem quando uma promessa é recusada explicitamente, mas tam
       // Instead, this happens:
       console.log("It failed!", err);
     })
+    
 
+This means it's useful to do all your promise-related work inside the promise constructor callback, so errors are automatically caught and become rejections.
 
-Isso significa que é útil fazer todo o trabalho relacionado a promessas dentro do callback do
-construtor para que os erros sejam capturados automaticamente e
-transformados em rejeições.
-
-O mesmo acontece com erros acionados nos callbacks `then()`.
+The same goes for errors thrown in `then()` callbacks.
 
     get('/').then(JSON.parse).then(function() {
       // This never happens, '/' is an HTML page, not JSON
@@ -584,14 +442,11 @@ O mesmo acontece com erros acionados nos callbacks `then()`.
       // Instead, this happens:
       console.log("It failed!", err);
     })
+    
 
+### Error handling in practice
 
-
-### Gerenciamento de erros na prática
-
-Podemos usar o “catch” com nossa história e nossos capítulos para exibir um erro ao usuário:
-
-
+With our story and chapters, we can use catch to display an error to the user:
 
     getJSON('story.json').then(function(story) {
       return getJSON(story.chapterUrls[0]);
@@ -602,19 +457,11 @@ Podemos usar o “catch” com nossa história e nossos capítulos para exibir u
     }).then(function() {
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
+If fetching `story.chapterUrls[0]` fails (e.g., http 500 or user is offline), it'll skip all following success callbacks, which includes the one in `getJSON()` which tries to parse the response as JSON, and also skips the callback that adds chapter1.html to the page. Instead it moves onto the catch callback. As a result, "Failed to show chapter" will be added to the page if any of the previous actions failed.
 
-
-Se a recuperação de `story.chapterUrls[0]` falhar (por exemplo, HTTP 500 ou o usuário está off-line), ela
-pulará todos os callbacks de conclusão a seguir, incluindo o de
-`getJSON()`, que tenta analisar a resposta como JSON. Além disso, ela pulará o
-callback que adiciona chapter1.html à página. Em vez de tudo isso, ela executará o callback do
-catch. Como resultado, se
-qualquer ação prévia falhar, "Failed to show chapter" será adicionado à página.
-
-Como o try/catch do JavaScript, o erro é capturado e o código subsequente
-continua. Portanto, o controle giratório fica sempre oculto, que é o que queremos. O
-código acima se torna uma versão assíncrona e não bloqueadora do código:
+Like JavaScript's try/catch, the error is caught and subsequent code continues, so the spinner is always hidden, which is what we want. The above becomes a non-blocking async version of:
 
     try {
       var story = getJSONSync('story.json');
@@ -625,13 +472,9 @@ código acima se torna uma versão assíncrona e não bloqueadora do código:
       addTextToPage("Failed to show chapter");
     }
     document.querySelector('.spinner').style.display = 'none'
+    
 
-
-O `catch()` pode ser necessário simplesmente para geração de registros, sem recuperação
-do erro. Para fazer isso, acione novamente o erro. Podemos fazer isso no
-nosso método `getJSON()`:
-
-
+You may want to `catch()` simply for logging purposes, without recovering from the error. To do this, just rethrow the error. We could do this in our `getJSON()` method:
 
     function getJSON(url) {
       return get(url).then(JSON.parse).catch(function(err) {
@@ -639,46 +482,39 @@ nosso método `getJSON()`:
         throw err;
       });
     }
+    
 
+So we've managed to fetch one chapter, but we want them all. Let's make that happen.
 
-Conseguimos buscar um capítulo, mas queremos todos eles. Faremos
-isso acontecer.
+## Parallelism and sequencing: getting the best of both
 
-
-## Paralelismo e sequência: como obter o melhor dos dois recursos
-
-
-Não é fácil pensar assincronamente. Se você está com dificuldades para começar,
-tente escrever o código como se fosse síncrono. Neste caso:
+Thinking async isn't easy. If you're struggling to get off the mark, try writing the code as if it were synchronous. In this case:
 
     try {
       var story = getJSONSync('story.json');
       addHtmlToPage(story.heading);
-
+    
       story.chapterUrls.forEach(function(chapterUrl) {
         var chapter = getJSONSync(chapterUrl);
         addHtmlToPage(chapter.html);
       });
-
+    
       addTextToPage("All done");
     }
     catch (err) {
       addTextToPage("Argh, broken: " + err.message);
     }
-
+    
     document.querySelector('.spinner').style.display = 'none'
+    
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/sync-example.html)
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/sync-example.html)
 
-
-Funciona (veja o
-[código](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/sync-example.html))!
-Porém, o código é síncrono e bloqueia o navegador durante os downloads. Para fazer isso
-funcionar de forma assíncrona, usamos `then()` para que tudo ocorra em sequência.
+That works (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/sync-example.html))! But it's sync and locks up the browser while things download. To make this work async we use `then()` to make things happen one after another.
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       // TODO: for each url in story.chapterUrls, fetch &amp; display
     }).then(function() {
       // And we're all done!
@@ -690,11 +526,9 @@ funcionar de forma assíncrona, usamos `then()` para que tudo ocorra em sequênc
       // Always hide the spinner
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-
-
-No entanto, podemos percorrer os URLs dos capítulos e buscá-los na ordem certa? Isso
-**não funciona**:
+But how can we loop through the chapter urls and fetch them in order? This **doesn't work**:
 
     story.chapterUrls.forEach(function(chapterUrl) {
       // Fetch chapter
@@ -703,20 +537,17 @@ No entanto, podemos percorrer os URLs dos capítulos e buscá-los na ordem certa
         addHtmlToPage(chapter.html);
       });
     })
+    
 
+`forEach` isn't async-aware, so our chapters would appear in whatever order they download, which is basically how Pulp Fiction was written. This isn't Pulp Fiction, so let's fix it.
 
+### Creating a sequence
 
-`forEach` não reconhece assincronismo. Portanto, os capítulos apareceriam na ordem de
-download, que é basicamente a forma como Pulp Fiction foi escrito. Como não
-estamos lidando com Pulp Fiction, corrigiremos esse problema.
-
-
-### Criar uma sequência
-Queremos transformar nossa matriz `chapterUrls` em uma sequência de promessas. Podemos fazer isso usando `then()`:
+We want to turn our `chapterUrls` array into a sequence of promises. We can do that using `then()`:
 
     // Start off with a promise that always resolves
     var sequence = Promise.resolve();
-
+    
     // Loop through our chapter urls
     story.chapterUrls.forEach(function(chapterUrl) {
       // Add these actions to the end of the sequence
@@ -726,26 +557,13 @@ Queremos transformar nossa matriz `chapterUrls` em uma sequência de promessas. 
         addHtmlToPage(chapter.html);
       });
     })
+    
 
+This is the first time we've seen `Promise.resolve()`, which creates a promise that resolves to whatever value you give it. If you pass it an instance of `Promise` it'll simply return it (**note:** this is a change to the spec that some implementations don't yet follow). If you pass it something promise-like (has a `then()` method), it creates a genuine `Promise` that fulfills/rejects in the same way. If you pass in any other value, e.g., `Promise.resolve('Hello')`, it creates a promise that fulfills with that value. If you call it with no value, as above, it fulfills with "undefined".
 
-Esta é a primeira vez que vemos `Promise.resolve()`. Isso cria uma
-promessa que é resolvida para qualquer valor informado. Se você passar uma
-instância de `Promise`, ela simplesmente a retornará (**Note:** essa é uma
-mudança na especificação que algumas implementações ainda não seguem). Se você
-passar algo semelhante a uma promessa (com um método `then()`), ela criará
-uma `Promise` legítima que será atendida/rejeitada da mesma forma. Se você passar
-qualquer outro valor como, por exemplo, `Promise.resolve('Hello')`, ela criará uma
-promessa que será atendida com esse valor. Se você fizer a chamada sem um valor,
-como acima, a promessa será atendida com "indefinido".
+There's also `Promise.reject(val)`, which creates a promise that rejects with the value you give it (or undefined).
 
-
-Existe também `Promise.reject(val)`, que cria uma promessa que será rejeitada com
-o valor fornecido (ou indefinido).
-
-Podemos organizar o código acima usando
-[`array.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce):
-
-
+We can tidy up the above code using [`array.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce):
 
     // Loop through our chapter urls
     story.chapterUrls.reduce(function(sequence, chapterUrl) {
@@ -756,21 +574,15 @@ Podemos organizar o código acima usando
         addHtmlToPage(chapter.html);
       });
     }, Promise.resolve())
+    
 
+This is doing the same as the previous example, but doesn't need the separate "sequence" variable. Our reduce callback is called for each item in the array. "sequence" is `Promise.resolve()` the first time around, but for the rest of the calls "sequence" is whatever we returned from the previous call. `array.reduce` is really useful for boiling an array down to a single value, which in this case is a promise.
 
-
-Esse código faz o mesmo que o exemplo anterior, mas não precisa da variável separada
-"sequence". Nosso callback reduzido é chamado para cada item na matriz.
-"sequence" é `Promise.resolve()` na primeira chamada. No entanto, para o resto de
-"sequence" de chamadas, será aquilo que retornar da chamada anterior. `array.reduce`
-é útil para resumir uma matriz a um único valor, que nesse caso
-é uma promessa.
-
-Vamos juntar tudo isso:
+Let's put it all together:
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       return story.chapterUrls.reduce(function(sequence, chapterUrl) {
         // Once the last chapter's promise is done…
         return sequence.then(function() {
@@ -791,40 +603,28 @@ Vamos juntar tudo isso:
       // Always hide the spinner
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-example.html)
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-example.html)
 
-E ficou assim (veja o
-[código](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-example.html)),
-uma versão totalmente assíncrona da opção síncrona. Ainda podemos fazer melhor. No momento,
-o download da nossa página acontece assim:
-
+And there we have it (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-example.html)), a fully async version of the sync version. But we can do better. At the moment our page is downloading like this:
 
 <figure>
   <img src="imgs/promise1.gif">
 </figure>
 
-Os navegadores são muito eficientes no download de vários itens ao mesmo tempo. Por isso, estamos perdendo
-desempenho fazendo o download de capítulos um depois do outro. Queremos fazer
-o download de todos ao mesmo tempo e processá-los depois que isso sejam concluído.
-Existe uma API para isso:
-
+Browsers are pretty good at downloading multiple things at once, so we're losing performance by downloading chapters one after the other. What we want to do is download them all at the same time, then process them when they've all arrived. Thankfully there's an API for this:
 
     Promise.all(arrayOfPromises).then(function(arrayOfResults) {
       //...
     })
+    
 
-
-
-`Promise.all` recebe uma matriz de promessas e cria uma promessa que será atendida
-quando todas as outras forem concluídas. Você recebe uma matriz de resultados (com
-os dados das promessas atendidas) na mesma ordem em que elas foram passadas.
-
-
+`Promise.all` takes an array of promises and creates a promise that fulfills when all of them successfully complete. You get an array of results (whatever the promises fulfilled to) in the same order as the promises you passed in.
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       // Take an array of promises and wait on them all
       return Promise.all(
         // Map our array of chapter urls to
@@ -844,31 +644,23 @@ os dados das promessas atendidas) na mesma ordem em que elas foram passadas.
     }).then(function() {
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-all-example.html)
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-all-example.html)
 
-Dependendo da conexão, esse processo pode ser alguns segundos mais rápido que o carregamento individual (veja o
-[código](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-all-example.html))
-, e o código pode ficar menor na nossa primeira tentativa. É possível fazer o download dos capítulos em qualquer
-ordem, mas eles são exibidos na tela na ordem correta.
-
+Depending on connection, this can be seconds faster than loading one-by-one (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-all-example.html)), and it's less code than our first try. The chapters can download in whatever order, but they appear on screen in the right order.
 
 <figure>
   <img src="imgs/promise2.gif">
 </figure>
 
-No entanto, ainda podemos melhorar o desempenho percebido. Quando o capítulo um chegar, teremos
-de adicioná-lo à página. Isso permite que o usuário comece a leitura antes da chegada dos
-demais capítulos. Quando o capítulo três chegar, não o adicionaremos à
-página porque talvez o usuário não perceba que o capítulo dois não está disponível. Quando o capítulo dois
-chegar, poderemos adicionar os capítulos dois, três e assim por diante.
+However, we can still improve perceived performance. When chapter one arrives we should add it to the page. This lets the user start reading before the rest of the chapters have arrived. When chapter three arrives, we wouldn't add it to the page because the user may not realize chapter two is missing. When chapter two arrives, we can add chapters two and three, etc etc.
 
-Para fazer isso, buscamos o JSON de todos os capítulos ao mesmo tempo e criamos uma
-sequência para adicioná-los ao documento:
+To do this, we fetch JSON for all our chapters at the same time, then create a sequence to add them to the document:
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       // Map our array of chapter urls to
       // an array of chapter json promises.
       // This makes sure they all download in parallel.
@@ -892,43 +684,25 @@ sequência para adicioná-los ao documento:
     }).then(function() {
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-best-example.html)
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-best-example.html)
 
-E este é o resultado (veja o
-[código](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-best-example.html)),
-o melhor de dois mundos! O mesmo tempo será necessário para exibir todo o conteúdo,
-mas o usuário receberá a primeira parte dele antes.
-
+And there we go (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-best-example.html)), the best of both! It takes the same amount of time to deliver all the content, but the user gets the first bit of content sooner.
 
 <figure>
   <img src="imgs/promise3.gif">
 </figure>
 
-Neste exemplo simples, todos os capítulos chegam aproximadamente no mesmo momento, mas
-o benefício de exibir um de cada vez será ainda maior para capítulos
-mais longos.
+In this trivial example, all of the chapters arrive around the same time, but the benefit of displaying one at a time will be exaggerated with more, larger chapters.
 
+Doing the above with [Node.js-style callbacks or events](https://gist.github.com/jakearchibald/0e652d95c07442f205ce) is around double the code, but more importantly isn't as easy to follow. However, this isn't the end of the story for promises, when combined with other ES6 features they get even easier.
 
-Para fazer tudo isso com [callbacks ou
-eventos no estilo do Node.js](https://gist.github.com/jakearchibald/0e652d95c07442f205ce),
-precisaríamos do dobro de código e, o mais importante, não seria tão fácil de entender. No entanto, ainda
-não chegamos ao fim do tópico sobre promessas. Quando combinadas com outros recursos do ES6,
-elas ficam ainda mais fáceis de usar.
+## Bonus round: promises and generators
 
+This next bit involves a whole bunch of new ES6 features, but it's not something you need to understand to use promises in your code today. Treat it like a movie trailer for some upcoming blockbuster features.
 
-## Rodada bônus: promessas e geradores
-
-
-A próxima parte envolve um grupo de novos recursos do ES6, mas isso não é algo
-que você precisa entender para começar a usar promessas no seu código. Encare essas informações como um
-trailer de alguns recursos fantásticos que serão lançados em breve.
-
-O ES6 também oferece
-[geradores](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Generators),
-que permitem que as funções saiam em um determinado ponto, como "return", mas depois
-reiniciem no mesmo ponto e estado, por exemplo:
-
+ES6 also gives us [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Generators), which allow functions to exit at a particular point, like "return", but later resume from the same point and state, for example:
 
     function *addGenerator() {
       var i = 0;
@@ -936,10 +710,9 @@ reiniciem no mesmo ponto e estado, por exemplo:
         i += yield i;
       }
     }
+    
 
-
-Observe o asterisco antes do nome da função. Isso faz dela um gerador. A palavra-chave “yield”
-é nosso ponto de retorno/retomada. Podemos usar o gerador da seguinte forma:
+Notice the star before the function name, this makes it a generator. The yield keyword is our return/resume point. We can use it like this:
 
     var adder = addGenerator();
     adder.next().value; // 0
@@ -947,13 +720,9 @@ Observe o asterisco antes do nome da função. Isso faz dela um gerador. A palav
     adder.next(5).value; // 10
     adder.next(5).value; // 15
     adder.next(50).value; // 65
+    
 
-
-Mas o que isso significa para as promessas? Você pode usar esse comportamento de retornar/retomar
-para escrever um código assíncrono que parece e é tão fácil de entender
-quanto o síncrono. Não se preocupe em entender todas as linhas, mas
-veja a seguir uma função auxiliar que permite o uso de `yield` para aguardar a definição de
-promessas:
+But what does this mean for promises? Well, you can use this return/resume behaviour to write async code that looks like (and is as easy to follow as) synchronous code. Don't worry too much about understanding it line-for-line, but here's a helper function that lets us use `yield` to wait for promises to settle:
 
     function spawn(generatorFunc) {
       function continuer(verb, arg) {
@@ -974,13 +743,9 @@ promessas:
       var onRejected = continuer.bind(continuer, "throw");
       return onFulfilled();
     }
+    
 
-
-Eu
-[copiei essa função do Q](https://github.com/kriskowal/q/blob/db9220d714b16b96a05e9a037fa44ce581715e41/q.js#L500),
-mas fiz algumas adaptações para as promessas do JavaScript. Com isso, podemos usar nossa
-versão final do capítulo, combiná-la com várias novas vantagens do ES6 e
-transformá-la em:
+… which I pretty much [lifted verbatim fromQ](https://github.com/kriskowal/q/blob/db9220d714b16b96a05e9a037fa44ce581715e41/q.js#L500), but adapted for JavaScript promises. With this, we can take our final best-case chapter example, mix it with a load of new ES6 goodness, and turn it into:
 
     spawn(function *() {
       try {
@@ -988,18 +753,18 @@ transformá-la em:
         // returning the result of the promise
         let story = yield getJSON('story.json');
         addHtmlToPage(story.heading);
-
+    
         // Map our array of chapter urls to
         // an array of chapter json promises.
         // This makes sure they all download in parallel.
         let chapterPromises = story.chapterUrls.map(getJSON);
-
+    
         for (let chapterPromise of chapterPromises) {
           // Wait for each chapter to be ready, then add it to the page
           let chapter = yield chapterPromise;
           addHtmlToPage(chapter.html);
         }
-
+    
         addTextToPage("All done");
       }
       catch (err) {
@@ -1008,143 +773,128 @@ transformá-la em:
       }
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-generators-example.html)
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-generators-example.html)
 
-Funciona exatamente como antes, mas é muito mais fácil de ler. Esse código já funciona hoje no
-Chrome e no Opera (veja o
-[código](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-generators-example.html))
-e também pode ser usado no Microsoft Edge, desde que você acesse `about:flags` e ative a configuração
-**Enable experimental JavaScript features**. Essa configuração será
-ativada por padrão em uma próxima versão.
+This works exactly as before but is so much easier to read. This works in Chrome and Opera today (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-generators-example.html)), and works in Microsoft Edge by going to `about:flags` and turning on the **Enable experimental JavaScript features** setting. This will be enabled by default in an upcoming version.
 
+This throws together a lot of new ES6 stuff: promises, generators, let, for-of. When we yield a promise, the spawn helper waits for the promise to resolve and returns the final value. If the promise rejects, spawn causes our yield statement to throw an exception, which we can catch with normal JavaScript try/catch. Amazingly simple async coding!
 
-Isso reúne vários recursos novos do ES6: promessas, geradores, let, for-of.
-Quando executamos yield em uma promessa, o auxiliar de criação aguarda a resolução da promessa e
-retorna o valor final. Se a promessa for rejeitada, o spawn fará com que a instrução yield
-acione uma exceção, que poderá ser capturada com o
-try/catch normal do JavaScript. É uma codificação assíncrona incrivelmente simples!
+This pattern is so useful, it's coming to ES7 in the form of [async functions](https://jakearchibald.com/2014/es7-async-functions/). It's pretty much the same as above, but no need for a `spawn` method.
 
+## Promise API reference {: #promise-api-reference }
 
-Esse padrão é tão útil que será disponibilizado no ES7 na forma de
-[funções assíncronas](https://jakearchibald.com/2014/es7-async-functions/). O recurso é
-muito parecido com o que vimos acima, mas sem a necessidade de um método `spawn`.
+All methods work in Chrome, Opera, Firefox, Microsoft Edge, and Safari unless otherwise noted. The [polyfill](https://github.com/jakearchibald/ES6-Promises#readme) provides the below for all browsers.
 
-
-## Referência da API de promessas {: #promise-api-reference }
-
-Todos os métodos funcionam nos navegadores Chrome, Opera, Firefox, Microsoft Edge e Safari,
-exceto onde indicado. O
-[Polyfill](https://github.com/jakearchibald/ES6-Promises#readme) oferece
-os recursos abaixo para todos os navegadores.
-
-
-### Métodos estáticos
+### Static Methods
 
 <table class="responsive methods">
+  
 <tr>
-<th colspan="2">Resumos dos métodos</th>
+<th colspan="2">Method summaries</th>
 </tr>
 <tr>
   <td><code>Promise.resolve(promise);</code></td>
-  <td>Retorna a promessa (somente se <code>promise.constructor == Promise</code>)</td>
+  <td>Returns promise (only if <code>promise.constructor == Promise</code>)</td>
 </tr>
 <tr>
   <td><code>Promise.resolve(thenable);</code></td>
   <td>
-    Faz uma nova promessa usando o thenable. Um thenable é parecido com uma promessa
-    na medida em que tem um método `then()`.
+    Make a new promise from the thenable. A thenable is promise-like in as
+    far as it has a `then()` method.
   </td>
 </tr>
 <tr>
   <td><code>Promise.resolve(obj);</code></td>
-  <td>Faz uma promessa que será atendida como <code>obj</code>. nessa situação.</td>
+  <td>Make a promise that fulfills to <code>obj</code>. in this situation.</td>
 </tr>
 <tr>
   <td><code>Promise.reject(obj);</code></td>
   <td>
-    Faz uma promessa que será rejeitada como <code>obj</code>. Para fins de consistência e
-    depuração (por exemplo: rastreamento de pilha), <code>obj</code> deveria ser um
+    Make a promise that rejects to <code>obj</code>. For consistency and
+    debugging (e.g. stack traces), <code>obj</code> should be an
     <code>instanceof Error</code>.
   </td>
 </tr>
 <tr>
   <td><code>Promise.all(array);</code></td>
   <td>
-    Faz uma promessa que será atendida quando todos os itens da matriz também forem e
-    rejeitada se (e quando) qualquer item for rejeitado. Cada item da matriz é passado para
-    <code>Promise.resolve</code>. Portanto, a matriz pode ser uma combinação
-    de objetos parecidos com promessa e outros itens. O valor do atendimento é
-    uma matriz, na ordem dos valores correspondentes. O valor da rejeição é
-    o valor da primeira rejeição.
+    Make a promise that fulfills when every item in the array fulfills, and
+    rejects if (and when) any item rejects. Each array item is passed to
+    <code>Promise.resolve</code>, so the array can be a mixture of
+    promise-like objects and other objects. The fulfillment value is
+    an array (in order) of fulfillment values. The rejection value is
+    the first rejection value.
   </td>
 </tr>
 <tr>
   <td><code>Promise.race(array);</code></td>
   <td>
-    Faz uma promessa que será atendida assim que qualquer item for atendido ou será rejeitada assim
-    que qualquer item for rejeitado, o que ocorrer primeiro.
+    Make a Promise that fulfills as soon as any item fulfills, or rejects as
+    soon as any item rejects, whichever happens first.
   </td>
 </tr>
 </table>
 
-Note: Não estou convencido da utilidade de `Promise.race`. Eu preferiria ter um
-oposto de `Promise.all` que somente será rejeitada se todos os itens forem rejeitados.
+Note: I'm unconvinced of `Promise.race`'s usefulness; I'd rather have an opposite of `Promise.all` that only rejects if all items reject.
 
-### Construtor
+### Constructor
 
 <table class="responsive constructors">
+  
 <tr>
-<th colspan="2">Construtor</th>
+<th colspan="2">Constructor</th>
 </tr>
 <tr>
   <td><code>new Promise(function(resolve, reject) {});</code></td>
   <td>
     <p>
       <code>resolve(thenable)</code><br>
-      Sua promessa será atendida/rejeitada com o resultado de
+      Your promise will be fulfilled/rejected with the outcome of
       <code>thenable</code>
     </p>
 
     <p>
       <code>resolve(obj)</code><br>
-      Sua promessa será atendida com <code>obj</code>
+      Your promise is fulfilled with <code>obj</code>
     </p>
 
     <p>
       <code>reject(obj)</code><br>
-      Sua promessa será rejeitada com <code>obj</code>. Para fins de consistência e
-      depuração (por exemplo, rastreamentos de pilha), o obj deve ser um <code>instanceof
-      Error</code>.  Todos os erros acionados no callback do construtor serão passados
-      implicitamente para <code>reject()</code>.
+      Your promise is rejected with <code>obj</code>. For consistency and
+      debugging (e.g., stack traces), obj should be an <code>instanceof
+      Error</code>.  Any errors thrown in the constructor callback will be
+      implicitly passed to <code>reject()</code>.
     </p>
   </td>
 </tr>
 </table>
 
-### Métodos de instância
+### Instance Methods
 
 <table class="responsive methods">
+  
 <tr>
-<th colspan="2">Métodos de instância</th>
+<th colspan="2">Instance Methods</th>
 </tr>
 <tr>
   <td><code>promise.then(onFulfilled, onRejected)</code></td>
   <td>
-    <code>onFulfilled</code> é chamado quando/se a "promessa" for resolvida.
-    <code>onRejected</code> é chamado quando/se a "promessa" for rejeitada. As duas opções são
-    opcionais. Se um deles ou ambos forem omitidos, o próximo
-    <code>onFulfilled</code>/<code>onRejected</code> da cadeia será chamado.
-    Os dois callbacks têm um parâmetro único, o valor de atendimento ou
-    motivo da rejeição. <code>then()</code> retorna uma nova promessa equivalente ao
-    valor retornado de <code>onFulfilled</code>/<code>onRejected</code>
-    após ser passado por meio de <code>Promise.resolve</code>. Se um erro for
-    acionado no callback, a promessa retornada será rejeitada com esse problema.
+    <code>onFulfilled</code> is called when/if "promise" resolves.
+    <code>onRejected</code> is called when/if "promise" rejects. Both are
+    optional, if either/both are omitted the next
+    <code>onFulfilled</code>/<code>onRejected</code> in the chain is called.
+    Both callbacks have a single parameter, the fulfillment value or
+    rejection reason. <code>then()</code> returns a new promise equivalent to
+    the value you return from <code>onFulfilled</code>/<code>onRejected</code>
+    after being passed through <code>Promise.resolve</code>. If an error is
+    thrown in the callback, the returned promise rejects with that error.
   </td>
 </tr>
 <tr>
   <td><code>promise.catch(onRejected)</code></td>
-  <td>Outra forma de <code>promise.then(undefined, onRejected)</code></td>
+  <td>Sugar for <code>promise.then(undefined, onRejected)</code></td>
 </tr>
 </table>
 
@@ -1154,10 +904,6 @@ oposto de `Promise.all` que somente será rejeitada se todos os itens forem reje
 
 <div class="clearfix"></div>
 
-Muitos agradecimentos para Anne van Kesteren, Domenic Denicola, Tom Ashworth, Remy Sharp,
-Addy Osmani, Arthur Evans e Yutaka Hirano, que revisaram este texto e fizeram
-correções e recomendações.
+Many thanks to Anne van Kesteren, Domenic Denicola, Tom Ashworth, Remy Sharp, Addy Osmani, Arthur Evans, and Yutaka Hirano who proofread this and made corrections/recommendations.
 
-Agradeço também a [Mathias Bynens](https://mathiasbynens.be/) por
-[atualizar várias partes](https://github.com/html5rocks/www.html5rocks.com/pull/921/files)
-do artigo.
+Also, thanks to [Mathias Bynens](https://mathiasbynens.be/) for [updating various parts](https://github.com/html5rocks/www.html5rocks.com/pull/921/files) of the article.

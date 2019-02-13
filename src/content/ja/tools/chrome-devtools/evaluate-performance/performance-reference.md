@@ -1,127 +1,121 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Timeline イベントモードでは、記録中に発生したイベントがすべて表示されます。この Timeline イベント リファレンスを使って、各種 Timeline イベントを確認します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The timeline events mode displays all events triggered while making a recording. Use the timeline event reference to learn more about each timeline event type.
 
-{# wf_updated_on:2015-05-11 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Timeline イベント リファレンス {: .page-title }
+# Timeline Event Reference {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %}
 
-Timeline イベントモードでは、記録中に発生したイベントがすべて表示されます。この Timeline イベント リファレンスを使って、各種 Timeline イベントを確認します。
+The timeline events mode displays all events triggered while making a recording. Use the timeline event reference to learn more about each timeline event type.
 
+## Common timeline event properties
 
-##  Timeline イベント共通のプロパティ
+Certain details are present in events of all types, while some only apply to certain event types. This section lists properties common to different event types. Properties specific to certain event types are listed in the references for those event types that follow.
 
-すべての種類のイベントに示される情報と、特定の種類のイベントのみに示される情報があります。このセクションでは、さまざまな種類のイベントに共通するプロパティを一覧します。特定の種類のイベント固有のプロパティは、各種イベントのリファレンスで別途一覧します。
+| Property                 | When is it shown                                                                                                                                                      |
+| ------------------------ |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Aggregated time          | For events with [nested events](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), the time taken by each category of events. |
+| Call Stack               | For events with [child events](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events), the time taken by each category of events.  |
+| CPU time                 | How much CPU time the recorded event took.                                                                                                                            |
+| Details                  | Other details about the event.                                                                                                                                        |
+| Duration (at time-stamp) | How long it took the event with all of its children to complete; timestamp is the time at which the event occurred, relative to when the recording started.           |
+| Self time                | How long the event took without any of its children.                                                                                                                  |
+| Used Heap Size           | Amount of memory being used by the application when the event was recorded, and the delta (+/-) change in used heap size since the last sampling.                     |
 
-| プロパティ   |      示される状況                                                       |
-|----------|:-----------------------------------------------------------------|
-|Aggregated time | [ネストされるイベント](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events)を持つイベントの場合、イベントのカテゴリ別にかかった時間。|
-| Call Stack | [子イベント](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#view-nested-events)を持つイベントの場合、イベントのカテゴリ別にかかった時間。|
-| CPU time | 記録されたイベントが使った CPU 時間。|
-| Details | イベントに関するその他の詳細。|
-| Duration（タイムスタンプ） | すべての子イベントを含めて、イベント完了までにかかった時間。タイムスタンプは、記録開始時点からの相対時間としてイベント発生時点を表した時間です。|
-| Self time    |すべての子イベントを除いて、イベント完了までにかかった時間|
-| Used Heap Size | イベント記録時にアプリケーションが使用していたメモリ量と、最後のサンプリング以降に使用されたヒープサイズの差分（+/-）。|
+## Loading events
 
-##  読み込みイベント
+This section lists events that belong to Loading category and their properties.
 
-このセクションでは、読み込みカテゴリに属するイベントとそのプロパティを一覧します。
+| Event            | Description                                                                     |
+| ---------------- |:------------------------------------------------------------------------------- |
+| Parse HTML       | Chrome executed its HTML parsing algorithm.                                     |
+| Finish Loading   | A network request completed.                                                    |
+| Receive Data     | Data for a request was received. There will be one or more Receive Data events. |
+| Receive Response | The initial HTTP response from a request.                                       |
+| Send Request     | A network request has been sent.                                                |
 
-| イベント | 説明 |
-|-------|:----------|
-|Parse HTML|Chrome が HTML 解析アルゴリズムを実行した時点で発生します。|
-|Finish Loading|ネットワーク リクエストが完了した時点で発生します。|
-|Receive Data|リクエストしたデータを受信した時点で発生します。Receive Data イベントは 1 回以上発生します。|
-|Receive Response|  リクエストから最初の HTTP レスポンスを受け取った時点で発生します。|
-|Send Request|  ネットワーク リクエストを送信した時点で発生します。|
+### Loading event properties
 
-###  読み込みイベントのプロパティ
+| Property            | Description                                                  |
+| ------------------- |:------------------------------------------------------------ |
+| Resource            | The URL of the requested resource.                           |
+| Preview             | Preview of the requested resource (images only).             |
+| Request Method      | HTTP method used for the request (GET or POST, for example). |
+| Status Code         | HTTP response code.                                          |
+| MIME Type           | MIME type of the requested resource.                         |
+| Encoded Data Length | Length of requested resource in bytes.                       |
 
-| プロパティ | 説明 |
-|-------|:----------|
-|Resource|リクエストされたリソースの URL。|
-|Preview|リクエストされたリソースのプレビュー（イメージのみ）。|
-|Request Method|リクエストに使用された HTTP メソッド（GET や POST など）。|
-|Status Code|HTTP レスポンス コード。|
-|MIME Type|リクエストされたリソースの MIME タイプ。|
-|Encoded Data Length|リクエストされたリソースのバイト長。|
+## Scripting events
 
-##  スクリプティング イベント
+This section lists events that belong to the Scripting category and their properties.
 
-このセクションでは、スクリプティング カテゴリに属するイベントとそのプロパティを一覧します。
+| Event                   | Description                                                                                                                                                                                                      |
+| ----------------------- |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Animation Frame Fired   | A scheduled animation frame fired, and its callback handler invoked.                                                                                                                                             |
+| Cancel Animation Frame  | A scheduled animation frame was canceled.                                                                                                                                                                        |
+| GC Event                | Garbage collection occurred.                                                                                                                                                                                     |
+| DOMContentLoaded        | The [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) was fired by the browser. This event is fired when all of the page’s DOM content has been loaded and parsed.        |
+| Evaluate Script         | A script was evaluated.                                                                                                                                                                                          |
+| Event                   | A JavaScript event ("mousedown", or "key", for example).                                                                                                                                                         |
+| Function Call           | A top-level JavaScript function call was made (only appears when browser enters JavaScript engine).                                                                                                              |
+| Install Timer           | A timer was created with [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval) or [setTimeout()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setTimeout). |
+| Request Animation Frame | A `requestAnimationFrame()` call scheduled a new frame                                                                                                                                                           |
+| Remove Timer            | A previously created timer was cleared.                                                                                                                                                                          |
+| Time                    | A script called [console.time()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimelabel)                                                                                                    |
+| Time End                | A script called [console.timeEnd()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel)                                                                                              |
+| Timer Fired             | A timer fired that was scheduled with `setInterval()` or `setTimeout()`.                                                                                                                                         |
+| XHR Ready State Change  | The ready state of an XMLHTTPRequest changed.                                                                                                                                                                    |
+| XHR Load                | An `XMLHTTPRequest` finished loading.                                                                                                                                                                            |
 
-| イベント | 説明 |
-|-------|:----------|
-|Animation Frame Fired|予定されているアニメーション フレームが起動され、そのコールバック ハンドラが呼び出された時点で発生します。|
-|Cancel Animation Frame|予定されているアニメーション フレームがキャンセルされた時点で発生します。|
-|GC Event|ガベージ コレクションが実行された時点で発生します。|
-|DOMContentLoaded|ブラウザによって [DOMContentLoaded](https://docs.webplatform.org/wiki/dom/events/DOMContentLoaded) が発生した時点で発生します。このイベントは、ページの DOM コンテンツがすべて読み込まれて解析された時点で発生します。|
-|Evaluate Script| スクリプトが評価された時点で発生します。|
-|Event| JavaScript イベント（mousedown、key など）によって発生します。|
-|Function Call| 最上位の JavaScript 関数呼び出しが行われた時点で発生します（ブラウザが JavaScript エンジンに処理を受け渡したときにのみ発生します）。|
-|Install Timer| [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval) または [setTimeout()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setTimeout) によってタイマーが作成された時点で発生します。|
-|Request Animation Frame| `requestAnimationFrame()` 呼び出しによって新しいフレームのスケジュールが設定された時点で発生します。|
-|Remove Timer|  以前に作成したタイマーが削除された時点で発生します。|
-|Time|  スクリプトが [console.time()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimelabel) を呼び出した時点で発生します。|
-|Time End|スクリプトが [console.timeEnd()](/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel) を呼び出した時点で発生します。|
-|Timer Fired| `setInterval()` または `setTimeout()` によって予定されていたタイマーが起動された時点で発生します。|
-|XHR Ready State Change|  XMLHTTPRequest がレディ状態に変化した時点で発生します。|
-|XHR Load|  `XMLHTTPRequest` が読み込みを完了した時点で発生します。|
+### Scripting event properties
 
-###  スクリプティング イベントのプロパティ
+| Property      | Description                                  |
+| ------------- |:-------------------------------------------- |
+| Timer ID      | The timer ID.                                |
+| Timeout       | The timeout specified by the timer.          |
+| Repeats       | Boolean that specifies if the timer repeats. |
+| Function Call | A function that was invoked.                 |
 
-| プロパティ | 説明 |
-|-------|:----------|
-|Timer ID|タイマー ID。|
-|Timeout|タイマーによって指定されたタイムアウト。|
-|Repeats|タイマーを繰り返し起動するかどうかを指定するブール値。|
-|Function Call|呼び出された関数。|
+## Rendering events
 
-##  レンダリング イベント
+This section lists events that belong to Rendering category and their properties.
 
-このセクションでは、レンダリング カテゴリに属するイベントとそのプロパティを一覧します。
+| Event             | Description                                      |
+| ----------------- |:------------------------------------------------ |
+| Invalidate layout | The page layout was invalidated by a DOM change. |
+| Layout            | A page layout was executed.                      |
+| Recalculate style | Chrome recalculated element styles.              |
+| Scroll            | The content of nested view was scrolled.         |
 
-| イベント | 説明 |
-|-------|:----------|
-|Invalidate layout| ページ レイアウトが DOM の変更によって無効化された時点で発生します。|
-|Layout|  ページ レイアウトが実行された時点で発生します。|
-|Recalculate style| Chrome によって要素のスタイルが再計算された時点で発生します。|
-|Scroll|  ネストされたビューのコンテンツがスクロールされた時点で発生します。|
+### Rendering event properties
 
-###  レンダリング イベントのプロパティ
+| Property               | Description                                                                                                                                                                                                          |
+| ---------------------- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout invalidated     | For Layout records, the stack trace of the code that caused the layout to be invalidated.                                                                                                                            |
+| Nodes that need layout | For Layout records, the number of nodes that were marked as needing layout before the relayout started. These are normally those nodes that were invalidated by developer code, plus a path upward to relayout root. |
+| Layout tree size       | For Layout records, the total number of nodes under the relayout root (the node that Chrome starts the relayout).                                                                                                    |
+| Layout scope           | Possible values are "Partial" (the re-layout boundary is a portion of the DOM) or "Whole document".                                                                                                                  |
+| Elements affected      | For Recalculate style records, the number of elements affected by a style recalculation.                                                                                                                             |
+| Styles invalidated     | For Recalculate style records, provides the stack trace of the code that caused the style invalidation.                                                                                                              |
 
-| プロパティ | 説明 |
-|-------|:----------|
-|Layout invalidated|レイアウト レコードの場合、レイアウト無効化の原因となるコードのスタックトレース。|
-|Nodes that need layout|レイアウト レコードの場合、再レイアウト前にレイアウトが必要とマークされているノードの数。通常、これらはデベロッパーのコードによって無効化されるノードと、再レイアウト ルートに向かうパスです。|
-|Layout tree size|レイアウト レコードの場合、再レイアウト ルート（Chrome によって再レイアウトが開始されるノード）の下にあるノードの総数。|
-|Layout scope|有効な値は「Partial」（再レイアウトの境界が DOM の一部）または「Whole document」です。|
-|Elements affected|再計算スタイル レコードの場合、スタイル再計算の影響を受ける要素の数。|
-|Styles invalidated|再計算スタイル レコードの場合、スタイルを無効化する原因となるコードのスタックトレース。|
+## Painting events
 
-##  ペイント イベント
+This section lists events that belong to Painting category and their properties.
 
-このセクションでは、ペイント カテゴリに属するイベントとそのプロパティを一覧します。
+| Event            | Description                                                                                                                                    |
+| ---------------- |:---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composite Layers | Chrome's rendering engine composited image layers.                                                                                             |
+| Image Decode     | An image resource was decoded.                                                                                                                 |
+| Image Resize     | An image was resized from its native dimensions.                                                                                               |
+| Paint            | Composited layers were painted to a region of the display. Hovering over a Paint record highlights the region of the display that was updated. |
 
-| イベント | 説明 |
-|-------|:----------|
-|Composite Layers|Chrome のレンダリング エンジンによってイメージ レイヤーが合成された時点で発生します。|
-|Image Decode|イメージのリソースがデコードされた時点で発生します。|
-|Image Resize|イメージのサイズが元のサイズから変更された時点で発生します。|
-|Paint|合成されたレイヤーがディスプレイの領域にペイントされた時点で発生します。Paint レコードにカーソルを合わせると、アップデートされたディスプレイ領域がハイライト表示されます。|
+### Painting event properties
 
-###  ペイント イベントのプロパティ
+| Property   | Description                                                       |
+| ---------- |:----------------------------------------------------------------- |
+| Location   | For Paint events, the x and y coordinates of the paint rectangle. |
+| Dimensions | For Paint events, the height and width of the painted region.     |
 
-| プロパティ | 説明 |
-|-------|:----------|
-|Location|ペイント イベントの場合、ペイントされる長方形の x 座標と y 座標|
-|Dimensions|ペイント イベントの場合、ペイントされる領域の高さと幅。|
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

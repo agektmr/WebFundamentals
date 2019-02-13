@@ -1,36 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: JavaScript は多くの場合、視覚変化をトリガーします。視覚変化はスタイル操作を通じて直接行われることもあれば、データの検索やソートのように、計算が最終的に視覚変化につながることもあります。タイミングの悪い JavaScript や長時間実行される JavaScript はパフォーマンス低下の原因になることが多いため、可能な限り JavaScript の影響を最小限に抑える必要があります。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: JavaScript often triggers visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that result in visual changes, like searching or sorting data. Badly-timed or long-running JavaScript is a common cause of performance issues. You should look to minimize its impact where you can.
 
-{# wf_updated_on:2015-03-20 #}
-{# wf_published_on:2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>JavaScript #}
 
-#  JavaScript 実行の最適化 {: .page-title }
+# Optimize JavaScript Execution {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-JavaScript は多くの場合、視覚変化をトリガーします。視覚変化はスタイル操作を通じて直接行われることもあれば、データの検索やソートのように、計算が最終的に視覚変化につながることもあります。
-タイミングの悪い JavaScript や長時間実行される JavaScript はパフォーマンス低下の原因になることが多いため、可能な限り JavaScript の影響を最小限に抑える必要があります。
+JavaScript often triggers visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that result in visual changes, like searching or sorting data. Badly-timed or long-running JavaScript is a common cause of performance issues. You should look to minimize its impact where you can.
 
+JavaScript performance profiling can be something of an art, because the JavaScript you write is nothing like the code that is actually executed. Modern browsers use JIT compilers and all manner of optimizations and tricks to try and give you the fastest possible execution, and this substantially changes the dynamics of the code.
 
+Note: If you really want to see JIT in action you should check out
+<a href='http://mrale.ph/irhydra/2/'>IRHydra<sup>2</sup> by Vyacheslav Egorov</a>. It shows the intermediate state of JavaScript code when Chrome’s JavaScript engine, V8, is optimizing it.
 
-ユーザーが書く JavaScript は実際に実行されるコードとは異なるため、JavaScript パフォーマンス プロファイリングはちょっとした便利な技術と言えます。最近のブラウザは JIT コンパイラおよび多様な最適化とトリックを使用して、可能な限り高速の実行を実現しようとします。これによって、コードの動態が大きく変わります。
-
-注: JIT の動作を確認したい場合は、<a href='http://mrale.ph/irhydra/2/'>IRHydra<sup>2</sup> by Vyacheslav Egorov</a> を参照してください。Chrome の JavaScript エンジン V8 による最適化のときの、JavaScript コードの中間状態が示されています。
-
-ただし、そうは言っても、アプリで JavaScript を的確に実行するための工夫がいくつかあります。
+With all that said, however, there are some things you can definitely do to help your apps execute JavaScript well.
 
 ### TL;DR {: .hide-from-toc }
 
-* 視覚的な更新のために setTimeout または setInterval を使用するのを避けて、常に requestAnimationFrame を使用するようにします。
-* 長時間実行される JavaScript をメインスレッドから Web Worker に移動します。
-* マイクロタスクを使用して、複数のフレームにわたって DOM 変更を行います。
-* Chrome DevTools の Timeline と JavaScript プロファイラを使用して、JavaScript の影響を評価します。
+* Avoid setTimeout or setInterval for visual updates; always use requestAnimationFrame instead.
+* Move long-running JavaScript off the main thread to Web Workers.
+* Use micro-tasks to make DOM changes over several frames.
+* Use Chrome DevTools’ Timeline and JavaScript Profiler to assess the impact of JavaScript.
 
-## 視覚変化に対する `requestAnimationFrame` の使用
+## Use `requestAnimationFrame` for visual changes
 
-画面上で視覚変化が発生しているとき、ブラウザにとって的確なタイミングで（つまり、フレームの開始時に）処理を実行する必要があります。フレームの開始時に JavaScript が実行されることを保証する唯一の方法は、`requestAnimationFrame` を使用することです。
-
+When visual changes are happening on screen you want to do your work at the right time for the browser, which is right at the start of the frame. The only way to guarantee that your JavaScript will run at the start of a frame is to use `requestAnimationFrame`.
 
     /**
      * If run as a requestAnimationFrame callback, this
@@ -39,90 +33,85 @@ JavaScript は多くの場合、視覚変化をトリガーします。視覚変
     function updateScreen(time) {
       // Make visual updates here.
     }
-
+    
     requestAnimationFrame(updateScreen);
+    
 
+Frameworks or samples may use `setTimeout` or `setInterval` to do visual changes like animations, but the problem with this is that the callback will run at *some point* in the frame, possibly right at the end, and that can often have the effect of causing us to miss a frame, resulting in jank.
 
-フレームワークまたはサンプルでは、アニメーションのような視覚変化を実現するために `setTimeout` または `setInterval` を使用する場合がありますが、これの問題はコールバックがフレームの任意の位置で（おそらくフレームの最後で）実行されることです。そのため、1 つのフレームが見落とされ、ジャンクを発生させることが頻繁にあります。
+<img src="images/optimize-javascript-execution/settimeout.jpg" alt="setTimeout causing the browser to miss a frame." />
 
-<img src="images/optimize-javascript-execution/settimeout.jpg" alt="ブラウザでフレームの見落としを発生させる setTimeout">
+In fact, jQuery used to use `setTimeout` for its `animate` behavior. It was changed to use `requestAnimationFrame` in version 3. If you are using older version of jQuery, you can [patch it to use `requestAnimationFrame`](https://github.com/gnarf/jquery-requestAnimationFrame), which is strongly advised.
 
-実際、jQuery のデフォルト `animate` 動作では `setTimeout` が使用されます。[`requestAnimationFrame`](https://github.com/gnarf/jquery-requestAnimationFrame) を使用するように、この動作を修正できます（この修正を強く推奨します）。
+## Reduce complexity or use Web Workers
 
-## 複雑性の軽減または Web Worker の使用
+JavaScript runs on the browser’s main thread, right alongside style calculations, layout, and, in many cases, paint. If your JavaScript runs for a long time, it will block these other tasks, potentially causing frames to be missed.
 
-JavaScript は、スタイル計算、レイアウト、そして多くの場合はペイントとともに、ブラウザのメインスレッドで実行されます。JavaScript が長時間実行される場合は、これらの他のタスクがブロックされ、フレームが見落とされることになる可能性があります。
+You should be tactical about when JavaScript runs, and for how long. For example, if you’re in an animation like scrolling, you should ideally be looking to keep your JavaScript to something in the region of **3-4ms**. Any longer than that and you risk taking up too much time. If you’re in an idle period, you can afford to be more relaxed about the time taken.
 
-JavaScript を実行するタイミングと実行時間は十分に考慮する必要があります。たとえば、スクロール操作のようなアニメーションでは、JavaScript の実行時間を **3～4 ミリ秒**に抑えることが理想的です。そうしないと、実行時間が長くなりすぎる危険があります。アイドル期間であれば、実行時間をあまり気にする必要はありません。
-
-多くの場合、たとえば、DOM アクセスが必要でない場合は、純粋な計算処理を [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/basic_usage) に移動することができます。ロード処理やモデル生成と同様に、検索やソートなどのデータ操作またはトラバーサルは、通常、この手法に適しています。
-
+In many cases you can move pure computational work to [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/basic_usage), if, for example, it doesn’t require DOM access. Data manipulation or traversal, like sorting or searching, are often good fits for this model, as are loading and model generation.
 
     var dataSortWorker = new Worker("sort-worker.js");
     dataSortWorker.postMesssage(dataToSort);
-
+    
     // The main thread is now free to continue working on other things...
-
+    
     dataSortWorker.addEventListener('message', function(evt) {
        var sortedData = evt.data;
        // Update data on screen...
     });
+    
 
-
-
-すべての処理がこの手法に適しているとは限りません。Web Worker は DOM アクセスを行いません。メインスレッドで処理を実行する必要がある場合は、バッチ手法を検討してください。この手法では、大きいタスクを複数のマイクロタスクに分割します。各マイクロタスクの実行時間は数ミリ秒以内であり、各フレームにわたり `requestAnimationFrame` ハンドラの内部で実行されます。
-
+Not all work can fit this model: Web Workers do not have DOM access. Where your work must be on the main thread, consider a batching approach, where you segment the larger task into micro-tasks, each taking no longer than a few milliseconds, and run inside of `requestAnimationFrame` handlers across each frame.
 
     var taskList = breakBigTaskIntoMicroTasks(monsterTaskList);
     requestAnimationFrame(processTaskList);
-
+    
     function processTaskList(taskStartTime) {
       var taskFinishTime;
-
+    
       do {
         // Assume the next task is pushed onto a stack.
         var nextTask = taskList.pop();
-
+    
         // Process nextTask.
         processTask(nextTask);
-
+    
         // Go again if there’s enough time to do the next task.
         taskFinishTime = window.performance.now();
       } while (taskFinishTime - taskStartTime < 3);
-
+    
       if (taskList.length > 0)
         requestAnimationFrame(processTaskList);
-
+    
     }
+    
 
+There are UX and UI consequences to this approach, and you will need to ensure that the user knows that a task is being processed, either by [using a progress or activity indicator](https://www.google.com/design/spec/components/progress-activity.html). In any case this approach will keep your app's main thread free, helping it to stay responsive to user interactions.
 
-この手法により UX と UI に影響があります。[進捗インジケータまたはアクティビティ インジケータ](https://www.google.com/design/spec/components/progress-activity.html) を使用して、タスクが処理されていることをユーザーに知らせる必要があります。どのような場合も、この手法ではアプリのメインスレッドが空けられるため、ユーザーの操作に迅速に応答することができます。
+## Know your JavaScript’s “frame tax”
 
-## JavaScript の「フレームコスト」の認識
+When assessing a framework, library, or your own code, it’s important to assess how much it costs to run the JavaScript code on a frame-by-frame basis. This is especially important when doing performance-critical animation work like transitioning or scrolling.
 
-フレームワーク、ライブラリ、または独自のコードを評価するときは、JavaScript コードをフレーム単位で実行するコストを評価することが重要です。遷移やスクロールのようなパフォーマンス重視型アニメーション処理を実行するとき、これは特に重要です。
+The Performance panel of Chrome DevTools is the best way to measure your JavaScript's cost. Typically you get low-level records like this:
 
-JavaScript のコストとパフォーマンス プロファイルを計測する最適な方法は、Chrome DevTools を使用することです。通常、次のような概略情報のみが表示されます。
+<img src="images/optimize-javascript-execution/low-js-detail.png"
+     alt="A performance recording in Chrome DevTools" />
 
-<img src="images/optimize-javascript-execution/low-js-detail.jpg" alt="JavaScript 実行の概略情報を示す Chrome DevTools の Timeline">
+The **Main** section provides a flame chart of JavaScript calls so you can analyze exactly which functions were called and how long each took.
 
-長時間実行されている JavaScript を見つけた場合は、DevTools のユーザー インターフェースの最上部で JavaScript プロファイラを有効化することができます。
+Armed with this information you can assess the performance impact of the JavaScript on your application, and begin to find and fix any hotspots where functions are taking too long to execute. As mentioned earlier you should seek to either remove long-running JavaScript, or, if that’s not possible, move it to a Web Worker freeing up the main thread to continue on with other tasks.
 
-<img src="images/optimize-javascript-execution/js-profiler-toggle.jpg" alt="DevTools での JavaScript プロファイラの有効化">
+See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/) to learn how to use the Performance panel.
 
-この方法で JavaScript をプロファイリングするには負荷がかかるため、JavaScript の実行時特性を詳細に分析する場合に限り、プロファイラを有効化してください。チェックボックスをオンにしても、同じ機能を実行でき、JavaScript で呼び出された関数に関する極めて詳細な情報を参照できます。
+## Avoid micro-optimizing your JavaScript
 
-<img src="images/optimize-javascript-execution/high-js-detail.jpg" alt="JavaScript 実行の詳細情報を示す Chrome DevTools の Timeline">
+It may be cool to know that the browser can execute one version of a thing 100 times faster than another thing, like that requesting an element’s `offsetTop` is faster than computing `getBoundingClientRect()`, but it’s almost always true that you’ll only be calling functions like these a small number of times per frame, so it’s normally wasted effort to focus on this aspect of JavaScript’s performance. You'll typically only save fractions of milliseconds.
 
-この情報を活用して、アプリケーションに対する JavaScript のパフォーマンス影響を評価し、関数の実行に時間がかかりすぎているホットスポットの検出と修正を開始することができます。前述のとおり、長時間実行される JavaScript は削除するか、それが不可能な場合は、他のタスクを続行するために JavaScript を Web Worker に移動してメインスレッドを解放する必要があります。
+If you’re making a game, or a computationally expensive application, then you’re likely an exception to this guidance, as you’ll be typically fitting a lot of computation into a single frame, and in that case everything helps.
 
-## JavaScript の細かい最適化の回避
+In short, you should be very wary of micro-optimizations because they won’t typically map to the kind of application you’re building.
 
-ブラウザが特定の処理を他の処理よりも 100 倍速く実行できることは注目に値します。同様に、要素の `offsetTop` の要求は `getBoundingClientRect()` の計算よりも高速です。ただし、通常、これらの関数は 1 フレームあたり数回しか呼び出されないため、JavaScript のパフォーマンスのこの側面に注力することは一般的に無駄な努力になります。通常、短縮できる時間はわずかミリ秒未満です。
+## Feedback {: #feedback }
 
-ゲームや計算負荷の高いアプリケーションを開発している場合は、通常、大量の計算を単一のフレームに埋め込みます。その場合はあらゆることが役立つため、このアドバイスは当てはまりません。
-
-簡単に言えば、通常、細かい最適化は作成中のアプリケーションに適しないため、細かい最適化には非常に慎重になる必要があります。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

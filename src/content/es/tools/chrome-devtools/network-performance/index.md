@@ -1,10 +1,6 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Comienza a analizar el rendimiento de red.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Get started analyzing network performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-01-17 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-17 #} {# wf_blink_components: Platform>DevTools #} 
 
 <style>
 .devtools-inline {
@@ -16,239 +12,149 @@ figcaption {
 }
 </style>
 
-# Primeros pasos con el análisis del rendimiento de red en Chrome DevTools {: .page-title }
+ 
+
+# Get Started with Analyzing Network Performance in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Note: En [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started) (Optimización de la velocidad de sitios web) puedes
-encontrar un enfoque detallado para mejorar la velocidad de carga. Ese instructivo incluye el flujo de trabajo recomendado
-para analizar el rendimiento de carga.
+Note: See [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started) for a comprehensive approach to improving load speed. That tutorial contains the recommended workflow for analyzing load performance.
 
-Usa este instructivo interactivo y detallado para aprender a usar el panel Network de Chrome DevTools a fin de comprender por qué una página
-carga con lentitud.
+Learn how to use the Chrome DevTools Network panel to understand why a page loads slowly in this step-by-step, interactive tutorial.
 
-## Paso 1: Configura DevTools {: #set-up }
+## Step 1: Set up DevTools {: #set-up }
 
-Supongamos que recibes informes de usuarios móviles que te advierten que una página específica
-de tu sitio es lenta. Tu trabajo es lograr que la página sea rápida.
+Suppose that you're receiving reports from mobile users that a particular page on your site is slow. Your job is to make the page fast.
 
-1. Haz clic en **Open Slow Page**. La página se abre en una pestaña nueva.
+1. Click **Open Slow Page**. The page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Slow Page Opened"> <button>Open Slow Page</button> </a>
 
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Slow Page Opened">
-       <button>Open Slow Page</button>
-     </a>
+2. While the page is in focus, press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux) to open DevTools on the page.
 
-1. Con la página en foco, presiona
-   <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) o
-   <kbd>Ctrl</kbd>+<kbd>Mayús</kbd>+<kbd>I</kbd> (Windows o Linux) para
-   abrir DevTools en la página.
+3. In DevTools, click the **Network** tab.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, opened on the slow
+          page that you're going to diagnose.](imgs/get-started-network-panel.png) <figcaption> **Figure 1**. The Chrome DevTools Network panel, opened next to the slow page that you're going to diagnose. </figcaption> </figure> 
+    <aside class="note"> 
+    
+    **Note:** For the rest of the screenshots, DevTools is <a
+   href="/web/tools/chrome-devtools/ui#placement" target="_blank"> undocked to a separate window</a>, so that you can see its contents better. </aside>
+4. Enable **Capture Screenshots** ![Capture
+Screenshots](imgs/capture-screenshots.png){:.devtools-inline}, which turns blue when enabled. DevTools captures screenshots during the page load.
 
-1. En DevTools, haz clic en la pestaña **Network**.
+## Step 2: Emulate a mobile user's experience {: #emulate }
 
-     <figure>
-       <img src="imgs/get-started-network-panel.png"
-         alt="Panel Network de Chrome DevTools abierto en la página
-              lenta que deseas diagnosticar.">
-       <figcaption>
-         <b>Figura 1</b>. Panel Network de Chrome DevTools abierto junto a
-         la página lenta que deseas diagnosticar.
-       </figcaption>
-     </figure>
+Testing network performance on a laptop or desktop can be deceiving. Your internet connection is much faster than a mobile user's, and your browser caches resources from previous visits.
 
-     <aside class="note">
-       <b>Note:</b> Para el resto de las capturas de pantalla, DevTools está <a
-       href="/web/tools/chrome-devtools/ui#placement" target="_blank">
-       en una ventana separada</a> para que puedas visualizar mejor
-       el contenido.
-     </aside>
+1. Check the **Disable Cache** checkbox. When this checkbox is enabled, DevTools doesn't serve any resources from the cache. This more accurately emulates what first-time users experience when they view your page.
 
-1. Habilita **Capture Screenshots** ![Capture
-   Screenshots][screenshots]{:.devtools-inline}, que se pone de color azul cuando se habilita.
-   DevTools hace capturas de pantalla durante la carga de la página.
-
-## Paso 2: Emula la experiencia de un usuario móvil {: #emulate }
-
-Las pruebas de rendimiento de red que se hacen en una laptop o un equipo de escritorio pueden ser engañosas. Tu
-conexión a Internet es mucho más rápida que la de un usuario de dispositivo móvil, y tu navegador
-almacena en caché recursos de visitas anteriores.
-
-1. Marca la casilla de verificación **Disable Cache**. Cuando esta
-   casilla de verificación está habilitada, DevTools no entrega ningún recurso desde la caché.
-   Esto emula mejor la experiencia inicial de los usuarios cuando
-   visualizan tu página.
-
-1. En el menú desplegable que actualmente dice **No Throttling**, selecciona
-   **Regular 2G**. DevTools aplica un límite a la conexión de red para simular una
-   experiencia 2G normal. Así es como los usuarios móviles experimentan tu sitio
-   cuando no tienen una buena conexión.
+2. From the dropdown menu that currently says **No Throttling**, select **Regular 2G**. DevTools throttles the network connection to simulate a regular 2G experience. This is how mobile users experience your site in places with poor connections.
 
 <figure>
   <img src="imgs/get-started-setup.svg"
-    alt="Panel Network de Chrome DevTools después de configurar las capturas de pantalla,
-         deshabilitar la caché y aplicar un límite a la conexión de red.">
+    alt="The Chrome DevTools Network panel, after setting up screenshots,
+         cache disabling, and throttling.">
   <figcaption>
-    <b>Figura 2</b>. Panel Network de Chrome DevTools configurado para emular
-    la experiencia de un usuario móvil. Las capturas de pantalla, la caché
-    deshabilitada y la limitación de la conexión de red están marcadas en azul, de izquierda a derecha,
-    en ese orden.
+    <b>Figure 2</b>. The Chrome DevTools Network panel, set up to emulate
+    a mobile user's experience. Screenshots, cache
+    disabling, and throttling are outlined in blue, from left to right,
+    respectively.
   </figcaption>
 </figure>
 
-Esta configuración simula el peor de los casos. Si logras que la página
-cargue con rapidez con esta configuración, será rápida para todos los usuarios.
+This is a worst-case setup. If you can get your page loading fast on this setup, it'll be fast for all your users!
 
-[screenshots]: imgs/capture-screenshots.png
+## Step 3: Analyze requests {: #analyze }
 
-## Paso 3: Analiza las solicitudes {: #analyze }
+Figure out what's making the page slow by reloading the page and analyzing the requests that come in.
 
-Para averiguar el motivo por el que la página es lenta, recárgala y analiza
-las solicitudes que llegan.
+### Part A: Find render-blocking scripts
 
-### Parte A: Busca secuencias de comandos que bloqueen la representación
+When the browser encounters a `<script>` tag, it must pause rendering and execute the script immediately. Find scripts that aren't needed for page load and mark them asynchronous or defer their execution to speed up load time.
 
-Cuando el navegador encuentra una etiqueta `<script>`, debe pausar la representación y
-ejecutar la secuencia de comandos de inmediato. Busca secuencias de comandos que no sean necesarias para que cargue la página
-y márcalas como asíncronas o difiere su ejecución para acelerar el tiempo de carga.
+1. Press <kbd>Command</kbd>+<kbd>R</kbd> (Mac) or <kbd>Control</kbd>+<kbd>R</kbd> (Windows, Linux) to reload the page. On a good Wi-Fi connection, the page takes more than 10 seconds to load completely.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, after reloading the page.](imgs/get-started-post-load.png) <figcaption> **Figure 3**. The Chrome DevTools Network panel, after reloading the page. </figcaption> </figure>
+2. Note the value for [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) in the [Summary pane](reference#summary), on the bottom of the Network panel. You should see a value of at least 4 seconds. When you see this event firing late like this, be on the lookout for scripts that are delaying the main document's load and parse.
 
-1. Presiona <kbd>Command</kbd>+<kbd>R</kbd> (Mac) o
-   <kbd>Ctrl</kbd>+<kbd>R</kbd> (Windows, Linux) para volver a cargar la página.
-   Con una buena conexión inalámbrica, la página tarda más de 10 segundos para
-   cargar por completo.
+3. Click **main.js** to investigate that request further. DevTools shows a set of new tabs that provide more information about this request.
 
-     <figure>
-       <img src="imgs/get-started-post-load.png"
-         alt="Panel Network de Chrome DevTools después de volver a cargar la página.">
-       <figcaption>
-         <b>Figura 3</b>. Panel Network de Chrome DevTools después de volver a cargar
-         la página.
-       </figcaption>
-     </figure>
+4. Click the **Preview** tab to view the request's source code. You can see that the script just hangs for 4000ms. By marking this script with the `async` attribute and moving it to the bottom of the document's `<body>`, the page can load without waiting for the script.
+    
+    <figure> 
+    
+    ![Viewing the source code for main.js in the Preview pane.](imgs/get-started-preview.png) <figcaption> **Figure 4**. Viewing the source code for `main.js` in the Preview pane. </figcaption> </figure>
 
-1. Toma nota del valor de [`DOMContentLoaded`][DOMContentLoaded] en el
-   [panel Summary](reference#summary), en la parte inferior del panel Network.
-   Deberías ver un valor de al menos 4 segundos. Si ves que este evento
-   se activa tarde como en este caso, busca secuencias de comandos que estén retrasando
-   la carga y el análisis del documento principal.
+See [Parser-blocking versus asynchronous JavaScript](/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript) to learn more about render-blocking scripts.
 
-1. Haz clic en **main.js** para investigar la solicitud en más detalle. DevTools muestra un
-   juego de pestañas nuevas que proporcionan más información acerca de esta solicitud.
+### Part B: Find large requests
 
-1. Haz clic en la pestaña **Preview** para ver el código fuente de la solicitud. Puedes
-   ver que la secuencia de comandos se detiene durante 4,000 ms.
-   Al marcar esta secuencia de comandos con el atributo `async` y moverla
-   al final del `<body>` del documento, la página
-   puede cargarse sin tener que esperar a la secuencia de comandos.
+When the page loaded, did you notice that the DevTools logo took a long time to load? It's not blocking the load, but it's making the page *appear* slow. Users like it when pages *appear* fast.
 
-     <figure>
-       <img src="imgs/get-started-preview.png"
-         alt="Visualización del código fuente de main.js en el panel Preview.">
-       <figcaption>
-         <b>Figura 4</b>. Visualización del código fuente de <code>main.js</code> en
-         el panel Preview.
-       </figcaption>
-     </figure>
+1. Click **Close** ![Close](imgs/close.png){:.devtools-inline} so that you can see the [**Requests pane**](reference#requests) again.
 
-Consulta [Bloquear el analizador en comparación con JavaScript asincrónico][async] para obtener más información
-acerca de secuencias de comandos que bloquean la representación.
+2. Double-click on the top-left screenshot.
 
-### Parte B: Busca solicitudes grandes
+3. Press your right-arrow key to scan through the set of screenshots. The time below the screenshot indicates when the screenshot was taken. The screenshot takes multiple seconds to load. That means it's probably too large of a file.
 
-Cuando la página se cargó, ¿notaste que el logotipo de DevTools tardó
-mucho en cargar? No bloquea la carga, pero hace que la página *parezca*
-lenta. A los usuarios les gusta que las páginas *parezcan* rápidas.
+4. Click anywhere outside of the screenshot to minimize it.
 
-1. Haz clic en **Close** ![Close][close]{:.devtools-inline} para volver a ver
-   el [**panel Requests**](reference#requests).
+5. Hover over the [Waterfall](reference#waterfall) for the `logo-1024px.png` request. The request spends most of its time downloading the image. This confirms that the image is too large.
+    
+    <figure> 
+    
+    ![The waterfall for logo-1024px.png.](imgs/get-started-waterfall.png) <figcaption> **Figure 5**. The waterfall for `logo-1024px.png`. </figcaption> </figure>
 
-1. Haz doble clic en la captura de pantalla de la parte superior izquierda.
+## Step 4: Verify fixes on updated page {: #verify }
 
-1. Presiona la tecla de la flecha hacia la derecha para ver todas las capturas de pantalla, una a la vez. El
-   tiempo debajo de la captura de pantalla indica cuándo se generó. La
-   captura de pantalla tarda varios segundos en cargar. Eso significa que probablemente
-   sea un archivo demasiado grande.
+You're just about done. Suppose now that you've already made two changes to the page:
 
-1. Haz clic en cualquier lugar fuera de la captura de pantalla para minimizarla.
+* You moved the script to the bottom of the `<body>` and marked it `async` to prevent it from blocking the page load.
+* You converted the logo to SVG to reduce its size.
 
-1. Coloca el cursor sobre la [cascada](reference#waterfall) de la
-   solicitud de `logo-1024px.png`. La solicitud pasa la mayor parte de su tiempo
-   descargando la imagen. Esto confirma que la imagen es demasiado grande.
+All that's left to do is to test out the updated page to verify that your fixes do indeed make the page load faster.
 
-     <figure>
-       <img src="imgs/get-started-waterfall.png"
-         alt="Cascada de logo-1024px.png.">
-       <figcaption>
-         <b>Figura 5</b>. Cascada de <code>logo-1024px.png</code>.
-       </figcaption>
-     </figure>
+1. Click **Open Fast Page**. The fixed page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Fast Page Opened"> <button>Open Fast Page</button> </a>
 
-[DOMContentLoaded]: https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
+2. Set up DevTools the same as before. Screenshots and cache disabling should be on, and network throttling should be set to **Regular 2G**.
 
-[async]: /web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript
-
-[close]: imgs/close.png
-
-## Paso 4: Verifica las correcciones en la página actualizada. {: #verify }
-
-Ya casi terminas. Supongamos ahora que ya hiciste dos cambios en
-la página:
-
-* Moviste la secuencia de comandos al final del `<body>` y la marcaste como `async`
-  para impedir que bloquee la carga de la página.
-* Convertiste el logotipo a SVG para reducir su tamaño.
-
-Todo lo que queda por hacer es probar la página actualizada para verificar que las
-correcciones realmente hagan que la página se cargue más rápido.
-
-1. Haz clic en **Open Fast Page**. La página corregida se abre en una pestaña nueva.
-
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Fast Page Opened">
-       <button>Open Fast Page</button>
-     </a>
-
-1. Configura DevTools como antes. La deshabilitación de las capturas de pantalla y la caché deben
-   estar activadas, y la limitación de la red debe estar configurada con el valor **Regular 2G**.
-1. Vuelve a cargar la página. La página carga mucho más rápido.
-
-     <figure>
-       <img src="imgs/get-started-post-fix.png"
-         alt="Registro de la carga de la página después de aplicar las correcciones.">
-       <figcaption>
-         <b>Figura 6</b>. Registro de la carga de la página después de aplicar las
-         correcciones. La página tardaba unos 10 segundos en aparecer completa
-         visualmente. Ahora solo tarda 1 segundo.
-       </figcaption>
-     </figure>
+3. Reload the page. The page loads much faster.
+    
+    <figure> 
+    
+    ![A recording of the page's load, after applying the fixes.](imgs/get-started-post-fix.png) <figcaption> **Figure 6**. A recording of the page's load, after applying the fixes. The page used to take about 10 seconds to appear visually complete. Now it only takes about 1 second. </figcaption> </figure>
 
 <aside class="note">
-  <b>Nota</b>: Si bien la página carga mucho más rápido, sigue siendo inutilizable durante
-  unos 5 segundos. Esto es porque sigue ejecutando la secuencia de comandos que bloquea
-  el subproceso principal de la página.
+  <b>Note</b>: Although the page loads much faster, it's still unusable for
+  about 5 seconds. This is because it still runs the script that hangs
+  the main thread of the page.
 </aside>
 
-## Próximos pasos {: #next-steps }
+## Next Steps {: #next-steps }
 
-Buen trabajo. Ya eres todo un experto en el panel Network
-de Chrome DevTools. Bueno, tal vez no un experto. Pero tienes una base excelente
-de habilidades y conocimiento.
+Good job. You are now a bona fide expert in the Chrome DevTools Network panel. Well... maybe not an expert. You do have an excellent foundation of skills and knowledge, though.
 
-* Consulta <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / CRP"
-  href="/web/fundamentals/performance/critical-rendering-path">Ruta de acceso
-   de representación crítica</a> para obtener más información acerca de la teoría de carga de páginas
-  ultrarrápida.
-* Consulta <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Issues Guide" href="issues">Network
-  Issues Guide</a> (Guía de problemas de red) para aprender a identificar más problemas de red.
-* Consulta <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Reference" href="reference">Network
-  Panel Reference</a> (Referencia del panel Network) si deseas ver una lista completa de las funciones del panel Network.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / CRP"
+href="/web/fundamentals/performance/critical-rendering-path">Critical Rendering Path</a> to learn more about the theory of lightning-fast page loading.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Issues Guide" href="issues">Network Issues Guide</a> to learn how to spot more network issues.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Reference" href="reference">Network Panel Reference</a> for a comprehensive list of Network panel features.
 
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

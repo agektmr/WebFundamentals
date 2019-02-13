@@ -1,56 +1,49 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:利用 Chrome DevTools，您可以輕鬆地查看整個應用中的多個變量。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Chrome DevTools allows you to easily see multiple variables throughout your application.
 
-{# wf_published_on:2016-02-11 #}
-{# wf_updated_on:2016-02-11 #}
+{# wf_published_on: 2016-02-11 #} {# wf_updated_on: 2018-07-27 #} {# wf_blink_components: Platform>DevTools #}
 
-# 在 Sources 中觀察變量 {: .page-title }
+# Watch variables in Sources {: .page-title }
 
 {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-利用 Chrome DevTools，您可以輕鬆地查看整個應用中的多個變量。在 Sources 中觀察變量讓您可以不必使用控制檯，並將精力放在改進代碼上。
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See following section for up-to-date
+  information: <a href="reference#watch">Watch the values of custom JavaScript
+  expressions</a>
+</aside>
 
+Chrome DevTools allows you to easily see multiple variables throughout your application. Watching variables within Sources keeps you out of the console and focused on improving your code.
 
-Sources 面板讓您可以觀察應用中的變量。此功能位於調試程序邊欄的 Watch 部分。利用此功能，您無需將對象重複記錄到控制檯中。
+The Sources panel provides the ability to watch variables within your application. This is located in the watch section of the debugger sidebar. By taking advantage of this functionality you will not need repeatedly log objects to the console.
 
+![Watch section of debugger](imgs/sources-watch-variables-location.png)
 
+## Adding variables
 
-![調試程序的 Watch 部分](imgs/sources-watch-variables-location.png)
+To add a variable to the watch list use the add icon to the right of the section heading. This will open an inline input where you provide the variable name to watch. Once it is filled in press your <kbd>Enter</kbd> key to add it to the list.
 
-## 添加變量
+![Add to watch list button](imgs/add-variable-to-watch.png)
 
-要將變量添加至觀察列表，請使用此部分標題右側的 Add 圖標。這將打開內嵌輸入窗口，您在這裏提供要觀察的變量名稱。填好後，按 <kbd>Enter</kbd> 鍵將其添加到列表中。
+The watcher will show you the current value of the variable as it is added. If the variable is not set or can't be found it will show <samp>&lt;Not Available&gt;</samp> for the value.
 
+![Undefined variable in the watch list](imgs/undefined-variable-in-watch.png)
 
+## Updating variables
 
-![添加到觀察列表按鈕](imgs/add-variable-to-watch.png)
+Variable values may change as an application continues to operate. The watch list is not a live view of the variables unless you are stepping through execution. When you are stepping through execution using <breakpoints>, the watched values will update automatically. To manually recheck the variables in the list press the refresh button to the right of the section heading.
 
-觀察窗口將顯示變量在添加時的當前值。如果變量未設置或無法找到，值將顯示爲 <samp>&lt;Not Available&gt;</samp>。
+![Refresh watch variables button](imgs/refresh-variables-being-watched.png)
 
+As the refresh is requested the current application state is rechecked. Every watched item will be updated with the current values.
 
-![觀察列表中的未定義變量](imgs/undefined-variable-in-watch.png)
+![Updated variable being watched](imgs/updated-variable-being-watched.png)
 
-## 更新變量
+## Removing variables
 
-應用繼續操作時，變量值會更改。觀察列表不是變量的實時視圖，除非您正在單步執行。當您使用[斷點](add-breakpoints)單步執行時，觀察值會自動更新。要手動重新檢查列表中的值，請按這一部分標題右側的 Refresh 按鈕。
+To keep what you are looking at minimal for faster work you may need to remove variables from the watch list. This can be done by hovering the variable and then clicking the removal icon that appears to the right.
 
+![Hover variable to remove from watch list](imgs/hover-to-delete-watched-variable.png)
 
+## Feedback {: #feedback }
 
-
-![刷新觀察變量按鈕](imgs/refresh-variables-being-watched.png)
-
-請求刷新時，將重新檢查當前應用狀態。每個觀察項目都會更新爲當前值。
-
-
-![所觀察的已更新變量](imgs/updated-variable-being-watched.png)
-
-## 移除變量
-
-爲了確保您觀察的內容儘可能少以加快工作速度，您需要從觀察列表中移除變量。可以將鼠標懸停在變量上，然後點擊右側的移除圖標。
-
-
-![將鼠標懸停在變量上以從觀察列表中移除](imgs/hover-to-delete-watched-variable.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,407 +1,178 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 이미지 형식!
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Image formats!
 
-{# wf_updated_on: 2019-02-06#}
-{# wf_published_on: 2017-11-16 #}
-{# wf_blink_components: Blink>Image,Internals>Images,Internals>Images>Codecs #}
+{# wf_updated_on: 2018-03-02#} {# wf_published_on: 2017-11-16 #} {# wf_blink_components: Blink>Image,Internals>Images,Internals>Images>Codecs #}
 
-# 이미지 최적화 자동화하기 {: .page-title }
+# Automating image optimization {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-**이미지 압축 자동화는 필수입니다.**
-
-2017년에는 이미지 최적화가 자동화되어야 합니다. 모범
-사례가 변경되면 빌드 파이프라인을 거치지 않는 콘텐츠가
-손쉽게 빠져나간다는 것을 잊어버리기 십상입니다. 자동화하려면 다음을 수행합니다. 빌드 프로세스에 [imagemin](https://github.com/imagemin/imagemin)나
- [libvps](https://github.com/jcupitt/libvips)를 사용해 보세요. 다양한
-대체재가 있습니다.
-
-대부분의 CDN(예:
-[Akamai](https://www.akamai.com/us/en/solutions/why-akamai/image-management.jsp))
-및 [Cloudinary](https://cloudinary.com),
-[imgix](https://imgix.com), [Fastly's Image
-Optimizer](https://www.fastly.com/io/), [Instart Logic's
-SmartVision](https://www.instartlogic.com/technology/machine-learning/smartvision)
-또는 [ImageOptim API](https://imageoptim.com/api)와 같은 타사 솔루션은 종합적인 자동화 
-이미지 최적화 솔루션을 제공합니다.
-
-블로그 게시물을 읽거나 구성을 변경하는 데 소모하는 시간이 서비스의 월 정액보다
-훨씬 큽니다(Cloudinary에는 [무료](http://cloudinary.com/pricing)
-단계가 있습니다). 비용이나 지연 시간에 대한 우려
-때문에 이러한 작업을 아웃소싱하고 싶지 않다면, 위의 오픈소스 옵션이 도움이 됩니다.
-[Imageflow](https://github.com/imazen/imageflow)나
-[Thumbor](https://github.com/thumbor/thumbor)와 같은 프로젝트는 자체 호스팅 대체재를 사용할 수 있게 해 줍니다.
+**We should all be automating our image compression.**
 
-**누구나 이미지를 효율적으로 압축해야 합니다.**
-
-최소한 [ImageOptim](https://imageoptim.com/)을 사용하세요. 시각적 품질은 유지하면서도 이미지 크기를 크게
-줄여줍니다. Windows 및 Linux
-[대체재](https://imageoptim.com/versions.html)도 이용할 수 있습니다.
+In 2017, image optimization should be automated. It's easy to forget, best practices change, and content that doesn't go through a build pipeline can easily slip. To automate: Use [imagemin](https://github.com/imagemin/imagemin) or [libvps](https://github.com/jcupitt/libvips) for your build process. Many alternatives exist.
 
-더 구체적으로는,
-JPEG는 [MozJPEG](https://github.com/mozilla/mozjpeg)(웹 콘텐츠는 `q=80` 이하도
-적절합니다)를 이용하고, [Progressive
-JPEG](http://cloudinary.com/blog/progressive_jpegs_and_green_martians) 지원을 고려하거나,
-PNG는 [pngquant](https://pngquant.org/),
-SVG는 [SVGO](https://github.com/svg/svgo)를 이용하세요. 명시적으로 메타데이터를 제거(pngquant의 경우 `--strip`)하여
-몸집을 줄이세요. 엄청나게 거대한 애니메이션 GIF대신,
-[H.264](https://en.wikipedia.org/wiki/H.264/MPEG-4_AVC) 동영상(또는 Chrome, Firefox 및 Opera의 경우
-[WebM](https://www.webmproject.org/))을 제공하세요! 그럴 수
-없다면 적어도 [Giflossy](https://github.com/pornel/giflossy)를 사용하세요. CPU
-사이클에 여유가 있고 평균적인 웹 보다 높은 품질이 필요하며,
-느린 인코딩 시간이 괜찮다면
-[Guetzli](https://research.googleblog.com/2017/03/announcing-guetzli-new-open-source-jpeg.html)를 사용해 보세요.
+Most CDNs (e.g [Akamai](https://www.akamai.com/us/en/solutions/why-akamai/image-management.jsp)) and third-party solutions like [Cloudinary](https://cloudinary.com), [imgix](https://imgix.com), [Fastly's Image Optimizer](https://www.fastly.com/io/), [Instart Logic's SmartVision](https://www.instartlogic.com/technology/machine-learning/smartvision) or [ImageOptim API](https://imageoptim.com/api) offer comprehensive automated image optimization solutions.
 
-일부 브라우저는 Accept 요청 헤더를 통한 이미지 형식 지원을 내세웁니다.
-이 방식은 조건부 제공 형식에
-사용할 수 있습니다. 예: Chrome과 같은 블링크 기반 브라우저의 경우 손실
-[WebP](/speed/webp/), 기타 브라우저의 경우 JPEG/PNG와 같은 폴백.
+The amount of time you'll spend reading blog posts and tweaking your config is greater than the monthly fee for a service (Cloudinary has a [free](http://cloudinary.com/pricing) tier). If you don't want to outsource this work for cost or latency concerns, the open-source options above are solid. Projects like [Imageflow](https://github.com/imazen/imageflow) or [Thumbor](https://github.com/thumbor/thumbor) enable self-hosted alternatives.
 
-언제나 더 많은 것을 할 수 있습니다. 도구는 `srcset`
-중단점을 생성 및 제공하기 위해 존재합니다. 리소스 선택은 블링크 기반 브라우저에서
-[클라이언트 힌트](/web/updates/2015/09/automating-resource-selection-with-client-hints)로
-자동화할 수 있으며,
-[Save-Data](/web/updates/2016/02/save-data) 힌트에 주의를 기울임으로써 브라우저 내에서
-'데이터 저장'을 사용 중인 사용자에게 더 적은 바이트를 전달할 수 있습니다.
+**Everyone should be compressing their images efficiently.**
 
+At minimum: use [ImageOptim](https://imageoptim.com/). It can significantly reduce the size of images while preserving visual quality. Windows and Linux [alternatives](https://imageoptim.com/versions.html) are also available.
 
-이미지의 파일 크기를 더 작게 만들수록 사용자에게 더 나은 네트워크
-환경(특히 모바일)을 제공할 수 있습니다. 이 글에서는
-품질에 대한 영향을 최소화한 최신 압축 기술을 통해
-이미지 크기를 줄이는 방법을 알아봅니다.
+More specifically: run your JPEGs through [MozJPEG](https://github.com/mozilla/mozjpeg) (`q=80` or lower is fine for web content) and consider [Progressive JPEG](http://cloudinary.com/blog/progressive_jpegs_and_green_martians) support, PNGs through [pngquant](https://pngquant.org/) and SVGs through [SVGO](https://github.com/svg/svgo). Explicitly strip out metadata (`--strip` for pngquant) to avoid bloat. Instead of crazy huge animated GIFs, deliver [H.264](https://en.wikipedia.org/wiki/H.264/MPEG-4_AVC) videos (or [WebM](https://www.webmproject.org/) for Chrome, Firefox and Opera)! If you can't at least use [Giflossy](https://github.com/pornel/giflossy). If you can spare the extra CPU cycles, need higher-than-web-average quality and are okay with slow encode times: try [Guetzli](https://research.googleblog.com/2017/03/announcing-guetzli-new-open-source-jpeg.html).
 
-## 소개 {: #introduction }
+Some browsers advertise support for image formats via the Accept request header. This can be used to conditionally serve formats: e.g lossy [WebP](/speed/webp/) for Blink-based browsers like Chrome and fallbacks like JPEG/PNG for other browsers.
 
-**이미지는 여전히 웹의 몸집을 키우는 주요 요인입니다.**
+There's always more you can do. Tools exists to generate and serve `srcset` breakpoints. Resource selection can be automated in Blink-based browsers with [client-hints](/web/updates/2015/09/automating-resource-selection-with-client-hints) and you can ship fewer bytes to users who opted into "data savings" in-browser by heeding the [Save-Data](/web/updates/2016/02/save-data) hint.
 
-이미지 파일은
-크기가 큰 경우가 많으므로 방대한 양의 인터넷 대역폭을 차지합니다. [HTTP Archive](http://httparchive.org/)에 따르면, 웹페이지를 가져오기 위해 전송되는 데이터의 60%가
-JPEG, PNG,
-GIF로 구성된 이미지입니다. 2017년 7월 시점에서, 이미지는 3.0MB의 평균적인 사이트에 로드된 콘텐츠의
-[1.7MB](http://httparchive.org/interesting.php#bytesperpage)를
-차지했습니다.
+The smaller in file-size you can make your images, the better a network experience you can offer your users - especially on mobile. In this write-up, we'll look at ways to reduce image size through modern compression techniques with minimal impact to quality.
 
-Tammy Everts에 따르면, 이미지를 페이지에 추가하거나 기존 이미지를 더 크게 만들면 전환율이 증가한다는
-사실이
-[입증](https://calendar.perfplanet.com/2014/images-are-king-an-image-optimization-checklist-for-everyone-in-your-organization/)
-되었습니다. 이미지가 사라질 것 같지 않으므로,
-효율적인 압축 전략에 투자하여 몸집을 최소화하는 것이
-중요해집니다.
+## Introduction {: #introduction }
 
+**Images are still the number one cause of bloat on the web.**
 
-<img src="images/Modern-Image00.jpg" alt="페이지당 이미지가 적을수록 더
-      많은 전환을 일으킵니다. 이미지가 페이지당 평균 19개면, 페이지당 평균 31개의
-        이미지보다 더 전환이 잘 되었습니다." />
+Images take up massive amounts of internet bandwidth because they often have large file sizes. According to the [HTTP Archive](http://httparchive.org/), 60% of the data transferred to fetch a web page is images composed of JPEGs, PNGs and GIFs. As of July 2017, images accounted for [1.7MB](http://httparchive.org/interesting.php#bytesperpage) of the content loaded for the 3.0MB average site.
 
-2016년 [Soasta/Google
-research](https://www.thinkwithgoogle.com/marketing-resources/experience-design/mobile-page-speed-load-time/)에
-따르면, 이미지는 전환을 2번째로 정확하게 예측하는 항목입니다. 최고의
-페이지는 38% 더 적은 이미지를 보유합니다.
+Per Tammy Everts, adding images to a page or making existing images larger have been [proven](https://calendar.perfplanet.com/2014/images-are-king-an-image-optimization-checklist-for-everyone-in-your-organization/) to increase conversion rates. It's unlikely that images will go away and so investing in an efficient compression strategy to minimize bloat becomes important.
 
+![Fewer images per page create more
+        conversions. 19 images per page on average converted better than 31
+        images per page on average.](images/Modern-Image00.jpg)
 
-이미지 최적화는 이미지의
-파일 크기를 줄일 수 있는 여러 가지 방법으로 이루어집니다. 이것은 궁극적으로 이미지에 필요한
-시각적 충실도가 무엇인지에 따라 달라집니다.
+Per [Soasta/Google research](https://www.thinkwithgoogle.com/marketing-resources/experience-design/mobile-page-speed-load-time/) from 2016, images were the 2nd highest predictor of conversions with the best pages having 38% fewer images.
 
+Image optimization consists of different measures that can reduce the file size of your images. It ultimately depends on what visual fidelity your images require.
 
-<img src="images/image-optimisation.jpg" alt="이미지 최적화는 수많은
-        기법을 아우릅니다." /> <strong>이미지 최적화:</strong> 올바른
-형식을 선택하고, 주의 깊게 압축하여 지연 로딩할 수 있는 이미지보다
-중요한 이미지에 우선 순위를 매깁니다.
+![Image optimization covers a number of
+        different techniques](images/image-optimisation.jpg) **Image optimization:** Choose the right format, compress carefully and prioritize critical images over those that can be lazy-loaded.
 
+Common image optimizations include compression, responsively serving them down based on screen size using [`<picture>`](/web/fundamentals/design-and-ux/responsive/images)/[`<img
+srcset>`](/web/fundamentals/design-and-ux/responsive/images), and resizing them to reduce image decode costs.
 
-흔한 이미지 최적화에는 압축,
+![A histogram of potential image savings
+       from the HTTP Archive validating the 30KB of potential image savings at
+       the 95th percentile.](images/chart_naedwl.jpg) Per the [HTTP Archive](http://jsfiddle.net/rviscomi/rzneberp/embedded/result/), per-image savings at the 95th percentile (looking at the Cumulative Distribution Function) are 30KB!</strong>
 
-[`<picture>`](/web/fundamentals/design-and-ux/responsive/images)/[`<img
-srcset>`](/web/fundamentals/design-and-ux/responsive/images)
-을 사용하여 화면 크기에 따른 정확한 제공,이미지 디코딩 비용을 감소하기 위한 크기 조정이 포함됩니다.
+There's plenty of room for us to collectively optimize images better.
 
+![ImageOptim in use on Mac with a number of
+        images that have been compressed with savings over 50%](images/image-optim.jpg)
 
-<img src="images/chart_naedwl.jpg" alt="HTTP Archive의 잠재적인 이미지 절약의 히스토그램은
-95 백분위에서 30KB의 잠재적 이미지 절약이
-유효하다는 것을 보여줍니다." /> [HTTP
-       Archive](http://jsfiddle.net/rviscomi/rzneberp/embedded/result/)에 따르면,
-       95 백분위에서 이미지당(누적
-       분포 함수 참조) 30KB가 절약됩니다!</strong>
+ImageOptim is free, reduces image size through modern compression techniques and by stripping unnecessary EXIF meta-data.
 
+If you're a designer, there's also an [ImageOptim plugin for Sketch](https://github.com/ImageOptim/Sketch-plugin) that will optimize your assets on export. I've found it a huge time saver.
 
-전체적으로 이미지를 한층 더 최적화할 수 있는 여지는 충분합니다.
+### How can I tell if my images need to be optimized? {: #do-my-images-need-optimization }
 
+Perform a site audit through [WebPageTest.org](https://www.webpagetest.org/) and it will highlight opportunities to better optimize your images (see "Compress Images").
 
-<img src="images/image-optim.jpg" alt="Mac에서 50% 이상 절약하여 압축된 여러
-        이미지를 사용 중인 ImageOptim" />
+![WebPage test supports auditing for
+        image compression via the compress images section](images/Modern-Image1.jpg)
 
-ImageOptim는 무료이며, 최신 압축 기술과
-불필요한 EXIF 메타데이터 제거를 통해 이미지 크기를 줄입니다.
+The "Compress Images" section of a WebPageTest report lists images that can be compressed more efficiently and the estimated file-size savings of doing so.
 
+![image compression recommendations from
+        webpagetest](images/Modern-Image2.jpg)
 
+[Lighthouse](/web/tools/lighthouse/) audits for performance best practices. It includes audits for image optimization and can make suggestions for images that could be compressed further or point out images that are off-screen and could be lazy-loaded.
 
-여러분이 디자이너라면, 내보낼 때 자산을 최적화하는 [Sketch용
-ImageOptim 플러그인](https://github.com/ImageOptim/Sketch-plugin)도
-있습니다. 저도 이 플러그인으로 시간을 많이 절약할 수 있었습니다.
+As of Chrome 60, Lighthouse now powers the [Audits panel](/web/updates/2017/05/devtools-release-notes#lighthouse) in the Chrome DevTools:
 
-### 이미지에 최적화가 필요한지 어떻게 알 수 있나요? {: #do-my-images-need-optimization }
+![Lighthouse audit for
+        HBO.com, displaying image optimization recommendations](images/hbo.jpg) Lighthouse can audit for Web Performance, Best Practices and Progressive Web App features.
 
-[WebPageTest.org](https://www.webpagetest.org/)를 통해 사이트 감사를 수행하면
-이미지를 한층 최적화할 수 있는 부분을 강조표시합니다("Compress
-Images" 참조).
+You may also be familiar of other performance auditing tools like [PageSpeed Insights](/speed/pagespeed/insights/) or [Website Speed Test](https://webspeedtest.cloudinary.com/) by Cloudinary which includes a detailed image analysis audit.
 
+## [How do I choose an image format?](#choosing-an-image-format){#choosing-an-image-format}
 
-<img src="images/Modern-Image1.jpg" alt="WebPage 테스트는
-        압축 이미지 섹션을 통해 이미지 압축에 대한 감사를 지원합니다." />
+As Ilya Grigorik notes in his excellent [image optimization guide](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization), the "right format" for an image is a combination of desired visual results and functional requirements. Are you working with Raster or Vector images?
 
-WebPageTest 보고서의 "Compress Images" 섹션은
-더 효율적으로 압축할 수 있는 이미지와 압축 시의 예상 파일 크기 절약량을 나열합니다.
+![vector vs raster images](images/rastervvector.png)
 
-<img src="images/Modern-Image2.jpg" alt="webpagetest의
-        이미지 압축 권장 사항" />
+[Raster graphics](https://en.wikipedia.org/wiki/Raster_graphics) represent images by encoding the values of each pixel within a rectangular grid of pixels. They are not resolution or zoom independent. WebP or widely supported formats like JPEG or PNG handle these graphics well where photorealism is a necessity. Guetzli, MozJPEG and other ideas we've discussed apply well to raster graphics.
 
+[Vector graphics](https://en.wikipedia.org/wiki/Vector_graphics) use points, lines and polygons to represent images and formats using simple geometric shapes (e.g logos) offering a high-resolution and zoom like SVG handle this use case better.
 
+The wrong format can cost you. The logical flow for choosing the right format can be fraught with peril so experiment with the savings other formats can afford with care.
 
-[Lighthouse](/web/tools/lighthouse/)는 성능 모범 사례에 대한 감사를 제공합니다. 이미지 최적화에 대한 감사를 포함하고 있으며,
-더 압축할 수 있는
-이미지에 대한 제안을 제공하거나 화면 밖에 있는
-이미지를 지적하여 지연 로드할 수 있게 해 줍니다.
+Jeremy Wagner has covered [trade-offs](http://jlwagner.net/talks/these-images/#/2/2) worth considering when evaluating formats in his image optimization talks.
 
-Chrome 60부터 Lighthous가 이제 Chrome
-DevTools에 [Audits
-패널](/web/updates/2017/05/devtools-release-notes#lighthouse)을 제공합니다.
+## The humble JPEG {: #the-humble-jpeg }
 
+The [JPEG](https://en.wikipedia.org/wiki/JPEG) may well be the world's most widely used image format. As noted earlier, [45% of the images](http://httparchive.org/interesting.php) seen on sites crawled by HTTP Archive are JPEGs. Your phone, your digital SLR, that old webcam - everything pretty much supports this codec. It's also very old, dating all the way back to 1992 when it was first released. In that time, there's been an immense body of research done attempting to improve what it offers.
 
-<img src="images/hbo.jpg" alt="이미지 최적화 권장 사항을 표시한
-        HBO.com에 대한 Lighthouse 감사" /> Lighthouse는
-        웹 성능, 모범 사례, 프로그레시브 웹 앱 기능에 관한
-        감사를 수행할 수 있습니다.
+JPEG is a lossy compression algorithm that discards information in order to save space and many of the efforts that came after it attempted to preserve visual fidelity while keeping file sizes as small as possible.
 
+**What image quality is acceptable for your use-case?**
 
+Formats like JPEG are best suited for photographs or images with a number of color regions. Most optimization tools will allow you to set what level of compression you're happy with; higher compression reduces file size but can introduce artifacts, halos or blocky degrading.
 
-[PageSpeed
-Insights](/speed/pagespeed/insights/)나 세부적인 이미지 분석 감사를 제공하는 Cloudinary의 [Website Speed
-Test](https://webspeedtest.cloudinary.com/)와 같은
-다른 성능 감사 도구도 들어본 적이 있을 것입니다.
+![JPEG compression artifacts can be
+        increasingly perceived as we shift from best quality to lowest](images/Modern-Image5.jpg)
 
-## <a id="choosing-an-image-format" href="#choosing-an-image-format">이미지 형식은 어떻게 골라야 하나요?</a>
+JPEG: Perceivable JPEG compression artifacts can increase as we shift from best quality to lowest. Note that image quality scores in one tool can be very different to quality scores in another.
 
-Ilya Grigorik이 훌륭한 [이미지 최적화
-가이드](/web/fundamentals/performance/optimizing-content-efficiency/image-optimization)에서 강조했듯이,
-이미지의 "올바른 형식"이란 원하는 시각적 결과물과
-기능적 요건의 결합입니다. 래스터나 벡터 이미지로 작업하고 계신가요?
+When choosing what quality setting to opt for, consider what quality bucket your images fall into:
 
+* **Best quality** - when quality matters more than bandwidth. This may be because the image has high prominence in your design or is displayed at full resolution.
+* **Good quality** - when you care about shipping smaller file-sizes, but don't want to negatively impact image quality too much. Users still care about some level of image quality.
+* **Low quality** - when you care enough about bandwidth that image degradation is okay. These images are suitable for spotty/poor network conditions.
+* **Lowest quality** - bandwidth savings are paramount. Users want a decent experience but will accept a pretty degraded experience for the benefit of pages loading more quickly.
 
-<img src="images/rastervvector.png" alt="벡터 이미지와 래스터 이미지 비교"
-         />
+Next, let's talk about JPEG's compression modes as these can have a large impact on perceived performance.
 
+Note: It's possible that we sometimes overestimate the image quality that our users need. Image quality could be considered a deviation from an ideal, uncompressed source. It can also be subjective.
 
+## JPEG compression modes {: #jpeg-compression-modes }
 
-[래스터 그래픽](https://en.wikipedia.org/wiki/Raster_graphics)은 사각형 그리드 내에서 각 픽셀의 개별 값을 인코딩함으로써
-이미지를 나타냅니다.
-이 이미지는 해상도나 확대/축소에 종속적입니다. WebP나 광범위하게 지원되는
-JPEG 또는 PNG와 같은 형식은 포토리얼리즘이 필수인 이러한 그래픽을 잘 처리합니다.
-Guetzli, MozJPEG 및 논의했던 기타 개념은 래스터 그래픽에 잘 맞습니다.
+The JPEG image format has a number of different [compression modes](http://cs.haifa.ac.il/~nimrod/Compression/JPEG/J5mods2007.pdf). Three popular modes are baseline (sequential), Progressive JPEG (PJPEG) and lossless.
 
-[벡터 그래픽](https://en.wikipedia.org/wiki/Vector_graphics)은 선, 점 및 폴리곤을 사용하여 이미지를 나타내며,
-단순한 기하학적 형태(예: 로고)를 이용하여
-SVG와 같은 고해상도와 확대/축소를 제공하는 형식이 이러한 사용 사례를
-더 잘 처리합니다.
+**How do baseline (or sequential) JPEGs and Progressive JPEGs differ?**
 
-올바르지 않은 형식은 비용을 초래할 수 있습니다. 올바른 형식을 선택하는 논리적인 흐름은
-위험할 수 있으므로, 신중하게 다른 형식으로 절약할 수 있는 것을 실험해
-보세요.
+Baseline JPEGs (the default for most image editing and optimization tools) are encoded and decoded in a relatively simple manner: top to bottom. When baseline JPEGs load on slow or spotty connections, users see the top of the image with more of it revealed as the image loads. Lossless JPEGs are similar but have a smaller compression ratio.
 
-Jeremy Wagner는 이미지 최적화 강연에서 형식을 평가할 때 고려해볼 만한 
-[트레이드 오프](http://jlwagner.net/talks/these-images/#/2/2)를 다뤘습니다.
+![baseline JPEGs load top to bottom](images/Modern-Image6.jpg) Baseline JPEGs load top to bottom while Progressive JPEGs load from blurry to sharp.
 
+Progressive JPEGs divide the image into a number of scans. The first scan shows the image in a blurry or low-quality setting and following scans improve image quality. Think of this as "progressively" refining it. Each "scan" of an image adds an increasing level of detail. When combined this creates a full-quality image.
 
-## 겸손한 JPEG {: #the-humble-jpeg }
+![progressive JPEGs load from
+        low-resolution to high-resolution](images/Modern-Image7.jpg) </picture> Baseline JPEGs load images from top to bottom. PJPEGs load from low-resolution (blurry) to high-resolution. Pat Meenan wrote an [interactive tool](http://www.patrickmeenan.com/progressive/view.php?img=https%3A%2F%2Fwww.nps.gov%2Fplanyourvisit%2Fimages%2FGrandCanyonSunset_960w.jpg) to test out and learn about Progressive JPEG scans too.
 
-[JPEG](https://en.wikipedia.org/wiki/JPEG)는 아마도 세계에서 가장
-폭넓게 사용되는 이미지 형식일 것입니다. 이전에 언급했듯이, HTTP
-Archive가 크롤링한 바에 따르면 사이트에서 보이는 [이미지의
-45%](http://httparchive.org/interesting.php)는 JPEG입니다. 여러분의 전화, DSLR, 구형 웹캠 - 대부분이
-이 코덱을 지원합니다. 또한 이것은 처음 출시된 시점이 무려
-1992년까지 거슬러 올라가는 아주 오래된 형식이기도 합니다. 그 오랜 세월 동안 JPEG가 제공하는 기능을 향상하기 위해
-엄청난 양의 연구가 이루어졌습니다.
+Lossless JPEG optimization can be achieved by [removing EXIF data](http://www.verexif.com/en/) added by digital cameras or editors, optimizing an image's [Huffman tables](https://en.wikipedia.org/wiki/Huffman_coding), or rescanning the image. Tools like [jpegtran](http://jpegclub.org/jpegtran/) achieve lossless compression by rearranging the compressed data without image degradation. [jpegrescan](https://github.com/kud/jpegrescan), [jpegoptim](https://github.com/tjko/jpegoptim) and [mozjpeg](https://github.com/mozilla/mozjpeg) (which we'll cover shortly) also support lossless JPEG compression.
 
-JPEG는 손실 허용 압축 알고리즘으로 정보를
-삭제하여 공간을 절약하는 방식이며, 이후에 나타난 형식은 대부분 시각적
-충실도를 보전하면서 파일 크기는 가능한 한 작게 유지하는 데 주력했습니다.
+### The advantages of Progressive JPEGs {: #the-advantages-of-progressive-jpegs }
 
-**여러분의 사용 사례에 적합한 이미지 품질은 무엇인가요?**
+The ability for PJPEGs to offer low-resolution "previews" of an image as it loads improves perceived performance - users can feel like the image is loading faster compared to adaptive images.
 
-JPEG와 같은 형식은 색상 영역이
-많은 사진이나 이미지에 가장 적합합니다. 대부분의 최적화 도구에서는
-여러분이 선호하는 압축 수준을 설정할 수 있습니다. 높은 압축은 파일 크기를 줄이지만
-아티팩트, 헤일로, 블록 열화가 발생할 수 있습니다.
+On slower 3G connections, this allows users to see (roughly) what's in an image when only part of the file has been received and make a call on whether to wait for it to fully load. This can be more pleasant than the top-to-bottom display of images offered by baseline JPEGs.
 
+![impact to wait time of switching to
+        progressive jpeg](images/pjpeg-graph.png) In 2015, [Facebook switched to PJPEG (for their iOS app)](https://code.facebook.com/posts/857662304298232/faster-photos-in-facebook-for-ios/) and saw a 10% reduction in data usage. They were able to show a good quality image 15% faster than previously, optimizing perceived loading time, as shown in the figure above.
 
-<img src="images/Modern-Image5.jpg" alt="JPEG 압축 아티팩트는
-        최고 품질에서 최저 품질로 이동할 때 크게 눈에 띕니다" />
+PJPEGs can improve compression, consuming [2-10%](http://www.bookofspeed.com/chapter5.html) less bandwidth compared to baseline/simple JPEGs for images over 10KB. Their higher compression ratio is thanks to each scan in the JPEG being able to have its own dedicated optional [Huffman table](https://en.wikipedia.org/wiki/Huffman_coding). Modern JPEG encoders (e.g [libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/), MozJPEG, etc.) take advantage of PJPEG’s flexibility to pack data better.
 
-JPEG: 눈에 띄는 JPEG 압축 아티팩트는 최고
-품질에서 최저 품질로 이동할 때 증가합니다. 다만 이미지 품질 점수는 도구에 따라서
-크게 차이가 날 수 있다는 점을 유의해야 합니다.
+Note: Why do PJPEGs compress better? Baseline JPEG blocks are encoded one at a time. With PJPEGs, similar [Discrete Cosine Transform](https://en.wikipedia.org/wiki/Discrete_cosine_transform) coefficients across more than one block can be encoded together leading to better compression.
 
+### Who's using Progressive JPEGs in production? {: #whos-using-progressive-jpegs-in-production }
 
-어떤 품질 선택을 선택할지 고를 때, 이미지가
-어느 품질 유형에 해당하는지 고려해야 합니다.
+* [Twitter.com ships Progressive JPEGs](https://www.webpagetest.org/performance_optimization.php?test=170717_NQ_1K9P&run=2#compress_images) with a baseline of quality of 85%. They measured user perceived latency (time to first scan and overall load time) and found overall, PJPEGs were competitive at addressing their requirements for low file-sizes, acceptable transcode and decode times.
+* [Facebook ships Progressive JPEGs for their iOS app](https://code.facebook.com/posts/857662304298232/faster-photos-in-facebook-for-ios/). They found it reduced data-usage by 15% and enabling them to show a good quality image 15% faster.
+* [Yelp switched to Progressive JPEGs](https://engineeringblog.yelp.com/2017/06/making-photos-smaller.html) and found it was in part responsible for ~4.5% of their image size reduction savings. They also saved an extra 13.8% using MozJPEG
 
-*   **최고 품질** - 대역폭보다 품질이 중요할 때. 이미지가 디자인에서 크게 두드러지거나 전체
-  해상도로 표시되는 경우일
-수 있습니다.
-*   **양호한 품질** - 더 작은 파일 크기 전송을 중시하지만
-    이미지 품질에 너무 큰 부정적인 영향을 미치고 싶지 않은 경우. 사용자가
-   여전히 일정 수준의 이미지 품질을 중시합니다.
-*   **낮은 품질** - 대역폭을 크게 중시하여
-    이미지 열화를 용인할 수 있을 때. 이러한 이미지는 끊기거나/불량한 네트워크
-    환경에 적합합니다.
-*   **최저 품질** - 대역폭 절약이 최우선일 때. 사용자가
-    괜찮은 수준의 환경을 원하지만
-    더 빠른 페이지 로딩의 이점을 위해 상당히 열화된 경험을 용납합니다.
+### The disadvantages of Progressive JPEGs {: #the-disadvantages-of-progressive-jpegs }
 
-다음으로, 인지 성능에 큰 영향을 미칠 수 있는
-JPEG의 압축 모드에 대해 이야기해 봅시다.
+PJPEGs can be slower to decode than baseline JPEGs - sometimes taking 3x as long. On desktop machines with powerful CPUs this can be less of a concern, but is on underpowered mobile devices with limited resources. Displaying incomplete layers takes work as you're basically decoding the image multiple times. These multiple passes can eat CPU cycles.
 
-참고: 사용자에게
-필요한 이미지 품질을 과대평가할 수 있습니다. 이미지 품질이 이상적인
-무압축 소스와 거리가 있다고 생각할 수 있습니다. 또한, 이는 주관적일 수 있습니다.
+Progressive JPEGs are also not *always* smaller. For very small images (like thumbnails), progressive JPEGs can be larger than their baseline counterparts. However for such small thumbnails, progressive rendering might not really offer as much value.
 
-## JPEG 압축 모드 {: #jpeg-compression-modes }
+This means that when deciding whether or not to ship PJPEGs, you'll need to experiment and find the right balance of file-size, network latency and use of CPU cycles.
 
-JPEG 이미지 형식에는 수많은 [압축
-모드](http://cs.haifa.ac.il/~nimrod/Compression/JPEG/J5mods2007.pdf)가 있습니다. 세
-가지 유명한 모드는 베이스라인(순차적), 프로그레시브 JPEG(PJPEG) 및 무손실입니다.
+Note: PJPEGs (and all JPEGs) can sometimes be hardware decodable on mobile devices. It doesn't improve on RAM impact, but it can negate some of the CPU concerns. Not all Android devices have hardware-acceleration support, but high end devices do, and so do all iOS devices.
 
+Some users may consider progressive loading to be a disadvantage as it can become hard to tell when an image has completed loading. As this can vary heavily per audience, evaluate what makes sense for your own users.
 
-**베이스라인(또는 순차적) JPEG 및 프로그레시브 JPEG의 차이는 무엇인가요?**
+### How do you create Progressive JPEGs? {: #how-to-create-progressive-jpegs }
 
-베이스라인 JPEG(대부분의 이미지 편집 및 최적화 도구의 기본값)는
-위에서 아래라는 상대적으로 단순한 방식으로 인코딩 및 디코딩됩니다. 베이스라인
-JPEG가 느리거나 끊김이 있는 연결에서 로드되면 사용자는 이미지가 로드될 때 이미지 상단을
-먼저 보게 됩니다. 무손실 JPEG는 유사하지만
-압축 비율이 더 작습니다.
-
-
-
-<img src="images/Modern-Image6.jpg" alt="베이스라인 JPEG는 위에서 아래로 로딩됩니다" />
-        베이스라인 JPEG는 위에서 아래로 로드되지만, 프로그레시브 JPEG는
-   흐린 이미지에서 선명한 이미지로 로드합니다.
-
-
-프로그레시브 JPEG는 이미지를 여러 스캔으로 나눕니다. 첫 번째 스캔은
-흐리거나 낮은 품질 설정으로 이미지를 보여주며, 그 다음 스캔은 이미지 품질이
-향상됩니다. '점진적으로(Progressively)' 정제된다고 생각하면 됩니다. 각 이미지 '스캔'은
-훨씬 더 높은 수준의 세부 사항을 추가합니다. 이것을 결합하면 완전한 품질의
-이미지를 생성합니다.
-
-
-<img src="images/Modern-Image7.jpg" alt="프로그레시브 JPEG는
-        저해상도에서 고해상도로 로드됩니다" /> </picture> 베이스라인 JPEG는
-        이미지를 위에서 아래로 로드합니다. PJPEG는 저해상도(흐림)에서
-        고해상도로 로드합니다. Pat Meenan은 프로그레시브 JPEG 스캔을 테스트하고 이에 관해 배우고자 [대화식
-        도구](http://www.patrickmeenan.com/progressive/view.php?img=https%3A%2F%2Fwww.nps.gov%2Fplanyourvisit%2Fimages%2FGrandCanyonSunset_960w.jpg)를
-        작성했습니다.
-
-
-무손실 JPEG 최적화는 디지털 카메라나 에디터에서 추가된 [EXIF
-데이터를 삭제](http://www.verexif.com/en/)하고, 
-이미지의 [Huffman
-표](https://en.wikipedia.org/wiki/Huffman_coding)를 최적화하거나 이미지를 재스캔하여 얻을 수 있습니다.
-[jpegtran](http://jpegclub.org/jpegtran/)과 같은 도구는 이미지 열화 없이 압축 데이터를 재배열하여 무손실
-압축을 이루어냈습니다.
-[jpegrescan](https://github.com/kud/jpegrescan),
-[jpegoptim](https://github.com/tjko/jpegoptim) 및
-[mozjpeg](https://github.com/mozilla/mozjpeg)(아래에서 다룹니다) 또한
-무손실 JPEG 압축을 지원합니다.
-
-
-### 프로그레시브 JPEG의 이점 {: #the-advantages-of-progressive-jpegs }
-
-이미지 로드 중 저해상도 '미리보기'를 제공하는 PJPEG의 능력은
-인지 성능을 향상합니다. 사용자는 적응형 이미지에 비해 이 이미지가 더 빠르게
-로딩된다고 느낍니다.
-
-느린 3G 연결에서 이 방법은 파일의 일부분만 수신되었을 때
-사용자가 (대략적으로) 어떤 이미지인지 보고 완전히 로드되는 것을
-기다릴 지 결정할 수 있게 해 줍니다. 이 방식은 베이스라인 JPEG의 위에서 아래로 표시되는
-이미지 표시 방식보다 더 좋을 수 있습니다.
-
-
-<img src="images/pjpeg-graph.png" alt="프로그레시브 JPEG로 변경했을 때
-        대기 시간에 미치는 영향" /> 2015년에 [Facebook은 PJPEG(iOS
-앱 한정)](https://code.facebook.com/posts/857662304298232/faster-photos-in-facebook-for-ios/)로
-        변경 후 데이터 사용량의 10%가 감소한 것을 발견했습니다. 위의 그림에 나타난 것처럼, 이전보다 15% 더 빠르게
-        좋은 품질의 이미지를 표시할 수 있었으며, 인지 로딩
-        시간을 최적화했습니다.
-
-
-PJPEG는 압축을 향상하여 10KB 이상의 베이스라인/단순 JPEG 이미지에 비해 대역폭을 
-[2-10%](http://www.bookofspeed.com/chapter5.html) 더 적게 소비합니다.
- 한층 높은 압축 비율은
-JPEG가 각 스캔에 자체 전용 옵션
-[Huffman 표](https://en.wikipedia.org/wiki/Huffman_coding)를 보유할 수 있는 덕분입니다. 최신 JPEG
-인코더(예: [libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/), MozJPEG,
-등)은 데이터를 잘 담기 위해 PJPEG가 가진 유연성의 이점을 활용합니다.
-
-참고: PJPEG의 압축이 더 우수한 이유는 무엇인가요? 베이스라인 JPEG 블록은 한 번에
-하나만 인코딩됩니다. PJPEG를 이용하면 하나 이상의 블록에서 유사한 [이산 코사인
-변환](https://en.wikipedia.org/wiki/Discrete_cosine_transform) 계수가
-함께 인코딩되어
-우수한 압축을 이뤄냅니다.
-
-### 어떤 사람이 프로덕션에서 프로그레시브 JPEG를 사용하나요? {: #whos-using-progressive-jpegs-in-production }
-
-*   [Twitter.com은 프로그레시브
-    JPEG](https://www.webpagetest.org/performance_optimization.php?test=170717_NQ_1K9P&run=2#compress_images)를
-    85% 품질의 베이스라인으로 제공합니다. Twitter는 사용자 인지 지연
-    시간(첫 번째 스캔 및 전체 로드까지의 시간)을 측정하고 전반적으로 PJPEG가
-    작은 파일 크기, 허용 가능한
-    트랜스코딩 및 디코딩 시간이라는 요건을 충족하는 데 경쟁력이 있다는 것을 발견했습니다.
-*   [Facebook은 iOS 앱에 프로그레시브 JPEG를
-    전송합니다](https://code.facebook.com/posts/857662304298232/faster-photos-in-facebook-for-ios/).
-    Facebook은 이 방식이 데이터 사용량을 15% 줄이고 좋은
-    품질의 이미지를 15% 더 빠르게 표시할 수 있다는 것을 발견했습니다.
-*   [Yelp는 프로그레시브
-    JPEG로 변경](https://engineeringblog.yelp.com/2017/06/making-photos-smaller.html)
-    후 이 방식이 이미지 크기 감소로
-    절감한 것의 최대 4.5%를 차지한다는 것을 발견했습니다. 또한, Yelp는 MozJPEG를 사용하여 추가로 13.8%를 절약했습니다.
-
-### 프로그레시브 JPEG의 단점 {: #the-disadvantages-of-progressive-jpegs }
-
-PJPEG는 베이스라인 JPEG보다 느리게 디코딩될 수 있으며, 때로는 3배까지도
-더 걸립니다. 강력한 CPU를 탑재한 데스크탑 컴퓨터에서는 문제없지만,
-리소스가 제한적인 성능이 떨어지는 휴대기기에서는 문제가 될 수 있습니다. 불완전한
-레이어 표시에는 기본적으로 이미지를 여러 번 디코딩하는 것이므로 품이 듭니다. 이러한
-다중 패싱은 CPU 사이클을 좀먹을 수 있습니다.
-
-또한, 프로그레시브 JPEG가 *언제나* 더 작은 것은 아닙니다. 매우 작은 이미지(예:
-썸네일 이미지)의 경우, 프로그레시브 JPEG는 베이스라인 JPEG보다 더 클 수 있습니다.
-이러한 썸네일 이미지가 얼마나 작든, 프로그레시브 렌더링이
-큰 이점을 제공하지 못할 수 있습니다.
-
-즉, PJPEG의 전송 여부를 결정할 때
-실험을 하여 파일 크기, 네트워크 지연 시간, CPU
-사이클 사용의 적절한 밸런스를 찾아야 한다는 것을 의미합니다.
-
-참고: PJPEG(및 모든 JPEG)는 때때로 휴대기기에서
-하드웨어 디코딩이 가능할 수 있습니다. RAM에 대한 영향을 개선하지는 않지만 CPU에 관한
-우려를 다소 없앨 수 있습니다. 모든 Android 기기에 하드웨어 가속화가 지원되는 것은 아니지만, 고성능
-기기와 모든 iOS 기기에서는 지원됩니다.
-
-일부 사용자는 프로그레시브 로딩은
-언제 이미지가 완전히 로드되었는지 알기 어려우므로 좋지 않다고 생각할 수 있습니다. 이것은 잠재고객에 따라
-크게 다르므로, 여러분의 사용자에게 알맞은 것이 무엇인지 평가해야 합니다.
-
-### 프로그레시브 JPEG는 어떻게 생성하나요? {: #how-to-create-progressive-jpegs }
-
-[ImageMagick](https://www.imagemagick.org/),
-[libjpeg](http://libjpeg.sourceforge.net/),
-[jpegtran](http://jpegclub.org/jpegtran/),[
-jpeg-recompress](http://jpegclub.org/jpegtran/) 및
-[imagemin](https://github.com/imagemin/imagemin)과 같은 도구와 라이브러리가 프로그레시브
-JPEG 내보내기를 지원합니다. 기존의 이미지 최적화 파이프라인이 있다면, 프로그레시브
-로딩 지원을 추가하는 것이 수월할 수 있습니다.
+Tools and libraries like [ImageMagick](https://www.imagemagick.org/), [libjpeg](http://libjpeg.sourceforge.net/), [jpegtran](http://jpegclub.org/jpegtran/),[ jpeg-recompress](http://jpegclub.org/jpegtran/) and [imagemin](https://github.com/imagemin/imagemin) support exporting Progressive JPEGs. If you have an existing image optimization pipeline, there's a good likelihood that adding progressive loading support could be straight-forward:
 
 ```js
 const gulp = require('gulp');
@@ -417,231 +188,97 @@ gulp.task('images', function () {
 });
 ```
 
-대부분의 이미지 편집 도구는 기본적으로 이미지를 베이스라인 JPEG로 저장합니다.
+Most image editing tools save images as Baseline JPEG files by default.
 
+![photoshop supports exporting to progressive
+        jpeg from the file export menu](images/photoshop.jpg) Most image editing tools save images as Baseline JPEG files by default. You can save any image you create in Photoshop as a Progressive JPEG by going to File -> Export -> Save for Web (legacy) and then clicking on the Progressive option. Sketch also supports exporting Progressive JPEGs - export as JPG and check the ‘Progressive’ checkbox while saving your images.
 
-<img src="images/photoshop.jpg" alt="Photoshop은 파일 내보내기 메뉴에서 프로그레시브
-        jpeg 내보내기를 지원합니다" /> 대부분의 이미지 편집 도구는
-        기본적으로 이미지를 베이스라인 JPEG로 저장합니다. Photoshop에서 생성한 모든 이미지를
-        Progressive JPEG로 저장할 수 있습니다. File -> Export -> Save for
-        Web(legacy)로 이동한 다음 프로그레시브 옵션을 클릭하면 됩니다. Sketch도
-        프로그레시브 JPEG 내보내기를 지원합니다. JPG로 내보내고 이미지를 저장할 때
-        ‘Progressive’ 체크박스를 선택하면 됩니다.
+### Chroma (or color) subsampling {: #chroma-subsampling }
 
-### 크로마(또는 색상) 서브샘플링 {: #chroma-subsampling }
+Our eyes are more forgiving to loss of color detail in an image (chroma) than they are luminance (or luma for short - a measure of brightness). [Chroma subsampling](https://en.wikipedia.org/wiki/Chroma_subsampling) is a form of compression that reduces the precision of color in a signal in favor of luma. This reduces file size, in some cases by up to [15-17%](https://calendar.perfplanet.com/2015/why-arent-your-images-using-chroma-subsampling/), without adversely affecting image quality and is an option available for JPEG images. Subsampling can also reduce image memory usage.
 
-사람의 눈은 휘도(또는 루마라고 하는, 밝기의 척도)보다 이미지의 세부 색상(크로마)의
-손실에 더 관대합니다. [크로마
-서브샘플링](https://en.wikipedia.org/wiki/Chroma_subsampling)은 루마를 우선하여 신호에서 색상의 정확도를 감소시키는 압축
-방식입니다.
-이 방식은 이미지 품질에 악영향을 미치지 않고 일부 경우 파일 크기를 최대
-[15~17%](https://calendar.perfplanet.com/2015/why-arent-your-images-using-chroma-subsampling/)까지
-감소시키며, JPEG
-이미지에 사용할 수 있는 옵션입니다. 서브샘플링은 이미지의 메모리 사용도 감소시킵니다.
+![signal = chroma + luma](images/luma-signal.jpg)
 
+As contrast is responsible for forming shapes that we see in an image, luma, which defines it, is pretty important. Older or filtered black and white photos may not contain color, but thanks to luma, they can be just as detailed as their color counterparts. Chroma (color) has less of an impact on visual perception.
 
+![JPEG includes support for numerous subsampling types: none, horizontal and horizontal and vertical.](images/no-subsampling.jpg)
 
-<img src="images/luma-signal.jpg" alt="신호 = 크로마 + 루마" />
+JPEG supports a number of different subsampling types: none, horizontal and horizontal and vertical. This diagram is from [JPEGs for the horseshoe crabs](http://frdx.free.fr/JPEG_for_the_horseshoe_crabs.pdf) by Frédéric Kayser.
 
+There are a number of common samples discussed when talking about subsampling. Generally, `4:4:4`, `4:2:2` and `4:2:0`. But what do these represent? Let’s say a subsample takes the format A:B:C. A is the number of pixels in a row and for JPEGs this is usually 4. B represents the amount of color in the first row and C the color in the second.
 
-콘트라스트가 이미지에서 우리가 보는 형태를 형성한다면, 루마는
-이것을 정제하는 중요한 역할을 합니다. 오래되고 필터링된 흑백 사진에는
-색이 없지만 루마 덕분에 컬러 사진만큼이나
-디테일합니다. 크로마(색상)은 시각 인지에 더 적은 영향을 미칩니다.
+* `4:4:4` has no compression, so color and luma are transported completely.
+* `4:2:2` has half sampling horizontally and full sampling vertically.
+* `4:2:0` samples colors out of half the first row’s pixels and ignores the second row.
 
+Note: jpegtran and cjpeg support separate quality configuration of luminance and chroma. This can be done adding the `-sample` flag (e.g `-sample 2x1`).
 
-<img src="images/no-subsampling.jpg"
-     alt="JPEG에는 수많은 서브샘플링 유형(없음, 수평, 수평 및 수직)이 지원됩니다." />
+Some good general rules: subsampling (`-sample 2x2`) is great for photos. no-subsampling (`-sample 1x1`) is best for screenshots, banners and buttons. There's finally compromise (`2x1`) is you're unsure what to use.</aside>
 
-JPEG는 무수히 다양한 서브샘플링 유형(없음, 수평,
-수평 및 수직)을 지원합니다. 도표 출처: Frédéric Kayser의 [JPEGs for the horseshoe
-crabs](http://frdx.free.fr/JPEG_for_the_horseshoe_crabs.pdf)
+By reducing pixels in our chroma components, it’s possible to reduce the size of color components significantly, ultimately reducing byte size.
 
+![Chrome subsampling configurations for a
+        JPEG at quality 80.](images/subsampling.jpg) Chrome subsampling configurations for a JPEG at quality 80.
 
-서브샘플링에 관해서는 수많은 일반 샘플이 논의되었습니다.
-일반적으로는 `4:4:4`, `4:2:2`, `4:2:0`입니다. 그런데 이것은 무엇을 의미하는 걸까요? 서브샘플이 A:B:C의 형식을 따랐다고
-가정합시다. A는 행의 픽셀 수이며
-JPEG의 경우 이것은 보통 4입니다. B는 첫 번째 행의 색상의 양을 나타내며,
-C는 초당 색상을 나타냅니다.
+Chroma subsampling is worth considering for most types of image. It does have some notable exceptions: as subsampling relies on limitations in our eyes, it is not great for compressing images where color detail may be as important as luminance (e.g medical images).
 
-* `4:4:4`는 무압축이므로, 색상과 루마가 온전하게 전송됩니다.
-* `4:2:2`는 수평으로 절반 샘플링되며 수직으로 완전히 샘플링됩니다.
-* `4:2:0`는 첫 번째 행의 픽셀 절반에서 색상을 샘플링하고
-  두 번째 행은 무시합니다.
+Images containing typefaces can also suffer as poor subsampling of text can decrease its legibility. Sharper edges are harder to compress with JPEG as it was designed to better handle photographic scenes with softer transitions.
 
-참고: jpegtran 및 cjpeg는 휘도 및
-크로마의 개별 품질 구성을 지원합니다. 이렇게 하려면 `-sample` 플래그를 추가하면 됩니다(예: `-sample 2x1`).
+![Be careful when
+        using heavy subsampling with images containing text](images/Screen_Shot_2017-08-25_at_11.06.27_AM.jpg) [Understanding JPEG](http://compress-or-die.com/Understanding-JPG/) recommends sticking with a subsampling of 4:4:4 (1x1) when working with images containing text.
 
-몇 가지 좋은 일반 규칙:  서브샘플링(`-sample 2x2`)은 사진에 적합합니다.
-비서브샘플링(`-sample 1x1`)은 스크린샷, 배너, 버튼에 가장 적합합니다.
-마지막으로 타협(`2x1`)은 무엇을 사용해야 할 지 확신할 수 없을 때 사용합니다.</aside>
+Trivia: The exact method of Chroma subsampling wasn’t specified in the JPEG specification, so different decoders handle it differently. MozJPEG and libjpeg-turbo use the same scaling method. Older versions of libjpeg use a different method that adds ringing artifacts in colors.
 
-크로마 구성 요소의 픽셀을 줄임으로써
-색상 구성 요소의 크기를 크게 줄이고 궁극적으로는 바이트 크기를 감소시킬 수 있습니다.
+Note: Photoshop sets Chroma subsampling automatically when using the ‘Save for web’ feature. When image quality is set between 51-100, no subsampling is used at all (`4:4:4`). When quality is below this, a `4:2:0` subsampling is used instead. This is one reason a far greater file-size reduction can be observed when switching quality from 51 to 50.
 
+Note: In subsampling discussions the term [YCbCr](https://en.wikipedia.org/wiki/YCbCr) is often mentioned. This is a model that can represent gamma-corrected [RGB](https://en.wikipedia.org/wiki/RGB_color_model) color spaces. Y is gamma-corrected luminance, Cb is the blue color’s chroma component and Cr is the red color’s chroma component. If you look at ExifData, you’ll see YCbCr next to sampling levels.
 
-<img src="images/subsampling.jpg" alt="80 품질의 JPEG를 위한
-        크로마 서브샘플링 구성." /> 80 품질의 JPEG를 위한
-        크로마 서브샘플링 구성.
+For a further read on Chroma Subsampling, see [Why aren’t your images using Chroma subsampling?](https://calendar.perfplanet.com/2015/why-arent-your-images-using-chroma-subsampling/).
 
+### How far have we come from the JPEG? {: #how-far-have-we-come-from-the-jpeg }
 
-크로마 서브샘플링은 대부분의 이미지 유형에서 고려할 가치가 있습니다. 그러나
-몇 가지 확실한 예외가 있습니다. 서브샘플링이 우리의 눈의 한계에 의존하므로,
-세부 색상이 휘도만큼이나 중요한 이미지(예: 의료용 이미지)를 압축하는 데는
-좋지 않습니다.
+**Here's the current state of image formats on the web:**
 
-글씨가 담긴 이미지도 불량한 텍스트 서브샘플링이
-가독성을 저해할 수 있으므로 문제를 겪을 수 있습니다. JPEG는 전환이 부드러운 풍경 사진을 더 잘 처리하도록 고안되었기 때문에
-선명한 가장자리는 JPEG로 압축하기 어렵습니다.
+*tl;dr - there's a lot of fragmentation. We often need to conditionally serve different formats to different browsers to take advantage of anything modern.*
 
+![modern image formats compared based
+        on quality.](images/format-comparison.jpg) Different modern image formats (and optimizers) used to demonstrate what is possible at a target file-size of 26KB. We can compare quality using [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) (structural similarity) or [Butteraugli](https://github.com/google/butteraugli), which we'll cover in more detail later.
 
+* **[JPEG 2000](https://en.wikipedia.org/wiki/JPEG_2000) (2000)** - an improvement to JPEG switching from a discrete cosine based transform to a wavelet-based method. **Browser support: Safari desktop + iOS**
+* **[JPEG XR](https://en.wikipedia.org/wiki/JPEG_XR) (2009)** - alternative to JPEG and JPEG 2000 supporting [HDR](http://wikivisually.com/wiki/High_dynamic_range_imaging) and wide [gamut](http://wikivisually.com/wiki/Gamut) color spaces. Produces smaller files than JPEG at slightly slower encode/decode speeds. **Browser support: Edge, IE.**
+* **[WebP](https://en.wikipedia.org/wiki/WebP) (2010)** - block-prediction based format by Google with support for lossy and lossless compression. Offers byte savings associated with JPEG and transparency support byte-heavy PNGs are often used for. Lacks chroma subsampling configuration and progressive loading. Decode times are also slower than JPEG decoding. **Browser support: Chrome, Opera. Experimented with by Safari and Firefox.**
+* **[FLIF](https://en.wikipedia.org/wiki/Free_Lossless_Image_Format) (2015)** 
+    * lossless image format claiming to outperform PNG, lossless WebP, lossless BPG and lossless JPEG 2000 based on compression ratio. **Browser support: none.**
+* **HEIF and BPG.** From a compression perspective, they're the same but have a different wrapper:
+* **[BPG](https://en.wikipedia.org/wiki/Better_Portable_Graphics) (2015)** - intended to be more compression-efficient replacement for JPEG, based on HEVC ([High Efficiency Video Coding](http://wikivisually.com/wiki/High_Efficiency_Video_Coding)). Appears to offer better file size compared to MozJPEG and WebP. Unlikely to get broad traction due to licensing issues. **Browser support: none. *Note that there is a [JS in-browser decoder](https://bellard.org/bpg/).***
+* **[HEIF](https://en.wikipedia.org/wiki/High_Efficiency_Image_File_Format) (2015)** - format for images and image sequences for storing HEVC-encoded images with constrained inter-prediction applied. Apple announced at [WWDC](https://www.cnet.com/news/apple-ios-boosts-heif-photos-over-jpeg-wwdc/) they would explore switching to HEIF over JPEG for iOS, citing up to 2x savings on file-size. **Browser support: None at the time of writing. Eventually, Safari desktop and iOS 11**
 
-<img src="images/Screen_Shot_2017-08-25_at_11.06.27_AM.jpg" alt="텍스트가 담긴 이미지에
-        과도한 서브샘플링을 이용할 때는 주의를 기울여야 합니다" /> [JPEG의
-        이해](http://compress-or-die.com/Understanding-JPG/)는
-        텍스트가 담긴 이미지를 작업할 때 4:4:4(1x1) 서브샘플링을 고수할 것을
-        권장합니다.
+If you're more visual, you might appreciate [one](https://people.xiph.org/~xiphmont/demo/daala/update1-tool2b.shtml) of [these](http://xooyoozoo.github.io/yolo-octo-bugfixes/#cologne-cathedral&jpg=s&webp=s) visual comparison tools for some of the above.
 
+So, **browser support is fragmented** and if you wish to take advantage of any of the above you'll likely need to conditionally serve fallbacks for each of your target browsers. At Google, we've seen some promise with WebP so we'll dive into it in more depth shortly.
 
-트리비아: 크로마 서브샘플링의 정확한 메서드는 JPEG
-사양에 설명되어 있지 않으므로, 여러 디코더가 각기 다른 메서드로 처리합니다. MozJPEG 및
-libjpeg-turbo는 같은 확장 메서드를 사용합니다. 이전 버전의 libjpeg는
-색상에 링 아티팩트를 추가하는 다른 메서드를 사용합니다.
+You can also serve image formats (e.g WebP, JPEG 2000) with a .jpg extension (or any other) as the browser can render an image it can decide the media type. This allows for server-side [content-type negotiation](https://www.igvita.com/2012/12/18/deploying-new-image-formats-on-the-web/) to decide which image to send without needing to change the HTML at all. Services like Instart Logic use this approach when delivering images to their customers.
 
-참고: Photoshop은 ‘Save for
-web’ 기능을 사용하면 자동으로 크로마 서브샘플링을 설정합니다. 이미지 품질이 51~100으로 설정되면 서브샘플링이
-전혀(`4:4:4`) 이루어지지 않습니다. 품질이 이것보다 낮으면 `4:2:0` 서브샘플링이
-대신 사용됩니다. 이것이 품질을 51에서 50으로 변경했을 때
-파일 크기 감소가 훨씬 더 크게 관찰되는 이유입니다.
+Next, let's talk about an option for when you can't conditionally serve different image formats: **optimizing JPEG encoders**.
 
-참고: 서브샘플링 논의에서
-[YCbCr](https://en.wikipedia.org/wiki/YCbCr)라는 용어가 종종 언급됩니다. 이것은
-감마 교정된
-[RGB](https://en.wikipedia.org/wiki/RGB_color_model) 색상 공간을 나타낼 수 있는 모델입니다. Y는
-감마 교정된 휘도이며, Cb는 파란색의 크로마 구성 요소, Cr은
-빨간색 크로마 구성 요소입니다. ExifData를 보면 샘플링 수준 옆에 YCbCr가
-보일 것입니다.
+### Optimizing JPEG encoders {: #optimizing-jpeg-encoders }
 
-크로마 서브샘플링에 관해 더 읽어보려면 [Why aren’t your images using
-Chroma
-subsampling?](https://calendar.perfplanet.com/2015/why-arent-your-images-using-chroma-subsampling/)을 참조하세요.
+Modern JPEG encoders attempt to produce smaller, higher fidelity JPEG files while maintaining compatibility with existing browsers and image processing apps. They avoid the need to introduce new image formats or changes in the ecosystem in order for compression gains to be possible. Two such encoders are MozJPEG and Guetzli.
 
-### JPEG에서 얼마나 많이 발전했나요? {: #how-far-have-we-come-from-the-jpeg }
+***tl;dr Which optimizing JPEG Encoder should you use?***
 
-**현재 웹의 이미지 형식 상황은 이렇습니다.**
+* General web assets: MozJPEG
+* Quality is your key concern and you don't mind long encode times: use Guetzli
+* If you need configurability: 
+    * [JPEGRecompress](https://github.com/danielgtaylor/jpeg-archive) (which uses MozJPEG under the hood)
+    * [JPEGMini](http://www.jpegmini.com/). It's similar to Guetzli - chooses best quality automatically. It's not as technically sophisticated as Guetzli, but it's faster, and aims at quality range more suitable for the web.
+    * [ImageOptim API](https://imageoptim.com/api) (with free online interface [here](https://imageoptim.com/online)) - it's unique in its handling of color. You can choose color quality separately from overall quality. It automatically chooses chroma subsampling level to preserve high-res colors in screenshots, but avoid waste bytes on smooth colors in natural photos.
 
-*짧은 요약 - 단편화가 많아졌습니다. 최신 기술의 이점을 이용하기 위해
-서로 다른 브라우저에 서로 다른 형식을 조건부로 제공해야 할 때가 있습니다.*
+### What is MozJPEG? {: #what-is-mozjpeg }
 
+Mozilla offers a modernized JPEG encoder in the form of [MozJPEG](https://github.com/mozilla/mozjpeg). It [claims](https://research.mozilla.org/2014/03/05/introducing-the-mozjpeg-project/) to shave up to 10% off JPEG files. Files compressed with MozJPEG work cross-browser and some of its features include progressive scan optimization, [trellis quantization](https://en.wikipedia.org/wiki/Trellis_quantization) (discarding details that compress the least) and a few decent [quantization table presets](https://calendar.perfplanet.com/2014/mozjpeg-3-0/) that help create smoother High-DPI images (although this is possible with ImageMagick if you're willing to wade through XML configs).
 
-<img src="images/format-comparison.jpg" alt="품질을 기준으로
-        비교한 최신 이미지 형식." /> 26KB의 대상 파일 크기에서 가능한 것을 시험하기 위해
-        여러 최신 이미지 형식(및 최적화 도구)을 사용했습니다. 
-
-[SSIM](https://en.wikipedia.org/wiki/Structural_similarity)(구조적
-        유사성) 또는 [Butteraugli](https://github.com/google/butteraugli)를        사용하여 품질을        비교할 수 있습니다.
-        이 내용은 추후에 더 자세히 다루겠습니다.
-
-
-*   **[JPEG 2000](https://en.wikipedia.org/wiki/JPEG_2000) (2000)** - 이산 코사인 기반 변환에서
-    웨이브렛(wavelet) 기반 메서드로의 변경을 통한 JPEG
-    향상. **브라우저 지원: Safari 데스크탑 + iOS**
-*   **[JPEG XR](https://en.wikipedia.org/wiki/JPEG_XR)(2009)** - 
-    [HDR](http://wikivisually.com/wiki/High_dynamic_range_imaging) 및 폭넓은
-    [gamut](http://wikivisually.com/wiki/Gamut) 색상 공간을    지원하는 JPEG    및 JPEG 2000의 대체재. 다소 느린 인코딩/디코딩 속도로 JPEG보다
-   더 작은 파일을 생성합니다. **브라우저 지원:
-    Edge, IE.**
-*   **[WebP](https://en.wikipedia.org/wiki/WebP) (2010)** - 손실 허용 및 무손실 압축을 지원하는 Google의 블록 예측
-    기반 형식.
-    JPEG 관련 바이트 절약 및 바이트 크기가 큰 PNG에서 종종 사용되는 투명도 지원
-    제공. 크로마 서브샘플링 구성 및
- 프로그레시브 로딩이 없습니다. 디코딩 시간 또한 JPEG 디코딩보다 느립니다.
-    **브라우저 지원: Chrome, Opera. Safari 및 Firefox에서 실험되었습니다.**
-*   **[FLIF](https://en.wikipedia.org/wiki/Free_Lossless_Image_Format) (2015)**
-    - 압축률을 기반으로 PNG, 무손실 WebP, 무손실
-    BPG, 무손실 JPEG 2000보다 뛰어나다고 주장하는 무손실 이미지 형식. **브라우저 지원:
-    없음.**
-*   **HEIF 및 BPG.** 압축이라는 관점에서는 동일하나
-    래퍼가 다릅니다.
-*   **[BPG](https://en.wikipedia.org/wiki/Better_Portable_Graphics) (2015)** -
-    JPEG의 한층 압축 효율적인 대체제를 목적으로 하며,
-    HEVC([고효율 동영상
-    코딩](http://wikivisually.com/wiki/High_Efficiency_Video_Coding))를 기반으로 합니다. MozJPEG나 WebP에 비해 더 나은 파일 크기를 제공하는 것으로
-    보입니다. 라이선스 문제로 인해
-   폭넓은 인기를 얻을 것 같지 않습니다. **브라우저 지원: 없음. *참고
-:    [JS 브라우저 내 디코더](https://bellard.org/bpg/)가 있습니다.***
-*   **[HEIF](https://en.wikipedia.org/wiki/High_Efficiency_Image_File_Format)
-    (2015)** - 이미지 및 제약 상호 예측이 적용된 HEVC 인코딩
-    이미지 저장을 위한 이미지 시퀀스용 형식입니다. Apple은
-    [WWDC](https://www.cnet.com/news/apple-ios-boosts-heif-photos-over-jpeg-wwdc/)에서
-    iOS의 JPEG를 HEIF로 변경하는 것을 시도해 볼 것이라 말하며, 최대 2배의
-    파일 크기 절약을 인용했습니다. **브라우저 지원: 현재 작정 시점에서는 없음.
-    나중에 Safari 데스크탑 및 iOS 11에서 지원될 수 있습니다.**
-
-시각을 중시하는 분이라면 상기한 일부에 대한
-[이들](http://xooyoozoo.github.io/yolo-octo-bugfixes/#cologne-cathedral&jpg=s&webp=s)
-중 [하나](https://people.xiph.org/~xiphmont/demo/daala/update1-tool2b.shtml)
-의 시각적 비교 도구를 유용하게 사용할 수 있을 것입니다.
-
-**브라우저 지원이 단편화**되었으며, 위 형식의 이점을 이용하려면
-조건부로 각 대상 브라우저에 대한 폴백을 제공해야
-할 수 있습니다. Google은 WebP에서 희망을 보았으므로
-이에 대해 깊게 다루도록 하겠습니다.
-
-브라우저가 이미지를 렌더링하고 미디어 유형을 결정할 수 있으므로 이미지 형식(예: WebP, JPEG 2000)을 .jpg 확장자(또는
-기타)로도 제공할 수 있습니다. 이 방법을
-통해 서버측 [콘텐츠 유형
-협상](https://www.igvita.com/2012/12/18/deploying-new-image-formats-on-the-web/)
-이 HTML을 전혀 변경하지 않고도 어떤 이미지를 보낼 것인지 결정할 수 있게 됩니다.
-Instart Logic과 같은 서비스는 고객에게
-이미지를 전달할 때 이러한 접근 방식을 이용합니다.
-
-다음으로는 조건부로 여러 이미지 형식을 제공할 수 없을 때의
-옵션에 대해 이야기해 봅시다. **JPEG 최적화 인코더**.
-
-
-### JPEG 최적화 인코더 {: #optimizing-jpeg-encoders }
-
-최신 JPEG 인코더는 기존의 브라우저 및 이미지 처리 앱과의 호환성을 유지하면서
-더 작고 충실도는 더 높은 JPEG 파일을 만들려고
-합니다. 이들은 압축 이득을 얻기 위해 새로운 이미지 형식을 도입하거나
-이 생태계를 변경할 필요성을 피합니다. 이러한 두 인코더는
-MozJPEG와 Guetzli입니다.
-
-***짧은 요약: 어떤 JPEG 최적화 인코더를 사용해야 하나요?***
-
-* 일반 웹 자산: MozJPEG
-* 품질을 가장 중시하며 인코딩 시간이 길어도 괜찮은 경우: Guetzli를 사용하세요.
-* 설정성이 필요한 경우:
- * [JPEGRecompress](https://github.com/danielgtaylor/jpeg-archive)(내부에서
-   MozJPEG 사용)
- * [JPEGMini](http://www.jpegmini.com/). Guetzli와 유사하며 최고의
-   품질을 자동으로 선택합니다. 기술적으로는 Guetzli만큼 세련되지 않았지만
-  더 빠르며 웹에 더 적절한 범위의 품질을 목표로 합니다.
- * [ImageOptim API](https://imageoptim.com/api)(무료 온라인 인터페이스는
-   [여기](https://imageoptim.com/online)) - 독특한 방식으로
-   색상을 처리합니다. 전반적인 품질에서 색상 품질을 따로 선택할 수 있습니다. 스크린샷에서는
-   고해상도 색상을 유지하면서도 자연 사진에서 매끄러운 색상의 바이트를 낭비하지 않도록
-   자동으로 크로마 서브샘플링 수준을 선택합니다.
-
-### MozJPEG는 무엇입니까? {: #what-is-mozjpeg }
-
-Mozilla는
-[MozJPEG](https://github.com/mozilla/mozjpeg)의 형식으로 현대적인 JPEG 인코더를 제공합니다. [Mozilla에
-따르면](https://research.mozilla.org/2014/03/05/introducing-the-mozjpeg-project/)
-JPEG 파일의 최대 10%를 다듬을 수 있습니다. MozJPEG로 압축된 파일은
-브라우저 간에 이용할 수 있으며, 프로그레시브 스캔 최적화,
-[격자 양자화](https://en.wikipedia.org/wiki/Trellis_quantization)
-(가장 압축률이 적은 것을 삭제) 및 한층 매끄러운 고 DPI 이미지를 생성하는 데 도움이 되는 몇 가지 양호한 [양자화
-표 사전 설정 값](https://calendar.perfplanet.com/2014/mozjpeg-3-0/)(XML 구성을 거칠 의향이 있다면 ImageMagick으로도
-가능)과 같은 기능이
-포함되어 있습니다.
-
-MozJPEG는
-[ImageOptim](https://github.com/ImageOptim/ImageOptim/issues/45) 모두에서 지원되며, 이를 위한 비교적 신뢰할 수 있는
-구성 가능 [imagemin
-플러그인](https://github.com/imagemin/imagemin-mozjpeg)이 있습니다. Gulp를 이용한 샘플 구현은
-다음과 같습니다.
+MozJPEG is supported in both [ImageOptim](https://github.com/ImageOptim/ImageOptim/issues/45) and there's a relatively reliable configurable [imagemin plugin](https://github.com/imagemin/imagemin-mozjpeg) for it. Here's a sample implementation with Gulp:
 
 ```js
 const gulp = require('gulp');
@@ -658,82 +295,34 @@ gulp.task('mozjpeg', () =>
 );
 ```
 
+![mozjpeg being run from the
+        command-line](images/Modern-Image10.jpg)
 
-<img src="images/Modern-Image10.jpg" alt="명령줄에서
-        실행 중인 mozjpeg" />
+![mozjpeg compression at different
+        qualities. At q=90, 841KB. At q=85, 562KB. At q=75, 324KB. Similarly,
+        Butteraugli and SSIM scores get slightly worse as we lower quality.](images/Modern-Image11.jpg)
 
+MozJPEG: A comparison of file-sizes and visual similarity scores at different qualities.
 
+I used [jpeg-compress](https://github.com/imagemin/imagemin-jpeg-recompress) from the [jpeg-archive](https://github.com/danielgtaylor/jpeg-archive) project to calculate the SSIM (The Structural Similarity) scores for a source image. SSIM is a method for measuring the similarity between two images, where the SSIM score is a quality measure of one image given the other is considered "perfect".
 
+In my experience, MozJPEG is a good option for compressing images for the web at a high visual quality while delivering reductions on file size. For small to medium sized images, I found MozJPEG (at quality=80-85) led to 30-40% savings on file size while maintaining acceptable SSIM, offering a 5-6% improvement on jpeg-turbo. It does come with a [slower encoding cost](http://www.libjpeg-turbo.org/About/Mozjpeg) than baseline JPEG, but you may not find this a show stopper.
 
-<img src="images/Modern-Image11.jpg" alt="여러 품질에서의
-        mozjpeg 압축. q=90에서 841KB. q=85에서 562KB. q=75에서 324KB. 마찬가지로,
-     Butteraugli 및 SSIM 점수도 품질을 낮출 수록 조금씩 나빠집니다." />
+Note: if you need a tool supporting MozJPEG with additional configuration support and some complimentary utilities for image comparison, check out [jpeg-recompress](https://github.com/danielgtaylor/jpeg-archive). Jeremy Wagner, author of Web Performance in Action has had some success using it with [this](https://twitter.com/malchata/status/884836650563579904) configuration.
 
-MozJPEG: 여러
-품질에서의 파일 크기 및 시각적 유사성 점수 비교.
+### What is Guetzli? {: #what-is-guetzli }
 
-소스 이미지의 SSIM(구조적 유사성) 점수 계산을 위해 [jpeg-archive](https://github.com/danielgtaylor/jpeg-archive) 프로젝트
-의[jpeg-compress](https://github.com/imagemin/imagemin-jpeg-recompress)
-를 사용했습니다.
-SSIM은 두 이미지의 유사성을 측정하는 방법으로, SSIM
-점수는 한 이미지가 '완벽'하다고 고려했을 때 다른 하나의 이미지에 대한 품질 측정값입니다.
+[Guetzli](https://github.com/google/guetzli) is a promising, if slow, perceptual JPEG encoder from Google that tries to find the smallest JPEG that is perceptually indistinguishable from the original to the human eye. It performs a sequence of experiments that produces a proposal for the final JPEG, accounting for the psychovisual error of each proposal. Out of these, it selects the highest-scoring proposal as the final output.
 
-저의 경험에 따르면 MozJPEG는 파일 크기를 줄이면서도
-높은 시각적 품질로 웹에 사용할 이미지를 압축하는 데 훌륭한 선택지입니다. 작거나
-중간 크기의 이미지의 경우, MozJPEG(품질=80~85일 때)가 허용 가능한 SSIM을 유지하면서도 파일 크기를 30~40% 절약하여
-jpeg-turbo에서 5~6%의
-개선을 제공한다는 점을 발견했습니다. 베이스라인 JPEG보다 [더 느린
-인코딩 비용](http://www.libjpeg-turbo.org/About/Mozjpeg)으로 제공되기는 하지만, 장애로 느껴질
-정도는 아닙니다.
+To measure the differences between images, Guetzli uses [Butteraugli](https://github.com/google/butteraugli), a model for measuring image difference based on human perception (discussed below). Guetzli can take into account a few properties of vision that other JPEG encoders do not. For example, there is a relationship between the amount of green light seen and sensitivity to blue, so changes in blue in the vicinity of green can be encoded a little less precisely.
 
-참고: 추가 구성 지원을 갖춘 MozJPEG 지원 도구 및 이미지 비교를 위한
-몇 가지 무료 유틸리티가 필요하다면
-[jpeg-recompress](https://github.com/danielgtaylor/jpeg-archive)를 살펴보세요. Web Performance in Action의 저자
- Jeremy Wagner가
-[이](https://twitter.com/malchata/status/884836650563579904) 구성을 사용하여 소정의 성공을 거두었습니다.
+Note: Image file-size is **much** more dependent on the choice of **quality** than the choice of **codec**. There are far far larger file-size differences between the lowest and highest quality JPEGs compared to the file-size savings made possible by switching codecs. Using the lowest acceptable quality is very important. Avoid setting your quality too high without paying attention to it.
 
+Guetzli [claims](https://research.googleblog.com/2017/03/announcing-guetzli-new-open-source-jpeg.html) to achieve a 20-30% reduction in data-size for images for a given Butteraugli score compared to other compressors. A large caveat to using Guetzli is that it is extremely, extremely slow and is currently only suitable for static content. From the README, we can note Guetzli requires a large amount of memory - it can take 1 minute + 200MB RAM per megapixel. There's a good thread on real-world experience with Guetzli in [this Github thread](https://github.com/google/guetzli/issues/50). It can be ideal for when you’re optimizing images as part of a build process for a static site but less so when performed on demand.
 
-### Guetzli는 무엇인가요? {: #what-is-guetzli }
+Note: Guetzli may be more suitable when you're optimizing images as part of a build process for a static site, or situations where image optimization is not performed on demand.
 
-[Guetzli](https://github.com/google/guetzli)는 사람의 눈으로 원본과 구분할 수
-없는 가장 작은 JPEG를 찾는 Google의 인지
-JPEG 인코더이며, 느리지만 유망합니다. 이 인코더는 일련의
-실험을 수행하여 최종 JPEG에 대한 제안을 생성하고,
-각 제안의 정신시각적 오류를 기록합니다. 이 중에서 점수가
-가장 높은 제안을 최종 출력으로 선택합니다.
-
-이미지의 차이를 측정하기 위해 Guetzli는 인간의 지각을 기반으로 이미지의 차이를 측정하는 모델인
-[Butteraugli](https://github.com/google/butteraugli)(아래에서 논함)를 사용합니다.
- Guetzli는
-다른 JPEG 인코더가 제공하지 않는 몇 가지 시각 속성을 고려할 수 있습니다. 예를
-들어, 보이는 초록색의 양과 파란색에 대한 민감도에는 관련이 있으므로,
-초록색 인근의 파란색에 대한 변경 사항이
-덜 정확하게 인코딩될 수 있습니다.
-
-참고: 이미지 파일 크기는 **코덱** 선택보다
-**품질**선택에 **훨씬** 종속적입니다. 저품질과 고품질 JPEG의
-파일 크기 차이는 코덱을 바꾸어 절약한 파일 크기에 비해
-훨씬 더 큽니다. 허용되는 가장 낮은 품질을 사용하는 것이
-매우 중요합니다. 주의를 기울이지 않고 너무 높은 품질을 설정하지 않도록 하세요.
-
-Guetzli에
-[따르면](https://research.googleblog.com/2017/03/announcing-guetzli-new-open-source-jpeg.html
-) 주어진 Butteraugli 점수의 이미지의 데이터 크기를
-다른 압축 프로그램보다 20~30% 감소할 수 있다고 합니다. Guetzli 사용에 주의해야 할 점은 이 프로그램이
-매우 매우 느리며 현재는 정적 콘텐츠에만 적합하다는 점입니다.
-README에서 Guetzli에는 대용량의 메모리가 필요하다는 것을 강조했습니다. 이 프로그램은
-메가픽셀당 1분이 소요되고 200MB RAM을 차지합니다. Guetzli의 실제 사용
-경험에 관한 좋은 스레드가 [이 Github
-스레드](https://github.com/google/guetzli/issues/50)에 있습니다. 정적 사이트
-빌드 프로세스의 일환으로 이미지를 최적화할 때는 이상적이지만,
-온디맨드를 수행할 때는 적합하지 않습니다.
-
-참고: Guetzli는 정적 사이트
-빌드 프로세스의 일환으로 이미지를 최적화할 때나, 이미지 최적화가 온디맨드로 수행되지
-않는 상황에 더 적합합니다.
-
-ImageOptim과 같은 도구는 Guetzli 최적화([최신
-버전](https://imageoptim.com/)에서)를 지원합니다.
+Tools like ImageOptim support Guetzli optimization (in [the latest versions](https://imageoptim.com/)).
 
 ```js
 const gulp = require('gulp');
@@ -752,345 +341,170 @@ gulp.task('guetzli', () =>
 );
 ```
 
+![guetzli being run from gulp for
+        optimization](images/Modern-Image12.jpg)
 
-<img src="images/Modern-Image12.jpg" alt="최적화를 위해 Gulp에서 실행 중인
-        Guetzli" />
+It took almost seven minutes (and high CPU usage) to encode 3 x 3MP images using Guetzli with varied savings. For archiving higher-resolution photos, I could see this offering some value.
 
+![comparison of guetzli at different
+        qualities. q=100, 945KB. q=90, 687KB. q=85, 542KB.](images/Modern-Image13.jpg) Guetzli: A comparison of file sizes and visual similarity scores at different qualities.
 
-다양한 절약 옵션으로
-Guetzli로 3 x 3MP 이미지를 인코딩하는 데 거의 7분(및 높은 CPU 사용)이 소요됩니다. 고해상도 사진을 얻고자 할 때는
-어느 정도의 이점이 있습니다.
+Note: It's recommended to run Guetzli on high quality images (e.g uncompressed input images, PNG sources or JPEGs of 100% quality or close). While it will work on other images (e.g JPEGs of quality 84 or lower), results can be poorer.
 
+While compressing an image with Guetzli is very (very) time-consuming and will make your fans spin, for larger images, it is worth it. I have seen a number of examples where it saved anywhere up to 40% on file size while maintaining visual fidelity. This made it perfect for archiving photos. On small to medium sized images, I have still seen some savings (in the 10-15KB range) but they were not quite as well pronounced. Guetzli can introduce more liquify-esque distortion on smaller images while compressing.
 
-<img src="images/Modern-Image13.jpg" alt="여러 품질에서 Guetzli
-        비교. q=100, 945KB. q=90, 687KB. q=85, 542KB." /> Guetzli: 여러
-        품질에서의 파일 크기 및
-        시각적 유사성 점수 비교.
+You may also be interested in Eric Portis research [comparing](https://cloudinary.com/blog/a_closer_look_at_guetzli) Guetzli to Cloudinary's auto-compression for a different data point on effectiveness.
 
+### How does MozJPEG compare to Guetzli? {: #mozjpeg-vs-guetzli }
 
+Comparing different JPEG encoders is complex - one needs to compare both the quality and fidelity of the compressed image as well as the final size. As image compression expert Kornel Lesi&#x144;ski notes, benchmarking one but not both of these aspects could lead to [invalid](https://kornel.ski/faircomparison) conclusions.
 
-참고: 고품질 이미지에 Guetzli를 실행하는 것이 권장됩니다(예: 압축 해제된
-입력 이미지, PNG 원본 또는 100% 품질 또는 이에 근사한 JPEG). 다른 이미지(예: 84 이하 품질의 JPEG)에도 사용할 수 있지만,
-결과물이 좋지 않을 수 있습니다.
+How does Guetzli compare to MozJPEG? - Kornel's take:
 
-Guetzli로 이미지를 압축하는 것은 매우 (매우) 시간 소모가 크고 오랜 컴퓨터 가동이
-필요하지만, 큰 이미지에 경우에는 감수할 만 합니다. 저는 시각적
-충실도를 유지하면서도 파일 크기를 최대 40%까지
-절약한 여러 사례를 보았습니다. 따라서 사진을 보관 처리할 때 완벽한 방법입니다. 작거나 중간 크기의
-이미지에서도 약간의 절감(10~15KB)를 확인할 수 있지만, 크게 두각을 나타내지는
-않습니다. Guetzli는 작은 이미지를 압축할 때
-다소 픽셀 유동화스러운 왜곡을 일으킵니다.
+* Guetzli is tuned for higher-quality images (butteraugli is said to be best for `q=90`+, MozJPEG's sweet spot is around `q=75`)
+* Guetzli is much slower to compress (both produce standard JPEGs, so decoding is fast as usual)
+* MozJPEG doesn't automagically pick quality setting, but you can find optimal quality using an external tool, e.g. [jpeg-archive](https://github.com/danielgtaylor/jpeg-archive)
 
-효율성에 관한 여러 데이터 포인트에 대해 Guetzli를 Cloudinary의 자동 압축과 
-[비교한](https://cloudinary.com/blog/a_closer_look_at_guetzli) Eric Portis의 연구가 
-여러분의 흥미를 일으킬지도 모릅니다.
-
-### MozJPEG는 Guetzli에 비해 어떤가요? {: #mozjpeg-vs-guetzli }
-
-서로 다른 JPEG 인코더를 비교하는 것은 복잡합니다. 압축된 이미지의
-품질과 충실도뿐만 아니라 파일 크기도 비교해야 하기 때문입니다. 이미지
-압축 전문가 Kornel Lesi&#x144;ski는 이러한 측면 모두가 아니라
-하나만 기준으로 삼으면 [잘못된](https://kornel.ski/faircomparison)
-결론으로 이어질 수 있다고 지적했습니다.
-
-Guetzli는 MozJPEG에 비해 어떤가요? - Kornel의 의견:
-
-* Guetzli는 고품질 이미지에 적합하도록 고안되었습니다(`q=90` 이상에
-  대해서는 butteraugli가 최고이며, MozJPEG의 가장 적절한 품질은 약 `q=75`)
-* Guetzli는 압축하는 데 훨씬 더 오래 걸립니다(두 가지 모두 표준 JPEG를 생성하므로 디코딩은
-  언제나처럼 빠릅니다)
-* MozJPEG는 마법처럼 품질 설정을 선택하지 않지만
-  다음과 같은 외부 도구를 이용하여 최적의 품질을 찾을 수 있습니다.
-  [jpeg-archive](https://github.com/danielgtaylor/jpeg-archive)
-
-압축된 이미지가 원본과 시각적으로 유사한지
-아니면 유사하게 인지되는 것인지를 결정하기 위한 수많은 방법이 존재합니다. 이미지 품질 연구에서는 종종
-[SSIM](https://en.wikipedia.org/wiki/Structural_similarity)(구조적
-유사성) 방법을 사용합니다. Guetzli는 어떤 방식으로든 Butteraugli에 최적화합니다.
+A number of methods exist for determining if compressed images are visually similar or perceivable similar to their sources. Image quality studies often use methods like [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) (structural similarity). Guetzli however optimizes for Butteraugli.
 
 ### Butteraugli {: #butteraugli }
 
-[Butteraugli](https://github.com/google/butteraugli)는 Google의 프로젝트이며,
-사람이 두 이미지의 시각적 이미지 열화(정신시각적
-유사성)를 인지할 수 있는 지점을 추정합니다. 거의 눈치채지 못할 만큼의
-차이 영역에서 신뢰할 수 있는 이미지에 대한 점수를 제공합니다. Butteraugli는 스칼라 점수를
-제공할 뿐만 아니라, 차이 수준의 공간 지도를
-계산합니다. SSIM이 이미지의 오류 전체를 본다면,
-Butteraugli는 최악의 부분만을 봅니다.
+[Butteraugli](https://github.com/google/butteraugli) is a project by Google that estimates the point when a person may notice visual image degradation (the psychovisual similarity) of two images. It gives a score for the images that is reliable in the domain of barely noticeable differences. Butteraugli not only gives a scalar score, but also computes a spatial map of the level of differences. While SSIM looks at the aggregate of errors from an image, Butteraugli looks at the worst part.
 
+![butteraugli validating an image of a
+        parrot](images/Modern-Image14.jpg) Above is an example that used Butteraugli to find the minimal JPEG quality threshold before visual degradation was bad enough for a user to notice something wasn’t clear. It resulted in a 65% reduction in total file size.
 
-<img src="images/Modern-Image14.jpg" alt="앵무새의 이미지를 검사하는
-        Butteraugli" /> 위는 시각적 열화가 너무 심해서 사용자가 선명하지 않다고 느끼기 전의 최소
-        JPEG 품질 임계값을 찾기 위해
-        Butteraugli를 이용한 예입니다. 그 결과 총 파일 크기의
-        65% 감소가 나타났습니다.
+In practice, you would define a target goal for visual quality and then run through a number of different image optimization strategies, looking at your Butteraugli scores, before choosing something that fits the best balance of file- size and level.
 
+![butteraugli being run from the command line](images/Modern-Image15.jpg) All in all, it took me about 30m to setup Butteraugli locally after installing Bazel and getting a build of the C++ sources to correctly compile on my Mac. Using it is then relatively straight-forward: specify the two images to compare (a source and compressed version) and it will give you a score to work from.
 
+**How does Butteraugli differ to other ways of comparing visual similarity?**
 
-실제로는
-파일 크기와 수준에 대한 최적의 밸런스에 맞는 것을 선택하기 전에,
-시각적 품질의 목표를 정의한 다음 여러 이미지 최적화 전략을 거치고
-Butteraugli 점수를 볼 것입니다.
+[This comment](https://github.com/google/guetzli/issues/10#issuecomment-276295265) from a Guetzli project member suggests Guetzli scores best on Butteraugli, worst on SSIM and MozJPEG scores about as well on both. This is in line with the research I've put into my own image optimization strategy. I run Butteraugli and a Node module like [img-ssim](https://www.npmjs.com/package/img-ssim) over images comparing the source to their SSIM scores before/after Guetzli and MozJPEG.
 
+**Combining encoders?**
 
-<img src="images/Modern-Image15.jpg"
-        alt="명령 줄에서 실행 중인 Butteraugli" /> Bazel을 설치하고 올바르게 Mac에 컴파일하기 위한 C++ 소스의 빌드를 받은 후,
-        로컬에 Butteraugli를 설치하는 데 전반적으로
-        약 30분이 소요되었습니다. 그 후에는 사용은 상대적으로
-        간단합니다. 비교할 두 개의 이미지(원본과 압축 버전)를
-        지정하면 사용할 수 있는 점수를
-        제공합니다.
+For larger images, I found combining Guetzli with **lossless compression **in MozJPEG (jpegtran, not cjpeg to avoid throwing away the work done by Guetzli) can lead to a further 10-15% decrease in filesize (55% overall) with only very minor decreases in SSIM. This is something I would caution requires experimentation and analysis but has also been tried by others in the field like [Ariya Hidayat](https://ariya.io/2017/03/squeezing-jpeg-images-with-guetzli) with promising results.
 
+MozJPEG is a beginner-friendly encoder for web assets that is relatively fast and produces good-quality images. As Guetzli is resource-intensive and works best on larger, higher-quality images, it's an option I would reserve for intermediate to advanced users.
 
-**Butteraugli는 시각적 유사성을 비교하는 다른 방법과 무엇이 다른가요?**
+## What is WebP? {: #what-is-webp }
 
-Guetzli 프로젝트 멤버의 [이
-의견](https://github.com/google/guetzli/issues/10#issuecomment-276295265)
-은 Guetzli가 Butteraugli에서는 최고의 점수를 내고,
-SSIM에는 최악의 점수를 얻으며, MozJPEG도 두 가지에 대체로 비슷한 점수를 받는다고 합니다. 이 의견은
-제가 자체 이미지 최적화 전략에 기울인 연구와도 일치합니다. 저는 이미지에 대해 Butteraugli 및
-[img-ssim](https://www.npmjs.com/package/img-ssim)와 같은 노드 모듈을 실행하여 Guetzli 및
-MozJPEG 전/후의 SSIM 점수를
-원본과 비교했습니다.
+[WebP](/speed/webp/) is a recent image format from Google aiming to offer lower file-sizes for lossless and lossy compression at an acceptable visual quality. It includes support for alpha-channel transparency and animation.
 
-**인코더 결합하기?**
+In the last year, WebP gained a few percent over compression-wise in lossy and lossless modes and speed-wise the algorithm got twice as fast with a 10% improvement in decompression. WebP is not a tool for all purposes, but it has some standing and a growing user base in the image compression community. Let's examine why.
 
-큰 이미지의 경우 Guetzli와
-MozJPEG의 **무손실 압축**(Guetzli로 작업한 것을 유지하기 위해 cjpeg이 아닌 jpegtran으로)을 결합하면 근소한
-SSIM의 감소만으로 10~15%의 파일
-크기(전체 55%)를 추가로 줄일 수 있다는 발견했습니다. 이것은 실험과
-분석에 주의가 필요하지만, 해당 분야에 있는
-[Ariya Hidayat](https://ariya.io/2017/03/squeezing-jpeg-images-with-guetzli)과 같은 다른 사람들도 시도하여
-의미 있는 결과를 얻었습니다.
+![comparison of webp at different
+       quality settings. q=90, 646KB. q=80= 290KB. q=75, 219KB. q=70, 199KB](images/Modern-Image16.jpg) WebP: A comparison of file sizes and visual similarity scores at different qualities.
 
-MozJPEG는 비교적 빠르고
-양호한 품질의 이미지를 생성하는 웹 자산을 위한 초심자 친화적인 인코더입니다. Guetzli는 리소스 집중적이고
-대형 고품질 이미지에 가장 적합하기 때문에
-중급자에서 상급자를 위해 남겨둘 만한 선택지입니다.
+### How does WebP perform? {: #how-does-webp-perform }
 
+**Lossy Compression**
 
-## WebP란 무엇인가요? {: #what-is-webp }
+WebP lossy files, using a VP8 or VP9 video key frame encoding variant, are on average cited by the WebP team as being [25-34%](/speed/webp/docs/webp_study) smaller than JPEG files.
 
-[WebP](/speed/webp/)는
-Google의 최신 이미지 형식으로, 허용되는 시각적 품질에서
-무손실 및 손실 압축을 위한 더 작은 파일 크기를 제공하는 것을 목적으로 합니다. 이 형식에는 알파 채널 투명도
-및 애니메이션에 대한 지원도 포함됩니다.
+In the low-quality range (0-50), WebP has a large advantage over JPEG because it can blur away ugly blockiness artifacts. A medium quality setting (-m 4 -q 75) is the default balancing speed/file-size. In the higher-range (80-99), the advantages of WebP shrink. WebP is recommended where speed matters more than quality.
 
-작년에 WebP는 손실 및
-무손실 모드의 압축면에서 수 퍼센트를 차지했으며,
-속도 면에서 이 알고리즘은 두 배 빨랐고 압축 해제는 10% 개선되었습니다.  WebP가 범용 도구는 아니지만,
-이미지 압축 커뮤니티에서 일부 지지와 사용자층의 증가를 보이고 있습니다. 그 이유를
-살펴봅시다.
+**Lossless Compression**
 
+[WebP lossless files are 26% smaller than PNG files](/speed/webp/docs/webp_lossless_alpha_study). The lossless load-time decrease compared to PNG is 3%. That said, you generally don't want to deliver your users lossless on the web. There's a difference between lossless and sharp edges (e.g non-JPEG). Lossless WebP may be more suitable for archival content.
 
-<img src="images/Modern-Image16.jpg" alt="여러 품질 설정에서
-      WebP 비교 q=90, 646KB. q=80= 290KB. q=75, 219KB. q=70, 199KB" />
-       WebP: 여러 품질에서의
-       파일 크기 및 시각적 유사성 점수 비교.
+**Transparency**
 
+WebP has a lossless 8-bit transparency channel with only 22% more bytes than PNG. It also supports lossy RGB transparency, which is a feature unique to WebP.
 
-### WebP는 어떻게 작동합니까? {: #how-does-webp-perform }
+**Metadata**
 
-**손실 압축**
+The WebP file format supports EXIF photo metadata and XMP digital document metadata. It also contains an ICC Color Profile.
 
-WebP팀은 다양한 VP8이나 VP9 동영상 키 프레임
-인코딩을 사용한 WebP 손실 파일이
-JPEG 파일보다
-평균적으로 [25~34%](/speed/webp/docs/webp_study) 더 작다고 말합니다.
+WebP offers better compression at the cost of being more CPU intensive. Back in 2013, the compression speed of WebP was ~10x slower than JPEG but is now negligible (some images may be 2x slower). For static images that are processed as part of your build, this shouldn't be a large issue. Dynamically generated images will likely cause a perceivable CPU overhead and will be something you will need to evaluate.
 
-저품질 범위(0~50)에서
-WebP는 보기 흉한 블록 아티팩트를 희미하게 할 수 있으므로 JPEG에 비해 더 큰 이점을 가집니다. 중간 품질 환경(-m 4 -q 75)은
-속도/파일 크기 밸런싱 기본값입니다. 높은 범위(80~99)에서 WebP의 이점은
-감소합니다. WebP는 품질보다 속도가 중요한 경우에
-권장됩니다.
+Note: WebP lossy quality settings are not directly comparable to JPEG. A JPEG at "70% quality" will be quite different to a WebP image at "70% quality" because WebP achieves smaller file sizes by discarding more data.
 
-**무손실 압축**
+### Who's using WebP in production? {: #whos-using-webp-in-production }
 
-[WebP 무손실 파일은
-PNG 파일보다 26% 더 작습니다](/speed/webp/docs/webp_lossless_alpha_study).
-무손실 로드 시간은 PNG에 비해 3% 감소합니다. 하지만 보통은 웹에서
-사용자에게 무손실 파일을 전송하고 싶지 않을 것입니다. 무손실과
-선명함은 다릅니다(예: 비JPEG). 무손실 WebP는
-보관용 콘텐츠에 더 적합할 수 있습니다.
+Many large companies are using WebP in production to reduce costs and decrease web page load times.
 
-**투명도**
+Google reported 30-35% savings using WebP over other lossy compression schemes, serving 43 billion image requests a day, 26% of that being lossless compression. That's a lot of requests and significant savings. Savings would undoubtedly be larger if [browser support](http://caniuse.com/#search=webp) were better and more widespread. Google also uses it in production sites like Google Play and YouTube.
 
-WebP에는 PNG보다
-단 22% 더 용량이 큰 무손실 8비트 투명도 채널이 있습니다. 또한, 손실 RGB 투명도도 지원합니다. 이것은 WebP만의 고유한 기능입니다.
+Netflix, Amazon, Quora, Yahoo, Walmart, Ebay, The Guardian, Fortune, and USA Today, all compress and serve images with WebP for browsers which support it. VoxMedia [shaved 1-3s off load times](https://product.voxmedia.com/2015/8/13/9143805/performance-update-2-electric-boogaloo) for The Verge by switching over to WebP for their Chrome users. [500px](https://iso.500px.com/500px-color-profiles-file-formats-and-you/) saw an average 25% reduction in image file size with similar or better image quality when switching to serving it to their Chrome users.
 
-**메타데이터**
+There are quite a few more companies on board than this sample list indicates.
 
-WebP 파일 형식은 EXIF 사진 메타데이터 및 XMP 디지털 문서
-메타데이터를 지원합니다. 또한, ICC 색상 프로필도 담고 있습니다.
+![WebP stats at Google: over 43B image
+        requests a day](images/webp-conversion.jpg) WebP usage at Google: 43 billion WebP image requests a day are served across YouTube, Google Play, Chrome Data Saver and G+.
 
-WebP는 비용을 CPU에 집중하여 더 나은 압축을 제공합니다. 2013년에는
-WebP의 압축 속도가 JPEG보다 최대 10배 느렸지만, 이제는
-무시할 수 있는 수준이 되었습니다(일부 이미지는 2배 느릴 수 있음). 빌드의 일환으로
-처리된 정적 이미지의 경우, 이것이 큰 문제가 되지 않습니다. 동적으로 생성된
-이미지는 눈에 띄는 CPU 오버헤드를 일으키므로
-재고해야 할 수 있습니다.
+### How does WebP encoding work? {: #how-does-webp-encoding-work }
 
-참고: WebP 손실 품질 상황은 JPEG와 직접 비교할 수 없습니다. WebP는
-더 많은 데이터를 삭제하여 파일 크기를 더 작게 하기 때문에,
-'70% 품질'의 JPEG는 '70% 품질'의 WebP와는 상당히 다릅니다.
+WebP's lossy encoding is designed to compete with JPEG for still images. There are three key phases to WebP's lossy encoding:
 
+**Macro-blocking** - splitting an image into 16x16 (macro) blocks of luma pixels and two 8x8 blocks of chroma pixels. This may sound familiar to the idea of JPEGs doing color space conversion, chroma channel downsampling and image subdivision.
 
-### 어떤 사람이 프로덕션에서 WebP를 사용하나요? {: #whos-using-webp-in-production }
+![Macro-blocking example of a Google
+        Doodle where we break a range of pixels down into luma and chroma
+        blocks.](images/Modern-Image18.png)
 
-많은 대형 회사에서 비용을 줄이고
-웹페이지 로드 시간을 감소시키기 위해 프로덕션에서 WebP를 사용하고 있습니다.
+**Prediction** - every 4x4 subblock of a macroblock has a prediction model applied that effectively does filtering. This defines two sets of pixels around a block - A (the row directly above it) and L (the column to the left of it). Using these two the encoder fills a test block with 4x4 pixels and determines which creates values closest to the original block. Colt McAnlis talks about this in more depth in [How WebP lossy mode works](https://medium.com/@duhroach/how-webp-works-lossly-mode-33bd2b1d0670).
 
-Google은 다른 손실 압축 시스템에 비해 WebP 사용이 30~35%를 절감하며,
-하루에 430억 개의 이미지 요청을 제공하고 그 중 26%는 무손실 압축이었다고 보고했습니다.
-정말 많은 요청이자 상당한 절감입니다. 
-[브라우저 지원](http://caniuse.com/#search=webp)이 더 좋았거나 
-더 광범위했다면 절감은 의심할 여지 없이 더 컸을 것입니다. 또한, Google은 Google Play나
-YouTube와 같은 프로덕션 사이트에도 이것을 이용합니다.
+![Google Doodle example of a segment
+       displaying the row, target block and column L when considering a
+       prediction model.](images/Modern-Image19.png)
 
-Netflix, Amazon, Quora, Yahoo, Walmart, Ebay, The Guardian, Fortune, 및 USA
-Today는 모두 WebP를 지원하는 브라우저에 이미지를 WebP로 압축하여 제공합니다.
-VoxMedia는 Chrome 사용자에 대해 WebP로 전환함으로써
-The Verge의 [로드
-시간을 1~3초 줄였습니다](https://product.voxmedia.com/2015/8/13/9143805/performance-update-2-electric-boogaloo).
-[500px](https://iso.500px.com/500px-color-profiles-file-formats-and-you/)는 Chrome 사용자에게
-WebP 제공으로 전환함으로써 비슷하거나 더 나은 품질로
-평균 25%의 이미지 파일 크기 감소를 경험했습니다.
+A Discrete Cosine Transform (DCT) is applied with a few steps similar to JPEG encoding. A key difference is use of an [Arithmetic Compressor](https://www.youtube.com/watch?v=FdMoL3PzmSA&index=7&list=PLOU2XLYxmsIJGErt5rrCqaSGTMyyqNt2H) vs JPEG's Huffman.
 
-이 샘플 목록에 나타난 것 보다 더 많은 회사가 이용 중입니다.
+If you want to dive deeper, Google Developer’s article [WebP Compression Techniques](/speed/webp/docs/compression) goes into this topic in depth.
 
+### WebP browser support {: #webp-browser-support }
 
-<img src="images/webp-conversion.jpg" alt="Google의 WebP 통계: 일일 430억 개 이상의 이미지
-        요청" /> Google의 WebP 사용량: 일일 430억 개의 WebP 이미지 요청이
-        YouTube, Google Play, Chrome Data Saver 및 G+ 전역에서 제공됩니다.
+Not all browsers support WebP, however [according to CanIUse.com](http://caniuse.com/webp), global user support is at about 74%. Chrome and Opera natively support it. Safari, Edge, and Firefox have experimented with it but not landed it yet in official releases. This often leaves the task of getting the WebP image to the user up to the web developer. More on this later.
 
-### WebP 인코딩은 어떻게 작동하나요? {: #how-does-webp-encoding-work }
+Here are the major browsers and support information for each:
 
-WebP의 손실 인코딩은 정지 이미지에서 JPEG와 경쟁하기 위해 고안되었습니다. WebP의 손실 인코딩에는 세 가지 주요 단계가
-있습니다.
+* Chrome: Chrome began full support at version 23.
+* Chrome for Android: Since Chrome 50
+* Android: Since Android 4.2
+* Opera: Since 12.1
+* Opera Mini: All versions
+* Firefox: Some beta support
+* Edge: Some beta support
+* Internet Explorer: No support
+* Safari: Some beta support
 
-**매크로 차잔** - 이미지를 16x16(매크로) 루마 픽셀 블록과,
-두 개의 8x8 크로마 픽셀 블록으로 분할합니다. 이 내용은 JPEG의
-색상 공간 전환, 크로마 채널 다운샘플링, 이미지
-세분화 개념과 유사하게 들릴 수 있습니다.
+WebP is not without its downsides. It lacks full-resolution color space options and does not support progressive decoding. That said, tooling for WebP is decent and browser-support, while limited to Chrome and Opera at the time of writing, may well cover enough of your users for it to be worth considering with a fallback.
 
+### How do I convert my images to WebP? {: #how-do-i-convert-to-webp }
 
-<img src="images/Modern-Image18.png" alt="Google
-        기념일 로고의
-        매크로 차단(여러 픽셀을 루마 및 크로마 블록으로 나눔) 예시."/>
+Several commercial and open source image editing and processing packages support WebP. One particularly useful application is XnConvert: a free, cross-platform, batch image processing converter.
 
-
-
-**예측** - 매크로 블록의 모든 4x4 하위 블록에는
-효율적인 필터링을 위해 적용된 예측 모델이 있습니다. 이 모델은
-단일 블록 주변의 두 픽셀 집단을 정의합니다. A는 바로 위 행이며, L은 왼쪽의 열입니다.
-이 두 가지를 사용하여 인코더는 테스트 블록을 4x4 픽셀로 채우고 원본 블록에 가장 가까운 값을 생성하는 것을
-결정합니다. Colt McAnlis는
-[How WebP lossy mode
-works](https://medium.com/@duhroach/how-webp-works-lossly-mode-33bd2b1d0670)에서 이 내용에 대해 더 깊게 이야기했습니다.
-
-
-
-<img src="images/Modern-Image19.png" alt="예측 모델을 고려했을 때의
-       행, 대상 블록, L 열을 표시한
-       Google 기념일 로고의 세그먼트 예."/>
-
-
-
-이산 코사인 변환(DCT)이 JPEG
-인코딩과 유사하게 몇 가지 단계로 적용됩니다. 주요 차이는 JPEG의 Huffman과 달리 [산술
-압축 프로그램](https://www.youtube.com/watch?v=FdMoL3PzmSA&index=7&list=PLOU2XLYxmsIJGErt5rrCqaSGTMyyqNt2H)을
-사용한다는 점입니다.
-
-깊게 알아보고자 한다면 Google Developer의 [WebP 압축
-기술](/speed/webp/docs/compression) 글이 이 주제를
-심도 있게 다루고 있습니다.
-
-
-### WebP 브라우저 지원 {: #webp-browser-support }
-
-모든 브라우저가 WebP를 지원하는 것은
-아니지만, [CanIUse.com에 따르면](http://caniuse.com/webp) 글로벌 사용자 지원이 약 74%입니다.
-Chrome과 Opera에서는 기본적으로 지원합니다. Safari, Edge, 및 Firefox는
-이것을 테스트했지만 아직 공식 릴리스까지 이어지지는 않았습니다. 이로 인해
-WebP 이미지를 사용자에게 가져오는 작업이 웹 개발자에 달리게 됩니다.
-이에 대해서는 뒷부분에서 더 자세히 다루도록 하겠습니다.
-
-주요 브라우저 및 각각에 대한 지원 정보는 다음과 같습니다.
-
-* Chrome: Chrome은 23에서부터 완전히 지원을 시작했습니다.
-* Android용 Chrome: Chrome 50 이후부터
-* Android: Android 4.2 이후부터
-* Opera: 12.1 이후부터
-* Opera Mini: 모든 버전
-* Firefox: 일부 베타 지원
-* Edge: 일부 베타 지원
-* Internet Explorer: 지원 없음
-* Safari: 일부 베타 지원
-
-WebP에도 단점이 있습니다. 전체 해상도 색상 공간 옵션이 없으며,
-프로그레시브 디코딩을 지원하지 않습니다. 그럼에도 불구하고, WebP 도구 사용은 좋은 선택이며,
-글 작성 시점에서는 Chrome과 Opera만으로 제한되지만 브라우저가 지원되며,
-사용자를 충분히 커버하므로 폴백과 함께 고려해 볼만
-합니다.
-
-### 이미지를 WebP로 변환하려면 어떻게 해야 하나요? {: #how-do-i-convert-to-webp }
-
-몇 가지 상용 및 오픈소스 이미지 편집 및 처리 패키지가
-WebP를 지원합니다. 특히 유용한 애플리케이션은 XnConvert입니다. 무료이며, 플랫폼 간 지원과
-일괄 이미지 처리 변환기가 제공됩니다.
-
-참고: 낮은 품질이나 보통 품질의 JPEG를 WebP로 변환하지 않는 것이 중요합니다.
-이는 흔히 일어나는 실수이며, JPEG 압축
-아티팩트가 있는 WebP 이미지를 생성할 수 있습니다. 이로 인해 WebP가
-이미지를 덜 효율적으로 절감하고_아울러_JPEG에서 더해진 왜곡으로 인해
-품질이 두 배 손상됩니다. 변환 앱에 가능한 한 최고 품질의 소스 파일(가능하면
-원본)을 이용하세요.
+Note: It's important to avoid converting low or average quality JPEGs to WebP. This is a common mistake and can generate WebP images with JPEG compression artifacts. This can lead to WebP being less efficient as it has to save the image *and* the distortions added by JPEG, leading to you losing on quality twice. Feed conversion apps the best quality source file available, preferably the original.
 
 **[XnConvert](http://www.xnview.com/en/xnconvert/)**
 
-XnConvert는 일괄 이미지 처리 기능을 제공하며 500가지 이상의 이미지
-형식과 호환됩니다. 80가지 이상의 동작을 결합하여 다양한 방식으로 이미지를 변환하거나
-편집할 수 있습니다.
+XnConvert enables batch image processing, compatible with over 500 image formats. You can combine over 80 separate actions to transform or edit your images in multiple ways.
 
+![XNConvert app on Mac where a number of
+        images have been converted to WebP](images/Modern-Image20.png) XnConvert supports batch image optimization, allowing straight-forward conversion from source files to WebP and other formats. In addition to compression, XnConvert can also help with metadata stripping, cropping, color depth customization and other transforms.
 
-<img src="images/Modern-Image20.png" alt="수 많은 이미지가 WebP로 변환된
-        Mac의 XNConvert 앱"
-         />
-XnConvert는 일괄 이미지 최적화를 지원하며, 직관적으로 소스 파일에서
-WebP 및 기타 형식으로 변환할 수 있습니다. 압축과 더불어
-XnConvert는 메타데이터 스트립, 잘라내기, 색상
-깊이 사용자 설정 및 기타 변환도 도울 수 있습니다.
+Some of the options listed on the xnview website include:
 
+* Metadata: Editing
+* Transforms: Rotate, Crop, Resize
+* Adjustments: Brightness, Contrast, Saturation
+* Filters: Blur, Emboss, Sharpen
+* Effects: Masking, Watermark, Vignetting
 
-xnview 웹사이트에 나열된 이러한 옵션의 일부는 다음을 포함합니다.
+The results of your operations can be exported to about 70 different file formats, including WebP. XnConvert is free for Linux, Mac, and Windows. XnConvert is highly recommended, especially for small businesses.
 
-*   메타데이터: 편집
-*   변환: 회전, 잘라내기, 크기 조절
-*   조정: 밝기, 대비, 채도
-*   필터: 흐림, 엠보스, 선명
-*   효과: 마스킹, 워터마크, 비네팅
+**Node modules**
 
-작업 결과물은 약 70가지의 WebP를 비롯한 다양한 파일
-형식으로 내보낼 수 있습니다. XnConvert는 Linux, Mac, Windows에서 무료로 사용할 수 있습니다.
-XnConvert는 특히 소규모 비즈니스에 권장됩니다.
+[Imagemin](https://github.com/imagemin/imagemin) is a popular image minification module that also has an add-on for converting images to WebP ([imagemin-webp](https://github.com/imagemin/imagemin-webp)). This supports both lossy and lossless modes.
 
-**노드 모듈**
+To install imagemin and imagemin-webp run:
 
-[Imagemin](https://github.com/imagemin/imagemin)는 유명한 이미지 최소화
-모듈이며, 이미지를 WebP로 변환하는 부가기능이 있습니다
-([imagemin-webp](https://github.com/imagemin/imagemin-webp)). 이 모듈은
-손실 및 무손실 모드를 모두 지원합니다.
+    > npm install --save imagemin imagemin-webp
+    
 
-imagemin 및 imagemin-webp 설치하려면 다음을 실행합니다.
-
-```
-> npm install --save imagemin imagemin-webp
-```
-
-그 후에는 양쪽 모듈에 require()을 적용하고 프로젝트 디렉토리 내의
-어떤 이미지에나(예: JPEG) 실행할 수 있습니다. 아래는 60 품질의 WebP 인코더로
-손실 인코딩을 사용한 것입니다.
-
+We can then require() in both modules and run them over any images (e.g JPEGs) in a project directory. Below we're using lossy encoding with a WebP encoder quality of 60:
 
 ```js
 const imagemin = require('imagemin');
@@ -1105,12 +519,7 @@ imagemin(['images/*.{jpg}'], 'images', {
 });
 ```
 
-
-JPEG와 유사하게, 출력에서 압축 아티팩트를 볼 수 있습니다.
-어떤 품질 설정이 여러분의 이미지에 올바른지 평가하세요. Imagemin-webp도
-무손실 품질 WebP 이미지를 인코딩하는 데 사용할 수 있습니다(24비트 색상 및
-전체 투명도 지원). 이 경우 `lossless: true`를 옵션에 전달하면 됩니다.
-
+Similar to JPEGs, it's possible to notice compression artifacts in our output. Evaluate what quality setting makes sense for your own images. Imagemin-webp can also be used to encode lossless quality WebP images (supporting 24-bit color and full transparency) by passing `lossless: true` to options:
 
 ```js
 const imagemin = require('imagemin');
@@ -1125,11 +534,7 @@ imagemin(['images/*.{jpg,png}'], 'build/images', {
 });
 ```
 
-
-Sindre
-Sorhus의 [Gulp용 WebP 플러그인](https://github.com/sindresorhus/gulp-webp)은 imagemin-webp에 빌드되었으며 [WebPack용
-WebP 로더](https://www.npmjs.com/package/webp-loader)도 이용할 수 있습니다. 이 Gulp
-플러그인은 imagemin 부가기능이 수행하는 모든 옵션을 허용합니다.
+A [WebP plugin for Gulp](https://github.com/sindresorhus/gulp-webp) by Sindre Sorhus built on imagemin-webp and a [WebP loader for WebPack](https://www.npmjs.com/package/webp-loader) are also available. The Gulp plugin accepts any options the imagemin add-on does:
 
 ```js
 const gulp = require('gulp');
@@ -1146,7 +551,7 @@ gulp.task('webp', () =>
 );
 ```
 
-또는 무손실의 경우 다음과 같습니다.
+Or lossless:
 
 ```js
 const gulp = require('gulp');
@@ -1161,206 +566,134 @@ gulp.task('webp-lossless', () =>
 );
 ```
 
-**Bash를 사용한 일괄 이미지 최적화**
+**Batch image optimization using Bash**
 
-XNConvert는 일괄 이미지 압축을 지원하지만 앱이나 빌드 시스템 사용을
-피하고자 한다면, Bash 및 이미지 최적화 바이너리로
-단순하게 작업할 수 있습니다.
+XNConvert supports batch image compression, but if you would prefer to avoid using an app or a build system, bash and image optimization binaries keep things fairly simple.
 
+You can bulk convert your images to WebP using [cwebp](/speed/webp/docs/cwebp):
 
-[cwebp](/speed/webp/docs/cwebp)를 사용하여 대량의 이미지를 WebP로 한꺼번에 변환할 수 있습니다.
+    find ./ -type f -name '*.jpg' -exec cwebp -q 70 {} -o {}.webp \;
+    
 
-```
-find ./ -type f -name '*.jpg' -exec cwebp -q 70 {} -o {}.webp \;
-```
+Or bulk optimize your image sources with MozJPEG using [jpeg-recompress](https://github.com/danielgtaylor/jpeg-archive):
 
+    find ./ -type f -name '*.jpg' -exec jpeg-recompress {} {} \;
+    
 
-[jpeg-recompress](https://github.com/danielgtaylor/jpeg-archive)를 사용하여 대량의 이미지 소스를 MozJPEG로 최적화할 수 있습니다.
+and trim those SVGs down using [svgo](https://github.com/svg/svgo) (which we'll cover later on):
 
-```
-find ./ -type f -name '*.jpg' -exec jpeg-recompress {} {} \;
-```
+    find ./ -type f -name '*.svg' -exec svgo {} \;
+    
 
-또한, [svgo](https://github.com/svg/svgo)를 이용하여 SVG를 다듬을 수 있습니다(이에 관해서는
-추후에 다룹니다).
+Jeremy Wagner has a more comprehensive post on [image optimization using Bash](https://jeremywagner.me/blog/bulk-image-optimization-in-bash) and another on doing this work in [parallel](https://jeremywagner.me/blog/faster-bulk-image-optimization-in-bash) worth reading.
 
-```
-find ./ -type f -name '*.svg' -exec svgo {} \;
-```
+**Other WebP image processing and editing apps include:**
 
-Jeremy Wagner는 [Bash를
-이용한 이미지 최적화](https://jeremywagner.me/blog/bulk-image-optimization-in-bash)에 관한 한층 종합적인 게시물과
-이 작업에 대해
-[함께](https://jeremywagner.me/blog/faster-bulk-image-optimization-in-bash)
- 읽어볼 만한 다른 글을 보유하고 있습니다.
+* Leptonica — An entire website of open source image processing and analysis Apps.
+    
+    * Sketch supports outputting directly to WebP
+    * GIMP — Free, open source Photoshop alternative. Image editor.
+    * ImageMagick — Create, compose, convert, or edit bitmap images. Free. Command-Line app.
+    * Pixelmator — Commercial image editor for Mac.
+    * Photoshop WebP Plugin — Free. Image import and export. From Google.
 
-**기타 WebP 이미지 처리 및 편집 앱에는 다음과 같은 것이 있습니다.**
+**Android:** You can convert existing BMP, JPG, PNG or static GIF images to WebP format using Android Studio. For more information, see [Create WebP Images Using Android Studio](https://developer.android.com/studio/write/convert-webp.html).
 
-   * Leptonica — 오픈소스 이미지 처리 및 분석
-     앱에 관한 전체 웹사이트.
+### [How do I view WebP images on my OS?](#how-do-i-view-webp-on-my-os){#how-do-i-view-webp-on-my-os}
 
-*   Sketch는 WebP로의 직접 출력을 지원합니다.
-    * GIMP — 무료, 오픈소스 Photoshop 대체재. 이미지 편집기.
-    * ImageMagick — 비트맵 이미지의 생성, 구성, 변환, 편집. 무료.
-      명령 줄 앱.
-    * Pixelmator — Mac용 상용 이미지 편집기.
-    * Photoshop WebP 플러그인 — 무료. 이미지 가져오기 및 내보내기. Google에서.
+While you can drag and drop WebP images to Blink-based browsers (Chrome, Opera, Brave) to preview them, you can also preview them directly from your OS using an add-on for either Mac or Windows.
 
-**Android:** Android Studio를 이용하여 기존 BMP, JPG, PNG 또는 정적 GIF 이미지를 WebP
-형식으로 변환할 수 있습니다. 더 자세한 정보는 [Android Studio를 이용하여 WebP 이미지
-생성하기](https://developer.android.com/studio/write/convert-webp.html)를 참조하세요.
+[Facebook experimented with WebP](https://www.cnet.com/news/facebook-tries-googles-webp-image-format-users-squawk/) a few years ago and found that users who tried to right-click on photos and save them to disk noticed they wouldn't be displayed outside their browser due to them being in WebP. There were three key problems here:
 
-### <a id="how-do-i-view-webp-on-my-os" href="#how-do-i-view-webp-on-my-os">내 OS에서 WebP 이미지를 보려면 어떻게 해야 하나요?</a>
-
-WebP 이미지를 블링크 기반 브라우저(Chrome, Opera,
-Brave)에 드래그 앤 드롭하여 미리보기를 표시할 수 있지만, Mac이나 Windows의 부가기능을 이용하여 OS에서
-직접 미리보기를 표시할 수도 있습니다.
-
-[Facebook의
-WebP 실험](https://www.cnet.com/news/facebook-tries-googles-webp-image-format-users-squawk/)
-수 년 전, 사진을 오른쪽 클릭하여 디스크에 저장하려던
-사용자들은 이러한 사진이 WebP이기 때문에 브라우저 바깥에서는
-표시되지 않는다는 것을 알게 되었습니다. 여기에는 세 가지 주요 문제점이 있었습니다.
-
-<ul> <li>'다른 이름으로 저장'을 사용했지만 WebP 파일을 로컬에서 볼 수 없습니다. 이 문제는
-Chrome이 자체적으로 '.webp' 핸들러를 등록하여 수정되었습니다.</li> <li> '다른 이름으로 저장' 후
-이미지를 이메일에 첨부하거나 Chrome이 없는 사용자에게 공유합니다.
-Facebook은 UI에 '다운로드' 버튼을 도입하여 사용자가 다운로드를 요청했을 때
-JPEG를 반환하는 것으로 이 문제를 해결했습니다.</li> <li>Right click >
-URL 복사 -> 웹에서 URL 공유. 이 문제는 [콘텐츠 유형
-협상](https://www.igvita.com/2012/12/18/deploying-new-image-formats-on-the-web/)으로 해결되었습니다.</li>
+<ul>
+  <li>
+    "Save as" but unable to view WebP files locally. This was fixed by Chrome registering itself as a ".webp" handler.
+  </li>
+  <li>
+    "Save as" then attaching the image to an email and sharing with someone without Chrome. Facebook solved this by introducing a prominent "download" button in their UI and returning a JPEG when users requested the download.
+  </li>
+  <li>
+    Right click > copy URL -> share URL on the web. This was solved by [content-type negotation](https://www.igvita.com/2012/12/18/deploying-new-image-formats-on-the-web/).
+  </li>
 </ul>
 
-이러한 문제는 사용자에게 별로 중요하지 않을 수 있지만,
-사회적 공유성을 가볍게 지적하는 것도 흥미롭습니다. 다행히도 오늘날에는 여러 운영체제에서
-WebP를 보고 작업하기 위한 유틸리티가 존재합니다.
+These issues might matter less to your users, but is an interesting note on social shareability in passing. Thankfully today, utilities exist for viewing and working with WebP on different operating systems.
 
-Mac에서는 [WebP용
-Quick Look 플러그인](https://github.com/Nyx0uf/qlImageSize)(qlImageSize)을 시도해 보세요. 상당히
-잘 작동합니다.
+On Mac, try the [Quick Look plugin for WebP](https://github.com/Nyx0uf/qlImageSize) (qlImageSize). It works pretty well:
 
+![Desktop on a mac showing a WebP file
+      previewed using the Quick Look plugin for WebP files](images/Modern-Image22.jpg)
 
-<img src="images/Modern-Image22.jpg" alt="WebP용 Quick Look 플러그인을 이용하여
-      WebP 파일 미리보기를 보여주는 Mac의 바탕화면"
-         />
+On Windows, you can also download the [WebP codec package](https://storage.googleapis.com/downloads.webmproject.org/releases/webp/WebpCodecSetup.exe) allowing WebP images to be previewed in the File Explorer and Windows Photo Viewer.
 
+### How do I serve WebP? {: #how-do-i-serve-webp }
 
+Browsers without WebP support can end up not displaying an image at all, which isn't ideal. To avoid this there are a few strategies we can use for conditionally serving WebP based on browser support.
 
-Windows에서 [WebP 코덱
-패키지](https://storage.googleapis.com/downloads.webmproject.org/releases/webp/WebpCodecSetup.exe)도 다운로드하여
-WebP 이미지를 파일 탐색기나 Windows 사진
-뷰어에서 미리볼 수 있습니다.
+![The Chrome DevTools Network panel
+        displaying the waterfall for the Play Store in Chrome, where WebP is
+        served.](images/play-format-webp.jpg) The Chrome DevTools Network panel highlighting WebP files being conditionally served to Blink-based browsers under the "Type" column.
 
-### WebP를 어떻게 제공해야 하나요? {: #how-do-i-serve-webp }
+![While the Play store delivers WebP
+        to Blink, it falls back to JPEGs for browsers like Firefox.](images/play-format-type.jpg) While the Play store delivers WebP to Blink, it falls back to JPEGs for browsers like Firefox.
 
-WebP를 지원하지 않는 브라우저는 이미지를 전혀 표시하지 않을 수 있으며, 이는
-이상적인 일이 아닙니다. 이러한 일을 방지하기 위해 브라우저 지원에 따라 조건부로
-WebP를 제공할 수 있는 몇 가지 전략이 있습니다.
+Here are some of the options for getting WebP images from your server to your user:
 
+**Using .htaccess to Serve WebP Copies**
 
-<img src="images/play-format-webp.jpg" alt="WebP가 제공되는 Chrome의
-        Play 스토어에 대한 워터폴을 표시한
-        Chrome DevTools Network 패널."
-         />
-Chrome DevTools Network 패널은 "Type" 열 아래에서 블링크 기반 브라우저에 조건부로 제공되고 있는 WebP 파일을
-강조표시합니다.
+Here's how to use a .htaccess file to serve WebP files to supported browsers when a matching .webp version of a JPEG/PNG file exists on the server.
 
+Vincent Orback recommended this approach:
 
+Browsers can [signal WebP support explicitly](http://vincentorback.se/blog/using-webp-images-with-htaccess/) via an [Accept header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept). If you control your backend, you can return a WebP version of an image if it exists on disk rather than formats like JPEG or PNG. This isn’t always possible however (e.g for static hosts like GitHub pages or S3) so be sure to check before considering this option.
 
+Here is a sample .htaccess file for the Apache web server:
 
-<img src="images/play-format-type.jpg" alt="Play 스토어가 WebP를 블링크에
-        전달하는 동안, Firefox와 같은 브라우저에서는 JPEG로 다시 돌아갑니다."
-         />
-Play 스토어가 WebP를 블링크에
-전달하는 동안, Firefox와 같은 브라우저에서는 JPEG로 다시 돌아갑니다.
+    <IfModule mod_rewrite.c>
+    
+      RewriteEngine On
+    
+      # Check if browser support WebP images
+      RewriteCond %{HTTP_ACCEPT} image/webp
+    
+      # Check if WebP replacement image exists
+      RewriteCond %{DOCUMENT_ROOT}/$1.webp -f
+    
+      # Serve WebP image instead
+      RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp,E=accept:1]
+    
+    </IfModule>
+    
+    <IfModule mod_headers.c>
+    
+        Header append Vary Accept env=REDIRECT_accept
+    
+    </IfModule>
+    
+    AddType  image/webp .webp
+    
 
+If there are issues with the .webp images appearing on the page, make sure that the image/webp MIME type is enabled on your server.
 
+Apache: add the following code to your .htaccess file:
 
-서버에서 사용자로
-WebP 이미지를 가져오는 몇 가지 옵션은 다음과 같습니다.
+    AddType image/webp .webp
+    
 
-**.htaccess를 사용하여 WebP 사본 제공**
+Nginx: add the following code to your mime.types file:
 
-JPEG/PNG 파일과 일치하는 .webp 버전이 서버에 존재할 때
-.htaccess 파일을 이용하여 WebP 파일을 지원되는 브라우저에 제공하는 방법은 다음과 같습니다.
+    image/webp webp;
+    
 
-Vincent Orback는 다음과 같은 접근 방식을 권장했습니다.
+Note: Vincent Orback has a sample [htaccess config](https://github.com/vincentorback/WebP-images-with-htaccess) for serving WebP for reference and Ilya Grigorik maintains a collection of [configuration scripts for serving WebP](https://github.com/igrigorik/webp-detect) that can be useful.
 
-브라우저는 [Accept
-헤더](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept)를 통해
-[WebP 지원을
-명시적으로 알릴 수 있습니다](http://vincentorback.se/blog/using-webp-images-with-htaccess/). 백엔드를
-제어하는 경우, 이미지가 JPEG나 PNG와 같은 형식이 아닌
-WebP 버전으로 디스크에 존재한다면 WebP 버전을 반환할 수 있습니다. 그러나, 이 방법을 언제나 사용할 수 있는 것이 아니므로(예:
-GitHub 페이지나 S3와 같은 정적 호스트의 경우) 이 옵션을
-고려하기 전에 반드시 확인해야 합니다.
+**Using the `<picture>` Tag**
 
-Apache 웹 서버용 샘플 .htaccess 파일은 다음과 같습니다.
+The browser itself is capable of choosing which image format to display through the use of the `<picture>` tag. The `<picture>` tag utilizes multiple `<source>` elements, with one `<img>` tag, which is the actual DOM element which contains the image. The browser cycles through the sources and retrieves the first match. If the `<picture>` tag isn't supported in the user's browser, a `<div>` is rendered and the `<img>` tag is used.
 
-```
-<IfModule mod_rewrite.c>
+Note: Be careful with the position of `<source>` as order matters. Don't place image/webp sources after legacy formats, but instead put them before. Browsers that understand it will use them and those that don't will move onto more widely supported frameworks. You can also place your images in order of file size if they're all the same physical size (when not using the `media` attribute). Generally this is the same order as putting legacy last.
 
-  RewriteEngine On
-
-  # Check if browser support WebP images
-  RewriteCond %{HTTP_ACCEPT} image/webp
-
-  # Check if WebP replacement image exists
-  RewriteCond %{DOCUMENT_ROOT}/$1.webp -f
-
-  # Serve WebP image instead
-  RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp,E=accept:1]
-
-</IfModule>
-
-<IfModule mod_headers.c>
-
-    Header append Vary Accept env=REDIRECT_accept
-
-</IfModule>
-
-AddType  image/webp .webp
-```
-
-페이지에 나타나는 .webp 이미지에 문제가 있다면,
-해당 이미지/webp MIME 유형이 서버에서 사용 설정되었는지 확인합니다.
-
-Apache: 다음 코드를 .htaccess 파일에 추가합니다.
-
-```
-AddType image/webp .webp
-```
-
-Nginx: 다음 코드를 mime.types 파일에 추가합니다.
-
-```
-image/webp webp;
-```
-
-참고: Vincent Orback은 레퍼런스용 WebP 제공을 위한 샘플 [htaccess
-config](https://github.com/vincentorback/WebP-images-with-htaccess)를 보유하고 있으며, Ilya Grigorik는
-유용한 [WebP 제공을 위한
-스크립트](https://github.com/igrigorik/webp-detect) 컬렉션을
-보유하고 있습니다.
-
-
-**`<picture>` 태그 사용**
-
-브라우저가 자체적으로 어떤 이미지 형식을 표시할지 선택할 수 있습니다. 이때
-`<picture>` 태그를 사용합니다. `<picture>` 태그는 단일 `<img>`
-태그가 있는 여러 `<source>` 요소를 활용합니다. 이것은 
-이미지가 담긴 실제 DOM 요소입니다. 브라우저는 해당 소스를 순환하고 첫 번째로 매칭되는 것을 가져옵니다.
-`<picture>` 태그가 사용자의 브라우저에서 지원되지 않는다면, `<div>`가
-렌더링되고 `<img>` 태그가 사용됩니다.
-
-참고: 순서상 `<source>`의 위치에 주의해야 합니다. 이미지/webp
-소스를 레거시 형식 뒤에 두어서는 안되며, 그 앞에 두어야 합니다. 이것을 이해하는 브라우저는
-이를 사용하고, 그렇지 않은 브라우저는 더욱 폭넓게 지원되는
-프레임워크로 이동합니다. 만약 이미지의 물리적 크기가 모두 동일하다면 이미지를
-파일 크기 순으로 배치해도 됩니다(`media` 속성을 이용하지 않을 때).
-일반적으로 레거시를 마지막에 놓는 것과 동일한 순서입니다.
-
-다음은 몇 가지 샘플 HTML입니다.
+Here is some sample HTML:
 
 ```html
 <picture>
@@ -1383,784 +716,318 @@ config](https://github.com/vincentorback/WebP-images-with-htaccess)를 보유하
 </picture>
 ```
 
-**WebP로의 자동 CDN 변환**
-
-일부 CDN은 WebP로의 자동 변환을 지원하며, WebP 이미지를
-제공하기 위해 [언제든지
-가능하다면](http://cloudinary.com/documentation/responsive_images#automating_responsive_images_with_client_hints) 클라이언트힌트를 사용할 수 있습니다.
-여러분의 CDN를 확인하여 WebP 지원이 서비스에 포함되어 있는지 알아보세요. 쉬운 해결책이
-기다리고 있을지도 모릅니다.
-
-**WordPress WebP 지원**
-
-Jetpack — 유명한 WordPress 플러그인인 Jetpack에는
-[Photon](https://jetpack.com/support/photon/)이라는 이름의 CDN 이미지 서비스가 포함되어 있습니다. Photon을 이용하면
-매끄러운 WebP 이미지 지원을 받을 수 있습니다. Photon CDN는 Jetpack의 무료 단계에 포함되어 있으므로
-좋은 가격이며 구현도 자동으로 이루어집니다. 단점은
-Photon이 이미지의 크기를 조정하고, URL에 쿼리 문자열을 추가하며, 각 이미지에 추가
-DNS 룩업이 필요합니다.
-
-**Cache Enabler 및 Optimizer** — WordPress를 사용하고 있다면
-적어도 절반은 오픈소스인 옵션이 있습니다. 이 오픈소스 플러그인 [Cache
-Enabler](https://wordpress.org/plugins/cache-enabler/)에는 WebP 이미지를 사용할 수 있으며
-현재 사용자의 브라우저가 지원하는 경우 이를 캐싱하는 메뉴 체크박스
-옵션이 있습니다. 덕분에 WebP 이미지 제공이 쉬워집니다. 단점은 다음과 같습니다.
-Cache Enabler는 Optimizer라고 하는 자매 프로그램을 사용해야 합니다. 이 프로그램은
-연간 요금이 있습니다. 이것은 순수한 오픈소스 솔루션으로서 적합하지 않아 보입니다.
-
-
-**ShortPixel** — 단독으로 혹은 Cache
-Enabler와 함께 사용할 수 있는 다른 옵션으로는 ShortPixel이 있습니다(유료). 단독으로 사용할 때 [ShortPixel](https://shortpixel.com)는 
-브라우저에 따라 올바른 유형의 이미지를 제공하는 `<picture>` 태그를 
-추가할 수 있습니다. 한 달에 최대 100개의 이미지를 무료로 최적화할 수 있습니다.
-
-**애니메이션 GIF 압축 및 `<video>`가 더 나은 이유**
-
-애니메이션 GIF는 매우 제한적인
-형식에도 불구하고 여전히 광범위하게 사용되고 있습니다. 소셜 네트워크부터 인기 있는 미디어 사이트까지
-상당한 양의 애니메이션 GIF가 삽입되어 있지만, 이 형식은 동영상 저장이나
-애니메이션을 위해 고안된 적이 *없습니다*. 실제로, [GIF89a
-spec](https://www.w3.org/Graphics/GIF/spec-gif89a.txt)는 "GIF는 애니메이션을 위한
-플랫폼으로 제작된 것이 아니다"라고 지적합니다. [색상의 수, 프레임 수
-그리고
-수치](http://gifbrewery.tumblr.com/post/39564982268/can-you-recommend-a-good-length-of-clip-to-keep-gifs)
-모두가 애니메이션 GIF 크기에 영향을 미칩니다. 동영상으로 변경하는 것이 커다란 절감을 제공할 수 있습니다.
-
-
-
-<img src="images/animated-gif.jpg" alt="애니메이션 GIF와 동영상의 비교: 서로 다른 형식에 대한 동일한 품질에서의
-        파일 크기 비교."
-         />
-애니메이션 GIF와 동영상의 비교: 서로 다른 형식에 대한 동일한 품질에서의
-파일 크기 비교.
-
-
-**동일한 파일을 MP4 동영상으로 제공하면 보통 파일 크기의
-80% 이상을 감소할 수 있습니다.** GIF는 대역폭을 크게 낭비할 뿐만 아니라,
-로드하는 데 더 오래 걸리며, 더 적은 색상이 포함되고, 일반적으로 나쁜 사용자
-환경을 제공합니다. 여러분은 아마도 Twitter에 업로드한 애니메이션 GIF가 다른 웹사이트보다
-더 잘 작동한다는 것을 눈치채셨을 것입니다. [Twitter의 애니메이션 GIF는
-사실 GIF가 아닙니다](http://mashable.com/2014/06/20/twitter-gifs-mp4/#fiiFE85eQZqW).
-사용자 환경을 향상하고 대역폭 소비를 줄이기 위해, Twitter에 업로드된
-애니메이션 GIF는 사실 동영상으로 변환됩니다. 마찬가지로, [Imgur도
-GIF가 업로드되면
-동영상으로 변환](https://thenextweb.com/insider/2014/10/09/imgur-begins-converting-gif-uploads-mp4-videos-new-gifv-format/)하여
-, 여러분을 위해 조용히 MP4로 변환합니다.
-
-왜 GIF는 훨씬 더 큰가요? 애니메이션 GIF는 각 프레임을 무손실 GIF
-이미지로 저장합니다. 우리가 종종 경험하는 열화된 품질은 GIF의
-색상 팔레트가 256색으로 제한되어 있기 때문입니다. 이 형식은 H.264와 같은 동영상 코덱과 달리 인근 프레임을 압축 대상으로
-고려하지 않기 때문에 크기가 큽니다. MP4
-동영상은 각 키 프레임을 손실 JPEG로 저장합니다. 손실 JPEG는
-원본 데이터의 일부를 삭제하여 더 나은 압축을 달성합니다.
-
-**동영상으로 변경할 수 있다면**
-
-*   [ffmpeg](https://www.ffmpeg.org/)를 이용하여 애니메이션 GIF(또는
-    소스)를 H.264 MP4로 변환하세요. 이 한 줄 코드는 [
-    Rigor](http://rigor.com/blog/2015/12/optimizing-animated-gifs-with-html5-video)에서 가져온 것입니다.
-    `ffmpeg -i animated.gif -movflags faststart -pix_fmt yuv420p -vf
-    "scale=trunc(iw/2)*2:trunc(ih/2)*2" video.mp4`
-*   ImageOptim API도 [애니메이션 gif에서 WebM/H.264
-    동영상으로의 변환](https://imageoptim.com/api/ungif)을 지원하며 [GIF에서 디더링을
-    제거](https://github.com/pornel/undither#examples)하여 동영상
-    코덱이 더욱 압축할 수 있도록 도와줍니다.
-
-**반드시 애니메이션 GIF를 사용해야 한다면**
-
-*   Gifsicle과 같은 도구로 메타데이터, 사용되지 않은 팔레트 엔트리를 제거하고
-    프레임 간 변화를 최소화할 수 있습니다.
-*   손실 GIF 인코더를 고려해 보세요. Gifsicle의
- 포크인 [Giflossy](https://github.com/pornel/giflossy)가
-    `—lossy` 플래그로 이것을 지원하며    크기를 최대 60~65% 줄일 수 있습니다. 이를 기반으로 한
-    [Gifify](https://github.com/vvo/gifify)라는 좋은 도구도 있습니다. 비애니메이션 GIF는
-    PNG나 WebP로 변환하세요.
-
-더 많은 정보는 Rigor의 [Book of
-GIF](https://rigor.com/wp-content/uploads/2017/03/TheBookofGIFPDF.pdf)를 참조하세요.
-
-## SVG 최적화 {: #svg-optimization }
-
-SVG를 가볍게 유지하려면 불필요한 것을 삭제해야 합니다. 편집기로 생성된 SVG 파일은
-보통 대량의 불필요한 정보(메타데이터,
-주석, 숨겨진 레이아웃 등)를 담고 있습니다. 이 콘텐츠는
-렌더링된 최종 SVG에 영향을 미치지 않고도
-안전하게 제거하거나 더 미니멀한 양식으로 전환할 수 있습니다.
+**Automatic CDN conversion to WebP**
 
+Some CDNs support automated conversion to WebP and can use client hints to serve up WebP images [whenever possible](http://cloudinary.com/documentation/responsive_images#automating_responsive_images_with_client_hints). Check with your CDN to see if WebP support is included in their service. You may have an easy solution just waiting for you.
 
-<img src="images/Modern-Image26.jpg" alt="svgo"
-         />
-Jake Archibald의 [SVGOMG](https://jakearchibald.github.io/svgomg/)는 최적화를 선택하여 SVG를 원하는 대로 최적화할 수 있는 GUI
-인터페이스이며,
-출력된 마크업의 라이브 미리보기를 제공합니다.
-
+**WordPress WebP support**
 
-**SVG 최적화의 몇 가지 일반 규칙(SVGO):**
+Jetpack — Jetpack, a popular WordPress plugin, includes a CDN image service called [Photon](https://jetpack.com/support/photon/). With Photon you get seamless WebP image support. The Photon CDN is included in Jetpack's free level, so this is a good value and a hands-off implementation. The drawback is that Photon resizes your image, puts a query string in your URL and there is an extra DNS lookup required for each image.
 
-*   SVG 파일을 최소화하고 Gzip으로 압축하세요. SVG는 CSS, HTML, 자바스크립트처럼
-    사실 그저 XML로 표현된 텍스트 자산에 지나지 않으며, 성능 향상을 위해
-    최소화하고 Gzip으로 압축해야  합니다.
-* 경로 대신 `<rect>`, `<circle>`,
-  `<ellipse>`, `<line>`, `<polygon>`와 같은 사전 정의된 SVG 도형을 사용하세요. 사전 정의된 도형을 우선적으로 사용하면
-  최종 이미지를 생산하는 데 필요한 마크업이 감소하고, 따라서 브라우저가 파싱
-  및 래스터링할 코드가 감소합니다. SVG 복잡성을 감소시키면 브라우저가
-  더 빠르게 표시할 수 있게 됩니다.
-*   반드시 경로를 사용해야 한다면, 커브와 경로를 줄이려고 노력해 보세요. 가능한 경우에는 단순화하고
-   결합하세요. Illustrator의 [단순화
-    도구](http://jlwagner.net/talks/these-images/#/2/10)는 복잡한 아트워크에서도
-    불규칙한 부분을 매끄럽게 하면서 불필요한 지점을 삭제하는
-     데 능숙합니다.
-*   그룹 사용을 피하세요. 그럴 수 없다면 간소화하세요.
-*   보이지 않는 레이어를 삭제하세요.
-*   Photoshop이나 Illustrator 효과를 피하세요. 이러한 효과는 큰
-   래스터 이미지로 변환됩니다.
-*   SVG 친화적이지 않은 모든 삽입된 래스터 이미지를 두 번 클릭하세요
-* 도구를 사용하여 SVG를 최적화하세요.
-  [SVGOMG](https://jakearchibald.github.io/svgomg/)는 매우 편리한 웹 기반
-  GUI로, Jake Archibald가 [SVGO](https://github.com/svg/svgo)용으로 만든 것입니다. 실로 대단히
-  귀중한 가치가 있습니다. Sketch를 사용한다면 파일 크기를 줄이기 위해 내보낼 때 SVGO 압축기 플러그인([SVGO 실행용
-  Sketch 플러그인](https://www.sketchapp.com/extensions/plugins/svgo-compressor/))을
-  사용할 수 있습니다.
-
-
-<img src="images/svgo-precision.jpg" alt="svgo 정확도 감소는
-        때때로 크기에 긍정적인 영향을 미칠 수 있습니다"
-         />
-고정밀 모드(크기
-29% 향상)와 저정밀 모드(크기 38% 향상)에서 SVGO를 통한 SVG 소스 실행 비교 예.
-
-
-
-[SVGO](https://github.com/svg/svgo)는 SVG 최적화를 위한 노드 기반 도구입니다.
-SVGO는 <path> 정의 내 숫자의 *정밀도*를 낮추어 파일 크기를 줄일 수
-있습니다. 점 뒤의 각 숫자는 1바이트를 추가하기 때문에
-정밀도(숫자 개수)를 변경하는 것이 파일 크기에 크게 영향을 미칩니다. 형태가 어떻게 보이는가에 영향을 미칠 수 있으므로
-정밀도를 변경할 때는
-매우 매우 주의해야 합니다.
-
-
-<img src="images/Modern-Image28.jpg" alt="경로와 아트워크를 너무 단순화시킴으로써
-        svgo에 문제가 생길 수 있음"
-         />
-이전의 예시에서 SVGO는 과도하게 단순화한 경로 및 형태 없이 잘 작동했지만,
-그렇지 않은 수 많은 경우가 있다는 것을 알아두어야
-합니다. 위 로켓의 빛 스트립이 낮은 정밀도에서 어떻게 왜곡되는지
-관찰해 보세요.
-
-
-**명령 줄에서 SVGO 사용하기:**
-
-SVGO는 [글로벌 npm CLI](https://www.npmjs.com/package/svgo)로 설치할 수 있으며
-GUI보다 이것을 사용하는 것이 좋습니다.
-
-```
-npm i -g svgo
-```
-
-이렇게 하면 로컬 SVG 파일에 대해 다음과 같이 실행됩니다.
-
-```
-svgo input.svg -o output.svg
-```
-
-이것은 플로팅 지점
-정확도와 같은 예상하는 모든 옵션을 지원합니다.
-
-```
-svgo input.svg --precision=1 -o output.svg
-```
-
-SVGO [readme](https://github.com/svg/svgo)를 확인하여 지원되는 옵션의
-전체 목록을 확인하세요.
-
-**SVG 압축을 잊지 마세요!**
-
-
-<img src="images/before-after-svgo.jpg" alt="이미지를 SVGO에
-        실행시키기 전과 후"
-         />
-이전의 예시에서 SVGO는 과도하게 단순화한 경로 및 형태 없이 잘 작동했지만,
-그렇지 않은 수 많은 경우가 있다는 것을 알아두어야
-합니다. 위 로켓의 빛 스트립이 낮은 정밀도에서 어떻게 왜곡되는지
-관찰해 보세요.
-
-
-또한, [SVG
-자산을 Gzip으로 압축](https://calendar.perfplanet.com/2014/tips-for-optimising-svg-delivery-for-the-web/)하거나
-Brotli를 사용하여 제공하는 것도 잊지 마세요. 텍스트 기반이기 때문에
-정말 잘 압축됩니다(원본 소스의 최대 50%까지)
-
-Google이 새 로고를 제공했을 때,
-[가장 작은](https://twitter.com/addyosmani/status/638753485555671040) 버전이
-단 305바이트 크기라고 발표했습니다.
-
-
-<img src="images/Modern-Image30.jpg" alt="새 google
-        로고의 가장 작은 버전은 단 305바이트 크기였습니다"
-         />
-
-
-더욱 크기를 절감할 수 있는(146바이트까지) [수많은 고급 SVG
-방법](https://www.clicktorelease.com/blog/svg-google-logo-in-305-bytes/)이
-있습니다! 도구든 메뉴얼
-클린업이든, *조금*이라도 더 SVG에서 절감할 수 있는 부분이
-있을 것이라고만 말해두겠습니다.
-
-**SVG 스프라이트**
-
-SVG는
-아이콘 폰트에 필요한
-[유별난](https://www.filamentgroup.com/lab/bulletproof_icon_fonts.html)
-해결 방법 없이도 스프라이트로 시각화를 나타내는 방법을 제공하기 때문에 아이콘에 [강력](https://css-tricks.com/icon-fonts-vs-svg/)합니다. 아이콘 폰트(SVG 스트로크 속성)보다 더 세부적인 CSS 스타일링 제어를 보유하며,
-위치 지정 제어에 더 우수하고(의사 요소
-및 CSS `display`에 편법을 사용할 필요가 없음), SVG에 훨씬 더
-[접근하기 쉽습니다](http://www.sitepoint.com/tips-accessible-svg/).
-
-[svg-sprite](https://github.com/jkphl/svg-sprite) 및
-[IcoMoon](https://icomoon.io/)과 같은 도구는 SVG와 스프라이트 결합을 자동화할
-수 있으며, 이는 [CSS 스프라이트](https://css-tricks.com/css-sprites/), [기호
-스프라이트](https://css-tricks.com/svg-use-with-external-reference-take-2) 또는
-[스택된 스프라이트](http://simurai.com/blog/2012/04/02/svg-stacks)를 통해 이용할 수 있습니다. Una Kravetz는
-SVG 스프라이트 워크플로에 gulp-svg-sprite를 이용하는 방법에 관해 읽어볼 만한 실용적인 [기사](https://una.im/svg-icons/#💁)
-를 보유하고 있습니다. Sara Soudein도 블로그에서
-[아이콘 글꼴에서
-SVG로 전환](https://www.sarasoueidan.com/blog/icon-fonts-to-svg/)하는 방법을 다루고 있습니다.
-
-**추가 자료:**
-
-Sara Soueidan의 [tips for optimizing SVG delivery for the
-web](https://calendar.perfplanet.com/2014/tips-for-optimising-svg-delivery-for-the-web/)
-및 Chris Coyier의 [Practical SVG
-book](https://abookapart.com/products/practical-svg)은 훌륭한 글입니다. 또한,
-Andreas Larsen의 SVG 최적화 게시물([part
-1](https://medium.com/larsenwork-andreas-larsen/optimising-svgs-for-web-use-part-1-67e8f2d4035),[part
-2](https://medium.com/larsenwork-andreas-larsen/optimising-svgs-for-web-use-part-2-6711cc15df46))도 도움이 됩니다. [Preparing
-and exporting SVG icons in
-Sketch](https://medium.com/sketch-app-sources/preparing-and-exporting-svg-icons-in-sketch-1a3d65b239bb)도
- 훌륭한 글입니다.
-
-## 손실 코덱으로 이미지 재압축 삼가기 {: #avoid-recompressing-images-lossy-codecs }
-
-언제나 원본 이미지에서 압축하는 것이 권장됩니다. 이미지 재압축에는
-대가가 따릅니다. 이미 60 품질로 압축된
-JPEG를 예로 들어보겠습니다. 이 이미지를 손실
-인코딩으로 재압축한다면 훨씬 더 나쁘게 보일 것입니다. 압축을 한 번 더 할 때마다
-세대 손실이 발생하게 됩니다. 정보가 사라지고 압축 아티팩트가
-쌓이기 시작합니다. 고품질 설정으로 재압축을 하는 경우라도 마찬가지입니다.
-
-이러한 함정을 피하려면, **처음부터 납득할 수 있는 가장 낮은 수준의
-좋은 품질을 설정**해야 최대 파일 절감을 얻을 수 있습니다. 이렇게 하면
-이 함정을 피할 수 있는 까닭은 품질 저하만으로 인한 파일 크기 감소는
-항상 보기에 좋지 않기 때문입니다.
-
-손실 허용 파일을 다시 인코딩하면 항상 파일 크기가 작아지는 결과를 보장하지만
-그렇다고 생각한 만큼의 품질을 얻을 수 있다는 의미는 아닙니다.
-
-
-<img src="images/generational-loss.jpg" alt="여러 차례 이미지를 재인코딩할 때 발생하는
-        세대 손실"
-         />
-위의 글과 이 [훌륭한 동영상](https://www.youtube.com/watch?v=w7vXJbLhTyI),
-그리고 Jon
-Sneyers의 [동반
-기사](http://cloudinary.com/blog/why_jpeg_is_like_a_photocopier)에서 여러
-형식을 사용한 재압축의 세대 손실 영향을 확인할 수 있습니다. 이것은 소셜 네트워크에서 (이미 압축된) 이미지를 저장하고 다시 업로드(재압축 발생)하는
-경우에 마주할 수 있는 문제입니다.
-품질 손실은 축적됩니다.
-
-
-
-MozJPEG는 (아마도 의도치 않게) 격자 양자화 덕분에 재압축
-열화에 대해 더 나은 저항성을 보유합니다. 지금 그대로 모든 DCT
-값을 압축하는 대신, +1/-1 범위의 근사값을 확인하여
-유사한 값이 더 작은 비트로 압축되었는지 확인합니다. 손실 FLIF는
-(재)압축 이전에 데이터를 보고 무엇을 삭제할 지 결정한다는 점에서
-손실 PNG와 방법이 유사합니다. 재압축된 PNG는 감지할 수 있는 '구멍'이 있어
-데이터를 더 변경하는 것을 방지합니다.
-
-**소스 파일을 편집할 때는 PNG나
-TIFF와 같은 무손실 형식으로 저장하여 가능한 한 최고의 품질을 유지해야 합니다.** 빌드 도구나 이미지
-압축 서비스는
-그 후 최소한의 품질 손실으로 사용자에게 제공하는 압축된 버전 출력을 처리합니다.
-
-## 불필요한 이미지 디코딩 및 크기 조정 비용 절감 {: #reduce-unnecessary-image-decode-costs }
-
-우리 모두가 이전에 사용자에게 필요한 것보다 더 크고 더 높은 해상도의 이미지를
-전송한 적이 있습니다. 여기에는 비용이 따릅니다. 이미지 디코딩 및 크기 조절은 평균적인 모바일 하드웨어의 브라우저에게는 비용이 많이 드는
-작업입니다. 큰
-이미지를 전송하고 CSS나 너비/높이 속성을 이용하여 스케일을 조정하면, 이 문제가
-발생하는 것을 볼 수 있으며 성능에 영향을 미칩니다.
-
-
-<img src="images/image-pipeline.jpg" alt="브라우저가 태그에서 지정된
- 이미지를 가져와 이를 화면에 
-표시하는 데에는 여러 단계가 관련되어 있습니다. 여기에는 요청, 디코딩, 크기 조절, GPU에 복사, 표시가 포함됩니다."
-         />
-
-브라우저가 이미지를 가져올 때 메모리에 비트맵으로 포맷된 원본
-소스(예: JPEG)에서 이미지를 디코딩해야 합니다. 이 이미지는 대체로
-크기 조절이 필요합니다(예: 너비가 컨테이너의 백분율로 설정됨). 이미지 디코딩
-및 크기 조절은 비용이 많이 들고 이미지가
-표시되기까지의 시간을 지연시킵니다.
-
-
-브라우저가 전혀 크기 조절을 할 필요 없이 렌더링할 수 있는 이미지를 전송하는 것이
-이상적입니다. 따라서, 대상 화면 크기 및
- 해상도에 대해 가장 작은 이미지를 제공하여 [`srcset` 및
-`sizes`](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images)
-의 이점을 누려보세요. `srcset`에 대해서는 곧 다루겠습니다.
-
-이미지에서 `width` 또는 `height` 속성을 생략하는 것도 성능에
-부정적인 영향을 미칠 수 있습니다. 이런 속성이 없으면 브라우저는 충분한 바이트가 도착하여 올바른
-수치를 알 수 있을 때까지
-이미지에 대해 작은 자리표시자 영역을 할당합니다. 이때, 비용이 많이 드는 리플로우라는
-단계에서 문서 레이아웃이 반드시 업데이트되어야 합니다.
-
-
-<img src="images/devtools-decode.jpg" alt="chrome devtools에 표시된
-        이미지 디코딩 비용"
-         />
-브라우저는 이미지를 화면에 표시하기까지 수많은 단계를 거쳐야 합니다. 이미지를
-가져오는 것뿐만 아니라 디코딩하고 때로는 크기 조절도 해야 합니다. 이러한
-이벤트는 Chrome DevTools의
-[Timeline](/web/tools/chrome-devtools/evaluate-performance/performance-reference)에서 감사할 수 있습니다.
-
-
-
-큰 이미지는 메모리 크기 비용 상승도 발생시킵니다. 디코딩된 이미지는
-픽셀당 최대 4바이트입니다. 주의하지 않으면 문자 그대로 브라우저를
-다운시킬 수 있습니다. 저사양 기기에서 메모리 스와핑을 시작하는 데 그렇게 오래 걸리지 않습니다.
-따라서 이미지 디코딩, 크기 조절, 메모리 비용에 주의하세요.
-
-
-<img src="images/image-decoding-mobile.jpg" alt="이미지 디코딩은
-        저사양이나 평균 수준의 모바일 하드웨어에서 매우 비용을 많이 소모할 수 있습니다."
-         />
-이미지 디코딩은 저사양이나 평균 수준의 모바일 전화에서 매우 비용을 많이 소모할 수 있습니다.
-일부 경우, 디코딩이 5배 더 느릴 수 있습니다(더 길어지지 않는 한).
-
-
-새로운 [모바일 웹
-환경](https://medium.com/@paularmstrong/twitter-lite-and-high-performance-react-progressive-web-apps-at-scale-d28a00e780a3)을 빌드할 때, Twitter는 적절하게
-크기가 조절된 이미지를 사용자에게
-제공함으로써 디코딩 성능을 향상했습니다. 이 방법은
-Twitter 타임라인의 여러 이미지를 디코딩하는 데 걸리는 시간을 최대 400ms에서 최대 19까지 줄였습니다!
-
-
-<img src="images/image-decoding.jpg" alt="Twitter Lite가
-        이미지 파이프라인을 최적화하기 전과 후의 디코딩 시간을 강조표시한 Chrome DevTools Timeline/Performance
-        패널. 전이 더 높았습니다."
-         />
-Twitter Lite가 이미지 파이프라인을 최적화하기 전과 후의 디코딩 시간을
-강조표시(초록색)한 Chrome DevTools Timeline/Performance 패널.
-
-### `srcset`를 이용한 HiDPI 이미지 전달 {: #delivering-hidpi-with-srcset }
-
-사용자는 여러분의 사이트에 다양한 모바일 및 고해상도
-화면이 있는 데스크탑 기기로 접근할 수 있습니다. [기기 픽셀
-비율](https://stackoverflow.com/a/21413366)(DPR)('CSS 픽셀
-비율'이라고도 함)은 CSS가 기기 화면 해상도를 해석하는 방법을 결정합니다. DPR은
-요소가 너무 작게 보이지 않으면서 모바일 화면의 해상도와
-선명도를 향상하기 위해 전화 제조사에서 만든 것입니다.
-
-사용자가 기대하는 이미지 품질에 맞추기 위해, 사용자의 기기에 가장 적절한
-해상도의 이미지를 전달합니다. 선명한 고DPR 이미지(예: 2배, 3배)는
-이를 지원하는 기기에 제공됩니다. 2배 이상의 이미지는
-상당히 더 많은 용량을 차지하므로 낮은 DPR이나 표준 DPR 이미지는
-고해상도 화면이 없는 사용자에게 제공되어야 합니다.
-
-
-<img src="images/device-pixel-ratio.jpg" alt="1배, 2배 및 3배에서 기기 픽셀 비율의
-        도표. 이미지 품질은 DPR이 증가하면 선명하게 보입니다.
-        그림은 기기 픽셀과 CSS 픽셀 비교를 나타낸 것입니다."
-         />
-기기 픽셀 비율: 
-[material.io](https://material.io/devices/) 및
-[mydevice.io](https://mydevice.io/devices/)을 비롯한 여러 사이트가 인기있는 기기의 DPR을 추적합니다.
-
-
-
-[srcset](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images)를 이용하면
-브라우저가 기기에 사용할 수 있는 최고의 이미지를 선택합니다. 예를 들어, 2배의 모바일 화면에는
-2배의 이미지를 선택합니다. `srcset`을 지원하지 않는 브라우저는
-`<img>` 태그에 지정된 기본 `src`로 돌아갈 수 있습니다.
-
-```
-<img srcset="paul-irish-320w.jpg,
-             paul-irish-640w.jpg 2x,
-             paul-irish-960w.jpg 3x"
-     src="paul-irish-960w.jpg" alt="Paul Irish cameo">
-```
-
-
-[Cloudinary](http://cloudinary.com/blog/how_to_automatically_adapt_website_images_to_retina_and_hidpi_devices)
-및 [Imgix](https://docs.imgix.com/apis/url/dpr)와 같은 이미지 CDN은 모두 사용자에게 단일 인증 소스에서 최고의 밀도를 제공하기 위한 이미지
-밀도 제어를 지원합니다.
-
-참고: 기기 픽셀 비율과 반응형 이미지에 대한 자세한 내용은 이
-무료 [Udacity](https://www.udacity.com/course/responsive-images--ud882) 코스
-및 [이미지](/web/fundamentals/design-and-ui/responsive/images) 가이드(웹
-기본 사항에 있음)를 참조하시기 바랍니다.
-
-[클라이언트
-힌트](https://www.smashingmagazine.com/2016/01/leaner-responsive-images-client-hints/)도
-반응형 이미지 마크업 내 각 픽셀 밀도 및 형식을 지정하는 대체재를
-제공할 수 있다는 것을 알려드립니다. 대신, 클라이언트 힌트는 이 정보를 HTTP 요청에
-추가하여 웹 서버가 현재 기기의
-화면 밀도에 가장 알맞은 것을 선택할 수 있도록 합니다.
-
-### 아트 디렉션 {: #art-direction }
-
-사용자에게 올바른 해상도를 전달하는 것이 중요하긴 하지만, 일부 사이트에서는
-**[아트
-디렉션](http://usecases.responsiveimages.org/#art-direction)**에 대해 생각해야 합니다. 사용자가
-작은 화면을 사용한다면 잘라내거나, 확대하거나, 제목을 표시하여 이용 가능한 공간을 최대한
-활용해야 합니다. 아트 디렉션은
-이 글의 범위에 해당하지 않지만,[
-Cloudinary](http://cloudinary.com/blog/automatically_art_directed_responsive_images%20)와
-같은 서비스는 이것을 가능한 한 자동화하는 API를 제공합니다.
-
-
-<img src="images/responsive-art-direction.jpg" alt="기기에 따라 잘라내기로
-        이미지를 더 보여주거나 더 적게 보여주는 방식을 채택한
-        작동 중의 반응형 아트 디렉션"
-         />
-아트 디렉션: Eric Portis는 반응형 이미지를 아트 디렉션에 사용하는 방법에 대한 훌륭한
-[샘플](https://ericportis.com/etc/cloudinary/)을 한데
-모았습니다. 이 예는 기본 히어로 이미지의 시각적
-특징을 서로 다른 중단점에 적용하여 이용 가능한
-공간을 최대한 활용합니다.
-
-## 색상 관리 {: #color-management }
-
-색상에는 최소한 생물학, 물리,
-인쇄라는 세 가지의 관점이 있습니다. 생물학에서 색상이란 [지각
-현상](http://hubel.med.harvard.edu/book/ch8.pdf)입니다. 물체는 빛을
-다양한 파장의 조합으로 반사합니다. 우리 눈의 빛 수용체가
-이러한 파장을 우리가 알고 있는 색상이라는 감각으로 해석합니다. 물리학에서 중요한 것은
-빛입니다. 빛 주파수와 밝기가 중요합니다. 인쇄에는
-색상환, 잉크, 예술적인 모델이 더 중요합니다.
-
-이 세상의 모든 화면과 웹브라우저가 완전히 동일한
-색상을 표시하는 것이 이상적입니다. 안타깝게도, 내재된
-수많은 불일치로 인해 그렇지 않습니다. 색상 관리를 이용하면 색상 모델, 공간, 프로필을 통해 색상 표시에 대한
-타협에 도달할 수 있습니다.
-
-#### 색상 모델 {: #color-models }
-
-[색상 모델](https://en.wikipedia.org/wiki/Gamma_correction)은 적은 수의
-원색에서 완전한 범위의 색을 만들어내는 시스템을 말합니다.
-여러 유형의 색상 공간이 있으며, 각각은 색상 제어에 다른 매개변수를
-사용합니다. 일부 색상 공간은 다른 것에 비해 더 적은 제어 매개변수를 가지고 있습니다.
-예를 들어, 그레이스케일은
-검은색과 흰색의 명도를 제어하는 단일 매개변수만을 보유합니다.
-
-두 가지의 일반적인 모델은 가산 모델과 감산 모델입니다. 가산 색상
-모델(예: RGB. 디지털 표시에 사용됨)은 색상을 나타내는 데 빛을 사용하는 반면, 감산
-색상 모델(예: CMYK. 인쇄에 사용됨)은 빛을 제거함으로써 작동합니다.
-
-
-
-<img src="images/colors_ept6f2.jpg" alt="sRGB, Adobe RGB 및 ProPhoto RGB" /> 
-        RGB에서는 빨간색, 초록색, 파란색 빛이 여러 조합으로 더해져서
-        넓은 색상의 스펙트럼을 만들어 냅니다. CYMK(파란색, 빨간색, 노란색
-        검은색)은 흰색 종이에서 명도를 감소시키는 여러 색상의
-        잉크를 통해 작동합니다.
-
-
-[색상 모델 및 부분 색상
-시스템](https://www.designersinsights.com/designer-resources/understanding-color-models/)에는
-HSL, HSV 및
-LAB과 같은 다른 색상 모델이나 모드에 대한 우수한 설명이 제공됩니다.
-
-#### 색상 공간 {: #color-spaces }
-
-[색상
-공간](http://www.dpbestflow.org/color/color-space-and-color-profiles#space)은
-주어진 이미지를 나타낼 수 있는 특정 범위의 색상입니다. 예를 들어,
-이미지가 최대 1,670만 가지의 색을 담고 있다면, 다른 색상 공간은
-이러한 색상을 더 좁거나 더 넓은 범위로 사용할 수 있도록 합니다. 일부 개발자는 색상 모델과 색상 공간을
-동일한 것으로 말합니다.
-
-[sRGB](https://en.wikipedia.org/wiki/SRGB)는 웹을 위한 
-[표준](https://www.w3.org/Graphics/Color/sRGB.html) 색상 공간으로 고안되었으며
-RGB를 기반으로 합니다. 이것은 일반적으로
-가장 작은 공통 분모라고 보는 작은 색상 공간이며, 브라우저 간
-색상 관리에 가장 안전한 옵션입니다. 기타 색상 공간(예: Photoshop
-및 Lightroom에서 사용되는 [Adobe
-RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space) 또는 [ProPhoto
-RGB](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space))은 sRGB보다 더 생동감 있는 색상을 표현할 수 있지만
-후자는 웹브라우저, 게임, 모니터 어디에서나 사용할 수 있기 때문에
-여기에 주로 중점을 둡니다.
-
-
-
-<img src="images/color-wheel_hazsbk.jpg" alt="sRGB, Adobe RGB 및 ProPhoto RGB"
-        /> 위에서 Gamut(색상 공간이 정의할 수 있는
-        색상 범위)의 시각화를 확인할 수 있습니다.
-
-
-색상 공간은 세 개의 채널로 이루어져 있습니다(빨간색, 초록색, 파란색). 8비트 모드의
-각 채널에서 이용할 수 있는 색상은 255가지이며, 총 1,670만 가지의
-색상을 제공합니다. 16비트 이미지는 삼 조 가지의 색상을 나타낼 수 있습니다.
-
-
-<img src="images/srgb-rgb_ntuhi4.jpg" alt="sRGB, Adobe RGB 및 ProPhoto RGB" />
-        
-[Yardstick](https://yardstick.pictures/tags/img%3Adci-p3)의 이미지를 이용한        sRGB, Adobe RGB 및 ProPhoto RGB의 비교. 이 개념을
-        sRGB로 나타내는 것은 매우 어렵습니다. 보이지 않는 색상을 보여줄 수
-        없기 때문입니다. sRGB와 넓은 색상 범위에서의 일반 사진은
-        가장 채도가 높은 '풍부한' 색상을 제외한 모든 것이 같아야 합니다.
-
-
-색상 공간의 차이(예: sRGB, Adobe RGB 및 ProPhoto RGB)는
-Gamut(색조로 재현할 수 있는 색상의 범위), 광원 및
-[감마](http://blog.johnnovak.net/2016/09/21/what-every-coder-should-know-about-gamma/)
-곡선입니다. sRGB는 Adobe RGB보다 최대 20% 더 작으며, ProPhoto RGB는 Adobe
-RGB보다 최대 [50%
-더 큽니다](http://www.petrvodnakphotography.com/Articles/ColorSpace.htm). 위 이미지 소스의 출처는 [Clipping
-Path](http://clippingpathzone.com/blog/essential-photoshop-color-settings-for-photographers)입니다.
-
-[Wide-gamut](http://www.astramael.com/)은 sRGB보다 큰 Gamut의
-색상 공간을 나타내는 용어입니다. 이러한 유형의 디스플레이는 더욱 흔해지고 있습니다. 그러나
-여전히 많은 디지털 디스플레이는 sRGB보다 훨씬 더 좋은 색상 프로필을
-표시할 수 없습니다. Photoshop에서 웹용으로 저장할 때
-대상 사용자가
-고사양의 Wide-gamut 화면을 보유하고 있지 않은 한 'Convert to sRGB’ 이용을 고려해 보세요.
-
-<aside class="key-point"><b>참고:</b>원본 사진으로 작업할 때는
-sRGB를 주 색상 공간으로 사용하지 마세요. 대부분의 카메라가 지원하는 색상 공간보다
-작으며, 클리핑을 발생시킬 수 있습니다. 대신, 더 큰 색상
-공간(예: ProPhoto RGB)에서 작업하고 웹용으로 내보낼 때는 sRGB로 출력하세요.</aside>
-
-**Wide-gamut이 웹 콘텐츠에 적절한 사례가 있나요?**
-
-예. 이미지가 매우 높은 채도의/풍부한/생동감 있는 색상을 담고 있고,
-이러한 색상을 지원하는 화면에서 아름답게 보이게 하고 싶은 경우가 해당됩니다. 그러나 실제 사진에서는
-이런 일이 거의 일어나지 않습니다. 보통은
-sRGB Gamut을 실제로는 벗어나지 않으면서 색상을 변경하여 더 생동감 있게 보이게 하는 것이 쉽습니다.
-
-이것은 사람의 색상 인지가 절대적인 것이 아니라 주변에
-상대적이며, 속기 쉽기 때문입니다. 이미지가 형광색
-하이라이터 색상을 담고 있다면, Wide-gamut을 사용하는 것이 더 간편합니다.
-
-#### 감마 교정 및 압축 {: #gamma-correction }
-
-[감마 교정](https://en.wikipedia.org/wiki/Gamma_correction)(또는 그냥
-감마)은 이미지의 전반적인 명도를 제어합니다. 감마를 변경하면
-빨간색에 대한 초록색과 파란색의 비율도 변경됩니다. 감마 교정이 되지 않은 이미지는
-색상이 하얗게 바래거나 너무 어둡게 보일 수 있습니다.
-
-동영상 및 컴퓨터 그래픽에서 감마는 데이터
-압축과 유사하게 압축에 이용됩니다. 이를 통해 더 적은
-비트(12나 16이 아닌 8비트)로 유용한 수준의 명도를 이끌어낼 수 있습니다. 인간의 명도 인지는
-물리적 빛의 양에 선형적으로 비례하지 않습니다. 색상을
-실제 물리적 모습으로 나타내는 것은 사람의 눈에 대해 이미지를 인코딩할 때는 낭비입니다. 감마
-압축은 인간
-인지에 근접한 스케일로 명도를 인코딩하는 데 사용됩니다.
-
-감마 압축을 사용하면 유용한 명도 스케일이 8비트 정밀도로
-제공됩니다(대부분 RGB 색상에서 0~255 사용). 이것은 색상이
-물리와 1:1 관계인 단위를 사용한다면
-RGB 값은 1에서 백만이며 0~1,000까지의 값은 구분이 가능하지만
-999,000~1,000,000의 값은 동일하게 보일 것이라는 점에서 기인합니다. 어두운 방 안에 촛불 1개만
-켜놓고 있다고 상상해봅시다. 두 번째 촛불을 밝히면
-방 안이 상당히 밝아지는 것을 느낄 수 있을 것입니다. 세 번째 촛불을 밝히면 더 밝아집니다.
-이제 100개의 촛불이 있는 방을 상상해 보세요. 101개, 102개 촛불을 켜더라도,
-밝기의 변화를 느끼지 못할 것입니다.
-
-두 경우, 물리적으로는 완전이 동일한 양의 빛이
-더해졌는데도 그렇습니다. 눈은 빛이 밝을 때 덜 민감하므로, 감마
-압축은 밝기 값을 '압축'하여 물리적으로는 밝기 수준이
-덜 정확하지만 사람에 맞추어 스케일이 조정되었기 때문에
-사람의 관점에서는 모든 값이 동일하게 정확합니다.
-
-<aside class="key-point"><b>참고:</b> 여기서의 감마 압축/교정은
-Photoshop에서 구성하는 이미지 감마 커브와는 다릅니다. 감마
-압축이 제대로 작동하면, 전혀 다르게 보입니다.</aside>
-
-#### 색상 프로필 {: #color-profiles }
-
-색상 프로필은 기기의 색상 공간이 무엇인지 설명하는
-정보입니다. 이 정보는 여러 색상 공간을 변환하는 데 사용됩니다. 프로필은 이미지가 서로 다른 종류의
-화면과 매체에서 가능한 한 동일하게 보이도록
-합니다.
-
-[국제
-컬러 협회](http://www.color.org/icc_specs2.xalter)(ICC)에서 설명했듯이, 이미지에는 삽입된 색상 프로필이 있어
-정확하게 색상이 어떻게 보여야 하는지 나타냅니다. 이것은 다양한 형식(
-예: JPEG, PNG, SVG 및
-[WebP](/speed/webp/docs/riff_container))에서 지원되며 대부분의
-주요 브라우저는 삽입된 ICC 프로필을 지원합니다. 이미지가 앱에서 표시되었을 때
-모니터의 성능을 안다면, 이러한 색상은 색상
-프로필을 기반으로 조정될 수 있습니다.
-
-<aside class="key-point"><b>참고:</b> 일부 모니터는
-sRGB와 유사한 색상 프로필을 보유하여 더 나은 프로필을 표시할 수 없으므로, 대상
-사용자의 화면에 따라 이를 삽입하는 것이 의미가 없을 수 있습니다. 여러분의
-대상 사용자가 누구인지 확인하세요.</aside>
-
-삽입된 색상 프로필은 이미지의 크기를 과도하게 증가(때때로 100KB 이상)시킬
-수 있으므로 삽입에 주의해야 합니다. ImageOptim과 같은 도구는
-색상 프로필을 찾으면 실제로 [자동으로](https://imageoptim.com/color-profiles.html) 색상
-프로필을 삭제합니다. 반면, ICC 프로필이 파일 크기 감소라는 명목으로
-삭제되면 브라우저는 모니터의
-색상 공간으로 이미지를 표시하도록 강제되며, 이로 인해 기대한 채도나
-대비와 달라질 수 있습니다. 여러분의 사례에 적합하도록 트레이드오프를 평가하세요.
-
-[Nine Degrees Below](https://ninedegreesbelow.com/photography/articles.html)
-에 ICC 프로필 색상 관리에 대한 훌륭한 일련의 리소스가 있으니 프로필에 관해
-자세히 알아보려면 참조하시기 바랍니다.
-
-#### 색상 프로필 및 웹브라우저 {: #color-profiles }
-
-Chrome의 이전 버전에는 우수한 색상 관리 지원이 없었지만,
-2017년에 [색상 교정
-렌더링](https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/ptuKdRQwPAo)을 통해 향상되었습니다.
-sRGB가 아닌 화면(신형 Macbook Pro)은 색상을 sRGB에서
-화면 프로필로 변환합니다. 즉, 색상이 여러 시스템과 브라우저에서 유사하게
-보일 수 있다는 것을 의미합니다. Safari, Edge 및 Firefox도 이제 ICC
-프로필을 고려하므로, 다른 색상 프로필을 가진 이미지(예: ICC)도
-화면이 Wide-gamut인지와 무관하게 이제 올바르게 표시할 수 있습니다.
-
-참고: 색상이 우리가 웹에서 작업하는 방식의 더 넓은 스펙트럼에
-어떻게 적용되는지에 관한 훌륭한 가이드는 [nerd’s guide to color on the web](https://css-tricks.com/nerds-guide-color-web/)(Sarah
-Drasner 글)을 참조하세요.
-
-## 이미지 스프라이팅 {: #image-sprites }
-
-[이미지
-스프라이트](/web/fundamentals/design-and-ui/responsive/images#use_image_sprites)(또는 CSS 스프라이트)
-는 웹에서 오랜 역사를 갖고 있으며,
-모든 브라우저에서 지원되고,
-슬라이스된 하나의 커다란 이미지로 결합하여 페이지가 로드하는 이미지의 수를 감소시키는 인기 있는 방법이었습니다.
-
-
-<img src="images/i2_2ec824b0_1.jpg" alt="이미지 스프라이트는 여전히
-        많은 프로덕션 사이트에서 사용되며 Google 홈페이지도 마찬가지입니다."
-         />
-이미지 스프라이트는 여전히 많은 프로덕션 사이트에서 사용되며
-Google 홈페이지도 마찬가지입니다.
-
-
-HTTP/1.x에서 일부 개발자는 HTTP 요청을 줄이기 위해 스프라이팅을 사용했습니다. 이 방법은
-수많은 이점이 있지만, 곧
-캐시 무효화 문제에
-직면할 수 있으므로 주의가 필요합니다. 이미지 스프라이트의 작은 부분이라도 변경하면 사용자 캐시의 전체 이미지가 무효화됩니다.
-
-스프라이팅은 이제 어떤 식으로든 [HTTP/2](https://hpbn.co/http2/) 안티 패턴일 수 있습니다.
-HTTP/2에서는
-이제 단일 연결 내 다중 요청이 가능해졌으므로 [개별 이미지를
-로드](https://deliciousbrains.com/performance-best-practices-http2/)하는 것이 가장 좋을 수 있습니다. 이것이 자신의 네트워크 설정에 맞는지
-측정하고 평가하세요.
-
-## 중요하지 않은 이미지 지연 로드 {: #lazy-load-non-critical-images }
-
-지연 로딩은 사용자가 이미지를 봐야 할 때까지 브라우저 내 이미지 로딩을
-지연하는 웹 성능 패턴입니다. 한 예로, 스크롤을 하면
-이미지가 온디맨드로 비동기 로드됩니다. 이 방식은 이미지 압축 전략의
-바이트 절감을 한층 향상할 수 있습니다.
-
-
-
-<img src="images/scrolling-viewport.jpg" alt="이미지 지연 로딩"
-         />
-
-
-반드시 '첫 화면에서' 보여야 하거나 웹페이지가 처음 나타냈을 때의 이미지는
-바로 로드됩니다. '스크롤을 내려야 보이는' 이미지는
-아직 사용자가 볼 수 없습니다. 이러한 이미지는 즉시 브라우저에
-로드되지 않습니다. 사용자가
-스크롤을 내려 표시해야 할 때만 추후에 로드(지연 로드)됩니다.
-
-지연 로딩은 아직 브라우저 자체에서 기본 지원되지 않습니다(과거에
-이에 관한
-[논의](https://discourse.wicg.io/t/a-standard-way-to-lazy-load-images/1153/10)는
-있었습니다). 대신, 자바스크립트를 이용하여 이 성능을 추가합니다.
-
-**지연 로딩이 유용한 이유는 무엇인가요?**
-
-필요할 때만 이미지를 '지연' 로딩하는 것에는 여러 이점이 있습니다.
-
-* **데이터 소비 감소**: 사용자가 모든
-  이미지를 사전에 가져와야 할 것이라고 가정하지 않으므로, 최소한의 리소스만
-  로딩합니다. 이것은 특히 제한적인 데이터 요금을 사용하는
-  모바일에서 언제나 좋은 일입니다.
-* **배터리 소모 감소**: 사용자 브라우저의 작업 부하가 더 적어
-  배터리 수명을 절감할 수 있습니다.
-* **향상된 다운로드 속도**: 이미지가 많은
-  웹사이트의 전체 페이지 로드 시간을 수 초에서 거의 순식간으로 감소시키면
-  사용자 환경을 엄청나게 향상합니다. 사실상, 이것은 여러분의
-  웹 사이트에 머물며 즐거운 시간을 보내는 사용자와 또 하나의 이탈 통계치를 가르는 것입니다.
-
-**그러나 다른 모든 도구처럼, 커다란 힘에는 커다란 책임이 따릅니다.**
-
-**첫 화면에 표시되는 이미지의 지연 로딩을 삼가세요** 긴 이미지 목록(예: 제품)이나
-사용자 아바타 목록에 사용하세요. 기본 페이지의 히어로
-이미지에 사용하지 마세요. 첫 화면에 나타나는 이미지의 지연 로딩은 기술적으로나
-인지적으로나 로딩을 눈에 띄게 느리게 할 수 있습니다. 이렇게 하면 브라우저의 프리로더가 중지되어
-프로그레시브 로딩과 자바스크립트가 브라우저에 추가 작업을 생성합니다.
-
-**스크롤링 시 이미지 지연 로딩에 유의하세요.** 사용자가 스크롤할 때까지
-기다리면, 이전에 스크롤한 적이 없는 경우 자리표시자가 표시된 다음 나중에 이미지를
-가져옵니다. 첫 화면의 이미지가 로드된 후
-지연 로딩을 시작하여 사용자 상호작용과는
-독립적으로 모든 이미지를 로딩하는 것이 권장됩니다.
-
-**어떤 사람이 지연 로딩을 사용하나요?**
-
-지연 로딩의 예는 많은 이미지를
-호스팅하는 대부분의 주요 사이트에서 볼 수 있습니다. 몇 가지 주목할만한 사이트는 [Medium](https://medium.com/)과
-[Pinterest](https://www.pinterest.com/)입니다.
-
-
-<img src="images/Modern-Image35.jpg" alt="medium.com의
-        이미지에 대한 인라인 미리보기"
-         />
-medium.com의 이미지에 대한 가우시안 블러 인라인 미리보기 예시
-
-
-많은 사이트(예: Medium)는 작은 가우시안 블러 인라인
-미리보기(수 백 바이트)를 표시합니다. 일단 전체 품질의 이미지를 가져오면 이것으로
-변환(지연 로드)됩니다.
-
-José M. Pérez는 [CSS
-필터](https://jmperezperez.com/medium-image-progressive-loading-placeholder/)를 사용하여
-Medium 효과를 구현하는 방법을 작성하고, 이러한 자리표시자를 지원하기 위해 [여러
-이미지 형식](https://jmperezperez.com/webp-placeholder-images/)을
-실험했습니다. Facebook 또한
-[커버
-사진](https://code.facebook.com/posts/991252547593574/the-technology-behind-preview-photos/)의
- 이러한 자리표시자를 위한 유명한 200바이트 접근 방식에 관해 읽어볼 만한 글을 작성했습니다. Webpack 사용자라면 [LQIP
-로더](https://lqip-loader.firebaseapp.com/)가 이러한 작업을
-일부 자동화하는 데 도움을 줄 것입니다.
-
-사실상, 가장 좋아하는 고해상도 사진 소스를 검색하고
-페이지를 스크롤할 수 있습니다. 거의 대부분의 경우, 웹사이트가
-한 번에 단 몇 개의 전체 해상도 이미지만을 로드하며 나머지는
-자리표시자 색상이나 이미지인 것을 경험할 것입니다. 계속 스크롤하면, 자리표시자 이미지가
-전체 해상도 이미지로 대체됩니다. 지연 로딩이 작동한 것입니다.
-
-**페이지에 지연 로딩을 적용하려면 어떻게 해야 하나요?**
-
-지연 로딩에 이용할 수 있는 수많은 기술과 플러그인이 있습니다. 저는
-Alexander Farkas의 [lazysizes](https://github.com/aFarkas/lazysizes)를
-추천합니다. 우수한 성능, 기능,
-[Intersection Observer](/web/updates/2016/04/intersectionobserver)로의 선택적 통합,
-플러그인 지원을 갖추고 있기 때문입니다.
-
-**Lazysizes로 무엇을 할 수 있나요?**
-
-Lazysizes는 자바스크립트 라이브러리입니다. 구성이 필요하지 않습니다. 최소화된
-js 파일을 다운로드하고 웹페이지에 포함시키세요.
-
-
-다음은 README 파일에서 가져온 몇 가지 예시 코드입니다.
-
-data-src
-및/또는 data-srcset 속성과 함께 'lazyload' 클래스를 image/iframes에 추가하세요.
-
-선택적으로 저품질의 이미지에 src 속성을 추가할 수도 있습니다.
+**Cache Enabler and Optimizer** — If you are using WordPress, there is at least one halfway-open source option. The open source plugin [Cache Enabler](https://wordpress.org/plugins/cache-enabler/) has a menu checkbox option for caching WebP images to be served if available and the current user’s browser supports them. This makes serving WebP images easy. There is a drawback: Cache Enabler requires the use of a sister program called Optimizer, which has an annual fee. This seems out of character for a genuinely open source solution.
+
+**ShortPixel** — Another option that can be used stand-alone or with Cache Enabler, also at a cost, is ShortPixel. In its stand alone use [ShortPixel](https://shortpixel.com) can add a `<picture>` tag that usually will serve the right type of image depending on the browser. You can optimize up to 100 images a month for free.
+
+**Compressing Animated GIFs and why `<video>` is better**
+
+Animated GIFs continue to enjoy widespread use, despite being a very limited format. Although everything from social networks to popular media sites embed animated GIFs heavily, the format was *never* designed for video storage or animation. In fact, the [GIF89a spec](https://www.w3.org/Graphics/GIF/spec-gif89a.txt) notes "the GIF is not intended as a platform for animation". The [number of colors, number of frames and dimensions](http://gifbrewery.tumblr.com/post/39564982268/can-you-recommend-a-good-length-of-clip-to-keep-gifs) all impact animated GIF size. Switching to video offers the largest savings.
+
+![Animated GIF vs. Video: a comparison of
+        file sizes at ~equivalent quality for different formats.](images/animated-gif.jpg) Animated GIF vs. Video: a comparison of file sizes at ~equivalent quality for different formats.
+
+**Delivering the same file as an MP4 video can often shave 80% or more off your file-size.** Not only do GIFs often waste significant bandwidth, but they take longer to load, include fewer colors and generally offer sub-part user experiences. You may have noticed animated GIFs uploaded to Twitter perform better on Twitter than on other websites. [Animated GIFs on Twitter aren't actually GIFs](http://mashable.com/2014/06/20/twitter-gifs-mp4/#fiiFE85eQZqW). To improve user experience and reduce bandwidth consumption, animated GIFs uploaded to Twitter are actually converted to video. Similarly, [Imgur converts GIFs to videos](https://thenextweb.com/insider/2014/10/09/imgur-begins-converting-gif-uploads-mp4-videos-new-gifv-format/) on upload, silently converting it to an MP4 for you.
+
+Why are GIFs many times larger? Animated GIFs store each frame as a lossless GIF image - yes, lossless. The degraded quality we often experience is due to GIFs being limited to a 256-color palette. The format is often large as it doesn't consider neighbor frames for compression, unlike video codecs like H.264. An MP4 video stores each key frame as a lossy JPEG, which discards some of the original data to achieve better compression.
+
+**If you can switch to videos**
+
+* Use [ffmpeg](https://www.ffmpeg.org/) to convert your animated GIFs (or sources) to H.264 MP4s. I use this one-liner from[ Rigor](http://rigor.com/blog/2015/12/optimizing-animated-gifs-with-html5-video): `ffmpeg -i animated.gif -movflags faststart -pix_fmt yuv420p -vf
+"scale=trunc(iw/2)*2:trunc(ih/2)*2" video.mp4`
+* ImageOptim API also supports [converting animated gifs to WebM/H.264 video](https://imageoptim.com/api/ungif), [removing dithering from GIFs](https://github.com/pornel/undither#examples) which can help video codecs compress even more.
+
+**If you must use animated GIFs**
+
+* Tools like Gifsicle can strip metadata, unused palette entries and minimize what changes between frames
+* Consider a lossy GIF encoder. The [Giflossy](https://github.com/pornel/giflossy) fork of Gifsicle supports this with the `—lossy` flag and can shave ~60-65% off size. There's also a nice tool based on it called [Gifify](https://github.com/vvo/gifify). For non-animated GIFs, convert them to PNG or WebP.
+
+For more information, checkout the[ Book of GIF](https://rigor.com/wp-content/uploads/2017/03/TheBookofGIFPDF.pdf) by Rigor.
+
+## SVG optimization {: #svg-optimization }
+
+Keeping SVGs lean means stripping out anything unnecessary. SVG files created with editors usually contain a large quantity of redundant information (metadata, comments, hidden layers and so forth). This content can often be safely removed or converted to a more minimal form without impacting the final SVG that's being rendered.
+
+![svgo](images/Modern-Image26.jpg) [SVGOMG](https://jakearchibald.github.io/svgomg/), by Jake Archibald, is a GUI interface enabling you to optimize your SVGs to your preference by selecting optimizations, with a live preview of the outputted markup
+
+**Some general rules for SVG optimization (SVGO):**
+
+* Minify and gzip your SVG files. SVGs are really just text assets expressed in XML, like CSS, HTML and JavaScript, and should be minified and gzipped to improve performance.
+* Instead of paths, use predefined SVG shapes like `<rect>`, `<circle>`, `<ellipse>`, `<line>` and `<polygon>`. Preferring predefined shapes decreases how much markup is needed to produce a final image, meaning less code to parse and rasterize by the browser. Reducing SVG complexity means a browser can display it more quickly.
+* If you must use paths, try to reduce your curves and paths. Simplify and combine them where you can. Illustrator's [simplify tool](http://jlwagner.net/talks/these-images/#/2/10) is adept at removing superfluous points in even complex artwork while smoothing out irregularities.
+* Avoid using groups. If you can't, try to simplify them.
+* Delete layers that are invisible.
+* Avoid any Photoshop or Illustrator effects. They can get converted to large raster images.
+* Double check for any embedded raster images that aren't SVG-friendly
+* Use a tool to optimize your SVGs. [SVGOMG](https://jakearchibald.github.io/svgomg/) is a super handy web-based GUI for [SVGO](https://github.com/svg/svgo) by Jake Archibald that I’ve found invaluable. If you use Sketch, the SVGO Compressor plugin([Sketch plugin for running SVGO](https://www.sketchapp.com/extensions/plugins/svgo-compressor/)) can be used when exporting to shrink the file size.
+
+![svgo precision reduction can sometimes
+        have a positive impact on size](images/svgo-precision.jpg) An example of running an SVG source through SVGO in high-precision mode (leading to a 29% improvement in size) vs. low-precision mode (a 38% size improvement).
+
+[SVGO](https://github.com/svg/svgo) is a Node-based tool for optimizing SVG. SVGO can reduce file-size by lowering the *precision* of numbers in your <path> definitions. Each digit after a point adds a byte and this is why changing the precision (number of digits) can heavily influence file size. Be very very careful with changing precision however as it can visually impact how your shapes look.
+
+![where svgo can go wrong,
+        oversimplifying paths and artwork](images/Modern-Image28.jpg) It's important to note that while SVGO does well in the previous example without over-simplifying paths and shapes, there are plenty of cases where this may not be the case. Observe how the light strip on the above rocket is distorted at a lower precision.
+
+**Using SVGO at the command-line:**
+
+SVGO can be installed as a [global npm CLI](https://www.npmjs.com/package/svgo) should you prefer that to a GUI:
+
+    npm i -g svgo
+    
+
+This can then be run against a local SVG file as follows:
+
+    svgo input.svg -o output.svg
+    
+
+It supports all the options you might expect, including adjusting floating point precision:
+
+    svgo input.svg --precision=1 -o output.svg
+    
+
+See the SVGO [readme](https://github.com/svg/svgo) for the full list of supported options.
+
+**Don't forget to compress SVGs!**
+
+![before and after running an image
+        through svgo](images/before-after-svgo.jpg) It's important to note that while SVGO does well in the previous example without over-simplifying paths and shapes, there are plenty of cases where this may not be the case. Observe how the light strip on the above rocket is distorted at a lower precision.
+
+Also, don't forget to [Gzip your SVG assets](https://calendar.perfplanet.com/2014/tips-for-optimising-svg-delivery-for-the-web/) or serve them using Brotli. As they're text based, they'll compress really well (~50% of the original sources).
+
+When Google shipped a new logo, we announced that the [smallest](https://twitter.com/addyosmani/status/638753485555671040) version of it was only 305 bytes in size.
+
+![the smallest version of the new google
+        logo was only 305 bytes in size](images/Modern-Image30.jpg)
+
+There are [lots of advanced SVG tricks](https://www.clicktorelease.com/blog/svg-google-logo-in-305-bytes/) you can use to trim this down even further (all the way to 146 bytes)! Suffice to say, whether it's through tools or manual clean-up, there's probably a *little* more you can shave off your SVGs.
+
+**SVG Sprites**
+
+SVG can be [powerful](https://css-tricks.com/icon-fonts-vs-svg/) for icons, offering a way to represent visualizations as a sprite without the [quirky](https://www.filamentgroup.com/lab/bulletproof_icon_fonts.html) workarounds needed for icon fonts. It has more granular CSS styling control than icon fonts (SVG stroke properties), better positioning control (no need to hack around pseudo-elements and CSS `display`) and SVGs are much more [accessible](http://www.sitepoint.com/tips-accessible-svg/).
+
+Tools like [svg-sprite](https://github.com/jkphl/svg-sprite) and [IcoMoon](https://icomoon.io/) can automate combining SVGs into sprites which can be used via a [CSS Sprite](https://css-tricks.com/css-sprites/), [Symbol Sprite](https://css-tricks.com/svg-use-with-external-reference-take-2) or [Stacked Sprite](http://simurai.com/blog/2012/04/02/svg-stacks). Una Kravetz has a practical [write-up](https://una.im/svg-icons/#💁) on how to use gulp-svg-sprite for an SVG sprite workflow worth checking out. Sara Soudein also covers [making the transition from icon fonts to SVG](https://www.sarasoueidan.com/blog/icon-fonts-to-svg/) on her blog.
+
+**Further reading**
+
+Sara Soueidan's [tips for optimizing SVG delivery for the web](https://calendar.perfplanet.com/2014/tips-for-optimising-svg-delivery-for-the-web/) and Chris Coyier's [Practical SVG book](https://abookapart.com/products/practical-svg) are excellent. I've also found Andreas Larsen's optimizing SVG posts enlightening ([part 1](https://medium.com/larsenwork-andreas-larsen/optimising-svgs-for-web-use-part-1-67e8f2d4035),[part 2](https://medium.com/larsenwork-andreas-larsen/optimising-svgs-for-web-use-part-2-6711cc15df46)).[Preparing and exporting SVG icons in Sketch](https://medium.com/sketch-app-sources/preparing-and-exporting-svg-icons-in-sketch-1a3d65b239bb) was also a great read.
+
+## Avoid recompressing images with lossy codecs {: #avoid-recompressing-images-lossy-codecs }
+
+It is recommended to always compress from the original image. Recompressing images has consequences. Let's say you take a JPEG that's already been compressed with a quality of 60. If you recompress this image with lossy encoding, it will look worse. Each additional round of compression is going to introduce generational loss - information will be lost and compression artifacts will start to build up. Even if you're re-compressing at a high quality setting.
+
+To avoid this trap, **set the lowest good quality you're willing to accept in the first place** and you'll get maximum file savings from the start. You then avoid this trap because any file-size reductions from quality reduction alone will look bad.
+
+Re-encoding a lossy file will almost always give you a smaller file, but this doesn’t mean you’re getting as much quality out of it as you may think.
+
+![generational loss when re-encoding
+        an image multiple times](images/generational-loss.jpg) Above, from this [excellent video](https://www.youtube.com/watch?v=w7vXJbLhTyI) and [accompanying article](http://cloudinary.com/blog/why_jpeg_is_like_a_photocopier) by Jon Sneyers, we can see the generational loss impact of recompression using several formats. This is a problem you may have run into if saving (already compressed) images from social networks and re-uploading them (causing recompression). Quality loss will build up.
+
+MozJPEG (perhaps accidentally) has a better resistance to recompression degradation thanks to trellis quantization. Instead of compressing all DCT values as they are exactly, it can check close values within a +1/-1 range to see if similar values compress to fewer bits. Lossy FLIF has a hack similar to lossy PNG in that prior to (re)compression, it can look at the data and decide what to throw away. Recompressed PNGs have "holes" it can detect to avoid changing data further.
+
+**When editing your source files, store them in a lossless format like PNG or TIFF, so you preserve as much quality as you can.** Your build tools or image compression service than then handle outputting the compressed version you serve to users with minimal loss in quality.
+
+## Reduce unnecessary image decode and resize costs {: #reduce-unnecessary-image-decode-costs }
+
+We've all shipped large, higher resolution images than needed to our users before. This has a cost to it. Decoding and resizing images are expensive operations for a browser on average mobile hardware. If sending down large images and rescaling using CSS or width/height attributes, you're likely to see this happen and it can impact performance.
+
+![There are many steps involved in a
+        browser grabbing an image specified in a tag and displaying it on a
+        screen. These include request, decode, resize, copy to GPU, display.](images/image-pipeline.jpg)
+
+When a browser fetches an image, it has to decode the image from the original source format (e.g JPEG) to a bitmap in memory. Often the image needs to be resized (e.g width has been set to a percentage of its container). Decoding and resizing images are expensive and can delay how long it takes for an image to be displayed.
+
+Sending down images that a browser can render without needing to resize at all is ideal. So, serve the smallest images for your target screen sizes and resolutions, taking advantage of [`srcset` and `sizes`](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images)
+
+* we'll cover `srcset` shortly.
+
+Omitting the `width` or `height` attributes on an image can also negatively impact performance. Without them, a browser assigns a smaller placeholder region for the image until sufficient bytes have arrived for it to know the correct dimensions. At that point, the document layout must be updated in what can be a costly step called reflow.
+
+![image decode costs shown in the
+        chrome devtools](images/devtools-decode.jpg) Browsers have to go through a number of steps to paint images on the screen. In addition to fetching them, images need to be decoded and often resized. These events can be audited in the Chrome DevTools [Timeline](/web/tools/chrome-devtools/evaluate-performance/performance-reference).
+
+Larger images also come with an increase in memory size costs. Decoded images are ~4 bytes per pixel. If you're not careful, you can literally crash the browser; on low-end devices it doesn't take that much to start memory swapping. So, keep an eye on your image decode, resize and memory costs.
+
+![Decoding images can be
+        incredibly costly on average and lower-end mobile hardware](images/image-decoding-mobile.jpg) Decoding images can be incredibly costly on average and lower-end mobile phones. In some cases it can be 5x slower to decode (if not longer).
+
+When building their new [mobile web experience](https://medium.com/@paularmstrong/twitter-lite-and-high-performance-react-progressive-web-apps-at-scale-d28a00e780a3), Twitter improved image decode performance by ensuring they served appropriately sized images to their users. This took decode time for many images in the Twitter timeline from ~400ms all the way down to ~19!
+
+![Chrome DevTools Timeline/Performance
+        panel highlighting image decode times before and after Twitter Lite
+        optimized their image pipeline. Before was higher.](images/image-decoding.jpg) Chrome DevTools Timeline/Performance panel highlighting image decode times (in green) before and after Twitter Lite optimized their image pipeline.
+
+### Delivering HiDPI images using `srcset` {: #delivering-hidpi-with-srcset }
+
+Users may access your site through a range of mobile and desktop devices with high-resolution screens. The [Device Pixel Ratio](https://stackoverflow.com/a/21413366) (DPR) (also called the "CSS pixel ratio") determines how a device’s screen resolution is interpreted by CSS. DPR was created by phone manufacturers to enable increasing the resolution and sharpness of mobile screens without making elements appear too small.
+
+To match the image quality users might expect, deliver the most appropriate resolution images to their devices. Sharp, high-DPR images (e.g 2x, 3x) can be served to devices that support them. Low and standard-DPR images should be served to users without high-res screens as such 2x+ images will often weigh significantly more bytes.
+
+![A diagram of the device pixel
+        ratio at 1x, 2x and 3x. Image quality appears to sharpen as DPR
+        increases and a visual is shown comparing device pixels to CSS pixels.](images/device-pixel-ratio.jpg) Device Pixel Ratio: Many sites track the DPR for popular devices including [material.io](https://material.io/devices/) and [mydevice.io](https://mydevice.io/devices/).
+
+[srcset](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images) allows a browser to select the best available image per device, e.g selecting a 2x image for a 2x mobile display. Browsers without `srcset` support can fallback to the default `src` specified in the `<img>` tag.
+
+    <img srcset="paul-irish-320w.jpg,
+                 paul-irish-640w.jpg 2x,
+                 paul-irish-960w.jpg 3x"
+         src="paul-irish-960w.jpg" alt="Paul Irish cameo">
+    
+
+Image CDNs like [Cloudinary](http://cloudinary.com/blog/how_to_automatically_adapt_website_images_to_retina_and_hidpi_devices) and [Imgix](https://docs.imgix.com/apis/url/dpr) both support controlling image density to serve the best density to users from a single canonical source.
+
+Note: You can learn more about Device Pixel Ratio and responsive images in this free [Udacity](https://www.udacity.com/course/responsive-images--ud882) course and the [Images](/web/fundamentals/design-and-ui/responsive/images) guide on Web Fundamentals.
+
+A friendly reminder that [Client Hints](https://www.smashingmagazine.com/2016/01/leaner-responsive-images-client-hints/) can also provide an alternative to specifying each possible pixel density and format in your responsive image markup. Instead, they append this information to the HTTP request so web servers can pick the best fit for the current device's screen density.
+
+### Art direction {: #art-direction }
+
+Although shipping the right resolution to users is important, some sites also need to think about this in terms of **[art direction](http://usecases.responsiveimages.org/#art-direction)**. If a user is on a smaller screen, you may want to crop or zoom in and display the subject to make best use of available space. Although art direction is outside the scope of this write-up, services like[ Cloudinary](http://cloudinary.com/blog/automatically_art_directed_responsive_images%20) provide APIs to try automating this as much as possible.
+
+![responsive art direction in
+        action, adapting to show more or less of an image in a cropped manner
+        depending on device](images/responsive-art-direction.jpg) Art direction: Eric Portis put together an excellent [sample](https://ericportis.com/etc/cloudinary/) of how responsive images can be used for art-direction. This example adapt's the main hero image's visual characteristics at different breakpoints to make best use of the available space.
+
+## Color management {: #color-management }
+
+There are at least three different perspectives of color: biology, physics and print. In biology, color is a [perceptual phenomenon](http://hubel.med.harvard.edu/book/ch8.pdf). Objects reflect light in different combinations of wavelengths. Light receptors in our eyes translate these wavelengths into the sensation we know as color. In physics, it’s light that matters - light frequencies and brightness. Print is more about color wheels, inks and artistic models.
+
+Ideally, every screen and web browser in the world would display color exactly the same. Unfortunately, due to a number of inherent inconsistencies, they don’t. Color management allows us to reach a compromise on displaying color through color models, spaces and profiles.
+
+#### Color models {: #color-models }
+
+[Color models](https://en.wikipedia.org/wiki/Gamma_correction) are a system for generating a complete range of colors from a smaller set of primary colors. There are different types of color spaces which use different parameters to control colors. Some color spaces have fewer control parameters than others - e.g grayscale only has a single parameter for controlling brightness between black and white colors.
+
+Two common color models are additive and subtractive. Additive color models (like RGB, used for digital displays) use light to show color while subtractive color models (like CMYK, used in printing) work by taking light away.
+
+![sRGB, Adobe RGB and ProPhoto RGB](images/colors_ept6f2.jpg) In RGB red, green and blue light are added in different combinations to produce a broad spectrum of colors. CYMK (cyan, magenta, yellow and black) works through different colors of ink subtracting brightness from white paper.
+
+[Understanding Color Models and Spot Color Systems](https://www.designersinsights.com/designer-resources/understanding-color-models/) has a good description of other color models and modes, such as HSL, HSV and LAB.
+
+#### Color spaces {: #color-spaces }
+
+[Color spaces](http://www.dpbestflow.org/color/color-space-and-color-profiles#space) are a specific range of colors that can be represented for a given image. For example, if an image contains up to 16.7 million colors, different color spaces allow the use of narrower or wider ranges of these colors. Some developers refer to color models and color spaces as the same thing.
+
+[sRGB](https://en.wikipedia.org/wiki/SRGB) was designed to be a [standard](https://www.w3.org/Graphics/Color/sRGB.html) color space for the web and is based on RGB. It’s a small color space that is typically considered the lowest common denominator and is the safest option for color management cross-browser. Other color spaces (such as [Adobe RGB](https://en.wikipedia.org/wiki/Adobe_RGB_color_space) or [ProPhoto RGB](https://en.wikipedia.org/wiki/ProPhoto_RGB_color_space) - used in Photoshop and Lightroom) can represent more vibrant colors than sRGB but as the latter is more ubiquitous across most web browsers, games and monitors, it’s what is generally focused on.
+
+![sRGB, Adobe RGB and ProPhoto RGB](images/color-wheel_hazsbk.jpg) Above we can see a visualization of gamut - the range of colors a color space can define.
+
+Color spaces have three channels (red, green and blue). There are 255 colors possible in each channel under 8-bit mode, bringing us to a total of 16.7 million colors. 16-bit images can show trillions of colors.
+
+![sRGB, Adobe RGB and ProPhoto RGB](images/srgb-rgb_ntuhi4.jpg) A comparison of sRGB, Adobe RGB and ProPhoto RGB using an image from [Yardstick](https://yardstick.pictures/tags/img%3Adci-p3). It's incredibly hard to show this concept in sRGB, when you can't show colors that can't be seen. A regular photo in sRGB vs wide gamut should have everything identical, except most saturated "juicy" colors.
+
+The differences in color spaces (like sRGB, Adobe RGB and ProPhoto RGB) are their gamut (the range of colors they can reproduce with shades), illuminant and [gamma](http://blog.johnnovak.net/2016/09/21/what-every-coder-should-know-about-gamma/) curves. sRGB is ~20% smaller than Adobe RGB and ProPhoto RGB is ~[50% larger](http://www.petrvodnakphotography.com/Articles/ColorSpace.htm) than Adobe RGB. The above image sources are from [Clipping Path](http://clippingpathzone.com/blog/essential-photoshop-color-settings-for-photographers).
+
+[Wide-gamut](http://www.astramael.com/) is a term describing color spaces with a gamut larger than sRGB. These types of displays are becoming more common. That said, many digital displays are still simply unable to display color profiles that are significantly better than sRGB. When saving for the web in Photoshop, consider using the 'Convert to sRGB’ option unless targeting users with higher-end wide-gamut screens.<aside class="key-point">
+
+**Note:** When working with original photography, avoid using sRGB as your primary color space. It's smaller than the color spaces most cameras support and can cause clipping. Instead, work on a larger color space (like ProPhoto RGB) and output to sRGB when exporting for the web.</aside> 
+
+**Are there any cases where wide gamut makes sense for web content?**
+
+Yes. If an image contains very saturated/juicy/vibrant color and you care about it being just as juicy on screens that support it. However, in real photos that rarely happens. Often it's easy to tweak color to make it appear vibrant, without it actually exceeding sRGB gamut
+
+That's because human color perception is not absolute, but relative to our surroundings and is easily fooled. If your image contains a fluorescent highlighter color, then you'll have an easier time with wide gamut.
+
+#### Gamma correction and compression {: #gamma-correction }
+
+[Gamma correction](https://en.wikipedia.org/wiki/Gamma_correction) (or just Gamma) controls the overall brightness of an image. Changing the gamma can also alter the ratio of red to green and blue colors. Images without gamma correction can look like their colors are bleached out or too dark.
+
+In video and computer graphics, gamma is used for compression, similar to data compression. This allows you to squeeze useful levels of brightness in fewer bits (8-bit rather than 12 or 16). Human perception of brightness is not linearly proportional to physical amount of light. Representing colors in their true physical form would be wasteful when encoding images for human eyes. Gamma compression is used to encode brightness on a scale that is closer to human perception.
+
+With gamma compression useful scale of brightness fits in 8 bits of precision (0-255 used by most RGB colors). All of this comes from the fact that if colors used some unit with 1:1 relationship to physics, RGB values would be from 1 to million where values 0-1000 would look distinct, but values between 999000-1000000 would look identical. Imagine being in a dark room where there is just 1 candle. Light a second candle and you notice significant increases in brightness in the room light. Add a third candle and it’ll seem even brighter. Now imagine being in a room with 100 candles. Light the 101st candle, the 102nd. You won’t notice a change in brightness.
+
+Even though in both cases, physically, exactly the same amount of light was added. So because eyes are less sensitive when light is bright, gamma compression "compresses" bright values, so in physical terms bright levels are less precise but the scale is adjusted for humans so from the human perspective all values are equally precise.<aside class="key-point">
+
+**Note:** Gamma compression/correction here is different to the image gamma curves you might configure in Photoshop. When gamma compression works as it should, it doesn't look like anything.</aside> 
+
+#### Color profiles {: #color-profiles }
+
+A color profile is the information describing what that the color space of a device is. It’s used to convert between different color spaces. Profiles attempt to ensure an image looks as similar as possible on these different kinds of screens and mediums.
+
+Images can have an embedded color profile as described by the [International Color Consortium](http://www.color.org/icc_specs2.xalter) (ICC) to represent precisely how colors should appear. This is supported by different formats including JPEGs, PNGs, SVGs and [WebP](/speed/webp/docs/riff_container) and most major browsers support embedded ICC profiles. When an image is displayed in an app and it knows the monitor's capabilities, these colors can be adjusted based on the color profile.<aside class="key-point">
+
+**Note:** Some monitors have a color profile similar to sRGB and cannot display much better profiles so depending on your target users displays, there may be limited value in embedding them. Check who your target users are.</aside> 
+
+Embedded color profiles can also heavily increase the size of your images (100KB+ occasionally) so be careful with embedding. Tools like ImageOptim will actually [automatically](https://imageoptim.com/color-profiles.html) remove color profiles if it finds them. In contrast, with the ICC profile removed in the name of size reduction, browsers will be forced to display the image in your monitor's color space which can lead to differences in expected saturation and contrast. Evaluate the trade-offs here make sense for your use case.
+
+[Nine Degrees Below](https://ninedegreesbelow.com/photography/articles.html) have an excellent set of resources on ICC profile color management if you are interested in learning more about profiles.
+
+#### Color profiles and web browsers {: #color-profiles }
+
+Earlier versions of Chrome did not have great support for color management, but this is improving in 2017 with [Color Correct Rendering](https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/ptuKdRQwPAo). Displays that are not sRGB (newer Macbook Pros) will convert colors from sRGB to the display profile. This will mean colors should look more similar across different systems and browsers. Safari, Edge and Firefox can now also take ICC profiles into account, so images with a different color profile (e.g ICC) can now display them correctly whether your screen has wide gamut or not.
+
+Note: For a great guide on how color applies to a broader spectrum of ways we work on the web, see the [nerd’s guide to color on the web](https://css-tricks.com/nerds-guide-color-web/) by Sarah Drasner.
+
+## Image spriting {: #image-sprites }
+
+[Image sprites](/web/fundamentals/design-and-ui/responsive/images#use_image_sprites) (or CSS sprites) have a long history on the web, are supported by all browsers and have been a popular way to reduce the number of images a page loads by combining them into a single larger image that is sliced.
+
+![Image sprites are still widely used in
+        large, production sites, including the Google homepage.](images/i2_2ec824b0_1.jpg) Image sprites are still widely used in large, production sites, including the Google homepage.
+
+Under HTTP/1.x, some developers used spriting to reduce HTTP requests. This came with a number of benefits, however care was needed as you quickly ran into challenges with cache-invalidation - changes to any small part of an image sprite would invalidate the entire image in a user's cache.
+
+Spriting may now however be an [HTTP/2](https://hpbn.co/http2/) anti-pattern. With HTTP/2, it may be best to [load individual images](https://deliciousbrains.com/performance-best-practices-http2/) since multiple requests within a single connection are now possible. Measure to evaluate whether this is the case for your own network setup.
+
+## Lazy-load non-critical images {: #lazy-load-non-critical-images }
+
+Lazy loading is a web performance pattern that delays the loading of images in the browser until the user needs to see it. One example is, as you scroll, images load asynchronously on demand. This can further compliment the byte-savings you see from having an image compression strategy.
+
+![lazy-loading images](images/scrolling-viewport.jpg)
+
+Images that must appear "above the fold," or when the web page first appears are loaded straight away. The images which follow "below the fold," however, are not yet visible to the user. They do not have to be immediately loaded into the browser. They can be loaded later — or lazy loaded — only if and when the user scrolls down and it becomes necessary to show them.
+
+Lazy loading is not yet natively supported in the browser itself (although there have been [discussions](https://discourse.wicg.io/t/a-standard-way-to-lazy-load-images/1153/10) about it in the past). Instead, we use JavaScript to add this capability.
+
+**Why is Lazy Loading Useful?**
+
+This "lazy" way of loading images only if and when necessary has many benefits:
+
+* **Reduced data consumption**: As you aren’t assuming the user will need every image fetched ahead of time, you’re only loading the minimal number of resources. This is always a good thing, especially on mobile with more restrictive data plans.
+* **Reduced battery consumption**: Less workload for the user’s browser which can save on battery life.
+* **Improved download speed**: Decreasing your overall page load time on an image heavy website from several seconds to almost nothing is a tremendous boost to user experience. In fact, it could be the difference between a user staying around to enjoy your site and just another bounce statistic.
+
+**But like all tools, with great power comes great responsibility.**
+
+**Avoid lazy-loading images above the fold.** Use it for long-lists of images (e.g products) or lists of user avatars. Don’t use it for the main page hero image. Lazy-loading images above the fold can make loading visibly slower, both technically and for human perception. It can kill the browser’s preloader, progressive loading and the JavaScript can create extra work for the browser.
+
+**Be very careful lazy-loading images when scrolling.** If you wait until the user is scrolling they are likely to see placeholders and may eventually get images, if they haven’t already scrolled past them. One recommendation would be to start lazy-loading after the above-the-fold images have loaded, loading all of the images independent of user interaction.
+
+**Who Uses Lazy Loading?**
+
+For examples of lazy loading, look at most any major site that hosts a lot of images. Some notable sites are [Medium](https://medium.com/) and [Pinterest](https://www.pinterest.com/).
+
+![inline previews for images on
+        medium.com](images/Modern-Image35.jpg) An example of Gaussian-blurred inline previews for images on Medium.com
+
+A number of sites (such as Medium) display a small, Gaussian-blurred inline preview (a few 100 bytes) that transitions (lazy-loads) to a full-quality image once it has been fetched.
+
+José M. Pérez has written about how to implement the Medium effect using [CSS filters](https://jmperezperez.com/medium-image-progressive-loading-placeholder/) and experimented with [different image formats](https://jmperezperez.com/webp-placeholder-images/) to support such placeholders. Facebook also did a write-up on their famous 200-byte approach for such placeholders for their [cover photos](https://code.facebook.com/posts/991252547593574/the-technology-behind-preview-photos/) that is worth a read. If you’re a Webpack user, [LQIP loader](https://lqip-loader.firebaseapp.com/) can help automate some of this work away.
+
+In fact, you can search for your favorite source of high-res photos and then scroll down the page. In almost all cases you'll experience how the website loads only a few full-resolution images at a time, with the rest being placeholder colors or images. As you continue to scroll, the placeholder images are replaced with full-resolution images. This is lazy loading in action.
+
+**How Can I Apply Lazy Loading to My Pages?**
+
+There are a number of techniques and plugins available for lazy loading. I recommend [lazysizes](https://github.com/aFarkas/lazysizes) by Alexander Farkas because of its decent performance, features, its optional integration with [Intersection Observer](/web/updates/2016/04/intersectionobserver), and support for plugins.
+
+**What Can I Do with Lazysizes?**
+
+Lazysizes is a JavaScript library. It requires no configuration. Download the minified js file and include it in your webpage.
+
+Here is some example code taken from the README file:
+
+Add the class "lazyload" to your images/iframes in conjunction with a data-src and/or data-srcset attribute.
+
+Optionally you can also add a src attribute with a low quality image:
 
 ```html
 <!-- non-responsive: -->
@@ -2183,67 +1050,42 @@ data-src
 </iframe>
 ```
 
-이 책의 웹 버전을 위해 온디맨드 반응형 이미지에 대해 Lazysizes(다른 대체재를 사용해도
-됩니다)와 Cloudinary를 쌍으로 묶었습니다. 그 덕분에 여러 스케일 값, 품질, 형식,
-최소한의 노력으로
-프로그레시브 로드가 가능한지 자유롭게 실험할 수 있었습니다.
+For the web version of this book, I paired Lazysizes (although you can use any alternative) with Cloudinary for on-demand responsive images. This allowed me the freedom to experiment with different values for scale, quality, format and whether or not to progressively load with minimal effort:
 
+![Cloudinary supports
+        on-demand control of image quality, format and several other features.](images/cloudinary-responsive-images.jpg)
 
-<img src="images/cloudinary-responsive-images.jpg" alt="Cloudinary는
-        이미지 품질, 형식, 여러 다른 기능의 온디맨드 제어를 지원합니다."
-         />
+**Lazysizes features include:**
 
+* Automatically detects visibility changes on current and future lazyload elements
+* Includes standard responsive image support (picture and srcset)
+* Adds automatic sizes calculation and alias names for media queries feature
+* Can be used with hundreds of images/iframes on CSS and JS-heavy pages or web apps
+* Extendable: Supports plugins
+* Lightweight but mature solution
+* SEO improved: Does not hide images/assets from crawlers
 
-**Lazysizes 기능에는 다음이 포함됩니다.**
+**More Lazy Loading Options**
 
-* 자동으로 현재 및 향후 지연 로드
-  요소의 가시성 변화 검색
-* 표준 반응형 이미지 지원(picture 및 srcset) 포함
-* 미디어 쿼리 기능에 자동 크기 계산 및 별명 추가
-* CSS 및 JS가 많이 포함된 페이지나 웹
-  앱에서 수백 개의 image/iframe 사용 가능
-* 확장 가능: 플러그인 지원
-* 가벼우면서도 노련한 솔루션 제공
-* SEO 향상: 크롤러에서 이미지/자산을 숨기지 않음
+Lazysizes is not your only option. Here are more lazy loading libraries:
 
-**더 많은 지연 로딩 옵션**
+* [Lazy Load XT](http://ressio.github.io/lazy-load-xt/)
+* [BLazy.js](https://github.com/dinbror/blazy) (or [Be]Lazy)
+* [Unveil](http://luis-almeida.github.io/unveil/)
+* [yall.js (Yet Another Lazy Loader)](https://github.com/malchata/yall.js) which is ~1KB and uses Intersection Observer where supported.
 
-Lazysizes가 유일한 선택지는 아닙니다. 다음은 더 많은 지연 로딩 라이브러리입니다.
+**What's the catch with Lazy Loading?**
 
-*   [Lazy Load XT](http://ressio.github.io/lazy-load-xt/)
-*   [BLazy.js](https://github.com/dinbror/blazy)(또는 [Be]Lazy)
-*   [Unveil](http://luis-almeida.github.io/unveil/)
-*   [yall.js (Yet Another Lazy Loader)](https://github.com/malchata/yall.js)
-    최대 1KB이며 지원되는 경우에는 Intersection Observer 사용.
+* Screen readers, some search bots and any users with JavaScript disabled will not be able to view images lazy loaded with JavaScript. This is however something that we can work around with a `<noscript>` fallback.
+* Scroll listeners, such as used for determining when to load a lazy-loaded image, can have an adverse impact on browser scrolling performance. They can cause the browser to redraw many times, slowing the process to a crawl - however, smart lazy loading libraries will use throttling to mitigate this. One possible solution is Intersection Observer, which is supported by lazysizes.
 
-**지연 로딩의 문제는 무엇인가요?**
+Lazy loading images is a widespread pattern for reducing bandwidth, decreasing costs, and improving user experience. Evaluate whether it makes sense for your experience. For further reading see [lazy loading images](https://jmperezperez.com/lazy-loading-images/) and [implementing Medium's progressive loading](https://jmperezperez.com/medium-image-progressive-loading-placeholder/).
 
-*   스크린 리더, 일부 검색봇, 자바스크립트를 사용하지 않는 모든 사용자는
-   자바스크립트로 로드된 이미지를 볼 수 없습니다. 그러나 이 문제는
-   `<noscript>` 폴백으로 우회할 수 있습니다.
-*   이미지를 언제 로드할 지 결정하는 데 사용하는 스크롤 리스너는
-   브라우저 스크롤 성능에 악영향을 미칠 수 있습니다. 브라우저가
-   여러 번 다시 그리게 하거나, 크롤에 대한 프로세스를 느리게 할 수 있습니다.
-   그러나, 스마트 지연 로딩 라이브러리가 스로틀링을 이용해 이 문제를 완화합니다.
-    가능한 해결 방법 중 하나는
-    lazysizes에서 지원되는 Intersection Observer입니다.
+## Avoiding the display:none trap {: #display-none-trap }
 
-이미지 지연 로딩은 대역폭 감소, 비용
-감소, 사용자 환경 향상을 위해 널리 사용되는 패턴입니다. 여러분의
-환경에 적합한지 평가해 보세요. 더 읽어보려면 [이미지
-지연 로딩](https://jmperezperez.com/lazy-loading-images/) 및[Medium의
-프로그레시브
-로딩 구현](https://jmperezperez.com/medium-image-progressive-loading-placeholder/)을 확인하세요.
+Older responsive image solutions have mistaken how browsers handle image requests when setting the CSS `display` property. This can cause significantly more images to be requested than you might be expecting and is another reason `<picture>` and `<img srcset>` are preferred for loading responsive images.
 
-## display:none의 함정 피하기 {: #display-none-trap }
-
-이전 반응형 이미지 솔루션은 CSS `display` 속성을 설정할 때 브라우저가 이미지
-요청을 처리하는 방법을 잘못 이해하고 있었습니다. 이로 인해 예상한 것보다 훨씬 더 많은
-이미지가 요청됩니다. 이것이
-`<picture>` 및 `<img srcset>`가 반응형 이미지 로딩에 선호되는 이유입니다.
-
-특정 중단점에서 이미지를 `display:none`로
-설정하는 미디어 쿼리를 작성한 적이 있나요?
+Have you ever written a media query that sets an image to `display:none` at certain breakpoints?
 
 ```html
 <img src="img.jpg">
@@ -2256,7 +1098,7 @@ Lazysizes가 유일한 선택지는 아닙니다. 다음은 더 많은 지연 �
 </style>
 ```
 
-또는 `display:none`클래스를 사용하여 숨길 이미지를 설정/해제한 적이 있습니까?
+Or toggled what images are hidden using a `display:none` class?
 
 ```html
 <style>
@@ -2268,27 +1110,20 @@ Lazysizes가 유일한 선택지는 아닙니다. 다음은 더 많은 지연 �
 <img src=“img-hidden.jpg" class="hidden">
 ```
 
-Chrome DevTools Network 패널에 대한 빠른 확인을 통해,
-이러한 접근 방식을 사용하는 숨겨진 이미지를 가져올 것이라고 예상하지 않을 때에도 가져오는지
-확인할 수 있습니다. 이 동작은 사실 삽입된 리소스 사양에 따라 교정됩니다.
+A quick check against the Chrome DevTools network panel will verify that images hidden using these approaches still get fetched, even when we expect them not to be. This behavior is actually correct per the embedded resources spec.
 
+![Images hidden with display:none
+        still get fetched](images/display-none-images.jpg)
 
-<img src="images/display-none-images.jpg" alt="여전히 가져오기 작업이 이루어지는
-        display:none으로 숨겨진 이미지"
-         />
-
-
-**`display:none`이 image `src`에 대한 요청 트리거를 회피하나요?**
+**Does `display:none` avoid triggering a request for an image `src`?**
 
 ```html
 <div style="display:none"><img src="img.jpg"></div>
 ```
 
-아닙니다. 이 지정된 이미지는 여전히 요청을 받습니다. 자바스크립트가 src를
-변경하기 전에 이미지가 요청되므로 여기서 라이브러리는
-display:none에 의존할 수 없습니다.
+No. The image specified will still get requested. A library cannot rely on display:none here as the image will be requested before JavaScript can alter the src.
 
-**`display:none`이 `background: url()`에 대한 요청 트리거를 회피하나요?**
+**Does `display:none` avoid triggering a request for a `background: url()`?**
 
 ```html
 <div style="display:none">
@@ -2296,371 +1131,180 @@ display:none에 의존할 수 없습니다.
 </div>
 ```
 
-예. 요소가 파싱되자마자 CSS 백그라운드를 불러오지 않습니다. `display:none`이 있는 하위 요소에 대한
-CSS 스타일 연산은 이 문서의 렌더링에 영향을 미치지 않으므로
-유용성이 떨어집니다. 하위 요소의 배경 이미지는
-연산되거나 다운로드되지 않습니다.
+Yes. CSS backgrounds aren’t fetched as soon as an element is parsed. Calculating CSS styles for children of elements with `display:none` would be less useful as they don’t impact rendering of the document. Background images on child elements are not calculated nor downloaded.
 
-Jake Archibald의 [Request Quest](https://jakearchibald.github.io/request-quest/)에는
-반응형 이미지 로딩에 `display:none`을 사용하는
-함정에 관한 훌륭한 퀴즈가 담겨있습니다. 특정 브라우저의 이미지 요청 로딩 처리에
-의심이 들면, DevTools을 열고 직접 확인해 보세요.
+Jake Archibald’s [Request Quest](https://jakearchibald.github.io/request-quest/) has an excellent quiz on the pitfalls of using `display:none` for your responsive images loading. When in doubt about how specific browser’s handle image request loading, pop open their DevTools and verify for yourself.
 
-또한, 가능하면
-`display:none`에 의존하기보다 `<picture>` 및 `<img srcset>`를 사용하세요.
+Again, where possible, use `<picture>` and `<img srcset>` instead of relying on `display:none`.
 
-## 이미지 처리 CDN이 적합합니까? {: #image-processing-cdns }
+## Does an image processing CDN make sense for you? {: #image-processing-cdns }
 
-*자체적인 이미지 처리
-파이프라인을 설정하기 위해 블로그 게시물을 읽거나 구성을 변경하는 데 소요하는 시간이 서비스 요금보다 더 클 수 있습니다. 
-[Cloudinary](http://cloudinary.com/)에서 무료 서비스를 제공하고,
-[Imgix](https://www.imgix.com/) 무료 체험판과
-[Thumbor](https://github.com/thumbor/thumbor)가 OSS 대체재 역할을 할 수 있으니
-자동화에 이용할 수 있는 선택지는 많은 편입니다.*
+*The time you'll spend reading the blog posts to setup your own image processing pipeline and tweaking your config is often >> the fee for a service. With [Cloudinary](http://cloudinary.com/) offering a free service, [Imgix](https://www.imgix.com/) a free trial and [Thumbor](https://github.com/thumbor/thumbor) existing as an OSS alternative, there are plenty of options available to you for automation.*
 
-최적의 페이지 로드 시간을 달성하기 위해 이미지 로딩을 최적화해야 합니다.
-이러한 최적화에는
-반응형 이미지 전략이 필요하며, 온서버 이미지 압축, 최적의 형식 자동 선택, 반응형
-크기 조정의 이점을 누릴 수 있습니다. 중요한 것은 올바르게 크기가 조정된 이미지를 적절한 기기에
-적절한 해상도로 가능한 한 빠르게 전달하는 것입니다. 이것은 생각보다
-쉬운 일이 아닙니다.
+To achieve optimal page load times, you need to optimize your image loading. This optimization calls for a responsive image strategy and can benefit from on-server image compression, auto-picking the best format and responsive resizing. What matters is that you deliver the correctly sized image to the proper device in the proper resolution as fast as possible. Doing this is not as easy as one might think.
 
-**자체 서버와 CDN 사용 비교**
+**Using Your Server vs. a CDN**
 
-이미지 조작의 복잡성과 끊임없이 진화하는 특성으로 인해,
-이 분야에 숙련된 분의 말을 인용한 다음
-제안으로 넘어가보려 합니다.
+Because of the complexity and ever-evolving nature of image manipulation, we're going to offer a quote from someone with experience in the field, then proceed with a suggestion.
 
-"이미지 조작을 판매하는 것이 아니라면 직접 하지 마세요.
-Cloudinary[편집자주: 또는 imgix]와 같은 서비스가 더 효율적으로
-여러분보다 더 잘 수행하니, 이를 이용하세요. 비용이 걱정된다면
-이것이 개발과 유지, 호스팅, 저장용량,
-전달에 얼마나 많은 비용이 들지 생각해 보세요." — [Chris
-Gmyr](https://medium.com/@cmgmyr/moving-from-self-hosted-image-service-to-cloudinary-bd7370317a0d)
+"If your product is not image manipulation, then don't do this yourself. Services like Cloudinary [or imgix, Ed.] do this much more efficiently and much better than you will, so use them. And if you're worried about the cost, think about how much it'll cost you in development and upkeep, as well as hosting, storage, and delivery costs." — [Chris Gmyr](https://medium.com/@cmgmyr/moving-from-self-hosted-image-service-to-cloudinary-bd7370317a0d)
 
+For the moment, we are going to agree and suggest that you consider using a CDN for your image processing needs. Two CDNs will be examined to see how they compare relative to the list of tasks we raised earlier.
 
-현재로서는 여기에 동의하고
-이미지 처리에 CDN 사용을 고려하도록 제안할 겁니다. 두 가지 CDN을 검토하여
-이전에 언급했던 작업 목록에 대해 어떤 차이가 있는지 확인해 보겠습니다.
+**Cloudinary and imgix**
 
-**Cloudinary 및 imgix**
+[Cloudinary](http://cloudinary.com/) and [imgix](https://www.imgix.com/) are two established image processing CDNs. They are the choice of hundreds of thousands of developers and companies worldwide, including Netflix and Red Bull. Let's look at them in more detail.
 
-[Cloudinary](http://cloudinary.com/) 및 [imgix](https://www.imgix.com/)는
-입지를 굳힌 두 가지 이미지 처리 CDN입니다. Netflix와 Red Bull을 비롯한
-전 세계 수 천 수 백만의 개발자와 회사가 이것을 선택했습니다. 더 자세히
-살펴보겠습니다.
+**What are the Basics?**
 
-**기본은 무엇인가요?**
+Unless you are the owner of a network of servers like they are, their first huge advantage over rolling your own solution is that they use a distributed global network system to bring a copy of your images closer to your users. It's also far easier for a CDN to "future proof" your image loading strategy as trends change - doing this on your own requires maintenance, tracking browser support for emerging formats & following the image compression community.
 
-이런 서비스처럼 서버 네트워크를 소유하고 있지 않는 한, 여러분의 자체 해결 방법을 실행하는 것 보다 훨씬 큰 첫 번째 이점은
-사용자에게 근접한 이미지의 사본을 가져오는 분산 글로벌
-네트워크 시스템을 이용한다는 것입니다. 또한, CDN은
-손쉽게 트렌드 변화에 맞추어 이미지 로딩 전략을 
-'향후 사용에 알맞도록' 할 수 있습니다. 이것을 직접 하려면 유지관리, 떠오르는 형식에 대한 브라우저 지원 추적, 이미지 압축 커뮤니티
-팔로잉이 필요합니다.
+Second, each service has a tiered pricing plan, with Cloudinary offering a [free level](http://cloudinary.com/pricing) and imgix pricing their standard level inexpensively, relative to their high-volume premium plan. Imgix offers a free [trial](https://www.imgix.com/pricing) with a credit towards services, so it almost amounts to the same thing as a free level.
 
-두 번째로, 각 서비스는 단계별 요금제가 있습니다. Cloudinary는 [무료
-단계](http://cloudinary.com/pricing)를 제공하며, imgix는 기본 단계를
-고용량 프리미엄 요금제에 비해 비싸지 않은 가격으로 제공합니다. Imgix는 서비스에 신용카드를 등록하면 무료
-[체험판](https://www.imgix.com/pricing)을 제공하므로
-무료 단계와 거의 같은 수준입니다.
+Third, API access is provided by both services. Developers can access the CDN programmatically and automate their processing. Client libraries, framework plugins, and API documentation are also available, with some features restricted to higher paid levels.
 
-세 번째로, 두 서비스 모두 API 액세스를 제공합니다. 개발자는 프로그래밍 방식으로
-CDN에 접근하고 처리를 자동화할 수 있습니다. 클라이언트 라이브러리, 프레임워크
-플러그인, API 문서도 이용할 수 있습니다(일부 기능은
-더 높은 유료 단계로 제한됩니다).
+**Let's Get to the Image Processing**
 
-**이미지 처리를 해 봅시다**
+For now, let's limit our discussion to static images. Both Cloudinary and Imgix offer a range of image manipulation methods, and both support primary functions such as compression, resizing, cropping and thumbnail creation in their standard and free plans.
 
-잠시 논점을 정적 이미지로 제한해 봅시다. Cloudinary와 Imgix
-모두 다양한 이미지 조작 방법을 제공하며, 기본 및 무료 요금제에서
-압축, 크기 조정, 잘라내기, 썸네일 이미지 생성과 같은
-기본 기능을 지원합니다.
+![cloudinary media library](images/Modern-Image36.jpg) Cloudinary Media Library: By default Cloudinary encodes [non-Progressive JPEGs](http://cloudinary.com/blog/progressive_jpegs_and_green_martians). To opt-in to generating them, check the 'Progressive' option in 'More options' or pass the 'fl_progressive' flag.
 
+Cloudinary lists [seven broad image transformation](http://cloudinary.com/documentation/image_transformations) categories, with a total of 48 subcategories within them. Imgix advertises over [100 image processing operations](https://docs.imgix.com/apis/url?_ga=2.52377449.1538976134.1501179780-2118608066.1501179780).
 
-<img src="images/Modern-Image36.jpg" alt="cloudinary 미디어 라이브러리"
-         />
-Cloudinary 미디어 라이브러리 기본적으로 Cloudinary는 [비 프로그레시브
-JPEG](http://cloudinary.com/blog/progressive_jpegs_and_green_martians)를 인코딩합니다. 이 형식을 생성하려면
-'More options'의 'Progressive' 옵션을 선택하거나
-'fl_progressive' 플래그를 전달합니다.
+**What Happens by Default?**
 
+* Cloudinary performs the following optimizations by default:
+* [Encodes JPEGs using MozJPEG](https://twitter.com/etportis/status/891529495336722432) (opted against Guetzli as a default)
+* Strips all associated metadata from the transformed image file (the original image is left untouched). To override this behavior and deliver a transformed image with its metadata intact, add the `keep_iptc` flag.
+* Can generate WebP, GIF, JPEG, and JPEG-XR formats with automatic quality. To override the default adjustments, set the quality parameter in your transformation.
+* Runs [optimization](http://cloudinary.com/documentation/image_optimization#default_optimizations) algorithms to minimize the file size with minimal impact to visual quality when generating images in the PNG, JPEG or GIF format.
 
-Cloudinary는 [7가지 방대한 이미지
-변환](http://cloudinary.com/documentation/image_transformations)
-범주를 제공하며 그 안에 총 48가지의 하위 카테고리가 있습니다. Imgix는 
-[100가지 이상의 이미지 처리
-작업](https://docs.imgix.com/apis/url?_ga=2.52377449.1538976134.1501179780-2118608066.1501179780)을 내세웁니다.
+Imgix has no default optimizations such as Cloudinary has. It does have a settable default image quality. For imgix, auto parameters help you automate your baseline optimization level across your image catalog.
 
-**기본값은 무엇입니까?**
+Currently, it has [four different methods](https://docs.imgix.com/apis/url/auto):
 
-*   Cloudinary는 다음의 최적화를 기본값으로 수행합니다.
-*   [MozJPEG를 이용하여 JPEG
-    인코딩](https://twitter.com/etportis/status/891529495336722432)(기본으로
-    Guetzli에 대해)
-*   변환된 이미지 파일에서 모든 관련 메타데이터 제거(원본
-    이미지는 그대로). 이 동작을 재정의하고
-   메타데이터가 변형되지 않은 변환된 이미지를 전달하려면, `keep_iptc` 플래그를 추가합니다.
-*   자동 품질로 WebP, GIF, JPEG, 및 JPEG-XR 생성 가능. 이
-   기본 조정을 재정의하려면, 변형 시
-   품질 매개변수를 설정하세요.
-*   
-    [최적화](http://cloudinary.com/documentation/image_optimization#default_optimizations)
-    알고리즘    실행을 통해 PNG, JPEG 또는 GIF 형식으로    이미지 생성 시 시각적 품질에
-대한 최소한의 영향으로 파일 크기 최소화.
+* Compression
+* Visual enhancement
+* File format conversion
+* Redeye removal
 
-Imgix에는 Cloudinary와 같은 최적화 기본값이 없습니다. 그러나
-설정이 가능한 이미지 품질 기본값은 있습니다. imgix의 경우,
-자동 매개변수가 이미지 카탈로그 전체의 최적화 수준의 기준선을 자동화하는 데 도움을 줍니다.
+Imgix supports the following image formats: JPEG, JPEG2000, PNG, GIF, Animated GIF, TIFF, BMP, ICNS, ICO, PDF, PCT, PSD, AI
 
-현재 [네 가지
-방법](https://docs.imgix.com/apis/url/auto)이 있습니다.
+Cloudinary supports the following image formats: JPEG, JPEG 2000, JPEG XR, PNG, GIF, Animated GIF, WebP, Animated WebP,BMPs, TIFF, ICOs, PDF, EPS, PSD, SVG, AI, DjVu, FLIF, TARGA.
 
-*   압축
-*   시각적 개선
-*   파일 형식 변환
-*   적목 현상 제거
+**What About Performance?**
 
-Imgix는 다음의 이미지 형식을 지원합니다. JPEG, JPEG2000, PNG, GIF, 애니메이션
-GIF, TIFF, BMP, ICNS, ICO, PDF, PCT, PSD, AI
+CDN delivery performance is mostly about [latency](https://docs.google.com/a/chromium.org/viewer?a=v&pid=sites&srcid=Y2hyb21pdW0ub3JnfGRldnxneDoxMzcyOWI1N2I4YzI3NzE2) and speed.
 
-Cloudinary는 다음의 이미지 형식을 지원합니다. JPEG, JPEG 2000, JPEG XR, PNG,
-GIF, 애니메이션 GIF, WebP, 애니메이션 WebP, BMPs, TIFF, ICOs, PDF, EPS, PSD, SVG, AI,
-DjVu, FLIF, TARGA.
+Latency always increases somewhat for completely uncached images. But once an image is cached and distributed among the network servers, the fact that a global CDN can find the shortest hop to the user, added to the byte savings of a properly-processed image, almost always mitigates latency issues when compared to poorly processed images or solitary servers trying to reach across the planet.
 
-**성능은 어떤가요?**
+Both services use fast and wide CDN. This configuration reduces latency and increases download speed. Download speed affects page load time, and this is one of the most important metrics for both user experience and conversion.
 
-CDN 제공 성능은 대부분
-[지연 시간](https://docs.google.com/a/chromium.org/viewer?a=v&pid=sites&srcid=Y2hyb21pdW0ub3JnfGRldnxneDoxMzcyOWI1N2I4YzI3NzE2)과
-속도에 관한 것입니다.
+**So How Do They Compare?**
 
-지연 시간은 언제나 전혀 캐시되지 않은 이미지에서 다소 증가합니다. 그러나
-일단 이미지가 캐시되고 네트워크 전역에 배포되면,
-글로벌 CDN이 사용자로 이어지는 가장 짧은 길을 찾을 수 있다는 사실과 적절하게 처리된 이미지의 용량 절감 덕분에,
-불량하게 처리된 이미지나 전 지구에 도달하려고 노력하는 단독 서버에 비해
-거의 항상 지연 시간 문제를
-완화할 수 있습니다.
+Cloudinary has [160K customers](http://cloudinary.com/customers) including Netflix, eBay and Dropbox. Imgix doesn't report how many customers it has, but it is smaller than Cloudinary. Even so, imgix's base includes heavyweight image users such as Kickstarter, Exposure, unsplash, and Eventbrite.
 
-두 서비스 모두 빠르고 넓은 CDN을 이용합니다. 이 구성은 지연 시간을 감소시키고
-다운로드 속도를 향상합니다. 다운로드 속도는 페이지 로드 시간에 영향을 미치며, 사용자 환경과 전환 모두에 가장 중요한
-측정항목 중 하나입니다.
+There are so many uncontrolled variables in image manipulation that a head-to-head performance comparison between the two services is difficult. So much depends on how much you need to process the image — which takes a variable amount of time — and what size and resolution are required for the final output, which affects speed and download time. Cost may ultimately be the most important factor for you.
 
-**그래서 어떤 점이 다릅니까?**
+CDNs cost money. An image heavy site with a lot of traffic could cost hundreds of US dollars a month in CDN fees. There is a certain level of prerequisite knowledge and programming skill required to get the most out of these services. If you are not doing anything too fancy, you're probably not going to have any trouble.
 
-Cloudinary는 Netflix, eBay, Dropbox를 비롯한 [16만 고객](http://cloudinary.com/customers)을
-보유하고 있습니다. Imgix는 얼마나 많은 고객을 보유하는지 보고하지 않지만,
-Cloudinary보다는 적습니다. 그렇다고 하더라도, imgix의
-기반층은 Kickstarter, Exposure, unsplash, Eventbrite와 같은 무거운 이미지를 이용하는 사용자를 포함합니다.
+But if you're not comfortable working with image processing tools or APIs, then you are looking at a bit of a learning curve. In order to accommodate the CDN server locations, you will need to change some URLs in your local links. Do the right due diligence :)
 
-이미지 조작에는 제어할 수 없는 너무 많은 변수가 있으므로
-성능이 막상막하인 두 서비스의 비교는 어렵습니다. 따라서,
-최종 출력물에 필요한 크기와 해상도(속도와 다운로드 시간에 영향 미침)는 무엇인지 등, 이미지 처리에
-필요한 방법에 따라 많은 것이 달라집니다. 여기에 소요되는 시간은
-크게 다를 수 있습니다. 비용은 궁극적으로 여러분에게 가장 중요한
-요인일 수 있습니다.
+**Conclusion**
 
-CDN은 비용이 듭니다. 트래픽이 높고 이미지가 많은 사이트는 CDN 요금으로
-한 달에 미화 수백 달러가 들 수 있습니다. 이 서비스를 최대한 이용하려면 일정 수준의 사전
-지식과 프로그래밍 능력이 필요합니다.
-너무 멋진 것을 할 생각이 아니라면 아무
-문제도 없을 것입니다.
+If you are currently serving your own images or planning to, perhaps you should give a CDN some consideration.
 
-그러나 이미지 처리 도구나 API로 작업하는 것이 불편하다면,
-약간의 학습이 필요합니다. CDN
-서버 위치를 수용하려면, 로컬 링크의 일부 URL을 변경해야 합니다. 올바르고
-성실하게 해 보세요 :)
+## Caching image assets {: #caching-image-assets }
 
-**결론**
+Resources can specify a caching policy using [HTTP cache headers](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control). Specifically, `Cache-Control` can define who can cache responses and for how long
 
-자체 이미지를 제공 중이거나 그럴 계획이라면, CDN을 고려해보는 것이
-좋습니다.
+Most of the images you deliver to users are static assets that will[ not change](http://kean.github.io/post/image-caching) in the future. The best caching strategy for such assets is aggressive caching.
 
-## 이미지 자산 캐싱 {: #caching-image-assets }
+When setting your HTTP caching headers, set Cache-Control with a max-age of a year (e.g `Cache-Control:public; max-age=31536000`). This type of aggressive caching works well for most types of images, especially those that are long-lived like avatars and image headers.
 
-리소스는 [HTTP 캐시
-헤더](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control)를 이용하여 캐싱 정책을 지정할 수 있습니다.
-구체적으로는, 누가 캐시 응답을 얼마나 오랫동안 할 것인지 `Cache-Control`로 정의할 수
-있습니다.
+Note: If you're serving images using PHP, it can destroy caching due to the default [session_cache_limiter](http://php.net/manual/en/function.session-cache-limiter.php) setting. This can be a disaster for image caching and you may want to [work around](https://stackoverflow.com/a/3905468) this by setting session_cache_limiter('public') which will set `public, max-age=`. Disabling and setting custom cache-control headers is also fine.
 
-여러분이 사용자에게 전달하는 대부분의 이미지는 미래에 [변하지
-않을](http://kean.github.io/post/image-caching) 정적 자산입니다. 이러한 자산의 가장 좋은
-캐싱 전략은 공격적 캐싱입니다.
+## Preloading critical image assets {: #preload-critical-image-assets }
 
-HTTP 캐싱 헤더를 설정할 때,
-Cache-Control을 max-age로 설정하세요(예: `Cache-Control:public; max-age=31536000`). 이러한 유형의 공격적
-캐싱은 대부분의 이미지 유형에서 잘 작동되며, 특히 아바타나 이미지 헤더와 같은
-긴 수명의 이미지에 좋습니다.
+Critical image assets can be preloaded using [`<link
+rel=preload>`](https://www.w3.org/TR/preload/).
 
-참고: PHP를 사용하여 이미지를 제공하면
-기본
-[session_cache_limiter](http://php.net/manual/en/function.session-cache-limiter.php)
-설정으로 인해 캐싱을 파괴할 수 있습니다. 이것은 이미지 캐싱 입장에서는 재난에 가까우며 이를 [우회
-](https://stackoverflow.com/a/3905468)하려면
-session_cache_limiter('public')를 설정하여 `public, max-age=`를 설정하는 것이 좋습니다. 사용자설정
-cache-control 헤더를 설정하거나 중지하는 것도 좋습니다.
+`<link rel=preload>` is a declarative fetch, allowing you to force the browser to make a request for a resource without blocking the document’s `onload` event. It enables increasing the priority of requests for resources that might otherwise not be discovered until later in the document parsing process.
 
-## 주요 이미지 자산 미리 로딩 {: #preload-critical-image-assets }
-
-주요 이미지 자산은 [`<link
-rel=preload>`](https://www.w3.org/TR/preload/)를 이용하여 미리 로드할 수 있습니다.
-
-`<link rel=preload>`는 선언적 가져오기이며, 브라우저가 문서의 `onload` 이벤트를 차단하지 않고 리소스에 대한 요청을 생성하도록
-강제할 수 있습니다.
-추후 문서 파싱 프로세스에 이르러서야 발견되는 리소스에 대한
-요청 우선순위를 상승시킬 수 있습니다.
-
-이미지는 `image`의 `as` 값을 지정하여 미리 로드할 수 있습니다.
+Images can be preloaded by specifying an `as` value of `image`:
 
 ```html
 <link rel="preload" as="image" href="logo.jpg"/>
 ```
 
-`<img>`, `<picture>`, `srcset` 및 SVG에 대한 이미지 리소스는 모두
-이 최적화의 이점을 누릴 수 있습니다.
+Image resources for `<img>`, `<picture>`, `srcset` and SVGs can all take advantage of this optimization.
 
-참고: `<link rel="preload">`는 Chrome 및 Opera, [Safari Tech
-Preview](https://developer.apple.com/safari/technology-preview/release-notes/)
-와 같은 블링크 기반 브라우저에서 [지원](http://caniuse.com/#search=preload)
-되며 Firefox에서 [구현](https://bugzilla.mozilla.org/show_bug.cgi?id=1222633)
-되었습니다.
+Note: `<link rel="preload">` is [supported](http://caniuse.com/#search=preload) in Chrome and Blink-based browsers like Opera, [Safari Tech Preview](https://developer.apple.com/safari/technology-preview/release-notes/) and has been [implemented](https://bugzilla.mozilla.org/show_bug.cgi?id=1222633) in Firefox.
 
-[Philips](https://www.usa.philips.com/),
-[FlipKart](https://www.flipkart.com/) 및 [Xerox](https://www.xerox.com/)와 같은 사이트는
-`<link rel=preload>`를 사용하여 주 로고 자산을 미리 로드합니다(문서 초반에
-주로 사용됨). [Kayak](https://kayak.com/)도 preload를 사용하여 헤더의 히어로
-이미지가 가능한 한 빠르게 로드되도록 합니다.
+Sites like [Philips](https://www.usa.philips.com/), [FlipKart](https://www.flipkart.com/) and [Xerox](https://www.xerox.com/) use `<link rel=preload>` to preload their main logo assets (often used early in the document). [Kayak](https://kayak.com/) also uses preload to ensure the hero image for their header is loaded as soon as possible.
 
+![Philips use link rel=preload to
+        preload their logo image](images/preload-philips.jpg)
 
-<img src="images/preload-philips.jpg" alt="Philips는 link rel=preload를 이용하여
-        로고 이미지를 사전로드합니다"
-         />
+**What is the Link preload header?**
 
+A preload link can be specified using either an HTML tag or an [HTTP Link header](https://www.w3.org/wiki/LinkHeader). In either case, a preload link directs the browser to begin loading a resource into the memory cache, indicating that the page expects with high confidence to use the resource and doesn’t want to wait for the preload scanner or the parser to discover it.
 
-**Link preload 헤더란 무엇인가요?**
+A Link preload header for images would look similar to this:
 
-미리 로드 링크는 HTML 태그나 [HTTP Link
-헤더](https://www.w3.org/wiki/LinkHeader) 중 하나를 이용하여 지정할 수 있습니다. 어느 쪽이든, 미리 로드 링크는
-브라우저가 메모리 캐시에 리소스 로딩을 시작하도록 지시합니다. 즉, 이 페이지는 높은 신뢰도로 리소스를 사용할 것이 예상되며,
-미리 로드 스캐너나 파서가 발견할 때까지 기다리고 싶지 않다는 것을
-의미합니다.
+    Link: <https://example.com/logo-hires.jpg>; rel=preload; as=image
+    
 
-이미지의 Link preload 헤더는 다음과 유사합니다.
+When the Financial Times introduced a Link preload header to their site, they shaved [1 second off](https://twitter.com/wheresrhys/status/843252599902167040) the time it took to display their masthead image:
 
-```
-Link: <https://example.com/logo-hires.jpg>; rel=preload; as=image
-```
+![The FT using preload.
+        Displayed are the WebPageTest before and after traces showing
+        improvements.](images/preload-financial-times.jpg) Bottom: with `<link rel=preload>`, Top: without. Comparison for a Moto G4 over 3G on WebPageTest both [before](https://www.webpagetest.org/result/170319_Z2_GFR/) and [after](https://www.webpagetest.org/result/170319_R8_G4Q/).
 
-Financial Times는 Link preload 헤더를 사이트에 도입하고
-마스트헤드 이미지를 표시하는 데 걸리는 시간을 [1초 감소](https://twitter.com/wheresrhys/status/843252599902167040)
-시켰습니다.
+Similarly, Wikipedia improved time-to-logo performance with the Link preload header as covered in their [case study](https://phabricator.wikimedia.org/phame/post/view/19/improving_time-to-logo_performance_with_preload_links/).
 
+**What caveats should be considered when using this optimization?**
 
-<img src="images/preload-financial-times.jpg" alt="미리 로드를 사용하는 Financial Times.
-        표시된 내용은 향상을 나타내는 트레이스
-        전과 후의 WebPageTest입니다."
-         />
-하단: `<link rel=preload>`사용, 상단: 사용하지 않음. 3G에서
-Moto G4를
-이용한 [전](https://www.webpagetest.org/result/170319_Z2_GFR/)과
-[후](https://www.webpagetest.org/result/170319_R8_G4Q/)의 WebPageTest비교.
+Be very certain that it's worth preloading image assets as, if they aren't critical to your user experience, there may be other content on the page worth focusing your efforts on loading earlier instead. By prioritizing image requests, you may end up pushing other resources further down the queue.
 
+It's important to avoid using `rel=preload` to preload image formats without broad browser support (e.g WebP). It's also good to avoid using it for responsive images defined in `srcset` where the retrieved source may vary based on device conditions.
 
-이와 마찬가지로 Wikipedia에서도 Link preload
-헤더를 사용하여 로고 로딩 성능을 개선하였습니다. 이 내용은 해당 웹사이트의 [우수
-사례](https://phabricator.wikimedia.org/phame/post/view/19/improving_time-to-logo_performance_with_preload_links/)에서 다루었습니다.
+To learn more about preloading, see [Preload, Prefetch and Priorities in Chrome](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf) and [Preload: What Is It Good For?](https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/).
 
-**최적화를 사용할 때 주의해야 할 점은 무엇인가요?**
+## Web performance budgets for images {: #performance-budgets }
 
-이미지 자산을 미리 로드할 필요가 있는지 확신이 있어야 합니다. 이것이 사용자 환경에
-필수적이지 않다면, 빠른 로딩에 노력을 기울일만한
-페이지의 다른 콘텐츠가 있을 수 있습니다. 이미지 요청의
-우선순위를 지정함으로써 다른 리소스를 큐의 한참 아래로 밀어내게 될 수 있습니다.
+A performance budget is a "budget" for web page performance that a team attempts to not exceed. For example, "images will not exceed 200KB on any page" or "the user experience must be usable in under 3 seconds". When a budget isn't being met, explore why this is and how you get back on target.
 
-폭넓은 브라우저 지원(예: WebP)없이 이미지 형식 미리 로드에 `rel=preload`를 사용하는 것을
-피해야 합니다. 또한, 기기 조건에 따라
-가져온 소스가 다양할 수 있으므로 `srcset`에 정의된 반응형 이미지에 대해
-미리 로드를 피하는 것이 좋습니다.
+Budgets provide a useful framework for discussing performance with stakeholders. When a design or business decision may impact site performance, consult the budget. They're a reference for pushing back or rethinking the change when it can harm a site's user experience.
 
-미리 로딩에 자세히 알아보려면 [Preload, Prefetch and Priorities in
-Chrome](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf)
-및 [Preload: What Is It Good
-For?](https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/)을 확인해 보세요.
+I've found teams have the best success with performance budgets when monitoring them is automated. Rather than manually inspecting network waterfalls for budget regressions, automation can flag when the budget is crossed. Two such services that are useful for performance budget tracking are [Calibre](https://calibreapp.com/docs/metrics/budgets) and [SpeedCurve](https://speedcurve.com/blog/tag/performance-budgets/).
 
-## 이미지를 위한 웹 성능 예산 {: #performance-budgets }
+Once a performance budget for image sizes is defined, SpeedCurve starts monitoring and alerts you if the budget is exceeded:
 
-성능 예산은 웹페이지를 위한 '예산'이며, 팀에서는 이를 초과하지 않으려
-노력합니다. 예를 들어, '모든 페이지에서 이미지가 200KB를 초과하지 않는다' 혹은 '사용자
-환경이 반드시 3초 이내에 사용할 수 있어야 한다'가 여기에 해당합니다. 예산에
-맞지 않으면, 그 이유와 다시 목표로 돌아갈 수 있는 방법을 탐색해 보세요.
+![SpeedCurve image
+        size monitoring.](images/F2BCD61B-85C5-4E82-88CF-9E39CB75C9C0.jpg)
 
-예산은 투자자와 성능을 논의할 때 유용한 프레임워크를 제공합니다.
-디자인이나 비즈니스 결정이 사이트 성능에 영향을 미칠 수 있다면, 예산을
-참고하세요. 사이트의 사용자 환경을 저해할 수 있는
-변경 사항을 되돌리거나 재고하는 데 참고가 됩니다.
+Calibre offers a similar feature with support for setting budgets for each device-class you’re targeting. This is useful as your budget for image sizes on desktop over WiFi may vary heavily to your budgets on mobile.
 
-저는 팀이 성능 예산 모니터링을 자동화할 때
-가장 큰 성공을 거둔다는 것을 발견했습니다. 예산
-회귀에 대한 네트워크 워터폴의 수동 점검보다, 자동화를 사용하여 예산을 초과했을 때 플래그를 제공할 수 있습니다. 서비스 예산 추적에 유용한
-두 가지 서비스로는
-[Calibre](https://calibreapp.com/docs/metrics/budgets)와
-[SpeedCurve](https://speedcurve.com/blog/tag/performance-budgets/)가 있습니다.
+![Calibre supports budgets for image sizes.](images/budgets.jpg)
 
-일단 이미지 크기에 대한 성능 예산이 정의되면, SpeedCurve가
-모니터링을 시작하고 예산이 초과되면 알림을 보냅니다.
+## Closing recommendations {: #closing-recommendations }
 
+Ultimately, choosing an image optimization strategy will come down to the types of images you're serving down to your users and what you decide is a reasonable set of evaluation criteria. It might be using SSIM or Butteraugli or, if it's a small enough set of images, going off of human perception for what makes the most sense.
 
-<img src="images/F2BCD61B-85C5-4E82-88CF-9E39CB75C9C0.jpg" alt="SpeedCurve 이미지
-        크기 모니터링."
-         />
+**Here are my closing recommendations:**
 
+If you **can't** invest in conditionally serving formats based on browser support:
 
-Calibre도 목표로 하는 각
-기기 클래스에 대한 예산 설정을 지원하는 유사한 기능을 제공합니다. 이것은 WiFi로 연결된 데스크탑의
-이미지 크기에 대한 예산이 모바일의 예산과 크게 다를 수 있으므로 유용합니다.
+* Guetzli + MozJPEG's jpegtran is a good format for JPEG quality > 90. 
+    * For the web `q=90` is wastefully high. You can get away with `q=80`, and on 2x displays even with `q=50`. Since Guetzli doesn't go that low, for the web you can MozJPEG.
+    * Kornel Lesi&#x144;ski recently improved mozjpeg's cjpeg command to add tiny sRGB profile to help Chrome display natural color on wide-gamut displays
+* PNG pngquant + advpng has a pretty good speed/compression ratio
+* If you **can** conditionally serve (using `<picture>`, the [Accept header](https://www.igvita.com/2013/05/01/deploying-webp-via-accept-content-negotiation/) or [Picturefill](https://scottjehl.github.io/picturefill/)): 
+    * Serve WebP down to browsers that support it 
+        * Create WebP images from original 100% quality images. Otherwise you'll be giving browsers that do support it worse-looking images with JPEG distortions *and* WebP distortions! If you compress uncompressed source images using WebP it'll have the less visible WebP distortions and can compress better too.
+        * The default settings the WebP team use of `-m 4 -q 75` are usually good for most cases where they optimize for speed/ratio.
+        * WebP also has a special mode for lossless (`-m 6 -q 100`) which can reduce a file to its smallest size by exploring all parameter combinations. It's an order of magnitude slower but is worth it for static assets.
+    * As a fallback, serve Guetzli/MozJPEG compressed sources to other browsers
 
-
-<img src="images/budgets.jpg" alt="Calibre는 이미지 크기에 대한 예산을 지원합니다."
-         />
-
-## 마지막 권장 사항 {: #closing-recommendations }
-
-궁극적으로, 이미지 최적화 전략을 선택하는 것은 사용자에게
-제공하는 이미지로 귀결되며,
-여러분이 결정하는 것은 합리적인 평가 기준입니다. SSIM이나 Butteraugli를 이용할 수도 있고,
-혹은 사람의 인지를 벗어난 충분히 작은 이미지 집합이라면
-가장 적합한 것을 사용할 수도 있습니다.
-
-**마지막 권장 사항은 다음과 같습니다.**
-
-브라우저
-지원에 따른 조건부 제공 형식에 투자할 수 **없다면:**
-
-
-* Guetzli + MozJPEG의 jpegtran이 90 이상 품질의 JPEG에 좋은 형식입니다.
-    * 웹의 경우 `q=90`는 너무 높습니다. `q=80`으로도 충분하며,
-      2배 화면에는 `q=50`도 괜찮습니다. Guetzli는 그 정도로 낮은 설정이 안 되므로
-      웹의 경우에는 MozJPEG를 사용할 수 있습니다.
-    * Kornel Lesi&#x144;ski는 최근에
-      mozjpeg의 Chrome이 Wide-gamut에서 자연 색상을 표시하는 것을 돕는 작은 sRGB 프로필을 더함으로써
-      cjpeg 명령을 향상했습니다.
-* PNG pngquant + advpng은 상당히 양호한 속도/압축 비율을 갖추고 있습니다
-* 조건부 제공이 **가능하다면**(`<picture>`, [Accept
-  헤더](https://www.igvita.com/2013/05/01/deploying-webp-via-accept-content-negotiation/)
-  또는 [Picturefill](https://scottjehl.github.io/picturefill/) 사용):
-    * WebP를 지원하는 브라우저에 WebP를 제공하세요
-        * 원본 100% 품질 이미지에서 WebP 이미지를 생성하세요. 그렇지 않으면
-          WebP를 지원하는 브라우저에 JPEG
-          왜곡 *및* WebP 왜곡이 있는 매우 나쁜 품질의 이미지를 제공하게 됩니다! WebP를 이용하여 압축되지 않은
-          소스 이미지를 압축하면 WebP 왜곡이 덜 눈에 띄고
-          압축도 더 잘 됩니다.
-        * WebP 팀이 사용하는 `-m 4 -q 75` 기본 설정은 속도/비율을 최적화하는 대부분의
-          경우에 적합합니다.
-        * WebP에는 무손실용 특수 모드(`-m 6 -q 100`)도 있어서
- 가능한 모든 매개변수 조합을 탐색함으로써 파일을 가장 작은 크기로
- 줄일 수 있습니다. 상당히 느리긴 하지만
-          정적 자산에는 사용할 가치가 있습니다.
-    *   폴백으로 다른
-        브라우저에 Guetzli/MozJPEG 압축 소스를 제공하세요.
-
-즐거운 압축이 되길 바랍니다!
-
+Happy compressing!

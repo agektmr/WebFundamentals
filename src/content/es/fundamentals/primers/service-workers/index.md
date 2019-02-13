@@ -1,129 +1,63 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Están llegando a la Web ricas experiencias sin conexión, sincronizaciones periódicas en segundo plano, notificaciones push: funcionalidad que normalmente requiere una aplicación nativa. Los service workers brindan la base técnica que hace posibles todas estas funciones.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Rich offline experiences, periodic background syncs, push notifications&mdash;functionality that would normally require a native application&mdash;are coming to the web. Service workers provide the technical foundation that all these features rely on.
 
-{# wf_published_on: 2014-12-01 #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_published_on: 2014-12-01 #} {# wf_updated_on: 2019-01-09 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Introducción a los service workers {: .page-title }
+# Service Workers: an Introduction {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
-Están llegando a la Web ricas experiencias sin conexión, sincronizaciones periódicas en segundo plano, notificaciones
-push: funcionalidad que normalmente requiere una aplicación
-nativa. Los service workers brindan la base
-técnica que hace posibles todas estas funciones.
+Rich offline experiences, periodic background syncs, push notifications&mdash;functionality that would normally require a native application&mdash;are coming to the web. Service workers provide the technical foundation that all these features rely on.
 
-## Qué es un service worker
+## What is a service worker
 
-Un service worker es una secuencia de comandos que tu navegador ejecuta en segundo plano,
-separado de una página web, abriéndoles la puerta a funciones que no necesitan una página
-web ni interacción de usuario. En la actualidad, ya incorporan funciones como
-[notificaciones push](/web/updates/2015/03/push-notifications-on-the-open-web)
-y [sincronización en segundo plano](/web/updates/2015/12/background-sync). En el futuro,
-los service workers podrían admitir funciones como sincronización periódica o geovallado.
-La función principal que analizamos en este instructivo es la capacidad de interceptar y
-manejar solicitudes de red, incluida la administración programática de una caché de
-respuestas.
+A service worker is a script that your browser runs in the background, separate from a web page, opening the door to features that don't need a web page or user interaction. Today, they already include features like [push notifications](/web/updates/2015/03/push-notifications-on-the-open-web) and [background sync](/web/updates/2015/12/background-sync). In the future, service workers might support other things like periodic sync or geofencing. The core feature discussed in this tutorial is the ability to intercept and handle network requests, including programmatically managing a cache of responses.
 
-El motivo por el que esta es una API tan emocionante es que te permite admitir experiencias
-sin conexión, brindándoles a los programadores control total sobre la
-experiencia.
+The reason this is such an exciting API is that it allows you to support offline experiences, giving developers complete control over the experience.
 
-Antes del service worker, existía otra API que brindaba a los usuarios una experiencia
-sin conexión en la Web, llamada
-[AppCache](//www.html5rocks.com/en/tutorials/appcache/beginner/){: .external }.
-Hay una serie de problemas de la API de AppCache que se pueden evitar
-con los service workers.
+Before service worker, there was one other API that gave users an offline experience on the web called [AppCache](//www.html5rocks.com/en/tutorials/appcache/beginner/){: .external }. There are a number of issues with the AppCache API that service workers were designed to avoid.
 
-Algunas consideraciones sobre los service workers:
+Things to note about a service worker:
 
-* Son [JavaScript Workers](//www.html5rocks.com/en/tutorials/workers/basics/){: .external },
-  así que no pueden acceder al DOM directamente. Como alternativa, un service worker puede
-  comunicarse con las páginas que controla porque responde a mensajes enviados a través
-  de la interfaz de [postMessage](https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage); estas
-  páginas pueden manipular el DOM si es necesario.
-* Un service worker es un proxy de red programable. Esto te permite controlar la manera en que
-  se procesan las solicitudes de red de tu página.
-* Se detiene cuando no está en uso y se reinicia cuando se lo necesita nuevamente,
-  así que no puedes confiar en el estado global de los controladores `onfetch` y
-  `onmessage` de un service worker. Si hay información que necesitas que persista para
-  reutilizar entre reinicios, los service workers tienen acceso a la
-  [API de IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
-* Los service workers hacen gran uso de las promesas, así que, si no estás familiarizado con el concepto,
-  deberías dejar de leer esto y leer
-  [Promesas de JavaScript: introducción](/web/fundamentals/getting-started/primers/promises).
+* It's a [JavaScript Worker](//www.html5rocks.com/en/tutorials/workers/basics/){: .external }, so it can't access the DOM directly. Instead, a service worker can communicate with the pages it controls by responding to messages sent via the [postMessage](https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage) interface, and those pages can manipulate the DOM if needed.
+* Service worker is a programmable network proxy, allowing you to control how network requests from your page are handled.
+* It's terminated when not in use, and restarted when it's next needed, so you cannot rely on global state within a service worker's `onfetch` and `onmessage` handlers. If there is information that you need to persist and reuse across restarts, service workers do have access to the [IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
+* Service workers make extensive use of promises, so if you're new to promises, then you should stop reading this and check out [Promises, an introduction](/web/fundamentals/getting-started/primers/promises).
 
-## El ciclo de vida del service worker
+## The service worker life cycle
 
-Un service worker tiene un ciclo de vida completamente separado de tu página web.
+A service worker has a lifecycle that is completely separate from your web page.
 
-Si quieres instalar un service worker para tu sitio, debes registrarlo. Esto se realiza
-en el lenguaje JavaScript de tu página. Cuando registres un service worker, el navegador
-iniciará la etapa de instalación del proceso en segundo plano.
+To install a service worker for your site, you need to register it, which you do in your page's JavaScript. Registering a service worker will cause the browser to start the service worker install step in the background.
 
-Por lo general, durante la etapa de instalación, te convendrá almacenar en caché algunos elementos estáticos. Si
-todos los archivos se almacenan correctamente en caché, se instalará el
-service worker. Si no se puede descargar o almacenar en caché alguno de los archivos, el paso de instalación
-fallará y el service worker no se activará (es decir, no se instalará). Si
-esto ocurre, no te preocupes; se realizará un nuevo intento la próxima vez. Sin embargo, si la instalación tiene
-éxito, podrás estar seguro de que dichos elementos estáticos estarán en la caché.
+Typically during the install step, you'll want to cache some static assets. If all the files are cached successfully, then the service worker becomes installed. If any of the files fail to download and cache, then the install step will fail and the service worker won't activate (i.e. won't be installed). If that happens, don't worry, it'll try again next time. But that means if it does install, you know you've got those static assets in the cache.
 
-Después de la instalación, comenzará el paso de activación. Es una excelente
-oportunidad para administrar las cachés anteriores. Trataremos este asunto durante
-la sección sobre la actualización de los service workers.
+When installed, the activation step will follow and this is a great opportunity for handling any management of old caches, which we'll cover during the service worker update section.
 
-Después de la etapa de activación, el service worker controlará todas las páginas que estén a
-su alcance. Sin embargo, no se controlará la página que registró por primera
-vez el service worker hasta que se vuelva a cargar. Una vez que un service worker tiene
-el control, estará en uno de dos estados: el service worker se
-rescindirá para ahorrar memoria o controlará eventos de mensaje y extracción que
-ocurran cuando se emita un mensaje o solicitud de red desde tu página.
+After the activation step, the service worker will control all pages that fall under its scope, though the page that registered the service worker for the first time won't be controlled until it's loaded again. Once a service worker is in control, it will be in one of two states: either the service worker will be terminated to save memory, or it will handle fetch and message events that occur when a network request or message is made from your page.
 
-A continuación, se muestra una versión muy simplificada del ciclo de vida del service worker cuando se
-instala por primera vez.
+Below is an overly simplified version of the service worker lifecycle on its first installation.
 
-![ciclo de vida de un service worker](images/sw-lifecycle.png)
+![service worker lifecycle](images/sw-lifecycle.png)
 
+## Prerequisites
 
-## Requisitos previos
+### Browser support
 
-### Compatibilidad con navegadores
+Browser options are growing. Service workers are supported by Chrome, Firefox and Opera. Microsoft Edge is now [showing public support](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/serviceworker/). Even Safari has dropped [hints of future development](https://trac.webkit.org/wiki/FiveYearPlanFall2015). You can follow the progress of all the browsers at Jake Archibald's [is Serviceworker ready](https://jakearchibald.github.io/isserviceworkerready/){: .external } site.
 
-Cada vez hay más opciones de navegadores. Los service workers son compatibles con Chrome, Firefox y
-Opera. Microsoft Edge está
-[mostrando apoyo públicamente](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/serviceworker/).
-Incluso Safari ha demostrado [interés en desarrollos futuros](https://trac.webkit.org/wiki/FiveYearPlanFall2015).
-Puedes seguir el progreso de todos los navegadores en el sitio
-[is Serviceworker ready?](https://jakearchibald.github.io/isserviceworkerready/){: .external }
-de Jake Archibald.
+### You need HTTPS
 
-### Se necesita HTTPS
+During development you'll be able to use service worker through `localhost`, but to deploy it on a site you'll need to have HTTPS setup on your server.
 
-Durante el desarrollo, podrás usar el service worker por medio de `localhost`, pero
-para implementarlo en un sitio deberás configurar HTTPS en tu servidor.
+Using service worker you can hijack connections, fabricate, and filter responses. Powerful stuff. While you would use these powers for good, a man-in-the-middle might not. To avoid this, you can only register service workers on pages served over HTTPS, so we know the service worker the browser receives hasn't been tampered with during its journey through the network.
 
-Con los service workers puedes tomar el control de una conexión, y crear y filtrar
-respuestas. Herramientas poderosas. Si bien es muy probable que uses este poder con buenos propósitos, es
-posible que un intermediario no lo haga. Para evitar esto, solo puedes registrar service
-workers en páginas que se proporcionen a través de HTTPS. De esta forma, nos aseguramos de que el service worker que recibe
-el navegador no se ha manipulado durante su recorrido por la red.
+[GitHub Pages](https://pages.github.com/){: .external } are served over HTTPS, so they're a great place to host demos.
 
-Las [páginas de GitHub](https://pages.github.com/){: .external } se brindan a través de HTTPS, así que son un
-excelente lugar para alojar demostraciones.
+If you want to add HTTPS to your server then you'll need to get a TLS certificate and set it up for your server. This varies depending on your setup, so check your server's documentation and be sure to check out [Mozilla's SSL config generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/) for best practices.
 
-Si deseas agregar HTTPS a tu servidor, deberás conseguir un certificado
-TLS y configurarlo para el servidor. Esto varía según tu configuración;
-consulta la documentación de tu servidor y no olvides visitar el
-[generador de configuraciones SSL de Mozilla](https://mozilla.github.io/server-side-tls/ssl-config-generator/)
-para conocer las prácticas recomendadas.
+## Register A service worker
 
-## Registro de un service worker
-
-Para instalar un service worker, debes
-**registrarlo** en tu página para iniciar el proceso. De esta forma, se comunica al navegador dónde
-reside el archivo JavaScript de tu service worker.
+To install a service worker you need to kick start the process by **registering** it in your page. This tells the browser where your service worker JavaScript file lives.
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -136,58 +70,38 @@ reside el archivo JavaScript de tu service worker.
         });
       });
     }
+    
 
-Este código verifica si la API del service worker está disponible. Si está disponible,
-se registra el service worker de `/sw.js`
-[una vez que se carga la página](/web/fundamentals/instant-and-offline/service-worker/registration).
+This code checks to see if the service worker API is available, and if it is, the service worker at `/sw.js` is registered [once the page is loaded](/web/fundamentals/instant-and-offline/service-worker/registration).
 
-Puedes llamar a `register()` sin ningún problema cada vez que se cargue una página. El navegador
-determinará si el service worker está registrado o no, y actuará
-según corresponda.
+You can call `register()` every time a page loads without concern; the browser will figure out if the service worker is already registered or not and handle it accordingly.
 
-Un detalle que hay que tener en cuenta del método `register()` es la ubicación del archivo del proceso de trabajo de
-servicio. En este caso, observarás que el archivo del service worker se encuentra en la raíz del
-dominio. Esto significa que el alcance de este proceso será el origen
-completo. En otras palabras, el service worker recibirá eventos `fetch` para
-todos los elementos de este dominio. Si registramos el archivo del service worker en
-`/example/sw.js`, el service worker solo identificaría eventos `fetch` de páginas
-cuyas URL comiencen con `/example/` (es decir, `/example/page1/`, `/example/page2/`).
+One subtlety with the `register()` method is the location of the service worker file. You'll notice in this case that the service worker file is at the root of the domain. This means that the service worker's scope will be the entire origin. In other words, this service worker will receive `fetch` events for everything on this domain. If we register the service worker file at `/example/sw.js`, then the service worker would only see `fetch` events for pages whose URL starts with `/example/` (i.e. `/example/page1/`, `/example/page2/`).
 
-Para ver si un service worker está habilitado, ahora puedes ir a
-`chrome://inspect/#service-workers` y buscar tu sitio.
+Now you can check that a service worker is enabled by going to `chrome://inspect/#service-workers` and looking for your site.
 
-![Inspeccionar service workers](images/sw-chrome-inspect.png)
+![Inspect service workers](images/sw-chrome-inspect.png)
 
-Durante la implementación inicial del service worker, también puedes ver los detalles del service
-worker a través de `chrome://serviceworker-internals`. Esto puede continuar resultando
-útil si solo deseas conocer el ciclo de vida de los service
-workers, pero no debe sorprenderte si
-`chrome://inspect/#service-workers` lo reemplaza por completo más adelante.
+When service worker was first being implemented, you could also view your service worker details through `chrome://serviceworker-internals`. This may still be useful, if for nothing more than learning about the life cycle of service workers, but don't be surprised if it gets replaced completely by `chrome://inspect/#service-workers` at a later date.
 
-Probablemente te resulte útil probar tu service worker en una ventana de incógnito, de modo que
-puedas cerrarla y volver a abrirla sabiendo que el service worker anterior
-no tendrá efecto en la nueva ventana. Cualquier registro y caché creados en una
-ventana de incógnito se borrarán tras cerrar la ventana.
+You may find it useful to test your service worker in an Incognito window so that you can close and reopen knowing that the previous service worker won't affect the new window. Any registrations and caches created from within an Incognito window will be cleared out once that window is closed.
 
+## Install a service worker
 
-## Instalación de un service worker
+After a controlled page kicks off the registration process, let's shift to the point of view of the service worker script, which handles the `install` event.
 
-Después de que se inicia el proceso de registro en una página controlada, pasemos a la
-perspectiva de la secuencia de comandos del service worker que se encarga del evento `install`.
-
-Como parte del ejemplo más básico, debes definir un callback para el evento de instalación
-y definir los archivos que deseas almacenar en caché.
+For the most basic example, you need to define a callback for the install event and decide which files you want to cache.
 
     self.addEventListener('install', function(event) {
       // Perform install steps
     });
+    
 
+Inside of our `install` callback, we need to take the following steps:
 
-En nuestra devolución de llamada `install`, debemos realizar los siguientes pasos:
-
-1. Abrir una caché.
-2. Almacenar nuestros archivos en caché.
-3. Confirmar si todos los recursos requeridos se almacenan en caché o no.
+1. Open a cache.
+2. Cache our files.
+3. Confirm whether all the required assets are cached or not.
 
 <div style="clear:both;"></div>
 
@@ -197,7 +111,7 @@ En nuestra devolución de llamada `install`, debemos realizar los siguientes pas
       '/styles/main.css',
       '/script/main.js'
     ];
-
+    
     self.addEventListener('install', function(event) {
       // Perform install steps
       event.waitUntil(
@@ -208,33 +122,19 @@ En nuestra devolución de llamada `install`, debemos realizar los siguientes pas
           })
       );
     });
+    
 
+Here you can see we call `caches.open()` with our desired cache name, after which we call `cache.addAll()` and pass in our array of files. This is a chain of promises (`caches.open()` and `cache.addAll()`). The `event.waitUntil()` method takes a promise and uses it to know how long installation takes, and whether it succeeded or not.
 
-Aquí podrás ver que se llama a `caches.open()` con el nombre de caché deseado; después
-se llama a `cache.addAll()` y se pasa la matriz de archivos. Esta es una cadena de
-promesas (`caches.open()` y `cache.addAll()`). El método `event.waitUntil()` toma
-una promesa y la usa para saber cuánto tarda la instalación y si
-se realizó correctamente.
+If all the files are successfully cached, then the service worker will be installed. If **any** of the files fail to download, then the install step will fail. This allows you to rely on having all the assets that you defined, but does mean you need to be careful with the list of files you decide to cache in the install step. Defining a long list of files will increase the chance that one file may fail to cache, leading to your service worker not getting installed.
 
-Si todos los archivos se almacenan correctamente en caché, se instalará el
-service worker. Si **alguno** de los archivos no se descarga correctamente, el proceso de
-instalación falla. De esta forma, te aseguras de tener todos los elementos que hayas definido. Sin embargo,
-también debes tener cuidado con la lista de archivos que desees almacenar en caché durante el
-paso de instalación. Si defines una lista larga de archivos, habrá más posibilidad
-de que uno de ellos no se almacene correctamente en caché y de que falle la instalación del proceso de trabajo de
-servicio.
+This is just one example, you can perform other tasks in the `install` event or avoid setting an `install` event listener altogether.
 
-Este es solo un ejemplo; puedes realizar otras tareas en el evento `install` o
-incluso puedes evitar establecer un receptor de eventos `install`.
+## Cache and return requests
 
-## Solicitudes de devolución y caché
+Now that you've installed a service worker, you probably want to return one of your cached responses, right?
 
-Ahora que has instalado un service worker, probablemente desees
-  mostrar una de tus respuestas almacenadas en caché.
-
-Cuando se instala un service worker y el usuario actualiza la página
-o se dirige a una diferente, el service worker comienza a recibir eventos `fetch` (a continuación, se muestra un
-ejemplo).
+After a service worker is installed and the user navigates to a different page or refreshes, the service worker will begin to receive `fetch` events, an example of which is below.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -249,20 +149,13 @@ ejemplo).
         )
       );
     });
+    
 
+Here we've defined our `fetch` event and within `event.respondWith()`, we pass in a promise from `caches.match()`. This method looks at the request and finds any cached results from any of the caches your service worker created.
 
-Aquí hemos definido nuestro evento `fetch` y en `event.respondWith()`, pasamos
-una promesa de `caches.match()`. Este método examina la solicitud y
-encuentra cualquier resultado almacenado en caché de cualquiera de los caché creados por tu service worker.
+If we have a matching response, we return the cached value, otherwise we return the result of a call to `fetch`, which will make a network request and return the data if anything can be retrieved from the network. This is a simple example and uses any cached assets we cached during the install step.
 
-Si existe una respuesta, se devuelve el valor almacenado en caché. Si no existe, se devuelve
-el resultado de una llamada a `fetch`, que realizará una solicitud de red y devolverá
-los datos si se puede recuperar algo de la red. Este es un ejemplo simple
-y en él se usa cualquier recurso que hayamos almacenado en caché durante la instalación.
-
-Si deseamos almacenar en caché solicitudes nuevas de forma acumulativa, podemos hacerlo administrando la
-respuesta de la solicitud de fetch y luego agregándola a la caché, como se muestra a continuación.
-
+If we want to cache new requests cumulatively, we can do so by handling the response of the fetch request and then adding it to the cache, like below.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -272,94 +165,62 @@ respuesta de la solicitud de fetch y luego agregándola a la caché, como se mue
             if (response) {
               return response;
             }
-
-            // IMPORTANT: Clone the request. A request is a stream and
-            // can only be consumed once. Since we are consuming this
-            // once by cache and once by the browser for fetch, we need
-            // to clone the response.
-            var fetchRequest = event.request.clone();
-
-            return fetch(fetchRequest).then(
+    
+            return fetch(event.request).then(
               function(response) {
                 // Check if we received a valid response
                 if(!response || response.status !== 200 || response.type !== 'basic') {
                   return response;
                 }
-
+    
                 // IMPORTANT: Clone the response. A response is a stream
                 // and because we want the browser to consume the response
                 // as well as the cache consuming the response, we need
                 // to clone it so we have two streams.
                 var responseToCache = response.clone();
-
+    
                 caches.open(CACHE_NAME)
                   .then(function(cache) {
                     cache.put(event.request, responseToCache);
                   });
-
+    
                 return response;
               }
             );
           })
         );
     });
+    
 
+What we are doing is this:
 
-Esto es lo que estamos haciendo:
+1. Add a callback to `.then()` on the `fetch` request.
+2. Once we get a response, we perform the following checks: 
+    1. Ensure the response is valid.
+    2. Check the status is `200` on the response.
+    3. Make sure the response type is **basic**, which indicates that it's a request from our origin. This means that requests to third party assets aren't cached as well.
+3. If we pass the checks, we [clone](https://fetch.spec.whatwg.org/#dom-response-clone) the response. The reason for this is that because the response is a [Stream](https://streams.spec.whatwg.org/){: .external }, the body can only be consumed once. Since we want to return the response for the browser to use, as well as pass it to the cache to use, we need to clone it so we can send one to the browser and one to the cache.
 
-1. Agregamos una devolución de llamada a `.then()` en la solicitud `fetch`.
-2. Cuando recibimos una respuesta, realizamos las siguientes verificaciones:
-    1. Nos aseguramos de que la respuesta sea válida.
-    2. Verificamos que el estado sea `200` en la respuesta.
-    3. Nos aseguramos de que el tipo de respuesta sea **basic**, lo que indica que es una
-       solicitud proveniente de nuestro origen. Esto también significa que las solicitudes a recursos de terceros
-       no se almacenan en caché.
-3. Si pasamos las verificaciones, [clonamos](https://fetch.spec.whatwg.org/#dom-response-clone)
-   la respuesta. Esto es así porque, al ser la respuesta una
-   [transmisión](https://streams.spec.whatwg.org/){: .external }, el cuerpo solo se puede consumir
-   una vez. Debido a que deseamos devolver la respuesta para que el navegador la use, además de
-   pasarla a la caché para su aplicación, debemos clonarla a fin de enviar una
-   al navegador y otra a la caché.
+## Update a service worker {: #update-a-service-worker }
 
-## Actualización de un service worker {: #update-a-service-worker }
+There will be a point in time where your service worker will need updating. When that time comes, you'll need to follow these steps:
 
-Llegará un momento en que tu service worker
-necesite una actualización. Cuando eso suceda, debes seguir estos pasos:
+1. Update your service worker JavaScript file. When the user navigates to your site, the browser tries to redownload the script file that defined the service worker in the background. If there is even a byte's difference in the service worker file compared to what it currently has, it considers it *new*.
+2. Your new service worker will be started and the `install` event will be fired.
+3. At this point the old service worker is still controlling the current pages so the new service worker will enter a `waiting` state.
+4. When the currently open pages of your site are closed, the old service worker will be killed and the new service worker will take control.
+5. Once your new service worker takes control, its `activate` event will be fired.
 
-1. Actualiza el archivo JavaScript de tu service worker. Cuando un usuario navega por
-   tu sitio, el navegador intenta descargar de nuevo el archivo de la secuencia de comandos que definió
-   el service worker en segundo plano. Aunque solo haya un byte de diferencia entre
-   el archivo del service worker y el que tiene actualmente, se lo considera
-   _nuevo_.
-2. El service worker nuevo se inicia y el evento `install` se activa
-3. En este punto, el service worker antiguo todavía controla las páginas actuales,
-   por lo que el service worker nuevo pasa a un estado de `waiting`.
-4. Cuando las páginas abiertas del sitio se cierran, el service
-   worker antiguo finaliza y el service worker nuevo toma el control.
-5. Cuando el service worker nuevo toma el control, el evento `activate` correspondiente se
-   activa.
+One common task that will occur in the `activate` callback is cache management. The reason you'll want to do this in the `activate` callback is because if you were to wipe out any old caches in the install step, any old service worker, which keeps control of all the current pages, will suddenly stop being able to serve files from that cache.
 
-Una tarea común que se realiza en la devolución de llamada de `activate` es la administración de la caché.
-El motivo por el que es conveniente hacer esto durante la devolución de llamada de `activate` es que, si tu
-intención es borrar cachés antiguas durante el paso de instalación, los service workers anteriores,
-que controlan las páginas actuales, repentinamente no podrán obtener
-archivos de la caché en cuestión.
+Let's say we have one cache called `'my-site-cache-v1'`, and we find that we want to split this out into one cache for pages and one cache for blog posts. This means in the install step we'd create two caches, `'pages-cache-v1'` and `'blog-posts-cache-v1'` and in the activate step we'd want to delete our older `'my-site-cache-v1'`.
 
-Supongamos que hay una caché llamada `'my-site-cache-v1'` y
-deseamos dividirla en una caché para páginas y una caché para entradas de blog.
-Esto significa que, en el paso de instalación, crearíamos dos cachés, `'pages-cache-v1'` y
-`'blog-posts-cache-v1'`, y en el paso de activación deberíamos borrar la
-`'my-site-cache-v1'` antigua.
-
-El siguiente código permitiría hacer esto generando un ciclo por todas las cachés del
-service worker y eliminando cualquier caché que no esté definida en la lista blanca
-de la caché.
-
+The following code would do this by looping through all of the caches in the service worker and deleting any caches that aren't defined in the cache whitelist.
 
     self.addEventListener('activate', function(event) {
-
+    
       var cacheWhitelist = ['pages-cache-v1', 'blog-posts-cache-v1'];
-
+    
       event.waitUntil(
         caches.keys().then(function(cacheNames) {
           return Promise.all(
@@ -372,123 +233,86 @@ de la caché.
         })
       );
     });
+    
 
-## Imperfecciones y problemas
+## Rough edges and gotchas
 
-Todo esto es muy nuevo. A continuación, se describe un conjunto de problemas que
-ocasionan molestias. Esperamos poder borrar esta sección pronto. Por ahora, sin embargo,
-vale la pena tener en cuenta esta información.
+This stuff is really new. Here's a collection of issues that get in the way. Hopefully this section can be deleted soon, but for now these are worth being mindful of.
 
+### If installation fails, we're not so good at telling you about it
 
-### Si la instalación falla, no somos muy buenos para contártelo
+If a worker registers, but then doesn't appear in `chrome://inspect/#service-workers` or `chrome://serviceworker-internals`, it's likely failed to install due to an error being thrown, or a rejected promise being passed to `event.waitUntil()`.
 
-Si un service worker se registra, pero no aparece en `chrome://inspect/#service-workers`
-ni en `chrome://serviceworker-internals`, es muy probable que no se haya
-instalado debido a un error o a que se pasó una promesa rechazada a
-`event.waitUntil()`.
+To work around this, go to `chrome://serviceworker-internals` and check "Open DevTools window and pause JavaScript execution on service worker startup for debugging", and put a debugger statement at the start of your install event. This, along with [Pause on uncaught exceptions](/web/tools/chrome-devtools/javascript/breakpoints), should reveal the issue.
 
-Como solución alternativa, ve a `chrome://serviceworker-internals`, selecciona "Open
-DevTools window and pause JavaScript execution on service worker startup for
-la debugging" y coloca una instrucción de depuración al principio del evento de instalación.
-Esto, junto con
-[Pause on uncaught exceptions](/web/tools/chrome-devtools/javascript/breakpoints),
-debería revelar el problema.
+### The defaults of fetch()
 
+#### No credentials by default
 
-### Los valores predeterminados de fetch()
-
-#### No hay credenciales predeterminadas
-
-Cuando usas `fetch`, de manera predeterminada, las solicitudes no tendrán credenciales, por ejemplo,
-cookies. Si deseas credenciales, como alternativa, llama a lo siguiente:
+When you use `fetch`, by default, requests won't contain credentials such as cookies. If you want credentials, instead call:
 
     fetch(url, {
       credentials: 'include'
     })
+    
 
-
-Este comportamiento es intencional, y se podría decir que es mejor que el método predeterminado, más
-complejo, de XHR de enviar credenciales si la URL tiene el mismo origen y omitirlas en
-caso contrario. El comportamiento de fetch se asemeja más al de otras solicitudes CORS, como `<img
-crossorigin>`, que nunca envía cookies a menos que te suscribas con `<img
+This behaviour is on purpose, and is arguably better than XHR's more complex default of sending credentials if the URL is same-origin, but omitting them otherwise. Fetch's behaviour is more like other CORS requests, such as `<img
+crossorigin>`, which never sends cookies unless you opt-in with `<img
 crossorigin="use-credentials">`.
 
-#### Lo no compatible con CORS falla de forma predeterminada
+#### Non-CORS fail by default
 
-De manera predeterminada, obtener un recurso de una URL de terceros no será posible si esta no
-admite CORS. Puedes agregar a la solicitud una opción `no-CORS` para superar este obstáculo.
-Sin embargo, se producirá una respuesta “opaca”; esto significa que no podrás
-saber si la respuesta fue correcta o no.
+By default, fetching a resource from a third party URL will fail if it doesn't support CORS. You can add a `no-CORS` option to the Request to overcome this, although this will cause an 'opaque' response, which means you won't be able to tell if the response was successful or not.
 
     cache.addAll(urlsToPrefetch.map(function(urlToPrefetch) {
       return new Request(urlToPrefetch, { mode: 'no-cors' });
     })).then(function() {
       console.log('All resources have been fetched and cached.');
     });
+    
 
+### Handling responsive images
 
-### Manejo de imágenes receptivas
+The `srcset` attribute or the `<picture>` element will select the most appropriate image asset at run time and make a network request.
 
-El atributo `srcset` o el elemento `<picture>` seleccionará el recurso de imagen más
-apropiado durante el tiempo de ejecución y realizará una solicitud de red.
+For service worker, if you wanted to cache an image during the install step, you have a few options:
 
-Para un service worker, si deseas almacenar en caché una imagen durante el proceso de instalación,
-tienes algunas opciones:
+1. Install all the images that the `<picture>` element and the `srcset` attribute will request.
+2. Install a single low-res version of the image.
+3. Install a single high-res version of the image.
 
-1. Instalar todas las imágenes que solicitarán el elemento `<picture>` y
-   el atributo `srcset`.
-2. Instalar una única versión de baja resolución de la imagen.
-3. Instalar una única versión de alta resolución de la imagen.
+Realistically you should be picking option 2 or 3 since downloading all of the images would be a waste of storage space.
 
-En la práctica, deberías elegir la opción 2 o 3, ya que descargar todas las
-imágenes sería una pérdida de espacio de almacenamiento.
+Let's assume you go for the low res version at install time and you want to try and retrieve higher res images from the network when the page is loaded, but if the high res images fail, fallback to the low res version. This is fine and dandy to do but there is one problem.
 
-Supongamos que eliges la versión de baja resolución durante la instalación y deseas tratar de
-recuperar las imágenes de mayor resolución desde la red cuando se cargue la página. No obstante, si fallan las imágenes de alta resolución,
-retoma la versión de baja resolución. Esto es perfectamente
-posible, pero hay un inconveniente.
+If we have the following two images:
 
-Supongamos que tenemos estas dos imágenes:
-
-| Densidad de la pantalla| Ancho | Alto |
+| Screen Density | Width | Height |
 | -------------- | ----- | ------ |
 | 1x             | 400   | 400    |
 | 2x             | 800   | 800    |
 
-En una imagen `srcset`, tendríamos un lenguaje de marcado como este:
-
+In a `srcset` image, we'd have some markup like this:
 
     <img src="image-src.png" srcset="image-src.png 1x, image-2x.png 2x" />
+    
 
-
-Si ves en una pantalla 2x, el navegador descargará `image-2x.png`,
-si estamos sin conexión podrías `.catch()` esta solicitud y devolver `image-src.png`
-si se almacena en caché, sin embargo, el navegador esperará una imagen que tenga
-en cuenta los píxeles adicionales en una pantalla 2x, así que, la imagen aparecerá como
-200x200 píxeles CSS en lugar de 400x400 píxeles CSS. La única forma de solucionar esto es
-establecer en la imagen una altura y un ancho fijos.
-
+If we are on a 2x display, then the browser will opt to download `image-2x.png`, if we are offline you could `.catch()` this request and return `image-src.png` instead if it's cached, however the browser will expect an image that takes into account the extra pixels on a 2x screen, so the image will appear as 200x200 CSS pixels instead of 400x400 CSS pixels. The only way around this is to set a fixed height and width on the image.
 
     <img src="image-src.png" srcset="image-src.png 1x, image-2x.png 2x"
      style="width:400px; height: 400px;" />
+    
 
+For `<picture>` elements being used for art direction, this becomes considerably more difficult and will depend heavily on how your images are created and used, but you may be able to use a similar approach to srcset.
 
-En los elementos `<picture>` empleados para dirección artística, esto resulta mucho
-más difícil y dependerá en gran medida de cómo se creen y usen las imágenes,
-pero es posible usar un método parecido a srcset.
+## Learn more
 
-## Más información
+There is a list of documentation on service worker being maintained at [https://jakearchibald.github.io/isserviceworkerready/resources](https://jakearchibald.github.io/isserviceworkerready/resources.html) that you may find useful.
 
-En
-[https://jakearchibald.github.io/isserviceworkerready/resources](https://jakearchibald.github.io/isserviceworkerready/resources.html)
-encontrarás una lista de documentación sobre los service workers que probablemente te resulte útil.
+## Get help
 
-## Ayuda
+If you get stuck then please post your questions on StackOverflow and use the '[service-worker](http://stackoverflow.com/questions/tagged/service-worker)' tag so that we can keep a track of issues and try and help as much as possible.
 
-Si tienes algún problema, publica tus preguntas en StackOverflow y usa la etiqueta
-'[service-worker](http://stackoverflow.com/questions/tagged/service-worker)'
-para que podamos realizar el seguimiento de los problemas y tratar de brindarte la mejor ayuda posible.
-
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

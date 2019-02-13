@@ -1,34 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: アプリ内のモーダルビューにアニメーションを付ける方法を学習します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate modal views in your apps.
 
-{# wf_updated_on:2016-08-24 #}
-{# wf_published_on:2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# モーダルビューのアニメーション化 {: .page-title }
+# Animating Modal Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
 <div class="attempt-right">
   <figure>
-    <img src="images/dont-press.gif" alt="モーダルビューをアニメーション化。" />
+    <img src="images/dont-press.gif" alt="Animating a modal view." />
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">お試しください</a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">Try it</a>
     </figcaption>
   </figure>
 </div>
 
-モーダル ビューは重要なメッセージを表示するためのビューです。ユーザー インターフェースをブロックしてでも表示したい理由がある場合にのみ、使用するようにしてください。モーダルビューは過度に使用するとユーザー操作の妨げになり、ユーザー エクスペリエンスを低下させるため、使用する際は注意が必要です。しかし状況によっては最適なビューでもあり、アニメーションを追加することによって躍動感を出すことができます。
+Modal views are for important messages, and for which you have very good reasons to block the user interface. Use them carefully, because they're disruptive and can easily ruin the user’s experience if overused. But, in some circumstances, they’re the right views to use, and adding some animation will bring them to life.
 
 ### TL;DR {: .hide-from-toc }
-* モーダルビューは慎重に使用する必要があります。ユーザー操作を不必要に妨げると、ユーザーはストレスを感じます。
-* アニメーションにスケールを追加すると、優れた「ドロップオン」効果が得られます。
-* ユーザーがモーダルビューを消した場合は、すぐにビューを非表示にします。一方、モーダルビューを表示する際は、ユーザーが驚かないように表示速度を少し落とします。
+
+* Use modal views sparingly; users get frustrated if you interrupt their experience unnecessarily.
+* Adding scale to the animation gives a nice "drop on" effect.
+* Get rid of the modal view quickly when the user dismisses it. However, bring the modal view onto the screen a little more slowly so that it doesn't surprise the user.
 
 <div class="clearfix"></div>
 
-モーダル オーバーレイはビューポートに合わせる必要があるため、`position` を `fixed` に設定します。
-
+The modal overlay should be aligned to the viewport, so set its `position` to `fixed`:
 
     .modal {
       position: fixed;
@@ -44,10 +41,9 @@ description: アプリ内のモーダルビューにアニメーションを付�
     }
     
 
-`opacity` の初期値は 0 であるため、ビューでは非表示になっています。ただし、クリックやタッチイベントを通過させるため、`pointer-events` を `none` に設定しておく必要があります。この設定をしないと、すべての操作がブロックされてページ全体の応答性が低下します。最後に、`opacity` と `transform` をアニメーション化するために、これらを変更予定の要素として `will-change` で指定しておく必要があります（[will-change プロパティの使用](animations-and-performance#using-the-will-change-property)を参照してください）。
+It has an initial `opacity` of 0, so it's hidden from view, but then it also needs `pointer-events` set to `none` so that clicks and touches pass through. Without that, it blocks all interactions, rendering the whole page unresponsive. Finally, because it animates its `opacity` and `transform`, those need to be marked as changing with `will-change` (see also [Using the will-change property](animations-and-performance#using-the-will-change-property)).
 
-ビューが表示されているときは操作を受け付け、`opacity` を 1 にしておく必要があります。
-
+When the view is visible, it needs to accept interactions and have an `opacity` of 1:
 
     .modal.visible {
       pointer-events: auto;
@@ -55,15 +51,12 @@ description: アプリ内のモーダルビューにアニメーションを付�
     }
     
 
-モーダル ビューが必要なときにいつでも、JavaScript を使用して「表示する」クラスを切り替えることができます。
-
+Now whenever the modal view is required, you can use JavaScript to toggle the "visible" class:
 
     modal.classList.add('visible');
     
 
-この時点では、モーダルビューはアニメーションなしで表示されます。以下でアニメーションを追加しましょう（[カスタム イージング](custom-easing)を参照してください）。
-
-
+At this point, the modal view appears without any animation, so you can now add that in (see also [Custom Easing](custom-easing)):
 
     .modal {
       -webkit-transform: scale(1.15);
@@ -80,10 +73,9 @@ description: アプリ内のモーダルビューにアニメーションを付�
     }
     
 
-`scale` を transform に追加すると、わずかにビューが画面上に落下するように見え、素敵な効果が得られます。デフォルトの遷移として、transform プロパティと opacity プロパティの両方にカスタム曲線と 0.1 秒の継続時間を指定します。
+Adding `scale` to the transform makes the view appear to drop onto the screen slightly, which is a nice effect. The default transition applies to both transform and opacity properties with a custom curve and a duration of 0.1 seconds.
 
-この持続時間はかなり短いですが、ユーザーがビューを閉じてアプリに戻りたい場面には最適です。しかし、モーダル ビューが表示時に目立ちすぎるという難点もあります。この問題を解決するには、`visible` クラスの transition の値をオーバーライドします。
-
+The duration is pretty short, though, but it's ideal for when the user dismisses the view and wants to get back to your app. The downside is that it’s probably too aggressive for when the modal view appears. To fix this, override the transition values for the `visible` class:
 
     .modal.visible {
     
@@ -101,10 +93,8 @@ description: アプリ内のモーダルビューにアニメーションを付�
     }
     
 
-これでモーダルビューが画面に表示されるまでの時間は 0.3 秒になるので、唐突感は軽減されます。一方、モーダルビューを消すスピードは速い方がユーザーに好まれます。
+Now the modal view takes 0.3 seconds to come onto the screen, which is a bit less aggressive, but it is dismissed quickly, which the user will appreciate.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

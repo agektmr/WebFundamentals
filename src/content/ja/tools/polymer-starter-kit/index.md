@@ -1,109 +1,87 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Polymer Starter Kit
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Polymer Starter Kit.
 
-{# wf_published_on:2015-01-01 #}
-{# wf_updated_on:2016-09-12 #}
+{# wf_published_on: 2015-01-01 #} {# wf_updated_on: 2016-09-12 #}
 
-#  Polymer Starter Kit {: .page-title }
+# Polymer Starter Kit {: .page-title }
 
-[Polymer Starter Kit のダウンロード](https://github.com/polymerelements/polymer-starter-kit/releases){: .button .button-primary }
+[Download Polymer Starter Kit](https://github.com/polymerelements/polymer-starter-kit/releases){: .button .button-primary }
 
-##  Polymer Starter Kit とは
+## What is the Polymer Starter Kit?
 
-[Polymer Starter Kit](https://github.com/PolymerElements/polymer-starter-kit){: .external } を土台として、ドロワーベースのレイアウトを使用したアプリを作成できます。
-レイアウトは、`app-layout` 要素で提供されます。
+The [Polymer Starter Kit](https://github.com/PolymerElements/polymer-starter-kit){: .external } is a starting point for building apps using a drawer-based layout. The layout is provided by `app-layout` elements.
 
+This template, along with the `polymer-cli` toolchain, also demonstrates use of the "PRPL pattern" This pattern allows fast first delivery and interaction with the content at the initial route requested by the user, along with fast subsequent navigation by pre-caching the remaining components required by the app and progressively loading them on-demand as the user navigates through the app.
 
-このテンプレートを `polymer-cli` ツールチェーンと使用すると、「PRPL パターン」の使用方法を確認することができます。PRPL パターンを使用すると、ユーザーによる初回の転送リクエストでコンテンツの迅速な配信と操作が可能になります。さらに、アプリに必要な残りのコンポーネントを事前にキャッシュしておくことで、以降の操作が高速になり、ユーザーがアプリを操作するときにオンデマンドでコンポーネントを段階的に読み込めるようになります。
+The PRPL pattern, in a nutshell:
 
+* **Push** components required for the initial route
+* **Render** initial route ASAP
+* **Pre-cache** components for remaining routes
+* **Lazy-load** and progressively upgrade next routes on-demand
 
+### Migrating from Polymer Starter Kit v1?
 
+[Check out our blog post that covers what's changed in PSK2 and how to migrate!](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html){: .external }
 
+## Setup
 
-PRPL パターンの概要は次のとおりです。
+### Prerequisites
 
-* 最初に転送が必要なコンポーネントを**プッシュする（Push）**
-* 最初に転送したリソースをできるだけ迅速に**レンダリングする（Render）**
-* その後に転送するコンポーネントを**事前にキャッシュする（Pre-cache）**
-* 次の転送するリソースを**遅延読み込みし（Lazy-load）**、オンデマンドで段階的に更新する
-
-###  Polymer Starter Kit v1 からの移行
-
-[PSK2 での変更点と移行方法について説明しているブログ投稿をご覧ください。](https://www.polymer-project.org/1.0/blog/2016-08-18-polymer-starter-kit-or-polymer-cli.html){: .external }
-
-##  セットアップ
-
-###  前提条件
-
-[polymer-cli](https://github.com/Polymer/polymer-cli){: .external } をインストールします。
+Install [polymer-cli](https://github.com/Polymer/polymer-cli){: .external }:
 
     npm install -g polymer-cli
+    
 
-###  テンプレートを指定してプロジェクトを初期化する
+### Initialize project from template
 
     mkdir my-app
     cd my-app
     polymer init starter-kit
+    
 
-###  開発サーバーを起動する
+### Start the development server
 
-以下のコマンドを実行すると、`http://localhost:8080` でアプリが起動し、基本的な URL ルーティングがアプリに提供されます。
-
+This command serves the app at `http://localhost:8080` and provides basic URL routing for the app:
 
     polymer serve --open
+    
 
+### Build
 
-###  ビルド
+This command performs HTML, CSS, and JS minification on the application dependencies, and generates a service-worker.js file with code to pre-cache the dependencies based on the entrypoint and fragments specified in `polymer.json`. The minified files are output to the `build/unbundled` folder, and are suitable for serving from a HTTP/2+Push compatible server.
 
-build のコマンドを実行すると、アプリケーションの依存関係に基づいて HTML、CSS および JS が縮小され、service-worker.js ファイルが生成されます。このファイルには、`polymer.json` で指定されたエントリポイントとフラグメントに基づいて依存関係を事前にキャッシュするためのコードが含まれます。縮小されたファイルは `build/unbundled` フォルダに出力され、HTTP/2+Push 互換サーバーからの配信に適しています。
-
-
-
-
-
-このコマンドは、フォールバックの `build/bundled` フォルダも作成します。このフォルダは、フラグメント バンドルを使用して生成され、H2/Push 非互換サーバーからの配信と H2/Push をサポートしていないクライアントへの配信に適しています。
-
-
+In addition the command also creates a fallback `build/bundled` folder, generated using fragment bundling, suitable for serving from non H2/push-compatible servers or to clients that do not support H2/Push.
 
     polymer build
+    
 
-###  ビルドをプレビューする
+### Preview the build
 
-以下のコマンドでは、アプリが Push 互換サーバーで実行される場合のように、`http://localhost:8080` でアプリの縮小バージョンをバンドルされていない状態で実行します。
-
+This command serves the minified version of the app at `http://localhost:8080` in an unbundled state, as it would be served by a push-compatible server:
 
     polymer serve build/unbundled
+    
 
-以下のコマンドは、`http://localhost:8080` でアプリの縮小バージョンを実行します。このバージョンは、フラグメント バンドルで生成されます。
-
+This command serves the minified version of the app at `http://localhost:8080` generated using fragment bundling:
 
     polymer serve build/bundled
+    
 
-###  テストを実行する
+### Run tests
 
-以下のコマンドは、マシンに現在インストールされているブラウザに対して [Web Component Tester](https://github.com/Polymer/web-component-tester){: .external } を実行します。
-
-
+This command will run [Web Component Tester](https://github.com/Polymer/web-component-tester){: .external } against the browsers currently installed on your machine.
 
     polymer test
+    
 
-###  新しいビューを追加する
+### Adding a new view
 
-オンデマンドで読み込まれるビューを追加してアプリを拡張することができます。（転送ルートに基づいて読み込む、アプリケーションの重要でないセクションを段階的にレンダリングするなど）
-新たにオンデマンドで読み込まれた各フラグメントは、含まれている `polymer.json` ファイル内の `fragments` のリストに追加する必要があります。
-この処理により、これらのコンポーネントとその依存関係が、事前にキャッシュされたコンポーネントのリストに追加されるようになります（さらに、フォールバック `bundled` ビルドにバンドルが作成されます）。
+You can extend the app by adding more views that will be demand-loaded e.g. based on the route, or to progressively render non-critical sections of the application. Each new demand-loaded fragment should be added to the list of `fragments` in the included `polymer.json` file. This will ensure those components and their dependencies are added to the list of pre-cached components (and will have bundles created in the fallback `bundled` build).
 
+## Next Steps
 
+Check out the [getting started guide](https://www.polymer-project.org/1.0/start/toolbox/set-up){: .external }
 
-##  次のステップ
+## Learn More
 
-[スタートガイド](https://www.polymer-project.org/1.0/start/toolbox/set-up){: .external }をご覧ください。
-
-##  さらに詳しく知る
-
-詳細については、コードを確認するか、問題をご報告ください。または、GitHub リポジトリ（[https://github.com/polymerelements/polymer-starter-kit](https://github.com/polymerelements/polymer-starter-kit){: .external }）をご覧ください。
-
-
-
-{# wf_devsite_translation #}
+To learn more, see the code, submit an issue, or to get involved, check out our Git repo at <https://github.com/polymerelements/polymer-starter-kit>{: .external }

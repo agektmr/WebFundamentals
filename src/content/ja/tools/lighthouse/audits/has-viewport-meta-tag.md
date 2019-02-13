@@ -1,43 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「HTML にビューポートのメタタグを含める 」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Has A &lt;meta name="viewport"&gt; Tag With width Or initial-scale" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-#  HTML にビューポートのメタタグを含める {: .page-title }
+# Has A Viewport Meta Tag With width Or initial-scale {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ビューポートのメタタグがない場合、モバイル端末では、一般的なデスクトップの画面幅でページをレンダリングしたあと、モバイル画面に合わせてページをスケーリングします。
-ビューポートを設定すると、ビューポートの幅とスケーリングを制御できるようになります。
+Without a viewport meta tag, mobile devices render pages at typical desktop screen widths, and then scale the pages to fit the mobile screens. Setting the viewport enables you to control the width and scaling of the viewport. Check out the following links to learn more:
 
-詳細については、以下のリンクをご覧ください。
+* [Configure the Viewport](/speed/docs/insights/ConfigureViewport)
+* [Set the Viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)
 
-* [ビューポートを設定する](/speed/docs/insights/ConfigureViewport)
-* [ビューポートを設定する](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)
+## Recommendations {: #recommendations }
 
-##  監査に合格する方法 {: #how }
-
-HTML の `<head>` に、ビューポートの `<meta>` タグを追加します。
+Add a viewport `<meta>` tag in the `<head>` of your HTML.
 
     <head>
       ...
       <meta name="viewport" content="width=device-width, initial-scale=1">
       ...
     </head>
+    
 
-キーと値のペア `width=device-width`
-でビューポート幅と端末幅を指定し、`initial-scale=1` でページにアクセスしたときの最初のズームレベルを指定します。
+The `width=device-width` key-value pair sets the width of the viewport to the width of the device. The `initial-scale=1` key-value pair sets the initial zoom level when visiting the page.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse checks that there's a `<meta name="viewport">` tag in the `<head>` of the document. It also checks that the node contains a `content` attribute and that the value of this attribute contains the text `width=`. However, it does not check that `width` equals `device-width`. Lighthouse also does not check for a `initial-scale` key-value pair.
 
-Lighthouse では、ドキュメントの `<head>` に `<meta name="viewport">` タグが存在するかチェックされます。
-また、ノードに `content` 属性が含まれており、その属性値にテキスト
-`width=` が含まれていることも確認されます。ただし、`width` と `device-width`
-が等しいかは確認されません。また、キーと値のペア `initial-scale` も、Lighthouse ではチェックされません。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

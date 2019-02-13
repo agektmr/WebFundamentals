@@ -1,173 +1,156 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools の [Elements] パネルの DOM ツリービューには、現在のウェブページの DOM 構造が表示されます。DOM のアップデートを通じて、ページのコンテンツと構造をライブ編集します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
-{# wf_updated_on: 2015-04-29 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# DOM の編集 {: .page-title }
+# Edit the DOM {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome DevTools の [Elements] パネルの DOM ツリービューには、現在のウェブページの DOM 構造が表示されます。DOM のアップデートを通じて、ページのコンテンツと構造をライブ編集します。
-
+The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
 ### TL;DR {: .hide-from-toc }
-- DOM によりページの構造が定義されます。各 DOM ノードは、ヘッダーノードや段落ノードなどのページ要素です。
-- レンダリングされた DOM を通じてページのコンテンツと構造をライブ編集します。
-- ただし、[Elements] パネルでの DOM の変更を通じてソースファイルを変更することはできない点に注意してください。ページを再読み込みすると、すべての DOM ツリーの変更内容が失われます。
-- DOM ブレークポイントを使用して DOM の変更を監視します。
 
+* The DOM defines your page structure. Each DOM node is a page element, for example, a header node, paragraph node.
+* Live-edit the content and structure of your pages through the rendered DOM.
+* But remember, you can't modify source files through DOM changes in the Elements panel. Reloading the page erases any DOM tree modifications.
+* Watch for changes to the DOM using DOM breakpoints.
 
-##  要素の調査{:#inspect-an-element}
+## Inspect an element {:#inspect-an-element}
 
-**[Elements] パネル**を使用して、ページ内のすべての要素を 1 つの DOM ツリーで調査します。
-任意の要素を選択して、その要素に適用されているスタイルを調査します。
+Use the **Elements panel** to inspect all elements in your page in one DOM tree. Select any element and inspect the styles applied to it.<video autoplay muted src="animations/inspect-element.mp4"> </video> 
 
-<video autoplay muted src="animations/inspect-element.mp4">
-</video>
+There are several ways to inspect an element:
 
-以下のように、いくつかの方法で要素を調査できます。
+Right-click any element on the page and select **Inspect**.
 
-ページ上の任意の要素を右クリックし、[**Inspect**] を選択します。
+![Inspect an element via right-click](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
 
-![右クリックで要素を調べる](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
+Press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
 
-<kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Shift</kbd> キーを押します。
-+ <kbd class="kbd">C</kbd> キー（Windows）または <kbd class="kbd">Cmd</kbd>
-+ <kbd class="kbd">Shift</kbd>+<kbd class="kbd">C</kbd> キー（Mac）を押して、DevTools を [Inspect Element] モードで開き、要素にカーソルを合わせます。
-DevTools により自動的に、[**Elements**] パネルでカーソルが合わせられている要素がハイライト表示されます。
+* <kbd class="kbd">C</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>
+* <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd> (Mac) to open DevTools in Inspect Element mode, then hover over an element. DevTools automatically highlights the element that you are hovering over in the **Elements** panel. Click on the element to exit inspect mode while keeping the element highlighted within the **Elements** panel. 
 
-[**Elements**] パネル内で要素がハイライト表示されている状態で要素をクリックすると、調査モードが終了します。
- 
+Click the **Inspect Element** button ![Inspect icon](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline} to go into Inspect Element Mode, then click on an element.
 
-[**Inspect Element**] ボタン ![Inspect icon](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline} をクリックし、Inspect Element モードにして、要素をクリックします。
+Use the [`inspect`](/web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect) method in the console, such as `inspect(document.body)`.
 
+### View the rendered and natural sizes of an image {: #image-sizes }
 
+Hover over an `img` tag in the **DOM Tree** to view the rendered and natural sizes of that image.
 
-コンソールで [`inspect`][inspect] メソッドを使用します（例: `inspect(document.body)`）。
+![Rendered and natural image sizes](imgs/image-sizes.png)
 
+### View which image in a source set (srcset) is being used {: #srcset }
 
-##  DOM のナビゲーション
+To view which version of an image in a `srcset` was loaded, select the `img` element, then evaluate `$0.currentSrc` in the **Console**.
 
-DOM 構造をナビゲートするには、マウスまたはキーボードを使用します。
+Note: See [Enhance `img`s with `srcset` for high DPI devices](/web/fundamentals/design-and-ux/responsive/images#enhance_imgs_with_srcset_for_high_dpi_devices) to learn more about image optimization using `srcset`.
 
-折りたたまれたノードの隣には右向きの矢印があります。![折りたたまれたノード](imgs/collapsed-node.png){:.inline}
+![currentSrc in the Console](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-console.png)
 
+Note: `$0` is a shortcut in the DevTools **Console**. It provides a reference to the currently-selected element in the **DOM Tree**.
 
-展開されたノードの隣には下向きの矢印があります。![展開されたノード](imgs/expanded-node.png){:.inline}
+You can also view `currentSrc` via the **Properties** tab. The **Properties** tab only displays properties for the currently-selected element, so make sure that you've selected the correct element before viewing.
 
+![currentSrc in the Properties tab](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-properties.png)
 
-マウスを使用して、次の操作を実行できます。
+## Navigate the DOM
 
-* 1 回クリックすると、ノードがハイライト表示されます。
-* ノードを展開するには、ノードの任意の場所をダブルクリックするか、ノードの隣にある矢印をクリックします。
-* ノードを折りたたむには、ノードの隣にある矢印をクリックします。キーボードを使用して、次の操作を実行できます。
-* **↑**キーを押すと、現在のノードの 1 つ上のノードが選択されます。
-* **↓**キーを押すと、現在のノードの 1 つ下のノードが選択されます。
-* **→**キーを押すと、折りたたまれたノードが展開されます。もう一度押すと、（展開された）ノードの最初の子に移動します。
-この手法により、深くネストされているノードをすばやくナビゲートできます。
+Navigate through the DOM structure using your mouse or keyboard.
 
+A collapsed node has an arrow next to it pointing right: ![collapsed node](imgs/collapsed-node.png){:.inline}
 
-###  パンくずリストのナビゲーション
+An expanded node has an arrow next to it pointing down: ![expanded node](imgs/expanded-node.png){:.inline}
 
-[Elements] パネルの下部にはパンくずリストがあります。 
+Using your mouse:
 
-![パンくずリスト](imgs/breadcrumb-body.png)
+* Click once to highlight a node.
+* To expand a node, double-click anywhere on it or click on the arrow next  
+    to it.
+* To collapse a node, click on the arrow next to it.
 
-現在選択されているノードは青でハイライト表示されています。その左側のノードは現在のノードの親です。
-さらにその左側のノードは親の親です。同様に、ツリーの最上位まで続きます。
+Using your keyboard:
 
+* Press the **Up Arrow** key to select the node above the current one.
+* Press the **Down Arrow** to select the node below the current one.
+* Press the **Right Arrow** key to expand a collapsed node. Press it again to move to the first child of the (now-expanded) node. You can use this technique to quickly navigate deeply-nested nodes.
 
-![パンくずリストの拡張](imgs/breadcrumb-footer.png)
+### Navigate the breadcrumb trail
 
-構造の上位にナビゲートしていくと、ハイライトが移動します。
+At the bottom of the Elements panel is a breadcrumb trail.
 
-![パンくずリストを上位にナビゲートする](imgs/breadcrumb-trail.png)
+![Breadcrumb trail](imgs/breadcrumb-body.png)
 
-DevTools には、リスト内の項目が可能な限り多く表示されます。リスト全体がステータスバーに収まらない場合は、リストが切り捨てられた位置に省略記号（...）が表示されます。
+The currently selected node is highlighted in blue. The node to the left is the current node's parent. And to the left of that is the parent's parent. And so on, all the way up the tree.
 
-省略記号をクリックすると、非表示になっている要素が表示されます。
+![Extend breadcrumb trail](imgs/breadcrumb-footer.png)
 
+Navigating back up the structure moves the highlight:
 
-![パンくずリストの省略記号](imgs/breadcrumb-ellipsis.png)
+![Navigate up breadcrumb trail](imgs/breadcrumb-trail.png)
 
-##  DOM ノードと属性の編集
+DevTools displays as many items as possible in the trail. If the entire trail doesn't fit in the status bar, an ellipsis (...) shows where the trail has been truncated. Click the ellipsis to show the hidden elements:
 
-DOM ノード名または属性を編集するには、次のようにします。
+![Breadcrumb ellipsis](imgs/breadcrumb-ellipsis.png)
 
-* ノード名または属性を直接ダブルクリックします。
-* ノードをハイライト表示して <kbd>Enter</kbd> キーを押し、名前または属性が選択されるまで <kbd>Tab</kbd> キーを押し続けます。
-* [その他のアクション メニュー](#more-actions) を開き、[**Add Attribute**] または [**Edit Attribute**] を選択します。
-[**Edit Attribute**] は状況依存メニューです。クリックした部分に応じて、編集対象が変わります。
+## Edit DOM nodes and attributes
 
+To edit a DOM node name or attribute:
 
-終了すると、終了タグが自動的にアップデートされます。
+* Double-click directly on the node name or attribute.
+* Highlight the node, press <kbd>Enter</kbd>, and then press <kbd>Tab</kbd> until the name or attribute is selected.
+* Open the [more actions menu](#more-actions) and select **Add Attribute** or **Edit Attribute**. **Edit Attribute** is context-sensitive; the portion you click on determines what gets edited.
 
-<video autoplay muted src="animations/edit-element-name.mp4">
-</video>
+The closing tag is automatically updated when you're finished.<video autoplay muted src="animations/edit-element-name.mp4"> </video> 
 
-###  DOM ノードとその子の HTML としての編集
+### Edit DOM node and its children as HTML
 
-DOM ノードとその子を HTML として編集するには、次のようにします。
+To edit a DOM node and its children as HTML:
 
-* [その他のアクション メニュー](#more-actions) を開き、[**Edit as HTML**] を選択します。 
-* <kbd>F2</kbd> キー（Windows または Linux）または <kbd>Fn</kbd>+<kbd>F2</kbd> キー（Mac）を押します。
-* 変更を保存する場合は、<kbd>Ctrl</kbd>+<kbd>Enter</kbd> キー（Windows または Linux）または <kbd>Cmd</kbd>+<kbd>Enter</kbd> キー（Mac）を押します。
-* 保存せずにエディタを終了する場合は、<kbd>Esc</kbd> キーを押します。
+* Open the [more actions menu](#more-actions) and select **Edit as HTML**. 
+* Press <kbd>F2</kbd> (Windows / Linux) or <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
+* Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Enter</kbd> (Mac) to save your changes. 
+* Press <kbd>Esc</kbd> to exit the editor without saving.
 
-![HTML としての編集](imgs/edit-as-html.png)
+![edit as HTML](imgs/edit-as-html.png)
 
-##  DOM ノードの移動
+## Move DOM node
 
-ノードを移動するには、ノードをクリックし、長押してドラッグします。
+Click, hold, and drag a node to move it.<video autoplay muted src="animations/move-node.mp4"> </video> 
 
-<video autoplay muted src="animations/move-node.mp4">
-</video>
+## Delete DOM node
 
-##  DOM ノードの削除
+To delete a DOM node:
 
-DOM ノードを削除するには、次のようにします。
+* Open the [more actions menu](#more-actions) and select **Delete Node**.
+* Select the node and press the <kbd>Delete</kbd> key.
 
-* [その他のアクション メニュー](#more-actions) を開き、[**Delete Node**] を選択します。
-* ノードを選択して <kbd>Delete</kbd> キーを押します。
+Note: If you delete a node by accident, <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (or <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> on Mac) to undo your last action.
 
-注: 誤ってノードを削除した場合は、<kbd class='kbd'>Ctrl</kbd>+<kbd class='kbd'>Z</kbd> キー（Mac の場合は <kbd class='kbd'>Cmd</kbd>+<kbd class='kbd'>Z</kbd> キー）で最後の操作を元に戻すことができます。
+## Show more actions menu {:#more-actions}
 
-##  その他のアクション メニューの表示{:#more-actions}
+The **more actions** menu lets you interact with a DOM node in a variety of ways. To view the menu, right-click on a node, or select a node and then press the **more actions** button (![more action 
+button](imgs/more-actions-button.png){:.inline})). The button is only displayed on the currently selected element.
 
-**その他のアクション** メニューを使用すると、さまざまな方法で DOM ノードを操作できます。
-メニューを表示するには、ノードを右クリックするか、ノードを選択して**その他のアクション** ボタン（![その他のアクション ボタン](imgs/more-actions-button.png){:.inline}）を押します。
+![more actions menu](imgs/more-actions-menu.png)
 
-ボタンは現在選択されている要素にのみ表示されます。
+## Scroll into view
 
+When you hover over or select a DOM node, the rendered node is highlighted in the viewport. If the node is scrolled offscreen, you'll see a tooltip at the top of the viewport if the node is above the current viewport, and a tooltip at the bottom if the node is below the current viewport. For example, in the screenshot below DevTools is indicating that the currently selected element in the **Elements** panel is below the viewport.
 
-![その他のアクション メニュー](imgs/more-actions-menu.png)
+![element below viewport](imgs/below-viewport.png)
 
-##  ビューへのスクロール
+To scroll the page so the node appears in the viewport, **Right-click** the node and select **Scroll into View**.
 
-DOM ノードにカーソルを合わせるか、ノードを選択すると、レンダリングされたノードがビューポートでハイライト表示されます。
-ノードがスクロールされて画面外に出ると、ノードが現在のビューポートより上にある場合はビューポートの上部にツールチップが表示され、ノードが現在のビューポートより下にある場合は下部にツールチップが表示されます。
-たとえば、以下のスクリーンショットの DevTools では、[**Elements**] パネルで現在選択されている要素がビューポートより下にあることが示されています。
+## Set DOM breakpoints
 
-
-![ビューポートより下にある要素](imgs/below-viewport.png)
-
-ノードがビューポート内に表示されるようにページをスクロールするには、ノードを**右クリック**し、[**Scroll into View**] を選択します。
-
-
-##  DOM ブレークポイントの設定
-
-複雑な JavaScript アプリケーションをデバッグするための DOM ブレークポイントを設定します。たとえば、JavaScript によって DOM 要素のスタイルを変更している場合は、要素の属性が変更されたときに呼び出される DOM ブレークポイントを設定します。
-サブツリーの変更、属性の変更、ノードの削除のいずれかの DOM 変更でブレークポイントがトリガーされます。
+Set DOM breakpoints to debug complex JavaScript applications. For example, if your JavaScript is changing the styling of a DOM element, set a DOM breakpoint to fire when the element's attributes are modified. Trigger a breakpoint on one of the following DOM changes: subtree change, attribute change, node removal.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.breakpoints #}
 
-###  サブツリーの変更
+### Subtree Modifications
 
-サブツリーの変更ブレークポイントは、子要素が追加、削除、または移動された場合にトリガーされます。たとえば、`main-content` 要素にサブツリーの変更ブレークポイントを設定した場合は、次のコードでブレークポイントがトリガーされます。
-
+A subtree modification breakpoint is triggered when a child element is added, removed, or moved. For example, if you set a subtree modification breakpoint on the `main-content` element, the following code triggers the breakpoint:
 
     var element = document.getElementById('main-content');
     //modify the element's subtree.
@@ -175,150 +158,141 @@ DOM ノードにカーソルを合わせるか、ノードを選択すると、�
     element.appendChild( mySpan );
     
 
-###  属性の変更
+### Attribute Modifications
 
-属性の変更は、要素の属性（`class, id, name`）が動的に変更された場合に発生します。
-
+An attribute modification occurs when the attribute of an element (`class, id, name`) is changed dynamically:
 
     var element = document.getElementById('main-content');
     // class attribute of element has been modified.
     element.className = 'active';
     
 
-###  ノードの削除
+### Node Removal
 
-ノードの削除の変更は、対象のノードが DOM から削除されたときにトリガーされます。
-
-
+A node removal modification is triggered when the node in question is removed from the DOM:
 
     document.getElementById('main-content').remove();
     
 
-##  DOM ブレークポイントの操作
+## Interact with DOM breakpoints
 
-[Elements] パネルと [Sources] パネルの両方に DOM ブレークポイントを管理するためのパネルが含まれています。
+The Elements and Sources panels both include a pane for managing your DOM breakpoints.
 
+Each breakpoint is listed with an element identifier and the breakpoint type.
 
-各ブレークポイントが、要素の識別子とブレークポイントのタイプとともに表示されます。
+![DOM breakpoints pane](imgs/dom-breakpoints-pane.png)
 
-![[DOM Breakpoints] ペイン](imgs/dom-breakpoints-pane.png)
+Interact with each listed breakpoint in any of the following ways:
 
-次のいずれかの方法で、一覧表示されている各ブレークポイントを操作します。
+* **Hover** over the element identifier to show the element's corresponding position on the page (similar to hovering over nodes in the Elements panel).
+* **Click** an element to select it in the Elements panel.
+* **Toggle** the checkbox to enable or disable the breakpoint.
 
-* 要素の識別子に**カーソルを合わせる**と、ページ上での要素の対応する位置が示されます（[Elements] パネルでノードにカーソルを合わせた場合と同様です）。
-* 要素を**クリック**すると、[Elements] パネルでその要素が選択されます。
-* チェックボックスの**オンとオフを切り替える**と、ブレークポイントが有効または無効になります。
+When you trigger a DOM breakpoint, the breakpoint is highlighted in the DOM Breakpoints pane. The **Call Stack** pane displays the **reason** for a debugger pause:
 
-DOM ブレークポイントをトリガーすると、[DOM Breakpoints] ペインでそのブレークポイントがハイライト表示されます。
-[**Call Stack**] ペインには、デバッガーの一時停止の**理由**が表示されます。
+![Breakpoint reason](imgs/breakpoint-reason.png)
 
+## View element event listeners
 
-![ブレークポイントの理由](imgs/breakpoint-reason.png)
+View JavaScript event listeners associated with a DOM node in the **Event Listeners** pane.
 
-##  要素のイベント リスナーの表示
+![event listeners pane](imgs/event-listeners-pane.png)
 
-[**Event Listeners**] ペインで、DOM ノードに関連付けられている JavaScript のイベント リスナーを表示します。
- 
+The top-level items in the Event Listeners pane show the event types that have registered listeners.
 
-![[Event Listeners] ペイン](imgs/event-listeners-pane.png)
+Click the arrow next to the event type (for example `click`) to see a list of registered event handlers. Each handler is identified by a CSS selector-like element identifier, such as `document` or `button#call-to-action`. If more than one handler is registered for the same element, the element is listed repeatedly.
 
-[Event Listeners] ペインの最上位の項目は、リスナーが登録されているイベントタイプを示します。
-
-
-イベントタイプ（たとえば、`click`）の隣にある矢印をクリックすると、登録されたイベント ハンドラのリストが表示されます。
-各ハンドラは、CSS セレクターに似た要素の識別子（`document` や `button#call-to-action` など）により識別されます。
-同じ要素に対して複数のハンドラが登録されている場合、その要素は繰り返しリストに示されます。
-
-
-要素の識別子の隣にある展開矢印をクリックすると、イベント ハンドラのプロパティが表示されます。[Event Listeners] ペインに、各リスナーの以下のプロパティが示されます。
+Click the expander arrow next to an element identifier to see the properties of the event handler. The Event Listeners pane lists the following properties for each listener:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">イベント リスナーのプロパティと説明</th>
+      <th colspan="2">Event Listener Properties &amp; Description</th>
     </tr>
   </thead>
   <tbody>
-  	<tr>
+    <tr>
       <td data-th="Value"><code>handler</code></td>
-      <td data-th="Description">コールバック関数を含みます。関数を右クリックし、[<strong>Show Function Definition</strong>] を選択すると、関数が定義されている場所が表示されます（ソースコードが使用可能な場合）。</td>
+      <td data-th="Description">Contains a callback function. Right-click on the function and select <strong>Show Function Definition</strong> to view where the function is defined (if source code is available).</td>
     </tr>
     <tr>
       <td data-th="Value"><code>useCapture</code></td>
-      <td data-th="Description"> <code>addEventListener</code> に <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> フラグが設定されていたかどうかを示すブール値です。</td>
+      <td data-th="Description">A boolean value stating whether the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> flag on <code>addEventListener</code> was set.</td>
     </tr>
   </tbody>
 </table>
 
-注: Chrome 拡張機能の多くが、独自のイベント リスナーを DOM に追加します。イベント リスナーが多数あり、それらが自分のコードで設定したものではない場合は、[シークレット ウィンドウ](https://support.google.com/chrome/answer/95464)でページを再度開いてみてください。シークレット ウィンドウでは、既定で拡張機能の実行が停止されます。
+Note: Many Chrome extensions add their own event listeners onto the DOM. If you see a number of event listeners that aren't set by your code, you may want to reopen your page in an [Incognito window](https://support.google.com/chrome/answer/95464). Incognito windows prevent extensions from running by default.
 
-###  祖先イベント リスナーの表示
+### View ancestor event listeners
 
 {% comment %}
 
-スクリーンショットのコード
+code for screenshot
 
 <!doctype html>
 <html>
-<body onload="console.log('onload');">
-  <div onfocus="console.log('focus');">
-    <button id="button" onclick="console.log('onclick');">クリックする</button>
+<body onload="console.log('onload');"></p>
+
+<div onfocus="console.log('focus');">
+    <button id="button" onclick="console.log('onclick');">click me</button>
   </div>
-</body>
+
+<p></body>
 </html>
 
 {% endcomment %}
 
-[**Ancestors**] チェックボックスがオンになっている場合は、現在選択されているノードのイベント リスナーに加えて、そのノードの祖先のイベント リスナーも表示されます。
+When the **Ancestors** checkbox is enabled, the event listeners for the ancestors of the currently selected node are displayed, in addition to the currently selected node's event listeners.
 
+![ancestors enabled](imgs/ancestors-enabled.png)
 
+When the checkbox is disabled, only the event listeners for the currently selected node are displayed.
 
-![[Ancestors] がオン](imgs/ancestors-enabled.png)
+![ancestors disabled](imgs/ancestors-disabled.png)
 
-このチェックボックスがオフになっている場合は、現在選択されているノードのイベント リスナーのみが表示されます。
-
-
-![[Ancestors] がオフ](imgs/ancestors-disabled.png)
-
-###  フレームワーク リスナーの表示
+### View framework listeners
 
 {% comment %}
 
-スクリーンショットのコード
+code for screenshot
 
-<!doctype html>
-<html>
+<!doctype html> 
 <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
-<body>
-  <button id="button">クリックしてください</button>
-  <script>
+<button id="button">click me, please</button></p> 
+
+<script>
     $('#button').click(function() {
       $('#button').text('hehe, that tickled, thanks');
     });
   </script>
-</body>
-</html>
+
+ 
+
+</body> </html>
 
 {% endcomment %}
 
-JavaScript のフレームワークとライブラリの中には、ネイティブ DOM イベントをそのカスタム イベント API にラップしているものがあります。
-過去には、このせいで DevTools でイベントリスナを調べるのが難しくなっていました。なぜなら、関数定義が単にフレームワークまたはライブラリのコードを参照するためです。[**Framework listeners**] 機能によってこの問題が解決されます。
+Some JavaScript frameworks and libraries wrap native DOM events into their custom event APIs. In the past this made it hard to inspect the event listeners with DevTools, because the function definition would just reference back to the framework or library code. The **Framework listeners** feature solves this problem.
 
+When the **Framework listeners** checkbox is enabled, DevTools automatically resolves the framework or library wrapping portion of the event code, and then tells you where you actually bound the event in your own code.
 
-[**Framework listeners**] チェックボックスがオンになっている場合、DevTools は自動的にイベントコードのフレームワークまたはライブラリがラップしている部分を解決し、ユーザーのコードのどこに実際にイベントがバインドされているかを通知します。
+![framework listeners enabled](imgs/framework-listeners-enabled.png)
 
+When the **Framework listeners** checkbox is disabled, the event listener code will probably resolve somewhere in the framework or library code.
 
+![framework listeners disabled](imgs/framework-listeners-disabled.png)
 
-![[Framework listeners] がオン](imgs/framework-listeners-enabled.png)
+## Show HTML comments {: #show-html-comments }
 
-[**Framework listeners**] チェックボックスがオフになっている場合は、イベント リスナー コードで、フレームワークまたはライブラリ コードのどこかを解決することになると考えられます。
- 
+To show or hide HTML comments in the Elements panel:
 
-![[Framework listeners] がオフ](imgs/framework-listeners-disabled.png)
+1. Open [Settings](/web/tools/chrome-devtools/ui#settings).
+2. Click the **Preferences** tab.
+3. Under the **Elements** section, check the **Show HTML comments** checkbox.
 
+To show or hide HTML comments in the **Elements** panel, [open **Settings**](#settings), go to the **Preferences** panel, find the **Elements** section, and then toggle the **Show HTML comments** checkbox.
 
+## Feedback {: #feedback }
 
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,453 +1,395 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:Google 和 AnswerLab 进行的一项研究对用户与各类移动网站的交互方式做了调查。其目标是回答一个问题，‘怎样才算出色的移动网站？’
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Google and AnswerLab undertook a study examining how users interact with a diverse set of mobile sites. The goal was to answer the question, 'What makes a good mobile site?'
 
-{# wf_published_on: 2014-08-08 #}
-{# wf_updated_on: 2018-02-05 #}
+{# wf_published_on: 2014-08-08 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: N/A #}
 
-# 怎样才算出色的移动网站？ {: .page-title }
+# What Makes a Good Mobile Site? {: .page-title }
 
 {% include "web/_shared/contributors/jennygove.html" %}
 
-Google 和 AnswerLab 执行了一项[调查研究](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals)来回答这一问题。
+Google and AnswerLab conducted a [research study](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals) to answer this question.
 
-> 移动用户具有很强的目标导向。他们期望能够根据自身情况立即获得所需内容。
+> Mobile users are very goal-oriented. They expect to be able to get what they need, immediately, and on their own terms.
 
+The study was held through 119 hour-long, in-person usability sessions with participants in the US. Participants were asked to perform key tasks across a diverse set of mobile sites. iOS and Android users were included, and users tested the sites on their own phones. For each site, participants were asked to voice their thoughts aloud as they completed conversion-focused tasks like making a purchase or booking a reservation.
 
-这项研究是通过与美国参与者进行长达 119 小时的亲自易用性实验来完成的。
-研究要求参与者在各类移动网站上执行关键任务。iOS 和 Android 用户都包括在内，用户在其自己的手机上测试网站。对于每个网站，研究都要求参与者在完成侧重于转化的任务（如购物或预订）时明确表达自己的想法。
+The study uncovered 25 mobile site design principles, grouped into five categories.
 
+## Home page and site navigation
 
+Success: Focus your mobile homepage on connecting users to the content they’re looking for.
 
-这项研究发现了 25 个移动网站设计原则，并将它们分成五个类别。
+### Keep calls to action front and center
 
-
-## 首页和网站导航
-
-Success: 让您的移动首页侧重于将用户与他们要寻找的内容联系起来。
-
-### 让吸引注意力的元素前置居中
-
-通过[菜单](/web/fundamentals/design-and-ux/responsive/)或“首屏线以下空间”（网页中不向下滚动便无法看到的部分）提供二级任务。
-
+Make secondary tasks available through [menus](/web/fundamentals/design-and-ux/responsive/) or “below the fold” (the part of the webpage that can’t be seen without scrolling down).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-cta-good.png">
     <figcaption class="success">
-      <b>宜</b>：将用户所有最常见的任务安排在便于访问的位置。</figcaption>
-
+      <b>DO</b>: Make all of your users’ most common tasks easily available.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-cta-bad.png">
     <figcaption class="warning">
-      <b>忌</b>：使用“了解详情”之类含糊的吸引注意力的元素浪费宝贵的首屏空间。</figcaption>
-
+      <b>DON'T</b>: Waste precious above-the-fold space with vague
+      calls-to-action like “learn more”.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### 让菜单保持简短和亲切
+### Keep menus short and sweet
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-menus-good.png">
     <figcaption class="success">
-      <b>宜</b>：让菜单保持简短和亲切。</figcaption>
-
+      <b>DO</b>: Keep menus short and sweet.
+     </figcaption>
   </figure>
 </div>
 
-移动用户没有耐心通过浏览冗长的选项列表查找自己需要的内容。
-请重新组织您的菜单，在不牺牲易用性的情况下尽可能减少菜单项。
-
+Mobile users don’t have the patience to scroll through a long list of options to find what they want. Reorganize your menu to use as few items as possible, without sacrificing usability.
 
 <div style="clear:both;"></div>
 
-### 简化返回首页的操作
+### Make it easy to get back to the home page
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-hp-good.png">
     <figcaption class="success">
-      <b>宜</b>：简化返回首页的操作。</figcaption>
-
+      <b>DO</b>: Make it easy to get back to the home page.
+     </figcaption>
   </figure>
 </div>
 
-用户期望在其点按移动页面左上角的徽标时能够返回首页，如果未提供该徽标或者徽标不起作用，会令他们感到失望。
-
+Users expect to go back to the homepage when they tap the logo in the top-left of a mobile page, and they become frustrated when it isn’t available or doesn’t work.
 
 <div style="clear:both;"></div>
 
-### 别让推广信息喧宾夺主
+### Don't let promotions steal the show
 
-大型应用安装插页广告（例如，隐藏内容并提示用户安装应用的整页推广信息）令用户反感，让他们难以执行任务。除了让用户反感外，使用应用安装插页广告的网站还无法通过 [Google 移动易用性测试](https://search.google.com/test/mobile-friendly)，这可能对其搜索排名产生不良影响。
-
-
-
+Large app install interstitials (e.g., full-page promotions that hide content and prompt users to install an app) annoy users and make it difficult to perform tasks. In addition to annoying users, [sites that use interstitials may see a negative impact to their search rankings](https://webmasters.googleblog.com/2016/08/helping-users-easily-access-content-on.html).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-promo-good.png">
     <figcaption class="success">
-      <b>宜</b>：推广信息应能轻松关闭，并且不应让用户在使用网站时分心。</figcaption>
-
+      <b>DO</b>: Promotions should be easily dismissable and not distract from
+      the experience.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-promo-bad.png">
     <figcaption class="warning">
-      <b>忌</b>：插页广告（有时称作关门广告）常常令用户反感，让用户在使用网站时平添烦恼。</figcaption>
-
+      <b>DON'T</b>: Interstitials (sometimes called door slams) often annoy
+      users and make using the site a pain.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-## 网站搜索
+## Site search
 
-Success: 帮助移动用户找到其正在急切寻找的内容。
+Success: Help mobile users find what they’re looking for in a hurry.
 
-### 让网站搜索可见
+### Make site search visible
 
-寻找信息的用户通常求助于搜索，因此搜索字段应是他们在您的页面上率先看到的内容。
-不要将搜索框隐藏在菜单中。
-
+Users looking for information usually turn to search, so the search field should be one of the first things they see on your pages. Don’t hide the search box in a menu.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-search-good.jpg">
     <figcaption class="success">
-      <b>宜</b>：让搜索可见</figcaption>
-
+      <b>DO</b>: Make search visible
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-search-bad.jpg">
     <figcaption class="warning">
-      <b>忌</b>：将搜索隐藏在溢出菜单中</figcaption>
-
+      <b>DON'T</b>: Hide search in overflow menus
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### 确保网站搜索结果相关
+### Ensure site search results are relevant
 
-别让用户为了查找要寻找的内容而浏览多个页面的结果。
-通过自动完成查询、更正错误拼写和提供相关查询建议简化用户的搜索操作。
-为免于重复劳动，可以考虑使用 [Google 自定义搜索](https://cse.google.com/cse/){: .external }之类的稳健产品。
-
+Users don’t scan through multiple pages of results to find what they’re looking for. Make life easier on users by auto-completing queries, correcting misspellings, and suggesting related queries. Rather than reinventing the wheel, consider robust products like [Google Custom Search](https://cse.google.com/cse/){: .external }.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-relevant-good.png">
     <figcaption class="success">
-      <b>宜</b>：Macy's 只返回儿童商品。</figcaption>
-
+      <b>DO</b>: Macy's only returns kids items.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-relevant-bad.png">
     <figcaption class="warning">
-      <b>忌</b>：返回任何包含儿童一词的商品的搜索结果。</figcaption>
-
+      <b>DON'T</b>: Return results for anything with the word kid in it.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+### Implement filters to narrow results
 
-### 实现过滤条件来缩小结果范围
-
-研究参与者依靠[过滤条件](/custom-search/docs/structured_search)查找他们要寻找的内容，他们会放弃不提供有效过滤条件的网站。对搜索结果应用过滤条件，通过显示应用特定过滤条件时将会返回多少结果来帮助用户。
-
+Study participants rely on [filters](/custom-search/docs/structured_search) to find what they’re looking for, and abandon sites that do not have effective filters. Place filters above search results, and help users by displaying how many results will be returned when a specific filter is applied.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-filters-good.jpg">
     <figcaption class="success">
-      <b>宜</b>：为过滤提供便利。</figcaption>
-
+      <b>DO</b>: Make it easy to filter.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-filters-bad.jpg">
     <figcaption class="warning">
-      <b>忌</b>：隐藏过滤功能。</figcaption>
-
+      <b>DON'T</b>: Hide filter functionality.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### 引导用户获得更相关的网站搜索结果
+### Guide users to better site search results
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/ss-guide-good.png" alt="Zappos 通过询问用户的寻找内容来对其进行引导。">
+    <img src="images/ss-guide-good.png"
+         alt="Zappos guides users by asking them what they're looking for.">
     <figcaption class="success">
-      <b>宜</b>：通过沿正确方向引导用户来帮助他们查找其要寻找的内容。</figcaption>
-
+      <b>DO</b>: Help users to find what they're looking for by guiding them
+      in the right direction.
+     </figcaption>
   </figure>
 </div>
 
-对于具有多样化客户群的网站，请先提出几个问题，然后再呈现搜索框，并利用客户的回答作为搜索查询过滤条件来确保用户获得来自最相关客户群的结果。
-
-
+For sites with diverse customer segments, ask a few questions before presenting the search box, and use the customer’s responses as search query filters to ensure that users get results from the most relevant segment.
 
 <div style="clear:both;"></div>
 
-## 商务和转化
+## Commerce and conversion
 
-Success: 了解客户之旅，让用户根据自身情况进行转化。
+Success: Understand your customer journeys and let users convert on their own terms.
 
-### 让用户先探索、后表态
+### Let users explore before they commit
 
-研究参与者对那些要求先行注册才能查看内容的网站感到失望，尤其是在他们不熟悉网站品牌的情况下。
-尽管对您的业务而言客户信息不可或缺，但过早索要可能导致注册量减少。
-
-
+Study participants were frustrated by sites that require upfront registrations to view the site, especially when the brand was unfamiliar. Although customer information may be integral to your business, asking for it too early may result in fewer registrations.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/cc-gates-good.png">
     <figcaption class="success">
-      <b>宜</b>：允许用户在不登录的情况下浏览网站。</figcaption>
-
+      <b>DO</b>: Allow users to browse the site without requiring sign in.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-gates-bad.png">
     <figcaption class="warning">
-      <b>忌</b>：在网站上过早提出登录或注册要求。</figcaption>
-
+      <b>DON'T</b>: Place login or registration too early in a site.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-
-### 让用户以访客身份购买
+### Let users purchase as guests
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-purchase-guest-good.png">
     <figcaption class="success">
-      <b>宜</b>：允许用户使用访客帐号购物。</figcaption>
-
+      <b>DO</b>: Allow users to purchase with a guest account.
+     </figcaption>
   </figure>
 </div>
 
-研究参与者对访客结账的看法是“方便”、“简单”、“轻松”和“快速”。
-用户对购物时强制他们注册帐号的网站感到恼火，尤其是在注册帐号的好处并不明确的情况下。
-
-
+Study participants viewed guest checkouts as “convenient”, “simple”, “easy”, and “quick”. Users are annoyed by sites that force them to register for an account when making a purchase, especially when the benefit of an account is unclear.
 
 <div style="clear:both;"></div>
 
-### 利用现有信息最大限度提高便利性
+### Use existing information to maximize convenience
 
-为注册用户记忆并[预填首选项](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly)。为新用户提供熟悉的第三方结账服务。
+Remember and [pre-fill preferences](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly) for registered users. Offer familiar, third-party checkout services for new users.
 
-### 为复杂任务使用点击呼叫按钮
+### Use click-to-call buttons for complex tasks
 
-在具备呼叫能力的设备上，[点击呼叫链接](/web/fundamentals/native-hardware/click-to-call/)可让用户通过简单地触按链接来拨打电话。在大多数移动设备上，用户会在拨号前收到确认，或者为用户提供一个菜单，询问用户应如何处理号码。
+On devices with calling capabilities, [click-to-call links](/web/fundamentals/native-hardware/click-to-call/) enable users to make a phone call by simply tapping a link. On most mobile devices the user receives a confirmation before the number is dialed, or a menu is presented asking the user how the number should be handled.
 
-
-
-### 为在其他设备上完成任务提供便利
+### Make it easy to finish on another device
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-other-device-good.png">
     <figcaption class="success">
-      <b>宜</b>：让用户能够方便地继续在其他设备上浏览或购物。</figcaption>
-
+      <b>DO</b>: Provide easy ways for users to continue browsing or shopping on another device.
+     </figcaption>
   </figure>
 </div>
 
-用户经常想在其他设备上完成任务。例如，他们可能想在更大的屏幕上查看某个项目。
-或者他们可能工作繁忙，需要稍后完成任务。
-通过让用户能够[在社交网络上分享项目](/web/fundamentals/discovery-and-monetization/social-discovery/)，或允许用户直接在网站内通过电子邮件向自己发送链接，为这些客户之旅提供支持。
-
-
+Users frequently want to finish tasks on other devices. For instance, they might wish to view an item on a larger screen. Or they might get busy and need to finish later. Support these customer journeys by enabling users to [share items on social networks](/web/fundamentals/discovery-and-monetization/social-discovery/), or by letting users email themselves links from directly within the site.
 
 <div style="clear:both;"></div>
 
-## 表单输入
+## Form entry
 
-Success: 通过易用型表单提供顺畅的无缝式转化体验。
+Success: Provide a seamless, frictionless conversion experience with usable forms.
 
+### Streamline information entry
 
-### 精简信息输入
+Automatically advance to the next field when a user presses Return. In general, the fewer taps the user must perform, the better.
 
-用户按回车键时自动前进到下一字段。一般而言，用户必须执行的触按越少，体验越佳。
+### Choose the simplest input
 
+Use the most [appropriate input type](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type) for each scenario. Use elements like [`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist) to provide suggested values for a field.
 
-### 选择最简单的输入
-
-为每个情境使用最[合适的输入类型](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type)。
-使用 [`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist) 之类的元素为字段提供建议值。
-
-
-
-### 为日期选择提供可视化日历
+### Provide visual calendar for date selection
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-calendar-good.png">
     <figcaption class="success">
-      <b>宜</b>：尽可能使用日历小部件。</figcaption>
-
+      <b>DO</b>: Use calendar widgets when possible.
+     </figcaption>
   </figure>
 </div>
 
-明确标示开始日期和结束日期。用户应不必单纯为了安排日期而离开网站去查看日历应用。
-
+Clearly label start and end dates. Users should not need to leave a site and check a calendar app just to schedule a date.
 
 <div style="clear:both;"></div>
 
-### 通过标示和实时验证最大限度减少表单错误
+### Minimize form errors with labeling and real-time validation
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-multipart-good.png">
     <figcaption class="success">
-      <b>宜</b>：尽可能预填充内容。</figcaption>
-
+      <b>DO</b>: Label inputs clearly.
+     </figcaption>
   </figure>
 </div>
 
-正确标示输入并实时验证输入。
+Label inputs properly and validate input in real-time.
 
 <div style="clear:both;"></div>
 
-### 设计高效的表单
+### Design efficient forms
 
-充分利用[自动填充](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete)，让用户能借助预填充的数据轻松填写表单。
-使用已知信息预先填充字段。
-例如，在检索收货和账单地址时，尝试使用 [`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete)，或让用户能够将其收货地址复制到其账单地址（反之亦然）。
+Take advantage of [autofill](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete) so that users can easily complete forms with pre-populated data. Pre-fill fields with information you already know. For example, when retrieving shipping and billing addresses, try to use [`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete) or enable users to copy their shipping address to their billing address (or vice versa).
 
+## Usability and form factor
 
+Success: Delight your mobile users with small things that enhance their experiences.
 
+### Optimize your entire site for mobile
 
-## 易用性和机型
+Use a [responsive layout](/web/fundamentals/design-and-ux/responsive/) that changes based on the size and capabilities of the user’s device. Study participants found sites with a mix of desktop and mobile-optimized pages even harder to use than desktop-only sites.
 
-Success: 通过可增强移动用户使用体验的微小改进来取悦他们。
+### Don't make users pinch-to-zoom
 
-### 对您的整个网站进行移动优化
+Users are comfortable with scrolling sites vertically, but not horizontally. Avoid large, fixed-width elements. Use [CSS media queries](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness) to apply different stylings for different screens. Don’t create content that only displays well at a particular [viewport width](/web/fundamentals/design-and-ux/responsive/#set-the-viewport). Sites that force users to horizontally scroll fail the [Google Mobile-Friendly Test](https://search.google.com/test/mobile-friendly), which may negatively impact their search rankings.
 
-使用可随用户设备的尺寸和能力而变化的[自适应布局](/web/fundamentals/design-and-ux/responsive/)。
-研究参与者发现混合使用桌面和移动优化页面的网站甚至比单纯使用桌面页面的网站还要难以使用。
-
-
-
-### 别让用户进行捏拉缩放
-
-用户对垂直滚动网站感到顺手，水平滚动则不然。
-避免使用大型、固定宽度的元素。利用 [CSS 媒体查询](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness)为不同屏幕应用不同的样式。
-
-不要创建只能在特定[视口宽度](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)下正常显示的内容。强制用户水平滚动的网站无法通过 [Google 移动易用性测试](https://search.google.com/test/mobile-friendly)，可能对其搜索排名产生不良影响。
-
-
-
-
-
-
-### 让产品图像可扩展
+### Make product images expandable
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-make-images-expandable-good.png">
     <figcaption class="success">
-      <b>宜</b>：让产品图像可扩展并便于查看细节。</figcaption>
-
+      <b>DO</b>: Make product images expandable and easy to see in detail.
+     </figcaption>
   </figure>
 </div>
 
-零售客户期望网站允许其[查看产品的高分辨率特写](/web/fundamentals/design-and-ux/media/images#make-product-images-expandable)。研究参与者对无法查看所购买的产品感到失望。
-
+Retail customers expect sites to let them [view high resolution closeups](/web/fundamentals/design-and-ux/responsive/images#make-product-images-expandable) of products. Study participants got frustrated when they weren’t able to see what they were buying.
 
 <div style="clear:both;"></div>
 
-### 告诉用户哪个方向效果最好
+### Tell users which orientation works best
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/us-orientation.jpg">
     <figcaption class="success">
-      <b>宜</b>：告诉用户哪个方向效果最好。</figcaption>
-
+      <b>DO</b>: Tell the user which orientation works best.
+     </figcaption>
   </figure>
 </div>
 
-研究参与者往往一直使用同一屏幕方向，直至系统提示其进行切换。
-同时采用横向和纵向设计，或鼓励用户切换至最佳方向。
-确保即使用户忽略切换方向的建议，仍可完成您的重要行为召唤。
-
-
+Study participants tended to stay in the same screen orientation until something prompted them to switch. Design for both landscape and portrait, or encourage users to switch to the optimal orientation. Make sure that your important calls-to-action can be completed even if the users ignore the suggestion to switch orientations.
 
 <div style="clear:both;"></div>
 
-### 将您的用户留在单一浏览器窗口内
+### Keep your user in a single browser window
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-single-browser-good.png">
     <figcaption class="success">
-      <b>宜</b>：Macy's 通过在网站上提供优惠券将用户留在其网站上。</figcaption>
-
+      <b>DO</b>: Macy's keeps their users on their site by providing coupons on site.
+     </figcaption>
   </figure>
 </div>
 
-用户可能难以在窗口之间切换，并且可能找不到返回网站的路径。
-避免启动新窗口的行为召唤。识别任何可能导致用户离开您的网站的流程，并提供相应功能将他们留在您的网站上。例如，如果您接受优惠券，请直接在网站上提供，而不要让用户被迫前往其他网站寻找优惠。
-
-
+Users may have trouble switching between windows and might not be able to find their way back to the site. Avoid calls-to-action that launch new windows. Identify any journeys that might cause a user to look outside your site and provide features to keep them on your site. For example, if you accept coupons, offer them directly on the site, rather than forcing users to search other sites for deals.
 
 <div style="clear:both;"></div>
 
-### 避免使用“完整网站”标示
+### Avoid "full site" labeling
 
-当研究参与者看到用于切换“完整网站”（即桌面网站）和“移动网站”的选项时，会认为移动网站缺少内容而改为选择“完整”网站，这会将他们导向桌面网站。
+When study participants saw an option for a "full site" (i.e., desktop site) versus a "mobile site", they thought the mobile site lacked content and chose the "full" one instead, directing them to the desktop site.
 
+### Be clear why you need a user's location
 
-
-
-### 明确您为何需要用户的位置
-
-用户应始终明了您为何索要其[位置](/web/fundamentals/native-hardware/user-location/)。
-研究参与者试图预订其他城市的酒店，而旅行网站却在检测到其位置后改为提供其所在城市的酒店，这令他们感到困惑。默认情况下将位置字段留空，让用户通过“Find Near Me”之类的明确行为召唤选择填充这些字段。
-
+Users should always understand why you’re asking for their [location](/web/fundamentals/native-hardware/user-location/). Study participants trying to book a hotel in another city became confused when a travel site detected their location and offered hotels in their current city instead. Leave location fields blank by default, and let users choose to populate them through a clear call-to-action like “Find Near Me”.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/sw-navigation-good.png">
     <figcaption class="success">
-      <b>宜</b>：始终在手势操作时请求获取用户的位置。</figcaption>
-
+      <b>DO</b>: Always request access to location on a user gesture.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-navigation-bad.png">
     <figcaption class="warning">
-      <b>忌</b>：在网站加载首页时立即请求提供位置会导致不好的用户体验。</figcaption>
-
+      <b>DON'T</b>: Request immediately access to location on the
+      homepage, as this results in a poor user experience.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

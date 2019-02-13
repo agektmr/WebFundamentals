@@ -1,41 +1,33 @@
-project_path: /web/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse 검사 항목 "요소의 ARIA 속성은 유효해야 한다"를 위한 참조 문서
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Element aria-* Attributes Are Valid And Not Misspelled Or Non-Existent" Lighthouse audit.
 
-{# wf_updated_on: 2017-02-20 #}
-{# wf_published_on: 2017-01-18 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2017-01-18 #} {# wf_blink_components: N/A #}
 
-# 요소의 ARIA 속성은 유효해야 한다 {: .page-title }
+# Element ARIA Attributes Are Valid And Not Misspelled Or Non-Existent {: .page-title }
 
-## 왜 이 검사가 중요한가 {: #why }
+## Overview {: #overview }
 
-맞춤법이 틀렸거나 존재하지 않는 ARIA 속성으로 인해 스크린 리더가 위젯의 현재 상태를
-제대로 이해하지 못할 수 있습니다. 이로 인해 스크린 리더에 의존하는 사용자가
-페이지를 사용하지 못할 수 있습니다.
+Misspelled or nonexistent ARIA attributes may be preventing the screen reader from properly understanding the current state of a widget. This could make the page unusable to users who rely on screen readers.
 
-## 어떻게 이 검사를 통과하는가 {: #how }
+See [Introduction to ARIA](/web/fundamentals/accessibility/semantics-aria/) for more information.
+
+## Recommendations {: #recommendations }
 
 <<_shared/query.md>>
 
-리스트의 각 요소에서 잘못된 속성명을 찾으려면 다음을 수행하세요:
+To find each listed element's invalid attribute names:
 
-1. 요소의 `role` 및 `aria-*` 속성을 확인하세요.
+1. Note the `role` and `aria-*` attributes of the element.
 
-1. [Definition of Roles][roles]로 이동하세요.
+2. Go to [Definition of Roles](https://www.w3.org/TR/wai-aria/roles#role_definitions).
 
-1. 이 요소의 `role` 페이지로 이동하세요.
+3. Go to the page for this element's `role`.
 
-1. **Required States and Properties**나 **Supported States and Properties** 목록에서
-  요소의 `aria-*` 속성을 다시한번 체크하세요.
+4. Check the actual attributes on the element against the supported attributes, as listed in **Required States and Properties** and **Supported States and Properties**.
 
-[qs]: /web/tools/chrome-devtools/console/command-line-reference#queryselector
-[qsa]: /web/tools/chrome-devtools/console/command-line-reference#queryselectorall
-[xp]: /web/tools/chrome-devtools/console/command-line-reference#xpath
-[roles]: https://www.w3.org/TR/wai-aria/roles#role_definitions
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+This audit is powered by the aXe Accessibility Engine. See [ARIA attributes must conform to valid names](https://dequeuniversity.com/rules/axe/1.1/aria-valid-attr) for more information.
 
-이 검사는 aXe 접근성 엔진에 의해 검사합니다.
-더 자세한 정보는 [Elements must only use allowed ARIA attributes][axe]를 참고하세요.
+## Feedback {: #feedback }
 
-[axe]: https://dequeuniversity.com/rules/axe/1.1/aria-valid-attr
+{% include "web/_shared/helpful.html" %}

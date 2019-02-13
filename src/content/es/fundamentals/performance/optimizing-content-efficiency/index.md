@@ -1,29 +1,26 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: La cantidad de datos que descargan las apps continúa aumentando con el tiempo. Para proporcionar un excelente rendimiento, debes optimizar la entrega de datos tanto como sea posible.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
-
-# Optimización del ahorro de contenido {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Nuestras aplicaciones web continúan creciendo en términos de alcance, ambición y funcionalidad, y eso es bueno. No obstante, la implacable marcha hacia una Web más dinámica está impulsando otra tendencia: la cantidad de datos que descarga cada app continúa aumentando a un ritmo sostenido. Para ofrecer un excelente rendimiento, debemos optimizar la entrega de cada byte.
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
-¿Qué aspecto tiene una app web moderna? [HTTP Archive](http://httparchive.org/){: .external } nos puede ayudar a responder esta pregunta. En el proyecto se realiza un seguimiento de la forma en que está constituida la Web mediante el rastreo periódico de los sitios más populares (más de 300 000 en la lista del millón de sitios principales de Alexa), el registro y la adición de análisis sobre la cantidad de recursos, los tipos de contenido y otros metadatos para cada destino individual.
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-<img src="images/http-archive-trends.png"  alt="Tendencias de HTTP Archive">
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
 <table class="">
+  
 <colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>Percentil 50</th>
-    <th>Percentil 75</th>
-    <th>Percentil 90</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
@@ -33,7 +30,7 @@ Nuestras aplicaciones web continúan creciendo en términos de alcance, ambició
   <td data-th="90%">54 KB</td>
 </tr>
 <tr>
-  <td data-th="type">Imágenes</td>
+  <td data-th="type">Images</td>
   <td data-th="50%">528 KB</td>
   <td data-th="75%">1213 KB</td>
   <td data-th="90%">2384 KB</td>
@@ -51,7 +48,7 @@ Nuestras aplicaciones web continúan creciendo en términos de alcance, ambició
   <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="type">Otros</td>
+  <td data-th="type">Other</td>
   <td data-th="50%">282 KB</td>
   <td data-th="75%">308 KB</td>
   <td data-th="90%">353 KB</td>
@@ -64,13 +61,14 @@ Nuestras aplicaciones web continúan creciendo en términos de alcance, ambició
 </tr>
 </table>
 
-Los datos anteriores capturan la tendencia de aumento de la cantidad de bytes descargados para destinos populares en la Web entre enero de 2013 y enero de 2014. Por supuesto, no todos los sitios crecen en la misma proporción ni requieren la misma cantidad de datos, y por ello resaltamos los diferentes cuantiles dentro de la distribución: 50 (promedio), 75 y 90.
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-Un sitio promedio a principios de 2014 estaba compuesto por 75 solicitudes que sumaban 1054 KB de bytes transferidos totales, y la cantidad total de bytes (y solicitudes) aumentó a un ritmo constante durante todo el año anterior. Esto no debería sorprendernos, aunque conlleva consecuencias de rendimiento importantes: efectivamente, la velocidad de Internet aumenta, pero esto tiene lugar en diferentes proporciones en los distintos países, y muchos usuarios aún están sujetos a límites de datos y planes limitados costosos; en especial, los usuarios de dispositivos móviles.
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-A diferencia de lo que sucede en los equipos de escritorio, las aplicaciones web no requieren un proceso de instalación independiente. Se introduce la URL y eso es todo. Esta es una función clave de la Web. No obstante, para que esto ocurra **a menudo necesitamos obtener docenas, y a veces cientos, de recursos diferentes que pueden aumentar los megabytes de datos y deben combinarse en cientos de milisegundos para ofrecer la experiencia web que buscamos.**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-Lograr una experiencia web instantánea en vista de estos requisitos no es un tema menor y por ello es fundamental optimizar la eficacia del contenido: eliminar descargas innecesarias, optimizar la codificación de transferencia de cada recurso mediante diferentes técnicas de compresión y aprovechar el almacenamiento en caché, siempre que sea posible, para eliminar descargas redundantes.
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

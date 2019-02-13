@@ -1,37 +1,28 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:本指南审视 PageSpeed Insights 规则背景：优化关键渲染路径时的注意事项以及原因。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
-{# wf_updated_on:2015-10-05 #}
-{# wf_published_on:2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>JavaScript,Blink>CSS #}
 
-# PageSpeed 规则和建议 {: .page-title }
+# PageSpeed Rules and Recommendations {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-本指南审视 PageSpeed Insights 规则背景：优化关键渲染路径时的注意事项以及原因。
+This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
+## Eliminate render-blocking JavaScript and CSS
 
-## 消除阻塞渲染的 JavaScript 和 CSS
+To deliver the fastest time to first render, minimize and (where possible) eliminate the number of critical resources on the page, minimize the number of downloaded critical bytes, and optimize the critical path length.
 
-要以最快速度完成首次渲染，需要最大限度减少网页上关键资源的数量并（尽可能）消除这些资源，最大限度减少下载的关键字节数，以及优化关键路径长度。
+## Optimize JavaScript use
 
-## 优化 JavaScript 的使用
+JavaScript resources are parser blocking by default unless marked as `async` or added via a special JavaScript snippet. Parser blocking JavaScript forces the browser to wait for the CSSOM and pauses construction of the DOM, which in turn can significantly delay the time to first render.
 
-默认情况下，JavaScript 资源会阻塞解析器，除非将其标记为 `async` 或通过专门的 JavaScript 代码段进行添加。阻塞解析器的 JavaScript 会强制浏览器等待 CSSOM 并暂停 DOM 的构建，继而大大延迟首次渲染的时间。
+### Prefer asynchronous JavaScript resources
 
-### 首选使用异步 JavaScript 资源
+Asynchronous resources unblock the document parser and allow the browser to avoid blocking on CSSOM prior to executing the script. Often, if the script can use the `async` attribute, it also means it is not essential for the first render. Consider loading scripts asynchronously after the initial render.
 
-异步资源不会阻塞文档解析器，让浏览器能够避免在执行脚本之前受阻于 CSSOM。通常，如果脚本可以使用 `async` 属性，也就意味着它并非首次渲染所必需。可以考虑在首次渲染后异步加载脚本。
+### Avoid synchronous server calls
 
-### 避免同步服务器调用
-
-使用 `navigator.sendBeacon()` 方法来限制 XMLHttpRequests 在 `unload` 处理程序中发送的数据。
-因为许多浏览器都对此类请求有同步要求，所以可能减慢网页转换速度，有时还很明显。
-以下代码展示了如何利用 `navigator.sendBeacon()` 向 `pagehide` 处理程序而不是 `unload` 处理程序中的服务器发送数据。
-
-
-
+Use the `navigator.sendBeacon()` method to limit data sent by XMLHttpRequests in `unload` handlers. Because many browsers require such requests to be synchronous, they can slow page transitions, sometimes noticeably. The following code shows how to use `navigator.sendBeacon()` to send data to the server in the `pagehide` handler instead of in the `unload` handler.
 
     <script>
       function() {
@@ -45,8 +36,7 @@ description:本指南审视 PageSpeed Insights 规则背景：优化关键渲染
     </script>
     
 
-新增的 `fetch()` 方法提供了一种方便的数据异步请求方式。由于它尚未做到随处可用，因此您应该利用功能检测来测试其是否存在，然后再使用。该方法通过 Promise 而非多个事件处理程序来处理响应。不同于对 XMLHttpRequest 的响应，从 Chrome 43 开始，fetch 响应将是 stream 对象。这意味着调用 `json()` 也会返回 Promise。 
-
+The new `fetch()` method provides an easy way to asynchronously request data. Because it is not available everywhere yet, you should use feature detection to test for its presence before use. This method processes responses with Promises rather than multiple event handlers. Unlike the response to an XMLHttpRequest, a fetch response is a stream object starting in Chrome 43. This means that a call to `json()` also returns a Promise.
 
     <script>
     fetch('./api/some.json')  
@@ -68,8 +58,7 @@ description:本指南审视 PageSpeed Insights 规则背景：优化关键渲染
     </script>
     
 
-`fetch()` 方法也可处理 POST 请求。
-
+The `fetch()` method can also handle POST requests.
 
     <script>
     fetch(url, {
@@ -78,34 +67,34 @@ description:本指南审视 PageSpeed Insights 规则背景：优化关键渲染
         "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"  
       },  
       body: 'foo=bar&lorem=ipsum'  
-    }).then(function() { // Aditional code });
+    }).then(function() { // Additional code });
     </script>
     
 
-### 延迟解析 JavaScript
+### Defer parsing JavaScript
 
-为了最大限度减少浏览器渲染网页的工作量，应延迟任何非必需的脚本（即对构建首次渲染的可见内容无关紧要的脚本）。
+To minimize the amount of work the browser has to perform to render the page, defer any non-essential scripts that are not critical to constructing the visible content for the initial render.
 
-### 避免运行时间长的 JavaScript
+### Avoid long running JavaScript
 
-运行时间长的 JavaScript 会阻止浏览器构建 DOM、CSSOM 以及渲染网页，所以任何对首次渲染无关紧要的初始化逻辑和功能都应延后执行。如果需要运行较长的初始化序列，请考虑将其拆分为若干阶段，以便浏览器可以间隔处理其他事件。
+Long running JavaScript blocks the browser from constructing the DOM, CSSOM, and rendering the page, so defer until later any initialization logic and functionality that is non-essential for the first render. If a long initialization sequence needs to run, consider splitting it into several stages to allow the browser to process other events in between.
 
-## 优化 CSS 的使用
+## Optimize CSS Use
 
-CSS 是构建渲染树的必备元素，首次构建网页时，JavaScript 常常受阻于 CSS。确保将任何非必需的 CSS 都标记为非关键资源（例如打印和其他媒体查询），并应确保尽可能减少关键 CSS 的数量，以及尽可能缩短传送时间。
+CSS is required to construct the render tree and JavaScript often blocks on CSS during initial construction of the page. Ensure that any non-essential CSS is marked as non-critical (for example, print and other media queries), and that the amount of critical CSS and the time to deliver it is as small as possible.
 
-### 将 CSS 置于文档 head 标签内
+### Put CSS in the document head
 
-尽早在 HTML 文档内指定所有 CSS 资源，以便浏览器尽早发现 `<link>` 标记并尽早发出 CSS 请求。
+Specify all CSS resources as early as possible within the HTML document so that the browser can discover the `<link>` tags and dispatch the request for the CSS as soon as possible.
 
-### 避免使用 CSS import
+### Avoid CSS imports
 
-一个样式表可以使用 CSS import (`@import`) 指令从另一样式表文件导入规则。不过，应避免使用这些指令，因为它们会在关键路径中增加往返次数：只有在收到并解析完带有 `@import` 规则的 CSS 样式表之后，才会发现导入的 CSS 资源。
+The CSS import (`@import`) directive enables one stylesheet to import rules from another stylesheet file. However, avoid these directives because they introduce additional roundtrips into the critical path: the imported CSS resources are discovered only after the CSS stylesheet with the `@import` rule itself is received and parsed.
 
-### 内联阻塞渲染的 CSS
+### Inline render-blocking CSS
 
-为获得最佳性能，您可能会考虑将关键 CSS 直接内联到 HTML 文档内。这样做不会增加关键路径中的往返次数，并且如果实现得当，在只有 HTML 是阻塞渲染的资源时，可实现“一次往返”关键路径长度。
+For best performance, you may want to consider inlining the critical CSS directly into the HTML document. This eliminates additional roundtrips in the critical path and if done correctly can deliver a "one roundtrip" critical path length where only the HTML is a blocking resource.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

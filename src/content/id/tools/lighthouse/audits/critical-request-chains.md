@@ -1,34 +1,22 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Rantai Permintaan Penting".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Critical Request Chains" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-06 #}
-{# wf_published_on: 2016-10-06 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-06 #} {# wf_blink_components: N/A #}
 
-# Rantai Permintaan Penting  {: .page-title }
+# Critical Request Chains {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Rantai Permintaan Penting adalah sebuah konsep dari strategi optimalisasi
-Critical Rendering Path (CRP). CRP memungkinkan browser memuat laman secepat
-mungkin dengan memprioritaskan sumber daya mana yang akan dimuat serta
-urutan pemuatannya.
+The Critical Request Chain is a concept from the Critical Rendering Path (CRP) optimization strategy. CRP enables the browser to load a page as quickly as possible by prioritizing which resources get loaded and the order in which they load.
 
-Lihat dokumen [Jalur Rendering
-Penting](/web/fundamentals/performance/critical-rendering-path/) untuk mengetahui
-selengkapnya.
+Check out the [Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) docs to learn more.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Audit saat ini bukan berbentuk seperti "lulus" atau "tidak lulus". Informasi
-yang disediakan audit ini memberi Anda kesempatan untuk memperbaiki
-kinerja pemuatan laman untuk aplikasi Anda.
+This audit is currently not structured as something to "pass" or "fail". The information that this audit provides gives you an opportunity to improve the page load performance of your app.
 
-Di versi Ekstensi Chrome pada Lighthouse, laporan Anda menghasilkan diagram
-seperti berikut:
+In the Chrome Extension version of Lighthouse, your report generates a diagram like the following:
 
-<pre>
-Initial navigation
+<pre>Initial navigation
 |---lighthouse/ (developers.google.com)
     |---/css (fonts.googleapis.com) - 1058.34ms, 72.80KB
     |---css/devsite-googler-buttons.css (developers.google.com) - 1147.25ms, 70.77KB
@@ -39,36 +27,24 @@ Initial navigation
     |---MC30SXJEli4/photo.jpg (lh3.googleusercontent.com) - 3200.39ms, 73.59KB
 </pre>
 
-Diagram ini menyatakan rantai permintaan penting di laman. Jalur dari
-`lighthouse/` ke `/css` adalah satu rantai. Jalur dari `lighthouse/` ke
-`css/devsite-googler-buttons.css` adalah satu rantai lagi. Dan seterusnya. Skor tertinggi
-untuk audit menyatakan jumlah rantai ini. Misalnya, diagram
-di atas akan memiliki "skor" tujuh.
+This diagram represents the page's critical request chains. The path from `lighthouse/` to `/css` is one chain. The path from `lighthouse/` to `css/devsite-googler-buttons.css` is another chain. And so on. The top-most score of the audit represents this number of chains. For example, the diagram above would have a "score" of seven.
 
-Diagram ini juga memecah banyaknya waktu yang dihabiskan untuk mengunduh setiap
-sumber daya, dan jumlah byte yang diperlukan untuk mengunduh setiap sumber daya.
+The diagram also breaks down how much time was spent downloading each resource, and the number of bytes that was required to download each resource.
 
-Anda bisa menggunakan diagram ini untuk meningkatkan CRP dengan:
+You can use this diagram to improve your CRP by:
 
-* Meminimalkan jumlah sumber daya penting: menghilangkannya, menangguhkan
-  unduhannya, menandainya sebagai asinkron, dan seterusnya.
-* Mengoptimalkan jumlah byte penting untuk mengurangi waktu pengunduhan (jumlah
-  bolak-balik).
-* Mengoptimalkan urutan pemuatan sumber daya penting yang tersisa:
-  mengunduh semua aset penting sedini mungkin untuk mempersingkat
-  panjang jalur penting.
+* Minimizing the number of critical resources: eliminating them, deferring their download, marking them as async, and so on.
+* Optimizing the number of critical bytes to reduce the download time (number of roundtrips).
+* Optimizing the order in which the remaining critical resources are loaded: downloading all critical assets as early as possible to shorten the critical path length.
 
-Mengoptimalkan salah satu faktor ini akan menghasilkan pemuatan laman yang lebih cepat.
+Optimizing any of these factors results in a faster page load.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse menggunakan prioritas jaringan sebagai proxy untuk mengidentifikasi
-sumber daya penting yang memblokir rendering. Lihat [Prioritas Sumber Daya Chrome dan
-Penjadwalan](https://docs.google.com/document/d/1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc)
-untuk informasi selengkapnya mengenai cara Chrome mendefinisikan semua prioritas ini.
+Lighthouse uses network priority as a proxy for identifying render-blocking critical resources. See [Chrome Resource Priorities and Scheduling](https://docs.google.com/document/d/1bCDuq9H1ih9iNjgzyAL0gpwNFiEP4TZS-YLRp_RuMlc) for more information on how Chrome defines these priorities.
 
-Data pada rantai permintaan penting, ukuran sumber daya, dan waktu yang dihabiskan untuk mengunduh
-sumber daya diekstrak dari Chrome Debugger Protocol.
+Data on critical request chains, resource sizes, and time spent downloading resources is extracted from the Chrome Debugger Protocol.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

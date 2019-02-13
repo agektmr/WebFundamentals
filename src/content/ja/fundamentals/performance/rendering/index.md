@@ -1,109 +1,75 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ユーザーは、サイトやアプリが円滑に動作しないことに気が付きます。このため、レンダリング パフォーマンスを最適化することは重要です。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Users notice if sites and apps don't run well, so optimizing rendering performance is crucial!
 
-{# wf_updated_on: 2015-03-20 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# レンダリング パフォーマンス {: .page-title }
+# Rendering Performance {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-今日のウェブのユーザーは、[ページにアクセスしたときにインタラクティブでスムーズであることを期待します](https://paul.kinlan.me/what-news-readers-want/)。よって、この点に時間と労力を集約する必要があります。
-ページのロードは迅速かつ滑らかでなければなりません。スクロールは指に吸い付いているかのように高速で行われ、アニメーションとインタラクションは絹のようになめらかであるべきです。
+Users of today’s web [expect that the pages they visit will be interactive and smooth](https://paul.kinlan.me/what-news-readers-want/) and that’s where you need to increasingly focus your time and effort. Pages should not only load quickly, but also run well; scrolling should be stick-to-finger fast, and animations and interactions should be silky smooth.
 
+To write performant sites and apps you need to understand how HTML, JavaScript and CSS is handled by the browser, and ensure that the code you write (and the other 3rd party code you include) runs as efficiently as possible.
 
-
-パフォーマンスのサイトとアプリを記述するには、HTML、JavaScript、および CSS がブラウザでどのように処理されるかを理解する必要があります。また、記述したコード (および他のサードパーティのコード) が、可能な限り効率的に実行されるようにしてください。
-
-## 60fps および端末のリフレッシュ レート
+## 60fps and Device Refresh Rates
 
 <div class="attempt-right">
   <figure>
-    <img src="images/intro/response.jpg" alt="ウェブサイトを操作するユーザー。">
+    <img src="images/intro/response.jpg" alt="User interacting with a website.">
   </figure>
 </div>
 
-今日のほとんどの端末は、画面を **1 秒に 60 回**リフレッシュします。アニメーションや遷移の実行中、あるいはユーザーがページをスクロールしている最中は、ブラウザ側で端末のリフレッシュ レートに合わせて、画面がリフレッシュされるたびに 1 つの新しい画像またはフレームを表示する必要があります。
+Most devices today refresh their screens **60 times a second**. If there’s an animation or transition running, or the user is scrolling the pages, the browser needs to match the device’s refresh rate and put up 1 new picture, or frame, for each of those screen refreshes.
 
+Each of those frames has a budget of just over 16ms (1 second / 60 = 16.66ms). In reality, however, the browser has housekeeping work to do, so all of your work needs to be completed inside **10ms**. When you fail to meet this budget the frame rate drops, and the content judders on screen. This is often referred to as **jank**, and it negatively impacts the user's experience.
 
+## The pixel pipeline
 
+There are five major areas that you need to know about and be mindful of when you work. They are areas you have the most control over, and key points in the pixels-to-screen pipeline:
 
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-これらの各フレームのバジェットは 16 ミリ秒を少し上回ります（1秒 / 60 = 16.66 ミリ秒）。しかし実際には、ブラウザはハウスキーピングを行う必要があり、すべての作業は **10 ミリ秒**以内に完了する必要があります。
-このバジェットに合致しない場合は、フレームレートが低下し、画面上でコンテンツが震えて見えます。
-この現象は、一般的に**ジャンク**と呼ばれ、ユーザー エクスペリエンスの低下につながります。
+* **JavaScript**. Typically JavaScript is used to handle work that will result in visual changes, whether it’s jQuery’s `animate` function, sorting a data set, or adding DOM elements to the page. It doesn’t have to be JavaScript that triggers a visual change, though: CSS Animations, Transitions, and the Web Animations API are also commonly used.
+* **Style calculations**. This is the process of figuring out which CSS rules apply to which elements based on matching selectors, for example, `.headline` or `.nav > .nav__item`. From there, once rules are known, they are applied and the final styles for each element are calculated.
+* **Layout**. Once the browser knows which rules apply to an element it can begin to calculate how much space it takes up and where it is on screen. The web’s layout model means that one element can affect others, for example the width of the `<body>` element typically affects its children’s widths and so on all the way up and down the tree, so the process can be quite involved for the browser.
+* **Paint**. Painting is the process of filling in pixels. It involves drawing out text, colors, images, borders, and shadows, essentially every visual part of the elements. The drawing is typically done onto multiple surfaces, often called layers.
+* **Compositing**. Since the parts of the page were drawn into potentially multiple layers they need to be drawn to the screen in the correct order so that the page renders correctly. This is especially important for elements that overlap another, since a mistake could result in one element appearing over the top of another incorrectly.
 
+Each of these parts of the pipeline represents an opportunity to introduce jank, so it's important to understand exactly what parts of the pipeline your code triggers.
 
-##  ピクセル パイプライン。
+Sometimes you may hear the term "rasterize" used in conjunction with paint. This is because painting is actually two tasks: 1) creating a list of draw calls, and 2) filling in the pixels.
 
-作業するときに留意すべき 5 つの主要な領域があります。
-それらは最も制御力を持つ領域であり、ピクセルから画面へのパイプラインにおいてキーポイントとなります。
+The latter is called "rasterization" and so whenever you see paint records in DevTools, you should think of it as including rasterization. (In some architectures creating the list of draw calls and rasterizing are done in different threads, but that isn't something under developer control.)
 
+You won’t always necessarily touch every part of the pipeline on every frame. In fact, there are three ways the pipeline *normally* plays out for a given frame when you make a visual change, either with JavaScript, CSS, or Web Animations:
 
-<img src="images/intro/frame-full.jpg"  alt="フル ピクセル パイプライン。">
+### 1. JS / CSS > Style > Layout > Paint > Composite
 
-* **JavaScript**。一般的に JavaScript は、視覚的変化をもたらす作業を処理するために使用されます。jQuery の `animate` 機能、データセットのソート、DOM 要素のページへの追加などです。これは、視覚的な変化をトリガーする JavaScript である必要はありません。CSS アニメーション、遷移、およびウェブ アニメーションの API が一般的に使用されます。
-* **スタイルの計算**。これは、CSS ルールがどの要素に一致するかを、マッチング セレクタなどに基づいて見つけ出すプロセスです。ルールが判明するとそれらが適用され、各要素の最終的なスタイルが算出されます。
-* **レイアウト**。ブラウザが要素に適用されるルールを認識すると、どのくらいのスペースが必要か、画面のどこにあるか、などを計算し始めます。ウェブのレイアウト モデルは、1 つの要素が他の複数の要素に影響を与える可能性があることを意味します。たとえば、`<body>` 要素の幅は一般的にその子の幅に影響を与え、かつツリーの上から下まで影響を与えます。このため、プロセスはブラウザにとって非常に複雑になります。
-* **ペイント**。ペイントはピクセルを書き込む処理です。この処理では、テキスト、色、イメージ、線、影など、実質上、要素の視覚的な部分すべての描画が行われます。描画は一般的に、レイヤーと呼ばれる複数の面で行われます。
-* **コンポジット**。ページのパーツは潜在的に複数のレイヤーに描かれているので、ページが正しくレンダリングされるように、正しい順序で画面に描画する必要があります。順序を間違えると、要素が誤った要素の上に表示される場合があるため、重なり合う要素の場合はこれが特に重要です。
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-パイプラインのこれらの各パーツは、ジャンクを引き起こす可能性があるため、コードがトリガーするパイプラインの正確な部分を理解することが重要です。
+If you change a “layout” property, so that’s one that changes an element’s geometry, like its width, height, or its position with left or top, the browser will have to check all the other elements and “reflow” the page. Any affected areas will need to be repainted, and the final painted elements will need to be composited back together.
 
-ペイントに関連して「ラスタライズ」という言葉を聞くことがあります。これは、ペイントは実際には 
-1) ドローコールのリストの作成、2）ピクセルでの埋め込みという 2 つのタスクから成るためです。
+### 2. JS / CSS > Style > Paint > Composite
 
+<img src="images/intro/frame-no-layout.jpg" alt="The  pixel pipeline without layout." />
 
-後者は「ラスタライゼーション」と呼ばれます。DevTools でペイント レコードを見たら必ず、ラスタライゼーションを含むものであると考えるべきです。
-（一部のアーキテクチャでは、ドローコールのリストの作成とラスタライズが別のスレッドで実行されますが、これはデベロッパーが制御できることではありません。）
+If you changed a “paint only” property, like a background image, text color, or shadows, in other words one that does not affect the layout of the page, then the browser skips layout, but it will still do paint.
 
+### 3. JS / CSS > Style > Composite
 
+<img src="images/intro/frame-no-layout-paint.jpg" alt="The pixel pipeline without layout or paint." />
 
-必ずしも、各フレーム上のパイプラインのすべてのパーツを操作するとは限りません。実際には、パイプラインで特定のフレームの視覚的な変更を行う際に通常は、JavaScript、CSS、またはウェブ アニメーションの 3 つの方法があります。
+If you change a property that requires neither layout nor paint, and the browser jumps to just do compositing.
 
+This final version is the cheapest and most desirable for high pressure points in an app's lifecycle, like animations or scrolling.
 
+Note: If you want to know which of the three versions above changing any given CSS property will trigger head to [CSS Triggers](https://csstriggers.com). And if you want the fast track to high performance animations, read the section on [changing compositor-only properties](stick-to-compositor-only-properties-and-manage-layer-count).
 
+Performance is the art of avoiding work, and making any work you do as efficient as possible. In many cases it's about working with the browser, not against it. It’s worth bearing in mind that the work listed above in the pipeline differ in terms of computational cost; some tasks are more expensive than others!
 
-### 1. JS / CSS > スタイル > レイアウト > ペイント > コンポジット
-
-<img src="images/intro/frame-full.jpg"  alt="フル ピクセル パイプライン。">
-
-「レイアウト」プロパティを変更して、幅、高さ、左または上の位置など、要素の形状を変更する場合、ブラウザは他のすべての要素をチェックして、ページを「リフロー」する必要があります。
-影響を受ける領域は再ペイントする必要があり、ペイントされた最終要素をコンポジットして戻す必要があります。
-
-
-
-### 2. JS / CSS > スタイル > ペイント > コンポジット
-
-<img src="images/intro/frame-no-layout.jpg" alt="レイアウトなしのピクセル パイプライン。">
-
-背景画像、テキストの色、影など、「ペイントのみ」のプロパティ、つまりページのレイアウトに影響を与えないプロパティを変更した場合、ブラウザはレイアウトをスキップしますが、ペイントは行われます。
-
-
-
-### 3. JS / CSS > スタイル > コンポジット
-
-<img src="images/intro/frame-no-layout-paint.jpg" alt="レイアウトまたはペイントなしのピクセル パイプライン。">
-
-レイアウトもペイントも必要としないプロパティを変更する場合、ブラウザはコンポジットのみを行うためにそれらをスキップします。
-
-
-この最終バージョンは最も低コストで、アニメーションやスクロールといった、アプリのライフサイクルの中で負荷の高い時点に最適です。
-
-
-注: 任意の CSS プロパティを変更すると上記の 3 つのバージョンのどれがトリガーされるかを知りたい場合は、[CSS トリガー](https://csstriggers.com)を参照してください。高性能のアニメーションへの高速トラックを実行したい場合は、[コンポジタ専用プロパティの変更](stick-to-compositor-only-properties-and-manage-layer-count)セクションをご覧ください。
-
-パフォーマンスとは、負荷を回避することであり、あらゆる作業を可能な限り効率化することです。
-多くの場合、これはブラウザと連携することであり、ブラウザに悪影響を与えるものではありません。
-パイプラインにおける上記の処理は、計算コストが異なり、他のタスクに比べてコストが高いものもあることに注意してください。
-
-
-
-パイプラインのさまざまなパーツについてさらに見ていきましょう。一般的な問題と、それらの診断方法と修正方法についてもご紹介します。
-
+Let’s take a dive into the different parts of the pipeline. We’ll take a look at the common issues, as well how to diagnose and fix them.
 
 {% include "web/_shared/udacity/ud860.html" %}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

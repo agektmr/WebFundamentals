@@ -1,301 +1,232 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 混合コンテンツを見つけて修正するのは、重要なタスクですが、時間がかかることがあります。このガイドでは、このプロセスに役立つツールについて説明します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools that are available to help with the process.
 
-{# wf_published_on:2015-09-28 #}
-{# wf_updated_on:2016-08-24 #}
+{# wf_published_on: 2015-09-28 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-#  混合コンテンツの防止 {: .page-title }
+# Preventing Mixed Content {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-ポイント: ウェブサイトで HTTPS をサポートすることは、サイトとユーザーを攻撃から保護するための重要なステップですが、混合コンテンツによってこの保護が無意味になる可能性があります。サイトとユーザーを保護するためには、混合コンテンツの問題を見つけて修正することが非常に重要です。
+Success: Supporting HTTPS for your website is an important step to protecting your site and your users from attack, but mixed content can render that protection useless. To protect your site and your users, it is very important to find and fix mixed content issues.
 
-混合コンテンツを見つけて修正するのは、重要なタスクですが、時間がかかることがあります。このガイドでは、このプロセスに役立つツールとテクニックについて説明します。混合コンテンツの詳細については、[混合コンテンツとは](./what-is-mixed-content)をご覧ください。
+Finding and fixing mixed content is an important task, but it can be time-consuming. This guide discusses some tools and techniques that are available to help with the process. For more information on mixed content itself, see [What is Mixed Content](./what-is-mixed-content).
 
 ### TL;DR {: .hide-from-toc }
 
-* ページでリソースを読み込むときには、必ず https:// URL を使用します。
-* `Content-Security-Policy-Report-Only` ヘッダーを使用して、サイトの混合コンテンツのエラーを監視します。
-* `upgrade-insecure-requests` CSP ディレクティブを使用して、安全でないコンテンツからサイト訪問者を保護します。
+* Always use https:// URLs when loading resources on your page.
+* Use the `Content-Security-Policy-Report-Only` header to monitor mixed content errors on your site.
+* Use the `upgrade-insecure-requests` CSP directive to protect your visitors from insecure content.
 
-## 混合コンテンツの特定と修正 
+## Find and fix mixed content
 
-発生している問題の数によっては、混合コンテンツを手動で見つけるには長時間かかる可能性があります。このドキュメントで説明するプロセスでは、Chrome ブラウザを使用します。ただし、ほとんどの最新ブラウザでは、このプロセスに活用できる同様のツールが提供されています。
+Manually finding mixed content can be time consuming, depending on the number of issues you have. The process described in this document uses the Chrome browser; however most modern browsers provide similar tools to help with this process.
 
-### サイトにアクセスして混合コンテンツを見つける
+### Finding mixed content by visiting your site
 
-Google Chrome で HTTPS ページにアクセスすると、ブラウザの JavaScript コンソールに混合コンテンツがエラーと警告として示されます。
+When visiting an HTTPS page in Google Chrome, the browser alerts you to mixed content as errors and warnings in the JavaScript console.
 
+To view these alerts, go to our passive mixed content or active mixed content sample page and open the Chrome JavaScript console. You can open the console either from the View menu: *View* -&gt; *Developer* -&gt; *JavaScript Console*, or by right-clicking the page, selecting *Inspect Element*, and then selecting *Console*.
 
-これらの警告を表示するには、パッシブな混合コンテンツまたはアクティブな混合コンテンツのサンプルページに移動し、Chrome JavaScript コンソールを開きます。コンソールは [View] メニューから開くことができます。[View] -&gt; [Developer] -&gt; [JavaScript Console] の順に選択するか、ページを右クリックして [Inspect Element] を選択し、次に [Console] を選択します。
-
-[混合コンテンツとは](what-is-mixed-content#passive-mixed-content){: .external}ページの[パッシブな混合コンテンツの例](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external}では、以下のような混合コンテンツの警告が表示されます。
-
-<figure>
-  <img src="imgs/passive-mixed-content-warnings.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でない動画がリクエストされました。このコンテンツも HTTPS 経由で提供する必要があります。">
-</figure>
-
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
-
-一方、アクティブな混合コンテンツの例では、混合コンテンツのエラーが表示されます。
-
+The [passive mixed content example](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: .external} on the [What Is Mixed Content](what-is-mixed-content#passive-mixed-content){: .external} page causes mixed content warnings to be displayed, like the ones below:
 
 <figure>
-  <img src="imgs/active-mixed-content-errors.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でないリソースがリクエストされました。このリクエストはブロックされました。コンテンツは HTTPS 経由で提供する必要があります。">
+  <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
 </figure>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-
-これらのエラーと警告に表示された、サイトのソースに含まれる http:// URL を修正する必要があります。エラーや警告が見つかったページと URL のリストを作っておくと、修正するときに便利です。 
-
-注: 混合コンテンツのエラーと警告は、現在表示されているページについてのみ表示され、新しいページに移動するたびに JavaScript コンソールがクリアされます。したがって、これらのエラーを見つけるために、サイトの各ページを個別に表示することが必要になります。エラーの中には、ページのある部分を操作した後にのみ発生するものもあります。前のガイドの画像ギャラリーの混合コンテンツの例を参照してください。
-
-### ソースコードで混合コンテンツを見つける
-
-ソースコードで直接混合コンテンツを検索できます。ソースで `http://` を検索し、HTTP URL 属性を含むタグを探します。
-具体的には、前のガイドの[混合コンテンツの種類と関連するセキュリティ上の脅威](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external}セクションで示されたタグを探します。
-アンカータグ（`<a>`）の href 属性に `http://` が含まれていることは、通常は混合コンテンツの問題ではありませんが、注意が必要な例外があります。この例外については後述します。
- 
-
-Chrome の混合コンテンツのエラーと警告から HTTP URL のリストを作成したら、ソースでこれらの完全な URL を検索して、サイトのどこに含まれているのかを確認することもできます。
-
- 
-
-### 混合コンテンツの修正
-
-サイトのソースのどこに混合コンテンツが含まれているかがわかったら、次のステップに従って修正します。
-
-
-例として、Chrome での次の混合コンテンツのエラーを使用します。
+While the active mixed content example causes mixed content errors to be displayed:
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="混合コンテンツ:ページは HTTPS 経由で読み込まれましたが、安全でない画像がリクエストされました。このコンテンツも HTTPS 経由で提供する必要があります。">
+  <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
 </figure>
 
-これは、ソースの次の部分にあります。
- 
-    <img src="http://googlesamples.github.io/web-fundamentals/.../puppy.jpg"> 
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
 
-#### ステップ 1
+You need to fix the http:// URLs listed in these errors and warnings, in your site's source. It's helpful to make a list of these URLs, along with the page you found them on, for use when you fix them.
 
-ブラウザで新しいタブを開き、HTTPS 経由でこの URL を使用できることを確認します。アドレスバーに URL を入力して、`http://` を `https://` に変更します。
+Note: Mixed content errors and warnings are only shown for the page your are currently viewing, and the JavaScript console is cleared every time you navigate to a new page. This means you will have to view every page of your site individually to find these errors. Some errors may only show up after you interact with part of the page, see the image gallery mixed content example from our previous guide.
 
+### Finding mixed content in your source code
 
-表示されたリソースが **HTTP** 経由の場合と **HTTPS** 経由の場合で同じであれば、問題はありません。
-[ステップ 2](#step-2) に進んでください。
+You can search for mixed content directly in your source code. Search for `http://` in your source and look for tags that include HTTP URL attributes. Specifically, look for tags listed in the [mixed content types & security threats associated](what-is-mixed-content#mixed-content-types--security-threats-associated){: .external} section of our previous guide. Note that having `http://` in the href attribute of anchor tags (`<a>`) is often not a mixed content issue, with some notable exceptions discussed later.
+
+If you have a list of HTTP URLs from Chrome mixed content errors and warnings, you can also search for these complete URLs in your source to find where they are included in your site.
+
+### Fixing mixed content
+
+Once you've found where the mixed content is included in your site's source, follow these steps to fix it.
+
+Using the following mixed content error in Chrome as an example:
+
+<figure>
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
+</figure>
+
+Which you found in source here:
+
+    <img src="http://googlesamples.github.io/web-fundamentals/.../puppy.jpg">
+    
+
+#### Step 1
+
+Check that the URL is available over HTTPS by opening a new tab in your browser, entering the URL in the address bar, and changing `http://` to `https://`
+
+If the resource displayed is the same over **HTTP** and **HTTPS**, everything is OK. Proceed to [Step 2](#step-2).
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/puppy-http.png">
     <figcaption class="success">
-      HTTP の画像がエラーなしで読み込まれます。
-</figcaption>
+      HTTP image loads without error.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/puppy-https.png">
     <figcaption class="success">
-      HTTPS の画像がエラーなしで読み込まれ、画像は HTTP の場合と同じです。<a href="#step-2">ステップ 2</a> に進んでください。
-</figcaption>
+      HTTPS image loads without error, and image is the same as HTTP. Go to <a href="#step-2">step 2</a>!
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-証明書の警告が表示された場合、または **HTTPS** 経由でコンテンツを表示できなかった場合は、そのリソースを安全に使用することはできないことを意味します。
-
+If you see a certificate warning, or if the content can't be displayed over **HTTPS**, it means the resource is not available securely.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/https-not-available.png">
     <figcaption class="warning">
-      HTTPS 経由でリソースを使用できません。
-</figcaption>
+      Resource not available over HTTPS
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/https-cert-warning.png">
     <figcaption class="warning">
-      HTTPS 経由でリソースを表示しようとしたときの証明書の警告。
-</figcaption>
+      Certificate warning when attempting to view resource over HTTPS.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-この場合、次のいずれかのオプションを検討する必要があります。
+In this case, you should consider one of the following options:
 
-* 別のホストからのリソースが使用可能であれば、そのリソースを含めます。
-* 自分のサイトにコンテンツをダウンロードして、サイトで直接ホストします（合法的に許可されている場合）。
-* サイトからそのリソースを完全に除外します。
+* Include the resource from a different host, if one is available.
+* Download and host the content on your site directly, if you are legally allowed to do so.
+* Exclude the resource from your site altogether.
 
-#### ステップ 2
+#### Step 2
 
-URL を `http://` から `https://` に変更し、ソースファイルを保存し、必要に応じてアップデートされたファイルを再デプロイします。
+Change the URL from `http://` to `https://`, save the source file, and redeploy the updated file if necessary.
 
-#### ステップ 3
+#### Step 3
 
-最初にエラーが検出されたページを表示し、そのエラーが表示されなくなっていることを確認します。
+View the page where you found the error originally and verify that the error no longer appears.
 
-### 非標準タグの使用上の注意
+### Beware of non-standard tag usage
 
-サイトで非標準のタグを使用する際には注意してください。たとえば、アンカー（`<a>`）タグの URL は、ブラウザを新しいページに移動させるため、これ自体が混合コンテンツを発生させることはありません。
-つまり、これは通常修正する必要はありません。ただし、画像ギャラリーのスクリプトの中には、`<a>` タグの機能をオーバーライドして、`href` 属性で指定されている HTTP リソースをページのライトボックス表示に読み込み、混合コンテンツの問題を発生させるものがあります。
-
-
- 
+Beware of non-standard tag usage on your site. For instance, anchor (`<a>`) tag URLs don't cause mixed content by themselves, as they cause the browser to navigate to a new page. This means they usually don't need to be fixed. However some image gallery scripts override the functionality of the `<a>` tag and load the HTTP resource specified by the `href` attribute into a lightbox display on the page, causing a mixed content problem.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" region_tag="snippet1" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-上記のコードでは、`<a>` タグの href を `http://` のままにしても安全なように見えますが、サンプルを表示して、画像をクリックすると、混合コンテンツ リソースが読み込まれて、ページに表示されることがわかります。
+In the code above, it may seem safe to leave the `<a>` tags href as `http://`; however if you view the sample and click the image, you'll see that it loads a mixed content resource and displays it on the page.
 
- 
+## Handle mixed content at scale
 
-## 大規模な混合コンテンツの処理
+The manual steps above work well for smaller websites; but for large websites or sites with many separate development teams, it can be tough to keep track of all the content being loaded. To help with this task, you can use content security policy to instruct the browser to notify you about mixed content and ensure that your pages never unexpectedly load insecure resources.
 
-上記の手動ステップは小さなウェブサイトには適していますが、大規模なウェブサイトや、多数の異なる開発チームが関与しているサイトでは、読み込まれるすべてのコンテンツを把握するのが困難になる可能性があります。
-このタスクを支援するために、コンテンツ セキュリティ ポリシーを使用して、混合コンテンツについて通知するようにブラウザに指示し、ページが安全でないリソースを予期せず読み込まないようにすることができます。
+### Content security policy
 
+[**Content security policy**](/web/fundamentals/security/csp/) (CSP) is a multi-purpose browser feature that you can use to manage mixed content at scale. The CSP reporting mechanism can be used to track the mixed content on your site; and the enforcement policy, to protect users by upgrading or blocking mixed content.
 
+You can enable these features for a page by including the `Content-Security-Policy` or `Content-Security-Policy-Report-Only` header in the response sent from your server. Additionally you can set `Content-Security-Policy` (but **not** `Content-Security-Policy-Report-Only`) using a `<meta>` tag in the `<head>` section of your page. See examples in the following sections.
 
-### コンテンツ セキュリティ ポリシー
+CSP is useful for many things outside of its mixed content uses. Information about other CSP directives is available at the following resources:
 
-[**コンテンツ セキュリティ ポリシー**](/web/fundamentals/security/csp/)（CSP）は、大規模な混合コンテンツを管理するために使用できる、多目的のブラウザ機能です。
-CSP のレポート メカニズムを使用して、サイトの混合コンテンツを追跡できます。また、強制ポリシーを使用して混合コンテンツをアップグレードまたはブロックすることで、ユーザーを保護できます。
+* [Mozilla's intro to CSP](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
+* [HTML5 Rocks' intro to CSP](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
+* [CSP playground](http://www.cspplayground.com/){: .external }
+* [CSP spec](//www.w3.org/TR/CSP/){: .external }
 
- 
+Note: Browsers enforce **all** content security policies that they receive. Multiple CSP header values received by the browser in the response header or
+<code>&lt;meta&gt;</code> elements are combined and enforced as a single policy; reporting policies are likewise combined. Policies are combined by taking the intersection of the policies; that is to say, each policy after the first can only further restrict the allowed content, not broaden it.
 
-サーバーから送信されるレスポンスに `Content-Security-Policy` または `Content-Security-Policy-Report-Only` ヘッダーを含めることで、ページでこれらの機能を有効にすることができます。
-さらに、ページの `<head>` セクションで `<meta>` タグを使用して（`Content-Security-Policy-Report-Only`
-**ではなく**）、`Content-Security-Policy` を設定できます。
-次のセクションの例を参照してください。
+### Finding mixed content with content security policy
 
+You can use content security policy to collect reports of mixed content on your site. To enable this feature, set the `Content-Security-Policy-Report-Only` directive by adding it as a response header for your site.
 
-CSP は、混合コンテンツに使用する以外にも、多数のことに役立ちます。その他の CSP ディレクティブの詳細については、以下のリソースを参照してください。
+Response header:
 
-* [Mozilla による CSP の概要](https://developer.mozilla.org/en-US/docs/Web/Security/CSP/Introducing_Content_Security_Policy){: .external}
-* [HTML5 Rock による CSP の概要](//www.html5rocks.com/en/tutorials/security/content-security-policy/){: .external}
-* [CSP Playground](http://www.cspplayground.com/){: .external }
-* [CSP の仕様](//www.w3.org/TR/CSP/){: .external }
+    Content-Security-Policy-Report-Only: default-src https: 'unsafe-inline' 'unsafe-eval'; report-uri https://example.com/reportingEndpoint
+    
 
-注: ブラウザは、受信するコンテンツ セキュリティ ポリシーを<b>すべて</b>適用します。レスポンス ヘッダーまたは
-<code>&lt;meta&gt;</code> 要素でブラウザが受け取った複数の CSP ヘッダー値は結合され、1 つのポリシーとして適用されます。レポート ポリシーも同様に結合されます。
-ポリシーは、ポリシーの共通部分を取得することで結合されます。つまり、最初のポリシーの後の各ポリシーは、前のポリシーで許可されているコンテンツの制限のみが可能で、許可範囲を広げることはできません。
+Whenever a user visits a page on your site, their browser sends JSON-formatted reports regarding anything that violates the content security policy to `https://example.com/reportingEndpoint`. In this case, anytime a subresource is loaded over HTTP, a report is sent. These reports include the page URL where the policy violation occurred and the subresource URL that violated the policy. If you configure your reporting endpoint to log these reports, you can track the mixed content on your site without visiting each page yourself.
 
+The two caveats to this are:
 
+* Users have to visit your page in a browser that understands the CSP header. This is true for most modern browsers.
+* You only get reports for pages visited by your users. So if you have pages that don't get much traffic, it might be some time before you get reports for your entire site.
 
-### コンテンツ セキュリティ ポリシーを使用して混合コンテンツを見つける 
+For more information on CSP header format, see the [Content Security Policy specification](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}.
 
-コンテンツ セキュリティ ポリシーを使用して、サイトの混合コンテンツのレポートを収集できます。
-この機能を有効にするには、サイトのレスポンス ヘッダーとして `Content-Security-Policy-Report-Only` ディレクティブを追加し、これを設定します。
- 
+If you don't want to configure a reporting endpoint yourself, <https://report-uri.io/>{: .external} is a reasonable alternative.
 
-レスポンス ヘッダー:  
+### Upgrading insecure requests
 
-    Content-Security-Policy-Report-Only: default-src https: 'unsafe-inline' 'unsafe-eval'; report-uri https://example.com/reportingEndpoint 
+One of the newest and best tools to automatically fix mixed content is the [**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external} CSP directive. This directive instructs the browser to upgrade insecure URLs before making network requests.
 
+As an example, if a page contains an image tag with an HTTP URL:
 
-ユーザーがサイトのページにアクセスするたびに、ユーザーのブラウザは、コンテンツ セキュリティ ポリシーに違反するあらゆる事柄に関する JSON 形式のレポートを `https://example.com/reportingEndpoint` に送信します。
-この場合は、サブリソースが HTTP 経由で読み込まれるたびに、レポートが送信されます。
-これらのレポートには、ポリシー違反が発生したページの URL と、ポリシーに違反したサブリソースの URL が含まれます。
-これらのレポートをログに記録するようにレポート エンドポイントを設定している場合は、各ページに自分でアクセスすることなく、サイトの混合コンテンツを追跡できます。
+    <img src="http://example.com/image.jpg">
+    
 
- 
+The browser instead makes a secure request for
+<code><b>https:</b>//example.com/image.jpg</code>, thus saving the user from mixed content.
 
-これには、次の 2 つの注意点があります。
+You can enable this behavior either by sending a `Content-Security-Policy` header with this directive:
 
-* ユーザーは、CSP ヘッダーを解釈するブラウザでページにアクセスする必要があります。
-  最新のほとんどのブラウザにはこの機能があります。
-* ユーザーがアクセスしたページのレポートのみを取得できます。したがって、あまりアクセスされないページがある場合は、サイト全体のレポートを取得するまでに時間がかかる可能性があります。
+    Content-Security-Policy: upgrade-insecure-requests
+    
 
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
 
-CSP ヘッダー形式の詳細については、[コンテンツ セキュリティ ポリシーの仕様](https://w3c.github.io/webappsec/specs/content-security-policy/#violation-reports){: .external}を参照してください。 
+It is worth noting, that if the resource is not available over HTTPS, the upgraded request fails and the resource is not loaded. This maintains the security of your page.
 
-自分でレポート エンドポイントを設定したくない場合は、代わりに [https://report-uri.io/](https://report-uri.io/){: .external} を使用できます。
+The `upgrade-insecure-requests` directive cascades into `<iframe>` documents, ensuring the entire page is protected.
 
+### Blocking all mixed content
 
+Not all browsers support the upgrade-insecure-requests directive, so an alternative for protecting users is the [**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external} CSP directive. This directive instructs the browser to never load mixed content; all mixed content resource requests are blocked, including both active and passive mixed content. This option also cascades into `<iframe>` documents, ensuring the entire page is mixed content free.
 
-### 安全でないリクエストのアップグレード
+A page can opt itself into this behavior either by sending a `Content-Security-Policy` header with this directive:
 
-混合コンテンツを自動的に修正するための最新かつ最良のツールの 1 つは、[**`upgrade-insecure-requests`**](//www.w3.org/TR/upgrade-insecure-requests/){: .external} CSP ディレクティブです。
-このディレクティブは、ネットワーク リクエストを実行する前に、安全でない URL をアップグレードするようにブラウザに指示します。
+    Content-Security-Policy: block-all-mixed-content
+    
 
+Or by embedding that same directive inline in the document's `<head>` section using a `<meta>` element:
 
-たとえば、ページに HTTP URL を含むイメージ タグがあるとします。
-
- 
-    <img src="http://example.com/image.jpg"> 
-
-
-ブラウザは代わりに <code><b>https:</b>//example.com/image.jpg</code> に対して安全なリクエストを行い、ユーザーを混合コンテンツから守ります。
-
-
-
-この動作を有効にするには、このディレクティブを指定して `Content-Security-Policy` ヘッダーを送信します。
-
-
-
-    Content-Security-Policy: upgrade-insecure-requests  
-
-
-または、`<meta>` 要素を使用して、ドキュメントの `<head>` セクションにこの同じディレクティブをインラインで埋め込みます。
-
-
-  
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">  
-
-
-リソースを HTTPS 経由で使用できない場合は、アップグレードされたリクエストは失敗し、リソースは読み込まれないことに注意してください。
-これにより、ページのセキュリティが維持されます。
- 
-
-`upgrade-insecure-requests` ディレクティブは `<iframe>` ドキュメント内にも適用されるため、ページ全体が保護されます。
-
-
-### すべての混合コンテンツのブロック
-
-すべてのブラウザで upgrade-insecure-requests ディレクティブがサポートされているわけではないため、ユーザーを保護するための代わりの方法として [**`block-all-mixed-content`**](http://www.w3.org/TR/mixed-content/#strict-checking){: .external} CSP ディレクティブがあります。このディレクティブは、混合コンテンツを一切読み込まないようにブラウザに指示します。アクティブおよびパッシブ両方の混合コンテンツを含む、すべての混合コンテンツ リソースのリクエストがブロックされます。
-
-このオプションも `<iframe>` ドキュメント内に適用されるため、ページ全体で混合コンテンツが存在しないことが保証されます。
-
-
-ページでこの動作が行われるように設定するには、このディレクティブを指定して `Content-Security-Policy` ヘッダーを送信します。
-
-
-  
-    Content-Security-Policy: block-all-mixed-content  
-
-
-または、`<meta>` 要素を使用して、ドキュメントの `<head>` セクションにこの同じディレクティブをインラインで埋め込みます。
-
-
-  
     <meta http-equiv="Content-Security-Policy" content="block-all-mixed-content">
+    
 
+The downside of using `block-all-mixed-content` is, perhaps obviously, that all content is blocked. This is a security improvement, but it means that these resources are no longer available on the page. This might break features and content that your users expect to be available.
 
-`block-all-mixed-content` を使用することの欠点は、明らかでしょうが、すべてのコンテンツがブロックされることです。
-セキュリティは高まりますが、これらのリソースを今後ページで使用できなくなります。
-これにより、ユーザーが期待する機能やコンテンツが損なわれる可能性があります。
- 
+### Alternatives to CSP
 
-###  CSP の代替手段
+If your site is hosted for you by a platform such as Blogger, you may not have access to modify headers & add a CSP. Instead a viable alternative could be to use a website crawler to find issues across your site for you, such as [HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } or [Mixed Content Scan](https://github.com/bramus/mixed-content-scan){: .external }
 
-Blogger などのプラットフォームでサイトをホスティングしている場合、ヘッダーを変更して CSP を追加するためのアクセス権がない場合があります。代わりに有効な代替手段として、[HTTPSChecker](https://httpschecker.net/how-it-works#httpsChecker){: .external } や [Mixed Content Scan](https://github.com/bramus/mixed-content-scan){: .external } など、ウェブサイト クローラを使用してサイトの問題を見つける方法があります。
+## Feedback {: #feedback }
 
-
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

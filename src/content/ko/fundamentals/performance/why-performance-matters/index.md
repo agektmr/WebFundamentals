@@ -1,340 +1,115 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 휴대기기와 네트워크의 확산 덕분에 이전보다 더 많은 사람들이 웹을 이용하고 있습니다. 이러한 사용자층이 증가함에 따라 성능이 여느 때보다 더 중요해졌습니다. 이 문서에서 성능이 중요한 이유에 대해 알아보고 모두를 위해 웹을 빠르게 하는 방법을 배워봅니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Thanks to mobile device and network proliferation, more people are using the web than ever before. As this user base grows, performance is more important than ever. In this article, find out why performance matters, and learn what you can do to make the web faster for everyone.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-03-08 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-10-04 #} {# wf_published_on: 2018-03-08 #} {# wf_blink_components: N/A #}
 
-# 성능이 중요한 이유 {: .page-title }
+# Why Performance Matters {: .page-title }
 
 {% include "web/_shared/contributors/jeremywagner.html" %}
 
-웹이 더 많은 것을 하도록 추구하는 과정에서 성능이라는
-흔한 문제에 직면하게 됩니다. 사이트에는 그 어느 때보다
-많은 기능이 있습니다. 그러다 보니, 여러 사이트가 다양한 네트워크 조건과 기기 전반에서
-높은 수준의 성능을 달성하는 데 어려움을 겪고 있습니다.
+In our shared pursuit to push the web to do more, we're running into a common problem: performance. Sites have more features than ever before. So much so, that many sites now struggle to achieve a high level of performance across a variety of network conditions and devices.
 
-성능 문제는 다양할 수 있습니다. 가장 좋은 경우는 사용자를 아주 잠시 성가시게 하는
-짧은 지연을 발생시킵니다. 가장 나쁜 경우에는 사이트에 전혀 접근할 수 없고,
-사용자의 입력에 반응하지 않거나, 두 가지가 모두 일어납니다.
+Performance issues vary. At best, they create small delays that are only briefly annoying to your users. At worst, they make your site completely inaccessible, unresponsive to user input, or both.
 
-## 성능은 사용자 유지에 중요합니다.
+## Performance is about retaining users
 
-우리는 빌드한 사이트와 사용자가 의미 있게 상호작용하기를 바랍니다. 블로그라면,
-게시물을 읽을 수 있어야 합니다. 온라인 스토어라면 물건을
-살 수 있어야 합니다. 소셜 네트워크라면, 서로
-상호작용할 수 있어야 합니다.
+We want users to interact meaningfully with what we build. If it's a blog, we want people to read posts. If it's an online store, we want them to buy stuff. If it's a social network, we want them to interact with each other.
 
-성능은 모든 온라인 벤처의 성공에 중요한 역할을 담당합니다. 여기에 저성능 사이트에 비해 고성능 사이트가 얼마나 더 잘
-사용자를 끌어들이고 유지하는지
-보여주는 몇 가지 사례 분석이 있습니다.
+Performance plays a major role in the success of any online venture. Here are some case studies that show how high-performing sites engage and retain users better than low-performing ones:
 
-- 인지 대기 시간을 40% 감소시켰을 때 [Pinterest의 검색엔진 트래픽과 가입이 15% 증가되었습니다][pinterest]
-.
-- 평균 로드 시간을 850ms 감소시켰을 때 [COOK의 전환율이 7%
-  증가했으며, 이탈률은 7% 감소하고 페이지당
-  세션이 10% 증가되었습니다][COOK].
+- [Pinterest increased search engine traffic and sign-ups by 15%](https://medium.com/@Pinterest_Engineering/driving-user-growth-with-performance-improvements-cfc50dafadd7) when they reduced perceived wait times by 40%.
+- [COOK increased conversions by 7%, decreased bounce rates by 7%, and increased pages per session by 10%](https://www.nccgroup.trust/uk/about-us/resources/cook-real-user-monitoring-case-study/?style=Website+Performance&resources=Case+Studies) when they reduced average page load time by 850 milliseconds.
 
-[pinterest]: https://medium.com/@Pinterest_Engineering/driving-user-growth-with-performance-improvements-cfc50dafadd7
-[COOK]: https://www.nccgroup.trust/uk/about-us/resources/cook-real-user-monitoring-case-study/?style=Website+Performance&resources=Case+Studies
+Here are a couple case studies where low performance had a negative impact on business goals:
 
-낮은 성능이 비즈니스
-목표에 부정적인 영향을 미친 경우에 대한 몇 가지 사례 분석은 다음과 같습니다.
+- [The BBC found they lost an additional 10% of users](https://www.creativebloq.com/features/how-the-bbc-builds-websites-that-scale) for every additional second their site took to load.
+- [DoubleClick by Google found 53% of mobile site visits were abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if a page took longer than 3 seconds to load.
 
-- BBC는 사이트가 로드하는 데 1초씩
-  더 걸릴 때마다 [추가적으로 10%의 사용자를 잃었다는 것을 발견했습니다][BBC].
-- Google의 DoubleClick은 페이지
-  로드에 3초가 넘는 시간이 걸리면 [53%의 모바일 사이트 방문이 취소된다는 것을 발견했습니다][DoubleClick].
+In the same DoubleClick by Google study cited above, it was found that sites loading within 5 seconds had 70% longer sessions, 35% lower bounce rates, and 25% higher ad viewability than sites taking nearly four times longer at 19 seconds. To get a rough idea of how your site's performance compares with your competitors, [check out the Speed Scorecard tool](https://www.thinkwithgoogle.com/feature/mobile/).<figure> 
 
-[BBC]: https://www.creativebloq.com/features/how-the-bbc-builds-websites-that-scale
-[DoubleClick]: https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/
+<img srcset="images/speed-scorecard-2x.png 2x, images/speed-scorecard-1x.png 1x"
+src="images/speed-scorecard-1x.png" alt="A screenshot of the Speed Scorecard
+tool, comparing performance across four popular news outlets." /> <figcaption>**Figure 1**. Speed Scorecard comparing the performance of four competing sites using Chrome UX Report data from 4G network users in the United States.</figcaption> </figure> 
 
-위에서 인용한 것과 같은 Google의 DoubleClick에서 밝혀진 바에 따르면, 
-로딩에 5초가 걸리는 사이트는 그 네 배에 육박하는 19초가 걸리는 사이트에 비해 세션 길이가 70% 길고, 이탈률은
-35% 낮았으며 광고 노출률은 25% 더 높은 것으로
-나타났습니다. 경쟁자에 비해 나의 사이트 성능이
-어떤지 대략적으로 알아보려면 [Speed Scorecard
-도구를 확인해 보세요](https://www.thinkwithgoogle.com/feature/mobile/).
+## Performance is about improving conversions
 
-<figure>
-  <img srcset="images/speed-scorecard-2x.png 2x, images/speed-scorecard-1x.png 1x"
-src="images/speed-scorecard-1x.png" alt="4개의 유명한 뉴스 아웃렛의 성능을 비교한 Speed Scorecard
-도구의 스크린샷.">
-  <figcaption><b>그림 1</b>. 미국 내
-4G 네트워크 사용자의 Chrome UX Report 데이터를 이용하여 4개의
-경쟁 사이트 성능을 비교한 Speed Scorecard.</figcaption>
-</figure>
+Retaining users is crucial to improving conversions. Slow sites have a negative impact on revenue, and the opposite is also true. Here are some examples of how performance has played a role in making businesses more (or less) profitable:
 
-## 전환율 향상에 중요한 성능
+- For Mobify, [every 100ms decrease in homepage load speed worked out to a **1.11% increase** in session-based conversion, yielding an average annual revenue increase of **nearly $380,000**](http://resources.mobify.com/2016-Q2-mobile-insights-benchmark-report.html). Additionally, a 100ms decrease in checkout page load speed amounted to a **1.55% increase** in session-based conversion, which in turn yielded an average annual revenue increase of **nearly $530,000**.
+- DoubleClick found [publishers whose sites loaded within five seconds earned up to **twice as much ad revenue** than sites loading within 19 seconds](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/).
+- [When AutoAnything reduced page load time by half, they saw **a boost of 12-13% in sales**](https://www.digitalcommerce360.com/2010/08/19/web-accelerator-revs-conversion-and-sales-autoanything/).
 
-사용자 유지는 전환율 향상에 필수적입니다. 느린 사이트는
-수익에 부정적인 영향을 미치고 그 반대도 마찬가지입니다. 다음은 성능이
-비즈니스의 수익 향상(또는
-하락)에 어떤 역할을 담당했는지에 대한 몇 가지 예입니다.
+If you run a business on the web, performance is crucial. If your site's user experience is fast and responsive to user input, it can only serve you well. To see how performance could potentially affect your revenue, check out the [Impact Calculator](https://www.thinkwithgoogle.com/feature/mobile/) tool.<figure> 
 
-- Mobify의 경우, [홈페이지 로드 속도가 100ms 감소할 때마다 세션 기반 전환이 **1.11%
-증가**했으며, **거의
-$380,000**의 연평균 수익
-향상을 가져왔습니다](http://resources.mobify.com/2016-Q2-mobile-insights-benchmark-report.html).
-또한, 구매 페이지 로드 속도가 100ms 감소하면 세션 기반 전환이 **1.55%
-증가**하여 그 결과 **거의 $530,000**의 연평균 수익 향상을
-가져왔습니다.
-- DoubleClick은 [5초 이내로 로드되는 사이트의 게시자는 19초 내로 로드되는 사이트에 비해 최대
-**두 배 더 많은 광고 수익**을 얻는다는 것을
-발견했습니다](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/).
-- [AutoAnything이 페이지 로드 시간을 절반으로 줄이자 **판매량이
-12-13%로
-폭발적인 증가**를 보였습니다](https://www.digitalcommerce360.com/2010/08/19/web-accelerator-revs-conversion-and-sales-autoanything/).
+<img srcset="images/impact-calculator-2x.png 2x, images/impact-calculator-1x.png
+1x" src="images/impact-calculator-1x.png" alt="A screenshot of the Impact
+Calculator, estimating how much revenue a site could stand to gain if
+performance improvements are made." /> <figcaption>**Figure 2**. The Impact Calculator estimates how much revenue you stand to gain by improving site performance.</figcaption> </figure> 
 
-웹에서 비즈니스를 운영한다면 성능이 매우 중요합니다. 사이트의 사용자
-환경이 빠르고 사용자 입력에 잘 반응한다면 좋은 결과를 가져다 줄 것입니다. 성능이 잠재적으로
-여러분의 수익에 어떠한 영향을 미칠지 알아보려면 [Impact
-Calculator](https://www.thinkwithgoogle.com/feature/mobile/) 도구를 확인하세요.
+## Performance is about the user experience
 
-<figure>
-  <img srcset="images/impact-calculator-2x.png 2x, images/impact-calculator-1x.png
-1x" src="images/impact-calculator-1x.png" alt="성능이 향상되면
-사이트 수익이 얼마나 증가하는지 추정한 Impact
-Calculator의 스크린샷.">
-  <figcaption><b>그림 2</b>. Impact Calculator이 추정하는
-사이트 성능 향상으로 증가하는 수익.</figcaption>
-</figure>
+When you navigate to a URL, you do so from any number of potential starting points. Depending on a number of conditions, such as connection quality and the device you're using, your experience could be quite different from another user's.<figure> 
 
-## 사용자 환경에 중요한 성능
+![A comparison of two filmstrip reels
+of a page loading. The first shows a page loading on a slow connection, while
+the second shows the same page loading on a fast connection.](images/speed-comparison.png) <figcaption>**Figure 3**. A comparison of page load on a very slow connection (top) versus a faster connection (bottom).</figcaption> </figure> 
 
-URL로 이동할 때, 다양한 잠정
-시작점에서부터 이동합니다. 연결 품질이나
-사용하는 기기와 같은 여러 조건에 따라 여러분의
-경험은 다른 사용자의 경험과 상당히 다를 수 있습니다.
+As a site begins to load, there's a period of time where users wait for content to appear. Until this happens, there's no user experience to speak of. This lack of an experience is fleeting on fast connections. On slower connections, however, users are forced to wait. Users may experience more problems as page resources slowly trickle in.
 
-<figure>
-  <img src="images/speed-comparison.png" alt="페이지 로딩의 두 영사 슬라이드 릴
-비교. 첫 번째는 느린 연결의 페이지 로딩을 보여주며,
-두 번째는 빠른 연결의 페이지 로딩을 보여줍니다.">
-  <figcaption><b>그림 3</b>. 매우 느린 연결(위)과
-빠른 연결(아래)의 페이지 로드 비교.</figcaption>
-</figure>
+Performance is a foundational aspect of good user experiences. When sites ship a lot of code, browsers must use megabytes of the user's data plan in order to download the code. Mobile devices have limited CPU power and memory. They often get overwhelmed with what we might consider a small amount of unoptimized code. This creates poor performance which leads to unresponsiveness. Knowing what we know about human behavior, users will only tolerate low performing applications for so long before abandoning them. If you want to know more about how to assess your site's performance and find opportunities for improvement, check out [*How to Think About Speed Tools*](/web/fundamentals/performance/speed-tools/).<figure> 
 
-사이트가 로드를 시작할 때, 사용자가
-콘텐츠 표시를 기다리는 일정 시간이 있습니다. 이때까지 사용자 환경이라고 할만한 것은 없습니다. 이러한 환경의
-부재는 빠른 연결에서 금방 사라집니다. 반면, 느린 연결에서는
-사용자가 기다려야 합니다. 사용자는 페이지 리소스가 천천히 들어오면서
-더 많은 문제를 경험하게 됩니다.
+<img srcset="images/lighthouse-2x.png 2x, images/lighthouse-1x.png 1x"
+src="images/lighthouse-1x.png" alt="Page performance overview as seen in
+Lighthouse." /> <figcaption>**Figure 4**. Page performance overview as seen in [Lighthouse](/web/tools/lighthouse/).</figcaption> </figure> 
 
-성능은 좋은 사용자 환경의
-근본적인 부분입니다. 사이트가 많은 코드를 담고 있으면 브라우저는 이 코드를 다운로드하기 위해 반드시 사용자 데이터 요금제에서 수 메가바이트를
-이용해야 합니다. 휴대기기의 CPU 파워와 메모리에는
-한계가 있습니다. 우리가 생각하기에 적은 양의 최적화되지 않은 코드에도
-허덕일 수 있습니다. 이로 인해 성능이 불량해지고
-반응이 없는 상태가 일어납니다. 익히 알고 있는 인간의 습성대로, 사용자는
-저성능 애플리케이션을 오래 기다려주지 않고 버립니다.
-사이트의 성능을 평가하는
-방법을 알고 개선 기회를 찾아보려면,
-[_How to Think About Speed Tools_](/web/fundamentals/performance/speed-tools/)를 확인하세요.
+## Performance is about people
 
-<figure>
-  <img srcset="images/lighthouse-2x.png 2x, images/lighthouse-1x.png 1x"
-src="images/lighthouse-1x.png" alt="Lighthouse에서
-보이는 페이지 성능 개요">
-  <figcaption><b>그림 4</b>. <a
-href="/web/tools/lighthouse/">Lighthouse</a>에서 보이는 페이지 성능 개요.</figcaption>
-</figure>
+Poorly performing sites and applications can also pose real costs for the people who use them.
 
-## 사람을 위한 성능
+[As mobile users continue to make up a larger portion of internet users worldwide](http://gs.statcounter.com/platform-market-share/desktop-mobile-tablet), it's important to bear in mind that many of these users access the web through mobile LTE, 4G, 3G and even 2G networks. As Ben Schwarz of Calibre points out in [this study of real world performance](https://building.calibreapp.com/beyond-the-bubble-real-world-performance-9c991dcd5342), the cost of prepaid data plans is decreasing, which in turn is making access to the internet more affordable in places where it once wasn't. Mobile devices and internet access are no longer luxuries. They are common tools necessary to navigate and function in an increasingly interconnected world.
 
-제대로 작동하지 않는 사이트나 애플리케이션은 이것을 사용하는 사람들에게 실질적인 비용을
-일으킬 수도 있습니다.
+[Total page size has been steadily increasing since at least 2011](http://beta.httparchive.org/reports/state-of-the-web#bytesTotal), and the trend appears to be continuing. As the typical page sends more data, users must replenish their metered data plans more often, which costs them money.
 
-[모바일 사용자가 전 세계 인터넷 사용자의 커다란 부분을 차지하고 있기
-때문에](http://gs.statcounter.com/platform-market-share/desktop-mobile-tablet),
-이러한 대부분의 사용자가 LTE, 4G, 3G 또는 2G 네트워크를 통해
-웹에 접속한다는 것을 명심하는 것이 중요합니다. Calibre의 Ben Schwarz가
-[this study of real world
-performance](https://building.calibreapp.com/beyond-the-bubble-real-world-performance-9c991dcd5342)에서 지적했듯이,
-선불 데이터 요금제가 감소하여 인터넷 사용이 값비쌌던 곳에서도
-적절한 비용으로 이용할 수 있게 되었습니다. 휴대기기와
-인터넷은 더 이상 사치품이 아닙니다.
-점점 더
-상호 연결성이 강해지는 세상에서 이동과 제 기능을 하기에 필요한 보편적인 도구입니다.
+In addition to saving your users money, fast and lightweight user experiences can also prove crucial for users in crisis. Public resources such as hospitals, clinics, and crisis centers have online resources that give users important and specific information that they need during a crisis. [While design is pivotal in presenting important information efficiently in stressful moments](https://aneventapart.com/news/post/eric-meyer-designing-for-crisis), the importance of delivering this information fast can't be understated. It's part of our job.
 
-[총 페이지 크기는 적어도
-2011년부터 꾸준히 증가](http://beta.httparchive.org/reports/state-of-the-web#bytesTotal)하고 있으며, 이러한
-경향은 지속되고 있는 듯 합니다. 일반적인 페이지가 더 많은 데이터를 보내면 사용자는
-책정된 데이터 요금제를 더 자주 충전하게 되고, 이는 비용을 발생시킵니다.
+## Where to go from here
 
-사용자의 비용을 절약하는 것과 더불어, 가벼운 사용자 환경은
-위기에 처한 사용자에게 매우 중요하다는 것이 익히 알려져 있습니다. 병원,
-클리닉, 위기 센터와 같은 공공 자원은 사용자가 위기에 처했을 때 필요한
-중요하고 구체적인 정보를 전달하는 온라인 리소스를 보유합니다. [힘든 상황에서 중요한 정보를 효율적으로 보여주는 데
-디자인이 중요](https://aneventapart.com/news/post/eric-meyer-designing-for-crisis)하긴 하지만,
-이러한 정보를 빠르게 전달하는 것의 중요성은 몇 번을 말해도
-부족합니다.
-이것은 우리가 해야 할 일입니다.
+While the lists below may seem daunting, understand you don't need to do *all* of these things to improve the performance of your site. They are just starting points, so don't feel overwhelmed! *Anything* you can do to improve performance will be helpful to your users.
 
-## 나아가야 할 길
+### Mind what resources you send
 
-아래 목록이 감당하기 힘들어 보이지만,
-사이트의
-성능을 향상하기 위해 여러분이 이_모든_것을 할 필요는 없습니다. 이것은 시작점에 불과하니, 부담 갖지 마세요!
-성능 향상을 위해 여러분이 하는_모든 것_은 사용자에게 도움이 될 것입니다.
+An effective method of building high performance applications is to [audit *what* resources you send to users](/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads). While the [Network panel in Chrome DevTools](/web/tools/chrome-devtools/network-performance/) does a fantastic job of summarizing all the resources used on a given page, it can be daunting to know where to start if you haven't considered performance until now. Here are a few suggestions:
 
-### 전송하는 리소스에 유념하기
+- If you use Bootstrap or Foundation to build your UI, ask yourself if they're necessary. Such abstractions add heaps of CSS the browser must download, parse, and apply to a page, all before your site-specific CSS enters the picture. [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout) and [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout) are superb at creating both simple and complex layouts with relatively little code. [Because CSS is a render blocking resource](/web/fundamentals/performance/critical-rendering-path/render-blocking-css), the overhead of a CSS framework can delay rendering significantly. You can speed up your rendering by removing unnecessary overhead whenever possible.
+- JavaScript libraries are convenient, but not always necessary. Take jQuery for example: Element selection has been greatly simplified thanks to methods like [`querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) and [`querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll). Event binding is easy with [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). [`classList`](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList), [`setAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute), and [`getAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute) offer easy ways of working with classes and element attributes. If you must use a library, research for leaner alternatives. For example, [Zepto](http://zeptojs.com/) is a smaller jQuery alternative, and [Preact](https://preactjs.com/) is a much smaller alternative to React.
+- Not all websites need to be single page applications (SPAs), as they often make extensive use of JavaScript. [JavaScript is the most expensive resource we serve on the web byte for byte](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e), as it must not only be downloaded, but parsed, compiled and executed as well. For example, news and blog sites with optimized front end architecture can perform well as traditional multipage experiences. Particularly if [HTTP caching](/web/fundamentals/performance/optimizing-content-efficiency/http-caching) is configured properly, and optionally, if a [service worker](/web/fundamentals/primers/service-workers/) is used.
 
-고성능 애플리케이션을 빌드하는 효과적인 방법은 [사용자에게_어떤_
-리소스를 보내는지 감사](/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads)하는
-것입니다.
-[Chrome DevTools의 네트워크 패널](/web/tools/chrome-devtools/network-performance/)이
-주어진 페이지에서 사용된 모든 리소스를 훌륭하게 요약하고 있지만, 이제까지 성능에 대해 고려한 적이 없다면 어디서부터
-시작해야 할지 막막할 것입니다. 다음과 같은
-몇 가지 제안을 드립니다.
+### Mind how you send resources
 
-- UI 빌드에 Bootstrap이나 Foundation을 사용하고 있다면,
-이것이 필요한지 자문해보세요. 이러한 추상성은 사이트 특정 CSS가
-그림을 입력하기도 전에 브라우저가 페이지에 다운로드, 파싱,
-적용해야 하는 CSS 힙을 추가합니다.
-[Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout)와
-[Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout)는 상대적으로 적은 코드로
-단순한 레이아웃과 복잡한 레이아웃을 모두 생성하는 데 탁월합니다.
-[CSS가
-리소스를 차단하는 렌더이기 때문에](/web/fundamentals/performance/critical-rendering-path/render-blocking-css),
-CSS 프레임워크의 오버헤드는 렌더링을 크게 지연시킬 수 있습니다. 언제든지 가능하다면 불필요한 오버헤드를 삭제하는 것으로
-렌더링을 빠르게 할 수 있습니다.
-- 자바스크립트 라이브러리는 편리하지만 언제나 필요한 것은 아닙니다. jQuery를
-예로 들어보겠습니다. [`querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)나
-[`querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll)과
-같은
-메서드 덕분에 요소 선택이 크게 간소화되었습니다.
-이벤트 바인딩은
-[`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener)를 이용하면 간편합니다.
-[`classList`](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList),
-[`setAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute),
-및
-[`getAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute)는
-클래스와 속성을 작업하는 쉬운 방법을 제공합니다. 반드시
-라이브러리를 사용해야 한다면, 더 가벼운 대체재를 찾아보세요. 예를 들어,
-[Zepto](http://zeptojs.com/)는 작은 jQuery 대체재이며,
-[Preact](https://preactjs.com/)는 React보다 훨씬 작은 대체재입니다.
-- 모든 웹사이트에 단일 페이지 애플리케이션(SPA)이 필요한 것은 아닙니다. SPA는 대체로
-자바스크립트를 광범위하게 사용하기 때문입니다. 자바스크립트는
-다운로드뿐만 아니라
-파싱, 컴파일, 실행이 필요하기 때문에 [바이트당 웹에서 제공하는
-가장 고비용의 리소스입니다](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e). 예를 들어,
-최적화된 프런트 엔드 아키텍처를 갖춘 뉴스나 블로그 사이트는 기존의 멀티페이지 환경과 마찬가지로
-잘 작동합니다. 특히 [HTTP
-캐싱](/web/fundamentals/performance/optimizing-content-efficiency/http-caching)이
-적절하게 구성되었으며, 추가적으로 [서비스
-워커](/web/fundamentals/primers/service-workers/)가 사용된 경우에 그러합니다.
+Efficient delivery is vital to building fast user experiences.
 
-### 리소스 전송 방법 유념하기
+- [Migrate to HTTP/2](/web/fundamentals/performance/http2/). HTTP/2 addresses many performance problems inherent in HTTP/1.1, such as concurrent request limits and the lack of header compression.
+- [Download resources earlier using resource hints](/web/fundamentals/performance/resource-prioritization). `rel=preload` is one such resource hint that allows early fetches of critical resources before the browser would otherwise discover them. [This can have a pronounced positive effect](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf#0106) on page rendering and lowering [Time to Interactive](/web/tools/lighthouse/audits/time-to-interactive) when used judiciously. [`rel=preconnect` is another resource hint that can mask the latency of opening new connections for resources hosted on third party domains](https://www.igvita.com/2015/08/17/eliminating-roundtrips-with-preconnect/).
+- Modern sites ship [a *lot* of JavaScript](http://httparchive.org/trends.php#bytesJS&reqJS) [and CSS](http://httparchive.org/trends.php#bytesCSS&reqCSS) on average. It was common to bundle styles and scripts into large bundles in HTTP/1 environments. This was done because a large amount of requests was detrimental to performance. This is no longer the case now that HTTP/2 is on the scene, as multiple, simultaneous requests are cheaper. [Consider using code splitting in webpack](https://webpack.js.org/guides/code-splitting/) to limit the amount of scripts downloaded to only what is needed by the current page or view. Separate your CSS into smaller template or component-specific files, and only include those resources where they're likely to be used.
 
-효율적인 전달은 빠른 사용자 환경을 빌드하는 데 필수적입니다.
+### Mind how much data you send
 
-- [HTTP/2로 마이그레이션](/web/fundamentals/performance/http2/) HTTP/2에는
-HTTP/1.1에서 유래된 동시 요청 제한이나
-헤더 압축 결여와 같은 다양한 성능 문제를 해결합니다.
-- [리소스
-힌트를 이용하여 조기 리소스 다운로드](/web/fundamentals/performance/resource-prioritization). `rel=preload`는
-브라우저가 발견하기 전에
-중요한 리소스를 조기에 가져오도록 하는 리소스 힌트 중 하나입니다. 이것은 현명하게 사용하면
-페이지의 렌더링과 [상호작용
-시간](/web/tools/lighthouse/audits/time-to-interactive)을 낮추는 데 [상당한 긍정적인
-효과가 있습니다](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf#0106)
-. [`rel=preconnect`는 타사
-도메인에서 호스팅되는 리소스에 대한 새로운 연결 생성 지연을 마스크할 수 있는 또 다른
-리소스 힌트입니다](https://www.igvita.com/2015/08/17/eliminating-roundtrips-with-preconnect/).
-- 최신 사이트는 평균적으로 [수_많은_
-자바스크립트](http://httparchive.org/trends.php#bytesJS&reqJS) [및
-CSS](http://httparchive.org/trends.php#bytesCSS&reqCSS)를 담고 있습니다. HTTP/1 환경에서는 스타일과 스크립트를 대형 번들로 묶는 일이
-흔했습니다.
-이것은 대량의 요청이 성능에 해를 끼치기 때문이었습니다.
-이것은 이제 다중,
-동시 요청의 비용이 훨씬 저렴한 HTTP/2가 나왔으므로 더는 현실적으로 해당되는 내용이 아닙니다. [웹팩에서
-코드 분할 사용을 고려](https://webpack.js.org/guides/code-splitting/)하여 현재 페이지나 뷰에서 필요한 한정된 양의
-스크립트만 다운로드해 보세요. CSS를 작은 템플릿이나 구성요소에 특정적인 파일로
-나누고, 리소스를 정말 사용될만한 곳에만
-포함하세요.
+Here are some suggestions for limiting *how much* data you send:
 
-### 데이터 전송량 유념하기
+- [Minify text assets](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations). Minification is the removal of unnecessary whitespace, comments and other content in text-based resources. It significantly reduces the amount of data you send to users without impacting functionality. [Use uglification in JavaScript](https://www.npmjs.com/package/uglifyjs) to get more savings through shortening variable and method names. Since SVG is a text-based image format, [it can be optimized with SVGO](https://github.com/svg/svgo).
+- [Configure your server to compress resources](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer). Compression drastically reduces the amount of data you send to users, *especially* text assets. GZIP is a popular option, but [Brotli compression can go further](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/). Understand, however, that compression is *not* a catch-all for performance woes: Some file formats which are implicitly compressed (e.g., JPEG, PNG, GIF, WOFF, et cetera) don't respond to compression because they're already compressed.
+- [Optimize images](/web/fundamentals/performance/optimizing-content-efficiency/automating-image-optimization/) to ensure your site sends as little image data as possible. [Since images make up a large portion of the average per-page payload on the web](http://httparchive.org/trends.php#bytesImg&reqImg), image optimization represents a uniquely large opportunity to boost performance.
+- If you have time, consider serving alternative image formats. [WebP](/speed/webp/) enjoys reasonably [broad browser support](https://caniuse.com/#feat=webp), and uses less data than JPEG and PNG while keeping visual quality high. [JPEG XR is another alternative format](https://jpeg.org/jpegxr/index.html) supported in IE and Edge offering similar savings.
+- [Deliver images responsively](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images). The huge diversity of devices and their screens presents a tremendous opportunity to improve performance by sending images that are the best fit for the screens that view them. In the simplest use cases, you can add an [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset) to an `<img>` element to specify an array of images the browser can choose from. On the more complex side of things, you can use `<picture>` to help the browser choose the most optimal format (e.g., WebP over JPEG or PNG), or serve altogether different treatments of images for different screen sizes.
+- [Use video instead of animated GIFs](/web/fundamentals/performance/optimizing-content-efficiency/replace-animated-gifs-with-video/). Animated GIFs are *massive*. Videos of similar quality are *far* smaller, often by 80% or so. If your site makes heavy use of animated GIFs, this is probably the most impactful thing you can do to improve loading performance.
+- [Client hints](http://httpwg.org/http-extensions/client-hints.html) can tailor resource delivery based on current network conditions and device characteristics. The `DPR`, `Width` and `Viewport-Width` headers can help you [deliver the best images for a device using server-side code *and* deliver less markup](/web/updates/2015/09/automating-resource-selection-with-client-hints). The `Save-Data` header can help you [deliver lighter application experiences for users who are specifically asking you to do so](/web/updates/2016/02/save-data).
+- The [`NetworkInformation` API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation) exposes information about the user's network connection. This information can be used to modify application experiences for users on slower networks.
 
-전송하는 데이터의_양_에 대한 몇 가지 제안이 있습니다.
+For a more holistic guide on improving performance, check out our writeup on [the RAIL performance model](/web/fundamentals/performance/rail), which focuses on improving both load time and application responsiveness. [Our PRPL pattern guide is also an excellent resource](/web/fundamentals/performance/prpl-pattern/) for improving the performance of modern single page applications.
 
-- [텍스트
-자산 최소화](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations).
-최소화란 불필요한 공백, 주석, 텍스트 기반 리소스의 기타 콘텐츠를
-삭제하는 것입니다. 이렇게 하면 기능에 영향을 미치지 않고도
-사용자에게 보내는 데이터 양을 크게 줄일 수 있습니다. [자바스크립트에서
-난독화(Uglification)](https://www.npmjs.com/package/uglifyjs)를 이용하여
-변수와 메서드 이름을 줄임으로써 더욱 절약할 수 있습니다. SVG는 텍스트 기반 이미지
-형식이므로 [SVGO로 최적화할 수 있습니다](https://github.com/svg/svgo).
-- [서버가
-리소스를 압축하도록 구성](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer).
-압축은 사용자에게 전송하는 데이터 중에서도
-_특히_텍스트 자산의 양을 크게 감소시킵니다. GZIP이 가장 인기 있는 선택지지만, [Brotli 압축은
-더 많은 것을 할 수 있습니다](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/).
-단, 압축은 성능 문제에 대한 능사가_ 아니라는_점을 알아야 합니다.
-암묵적 압축된 일부 파일 형식(예: JPEG, PNG, GIF, WOFF
-등)은 이미 압축되었으므로 압축에 반응하지 않습니다.
-- [이미지를
-최적화](/web/fundamentals/performance/optimizing-content-efficiency/automating-image-optimization/)하여
-사이트가 최소한의 이미지 데이터를 전송하도록 합니다. [이미지는 웹에서 평균적인 페이지당
-페이로드의 큰 부분을
-차지하므로](http://httparchive.org/trends.php#bytesImg&reqImg), 이미지 최적화는
-성능을 크게 향상하는 독자적인 다양한 기회를 제공합니다.
-- 시간이 있다면 대체 이미지 형식을 제공하는 것을 고려해 보세요.
-[WebP](/speed/webp/)는 상당히 [폭넓은 브라우저
-지원](https://caniuse.com/#feat=webp)이 제공되며, 시각적 품질은 높게 유지하면서도 JPEG나 PNG보다
-적은 데이터를 사용합니다. [JPEG XR는 IE 및 Edge에서 지원되는 또 다른
-대체 형식](https://jpeg.org/jpegxr/index.html)으로,
-유사하게 절약할 수 있습니다.
-- [이미지를
-반응형으로 전달](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images).
-기기와 화면의 폭넓은 다양성은
-이미지가 나타나는 화면에 가장 알맞은 이미지를 전송함으로써
-성능을 향상할 수 있는 엄청난 기회를 제공합니다. 가장 간단한 사용 사례는 [`srcset`
-속성](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset)을
-`<img>` 요소에 추가하여 브라우저가 선택할 수 있는 다양한 이미지를 지정하는 것입니다.
-조금 더 복잡한 측면으로는 `<picture>`을 이용하여 브라우저가
-최적의 형식(예: JPEG나 PNG보다 WebP)을 선택하도록 돕거나 다양한 화면 크기에 대해 각기 다른 이미지 처리를
-한꺼번에 제공할 수도 있습니다.
-- [애니메이션
-GIF 대신 동영상 사용](/web/fundamentals/performance/optimizing-content-efficiency/replace-animated-gifs-with-video/).
-애니메이션 GIF는_거대합니다_. 비슷한 품질의
-동영상은_훨씬_작습니다(보통 80% 정도). 사이트에 애니메이션 GIF를 많이 사용한다면
-이 방식이 로딩 성능을 향상하는 데 가장 큰 영향을 미칠 것입니다.
-- [클라이언트 힌트](http://httpwg.org/http-extensions/client-hints.html)는
-현재 네트워크 상황과 기기
-특징에 따라 리소스 전달을 재단합니다. `DPR`, `Width`, `Viewport-Width` 헤더가
-[서버측 코드를 사용하는 기기에 대한 최적의 이미지 전달_및_적은
-마크업 전달](/web/updates/2015/09/automating-resource-selection-with-client-hints)에 도움을 줄 수 있습니다.
-`Save-Data` 헤더는 [특별히 가벼운 애플리케이션 경험을 요청하는
-사용자에게 원하는 바를 제공할 수 있도록](/web/updates/2016/02/save-data) 도울 수 있습니다.
-- [`NetworkInformation`
-API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation)는
-사용자의 네트워크 연결에 관한 정보를 노출합니다. 이 정보는 느린 네트워크를 이용하는 사용자를 위해 애플리케이션 경험을 수정하는 데
-사용할 수 있습니다.
+If you're excited to learn more about performance and how to make your site faster, browse through our performance documentation for guides on a variety of topics. We're constantly adding new guides and updating existing ones, so keep coming back!
 
-성능 향상에 관한 총체적인 가이드는
-[the RAIL performance model](/web/fundamentals/performance/rail)에서 우리의 글을 확인해 보세요. 이 글은
-로드 시간과 애플리케이션 반응성을 모두 향상하는 데 초점을 맞추고 있습니다. [PRPL 패턴
-가이드](/web/fundamentals/performance/prpl-pattern/)도 최신 단일 페이지
-애플리케이션의 성능 향상을 위한
-훌륭한 리소스입니다.
+*Special thanks to [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff Posnick](/web/resources/contributors/jeffposnick), [Matt Gaunt](/web/resources/contributors/mattgaunt), [Philip Walton](/web/resources/contributors/philipwalton), [Vinamrata Singal](/web/resources/contributors/vinamratasingal), [Daniel An](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/), and [Pete LePage](/web/resources/contributors/petelepage) for their extensive feedback in improving and launching this resource!*
 
-성능 및 사이트
-를 더 빠르게 하는 방법에 대해 자세히 알아보려면, 다양한 주제에 관한 우리의 성능 문서를
-둘러보세요. 계속해서 새로운 가이드를 추가하고 기존 가이드를 업데이트하고 있으니
-자주 방문해 주세요!
-
-_이 리소스를 향상하고 런칭하는 데 폭넓은 의견을 제시해 주신 [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff
-Posnick](/web/resources/contributors/jeffposnick), [Matt
-Gaunt](/web/resources/contributors/mattgaunt), [Philip
-Walton](/web/resources/contributors/philipwalton), [Vinamrata
-Singal](/web/resources/contributors/vinamratasingal), [Daniel
-An](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/),
-[Pete LePage](/web/resources/contributors/petelepage)께 특별한
-감사를 드립니다._
-
-## 의견 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

@@ -1,175 +1,90 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Introdução à semântica e à tecnologia assistiva
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to semantics and assistive technology
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Introduction to Semantics {: .page-title }
 
-# Introdução à semântica {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+You've seen how to make a site accessible to users who can't use a mouse or pointing device &mdash; whether due to physical impairment, a technology issue, or personal preference &mdash; by addressing keyboard-only use. While it requires some care and thought, it's not a huge amount of work if you plan it from the beginning. Once that basic work is done, you're a long way down the path to a fully accessible and more polished site.
 
+In this lesson, we'll build on that work and get you thinking about other accessibility factors, such as how to build websites to support [users like Victor Tsaran](/web/fundamentals/accessibility/#understanding-users-diversity), who can't see the screen.
 
+First, we'll get some background on *assistive technology*, the general term for tools like screen readers that help users with impairments that can keep them from accessing information.
 
-Você já viu como tornar um site acessível para usuários que não podem usar um mouse ou
-dispositivo de ponteiro &mdash; seja por uma deficiência física, uma questão tecnológica
-ou preferência pessoa &mdash; abordando o uso com apenas o teclado. Embora
-cautela e reflexão sejam necessárias, isso não é muito trabalhoso se você planejar
-desde o início. Quando o trabalho básico estiver concluído, você terá trilhado grande parte da
-jornada para um site aprimorado e totalmente acessível.
+Next, we'll look at some general user experience concepts, and build on those to take a deeper dive into the experience of users of assistive technology.
 
-Nesta lição, desenvolveremos esse trabalho e faremos você considerar outros
-fatores de acessibilidade, por exemplo, como criar sites que ofereçam suporte para [usuários como
-Victor Tsaran](/web/fundamentals/accessibility/#understanding-users-diversity),
-que não conseguem enxergar a tela.
+Finally, we'll see how to use HTML effectively to create a good experience for these users, and how it overlaps quite a bit with the way we addressed focus earlier.
 
-Primeiro, vamos estabelecer o pano de fundo da *tecnologia assistiva*, que é um termo genérico para
-ferramentas como leitores de tela, que ajudam usuários com deficiências que podem impedi-los de
-acessar informações.
+## Assistive technology
 
-Em seguida, examinaremos alguns conceitos gerais da experiência do usuário, e desenvolveremos esses conceitos para
-nos aprofundarmos mais sobre a experiência dos usuários da tecnologia assistiva.
+*Assistive technology* is an umbrella term for devices, software, and tools that help any person with a disability complete a task. In the broadest sense this could be something low-tech like a crutch for walking or a magnifying glass for reading, or something high-tech like a robotic arm or image recognition software on a smartphone.
 
-Por fim, veremos como usar o HTML de maneira eficaz para criar uma boa experiência para
-esses usuários, e como grande parte dessas técnicas já foram abordadas quando falamos de foco
-anteriormente.
+![assistive technology examples including crutch magnifying glass and robotic
+prosthesis](imgs/assistive-tech1.png)
 
-## Tecnologia assistiva
+Assistive technology can include something as general as browser zoom, or as specific as a custom-designed game controller. It can be a separate physical device like a braille display, or be implemented completely in software like voice control. It can be built-in to the operating system like some screen readers, or it can be an add-on like a Chrome extension.
 
-*Tecnologia assistiva* é um termo genérico para dispositivos, software e ferramentas que
-ajudam pessoas com deficiências a realizar uma tarefa. No sentido mais amplo,
-pode ser algo não tecnológico como uma muleta para auxiliar a pessoa a andar ou uma lupa para
-leitura, ou algo tecnológico como um braço robótico ou um software de reconhecimento de imagens
-em um smartphone.
+![more assistive technology examples including browser zoom braille display and
+voice control](imgs/assistive-tech2.png)
 
-![exemplos de tecnologia assistiva, incluindo muletas, lupas e próteses
-robóticas](imgs/assistive-tech1.png)
+The line between assistive technology and technology in general is blurry; after all, all technology is meant to assist people with some task or another. And technologies can often move into and out of the "assistive" category.
 
-A tecnologia assistiva pode incluir algo genérico como o recurso de zoom de um navegador
-ou específico como um controle de jogos personalizado. Pode ser um dispositivo físico separado
-como um terminal braille ou ser implementado totalmente em software como
-o recurso de controle de voz. Pode ser incorporado ao sistema operacional como alguns leitores
-de tela ou um complemento como uma extensão do Chrome.
+For example, one of the earliest commercial speech synthesis products was a talking calculator for the blind. Now speech synthesis is all over the place, from driving directions to virtual assistants. Conversely, technology that was originally general-purpose often finds an assistive use. For example, people with low vision may use their smartphone's camera zoom to get a better look at something small in the real world.
 
-![mais exemplos de tecnologia assistiva, incluindo terminal braille e recurso de
-controle de voz](imgs/assistive-tech2.png)
+In the context of web development, we must consider a diverse range of technologies. People may interact with your website using a screen reader or braille display, with a screen magnifier, via voice control, using a switch device, or with some other form of assistive technology that adapts the page's default interface to create a more specific interface that they can use.
 
-A linha entre a tecnologia auxiliar e a tecnologia em geral é tênue, afinal,
-toda tecnologia tem como objetivo auxiliar as pessoas a realizar alguma tarefa. Além disso,
-tecnologias podem entrar e sair da categoria "auxiliar" com frequência.
-
-Por exemplo, um dos primeiros produtos comerciais de síntese de fala foi uma
-calculadora falante para deficientes visuais. Agora, a síntese de fala está muito difundida,
-de instruções de GPS para motoristas a assistentes virtuais. Por outro lado, tecnologias que anteriormente
-eram genéricas frequentemente encontram um uso auxiliar. Por exemplo, pessoas
-com visão reduzida podem usar o recurso de zoom da câmera de um smartphone para enxergar melhor
-algo pequeno no mundo real.
-
-No contexto de desenvolvimento Web, devemos considerar uma grande variedade de
-tecnologias. As pessoas podem interagir com seu site usando um leitor de tela ou
-um terminal braille, com um ampliador de tela, controle de voz, dispositivo de
-switch ou outra forma de tecnologia assistiva que adapte a interface padrão
-da página para criar uma interface mais específica que elas possam usar.
-
-Muitas dessas tecnologias assistivas dependem de uma *semântica programaticamente
-expressa* para criar uma experiência de usuário acessível, que é o objetivo principal
-desta lição. Mas, antes de explicarmos a semântica programaticamente expressa,
-precisamos falar um pouco sobre *affordances*.
+Many of these assistive technologies rely on *programmatically expressed semantics* to create an accessible user experience, and that's what most of this lesson is about. But before we can explain programmatically expressed semantics, we need to talk a bit about *affordances*.
 
 ## Affordances
 
-Quando usamos uma ferramenta ou um dispositivo feito pelo homem, geralmente observamos sua forma e seu design
-para ter uma ideia do que ele faz e como funciona. Uma *affordance* é qualquer
-objeto que proporcione (“afford”, em inglês) ao usuário a oportunidade de realizar uma ação.
-Quanto melhor for o design da affordance, mais óbvio e intuitivo é seu uso.
+When we use a man-made tool or device, we typically look to its form and design to give us an idea of what it does and how it works. An *affordance* is any object that offers, or affords, its user the opportunity to perform an action. The better the affordance is designed, the more obvious or intuitive its use.
 
-Um exemplo clássico é a chaleira. É fácil de reconhecer que você
-deve segurá-la pela alça, não pelo bico, mesmo que você nunca tenha
-visto uma chaleira antes.
+A classic example is a kettle or teapot. You can easily recognize that you should pick it up by the handle, not the spout, even if you've never seen a teapot before.
 
-![uma chaleira com alça e bico](imgs/teapot.png)
+![a teapot with handle and spout](imgs/teapot.png)
 
-Isso ocorre porque a affordance é semelhante ao que você já viu em muitos outros
-objetos, como regadores, jarros, xícaras e assim por diante. É
-provavelmente possível segurar a chaleira pelo bico, mas sua experiência com
-affordances semelhantes indica que a opção melhor é usar a alça.
+That's because the affordance is similar to those you have seen on many other objects -- watering pots, beverage pitchers, coffee mugs, and so on. You probably *could* pick up the pot by the spout, but your experience with similar affordances tells you the handle is the better option.
 
-Em interfaces de usuário gráficas, affordances representam ações que podemos realizar, mas
-elas podem ser ambíguas por não haver um objeto físico com o qual interagir. Portanto, affordances
-de GUI são especificamente projetadas para não serem ambíguas: botões, caixas de
-seleção e barras de rolagem devem transmitir seu modo de uso sem precisar
-de treinamento.
+In graphical user interfaces, affordances represent actions we can take, but they can be ambiguous because there is no physical object to interact with. GUI affordances are thus specifically designed to be unambiguous: buttons, check boxes, and scroll bars are meant to convey their usage with as little training as possible.
 
-Por exemplo, você pode parafrasear o uso de alguns elementos de forma comuns
-(affordances) da seguinte maneira:
+For example, you might paraphrase the use of some common form elements (affordances) like this:
 
- - Botões de opção &mdash; “Posso escolher uma destas opções.”
- - Caixa de seleção &mdash; “Posso escolher ‘sim’ ou ‘não’ para esta opção.”
- - Campo de texto &mdash; “Posso digitar algo nesta área.”
- - Lista suspensa &mdash; “Posso abrir este elemento para exibir minhas opções.”
+- Radio buttons &mdash; "I can choose one of these options."
+- Check box &mdash; "I can choose 'yes' or 'no' to this option."
+- Text field &mdash; "I can type something into this area."
+- Dropdown &mdash; "I can open this element to display my options."
 
-Você pode tirar conclusões sobre esses elementos *somente porque pode
-vê-los*. Naturalmente, alguém que não consegue enxergar as indicações visuais fornecidas por um elemento
-não pode compreender seu significado ou entender intuitivamente o valor da affordance.
-Portanto, devemos garantir que as informações sejam expressas de forma flexível o bastante para
-serem acessadas por tecnologias assistivas que podem criar uma interface alternativa para
-atender às necessidades do usuário.
+You are able to draw conclusions about these elements *only because you can see them*. Naturally, someone who can't see the visual clues provided by an element can't comprehend its meaning or intuitively grasp the value of the affordance. So we must make sure that the information is expressed flexibly enough to be accessed by assistive technology that can construct an alternative interface to suit its user's needs.
 
-Essa exposição não visual do uso de uma affordance é chamada de *semântica*.
+This non-visual exposure of an affordance's use is called its *semantics*.
 
-## Leitores de tela
+## Screen readers
 
-Um tipo popular de tecnologia assistiva é o *leitor de tela*, um programa que
-permite que pessoas com deficiências visuais usem computadores ao ler o texto da tela
-com uma voz gerada eletronicamente. O usuário pode controlar o que é lido movendo o cursor
-para uma área relevante usando o teclado.
+One popular type of assistive technology is the *screen reader*, a program that enables visually impaired people to use computers by reading screen text aloud in a generated voice. The user can control what is read by moving the cursor to a relevant area with the keyboard.
 
-Pedimos que [Victor
-Tsaran](/web/fundamentals/accessibility/#understanding-users-diversity)
-explicasse como ele acessa a Web, como deficiente visual, usando o leitor de tela
-incorporado ao OS X, que é chamado de VoiceOver. Confira [este
-vídeo](https://www.youtube.com/watch?v=QW_dUs9D1oQ) do Victor usando o VoiceOver.
+We asked [Victor Tsaran](/web/fundamentals/accessibility/#understanding-users-diversity) to explain how, as a blind person, he accesses the web using a the built-in screen reader on OS X, called VoiceOver. See [this video](https://www.youtube.com/watch?v=QW_dUs9D1oQ) of Victor using VoiceOver.
 
-Agora, é sua vez de tentar usar um leitor de tela. Aqui está uma página com o *ChromeVox
-Lite*, um leitor de tela mínimo, mas funcional, programado em JavaScript. A tela
-é propositalmente desfocada para simular uma experiência de baixa visão e forçar o usuário a
-realizar a tarefa com um leitor de tela. Naturalmente, você precisará usar
-o navegador Chrome para esse exercício.
+Now, it's your turn to try using a screen reader. Here is a page with *ChromeVox Lite*, a minimal but functioning screen reader written in JavaScript. The screen is purposefully blurred to simulate a low-vision experience and force the user to complete the task with a screen reader. Of course, you'll need to use the Chrome browser for this exercise.
 
-[Página de demonstração do ChromeVox Lite](http://udacity.github.io/ud891/lesson3-semantics-built-in/02-chromevox-lite/)
+[ChromeVox lite demo page](http://udacity.github.io/ud891/lesson3-semantics-built-in/02-chromevox-lite/)
 
-Você pode usar o painel de controle na parte inferior da tela para controlar o leitor de
-tela. As funcionalidades desse leitor de tela são mínimas, mas você pode explorar
-o conteúdo usando os botões `Previous` e `Next` e clicar em elementos
-usando o botão `Click`.
+You can use the control panel at the bottom of the screen to control the screen reader. This screen reader has very minimal functionality, but you can explore the content using the `Previous` and `Next` buttons, and you can click things using the `Click` button.
 
-Experimente usar essa página com o ChromeVox Lite ativado para ter uma ideia do uso
-de um leitor de tela. Considere o fato de que um leitor de tela (ou outra tecnologia assistiva)
-cria uma experiência de usuário totalmente alternativa com base na
-semântica programaticamente expressa. Em vez de uma interface visual, o leitor
-de tela oferece uma interface auditiva.
+Try using this page with ChromeVox lite enabled to get a feel for screen reader use. Think about the fact that a screen reader (or other assistive technology) actually creates a complete alternate user experience for the user based on the programmatically expressed semantics. Instead of a visual interface, the screen reader provides an audible interface.
 
-Observe como o leitor de tela fornece informações sobre cada elemento
-da interface. Deve-se esperar que um leitor bem projetado forneça todas, ou pelo menos
-a maior parte, das seguintes informações sobre os elementos encontrados.
+Notice how the screen reader tells you some information about each interface element. You should expect a well-designed reader to tell you all, or at least most, of the following information about the elements it encounters.
 
- - A *função* ou o tipo de elemento, se especificado (deve ser).
- - O *nome* do elemento, se ele tiver um (deve ter).
- - O *valor* do elemento, se ele tiver um (pode ter ou não).
- - O *estado* do elemento, por exemplo, se ele está ativado ou desativado (se
- aplicável).
+- The element's *role* or type, if it is specified (it should be).
+- The element's *name*, if it has one (it should).
+- The element's *value*, if it has one (it may or may not).
+- The element's *state*, e.g., whether it is enabled or disabled (if applicable).
 
-O leitor de tela pode criar essa interface alternativa porque os elementos
-nativos contêm metadados de acessibilidade incorporados. Da mesma forma que o mecanismo de renderização
-usa o código nativo para criar uma interface visual, o leitor de tela usa os
-metadados nos nós do DOM para criar uma versão acessível, semelhante à apresentada
-a seguir.
+The screen reader is able to construct this alternate UI because the native elements contain built-in accessibility metadata. Just as the rendering engine uses the native code to construct a visual interface, the screen reader uses the metadata in the DOM nodes to construct an accessible version, something like this.
 
-![um leitor de tela usa o DOM para criar
-nós acessíveis](imgs/nativecodetoacc.png)
+![a screen reader uses the DOM to create accessible
+nodes](imgs/nativecodetoacc.png)
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

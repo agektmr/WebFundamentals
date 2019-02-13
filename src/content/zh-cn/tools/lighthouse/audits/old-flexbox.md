@@ -1,40 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“网站不使用旧版 CSS Flexbox”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Old CSS Flexbox" Lighthouse audit.
 
-{# wf_updated_on:2017-12-19 #}
-{# wf_published_on:2016-12-05 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# 网站不使用旧版 CSS Flexbox {: .page-title }
+# Avoids Old CSS Flexbox {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-2009 年的旧 Flexbox 规范已弃用，其速度比最新的规范慢 2.3 倍。
-请参阅 [Flexbox 布局并不慢][slow]了解更多信息。
+The old, 2009 specification for Flexbox is deprecated and is 2.3x slower than the latest specification. See [Flexbox Layout Isn't Slow](/web/updates/2013/10/Flexbox-layout-isn-t-slow) to learn more.
 
+Caution: Consider ignoring this audit if a large portion of your users use UCBrowser. See [googlechrome/lighthouse#1710](https://github.com/GoogleChrome/lighthouse/issues/1710#issuecomment-294470505).
 
-[slow]: /web/updates/2013/10/Flexbox-layout-isn-t-slow
+## Recommendations {: #recommendations }
 
-## 如何通过此审查{: #how }
+Under **URLs**, Lighthouse lists every instance of `display: box` that it found on your page's stylesheets. Replace every instance with the new syntax, `display: flex`.
 
-在 **URLs** 下，Lighthouse 列出了它在页面样式表中找到的 `display: box` 的每个实例。
-将每个实例替换为新语法，`display: flex`。
+If a stylesheet is using `display: box`, then it may be using other deprecated Flexbox properties. In short, every property that begins with `box`, such as `box-flex`, is deprecated and should be replaced. See [CSS Flexbox 2009/2011 Spec Syntax Property Mapping](https://wiki.csswg.org/spec/flexbox-2009-2011-spec-property-mapping) to see exactly how the old properties map to the new ones.
 
+Lighthouse also flags vendor prefix values, such as `display: -ms-flexbox`. Lighthouse flags these so that you know that you're sending more bytes in your CSS than needed. If you're using Autoprefixer, you can prevent it from printing out vendor prefixes by adding the following rule to your `package.json` config:
 
-如果样式表当前在使用 `display: box`，则它可能在使用其他已弃用的 Flexbox 属性。
-简言之，以 `box` 开头的每个属性（如 `box-flex`）已弃用并且应予以替换。
-请参阅 [CSS Flexbox 2009/2011 规范语法属性对应关系][map]以准确了解旧版属性与新版属性的对应关系。
+    "browserslist": [
+      "last 2 versions",
+      "not ie <= 10",
+      "not ie_mob <= 10"
+    ]
+    
 
+## More information {: #more-info }
 
+Lighthouse collects all of the stylesheets used on the page and checks if any of them uses `display: box`. Lighthouse does not check if the stylesheets use any other deprecated properties.
 
-[map]: https://wiki.csswg.org/spec/flexbox-2009-2011-spec-property-mapping
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 收集页面上使用的所有样式表，并检查否有任何样式表使用 `display: box`。
-Lighthouse 不会检查样式表是否使用任何其他已弃用的属性。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,69 +1,75 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Пользователи заметят, если сайты и приложения работают плохо, поэтому оптимизация производительности визуализации имеет важнейшее значение!
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Users notice if sites and apps don't run well, so optimizing rendering performance is crucial!
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# Производительность визуализации {: .page-title }
+# Rendering Performance {: .page-title }
 
+{% include "web/_shared/contributors/paullewis.html" %}
 
+Users of today’s web [expect that the pages they visit will be interactive and smooth](https://paul.kinlan.me/what-news-readers-want/) and that’s where you need to increasingly focus your time and effort. Pages should not only load quickly, but also run well; scrolling should be stick-to-finger fast, and animations and interactions should be silky smooth.
 
-Сегодняшние интернет-пользователи <a href="http://paul.kinlan.me/what-news-readers-want/">хотят, чтобы открываемые ими страницы были интерактивными и работали плавно.</a> Именно этому и требуется уделять много времени и труда. Страницы должны не только быстро загружаться, но и работать хорошо: прокрутка должна быть быстрой, а анимация и взаимодействия – плавными
+To write performant sites and apps you need to understand how HTML, JavaScript and CSS is handled by the browser, and ensure that the code you write (and the other 3rd party code you include) runs as efficiently as possible.
 
-<img src="images/intro/response.jpg" class="center" alt="Пользователь, взаимодействующий с веб-сайтом.">
+## 60fps and Device Refresh Rates
 
-Длятого чтобы писать производительные сайты и приложения, необходимо понимать, каким образом браузер обрабатывает HTML, JavaScript и CSS. А уже на основе этих знаний необходимо предпринять усилия, чтобы ваш код (а также сторонний код, который вы используете) работал как можно эффективнее.
+<div class="attempt-right">
+  <figure>
+    <img src="images/intro/response.jpg" alt="User interacting with a website.">
+  </figure>
+</div>
 
-## 60 кадров в секунду и частота обновления экрана устройства
+Most devices today refresh their screens **60 times a second**. If there’s an animation or transition running, or the user is scrolling the pages, the browser needs to match the device’s refresh rate and put up 1 new picture, or frame, for each of those screen refreshes.
 
-Сегодня большинство устройств обновляют свои экраны **60 раз в секунду**. Если выполняется анимация или переход либо если пользователь прокручивает страницы, браузеру нужно соответствовать частоте обновления экрана устройства и выдавать по одной новой картинке (или кадру) при каждом обновлении экрана.
+Each of those frames has a budget of just over 16ms (1 second / 60 = 16.66ms). In reality, however, the browser has housekeeping work to do, so all of your work needs to be completed inside **10ms**. When you fail to meet this budget the frame rate drops, and the content judders on screen. This is often referred to as **jank**, and it negatively impacts the user's experience.
 
-Каждый из этих кадров может длиться чуть более 16 мс (1 секунда / 60 = 16,66 мс). В реальности же браузеру нужно выполнить и еще кое-какие действия, потому вся ваша работа должна занимать не более **10 мс**. Если не уложиться в эти рамки, частота кадров будет меньше, а контент начнет дергаться на экране. Часто эту ситуацию называют **подвисанием**, она отрицательно сказывается на восприятии пользователей.
+## The pixel pipeline
 
-## Конвейер пикселей
-Есть пять основных областей, о которых следует знать и помнить при выполнении своей работы. Это те области, которые вы в наибольшей степени контролируете. Они являются ключевыми точками конвейера вывода пикселей на экран.
+There are five major areas that you need to know about and be mindful of when you work. They are areas you have the most control over, and key points in the pixels-to-screen pipeline:
 
-<img src="images/intro/frame-full.jpg" class="center" alt="Полный конвейер пикселей">
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-* **JavaScript**. Обычно JavaScript используется для выполнения работы, результатом которой будут визуальные изменения, будь то функция jQuery `animate`, сортировка набора данных или добавление DOM-элементов на страницу. Однако вызывать визуальное изменение можно не только с помощью JavaScript: Также часто используются анимация CSS, переходы и API-интерфейс веб-анимации.
-* **Вычисление стилей**. В процессе вычисления стилей определяется, какие правила CSS к каким элементам применяются с учетом соответствующих селекторов, например: `.headline` или `.nav > .nav__item`. Отсюда, после того как правила определены, они применяются и вычисляются итоговые стили для каждого элемента.
-* **Расчет макета**. Как только браузер будет знать, какие правила применяются к элементу, он может начать вычислять, сколько места он займет, и где он находится на экране. Модель макета для Интернета означает, что один элемент может влиять на другие, например: ширина элемента `<body>` обычно влияет на значения ширины дочерних элементов и так далее по всему дереву, поэтому этот процесс для браузера может быть довольно сложным.
-* **Прорисовка**. Прорисовка – это процесс заполнения пикселей. Он подразумевает вывод текста, цветов, изображений, границ и теней, по сути – всех визуальных частей элементов. Прорисовка обычно выполняется на нескольких поверхностях, которые называются слоями.
-* **Компоновка**. Поскольку части страницы потенциально были прорисованы на нескольких слоях, они должны быть выведены на экран в надлежащем порядке, с тем чтобы страница отображалась правильно. Это особенно важно для элементов, которые перекрывают другие элементы, поскольку ошибка может привести к тому, что один элемент будет неправильно показан поверх другого элемента.
+* **JavaScript**. Typically JavaScript is used to handle work that will result in visual changes, whether it’s jQuery’s `animate` function, sorting a data set, or adding DOM elements to the page. It doesn’t have to be JavaScript that triggers a visual change, though: CSS Animations, Transitions, and the Web Animations API are also commonly used.
+* **Style calculations**. This is the process of figuring out which CSS rules apply to which elements based on matching selectors, for example, `.headline` or `.nav > .nav__item`. From there, once rules are known, they are applied and the final styles for each element are calculated.
+* **Layout**. Once the browser knows which rules apply to an element it can begin to calculate how much space it takes up and where it is on screen. The web’s layout model means that one element can affect others, for example the width of the `<body>` element typically affects its children’s widths and so on all the way up and down the tree, so the process can be quite involved for the browser.
+* **Paint**. Painting is the process of filling in pixels. It involves drawing out text, colors, images, borders, and shadows, essentially every visual part of the elements. The drawing is typically done onto multiple surfaces, often called layers.
+* **Compositing**. Since the parts of the page were drawn into potentially multiple layers they need to be drawn to the screen in the correct order so that the page renders correctly. This is especially important for elements that overlap another, since a mistake could result in one element appearing over the top of another incorrectly.
 
-Каждая из этих частей конвейера является потенциальным источником подвисания. Поэтому важно точно понимать, какие части конвейера срабатывают при выполнении вашего кода.
+Each of these parts of the pipeline represents an opportunity to introduce jank, so it's important to understand exactly what parts of the pipeline your code triggers.
 
-Note: Иногда, когда речь идет о прорисовке, можно услышать термин 'растеризовать'. Связано это с тем, что прорисовка, по сути, состоит из двух операций: 1) создания списка команд draw call и 2) заполнения пикселей.
-Последняя операция называется 'растеризацией', поэтому, когда вы видите записи о прорисовке в DevTools, это означает, что также подразумевается и растеризация. (В некоторых вариантах архитектуры создание списка команд draw call и растеризация выполняются в разных потоках, однако разработчик не может этого контролировать.)
+Sometimes you may hear the term "rasterize" used in conjunction with paint. This is because painting is actually two tasks: 1) creating a list of draw calls, and 2) filling in the pixels.
 
-Далеко не всегда каждый кадр затрагивает все части конвейера. На самом деле есть три варианта, в соответствии с которыми конвейер_обычно_ воспроизводится для данного кадра при внесении визуального изменения, – с помощью JavaScript, CSS или веб-анимации:
+The latter is called "rasterization" and so whenever you see paint records in DevTools, you should think of it as including rasterization. (In some architectures creating the list of draw calls and rasterizing are done in different threads, but that isn't something under developer control.)
 
-### 1. JS / CSS > Стиль > Расчет макета > Прорисовка > Компоновка
+You won’t always necessarily touch every part of the pipeline on every frame. In fact, there are three ways the pipeline *normally* plays out for a given frame when you make a visual change, either with JavaScript, CSS, or Web Animations:
 
-<img src="images/intro/frame-full.jpg" class="center" alt="Полный конвейер пикселей">
+### 1. JS / CSS > Style > Layout > Paint > Composite
 
-Если изменить свойство, относящееся к макету, например такое свойство геометрии элемента, как ширина, высота или положение относительно левого верхнего угла, браузеру придется проверить все остальные элементы и перерасчитать дерево отрисовки страницы. Все затронутые области необходимо будет прорисовать заново, а итоговые элементы нужно будет снова скомпоновать.
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-### 2. JS / CSS > Стиль > Прорисовка > Компоновка
+If you change a “layout” property, so that’s one that changes an element’s geometry, like its width, height, or its position with left or top, the browser will have to check all the other elements and “reflow” the page. Any affected areas will need to be repainted, and the final painted elements will need to be composited back together.
 
-<img src="images/intro/frame-no-layout.jpg" class="center" alt="Конвейер пикселей без перерасчета макета.">
+### 2. JS / CSS > Style > Paint > Composite
 
-Если изменить свойство, которое связано только с прорисовкой, например фоновое изображение, цвет текста или его тень, другими словами, свойство, которое не влияет на макет страницы, браузер оставит макет неизменным, но ему все равно придется выполнить прорисовку.
+<img src="images/intro/frame-no-layout.jpg" alt="The  pixel pipeline without layout." />
 
-### 3. JS / CSS > Стиль > Компоновка
+If you changed a “paint only” property, like a background image, text color, or shadows, in other words one that does not affect the layout of the page, then the browser skips layout, but it will still do paint.
 
-<img src="images/intro/frame-no-layout-paint.jpg" class="center" alt="Конвейер пикселей без перерасчета макета или прорисовки.">
+### 3. JS / CSS > Style > Composite
 
-Если же изменить свойство, которое не требует ни перерасчета макета, ни прорисовки, браузер сразу же перейдет к компоновке.
+<img src="images/intro/frame-no-layout-paint.jpg" alt="The pixel pipeline without layout or paint." />
 
-Последний вариант является самым простым и наиболее предпочтительным для точек высокой нагрузки в жизненном цикле приложения, например при анимации или прокрутке.
+If you change a property that requires neither layout nor paint, and the browser jumps to just do compositing.
 
-Note: Если вы желаете узнать, какие из приведенных выше трех вариантов вызовут изменение того или иного свойства CSS, читайте статью <a href='http://csstriggers.com'>Срабатывание событий при изменении CSS</a>. Если вы сразу хотите узнать, как создавать высокопроизводительную анимацию, прочитайте раздел об <a href='stick-to-compositor-only-properties-and-manage-layer-count'>изменении свойств, которые затрагивают только компоновку</a>.
+This final version is the cheapest and most desirable for high pressure points in an app's lifecycle, like animations or scrolling.
 
-Производительность – это искусство избегать работы и делать любую работу как можно более эффективно. Во многих случаях это означает работу вместе с браузером, а не против него. Стоит помнить, что описанная выше работа в конвейере отличается по затратам вычислительных ресурсов: одни задачи являются более ресурсоемкими, чем другие!
+Note: If you want to know which of the three versions above changing any given CSS property will trigger head to [CSS Triggers](https://csstriggers.com). And if you want the fast track to high performance animations, read the section on [changing compositor-only properties](stick-to-compositor-only-properties-and-manage-layer-count).
 
-Давайте разберемся с разными частями конвейера. Мы рассмотрим стандартные проблемы, а также методы их диагностики и устранения.
+Performance is the art of avoiding work, and making any work you do as efficient as possible. In many cases it's about working with the browser, not against it. It’s worth bearing in mind that the work listed above in the pipeline differ in terms of computational cost; some tasks are more expensive than others!
 
+Let’s take a dive into the different parts of the pipeline. We’ll take a look at the common issues, as well how to diagnose and fix them.
 
 {% include "web/_shared/udacity/ud860.html" %}
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

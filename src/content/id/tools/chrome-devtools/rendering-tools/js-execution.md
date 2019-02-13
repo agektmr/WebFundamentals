@@ -1,148 +1,102 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Identifikasi fungsi yang berat dengan menggunakan CPU Profiler di Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-{# wf_updated_on: 2016-03-30 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Percepat Eksekusi JavaScript {: .page-title }
+# Speed Up JavaScript Execution {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Identifikasi fungsi yang berat dengan menggunakan CPU Profiler di 
-Chrome DevTools.
+Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-![profil CPU](imgs/cpu-profile.png)
-
+![CPU profile](imgs/cpu-profile.png)
 
 ### TL;DR {: .hide-from-toc }
-- Rekam secara persis fungsi mana yang dipanggil dan berapa lama waktu yang dihabiskan masing-masing fungsi dengan CPU Profiler.
-- Memvisualkan profil Anda sebagai flame chart.
 
+* Record exactly which functions were called and how long each took with the CPU Profiler.
+* Visualize your profiles as a flame chart.
 
-## Merekam profil CPU {:#record-profile}
+## Record a CPU profile {:#record-profile}
 
-Jika Anda melihat adanya jank atau sendatan di JavaScript, kumpulkan profil CPU JavaScript.
-Profil CPU menampilkan di mana saja waktu eksekusi dihabiskan di fungsi laman Anda.
+If you’re noticing jank in your JavaScript, collect a JavaScript CPU profile. CPU profiles show where execution time is spent in your page’s functions.
 
-1. Masuklah ke panel **Profiles** di DevTools.
-2. Pilih tombol radio **Collect JavaScript CPU Profile**.
-3. Tekan **Start**.
-4. Tergantung pada apa yang ingin Anda coba analisis, Anda bisa memuat ulang 
-   laman, berinteraksi dengan laman, atau hanya membiarkan laman berjalan.
-5. Tekan tombol **Stop** setelah selesai. 
+1. Go to the **Profiles** panel of DevTools.
+2. Select the **Collect JavaScript CPU Profile** radio button.
+3. Press **Start**. 
+4. Depending on what you are trying to analyze, you can either reload the page, interact with the page, or just let the page run.
+5. Press the **Stop** button when you are finished. 
 
-Anda juga bisa menggunakan [Command Line API][profile] untuk merekam dan mengelompokkan profil 
-dari baris perintah.
+You can also use the [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname) to record and group profiles from the command line.
 
-[profile]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname
+## View CPU profile {:#view-profile}
 
-## Tampilkan profil CPU {:#view-profile}
+When you finish recording, DevTools automatically populates the Profile panel with the data from your recording.
 
-Bila Anda selesai merekam, DevTools secara otomatis mengisi panel Profile
-dengan data dari rekaman. 
+The default view is **Heavy (Bottom Up)**. This view enables you to see which functions had the most impact on performance and examine the calling paths to those functions.
 
-Tampilan defaultnya adalah **Heavy (Bottom Up)**. Tampilan ini memungkinkan Anda melihat 
-fungsi mana yang berdampak paling besar terhadap kinerja dan memeriksa jalur
-yang memanggil ke fungsi tersebut. 
+### Change sort order {:#sort}
 
-### Mengubah urutan penyortiran {:#sort}
+To change the sorting order, click on the dropdown menu next to the **focus selected function** icon (![focus selected function icon](imgs/focus.png){:.inline}) and then choose one of the following options:
 
-Untuk mengubah urutan penyortiran, klik menu tarik-turun di sebelah ikon 
-**focus selected function**
-(![ikon focus selected function](imgs/focus.png){:.inline}) 
-kemudian pilih salah satu opsi berikut:
+**Chart**. Displays a chronological flame chart of the recording.
 
-**Bagan**. Menampilkan bagan api kronologis rekaman.
+![flame chart](imgs/flamechart.png)
 
-![bagan api](imgs/flamechart.png)
+**Heavy (Bottom Up)**. Lists functions by impact on performance and enables you to examine the calling paths to the functions. This is the default view.
 
-**Heavy (Bottom Up)**. Menampilkan fungsi menurut dampak pada kinerja dan memungkinkan Anda
-memeriksa jalur yang memanggil ke fungsi. Ini adalah tampilan default-nya. 
+![heavy chart](imgs/heavy.png)
 
-![bagan heavy](imgs/heavy.png)
+**Tree (Top Down)**. Shows an overall picture of the calling structure, starting at the top of the call stack.
 
-**Tree (Top Down)**. Menampilkan gambaran keseluruhan struktur pemanggilan, 
-mulai dari bagian paling atas tumpukan panggilan. 
+![tree chart](imgs/tree.png)
 
-![bagan tree](imgs/tree.png)
+### Exclude functions {:#exclude}
 
-### Mengecualikan fungsi {:#exclude}
+To exclude a function from your CPU profile, click on it to select it and then press the **exclude selected function** icon (![exclude function icon](imgs/exclude.png){:.inline}). The caller of the excluded function is charged with the excluded function's total time.
 
-Untuk mengecualikan fungsi dari profil CPU Anda, klik fungsi yang dimaksud untuk memilihnya dan 
-tekan ikon **exclude selected function** 
-(![ikon exclude function](imgs/exclude.png){:.inline}). Pemanggil fungsi 
-yang dikecualikan dibebani dengan waktu total fungsi yang dikecualikan.
+Click the **restore all functions** icon (![restore all functions icon](imgs/restore.png){:.inline}) to restore all excluded functions back into the recording.
 
-Klik ikon **restore all functions** 
-(![restore all functions icon](imgs/restore.png){:.inline})
-untuk mengembalikan semua fungsi yang dikecualikan ke rekaman.
+## View CPU profile as Flame Chart {:#flame-chart}
 
-## Menampilkan profil CPU sebagai Flame Chart {:#flame-chart}
+The Flame Chart view provides a visual representation of the CPU profile over time.
 
-Tampilan Flame Chart menyediakan gambaran visual profil CPU
-seiring waktu.
+After [recording a CPU profile](#record-profile), view the recording as a flame chart by [changing the sort order](#sort) to **Chart**.
 
-Setelah [merekam profil CPU](#record-profile), tampilkan rekaman sebagai 
-bagan api dengan [mengubah urutan penyortiran](#sort) ke **Chart**.
+![Flamechart view](imgs/flamechart.png)
 
-![Tampilan bagan api](imgs/flamechart.png)
+The flame chart is split into two parts:
 
-Bagan api dipecah menjadi dua bagian:
+1. **Overview**. A birds-eye view of the entire recording. The height of the bars correspond to the depth of the call stack. So, the higher the bar, the deeper the call stack.
 
-1. **Overview**. Tampilan menyeluruh seluruh rekaman.
-   Tinggi bilah menggambarkan kedalaman 
-   tumpukan panggilan. Jadi, semakin tinggi bilah, semakin dalam tumpukan panggilan. 
+2. **Call Stacks**. This is an in-depth view of the functions that were called during the recording. The horizontal axis is time and vertical axis is the call stack. The stacks are organized top-down. So, the function on top called the one below it, and so on.
+    
+    Functions are colored randomly. There is no correlation to the colors used in the other panels. However, functions are always colored the same across invocations so that you can see patterns of executions.
 
-2. **Call Stacks**. Ini adalah tampilan mendalam fungsi yang dipanggil 
-   selama rekaman. Sumbu horizontal adalah waktu dan sumbu vertikal adalah 
-   tumpukan panggilan. Tumpukan disusun dari atas ke bawah. Jadi, fungsi di atas
-  memanggil fungsi di bawahnya, dan seterusnya. 
+![annotated flame chart](imgs/annotated-cpu-flame.png)
 
-   Fungsi diberi warna secara acak. Tidak ada hubungan antara warna yang digunakan
-   di panel lainnya. Akan tetapi, fungsi selalu diberi warna yang sama
-   di seluruh pemanggilan sehingga Anda bisa melihat pola eksekusi. 
+A tall call stack is not necessarily significant, it just means that a lot of functions were called. But a wide bar means that a call took a long time to complete. These are candidates for optimization.
 
-![bagan api beranotasi](imgs/annotated-cpu-flame.png)
+### Zoom in on specific parts of recording {:#zoom}
 
-Tumpukan panggilan yang tinggi tidak selalu penting, ini hanyalah tanda bahwa banyak sekali
-fungsi yang dipanggil. Bilah lebar berarti bahwa sebuah panggilan memakan waktu lama 
-untuk diselesaikan. Inilah yang berpeluang dioptimalkan. 
+Click, hold, and drag your mouse left and right across the overview to zoom in on particular parts of the call stack. After you zoom, the call stack automatically displays the portion of the recording that you've selected.
 
-### Memperbesar bagian rekaman tertentu {:#zoom}
+![flame chart zoomed](imgs/benchmark-zoom.png)
 
-Klik, tahan, dan seret mouse ke kiri dan ke kanan pada ringkasan untuk memperbesar
-bagian khusus tumpukan panggilan. Setelah memperbesar, tumpukan panggilan 
-secara otomatis menampilkan bagian rekaman yang Anda pilih.
+### View function details {:#flame-chart-function-details}
 
-![bagan api diperbesar](imgs/benchmark-zoom.png)
+Click on a function to view its definition in the **Sources** panel.
 
-### Menampilkan detail fungsi {:#flame-chart-function-details}
+Hover over a function to display its name and timing data. The following information is provided:
 
-Klik sebuah fungsi untuk melihat definisinya di panel **Sources**.
+* **Name**. The name of the function.
+* **Self time**. How long it took to complete the current invocation of the function, including only the statements in the function itself, not including any functions that it called.
+* **Total time**. The time it took to complete the current invocation of this function and any functions that it called.
+* **URL**. The location of the function definition in the form of `file.js:100` where `file.js` is the name of the file where the function is defined and `100` is the line number of the definition.
+* **Aggregated self time**. Aggregate time for all invocations of the function across the recording, not including functions called by this function.
+* **Aggregated total time**. Aggregate total time for all invocations of the function, including functions called by this function.
+* **Not optimized**. If the profiler has detected a potential optimization for the function it lists it here.
 
-Arahkan ke atas fungsi untuk menampilkan nama dan data pengaturan waktunya. Informasi
-berikut disediakan: 
+![viewing functions details in flame chart](imgs/details.png)
 
-*  **Name**. Nama fungsi.
-*  **Self time**. Waktu yang dibutuhkan untuk menyelesaikan pembukaan fungsi 
-   saat ini, termasuk hanya pernyataan di fungsi itu sendiri, tidak 
-   termasuk fungsi apa pun yang dipanggilnya.
-*  **Total time**. Waktu yang dibutuhkan untuk menyelesaikan pembukaan fungsi 
-   saat ini dan fungsi apa pun yang dipanggilnya.
-*  **URL**. Lokasi definisi fungsi dalam bentuk 
-   `file.js:100` yang `file.js` berarti nama file tempat fungsi
-   didefinisikan dan `100` adalah nomor baris definisi.
-*  **Aggregated self time**. Kumpulan waktu untuk semua pembukaan fungsi 
-   di seluruh rekaman, tidak termasuk fungsi yang dipanggil oleh 
-   fungsi ini.
-*  **Aggregated total time**. Kumpulan waktu total untuk semua pembukaan fungsi 
-   , termasuk fungsi yang diambil oleh fungsi ini.
-*  **Not optimized**. Jika profiler mendeteksi kemungkinan optimalisasi
-   bagi fungsi, profiler akan menampilkannya di sini.
+## Feedback {: #feedback }
 
-![menampilkan detail fungsi di bagan api](imgs/details.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Узнайте больше о технике анимации и ее использовании в современных приложениях и на сайтах
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Анимация {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-Анимация занимает особое место среди средств создания привлекательных веб-приложений и сайтов. Современные пользователи привыкли к быстро реагирующим интерфейсам с высокой степенью интерактивности. Однако анимация не обязательно должна быть реализована прямо в интерфейсе. Какие элементы следует анимировать, когда и какое ощущение должна вызывать анимация?
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-- Используйте анимацию в качестве средства придания динамичности своим проектам.
-- Анимация должна способствовать улучшению взаимодействия с пользователем.
-- Взвешенно подходите к выбору свойств, для которых создаете анимационные эффекты; на изменение некоторых из них требуется довольно много ресурсов!
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-## Выбирайте элементы, которые целесообразно анимировать
+## Choose the right things to animate
 
-Отличная анимация делает ваши проекты приятными и привлекательными для пользователей. Анимировать можно практически все, что угодно: ширину, высоту, положение, цвет, фон. Однако при этом не следует забывать о возможных проблемах с производительностью, а также о том, как именно анимация скажется на индивидуальности вашего приложения. Подвисание или плохо подобранный эффект анимации могут вызвать отрицательную реакцию пользователей, поэтому анимация должна хорошо работать и быть уместной.
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-## Используйте анимацию для поддержки взаимодействия
+## Use animations to support interactions
 
-Не следует применять анимацию только потому, что вы можете это сделать. Она будет просто раздражать пользователей и мешать им. Размещайте анимацию стратегически, чтобы поддержать взаимодействие с пользователем. Если пользователь нажимает значок меню, выводите меню с боку страницы, или же если он нажимает кнопку, используйте небольшой отблеск или отскок, чтобы подтвердить взаимодействие. Старайтесь избегать использования техники анимации, которая без нужды прерывает работу пользователей или мешает им.
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-## Не стоит анимировать ресурсоемкие свойства
+## Avoid animating expensive properties
 
-Хуже неправильно размещенной анимации бывает только анимация, которая вызывает подвисание страниц. Пользователям это чрезвычайно не по душе. Они, скорее всего, подумают, что лучше бы вы вообще обошлись без анимации!
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-На изменение одних свойств требуется больше ресурсов, чем других, и при этом вероятность подвисания страниц выше. Так, например, для изменения свойства элемента `box-shadow`  потребуется выполнить намного более ресурсоемкую операцию перерисовки страницы, чем изменение, скажем, цвета текста. Изменение свойства элемента `width` вероятнее всего будет более ресурсоемким, чем изменение его свойства `transform`.
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-Подробности о вопросах производительности анимации можно найти в руководстве [Анимация и производительность](animations-and-performance.html), но если вам требуется TL;DR, старайтесь изменять свойства transform и opacity, а также пользуйтесь свойством `will-change`. Если вы хотите точно знать, что происходит при анимации того или иного свойства, сведения об этом см. в разделе [Срабатывание событий при изменении CSS](http://csstriggers.com).
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}

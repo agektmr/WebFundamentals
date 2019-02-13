@@ -1,148 +1,73 @@
-project_path: /web/_project.yaml 
-book_path: /web/fundamentals/_book.yaml
-description: Arsitektur shell aplikasi membuat UI Anda tetap lokal dan memuat konten secara dinamis tanpa mengorbankan kemampuan untuk dapat ditemukan dan ditautkan pada web. 
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Application shell architecture keeps your UI local and loads content dynamically without sacrificing the linkability and discoverability of the web.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-09-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-09-27 #} {# wf_blink_components: N/A #}
 
-# Model Shell Aplikasi {: .page-title }
+# The App Shell Model {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-Arsitektur **shell aplikasi** (atau app shell) adalah satu cara untuk membangun
-Progressive Web App yang bisa diandalkan dan langsung dimuat pada layar pengguna,
-serupa dengan yang Anda lihat di aplikasi asli.
+An **application shell** (or app shell) architecture is one way to build a Progressive Web App that reliably and instantly loads on your users' screens, similar to what you see in native applications.
 
-"Shell" aplikasi adalah HTML, CSS, dan JavaScript minimal yang diperlukan untuk menjalankan
-antarmuka pengguna dan bila di-cache offline bisa menjamin **kinerja yang bagus, instan,
-dan bisa diandalkan** pada pengguna saat kunjungan berulang. Ini berarti shell aplikasi
-tidak dimuat dari jaringan setiap kali pengguna berkunjung. Hanya materi yang dibutuhkan
-yang dimuat dari jaringan.
+The app "shell" is the minimal HTML, CSS and JavaScript required to power the user interface and when cached offline can ensure **instant, reliably good performance** to users on repeat visits. This means the application shell is not loaded from the network every time the user visits. Only the necessary content is needed from the network.
 
-Untuk [aplikasi
-laman-tunggal](https://en.wikipedia.org/wiki/Single-page_application) dengan
-arsitektur yang sarat JavaScript, shell aplikasi menjadi pendekatan yang dianjurkan. Pendekatan
-ini mengandalkan caching shell secara agresif (dengan menggunakan [service
-worker](/web/fundamentals/primers/service-worker/)) untuk menjalankan
-aplikasi. Berikutnya, konten dinamis dimuat untuk setiap laman menggunakan JavaScript. Shell
-aplikasi berguna untuk menempatkan sebagian HTML awal ke layar dengan cepat tanpa
-jaringan.
+For [single-page applications](https://en.wikipedia.org/wiki/Single-page_application) with JavaScript-heavy architectures, an application shell is a go-to approach. This approach relies on aggressively caching the shell (using a [service worker](/web/fundamentals/primers/service-worker/)) to get the application running. Next, the dynamic content loads for each page using JavaScript. An app shell is useful for getting some initial HTML to the screen fast without a network.
 
-<img src="images/appshell.png" alt="Arsitektur Shell Aplikasi" />
+![Application Shell architecture](images/appshell.png)
 
-Sisihkan yang lain, shell aplikasi serupa dengan bundel kode yang Anda
-publikasikan ke toko aplikasi saat membangun aplikasi asli. Ini adalah kerangka
-UI Anda dan komponen inti yang diperlukan aplikasi Anda agar berhasil, namun kemungkinan
-tidak berisi data.
+Put another way, the app shell is similar to the bundle of code that you’d publish to an app store when building a native app. It is the skeleton of your UI and the core components necessary to get your app off the ground, but likely does not contain the data.
 
-Note: Cobalah codelab [Progressive Web
-App Pertama](https://codelabs.developers.google.com/codelabs/your-first-pwapp/#0)
-untuk mempelajari cara merancang dan
-mengimplementasikan shell aplikasi pertama Anda untuk aplikasi cuaca. Video [Pemuatan
-Instan dengan model Shell Aplikasi](https://www.youtube.com/watch?v=QhUzmR8eZAo)
-juga akan menjelaskan pola ini.
+Note: Try the [First Progressive Web App](https://codelabs.developers.google.com/codelabs/your-first-pwapp/#0) codelab to learn how to architectect and implement your first application shell for a weather app. The [Instant Loading with the App Shell model](https://www.youtube.com/watch?v=QhUzmR8eZAo) video also walks through this pattern.
 
-### Kapan menggunakan model shell aplikasi
+### When to use the app shell model
 
-Membangun PWA bukan berarti memulai dari nol. Jika Anda sedang membangun
-aplikasi laman-tunggal yang modern, maka Anda barangkali menggunakan sesuatu yang serupa dengan shell aplikasi,
-baik Anda menyebutnya demikian ataupun tidak. Detailnya mungkin sedikit bervariasi yang bergantung pada
-pustaka atau kerangka kerja mana yang Anda gunakan, namun konsepnya sendiri
-tidak memedulikan kerangka kerja.
+Building a PWA does not mean starting from scratch. If you are building a modern single-page app, then you are probably using something similar to an app shell already whether you call it that or not. The details might vary a bit depending upon which libraries or frameworks you are using, but the concept itself is framework agnostic.
 
-Arsitektur shell aplikasi paling layak untuk aplikasi dan situs dengan
-navigasi yang relatif tidak berubah namun materinya berubah. Sejumlah kerangka kerja dan pustaka
-JavaScript modern sudah mendorong pemisahan logika aplikasi
-dari materinya, sehingga membuat arsitektur ini lebih sederhana untuk diterapkan.
-Untuk kelas situs web tertentu yang hanya memiliki materi statis, Anda tetap bisa
-mengikuti model yang sama namun situs tersebut 100% shell aplikasi.
+An application shell architecture makes the most sense for apps and sites with relatively unchanging navigation but changing content. A number of modern JavaScript frameworks and libraries already encourage splitting your application logic from its content, making this architecture more straightforward to apply. For a certain class of websites that only have static content you can still follow the same model but the site is 100% app shell.
 
-Untuk melihat cara Google membangun arsitektur shell aplikasi, perhatikan
-[Membangun Google I/O 2016 Progressive Web App](/web/showcase/2016/iowa2016).
-Aplikasi sungguhan ini dimulai dengan SPA untuk membuat PWA yang melakukan precache materi
-dengan menggunakan service worker, memuat laman baru secara dinamis, melakukan transisi secara halus
-antar tampilan, dan menggunakan kembali materi setelah pemuatan pertama.
+To see how Google built an app shell architecture, take a look at [Building the Google I/O 2016 Progressive Web App](/web/showcase/2016/iowa2016). This real-world app started with a SPA to create a PWA that precaches content using a service worker, dynamically loads new pages, gracefully transitions between views, and reuses content after the first load.
 
+### Benefits {: #app-shell-benefits }
 
-### Manfaat {: #app-shell-benefits }
+The benefits of an app shell architecture with a service worker include:
 
-Manfaat arsitektur shell aplikasi dengan service worker antara lain:
+* **Reliable performance that is consistently fast**. Repeat visits are extremely quick. Static assets and the UI (e.g. HTML, JavaScript, images and CSS) are cached on the first visit so that they load instantly on repeat visits. Content *may* be cached on the first visit, but is typically loaded when it is needed.
 
-* **Kinerja yang cepat secara konsisten dan bisa diandalkan**. Kunjungan berulang menjadi
-sangat cepat sekali.  Aset statis dan UI (mis. HTML, JavaScript, gambar
-dan CSS) disimpan ke cache pada kunjungan pertama sehingga akan dimuat seketika pada
-kunjungan berulang. Materi _mungkin_ akan di-cache pada kunjungan pertama, namun
-umumnya akan dimuat bila dibutuhkan.
+* **Native-like interactions**. By adopting the app shell model, you can create experiences with instant, native-application-like navigation and interactions, complete with offline support.
 
-* **Interaksi seperti-asli**. Dengan mengadopsi model shell aplikasi, Anda
-bisa membuat pengalaman dengan interaksi dan navigasi instan seperti-aplikasi-asli,
-lengkap dengan dukungan offline.
+* **Economical use of data**. Design for minimal data usage and be judicious in what you cache because listing files that are non-essential (large images that are not shown on every page, for instance) result in browsers downloading more data than is strictly necessary. Even though data is relatively cheap in western countries, this is not the case in emerging markets where connectivity is expensive and data is costly.
 
-* **Penggunaan data yang ekonomis**. Desain untuk penggunaan data minimal dan bijaksanalah dalam
-hal apa yang Anda cache karena pencantuman file yang tidak begitu penting (misalnya gambar besar yang
-tidak ditampilkan pada setiap laman) mengakibatkan browser mengunduh
-data lebih banyak daripada yang dibutuhkan. Walaupun data relatif murah di negara-negara
-barat, tidak demikian halnya di negara-negara yang sedang berkembang di mana konektivitas
-dan data adalah sesuatu yang mahal.
+## Requirements {: #app-shell-requirements }
 
-## Persyaratan {: #app-shell-requirements }
+The app shell should ideally:
 
-Shell aplikasi idealnya:
+* Load fast
+* Use as little data as possible
+* Use static assets from a local cache
+* Separate content from navigation
+* Retrieve and display page-specific content (HTML, JSON, etc.)
+* Optionally, cache dynamic content
 
-* Memuat dengan cepat
-* Menggunakan data sekecil mungkin
-* Menggunakan aset statis dari cache lokal
-* Memisahkan materi dari navigasi
-* Mengambil dan menampilkan materi laman tertentu (HTML, JSON, dll.)
-* Opsional, meng-cache konten dinamis
+The app shell keeps your UI local and pulls in content dynamically through an API but does not sacrifice the linkability and discoverability of the web. The next time the user accesses your app, the latest version displays automatically. There is no need to download new versions before using it.
 
-Shell aplikasi menjaga UI Anda tetap lokal dan menarik konten secara dinamis melalui
-API namun tidak mengorbankan kemampuan untuk dapat ditemukan dan ditautkan dari web. Saat
-berikutnya pengguna mengakses aplikasi Anda, versi terbaru ditampilkan secara otomatis.
-Tidak perlu mengunduh versi baru sebelum menggunakannya.
+Note: The [Lighthouse](https://github.com/googlechrome/lighthouse) auditing extension can be used to verify if your PWA using an app shell hits a high-bar for performance. [To the Lighthouse](https://www.youtube.com/watch?v=LZjQ25NRV-E) is a talk that walks through optimizing a PWA using this tool.
 
-Note: Ekstensi audit [Lighthouse](https://github.com/googlechrome/lighthouse) bisa digunakan
-untuk memverifikasi apakah PWA Anda yang menggunakan shell aplikasi telah
-mencapai kinerja tinggi. [To the Lighthouse](https://www.youtube.com/watch?v=LZjQ25NRV-E)
-adalah perbincangan yang menjelaskan cara mengoptimalkan PWA dengan menggunakan alat (bantu) ini.
+## Building your app shell {: #building-your-app-shell }
 
-## Membangun shell aplikasi Anda {: #building-your-app-shell }
+Structure your app for a clear distinction between the page shell and the dynamic content. In general, your app should load the simplest shell possible but include enough meaningful page content with the initial download. Determine the right balance between speed and data freshness for each of your data sources.<figure> 
 
-Buat struktur aplikasi Anda agar ada tujuan jelas antara shell laman dan
-konten dinamis. Secara umum, aplikasi Anda harus memuat shell yang sesederhana mungkin
-namun menyertakan materi laman yang cukup berarti bersama unduhan pertama. Tentukan
-keseimbangan yang tepat antara kecepatan dan kebaruan data untuk setiap
-sumber data.
+![Offline Wikipedia app using an application shell with content caching](images/wikipedia.jpg) <figcaption>Jake Archibald’s [offline Wikipedia application](https://wiki-offline.jakearchibald.com/wiki/Rick_and_Morty) is a good example of a PWA that uses an app shell model. It loads instantly on repeat visits, but dynamically fetches content using JS. This content is then cached offline for future visits. </figcaption> </figure> 
 
-<figure>
-  <img src="images/wikipedia.jpg"
-    alt="Aplikasi Wikipedia offline menggunakan shell aplikasi bersama caching materi">
-  <figcaption><a href="https://wiki-offline.jakearchibald.com/wiki/Rick_and_Morty">Aplikasi Wikipedia offline</a> dari Jake Archibald adalah contoh bagus PWA yang menggunakan model shell aplikasi. Aplikasi ini secara instan dimuat pada kunjungan berulang, namun secara dinamis mengambil materi menggunakan JS. Materi ini kemudian di-cache secara offline untuk kunjungan yang akan datang.
-</figcaption>
-</figure>
+### Example HTML for an app shell {: #example-html-for-appshell }
 
-### Contoh HTML untuk shell aplikasi {: #example-html-for-appshell }
+This example separates the core application infrastructure and UI from the data. It is important to keep the initial load as simple as possible to display just the page’s layout as soon as the web app is opened. Some of it comes from your application’s index file (inline DOM, styles) and the rest is loaded from external scripts and stylesheets.
 
-Contoh ini memisahkan infrastruktur aplikasi inti dan UI dari data.
-Pemuatan pertama perlu sesederhana mungkin untuk menampilkan layout
-laman saja begitu aplikasi web dibuka. Sebagian yang dimuat berasal dari
-file indeks aplikasi Anda (inline DOM, gaya) dan selebihnya dimuat dari
-stylesheet dan skrip eksternal.
+All of the UI and infrastructure is cached locally using a service worker so that on subsequent loads, only new or changed data is retrieved, instead of having to load everything.
 
-Semua UI dan infrastruktur di-cache secara lokal menggunakan service worker sehingga
-pada pemuatan selanjutnya, hanya data baru dan berubah yang diambil, daripada
-harus memuat semuanya.
+Your `index.html` file in your work directory should look something like the following code. This is a subset of the actual contents and is not a complete index file. Let's look at what it contains.
 
-File `index.html` di direktori kerja Anda seharusnya terlihat seperti
-kode berikut. Ini adalah subset materi sesungguhnya dan bukan
-file indeks lengkap. Mari kita lihat apa materinya.
-
-* HTML dan CSS untuk "kerangka" antarmuka pengguna Anda lengkap dengan
-  placeholder materi dan navigasi.
-* File eksternal JavaScript (app.js) untuk menangani navigasi dan logika UI serta
-  kode untuk menampilkan entri blog diambil dari server dan disimpan
-  secara lokal menggunakan mekanisme storage seperti IndexedDB.
-* Manifes aplikasi web dan service worker loader untuk mengaktifkan kemampuan offline.
+* HTML and CSS for the "skeleton" of your user interface complete with navigation and content placeholders.
+* An external JavaScript file (app.js) for handling navigation and UI logic as well as the code to display posts retrieved from the server and store them locally using a storage mechanism like IndexedDB.
+* A web app manifest and service worker loader to enable off-line capabilities.
 
 <div class="clearfix"></div>
 
@@ -150,35 +75,34 @@ file indeks lengkap. Mari kita lihat apa materinya.
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Shell Aplikasi</title>
+      <title>App Shell</title>
       <link rel="manifest" href="/manifest.json">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Shell Aplikasi</title>
       <link rel="stylesheet" type="text/css" href="styles/inline.css">
     </head>
-
+    
     <body>
       <header class="header">
-        <h1 class="header__title">Shell Aplikasi</h1>
+        <h1 class="header__title">App Shell</h1>
       </header>
-      
+    
       <nav class="nav">
       ...
       </nav>
-      
+    
       <main class="main">
       ...
       </main>
-
+    
       <div class="dialog-container">
       ...
       </div>
-
+    
       <div class="loader">
         <!-- Show a spinner or placeholders for content -->
       </div>
-
+    
       <script src="app.js" async></script>
       <script>
       if ('serviceWorker' in navigator) {
@@ -193,49 +117,35 @@ file indeks lengkap. Mari kita lihat apa materinya.
       </script>
     </body>
     </html>
+    
 
 <div class="clearfix"></div>
 
-
-Note: Lihat [https://app-shell.appspot.com/](https://app-shell.appspot.com/) untuk
-tampilan sesungguhnya dengan PWA sangat sederhana menggunakan shell aplikasi dan
-rendering sisi-server untuk materi. Shell aplikasi bisa diimplementasikan dengan menggunakan sembarang pustaka atau
-kerangka kerja seperti yang dibahas dalam pembahasan <a
-href="https://www.youtube.com/watch?v=srdKq0DckXQ">Progressive Web Apps across
-all frameworks</a>. Contoh tersedia menggunakan Polymer (<a
-href="https://shop.polymer-project.org">Shop</a>) dan React (<a
-href="https://github.com/insin/react-hn">ReactHN</a>,
+Note: See <https://app-shell.appspot.com/> for a real-life look at a very simple PWA using an application shell and server-side rendering for content. An app shell can be implemented using any library or framework as covered in our [Progressive Web Apps across all frameworks](https://www.youtube.com/watch?v=srdKq0DckXQ) talk. Samples are available using Polymer ([Shop](https://shop.polymer-project.org)) and React ([ReactHN](https://github.com/insin/react-hn),
 <a
 href="https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo">iFixit</a>).
- 
 
-### Meng-cache shell aplikasi {: #app-shell-caching }
+### Caching the application shell {: #app-shell-caching }
 
-Shell aplikasi bisa di-cache menggunakan service worker yang ditulis secara manual
-atau yang dihasilkan oleh service worker menggunakan alat (bantu) precache aset statis seperti
-[sw-precache](https://github.com/googlechrome/sw-precache).
+An app shell can be cached using a manually written service worker or a generated service worker using a static asset precaching tool like [sw-precache](https://github.com/googlechrome/sw-precache).
 
-Note: Contoh disediakan untuk informasi umum dan tujuan ilustrasi
-saja. Sumber daya sesungguhnya yang digunakan mungkin akan berbeda untuk
-aplikasi Anda.
+Note: The examples are provided for general information and illustrative purposes only. The actual resources used will likely be different for your application.
 
-#### Meng-cache shell aplikasi secara manual
+#### Caching the app shell manually
 
-Di bawah ini adalah contoh kode service worker yang meng-cache sumber daya statis dari
-shell aplikasi ke dalam [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache)
-menggunakan kejadian `install` service worker:
+Below is example service worker code that caches static resources from the app shell into the [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) using service worker's `install` event:
 
     var cacheName = 'shell-content';
     var filesToCache = [
       '/css/styles.css',
       '/js/scripts.js',
       '/images/logo.svg',
-
-      '/offline.html’,
-
-      '/’,
+    
+      '/offline.html',
+    
+      '/',
     ];
-
+    
     self.addEventListener('install', function(e) {
       console.log('[ServiceWorker] Install');
       e.waitUntil(
@@ -245,46 +155,36 @@ menggunakan kejadian `install` service worker:
         })
       );
     });
+    
 
-#### Menggunakan sw-precache untuk meng-cache shell aplikasi
+#### Using sw-precache to cache the app shell
 
-Service worker yang dihasilkan oleh sw-precache akan meng-cache dan menyajikan sumber daya
-yang Anda konfigurasi sebagai bagian dari proses pembangunan. Anda bisa menyuruhnya meng-cache lebih dahulu setiap file
-HTML, JavaScript, dan CSS yang membentuk shell aplikasi Anda. Segala sesuatunya akan
-bekerja offline, dan dimuat cepat pada kunjungan selanjutnya tanpa upaya tambahan.
+The service worker generated by sw-precache will cache and serve the resources that you configure as part of your build process. You can have it precache every HTML, JavaScript, and CSS file that makes up your app shell. Everything will both work offline, and load fast on subsequent visits without any extra effort.
 
-Inilah sebuah contoh dasar penggunaan sw-precache sebagai bagian dari proses pembangunan
-[gulp](http://gulpjs.com):
+Here is a basic example of using sw-precache as part of a [gulp](http://gulpjs.com) build process:
 
     gulp.task('generate-service-worker', function(callback) {
       var path = require('path');
       var swPrecache = require('sw-precache');
       var rootDir = 'app';
-
+    
       swPrecache.write(path.join(rootDir, 'service-worker.js'), {
         staticFileGlobs: [rootDir + '/**/*.{js,html,css,png,jpg,gif}'],
         stripPrefix: rootDir
       }, callback);
     });
+    
 
-Untuk mengetahui selengkapnya tentang caching aset statis, lihat codelab [Menambahkan Service Worker dengan
-sw-precache](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0).
+To learn more about static asset caching, see the [Adding a Service Worker with sw-precache](https://codelabs.developers.google.com/codelabs/sw-precache/index.html?index=..%2F..%2Findex#0) codelab.
 
+Note: sw-precache is useful for offline caching your static resources. For runtime/dynamic resources, we recommend using our complimentary library [sw-toolbox](https://github.com/googlechrome/sw-toolbox).
 
-Note: sw-precache berguna untuk caching sumber daya statis offline Anda. Untuk
-sumber daya dinamis/waktu proses, kami menyarankan penggunaan pustaka gratis kami
-[sw-toolbox](https://github.com/googlechrome/sw-toolbox).
+## Conclusion {: #conclusion }
 
-## Kesimpulan {: #conclusion }
+An app shell using Service worker is powerful pattern for offline caching but it also offers significant performance wins in the form of instant loading for repeat visits to your PWA. You can cache your application shell so it works offline and populate its content using JavaScript.
 
-Shell aplikasi yang menggunakan Service worker adalah pola andal untuk caching offline
-juga menawarkan keunggulan kinerja yang signifikan dalam bentuk pemuatan instan untuk
-kunjungan berulang ke PWA Anda. Anda bisa meng-cache shell aplikasi supaya bekerja secara
-offline dan mengisi materinya menggunakan JavaScript.
+On repeat visits, this allows you to get meaningful pixels on the screen without the network, even if your content eventually comes from there.
 
-Pada kunjungan berulang, hal ini memungkinkan Anda menampilkan piksel yang memadai ke layar tanpa
-perlu jaringan, sekalipun materi Anda pada akhirnya akan berasal dari jaringan.
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

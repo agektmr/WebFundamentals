@@ -1,46 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「マニフェストの short_name が切れずにホーム画面上に表示される」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest's short_name won't be truncated when displayed on homescreen" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# マニフェストに定義したアプリの省略名が切れずにホーム画面上に表示される {: .page-title }
+# Manifest's short_name Won't Be Truncated When Displayed on Homescreen {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ユーザーがホーム画面にウェブアプリを追加すると、アプリ アイコンの下に `short_name` プロパティがラベルとして表示されます。
-`short_name` が 12 文字を超えると、ホーム画面上で途中までしか表示されません。
+When a user adds your web app to the homescreen, the `short_name` property is displayed as the label next to your app's icon. If the `short_name` is longer than 12 characters, it'll be truncated on the homescreen.
 
+Note that, if the `short_name` is not present, Chrome can fall back to the `name` property if it's short enough.
 
-Chrome の場合は、`short_name` が定義されておらず、`name` プロパティの値が十分に短ければ、name プロパティの値が代用されます。
+## Recommendations {: #recommendations }
 
-
-##  監査に合格する方法 {: #how }
-
-ウェブアプリ マニフェストの `short_name` プロパティを 12 文字以下にします。
+Make the `short_name` property in your Web App Manifest less than 12 characters.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-または、マニフェストで `short_name` プロパティを指定しない場合は、`name`
-プロパティを 12 文字以下にします。
+Or, if you don't specify a `short_name` property in your manifest, make the `name` property less than 12 characters.
 
-アプリに "Add to Homescreen"
-機能を適切に実装して、テストを実施する方法については、[マニフェストを使用する](manifest-exists#how)で紹介しているガイドをご覧ください。
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse fetches the manifest and verifies that the `short_name` property is less than 12 characters. Note that since the `name` property can be used as a fallback for `short_name`, Lighthouse also tests this property as a fallback. So, if you don't include a `short_name` in your manifest, but your `name` is less than 12 characters, then the audit passes. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
-Lighthouse はマニフェストを取得して、`short_name` プロパティが 12 文字以下であることを検証します。
-`name` プロパティは `short_name` の代わりに使用されることがあるため、Lighthouse では short_name プロパティも代替値としてテストする点に注意してください。
-つまり、マニフェストに `short_name` がない場合でも、`name` が 12 文字以下であれば監査には合格します。
-なお、Lighthouse
-で取得するマニフェストは、Chrome がページで使用するマニフェストとは別のファイルであるため、正確な結果が出ない場合があります。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

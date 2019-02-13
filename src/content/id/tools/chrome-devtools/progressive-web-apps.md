@@ -1,204 +1,129 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Gunakan panel Application untuk memeriksa, memodifikasi, dan men-debug manifes aplikasi web, service worker, dan cache service worker.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Application panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-07-25 #}
+{# wf_updated_on: 2018-11-20 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: Platform>DevTools #}
 
-# Men-debug Progressive Web App {: .page-title }
+# Debug Progressive Web Apps {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Gunakan panel <strong>Application</strong> untuk memeriksa, memodifikasi,
-dan men-debug manifes aplikasi web, service worker, dan cache service worker.
+Use the **Application** panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
-Panduan Terkait: 
+Related Guides:
 
-* [Progressive Web App](/web/progressive-web-apps)
+* [Progressive Web Apps](/web/progressive-web-apps)
 
-Panduan ini hanya membahas fitur Progressive Web App dari panel
-**Application**. Bila Anda sedang mencari bantuan untuk panel lainnya, lihat
-bagian terakhir dari panduan ini, [Panduan
-panel Application lainnya](#other).
-
+This guide only discusses the Progressive Web App features of the **Application** panel. If you're looking for help on the other panes, check out the last section of this guide, [Other Application panel guides](#other).
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan panel <strong>App Manifest</strong> untuk memeriksa manifes aplikasi web Anda dan memicu kejadian Add to Homescreen.
-- Gunakan panel <strong>Service Worker</strong> untuk segala macam tugas yang berkaitan dengan service worker, seperti mencabut pendaftaran atau memperbarui layanan, mengemulasikan kejadian push, beralih offline, atau menghentikan service worker.
-- Tampilkan cache service worker Anda dari panel <strong>Cache Storage</strong>.
-- Cabut pendaftaran service worker dan kosongkan semua penyimpanan dan cache dengan sekali klik tombol dari panel <strong>Clear Storage</strong>.
 
+* Use the **Manifest** pane to inspect your web app manifest and trigger Add to Homescreen events.
+* Use the **Service Workers** pane for a whole range of service-worker-related tasks, like unregistering or updating a service, emulating push events, going offline, or stopping a service worker.
+* View your service worker cache from the **Cache Storage** pane.
+* Unregister a service worker and clear all storage and caches with a single button click from the **Clear storage** pane.
 
-## Manifes aplikasi web {:#manifest}
+## Web app manifest {:#manifest}
 
-Jika Anda menginginkan agar pengguna bisa menambahkan aplikasi ke layar beranda seluler mereka,
-Anda membutuhkan manifes aplikasi web. Manifes mendefinisikan bagaimana aplikasi ditampilkan di
-layar beranda, mengarahkan pengguna saat meluncurkan aplikasi dari layar beranda, dan seperti
-apa aplikasi terlihat saat peluncuran.
+If you want your users to be able to add your app to their mobile homescreens, you need a web app manifest. The manifest defines how the app appears on the homescreen, where to direct the user when launching from homescreen, and what the app looks like on launch.
 
-Panduan Terkait:
+Related Guides:
 
-* [Meningkatkan pengalaman pengguna dengan Manifes
-  Aplikasi Web](/web/fundamentals/web-app-manifest)
-* [Menggunakan Spanduk
-  Pemasangan Aplikasi](/web/fundamentals/app-install-banners)
+* [Improve user experiences with a Web App Manifest](/web/fundamentals/web-app-manifest)
+* [Using App Install Banners](/web/fundamentals/app-install-banners)
 
-Setelah Anda menyiapkan manifes, Anda bisa menggunakan panel **Manifest** dari panel
-**Application** untuk memeriksanya.
+Once you've got your manifest set up, you can use the **Manifest** pane of the **Application** panel to inspect it.
 
-![panel manifest][manifest]
+![manifest pane](images/manifest.png)
 
-* Untuk melihat sumber manifes, klik tautan di bawah label **App Manifest**
-  (`https://airhorner.com/manifest.json` dalam tangkapan layar di atas).
-* Tekan tombol **Add to homescreen** untuk menyimulasikan kejadian
-  Add to Homescreen. Lihat bagian berikutnya untuk informasi selengkapnya.
-* Bagian **Identity** dan **Presentation** cuma menampilkan bidang-bidang dari
-  sumber manifes dalam tampilan yang lebih ramah pengguna.
-* Bagian **Icons** menampilkan semua ikon yang telah Anda tetapkan.
+* To look at the manifest source, click the link below **App Manifest** label (`https://airhorner.com/manifest.json` in the screenshot above).
+* Press the **Add to homescreen** button to simulate an Add to Homescreen event. Check out the next section for more information.
+* The **Identity** and **Presentation** sections just display fields from the manifest source in a more user-friendly display.
+* The **Icons** section displays every icon that you've specified.
 
-[manifest]: images/manifest.png
+### Simulate Add to Homescreen events {:#add-to-homescreen}
 
-### Menyimulasikan kejadian Add to Homescreen {:#add-to-homescreen}
+A web app can only be added to a homescreen when the site is visited at least twice, with at least five minutes between visits. While developing or debugging your Add to Homescreen workflow, this criteria can be inconvenient. The **Add to homescreen** button on the **App Manifest** pane lets you simulate Add to Homescreen events whenever you want.
 
-Sebuah aplikasi web hanya bisa ditambahkan ke homescreen ketika situs ini dikunjungi minimal
-dua kali, dengan setidaknya lima menit antar kunjungan. Saat mengembangkan atau
-men-debug alur kerja Add to Homescreen, kriteria ini bisa jadi tidak praktis.
-Tombol **Add to homescreen** pada panel **App Manifest** memungkinkan Anda
-menyimulasikan kejadian Add to Homescreen kapan saja Anda inginkan.
+You can test out this feature with the [Google I/O 2016 progressive web app](https://events.google.com/io2016/){: .external }, which has proper support for Add to Homescreen. Clicking on **Add to Homescreen** while the app is open prompts Chrome to display the "add this site to your shelf" banner, which is the desktop equivalent of the "add to homescreen" banner for mobile devices.
 
-Anda bisa menguji fitur ini dengan [Google I/O 2016 progressive web
-app](https://events.google.com/io2016/){: .external }, yang memiliki dukungan sesuai untuk Add to
-Homescreen. Mengeklik **Add to Homescreen** saat aplikasi dibuka akan menyebabkan
-Chrome menampilkan spanduk "add this site to your shelf", yang merupakan
-padanan spanduk "add to homescreen" di desktop untuk perangkat seluler.
+![add to desktop shelf](images/io.png)
 
-![menambahkan ke rak desktop][shelf]
+**Tip**: Keep the **Console** drawer open while simulating Add to Homescreen events. The Console tells you if your manifest has any issues and logs other information about the Add to Homescreen lifecycle.
 
-**Tip**: Biarkan panel samping **Console** tetap terbuka saat menyimulasikan kejadian
-Homescreen. Console akan memberi tahu apakah manifes Anda mengalami masalah dan mencatat log informasi
-lainnya tentang daur hidup Add to Homescreen.
+The **Add to Homescreen** feature cannot yet simulate the workflow for mobile devices. Notice how the "add to shelf" prompt was triggered in the screenshot above, even though DevTools is in Device Mode. However, if you can successfully add your app to your desktop shelf, then it'll work for mobile, too.
 
-Fitur **Add to Homescreen** belum bisa menyimulasikan alur kerja untuk perangkat
-seluler. Perhatikan bagaimana prompt "add to shelf" dipicu dalam
-tangkapan layar di atas, walaupun DevTools dalam Device Mode. Namun, jika Anda bisa
-berhasil menambahkan aplikasi ke rak desktop, maka aplikasi itu juga
-akan bekerja untuk seluler.
+If you want to test out the genuine mobile experience, you can connect a real mobile device to DevTools via [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging/remote-debugging), and then click the **Add to Homescreen** button (on DevTools) to trigger the "add to homescreen" prompt on the connected mobile device.
 
-Jika ingin menguji pengalaman seluler yang asli, Anda bisa
-menghubungkan perangkat seluler sungguhan ke DevTools melalui [debug dari jauh][debug
-dari jauh], kemudian klik tombol **Add to Homescreen** (di DevTools)
-untuk memicu prompt "add to homescreen" di perangkat seluler yang terhubung.
+## Service workers {:#service-workers}
 
-[shelf]: images/io.png
-[debug dari jauh]: /web/tools/chrome-devtools/debug/remote-debugging/remote-debugging
+Service workers are a fundamental technology in the future web platform. They are scripts that the browser runs in the background, separate from a web page. These scripts enable you to access features that don't need a web page or user interaction, like push notifications, background sync, and offline experiences.
 
-## Service worker {:#service-workers}
+Related Guides:
 
-Service worker adalah teknologi fundamental di platform web masa depan. Mereka
-adalah skrip yang dijalankan browser di latar belakang, terpisah dari laman web.
-Skrip ini memungkinkan Anda mengakses berbagai fitur yang tidak memerlukan laman web atau interaksi
-pengguna, seperti pemberitahuan push, sinkronisasi latar belakang, dan pengalaman offline.
+* [Intro to Service Workers](/web/fundamentals/primers/service-worker)
+* [Push Notifications: Timely, Relevant, and Precise](/web/fundamentals/push-notifications)
 
-Panduan Terkait:
+The **Service Workers** pane in the **Application** panel is the main place in DevTools to inspect and debug service workers.
 
-* [Pengantar Service Worker](/web/fundamentals/primers/service-worker)
-* [Pemberitahuan Push: Tepat Waktu, Relevan, dan
-  Tepat](/web/fundamentals/push-notifications)
+![service worker pane](images/sw.png)
 
-Panel **Service Workers** di panel **Application** adalah tempat utama di
-DevTools untuk memeriksa dan men-debug service worker.
+* If a service worker is installed to the currently open page, then you'll see it listed on this pane. For example, in the screenshot above there's a service worker installed for the scope of `https://events.google.com/io2016/`.
+* The **Offline** checkbox puts DevTools into offline mode. This is equivalent to the offline mode available from the **Network** panel, or the `Go offline` option in the [Command Menu](/web/tools/chrome-devtools/ui#command-menu).
+* The **Update on reload** checkbox forces the service worker to update on every page load.
+* The **Bypass for network** checkbox bypasses the service worker and forces the browser to go to the network for requested resources.
+* The **Update** button performs a one-time update of the specified service worker.
+* The **Push** button emulates a push notification without a payload (also known as a [tickle](/web/fundamentals/push-notifications/how-push-works)).
+* The **Sync** button emulates a background sync event.
+* The **Unregister** button unregisters the specified service worker. Check out [Clear storage](#clear-storage) for a way to unregister a service worker and wipe storage and caches with a single button click.
+* The **Source** line tells you when the currently running service worker was installed. The link is the name of the service worker's source file. Clicking on the link sends you to the service worker's source.
+* The **Status** line tells you the status of the service worker. The number on this line (`#1` in the screenshot above) indicates how many times the service worker has been updated. If you enable the **update on reload** checkbox you'll notice that the number increments on every page load. Next to the status you'll see a **start** button (if the service worker is stopped) or a **stop** button (if the service worker is running). Service workers are designed to be stopped and started by the browser at any time. Explicitly stopping your service worker using the **stop** button can simulate that. Stopping your service worker is a great way to test how your code behaves when the service worker starts back up again. It frequently reveals bugs due to faulty assumptions about persistent global state.
+* The **Clients** line tells you the origin that the service worker is scoped to. The **focus** button is mostly useful when you've enabled the **show all** checkbox. When that checkbox is enabled, all registered service workers are listed. If you click on the **focus** button next to a service worker that is running in a different tab, Chrome focuses on that tab.
 
-![panel service worker][sw]
+If the service worker causes any errors, a new label called **Errors** shows up.
 
-* Jika service worker telah dipasang ke laman yang saat ini dibuka, maka Anda akan melihatnya
-  tercantum di panel ini. Misalnya, dalam tangkapan layar di atas ada service
-  worker yang dipasang untuk cakupan `https://events.google.com/io2016/`.
-* Kotak centang **Offline** memasukkan DevTools ke mode offline. Ini sama dengan
-  mode offline yang tersedia dari panel **Network**, atau
-  opsi `Go offline` di [Menu Perintah][cm].
-* Kotak centang **Update on reload** akan memaksa service worker
-  diperbarui saat pemuatan setiap laman.
-* Kotak centang **Bypass for network** akan melangkahi service worker dan memaksa
-  browser pergi ke jaringan untuk mencari sumber daya yang diminta.
-* Tombol **Update** melakukan pembaruan satu-kali untuk service
-  worker yang ditetapkan.
-* Tombol **Push** mengemulasikan pemberitahuan push tanpa payload (juga dikenal
-  sebagai [tickle][tickle]).
-* Tombol **Sync** mengemulasikan kejadian sinkronisasi latar belakang.
-* Tombol **Unregister** mencabut pendaftaran service worker yang ditetapkan. Lihat
-  [Clear storage](#clear-storage) untuk mengetahui cara mencabut pendaftaran service worker dan
-  mengosongkan penyimpanan serta cache dengan sekali klik tombol.
-* Baris **Source** memberi tahu Anda bila service worker yang saat ini dijalankan
-  telah dipasang. Tautan tersebut adalah nama file sumber service worker. Mengeklik
-  tautan akan mengirim Anda ke sumber service worker.
-* Baris **Status** memberi tahu Anda status service worker. Nomor pada
-  baris ini (`#1` dalam tangkapan layar di atas) menunjukkan berapa kali service
-  worker telah diperbarui. Jika Anda mengaktifkan kotak centang **update on reload**
-  Anda akan melihat bahwa nomor itu bertambah setiap kali laman dimuat. Di sebelah
-  status, Anda akan melihat tombol **start** (jika service worker dihentikan) atau tombol
-  **stop** (jika service worker sedang berjalan). Service worker
-  dirancang untuk dihentikan dan dimulai oleh browser setiap saat. Menghentikan
-  service worker Anda secara eksplisit menggunakan tombol **stop** bisa menyimulasikannya.
-  Menghentikan service worker Anda adalah cara terbaik untuk menguji bagaimana kode
-  Anda berperilaku ketika service worker mulai mencadangkan lagi. Itu sering kali
-  memunculkan bug karena asumsi yang salah tentang keadaan global persisten.
-* Baris **Clients** akan memberi tahu Anda asal cakupan
- service worker. Tombol **focus** umumnya berguna bila Anda telah mengaktifkan kotak centang
-  **show all**. Bila kotak centang itu telah diaktifkan, semua service
-  worker yang terdaftar akan dicantumkan. Jika Anda mengeklik tombol **focus** di sebelah service
-  worker yang berjalan di tab yang berbeda, Chrome akan berfokus pada tab tersebut.
+![service worker with errors](images/sw-error.png)
 
-Bila service worker menyebabkan kesalahan, label baru yang disebut **Errors** akan
-muncul.
+## Service worker caches {:#caches}
 
-![service worker dengan error][errors]
+The **Cache Storage** pane provides a read-only list of resources that have been cached using the (service worker) [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
 
-[sw]: images/sw.png
-[cm]: /web/tools/chrome-devtools/settings#command-menu
-[tickle]: /web/fundamentals/push-notifications/how-push-works
-[errors]: images/sw-error.png
+![service worker cache pane](images/sw-cache.png)
 
-## Cache service worker {:#caches}
+Note that the first time you open a cache and add a resource to it, DevTools might not detect the change. Reload the page and you should see the cache.
 
-Panel **Cache Storage** menyediakan daftar hanya-baca dari sumber daya yang
-telah di-cache menggunakan (service worker) [Cache API][sw-cache].
+If you've got two or more caches open, you'll see them listed below the **Cache Storage** dropdown.
 
-![panel cache service worker][sw-cache-pane]
+![multiple service worker caches](images/multiple-caches.png)
 
-Perhatikan bahwa saat Anda pertama kali membuka cache dan menambahkan sumber daya kesitu, DevTools
-mungkin tidak mendeteksi perubahan. Muat ulang laman dan Anda akan melihat cache.
+## Quota usage {:#opaque-responses}
 
-Jika Anda punya dua atau beberapa cache yang terbuka, Anda akan melihat mereka tercantum di bawah menu tarik turun
-**Cache Storage**.
+Some responses within the Cache Storage pane may be flagged as being "[opaque](/web/fundamentals/glossary#opaque-response)". This refers to a response retrieved from a different origin, like from a [CDN](/web/fundamentals/glossary#CDN) or remote API, when [CORS](https://fetch.spec.whatwg.org/#http-cors-protocol) is not enabled.
 
-![beberapa cache service worker][multiple-caches]
+In order to avoid leakage of cross-domain information, there's significant padding added to the size of an opaque response used for calculating storage quota limits (i.e. whether a `QuotaExceeded` exception is thrown) and reported by the [`navigator.storage` API](/web/updates/2017/08/estimating-available-storage-space).
 
-[sw-cache]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-[sw-cache-pane]: images/sw-cache.png
-[multiple-caches]: images/multiple-caches.png
+The details of this padding vary from browser to browser, but for Google Chrome, this means that the *minimum* size that any single cached opaque response contributes to the overall storage usage is [approximately 7 megabytes](https://bugs.chromium.org/p/chromium/issues/detail?id=796060#c17). You should keep this in mind when determining how many opaque responses you want to cache, since you could easily exceeded storage quota limitations much sooner than you'd otherwise expect based on the actual size of the opaque resources.
+
+Related Guides:
+
+* [Stack Overflow: What limitations apply to opaque responses?](https://stackoverflow.com/q/39109789/385997)
+* [Workbox: Understanding Storage Quota](/web/tools/workbox/guides/storage-quota#beware_of_opaque_responses)
 
 ## Clear storage {:#clear-storage}
 
-Panel **Clear Storage** adalah fitur yang sangat berguna ketika
-mengembangkan progressive web app. Panel ini memungkinkan Anda mencabut pendaftaran service worker
-dan mengosongkan semua cache dan penyimpanan dengan sekali klik tombol. Lihat
-bagian berikut untuk mengetahui selengkapnya.
+The **Clear Storage** pane is a very useful feature when developing progressive web apps. This pane lets you unregister service workers and clear all caches and storage with a single button click. Check out the section below to learn more.
 
-Panduan Terkait:
+Related Guides:
 
-* [Clear
-  Storage](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
+* [Clear Storage](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
 
-## Panduan panel Application lainnya {:#other}
+## Other Application panel guides {:#other}
 
-Lihat panduan di bawah ini untuk bantuan selengkapnya mengenai panel lain di panel
-**Application**.
+Check out the guides below for more help on the other panes of the **Application** panel.
 
-Panduan Terkait:
+Related Guides:
 
-* [Memeriksa sumber daya laman](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
-* [Memeriksa dan mengelola penyimpanan lokal dan
-  cache](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
+* [Inspect page resources](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
+* [Inspect and manage local storage and caches](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

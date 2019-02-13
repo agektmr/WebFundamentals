@@ -1,26 +1,18 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El manifiesto contiene íconos de al menos 192 píxeles".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains Icons at Least 192px" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# El manifiesto contiene íconos de al menos 192 píxeles  {: .page-title }
+# Manifest Contains Icons at Least 192px {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Cuando un usuario agrega tu app a la pantalla de inicio, el dispositivo móvil necesita un ícono para
-mostrar. El ícono se especifica en la matriz `icons` del manifiesto de apps web.
+When a user adds your app to the homescreen, the mobile device needs an icon to display. That icon is specified in the `icons` array of the Web App Manifest.
 
-Un ícono de 192 píxeles garantiza que tu ícono se muestra correctamente en los
-dispositivos Android más grandes. Para los dispositivos que necesitan un ícono más pequeño, Android
-puede reducir el ícono de 192 píxeles con una precisión razonable. En otras palabras,
-aunque puedes proporcionar íconos más pequeños en el manifiesto de apps web, no es
-necesario que lo hagas.
+The presence of a 192-pixel icon ensures that your icon displays well on the largest Android devices. For smaller devices that need a smaller icon, Android can scale down the 192-pixel icon with reasonable accuracy. In other words, although you can provide smaller-sized icons in your Web App Manifest, it's unnecessary.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Agrega un ícono de 192 píxeles al manifiesto de apps web.
+Add a 192-pixel icon to your Web App Manifest.
 
     {
       ...
@@ -31,23 +23,16 @@ Agrega un ícono de 192 píxeles al manifiesto de apps web.
       }],
       ...
     }
+    
 
-Consulta [El manifiesto existe](manifest-exists#how)
-para obtener una lista de guías que muestran cómo implementar
-y probar correctamente la compatibilidad con "Add to Homescreen" en tu app.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-La auditoría solo puede garantizar que el ícono se muestre correctamente en los dispositivos Android.
-Otros sistemas operativos pueden requerir otro tamaño de ícono para una presentación
-óptima.
+This audit can only guarantee that your icon displays well on Android devices. Other operating systems may require a different icon size for optimal presentation.
 
-Lighthouse obtiene el manifiesto y verifica que la propiedad `icons`
-haga referencia a un ícono de 192 píxeles. El manifiesto que Lighthouse obtiene no es
-el que Chrome usa en la página, lo que puede dar
-resultados imprecisos. Ten en cuenta que Lighthouse no controla si el ícono
-existe realmente en la caché. Tan solo se asegura de que el manifiesto de apps
-web defina un ícono de 192 píxeles.
+Lighthouse fetches the manifest and verifies that the `icons` property references a 192-pixel icon. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results. Note also that Lighthouse does not check whether the icon actually exists in the cache. It just makes sure that the Web App Manifest defines a 192-pixel icon.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

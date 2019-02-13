@@ -1,348 +1,366 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Menggunakan perangkat virtual di Device Mode Chrome untuk membangun situs web yang mengedepankan perangkat seluler.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use virtual devices in Chrome's Device Mode to build mobile-first websites.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-[capture]: /web/tools/chrome-devtools/images/shared/capture-settings.png
-[customize]: /web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png
-
-# Menyimulasikan Perangkat Seluler dengan Device Mode di Chrome DevTools {: .page-title }
+# Simulate Mobile Devices with Device Mode in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Gunakan Device Mode untuk memperkirakan bagaimana tampilan dan kinerja halaman di perangkat seluler.
+Use Device Mode to approximate how your page looks and performs on a mobile device.
 
-Device Mode adalah nama untuk koleksi fitur longgar di Chrome DevTools yang
-membantu Anda menyimulasikan perangkat seluler. Fitur ini meliputi:
+Device Mode is the name for the loose collection of features in Chrome DevTools that help you simulate mobile devices. These features include:
 
-* [Menyimulasikan viewport seluler](#viewport)
-* [Membatasi jaringan](#network)
-* [Membatasi CPU](#cpu)
-* [Menyimulasikan geolokasi](#geolocation)
-* [Menyetel orientasi](#orientation)
+* [Simulating a mobile viewport](#viewport)
+* [Throttling the network](#network)
+* [Throttling the CPU](#cpu)
+* [Simulating geolocation](#geolocation)
+* [Setting orientation](#orientation)
 
-## Batasan {: #limitations }
+## Limitations {: #limitations }
 
-Anggap Device Mode sebagai [perkiraan urutan pertama][approximation]{:.external} bagaimana
-halaman Anda terlihat dan terasa di perangkat seluler. Dengan Device Mode, sebenarnya Anda tidak menjalankan kode
-di perangkat seluler. Anda menyimulasikan pengalaman pengguna ponsel dari laptop atau desktop.
+Think of Device Mode as a [first-order approximation](https://en.wikipedia.org/wiki/Order_of_approximation#First-order){:.external} of how your page looks and feels on a mobile device. With Device Mode you don't actually run your code on a mobile device. You simulate the mobile user experience from your laptop or desktop.
 
-[approximation]: https://en.wikipedia.org/wiki/Order_of_approximation#First-order
+There are some aspects of mobile devices that DevTools will never be able to simulate. For example, the architecture of mobile CPUs is very different than the architecture of laptop or desktop CPUs. When in doubt, your best bet is to actually run your page on a mobile device. Use [Remote Debugging](/web/tools/chrome-devtools/remote-debugging/) to view, change, debug, and profile a page's code from your laptop or desktop while it actually runs on a mobile device.
 
-Ada beberapa aspek perangkat seluler yang tidak pernah bisa disimulasikan DevTools.
-Misalnya, arsitektur CPU seluler sangat berbeda dari laptop
-atau CPU desktop. Jika ragu, tindakan terbaik yaitu menjalankan halaman di perangkat seluler.
-Gunakan [Proses Debug dari Jauh](/web/tools/chrome-devtools/remote-debugging/) untuk melihat, mengubah, men-debut,
-dan menghasilkan analisis kode halaman dari laptop atau desktop meski alat ini sebenarnya berjalan di perangkat seluler.
+## Simulate a mobile viewport {: #viewport }
 
-## Menyimulasikan viewport seluler {: #viewport }
-
-Klik **Toggle Device Toolbar** ![Beralih Toolbar Perangkat][TDB]{: .inline-icon } untuk membuka UI yang
-memungkinkan Anda menyimulasikan viewport seluler.
-
-[TDB]: /web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png
+Click **Toggle Device Toolbar** ![Toggle Device Toolbar](/web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png){: .inline-icon } to open the UI that enables you to simulate a mobile viewport.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="Toolbar Perangkat."/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>Gambar 1</b>. Toolbar Perangkat
+    <b>Figure 1</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-Secara default, Toolbar Perangkat terbuka dalam Mode Viewport Responsif.
+By default the Device Toolbar opens in Responsive Viewport Mode.
 
-### Mode Viewport Responsif {: #responsive }
+### Responsive Viewport Mode {: #responsive }
 
-Tarik pengendali untuk mengubah ukuran viewport ke dimensi mana pun yang Anda perlukan. Atau, masukkan nilai tertentu
-di kotak lebar dan tinggi. Di **Gambar 2**, lebar disetel ke `628` dan tinggi disetel ke
-`662`.
+Drag the handles to resize the viewport to whatever dimensions you need. Or, enter specific values in the width and height boxes. In **Figure 2**, the width is set to `628` and the height is set to `662`.
 
 <figure>
   <img src="imgs/responsive-handles.png"
-       alt="Pengendali untuk mengubah dimensi viewport saat dalam Mode Viewport Responsif."/>
+       alt="The handles for changing the viewport's dimensions when in Responsive Viewport Mode."/>
   <figcaption>
-    <b>Gambar 2</b>. Pengendali untuk mengubah dimensi viewport saat dalam Mode Viewport Responsif
+    <b>Figure 2</b>. The handles for changing the viewport's dimensions when in Responsive Viewport Mode
   </figcaption>
 </figure>
 
-#### Tampilkan kueri media {: #queries }
+#### Show media queries {: #queries }
 
-Untuk menampilkan titik putus kueri media di atas viewport, klik **More options** dan lalu pilih **Show media
-queries**.
+To show media query breakpoints above your viewport, click **More options** and then select **Show media queries**.
 
 <figure>
   <img src="imgs/show-media-queries.png"
-       alt="Tampilkan kueri media."/>
+       alt="Show media queries."/>
   <figcaption>
-    <b>Gambar 3</b>. Tampilkan kueri media
+    <b>Figure 3</b>. Show media queries
   </figcaption>
 </figure>
 
-Klik titik putus untuk mengubah lebar viewport sehingga titik putus dipicu.
+Click a breakpoint to change the viewport's width so that the breakpoint gets triggered.
 
 <figure>
   <img src="imgs/breakpoint.png"
-       alt="Klik titik putus untuk mengubah lebar viewport."/>
+       alt="Click a breakpoint to change the viewport's width."/>
   <figcaption>
-    <b>Gambar 4</b>. Klik titik putus untuk mengubah lebar viewport
+    <b>Figure 4</b>. Click a breakpoint to change the viewport's width
   </figcaption>
 </figure>
 
-### Mode Viewport Perangkat Seluler {: #device }
+#### Set the device type {: #type }
 
-Untuk menyimulasikan dimensi perangkat seluler tertentu, pilih perangkat dari daftar **Perangkat**.
+Use the **Device Type** list to simulate a mobile device or desktop device.
+
+<figure>
+  <img src="imgs/device-type.png"
+       alt="The Device Type list."/>
+  <figcaption>
+    <b>Figure 5</b>. The <b>Device Type</b> list
+  </figcaption>
+</figure>
+
+The table below describes the differences between the options. **Rendering method** refers to whether Chrome renders the page as a mobile or desktop viewport. **Cursor icon** refers to what type of cursor you see when you hover over the page. **Events fired** refers to whether the page fires `touch` or `click` events when you interact with the page.
+
+<table>
+  <tr>
+    <th>Option</th>
+    <th>Rendering method</th>
+    <th>Cursor icon</th>
+    <th>Events fired</th>
+  </tr>
+  <tr>
+    <td>Mobile</td>
+    <td>Mobile</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+  <tr>
+    <td>Mobile (no touch)</td>
+    <td>Mobile</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop</td>
+    <td>Desktop</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop (touch)</td>
+    <td>Desktop</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+</table>
+
+### Mobile Device Viewport Mode {: #device }
+
+To simulate the dimensions of a specific mobile device, select the device from the **Device** list.
 
 <figure>
   <img src="imgs/device-list.png"
-       alt="Daftar Perangkat."/>
+       alt="The Device list."/>
   <figcaption>
-    <b>Gambar 5</b>. Daftar Perangkat
+    <b>Figure 6</b>. The Device list
   </figcaption>
 </figure>
 
-#### Putar viewport ke orientasi lanskap {: #landscape }
+#### Rotate the viewport to landscape orientation {: #landscape }
 
-Klik **Rotate** ![Putar](imgs/rotate.png){: .inline-icon } untuk memutar viewport ke orientasi lanskap.
+Click **Rotate** ![Rotate](imgs/rotate.png){: .inline-icon } to rotate the viewport to landscape orientation.
 
 <figure>
   <img src="imgs/landscape.png"
-       alt="Orientasi lanskap."/>
+       alt="Landscape orientation."/>
   <figcaption>
-    <b>Gambar 6</b>. Orientasi lanskap
+    <b>Figure 7</b>. Landscape orientation
   </figcaption>
 </figure>
 
-Perhatikan bahwa tombol **Rotate** akan muncul jika **Toolbar Perangkat** tipis.
+Note that the **Rotate** button disappears if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="Toolbar Perangkat."/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>Gambar 7</b>. Toolbar Perangkat
+    <b>Figure 8</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-Baca juga [Atur orientasi](#orientation).
+See also [Set orientation](#orientation).
 
-#### Tampilkan bingkai perangkat {: #frame }
+#### Show device frame {: #frame }
 
-Saat menyimulasikan dimensi perangkat seluler tertentu seperti iPhone 6, buka **More options**
-dan pilih **Show device frame** untuk menampilkan bingkai perangkat fisik di sekitar viewport.
+When simulating the dimensions of a specific mobile device like an iPhone 6, open **More options** and then select **Show device frame** to show the physical device frame around the viewport.
 
-Note: Jika Anda tidak melihat bingkai perangkat dari perangkat tertentu, itu mungkin berarti DevTools
-hanya tidak memiliki seni untuk pilihan spesifik itu.
+Note: If you don't see a device frame for a particular device, it probably means that DevTools just doesn't have art for that specific option.
 
 <figure>
   <img src="imgs/show-device-frame.png"
-       alt="Tampilkan bingkai perangkat."/>
+       alt="Show device frame."/>
   <figcaption>
-    <b>Gambar 8</b>. Tampilkan bingkai perangkat
+    <b>Figure 9</b>. Show device frame
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/iphone-frame.png"
-       alt="Bingkai perangkat untuk iPhone 6."/>
+       alt="The device frame for the iPhone 6."/>
   <figcaption>
-    <b>Gambar 9</b>. Bingkai perangkat untuk iPhone 6
+    <b>Figure 10</b>. The device frame for the iPhone 6
   </figcaption>
 </figure>
 
-### Tampilkan aturan {: #rulers }
+#### Add a custom mobile device {: #custom }
 
-Klik **More options** dan pili **Show rulers** untuk melihat aturan di atas dan di sebelah kiri
-viewport. Unit pengukuran aturan adalah piksel.
+To add a custom device:
+
+1. Click the **Device** list and then select **Edit**.
+    
+    <figure> 
+    
+    ![Selecting 'Edit'.](imgs/edit.png) <figcaption> **Figure 11**. Selecting **Edit** </figcaption> </figure>
+2. Click **Add custom device**.
+
+3. Enter a name, width, and height for the device. The [device pixel ratio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio), [user agent string](https://developer.mozilla.org/en-US/docs/Glossary/User_agent), and [device type](#type) fields are optional. The device type field is the list that is set to **Mobile** by default.
+    
+    <figure> 
+    
+    ![Creating a custom device.](imgs/add-custom-device.png) <figcaption> **Figure 12**. Creating a custom device </figcaption> </figure>
+
+### Show rulers {: #rulers }
+
+Click **More options** and then select **Show rulers** to see rulers above and to the left of your viewport. The sizing unit of the rulers is pixels.
 
 <figure>
   <img src="imgs/show-rulers.png"
-       alt="Tampilkan aturan."/>
+       alt="Show rulers."/>
   <figcaption>
-    <b>Gambar 10</b>. Tampilkan aturan
+    <b>Figure 13</b>. Show rulers
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/rulers.png"
-       alt="Aturan di atas dan di sebelah kiri viewport."/>
+       alt="Rulers above and to the left of the viewport."/>
   <figcaption>
-    <b>Gambar 11</b>. Aturan di atas dan di sebelah kiri viewport
+    <b>Figure 14</b>. Rulers above and to the left of the viewport
   </figcaption>
 </figure>
 
-### Zoom viewport {: #zoom }
+### Zoom the viewport {: #zoom }
 
-Gunakan daftar **Zoom** untuk memperbesar atau memperkecil.
+Use the **Zoom** list to zoom in or out.
 
 <figure>
   <img src="imgs/zoom-viewport.png"
        alt="Zoom."/>
   <figcaption>
-    <b>Gambar 11</b>. Zoom
+    <b>Figure 15</b>. Zoom
   </figcaption>
 </figure>
 
-## Batasi jaringan dan CPU {: #throttle }
+## Throttle the network and CPU {: #throttle }
 
-Untuk membatasi jaringan dan CPU, pilih **Mid-tier mobile** atau **Low-end mobile**
-dari daftar **Pembatasan**.
+To throttle the network and CPU, select **Mid-tier mobile** or **Low-end mobile** from the **Throttle** list.
 
 <figure>
   <img src="imgs/throttling.png"
-       alt="Daftar Pembatasan."/>
+       alt="The Throttle list."/>
   <figcaption>
-    <b>Gambar 12</b>. Daftar Pembatasan
+    <b>Figure 16</b>. The Throttle list
   </figcaption>
 </figure>
 
-**Ponsel tingkat tengah** menyimulasikan 3G cepat dan membatasi CPU, sehingga koneksi ini 4 kali
-lebih lambat daripada biasanya. **Ponsel kelas bawah** menyimulasikan 3G lambat dan membatasi CPU 6 kali lebih lambat daripada biasanya.
-Perlu diingat bahwa membatasi relatif terhadap kemampuan normal laptop atau desktop.
+**Mid-tier mobile** simulates fast 3G and throttles your CPU so that it is 4 times slower than normal. **Low-end mobile** simulates slow 3G and throttles your CPU 6 times slower than normal. Keep in mind that the throttling is relative to the normal capability of your laptop or desktop.
 
-Perhatikan bahwa daftar **Pembatasan** akan disembunyikan jika **Toolbar Perangkat** terbatas.
+Note that the **Throttle** list will be hidden if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="Toolbar Perangkat."/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>Gambar 13</b>. Toolbar Perangkat
+    <b>Figure 17</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-### Batasi CPU saja {: #cpu }
+### Throttle the CPU only {: #cpu }
 
-Untuk membatasi CPU saja dan bukan jaringan, buka panel **Performance**, klik
-**Capture Settings** ![Setelan Tangkapan][capture]{:.inline-icon}, lalu pilih
-**4x slowdown** atau **6x slowdown** dari daftar **CPU**.
+To throttle the CPU only and not the network, go to the **Performance** panel, click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){:.inline-icon}, and then select **4x slowdown** or **6x slowdown** from the **CPU** list.
 
 <figure>
   <img src="imgs/cpu.png"
-       alt="Daftar CPU."/>
+       alt="The CPU list."/>
   <figcaption>
-    <b>Gambar 14</b>. Daftar CPU
+    <b>Figure 18</b>. The CPU list
   </figcaption>
 </figure>
 
-### Batasi jaringan saja {: #network }
+### Throttle the network only {: #network }
 
-Untuk membatasi jaringan saja dan bukan CPU, buka panel **Jaringan** dan pilih
-**Fast 3G** atau **Slow 3G** dari daftar **Pembatasan**.
+To throttle the network only and not the CPU, go the **Network** panel and select **Fast 3G** or **Slow 3G** from the **Throttle** list.
 
 <figure>
   <img src="imgs/network.png"
-       alt="Daftar Pembatasan."/>
+       alt="The Throttle list."/>
   <figcaption>
-    <b>Gambar 14</b>. Daftar Pembatasan
+    <b>Figure 19</b>. The Throttle list
   </figcaption>
 </figure>
 
-Atau tekan <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) atau
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) untuk membuka
-Menu Perintah, ketik `3G`, dan pilih **Enable fast 3G throttling** atau
-**Enable slow 3G throttling**.
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `3G`, and select **Enable fast 3G throttling** or **Enable slow 3G throttling**.
 
 <figure>
   <img src="imgs/commandmenu.png"
-       alt="Menu Perintah."/>
+       alt="The Command Menu."/>
   <figcaption>
-    <b>Gambar 15</b>. Menu Perintah
+    <b>Figure 20</b>. The Command Menu
   </figcaption>
 </figure>
 
-Anda juga bisa mengatur pembatasan jaringan dari panel **Performance**. Klik
-**Capture Settings** ![Setelan Tangkapan][capture]{: .inline-icon } lalu
-pilih **Fast 3G** atau **Slow 3G** dari daftar **Network**.
+You can also set network throttling from the **Performance** panel. Click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){: .inline-icon } and then select **Fast 3G** or **Slow 3G** from the **Network** list.
 
 <figure>
   <img src="imgs/network2.png"
-       alt="Mengatur pembatasan jaringan dari panel Kinerja."/>
+       alt="Setting network throttling from the Performance panel."/>
   <figcaption>
-    <b>Gambar 16</b>. Mengatur pembatasan jaringan dari panel Kinerja.
+    <b>Figure 21</b>. Setting network throttling from the Performance panel
   </figcaption>
 </figure>
 
-## Ganti geolokasi {: #geolocation }
+## Override geolocation {: #geolocation }
 
-Untuk membukat UI penggantian lokasi, klik **Customize and control DevTools**
-![Sesuaikan dan kontrol DevTools][customize]{: .inline-icon } lalu pilih
-**More tools** > **Sensors**.
+To open the geolocation overriding UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
-       alt="Sensor"/>
+       alt="Sensors"/>
   <figcaption>
-    <b>Gambar 17</b>. Sensor
+    <b>Figure 22</b>. Sensors
   </figcaption>
 </figure>
 
-Atau tekan <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) atau
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) untuk membuka
-Menu Perintah, ketik `Sensors`, lalu pilih **Show Sensors**.
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
-       alt="Tampilkan Sensor"/>
+       alt="Show Sensors"/>
   <figcaption>
-    <b>Gambar 18</b>. Tampilkan Sensor
+    <b>Figure 23</b>. Show Sensors
   </figcaption>
 </figure>
 
-Pilih salah satu preset dari daftar **Geolocation**, atau pilih **Custom location**
-untuk memasukkan koordinat Anda sendiri, atau pilih **Location unavailable** untuk menguji halaman
-bertindak saat geolokasi dalam kondisi error.
+Select one of the presets from the **Geolocation** list, or select **Custom location** to enter your own coordinates, or select **Location unavailable** to test out how your page behaves when geolocation is in an error state.
 
 <figure>
   <img src="imgs/geolocation.png"
-       alt="Geolokasi"/>
+       alt="Geolocation"/>
   <figcaption>
-    <b>Gambar 19</b>. Geolokasi
+    <b>Figure 24</b>. Geolocation
   </figcaption>
 </figure>
 
-## Atur orientasi {: #orientation }
+## Set orientation {: #orientation }
 
-Untuk membuka UI orientasi, klik **Customize and control DevTools**
-![Sesuaikan dan kontrol DevTools][customize]{: .inline-icon } lalu pilih
-**More tools** > **Sensors**.
-
+To open the orientation UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
-       alt="Sensor"/>
+       alt="Sensors"/>
   <figcaption>
-    <b>Gambar 20</b>. Sensor
+    <b>Figure 25</b>. Sensors
   </figcaption>
 </figure>
 
-Atau tekan <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) atau
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) untuk membuka
-Menu Perintah, ketik `Sensors`, lalu pilih **Show Sensors**.
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
-       alt="Tampilkan Sensor"/>
+       alt="Show Sensors"/>
   <figcaption>
-    <b>Gambar 21</b>. Tampilkan Sensor
+    <b>Figure 26</b>. Show Sensors
   </figcaption>
 </figure>
 
-Pilih salah satu preset dari daftar **Orientation** atau pilih **Custom orientation**
-untuk mengatur nilai alfa, beta, dan gamma.
+Select one of the presets from the **Orientation** list or select **Custom orientation** to set your own alpha, beta, and gamma values.
 
 <figure>
   <img src="imgs/orientation.png"
-       alt="Orientasi"/>
+       alt="Orientation"/>
   <figcaption>
-    <b>Gambar 22</b>. Orientasi
+    <b>Figure 27</b>. Orientation
   </figcaption>
 </figure>
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}
 
-Baca [Gabung dengan komunitas DevTools](/web/tools/chrome-devtools/#community) untuk mengetahui cara lain
-untuk meninggalkan masukan.
+See [Join the DevTools community](/web/tools/chrome-devtools/#community) for other ways to leave feedback.

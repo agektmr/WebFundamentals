@@ -1,37 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Aby maksymalnie skrócić czas wymagany do przeprowadzenia pierwszego renderowania strony, musimy zminimalizować trzy zmienne: liczbę krytycznych zasobów, liczbę krytycznych bajtów i długość ścieżki krytycznej.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
-
-# Optymalizacja krytycznej ścieżki renderowania {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-Aby maksymalnie skrócić czas wymagany do przeprowadzenia pierwszego renderowania strony, musimy zminimalizować trzy zmienne:
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-* **liczbę krytycznych zasobów,**
-* **liczbę krytycznych bajtów,**
-* **długość ścieżki krytycznej.**
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-Zasobem krytycznym jest dowolny zasób zdolny do zablokowania pierwszego renderowania strony. Im mniej takich zasobów obecnych na stronie, tym mniej działań musi wykonać przeglądarka, by wyświetlić treść na ekranie, i tym mniejsze zapotrzebowanie na moc obliczeniową procesora i inne zasoby.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-Podobnie im mniej bajtów krytycznych musi pobrać przeglądarka, tym szybciej może przejść do przetwarzania treści i wyświetlić ją na ekranie. Liczbę takich bajtów można zmniejszyć, redukując liczbę zasobów (eliminując je lub przekształcając je na niekrytyczne) i zmniejszając rozmiar każdego zasobu przez jego kompresję i optymalizację.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-W końcu należy zaznaczyć, że długość ścieżki krytycznej wynika z zależności pomiędzy wszystkimi zasobami krytycznymi potrzebnymi na stronie i ich rozmiarem w bajtach: pobieranie niektórych zasobów można rozpocząć dopiero po przetworzeniu poprzedniego zasobu, a im większy zasób, tym więcej kolejnych cykli wymiany danych wymaga jego pobranie.
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-Inaczej mówiąc, liczba zasobów, ich rozmiar w bajtach i długość ścieżki krytycznej są ze sobą powiązane, ale nie oznaczają dokładnie tego samego. Na przykład zmniejszenie liczby zasobów krytycznych lub skrócenie ścieżki krytycznej może nie być wykonalne, ale zmniejszenie liczby bajtów krytycznych wciąż będzie stanowić ważny krok optymalizacji &ndash; i na odwrót.
+## Feedback {: #feedback }
 
-**Ogólnie sekwencja kroków wymaganych do optymalizacji krytycznej ścieżki renderowania jest następująca:**
-
-1. Analiza i charakterystyka ścieżki krytycznej: liczby zasobów, rozmiaru w bajtach, długości ścieżki.
-2. Minimalizacja liczby zasobów krytycznych: ich eliminacja, odłożenie pobierania, oznaczenie jako asynchroniczne itp.
-3. Optymalizacja kolejności wczytywania pozostałych zasobów krytycznych: aby skrócić ścieżkę krytyczną, pobieranie wszystkich zasobów krytycznych powinno zacząć się możliwie najwcześniej.
-4. Optymalizacja liczby bajtów krytycznych w celu redukcji czasu pobierania (liczby cykli wymiany danych).
-
-
-
+{% include "web/_shared/helpful.html" %}

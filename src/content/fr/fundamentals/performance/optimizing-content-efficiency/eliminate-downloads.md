@@ -1,39 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: La ressource la plus rapide et la mieux optimisée est une ressource qui n'est pas envoyée. Avez-vous audité vos ressources récemment ? Vous devez le faire régulièrement pour vous assurer que chaque ressource permet d'offrir une meilleure expérience à l'utilisateur.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should audit your resources periodically to ensure that each resource is helping deliver a better user experience.
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Éliminer les téléchargements inutiles {: .page-title }
+# Eliminating Unnecessary Downloads {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-
-
-La ressource la plus rapide et la mieux optimisée est une ressource qui n'est pas envoyée. Avez-vous audité vos ressources récemment ? Vous devez le faire régulièrement pour vous assurer que chaque ressource permet d'offrir une meilleure expérience à l'utilisateur.
-
-
 ### TL;DR {: .hide-from-toc }
-- Inventorier tous vos éléments et tous les éléments tiers sur vos pages
-- Mesurer les performances de chaque élément : sa valeur et ses performances techniques
-- Déterminer si les ressources offrent une valeur suffisante
 
+* Inventory your own assets and third-party assets on your pages.
+* Measure the performance of each asset: its value and its technical performance.
+* Determine if the resources are providing sufficient value.
 
-La ressource la plus rapide et la mieux optimisée est une ressource qui n'est pas envoyée. Cela peut sembler évident, mais en pratique, ce principe est trop souvent oublié : en tant que technicien en performances, il vous incombe de toujours garder un regard critique afin de saisir chaque opportunité d'éliminer les ressources inutiles de votre application. La remise en question et le réexamen périodique des suppositions implicites et explicites avec votre équipe font partie des bonnes pratiques. Quelques exemples :
+The fastest and best-optimized resource is a resource not sent. You should eliminate unnecessary resources from your application. It’s a good practice to question, and periodically revisit, the implicit and explicit assumptions with your team. Here are a few examples:
 
-* Nous avons toujours inclus la ressource X sur nos pages, mais le coût de son téléchargement et de son affichage est-il compensé par la valeur apportée à l'utilisateur ? Pouvons-nous mesurer et prouver sa valeur ?
-* La ressource, en particulier s'il s'agit d'une ressource tierce, offre-t-elle des performances constantes ? La ressource se trouve-t-elle dans le chemin critique, ou a-t-elle besoin de s'y trouver ? Si la ressource se trouve dans le chemin critique, pourrait-elle constituer un point faible pour notre site ? C'est-à-dire que si la ressource n'est pas disponible, cela affecte-t-il l'expérience de nos pages pour l'utilisateur ?
-* Cette ressource a-t-elle besoin ou dispose-t-elle d'un contrat de niveau de service ? Cette ressource respecte-t-elle les bonnes pratiques en matière de performances : compression, mise en cache, etc. ?
+* You've always included resource X on your pages, but does the cost of downloading and displaying it offset the value it delivers to the user? Can you measure and prove its value?
+* Does the resource (especially if it's a third-party resource) deliver consistent performance? Is this resource in the critical path, or need to be? If the resource is in the critical path, could it be a single point of failure for the site? That is, if the resource is unavailable, does it affect performance and the user experience of your pages?
+* Does this resource need or have an SLA? Does this resource follow performance best practices: compression, caching, and so on?
 
-Nos pages contiennent trop souvent des ressources inutiles, ou pire, qui réduisent les performances de la page sans offrir beaucoup de valeur au visiteur ou au site sur lequel elles sont hébergées. Cela s'applique également aux ressources et widgets propriétaires et tiers :
+Too often, pages contain resources that are unnecessary, or worse, that hinder page performance without delivering much value to the visitor or to the site they're hosted on. This applies equally to first-party and third-party resources and widgets:
 
-* Le site A a décidé d'afficher un un carrousel de photos sur sa page d'accueil, pour permettre au visiteur de prévisualiser plusieurs photos en un clic. Toutes les photos sont chargées en même temps que la page, et l'utilisateur les fait défiler.
-    * **Question** : Avez-vous calculé combien d'utilisateurs affichent plusieurs photos dans la galerie carrousel ? Vous pouvez augmenter de façon importante le temps système en téléchargeant des ressources inutiles que la plupart des visiteurs ne consultent jamais.
-* Le site B a décidé d'installer un widget tiers pour afficher le contenu connexe, augmenter les interactions sociales ou fournir un autre service.
-    * **Question** : Avez-vous contrôlé combien de visiteurs utilisent le widget ou cliquent pour accéder au contenu fourni par celui-ci ? Les interactions générées par ce widget sont-elles suffisantes pour justifier le temps système ?
+* Site A has decided to display a photo carousel on its homepage to allow the visitor to preview multiple photos with a quick click. All of the photos are loaded when the page is loaded, and the user advances through the photos. 
+    * **Question:** Have you measured how many users view multiple photos in the carousel? You might be incurring high overhead by downloading resources that most visitors never view.
+* Site B has decided to install a third-party widget to display related content, improve social engagement, or provide some other service. 
+    * **Question:** Have you tracked how many visitors use the widget or click-through on the content that the widget provides? Is the engagement that this widget generates enough to justify its overhead?
 
-Comme vous pouvez le voir, si le fait d'éliminer les téléchargements inutiles peut sembler sans intérêt, en pratique c'est tout le contraire, car cela demande souvent beaucoup de réflexion et de mesures pour prendre la décision adaptée. En fait, pour obtenir les meilleurs résultats possibles, vous devez inventorier et vous reposer ces questions régulièrement pour chaque élément sur vos pages.
+Determining whether to eliminate unnecessary downloads often requires a lot of careful thinking and measurement. For best results, periodically inventory and revisit these questions for every asset on your pages.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}

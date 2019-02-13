@@ -1,31 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:向辅助技术隐藏内容
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Hiding content from assistive technology
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Hiding and Updating Content {: .page-title }
 
-# 隐藏和更新内容 {: .page-title }
-
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
 ## aria-hidden
 
-优化辅助技术用户体验的另一个重要技巧涉及确保只向辅助技术公开相关的页面部分。可通过几种方法确保不将 DOM 的某个部分向无障碍 API 公开。
+Another important technique in fine-tuning the experience for assistive technology users involves ensuring that only relevant parts of the page are exposed to assistive technology. There are several ways to ensure that a section of the DOM does not get exposed to accessibility APIs.
 
+First, anything that is explicitly hidden from the DOM will also not be included in the accessibility tree. So anything that has a CSS style of `visibility:
+hidden` or `display: none` or uses the HTML5 `hidden` attribute will also be hidden from assistive technology users.
 
-首先，任何向 DOM 显式隐藏的内容同样不会包含在无障碍树中。
-因此，任何 CSS 样式为 `visibility: hidden` 或 `display: none` 或者使用 HTML5 `hidden` 属性的内容同样会向辅助技术用户隐藏。
-
-
-
-不过，未进行视觉渲染但未做显式隐藏的元素仍包含在无障碍树中。
-一种常见的技巧是，在绝对位置位于屏幕之外的元素中加入“屏幕阅读器专用文本”。
-
-
+However, an element that is not visually rendered but not explicitly hidden is still included in the accessibility tree. One common technique is to include "screen reader only text" in an element that is absolute positioned offscreen.
 
     .sr-only {
       position: absolute;
@@ -36,16 +24,11 @@ description:向辅助技术隐藏内容
     }
     
 
-此外，正如我们所见，通过 `aria-label`、`aria-labelledby` 或 `aria-describedby` 属性引用原本隐藏的元素来提供屏幕阅读器专用文本是可行的。
+Also, as we have seen, it's possible to provide screen reader only text via an `aria-label`, `aria-labelledby`, or `aria-describedby` attribute referencing an element that is otherwise hidden.
 
+See this WebAIM article on [Techniques for hiding text](http://webaim.org/techniques/css/invisiblecontent/#techniques){: .external } for more information on creating "screen reader only" text.
 
-
-如需了解有关创建“屏幕阅读器专用”文本的详细信息，请参阅这篇有关[文本隐藏技巧](http://webaim.org/techniques/css/invisiblecontent/#techniques){: .external }的 WebAIM 文章。
-
-
-
-最后，ARIA 提供了一种利用 `aria-hidden` 属性将非视觉隐藏内容排除在辅助技术访问范围之外的机制。如果对元素应用该属性，实际上是将元素*及其所有子项*从无障碍树中移除。只有 `aria-labelledby` 或 `aria-describedby` 属性引用的元素例外。
-
+Finally, ARIA provides a mechanism for excluding content from assistive technology that is not visually hidden, using the `aria-hidden` attribute. Applying this attribute to an element effectively removes it *and all of its descendants* from the accessibility tree. The only exceptions are elements referred to by an `aria-labelledby` or `aria-describedby` attribute.
 
     <div class="deck">
       <div class="slide" aria-hidden="true">
@@ -58,88 +41,53 @@ description:向辅助技术隐藏内容
         Action Items
       </div>
     </div>
+    
 
-例如，如果您要创建某个模态 UI 来阻止对主页面的访问，可以使用 `aria-hidden`。
-在此情况下，视力正常用户可以看到某种半透明叠层，这表示页面的大部分内容当前无法使用，但屏幕阅读器用户仍可探索页面的其他部分。在此情况下以及创建键盘陷阱（[前文有说明](/web/fundamentals/accessibility/focus/using-tabindex#modals-and-keyboard-traps)）的情况下，您需要确保那些当前超出范围的页面部分同样处于 `aria-hidden` 状态。
+For example, you might use `aria-hidden` if you're creating some modal UI that blocks access to the main page. In this case, a sighted user might see some kind of semi-transparent overlay indicating that most of the page can't currently be used, but a screen reader user may still be able to explore to the other parts of the page. In this case, as well as creating the keyboard trap [explained earlier](/web/fundamentals/accessibility/focus/using-tabindex#modals-and-keyboard-traps), you need to make sure that the parts of the page that are currently out of scope are `aria-hidden` as well.
 
-
-
-
-现在您已了解 ARIA 的基础知识、它与原生 HTML 语义的协作方式、如何利用它对无障碍树执行相当重大的修改以及如何更改单个元素的语义，让我们看看如何利用它来传递有时效性要求的信息。
-
-
-
+Now that you understand the basics of ARIA, how it plays with native HTML semantics, and how it can be used to perform fairly major surgery on the accessibility tree as well as changing the semantics of a single element, let's look at how we can use it to convey time-sensitive information.
 
 ## aria-live
 
-`aria-live` 允许开发者将某个页面部分标记为“活动”，其意义在于，无论处在什么页面位置，都应立即向用户传达更新，而不是在用户恰好探索该页面部分时再行传达。当元素具有 `aria-live` 属性时，包含它及其子项的页面部分称作*活动区域*。
+`aria-live` lets developers mark a part of the page as "live" in the sense that updates should be communicated to users immediately regardless of the page position, rather than if they just happen to explore that part of the page. When an element has an `aria-live` attribute, the part of the page containing it and its descendants is called a *live region*.
 
+![ARIA live establishes a live region](imgs/aria-live.jpg)
 
-
-![ARIA live 建立一个活动区域](imgs/aria-live.jpg)
-
-例如，活动区域可以是因用户操作而出现的状态消息。
-如果消息的重要性足以吸引视力正常用户的注意，也就足以吸引辅助技术用户的注意（通过设置其 `aria-live` 属性）。
-
-将这个简单 `div`
-
+For example, a live region might be a status message that appears as a result of a user action. If the message is important enough to grab a sighted user's attention, it is important enough to direct an assistive technology user's attention to it by setting its `aria-live` attribute. Compare this plain `div`
 
     <div class="status">Your message has been sent.</div>
     
 
-与其“活动”版本进行比较：
-
+with its "live" counterpart.
 
     <div class="status" aria-live="polite">Your message has been sent.</div>
     
 
-`aria-live` 有三个允许值：`polite`、`assertive` 和 `off`。
+`aria-live` has three allowable values: `polite`, `assertive`, and `off`.
 
- - `aria-live="polite"` 指示辅助技术在完成其当前执行的任何操作后提醒用户这一变化。
-它非常适合在事情重要但并不紧急时使用，`aria-live` 大多作此用途。
- - `aria-live="assertive"` 指示辅助技术中断其正在执行的操作，立即提醒用户这一变化。
-这仅适用于重要并且紧急的更新，例如“您的更改因服务器出错而未予保存；请刷新页面”这样的状态消息，或者因用户操作（如按步进器小部件上的按钮）而直接引发的输入字段更新。
- - `aria-live="off"` 指示辅助技术暂停 `aria-live` 中断。
+- `aria-live="polite"` tells assistive technology to alert the user to this change when it has finished whatever it is currently doing. It's great to use if something is important but not urgent, and accounts for the majority of `aria-live` use.
+- `aria-live="assertive"` tells assistive technology to interrupt whatever it's doing and alert the user to this change immediately. This is only for important and urgent updates, such as a status message like "There has been a server error and your changes are not saved; please refresh the page", or updates to an input field as a direct result of a user action, such as buttons on a stepper widget.
+- `aria-live="off"` tells assistive technology to temporarly suspend `aria-live` interruptions.
 
+There are some tricks to making sure your live regions work correctly.
 
-可以运用一些技巧来确保活动区域工作正常。
+First, your `aria-live` region should probably be set in the initial page load. This is not a hard-and-fast rule, but if you're having difficulty with an `aria-live` region, this might be the issue.
 
-首先，您的 `aria-live` 区域多半应在初始页面加载时进行设置。这并非定规，但如果您在某个 `aria-live` 区域遇到困难，可能就是这个问题所致。
+Second, different screen readers react differently to different types of changes. For example, it's possible to trigger an alert on some screen readers by toggling a descendant element's `hidden` style from true to false.
 
+Other attributes that work with `aria-live` help you fine-tune what is communicated to the user when the live region changes.
 
+`aria-atomic` indicates whether the entire region should be considered as a whole when communicating updates. For example, if a date widget consisting of a day, month, and year has `aria-live=true` and `aria-atomic=true`, and the user uses a stepper control to change the value of just the month, the full contents of the date widget would be read out again. `aria-atomic`'s value may be `true` or `false` (the default).
 
-其次，不同的屏幕阅读器对不同类型变化的反应有所差异。
-例如，可通过将子元素的 `hidden` 样式从 true 切换为 false，在某些屏幕阅读器上触发提醒。
+`aria-relevant` indicates what types of changes should be presented to the user. There are some options that may be used separately or as a token list.
 
+- *additions*, meaning that any element being added to the live region is significant. For example, appending a span to an existing log of status messages would mean that the span would be announced to the user (assuming that `aria-atomic` was `false`).
+- *text*, meaning that text content being added to any descendant node is relevant. For example, modifying a custom text field's `textContent` property would read the modified text to the user.
+- *removals*, meaning that the removal of any text or descendant nodes should be conveyed to the user.
+- *all*, meaning that all changes are relevant. However, the default value for `aria-relevant` is `additions text`, meaning that if you don't specify `aria-relevant` it will update the user for any addition to the element, which is what you are most likely to want.
 
-其他兼容 `aria-live` 的属性可以帮助您优化活动区域发生变化时传达给用户的信息。
+Finally, `aria-busy` lets you notify assistive technology that it should temporarily ignore changes to an element, such as when things are loading. Once everything is in place, `aria-busy` should be set to false to normalize the reader's operation.
 
+## Feedback {: #feedback }
 
-`aria-atomic` 表示传达更新时是否应将整个区域作为一个整体加以考虑。
-例如，如果某个包括日、月和年的日期小部件具有 `aria-live=true` 和 `aria-atomic=true`，并且用户使用的步进器控件只能更改月份值，则会再次读出日期小部件的完整内容。`aria-atomic` 的值可以是 `true` 或 `false`（默认值）。
-
-
-
-
-
-`aria-relevant` 表示应向用户提供哪些类型的更改。有一些选项可以单独使用，或以令牌列表形式使用。
-
-
- - *additions*，表示任何添加到活动区域的元素都是重要内容。
-例如，向现有状态消息日志追加 span 意味着将把该 span 告知用户（假定 `aria-atomic` 为 `false`）。
- - *text*，表示添加到任何子节点的文本内容都是重要内容。
-例如，如果修改自定义文本字段的 `textContent` 属性，将向用户读出修改后的文本。
- - *removals*，表示应将移除任何文本或子节点的情况传达给用户。
- - *all*，意味着所有更改都是重要更改。不过，`aria-relevant` 的默认值是 `additions text`，这表示如果您不指定 `aria-relevant`，它会将对元素的任何添加动态告知用户，而这很可能是您最想获得的信息。
-
-
-
-
-最后，`aria-busy` 允许您通知辅助技术它应暂时忽略对元素的更改（例如在加载内容时）。
-一切就位后，`aria-busy` 应设置为 false，以使阅读器的工作正常化。
-
-
- 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

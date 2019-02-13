@@ -1,62 +1,60 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「初回ペイントの遅延を引き起こすリンクタグをサイトに使用しない」および「初回ペイントの遅延を引き起こすスクリプトタグをサイトの head 部に使用しない」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Render-blocking stylesheets" and "Render-blocking scripts" Lighthouse audits.
 
-{# wf_updated_on: 2016-12-01 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-#  サイトに初回ペイントの遅延を引き起こすリソースを使用しない {: .page-title }
+# Render-Blocking Resources {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-ページの読み込み速度が上がると、ユーザ エンゲージメント、ページビュー、コンバージョン率の向上につながります。
+Fast page loads result in higher user engagement, more pageviews, and improved conversion.
 
+You can improve your page load speed by inlining links and scripts that are required for first paint, and deferring those that aren't.
 
-ページを高速で読み込むには、初回ペイント時に必要なスクリプトやリンクをインライン化して、それ以外の要素は後回しにします。
+## Recommendations {: #recommendations }
 
+In your report, Lighthouse lists all of the render-blocking links or scripts that it has detected. The goal is to reduce this number.
 
-##  監査に合格する方法 {: #how }
+Lighthouse flags three types of render-blocking links: scripts, stylesheets, and HTML imports. How you optimize depends on what type of resource you're working with.
 
-レポートには、Lighthouse で検出されたレンダリングをブロックするリンクやスクリプトが一覧表示されます。
-目標は、この数を減らすことです。
+Note: When a resource is referred to as "critical" below, it means that the resource is required for first paint or is crucial to the page's core functionality.
 
-[監査の実装方法](#implementation)で説明しているように、Lighthouse ではスクリプト、スタイルシート、HTML Imports
-の 3 種類のレンダリング ブロック リンクについて警告します。
-最適化の方法は、使用しているリソースの種類よって異なります。
+* For critical scripts, consider inlining them in your HTML. For non-critical scripts, consider marking them with the `async` or `defer` attributes. See [Adding Interactivity with JavaScript](/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript) to learn more.
+* For stylesheets, consider splitting up your styles into different files, organized by media query, and then adding a `media` attribute to each stylesheet link. When loading a page, the browser only blocks the first paint to retrieve the stylesheets that match the user's device. See [Render-Blocking CSS](/web/fundamentals/performance/critical-rendering-path/render-blocking-css) to learn more. Build tools like [critical](https://github.com/addyosmani/critical/) can help you extract and inline critical CSS.
+* For non-critical HTML imports, mark them with the `async` attribute. As a general rule, `async` should be used with HTML imports as much as possible.
 
-注: 以下で「クリティカル」と記載されているリソースは、初回ペイントに必須のリソース、およびページの主要機能に不可欠なリソースです。
+### Identify render-blocking code {: #coverage }
 
+Use the [Coverage](/web/updates/2017/04/devtools-release-notes#coverage) tab in Chrome DevTools to identify non-critical CSS and JS.
 
+<figure>
+  <img src="/web/updates/images/2017/04/coverage.png"
+       alt="The Coverage tab."/>
+  <figcaption>
+    <b>Figure 1</b>. The Coverage tab
+  </figcaption>
+</figure>
 
-* クリティカルなスクリプトは、HTML でインライン化することを検討してください。クリティカルではないスクリプトについては、`async` または `defer` 属性を指定してください。詳細は [JavaScript を使用してインタラクティブなサイトにする][js]をご覧ください。
-* スタイルシートについては、複数のファイルにスタイルを分けて、メディアクエリで管理します。各スタイルシートのリンクには `media`
-属性を追加します。
-ページの読み込み時に、ブラウザは初回ペイントのみをブロックして、ユーザの端末に対応するスタイルシートを取得します。
-詳細については[レンダリングをブロックする CSS][css] をご覧ください。
-* クリティカルではない HTML Imports には、`async` 属性を指定します。一般的な規則として、`async` はできる限り HTML Imports と一緒に使用します。
+## More information {: #more-info }
 
+Lighthouse identifies three types of blocking resources.
 
-[js]: /web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript
-[css]: /web/fundamentals/performance/critical-rendering-path/render-blocking-css
+A `<script>` tag that:
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+* Is in the `<head>` of the document.
+* Does not have a `defer` attribute.
+* Does not have an `async` attribute.
 
-Lighthouse では、次の3 種類のブロッキング リソースを特定します。
+A `<link rel="stylesheet">` tag that:
 
-以下の `<script>` タグ:
+* Does not have a `disabled` attribute. When this attribute is present, some browsers do not download the stylesheet. Note that this attribute is not supported in all browsers.
+* Does not have a `media` attribute that matches the user's device.
 
-* ドキュメントの `<head>` 部分にある。
-* `defer` 属性を持たない。
-* `async` 属性を持たない。
+A `<link rel="import">` tag that:
 
-以下の `<link rel="stylesheet">` タグ:
+* Does not have an `async` attribute.
 
-* `disabled` 属性を持たない。この属性があると、ブラウザはスタイルシートをダウンロードしません。
-* ユーザーのデバイスに対応する `media` 属性がない。
+[Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/byte-efficiency/render-blocking-resources.js){: .external }
 
-以下の `<link rel="import">` タグ:
+## Feedback {: #feedback }
 
-* `async` 属性を持たない。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

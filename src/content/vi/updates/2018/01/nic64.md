@@ -1,16 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: What's new in Chrome 64 for developers?
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: What's new in Chrome 64 for developers?
 
-{# wf_published_on: 2018-01-23 #}
-{# wf_updated_on: 2018-03-05 #}
-{# wf_featured_image: /web/updates/images/generic/new-in-chrome.png #}
-{# wf_tags: chrome64,new-in-chrome,observers,ux,regex,media,modules,responsive #}
-{# wf_featured_snippet: Chrome 64 adds support for ResizeObservers, which will notify you when an element’s content rectangle has changed its size. Modules can now access to host specific metadata with import.metadata The pop-up blocker gets strong and plenty more. Let’s dive in and see what’s new for developers in Chrome 64! #}
-{# wf_blink_components: N/A #}
+{# wf_published_on: 2018-01-23 #} {# wf_updated_on: 2018-03-05 #} {# wf_featured_image: /web/updates/images/generic/new-in-chrome.png #} {# wf_tags: chrome64,new-in-chrome,observers,ux,regex,media,modules,responsive #} {# wf_featured_snippet: Chrome 64 adds support for ResizeObservers, which will notify you when an element’s content rectangle has changed its size. Modules can now access to host specific metadata with import.metadata The pop-up blocker gets strong and plenty more. Let’s dive in and see what’s new for developers in Chrome 64! #} {# wf_blink_components: N/A #}
 
-# Mới trong Chrome 64 {: .page-title }
+# New in Chrome 64 {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
@@ -22,28 +14,28 @@ description: What's new in Chrome 64 for developers?
   </iframe>
 </div>
 
-* Hỗ trợ cho [`ResizeObservers`](#resizeobserver) , sẽ thông báo cho bạn khi hình chữ nhật nội dung của phần tử đã thay đổi kích thước của nó.
-* Các mô-đun hiện có thể truy cập để lưu trữ siêu dữ liệu cụ thể bằng [import.meta](#import-meta) .
-* [pop-up blocker](#popup-blocker) trở nên mạnh mẽ.
-* [`window.alert()`](#window-alert) không còn thay đổi tiêu điểm.
+* Support for [`ResizeObservers`](#resizeobserver), will notify you when an element’s content rectangle has changed its size.
+* Modules can now access to host specific metadata with [import.meta](#import-meta).
+* The [pop-up blocker](#popup-blocker) gets strong.
+* [`window.alert()`](#window-alert) no longer changes focus.
 
-Và có [plenty more](#more) !
+And there’s [plenty more](#more)!
 
-Tôi là Pete LePage. Hãy đi sâu vào và xem có gì mới cho các nhà phát triển trong Chrome 64!
+I’m Pete LePage. Let’s dive in and see what’s new for developers in Chrome 64!
 
 <div class="clearfix"></div>
 
-Note: Bạn muốn danh sách đầy đủ các thay đổi? Kiểm tra [Chromium source repository change list](https://chromium.googlesource.com/chromium/src/+log/63.0.3239.84..64.0.3282.140) .
+Note: Want the full list of changes? Check out the [Chromium source repository change list](https://chromium.googlesource.com/chromium/src/+log/63.0.3239.84..64.0.3282.140).
 
 ## `ResizeObserver` {: #resizeobserver }
 
-Theo dõi khi thay đổi kích thước của một phần tử có thể là một chút đau. Nhiều khả năng, bạn sẽ đính kèm một người nghe vào sự kiện `resize` của tài liệu, sau đó gọi `getBoundingClientRect` hoặc `getComputedStyle` . Nhưng, cả hai đều có thể gây ra sự đổ vỡ bố cục.
+Tracking when an element’s size changes can be a bit of a pain. Most likely, you’ll attach a listener to the document’s `resize` event, then call `getBoundingClientRect` or `getComputedStyle`. But, both of those can cause layout thrashing.
 
-Và điều gì sẽ xảy ra nếu cửa sổ trình duyệt không thay đổi kích thước, nhưng một phần tử mới đã được thêm vào tài liệu? Hoặc bạn đã thêm `display: none` vào một phần tử? Cả hai đều có thể thay đổi kích thước của các phần tử khác trong trang.
+And what if the browser window didn’t change size, but a new element was added to the document? Or you added `display: none` to an element? Both of those can change the size of other elements within the page.
 
-`ResizeObserver` thông báo cho bạn bất cứ khi nào kích thước của một phần tử thay đổi, và cung cấp chiều cao và chiều rộng mới của phần tử, giảm nguy cơ vỡ trang.
+`ResizeObserver` notifies you whenever an element’s size changes, and provides the new height and width of the element, reducing the risk of layout thrashing.
 
-Giống như các nhà quan sát khác, việc sử dụng nó khá đơn giản, tạo ra một đối tượng `ResizeObserver` và chuyển một cuộc gọi lại đến hàm tạo. `ResizeOberverEntries` lại sẽ được đưa ra một mảng của `ResizeOberverEntries` - một mục nhập cho mỗi phần tử quan sát - có chứa các tham số mới cho phần tử.
+Like other Observers, using it is pretty simple, create a `ResizeObserver` object and pass a callback to the constructor. The callback will be given an array of `ResizeOberverEntries` – one entry per observed element – which contain the new dimensions for the element.
 
 ```js
 const ro = new ResizeObserver( entries => {
@@ -59,44 +51,37 @@ const ro = new ResizeObserver( entries => {
 ro.observe(someElement);
 ```
 
-Kiểm tra [`ResizeObserver`: It's like `document.onresize` for Elements](/web/updates/2016/10/resizeobserver) để biết thêm chi tiết và ví dụ thế giới thực.
+Check out [`ResizeObserver`: It's like `document.onresize` for Elements](/web/updates/2016/10/resizeobserver) for more details and real world examples.
 
+## Improved Pop-up Blocker {: #popup-blocker }
 
-## Trình chặn {: #popup-blocker } sổ bật lên được cải thiện {: #popup-blocker }
+I hate tab-unders. You know them, it’s when a page opens a pop-up to some destination AND navigates the page. Usually one of them is an ad or something that you didn’t want.
 
-Tôi ghét tab-under. Bạn biết họ, đó là khi một trang mở một cửa sổ bật lên đến một số đích VÀ điều hướng trang. Thông thường một trong số đó là một quảng cáo hoặc một thứ gì đó mà bạn không muốn.
-
-Bắt đầu từ Chrome 64, các loại điều hướng này sẽ bị chặn và Chrome sẽ hiển thị một số giao diện người dùng gốc cho người dùng - cho phép họ theo dõi chuyển hướng nếu họ muốn.
-
+Starting in Chrome 64, these type of navigations will be blocked, and Chrome will show some native UI to the user - allowing them to follow the redirect if they want.
 
 ## `import.meta` {: #import-meta }
 
-Khi viết các mô-đun JavaScript, bạn thường muốn truy cập vào siêu dữ liệu của máy chủ lưu trữ cụ thể về mô-đun hiện tại. Chrome 64 giờ đây hỗ trợ thuộc tính `import.meta` trong các mô đun và hiển thị URL cho mô-đun là `import.meta.url` .
+When writing JavaScript modules, you often want access to host-specific metadata about the current module. Chrome 64 now supports the `import.meta` property within modules and exposes the URL for the module as `import.meta.url`.
 
-Điều này thực sự hữu ích khi bạn muốn giải quyết tài nguyên liên quan đến tệp mô-đun trái ngược với tài liệu HTML hiện tại.
+This is really helpful when you want to resolve resources relative to the module file as opposed to the current HTML document.
 
+## And more! {: #more }
 
-## Và hơn thế nữa! {: #more }
+These are just a few of the changes in Chrome 64 for developers, of course, there’s plenty more.
 
-Đây chỉ là một vài thay đổi trong Chrome 64 dành cho nhà phát triển, tất nhiên, có nhiều thay đổi hơn.
-
-* Chrome hiện hỗ trợ [named captures](/web/updates/2017/07/upcoming-regexp-features#named_captures) và [Unicode property  escapes](/web/updates/2017/07/upcoming-regexp-features#unicode_property_escapes) trong các biểu thức chính quy.
-* Giá trị mặc định `preload` giá trị cho `<audio>` và `<video>` yếu tố tại là `metadata` . Điều này mang Chrome phù hợp với các trình duyệt khác và giúp giảm băng thông và sử dụng tài nguyên bằng cách chỉ tải siêu dữ liệu chứ không phải chính phương tiện.
-* Bây giờ bạn có thể sử dụng `Request.prototype.cache` để xem chế độ cache của một `Request` và xác định xem yêu cầu có phải là một yêu cầu tải lại hay không.
-* Sử dụng API quản lý tập trung, bây giờ bạn có thể tập trung một phần tử mà không cần cuộn đến phần tử có thuộc tính `preventScroll` .
+* Chrome now supports [named captures](/web/updates/2017/07/upcoming-regexp-features#named_captures) and [Unicode property escapes](/web/updates/2017/07/upcoming-regexp-features#unicode_property_escapes) in regular expressions.
+* The default `preload` value for `<audio>` and `<video>` elements is now `metadata`. This brings Chrome in line with other browsers and helps to reduce bandwidth and resource usage by only loading the metadata and not the media itself.
+* You can now use `Request.prototype.cache` to view the cache mode of a `Request` and determine whether a request is a reload request.
+* Using the Focus Management API, you can now focus an element without scrolling to it with the `preventScroll` attribute.
 
 ## `window.alert()` {: #window-alert }
 
-Oh, và một nữa! Mặc dù đây không thực sự là &#39;tính năng dành cho nhà phát triển&#39;, điều đó làm tôi hạnh phúc. `window.alert()` không còn mang đến một tab nền cho nền trước! Thay vào đó, cảnh báo sẽ được hiển thị khi người dùng chuyển sang quay lại tab đó.
+Oh, and one more! While this isn’t really a ‘developer feature’, it makes me happy. `window.alert()` no longer brings a background tab to the foreground! Instead, the alert will be shown when the user switches to back to that tab.
 
-Không có chuyển đổi tab ngẫu nhiên hơn bởi vì một cái gì đó bắn một `window.alert` vào tôi. Tôi đang xem bạn Lịch Google cũ.
+No more random tab switching because something fired a `window.alert` on me. I’m looking at you old Google Calendar.
 
+Be sure to [subscribe](https://goo.gl/6FP1a5) to our [YouTube channel](https://www.youtube.com/user/ChromeDevelopers/), and you’ll get an email notification whenever we launch a new video, or add our [RSS feed](/web/shows/rss.xml) to your feed reader.
 
-Hãy chắc chắn để [subscribe](https://goo.gl/6FP1a5) để chúng tôi [YouTube channel](https://www.youtube.com/user/ChromeDevelopers/) , và bạn sẽ nhận được một thông báo qua email mỗi khi chúng ta khởi động một video mới, hoặc thêm chúng tôi [RSS feed](/web/shows/rss.xml) để feed reader của bạn.
-
-
-Tôi là Pete LePage và ngay sau khi Chrome 65 được phát hành, tôi sẽ ở ngay đây để cho bạn biết - tính năng mới trong Chrome!
+I’m Pete LePage, and as soon as Chrome 65 is released, I’ll be right here to tell you -- what’s new in Chrome!
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}

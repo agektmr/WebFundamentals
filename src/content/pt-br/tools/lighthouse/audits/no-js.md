@@ -1,62 +1,31 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse “A página apresenta conteúdo quando seus scripts não estão disponíveis”.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Contains Some Content When JavaScript Is Not Available" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-20 #}
-{# wf_published_on: 2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# A página apresenta conteúdo quando seus scripts não estão disponíveis  {: .page-title }
+# Contains Some Content When JavaScript Is Not Available {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-O [aprimoramento progressivo](https://en.wikipedia.org/wiki/Progressive_enhancement)
-é uma estratégia de desenvolvimento Web que garante que seu site possa ser acessado pelo
-maior público possível. A definição mais comum de aprimoramento
-progressivo é a seguinte:
+[Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) is a web development strategy that ensures that your site is accessible to the largest possible audience. The most common definition of progressive enhancement is as follows:
 
-O conteúdo básico e a funcionalidade da página devem depender apenas
-das tecnologias Web mais fundamentais para garantir que a página possa
-ser utilizada em todas as condições de navegação. Experiências avançadas, como estilos
-sofisticados que usam CSS ou interatividade usando JavaScript, podem ser distribuídas em camadas superiores
-para os navegadores compatíveis com essas tecnologias. No entanto, o conteúdo básico e a funcionalidade
-da página não devem depender de CSS ou JavaScript.
+Basic content and page functionality should rely on only the most fundamental web technologies, to ensure that the page is usable across all browsing conditions. Enhanced experiences, such as sophisticated styling using CSS, or interactivity using JavaScript, can be layered on top for the browsers that support those technologies. But basic content and page functionality should not rely on CSS or JavaScript.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-O aprimoramento progressivo é um tópico amplo e polêmico. Um grupo afirma que,
-para aderir à estratégia do aprimoramento progressivo, as páginas devem ser
-dispostas em camadas para que o conteúdo básico e a funcionalidade da página exijam apenas HTML. Consulte
-[Aprimoramento progressivo: o que é e como usá-lo](https://www.smashingmagazine.com/2009/04/progressive-enhancement-what-it-is-and-how-to-use-it/)
-para obter um exemplo dessa abordagem.
+Progressive enhancement is a large and contentious topic. One camp says that, in order to adhere to the strategy of progressive enhancement, pages should be layered so that basic content and page functionality only require HTML. See [Progressive Enhancement: What It Is, And How To Use It](https://www.smashingmagazine.com/2009/04/progressive-enhancement-what-it-is-and-how-to-use-it/) for an example of this approach.
 
-Outro grupo acredita que essa abordagem rígida é inviável ou desnecessária
-para muitos aplicativos da Web modernos de grande escala, e sugere o uso de
-CSS de caminho essencial em linha no documento `<head>` para os estilos de página mais importantes.
-Consulte [Caminho de renderização crítico](/web/fundamentals/performance/critical-rendering-path/) para saber mais sobre essa abordagem.
+Another camp believes that this strict approach is unfeasible or unnecessary for many modern, large-scale web applications and suggests using inline critical path CSS in the document `<head>` for absolutely critical page styles. See [Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) for more on this approach.
 
-Tendo isso em mente, essa auditoria do Lighthouse faz uma verificação simples para
-garantir que sua página não fique em branco quando o JavaScript é desativado. O quão estritamente seu
-aplicativo adere ao aprimoramento progressivo é controverso, mas há uma
-concessão geral de que todas as páginas devem exibir pelo menos *alguma* informação
-quando o JavaScript é desativado, mesmo que esse conteúdo seja apenas um alerta ao usuário
-de que o JavaScript é necessário para usar a página.
+Given these considerations, this Lighthouse audit performs a simple check to ensure that your page isn't blank when JavaScript is disabled. How strictly your app adheres to progressive enhancement is a topic of debate, but there's widespread agreement that all pages should display at least *some* information when JavaScript is disabled, even if the content is just an alert to the user that JavaScript is required to use the page.
 
-Para páginas que absolutamente precisem depender do JavaScript, uma possível abordagem é usar um elemento
-[`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript)
-para alertar o usuário de que o JavaScript é necessário para exibir a página. Isso é
-melhor do que uma página em branco, pois isso deixaria os usuários na dúvida
-sobre se há um problema na página, em seus navegadores ou em seus
-computadores.
+For pages that absolutely must rely on JavaScript, one approach is to use a [`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) element to alert the user that JavaScript is required for the page. This is better than a blank page, because the blank page leaves users uncertain about whether there's a problem with the page, their browsers, or their computers.
 
-Para verificar a aparência e o desempenho do seu site quando o JavaScript é desativado, use
-o recurso [Disable
-JavaScript](/web/tools/chrome-devtools/settings#disable-js) do Chrome DevTools.
+To see how your site looks and performs when JavaScript is disabled, use Chrome DevTools' [Disable JavaScript](/web/tools/chrome-devtools/settings#disable-js) feature.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-O Lighthouse desativa o JavaScript na página e inspeciona seu HTML. Se
-o HTML estiver vazio, a auditoria será reprovada. Se o HTML não estiver vazio, a auditoria será
-aprovada.
+Lighthouse disables JavaScript on the page and then inspects the page's HTML. If the HTML is empty then the audit fails. If the HTML is not empty then the audit passes.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

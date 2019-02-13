@@ -1,26 +1,18 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“清单包含像素至少达到 192px 的图标”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains Icons at Least 192px" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 清单包含像素至少达到 192px 的图标 {: .page-title }
+# Manifest Contains Icons at Least 192px {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-当用户将您的应用添加到主屏幕时，移动设备需要一个图标进行显示。
-在网络应用清单的 `icons` 数组中指定该图标。
+When a user adds your app to the homescreen, the mobile device needs an icon to display. That icon is specified in the `icons` array of the Web App Manifest.
 
-如果存在 192 像素的图标，则可确保您的图标在最大的 Android 设备上正常显示。
-对于需要较小图标的小型设备，Android 可以使用合理的精度按比例缩小 192 像素的图标。
-换句话说，尽管您可以在您的网络应用清单中提供尺寸较小的图标，但没有必要这么做。
+The presence of a 192-pixel icon ensures that your icon displays well on the largest Android devices. For smaller devices that need a smaller icon, Android can scale down the 192-pixel icon with reasonable accuracy. In other words, although you can provide smaller-sized icons in your Web App Manifest, it's unnecessary.
 
+## Recommendations {: #recommendations }
 
-
-## 如何通过此审查{: #how }
-
-将一个 192 像素的图标添加到您的网络应用清单。
+Add a 192-pixel icon to your Web App Manifest.
 
     {
       ...
@@ -31,21 +23,16 @@ description:“清单包含像素至少达到 192px 的图标”Lighthouse 审�
       }],
       ...
     }
+    
 
-有关向您展示如何在应用中正确实现和测试“添加到主屏幕”支持的指南清单，请查看[清单是否存在](manifest-exists#how)。
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
+This audit can only guarantee that your icon displays well on Android devices. Other operating systems may require a different icon size for optimal presentation.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse fetches the manifest and verifies that the `icons` property references a 192-pixel icon. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results. Note also that Lighthouse does not check whether the icon actually exists in the cache. It just makes sure that the Web App Manifest defines a 192-pixel icon.
 
-此审查只能保证您的图标在 Android 设备上正常显示。其他操作系统可能需要不同大小的图标才能实现最佳显示效果。
+## Feedback {: #feedback }
 
-
-
-Lighthouse 提取清单并验证 `icons` 属性是否引用了一个 192 像素的图标。
-Lighthouse 提取的清单独立于 Chrome 当前在页面上使用的清单，这可能会产生不准确的结果。另请注意，Lighthouse 不会检查此图标是否切实存在于缓存中。
-它只是确保网络应用清单定义一个 192 像素的图标。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

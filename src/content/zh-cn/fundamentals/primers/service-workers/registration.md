@@ -1,183 +1,99 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:确定 Service Worker 注册时间的最佳做法。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Best practices for timing your service worker registration.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2016-11-28 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-28 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Service Worker 注册 {: .page-title }
+# Service Worker Registration {: .page-title }
 
 {% include "web/_shared/contributors/jeffposnick.html" %}
 
-[Service
-Worker](/web/fundamentals/getting-started/primers/service-workers) 可有效加快重复访问网页应用的速度，但您应采取措施确保 Service Worker 的初始安装不会恶化用户的首次访问体验。
+[Service workers](/web/fundamentals/getting-started/primers/service-workers) can meaningfully speed up repeat visits to your web app, but you should take steps to ensure that a service worker's initial installation doesn't degrade a user's first-visit experience.
 
+Generally, deferring service worker [registration](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register) until after the initial page has loaded will provide the best experience for users, especially those on mobile devices with slower network connections.
 
+## Common registration boilerplate
 
-
-一般情况下，延迟 Service Worker
-[注册](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register)直至初始页面完成加载可为用户（特别是网络连接较慢的移动设备用户）提供最佳体验。
-
-
-
-## 通用注册样板文件
-
-如果您曾阅读有关 Service Worker 的内容，您可能会看到与以下内容实质相似的样板文件：
-
+If you've ever read about service workers, you've probably come across boilerplate substantially similar to the following:
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
     }
+    
 
-上述内容有时会附带几个 `console.log()` 语句，或包含[代码](https://github.com/GoogleChrome/sw-precache/blob/master/demo/app/js/service-worker-registration.js#L20)（其检测是否对以前的服务工作线程注册进行了更新），以此通知用户刷新页面。
- 但对于标准的几行代码而言，这些只是细微变化。
+This might sometimes be accompanied by a few `console.log()` statements, or [code](https://github.com/GoogleChrome/sw-precache/blob/master/demo/app/js/service-worker-registration.js#L20) that detects an update to a previous service worker registration, as a way of letting users know to refresh the page. But those are just minor variations on the standard few lines of code.
 
+So, is there any nuance to `navigator.serviceWorker.register`? Are there any best practices to follow? Not surprisingly (given that this article doesn't end right here), the answer to both is "yes!"
 
-那么，`navigator.serviceWorker.register` 是否有任何细微差别？是否有任何可以遵循的最佳做法？
-毫无意外（考虑到本文还未完结），对这两个问题的回答都是“有”。
+## A user's first visit
 
+Let's consider a user's first visit to a web app. There's no service worker yet, and the browser has no way of knowing in advance whether there will be a service worker that is eventually installed.
 
-## 用户的首次访问
+As a developer, your priority should be to make sure that the browser quickly gets the minimal set of critical resources needed to display an interactive page. Anything that slows down retrieving those responses is the enemy of a speedy time-to-interactive experience.
 
-我们考虑一下用户首次访问网页应用。 此时还没有服务工作线程，浏览器无法提前知道最终是否会安装一个服务工作线程。
+Now imagine that in the process of downloading the JavaScript or images that your page needs to render, your browser decides to start a background thread or process (for the sake of brevity, we'll assume it's a thread). Assume that you're not on a beefy desktop machine, but rather the type of underpowered mobile phone that much of the world considers their primary device. Spinning up this extra thread adds contention for CPU time and memory that your browser might otherwise spend on rendering an interactive web page.
 
+An idle background thread is unlikely to make a significant difference. But what if that thread isn't idle, but instead decides that it's also going to start downloading resources from the network? Any concern about CPU or memory contention should take a backseat to worries about the limited bandwidth available to many mobile devices. Bandwidth is precious, so don't undermine critical resources by downloading secondary resources at the same time.
 
+All of this is to say that spinning up a new service worker thread to download and cache resources in the background can work against your goal of providing the shortest time-to-interactive experience the first time a user visits your site.
 
-作为开发者，您的首要任务应该是确保浏览器快速获取显示交互页面所需的最低限度的关键资源集。
- 拖慢检索这些响应速度的任何资源都不利于实现快速的交互体验。
+## Improving the boilerplate
 
-
-现在，想象一下，在下载页面需要渲染的 JavaScript 或图像的进程中，您的浏览器决定启动一个后台线程或进程（为简单起见，我们假设启动一个线程）。
- 假定您使用的不是较大的台式机，而是性能不足的手机，世界上很多人都将手机作为主要设备。
- 启动这个额外的线程将加剧对 CPU 时间和内存的争用，从而影响浏览器渲染交互网页。
-
-
-
-空闲的后台线程不太可能有重大意义。 但是，如果该线程不处于空闲状态，而是决定也将开始从网络下载资源，那该怎么办？
-比起对 CPU 或内存的任何顾虑，我们更应该担心许多移动设备可用的有限带宽。
- 带宽非常宝贵，因此，不要同时下载次要资源，这样会影响关键资源的下载。
-
-
-所有这些都说明，在后台启动一个新的 Service Worker 下载和缓存资源，违背了为用户首次访问网站提供最快交互体验的目标。
-
-
-
-
-## 改进样板文件
-
-解决方案是通过选择调用 `navigator.serviceWorker.register()` 的时间来控制 Service Worker 的启动。
- 一个简单的经验法则是延迟注册，直到 <code>[load
-event](https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload)</code>
-在 <code>window</code> 上触发，如下所示：
+The solution is to control start of the service worker by choosing when to call `navigator.serviceWorker.register()`. A simple rule of thumb would be to delay registration until after the `<a href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onload">load
+event</a>` fires on `window`, like so:
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js');
       });
     }
+    
 
-但是启动服务工作线程注册的适当时间还取决于您的网络应用在加载后将做什么。
- 例如，[Google I/O 2016 网络应用](https://events.google.com/io2016/)在过渡到主屏幕前先显示一个简短的动画。
- 我们的团队[发现](/web/showcase/2016/iowa2016)，在显示动画期间启动服务工作线程注册会导致低端移动设备出现卡顿。
- 当浏览器很有可能出现几秒的空闲状态时，我们可以[延迟](https://github.com/GoogleChrome/ioweb2016/blob/8cfa27261f9d07fe8a5bb7d228bd3f35dfc9a91e/app/scripts/helper/elements.js#L42)服务工作线程注册直到动画显示完毕，而不是为用户提供糟糕的体验。
+But the right time to kick off the service worker registration can also depend on what your web app is doing right after it loads. For example, the [Google I/O 2016 web app](https://events.google.com/io2016/) features a short animation before transitioning to the main screen. Our team [found](/web/showcase/2016/iowa2016) that kicking off the service worker registration during the animation could lead to jankiness on low-end mobile devices. Rather than giving users a poor experience, we [delayed](https://github.com/GoogleChrome/ioweb2016/blob/8cfa27261f9d07fe8a5bb7d228bd3f35dfc9a91e/app/scripts/helper/elements.js#L42) service worker registration until after the animation, when the browser was most likely to have a few idle seconds.
 
+Similarly, if your web app uses a framework that performs additional setup after the page has loaded, look for a framework-specific event that signals when that work is done.
 
+## Subsequent visits
 
+We've been focusing on the first visit experience up until now, but what impact does delayed service worker registration have on repeat visits to your site? While it might surprise some folks, there shouldn't be any impact at all.
 
-同样，如果您的网页应用使用在页面加载后执行额外设置的框架，则查看一个框架特定的事件，其表明该工作何时完成。
+When a service worker is registered, it goes through the `install` and `activate` [lifecycle events](/web/fundamentals/instant-and-offline/service-worker/lifecycle). Once a service worker is activated, it can handle `fetch` events for any subsequent visits to your web app. The service worker starts *before* the request for any pages under its scope is made, which makes sense when you think about it. If the existing service worker weren't already running prior to visiting a page, it wouldn't have a chance to fulfill `fetch` events for navigation requests.
 
+So once there's an active service worker, it doesn't matter when you call `navigator.serviceWorker.register()`, or in fact, *whether you call it at all*. Unless you change the URL of the service worker script, `navigator.serviceWorker.register()` is effectively a [no-op](https://en.wikipedia.org/wiki/NOP) during subsequent visits. When it's called is irrelevant.
 
+## Reasons to register early
 
-## 后续访问
+Are there any scenarios in which registering your service worker as early as possible makes sense? One that comes to mind is when your service worker uses
+<code><a href="https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim">clients.claim()</a></code>
+to take control of the page during the first visit, and the service worker aggressively performs [runtime caching](/web/fundamentals/instant-and-offline/offline-cookbook/#on-network-response) inside of its `fetch` handler. In that situation, there's an advantage to getting the service worker active as quickly as possible, to try to populate its runtime caches with resources that might come in handy later. If your web app falls into this category, it's worth taking a step back to make sure that your service worker's `install` handler doesn't request resources that fight for bandwidth with the main page's requests.
 
-到目前为止，我们一直在关注首次访问体验，但延迟 Service Worker 注册对重复访问您的网站会有什么影响吗？尽管这让一些人出乎意料，但应该不会有任何影响。
+## Testing things out
 
+A great way to simulate a first visit is to open your web app in a [Chrome Incognito window](https://support.google.com/chromebook/answer/95464?co=GENIE.Platform%3DDesktop), and look at the network traffic in [Chrome's DevTools](/web/tools/chrome-devtools/). As a web developer, you probably reload a local instance of your web app dozens and dozens of times a day. But by revisiting your site when there's already a service worker and fully populated caches, you don't get the same experience that a new user would get, and it's easy to ignore a potential problem.
 
+Here's an example illustrating the difference that registration timing could make. Both screenshots are taken while visiting a [sample app](https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo) in Incognito mode using network throttling to simulate a slow connection.
 
-注册 Service Worker 后，它将完成 `install` 和
-`activate` [生命周期事件](/web/fundamentals/instant-and-offline/service-worker/lifecycle)。
-在激活 Service Worker 后，它可以处理 `fetch` 事件以对网页应用进行任意后续访问。
- 根据 Service Worker 的作用域，它将在请求任意页面*之前*启动，如果您仔细想一下，就会明白这非常有道理。
- 如果在访问页面之前，现有 Service Worker 还没有运行，那么，它将没有机会针对导航请求履行 `fetch` 事件。
+![Network traffic with early registration.](images/early-registration.png "Network traffic with early registration.")
 
+The screenshot above reflects the network traffic when the sample was modified to perform service worker registration as soon as possible. You can see precaching requests (the entries with the [gear icon](http://stackoverflow.com/questions/33590378/status-code200-ok-from-serviceworker-in-chrome-network-devtools/33655173#33655173) next to them, originating from the service worker's `install` handler) interspersed with requests for the other resources needed to display the page.
 
+![Network traffic with late registration.](images/late-registration.png "Network traffic with late registration.")
 
-因此，如果有活动的 Service Worker，那么，何时调用 `navigator.serviceWorker.register()`，或事实上*无论您是否调用它*都无关紧要。
-除非您更改 Service Worker 脚本的网址，否则
-`navigator.serviceWorker.register()` 在后续访问期间实际上是一个 [no-op](https://en.wikipedia.org/wiki/NOP)。
- 因此，何时调用它都无关禁用。
+In the screenshot above, service worker registration was delayed until after the page had loaded. You can see that the precaching requests don't start until all the resources have been fetched from the network, eliminating any contention for bandwidth. Moreover, because some of the items we're precaching are already in the browser's HTTP cache—the items with `(from disk cache)` in the Size column—we can populate the service worker's cache without having to go to the network again.
 
+Bonus points if you run this sort of test from an actual, low-end device on a real mobile network. You can take advantage of Chrome's [remote debugging capabilities](/web/tools/chrome-devtools/remote-debugging/) to attach an Android phone to your desktop machine via USB, and ensure that the tests you're running actually reflect the real-world experience of many of your users.
 
-## 尽早注册的原因
+## Conclusion
 
-是否存在最好尽快注册 Service Worker 的任何场景？
-我想到一个这样的场景，当 Service Worker 在首次访问期间使用
-<code>[clients.claim()](https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim)</code>
-控制页面时，Service Worker积极执行其 <code>fetch</code> 处理程序内部的[运行时缓存](/web/fundamentals/instant-and-offline/offline-cookbook/#on-network-response)。
- 在此情况下，最好是尽快激活 Service Worker，以设法使用稍后可能会用到的资源填充其运行时缓存。
- 如果您的网页应用属于此类别，则考虑回退，以确保 Service Worker 的 <code>install</code> 处理程序不会请求与主页面的请求争用带宽的资源。
+To summarize, making sure that your users have the best first-visit experience should be a top priority. Delaying service worker registration until after the page has loaded during the initial visit can help ensure that. You'll still get all the benefits of having a service worker for your repeat visits.
 
-
-
-
-## 进行测试
-
-模拟首次访问的一个绝佳方法是在 [Chrome 无痕式窗口](https://support.google.com/chromebook/answer/95464?co=GENIE.Platform%3DDesktop)中打开您的网页应用并查看 [Chrome 的 DevTools](/web/tools/chrome-devtools/) 中的网络流量。
- 作为网页开发者，您每天可能会多次重新加载您的网络应用的某个本地实例。
- 但是，如果在已有服务工作线程且已完全填充缓存的情况下重新访问您的网站，那么，您不会获得与新用户相同的体验，从而容易忽略潜在的问题。
-
-
-
-以下示例描述了注册时间不同可能产生的差异。
- 在隐身模式下使用网络节流访问一个[示例应用](https://github.com/GoogleChrome/sw-precache/tree/master/app-shell-demo)时截取了两个屏幕截图，以模拟缓慢的网速。
-
-
-
-![尽早注册时的网络流量。](images/early-registration.png
-"Network traffic with early registration.")
-
-上面的屏幕截图反映了修改示例以尽快执行 Service Worker 注册时的网络流量。
- 您可以看到预缓存请求（旁边带有[齿轮图标](http://stackoverflow.com/questions/33590378/status-code200-ok-from-serviceworker-in-chrome-network-devtools/33655173#33655173)的条目，源自服务工作线程的 `install` 处理程序）与针对显示页面所需的其他资源的请求分散排列。
-
-
-
-
-
-![延迟注册时的网络流量。](images/late-registration.png
-"Network traffic with late registration.")
-
-
-在上面的屏幕截图中，延迟 Service Worker 注册直到页面已加载。
- 您会看到在从网络获取所有资源之前预缓存请求不会启动，因此不会出现任何争用带宽的情况。
- 此外，由于我们预缓存的某些项目已存在于浏览器的 HTTP 缓存中 — Size 列中带有 `(from disk cache)` 的项目，因此，我们可以填充服务工作线程的缓存，而无需再次访问网络。
-
-
-
-
-如果您在真实的移动网络上从真实的低端设备运行这种测试，那就更好了。
- 您可以利用 Chrome 的[远程调试功能](/web/tools/chrome-devtools/remote-debugging/)将一部 Android 手机通过 USB 连接到台式机，并确保您运行的测试切实反映了许多用户的真实体验。
-
-
-
-
-
-## 结论
-
-总结一下，确保用户具有最佳的首次访问体验应成为重中之重。
- 在初始访问期间延迟服务工作线程注册直到页面已加载，可帮助确保这一点。
- 您仍可获得具有服务工作线程进行重复访问的所有优势。
-
-
-为确保延迟服务工作线程的初始注册直到第一个页面已加载，一个简单的方法是使用以下代码：
-
+A straightforward way to ensure to delay your service worker's initial registration until after the first page has loaded is to use the following:
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js');
       });
     }
+    
 
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

@@ -1,192 +1,209 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 您需要瞭解很多常見問題，才可確定並解決關鍵轉譯路徑效能方面的瓶頸。現在就讓我們開始實作之旅，找出常見的效能模式，以便您將網頁最佳化。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn to identify and resolve critical rendering path performance bottlenecks.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# 分析關鍵轉譯路徑效能 {: .page-title }
+# Analyzing Critical Rendering Path Performance {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Identifying and resolving critical rendering path performance bottlenecks requires good knowledge of the common pitfalls. Let's take a hands-on tour and extract common performance patterns that will help you optimize your pages.
 
-您需要瞭解很多常見問題，才可確定並解決關鍵轉譯路徑效能方面的瓶頸。現在就讓我們開始實作之旅，找出常見的效能模式，以便您將網頁最佳化。
+Optimizing the critical rendering path allows the browser to paint the page as quickly as possible: faster pages translate into higher engagement, more pages viewed, and [improved conversion](https://www.google.com/think/multiscreen/success.html). To minimize the amount of time a visitor spends viewing a blank screen, we need to optimize which resources are loaded and in which order.
 
+To help illustrate this process, let's start with the simplest possible case and incrementally build up our page to include additional resources, styles, and application logic. In the process, we'll optimize each case; we'll also see where things can go wrong.
 
+So far we've focused exclusively on what happens in the browser after the resource (CSS, JS, or HTML file) is available to process. We've ignored the time it takes to fetch the resource either from cache or from the network. We'll assume the following:
 
-最佳化關鍵轉譯路徑的目標是讓瀏覽器儘快繪製網頁：較快的頁面轉譯速度可以提高使用者的參與度、增加網頁瀏覽量並[提高轉換率](http://www.google.com/think/multiscreen/success.html)。因此，透過最佳化要載入的資源和載入順序，我們希望盡量減少訪客注視空白螢幕的時間。
+* A network roundtrip (propagation latency) to the server costs 100ms.
+* Server response time is 100ms for the HTML document and 10ms for all other files.
 
-為了更清楚介紹這項過程，我們先從最簡單的情況開始講解，再逐步建構我們的網頁，讓其中包含更多資源、樣式和套用邏輯；在這個過程中，我們還會探討出錯的環節，以及如何針對每種情況最佳化。
-
-最後，在開始之前，我們還要處理一件事...到目前為止，我們一直專注於資源(CSS、JS 或 HTML 檔案) 可進行處理之後，瀏覽器當中所發生的情況，但忽略了從快取或網路中擷取資源的時間。在下一課中，我們將從應用程式的網路連線層面深入研究如何最佳化，但同時 (為了更貼近現實) 也將做出以下假設：
-
-* 到伺服器的網路往返 (傳播延遲) 將花費 100 毫秒
-* HTML 文件的伺服器回應時間為 100 毫秒，而其他所有檔案的回應時間都為 10 毫秒
-
-## Hello World 體驗
+## The hello world experience
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-我們將從基本的 HTML 標記和單一圖片開始，沒有 CSS 或 JavaScript，就是這麼簡單。現在，我們在 Chrome DevTools 中開啟網路時間軸，並檢查產生的資源瀑布：
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom.png" class="center" alt="CRP">
+We'll start with basic HTML markup and a single image; no CSS or JavaScript. Let's open up our Network timeline in Chrome DevTools and inspect the resulting resource waterfall:
 
-不出我們所料，HTML 檔案的下載時間大約為 200 毫秒。注意，藍線的透明部分表示瀏覽器在網路上等待 (也就是尚未收到任何回應位元組) 的時間，而實線部分則顯示收到第一個回應位元組之後完成下載的時間。在上述示例中，HTML 下載量極少 (不足 4K)，因此我們僅需單一往返過程即可擷取整個檔案。因此，擷取 HTML 檔案大約耗時 200 毫秒，其中一半的時間在網路上等待，而另一半的時間則在等待伺服器回應。
+<img src="images/waterfall-dom.png" alt="CRP" />
 
-HTML 內容準備就緒後，瀏覽器必須剖析位元組、將其轉換為權杖，並建構 DOM 樹狀結構。為方便查看，DevTools 會在底部回報 DOMContentLoaded 事件的時間 (216 毫秒)，該時間也與藍色垂直線相對應。HTML 下載結束和藍色垂直線 (DOMContentLoaded) 之間的間隔是瀏覽器建構 DOM 樹狀結構花費的時間，在此示例中僅為幾毫秒。
+Note: Although this doc uses DevTools to illustrate CRP concepts, DevTools is currently not well-suited for CRP analysis. See [What about DevTools?](measure-crp#devtools) for more information.
 
-最後，我們注意到一個有趣的現象：我們的「趣照」竟然沒有禁止 domContentLoaded 事件！ 由此可知，我們無需等待網頁上的每個資源，即可建構轉譯樹狀結構，甚至是繪製網頁：**快速初次繪製並不需要所有資源**。事實上，就像我們接下來將要說明的，談論關鍵轉譯路徑時，我們通常談論的是 HTML 標記、CSS 和 JavaScript。圖片不會阻止網頁的初次轉譯，儘管如此，我們也應努力確保系統儘快繪製圖片！
+As expected, the HTML file took approximately 200ms to download. Note that the transparent portion of the blue line represents the length of time that the browser waits on the network without receiving any response bytes whereas the solid portion shows the time to finish the download after the first response bytes have been received. The HTML download is tiny (<4K), so all we need is a single roundtrip to fetch the full file. As a result, the HTML document takes approximately 200ms to fetch, with half the time spent waiting on the network and the other half waiting on the server response.
 
-不過，系統會禁止圖片上的「load」事件 (也常稱為「onload」)：DevTools 在 335 毫秒時回報了 onload 事件。回想一下，onload 事件代表網頁所需的**所有資源**都已下載並經過處理的時間點，這是瀏覽器的載入旋轉圖示停止旋轉的時間，而資訊瀑布會以紅色垂直線標記這一點。
+When the HTML content becomes available, the browser parses the bytes, converts them into tokens, and builds the DOM tree. Notice that DevTools conveniently reports the time for the DOMContentLoaded event at the bottom (216ms), which also corresponds to the blue vertical line. The gap between the end of the HTML download and the blue vertical line (DOMContentLoaded) is the time it takes the browser to build the DOM tree&mdash;in this case, just a few milliseconds.
 
+Notice that our "awesome photo" did not block the `domContentLoaded` event. Turns out, we can construct the render tree and even paint the page without waiting for each asset on the page: **not all resources are critical to deliver the fast first paint**. In fact, when we talk about the critical rendering path we are typically talking about the HTML markup, CSS, and JavaScript. Images do not block the initial render of the page&mdash;although we should also try to get the images painted as soon as possible.
 
-## 搭配使用 JavaScript 和 CSS
+That said, the `load` event (also known as `onload`), is blocked on the image: DevTools reports the `onload` event at 335ms. Recall that the `onload` event marks the point at which **all resources** that the page requires have been downloaded and processed; at this point, the loading spinner can stop spinning in the browser (the red vertical line in the waterfall).
 
-我們的「Hello World 體驗」頁面表面看起來好像非常簡單，但背後需要完成大量的工作才能呈現出這種成效！ 不過在實際使用時，我們還需要 HTML 以外的許多資源：我們可能需要 CSS 樣式表以及一個或多個新增網頁互動性的指令碼。我們將兩者搭配使用，看看會產生什麼結果：
+## Adding JavaScript and CSS into the mix
+
+Our "Hello World experience" page seems simple but a lot goes on under the hood. In practice we'll need more than just the HTML: chances are, we'll have a CSS stylesheet and one or more scripts to add some interactivity to our page. Let's add both to the mix and see what happens:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_timing.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-_新增 JavaScript 和 CSS 之前：_
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_timing.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom.png" alt="DOM CRP" class="center">
+*Before adding JavaScript and CSS:*
 
-_新增 JavaScript 和 CSS 之後：_
+<img src="images/waterfall-dom.png" alt="DOM CRP" />
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM、CSSOM 和 JS" class="center">
+*With JavaScript and CSS:*
 
-新增外部 CSS 和 JavaScript 檔案時，也一併增加了額外兩個向瀑布流發出的請求 (瀏覽器幾乎會同時發出這兩個請求)，目前一切順利。但請注意，**現在 domContentLoaded 事件和 onload 事件之間的時間差縮短許多了。這是怎麼一回事？**
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-* 與只有 HTML 的示例不同，我們現在還需要擷取並剖析 CSS 檔案以建構 CSSOM，而且我們必須使用 DOM 和 CSSOM 來建構轉譯樹狀結構。
-* 我們的網頁上還有一個禁止剖析器的 JavaScript 檔案，因此在系統下載並剖析 CSS 檔案之前，domContentLoaded 事件將會遭到禁止：JavaScript 可能會查詢 CSSOM，因此在執行 JavaScript 之前，我們必須阻止並等待 CSS。
+Adding external CSS and JavaScript files adds two extra requests to our waterfall, all of which the browser dispatches at about the same time. However, **note that there is now a much smaller timing difference between the `domContentLoaded` and `onload` events.**
 
-**如果我們使用內嵌指令碼代替外部指令碼會產生什麼結果？**表面上看來，這是一個微不足道的問題，但實際上卻非常棘手。結果證明，即使將指令碼直接內嵌到網頁中，如果要確保瀏覽器得知指令碼的意圖，唯一可靠的方式還是實際執行該指令碼。而且正如我們所瞭解的，在 CSSOM 建構完成之前，我們無法直接內嵌指令碼。總之，內嵌 JavaScript 也會禁止剖析器。
+What happened?
 
-雖然內嵌指令碼會禁止 CSS，但這項操作仍可加快網頁轉譯速度嗎？ 如果上一種情況很棘手，那這個問題會更棘手！ 我們試著實際操作一下，看看會發生什麼事...
+* Unlike our plain HTML example, we also need to fetch and parse the CSS file to construct the CSSOM, and we need both the DOM and CSSOM to build the render tree.
+* Because the page also contains a parser blocking JavaScript file, the `domContentLoaded` event is blocked until the CSS file is downloaded and parsed: because the JavaScript might query the CSSOM, we must block the CSS file until it downloads before we can execute JavaScript.
 
-_外部 JavaScript：_
+**What if we replace our external script with an inline script?** Even if the script is inlined directly into the page, the browser can't execute it until the CSSOM is constructed. In short, inlined JavaScript is also parser blocking.
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM、CSSOM 和 JS" class="center">
+That said, despite blocking on CSS, does inlining the script make the page render faster? Let's try it and see what happens.
 
-_內嵌 JavaScript：_
+*External JavaScript:*
 
-<img src="images/waterfall-dom-css-js-inline.png" alt="DOM、CSSOM 和 內嵌 JS" class="center">
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-我們減少了一個請求，但為什麼 onload 和 domContentLoaded 的時間仍然沒有變化呢？ 我們發現，無論 JavaScript 是內嵌或外部都無關痛癢，因為只要瀏覽器遇到指令碼標記，它就會禁止及等待，直到 CSSOM 建構完成。此外，在我們的第一個示例中，瀏覽器同時下載 CSS 和 JavaScript，而且下載程序幾乎是在同一時間完成。因此，在這個特定實例中，內嵌 JavaScript 程式並沒有太大意義！ 難道我們就陷入僵局，沒辦法加快網頁轉譯速度了嗎？ 實際上，我們還有多個不同的應對策略。
+*Inlined JavaScript:*
 
-首先回想一下，所有內嵌指令碼都會禁止剖析器，但是對於外部指令碼來說，我們可以新增「async」關鍵字來取消禁止剖析器。讓我們取消內嵌，並嘗試上述方法：
+<img src="images/waterfall-dom-css-js-inline.png" alt="DOM, CSSOM, and inlined JS" />
+
+We are making one less request, but both our `onload` and `domContentLoaded` times are effectively the same. Why? Well, we know that it doesn't matter if the JavaScript is inlined or external, because as soon as the browser hits the script tag it blocks and waits until the CSSOM is constructed. Further, in our first example, the browser downloads both CSS and JavaScript in parallel and they finish downloading at about the same time. In this instance, inlining the JavaScript code doesn't help us much. But there are several strategies that can make our page render faster.
+
+First, recall that all inline scripts are parser blocking, but for external scripts we can add the "async" keyword to unblock the parser. Let's undo our inlining and give that a try:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-_禁止剖析器的 (外部) JavaScript：_
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_async.html){: target="_blank" .external }
 
-<img src="images/waterfall-dom-css-js.png" alt="DOM、CSSOM 和 JS" class="center">
+*Parser-blocking (external) JavaScript:*
 
-_非同步 (外部) JavaScript：_
+<img src="images/waterfall-dom-css-js.png" alt="DOM, CSSOM, JS" />
 
-<img src="images/waterfall-dom-css-js-async.png" alt="DOM、CSSOM 和非同步 JS" class="center">
+*Async (external) JavaScript:*
 
-好多了！ 剖析 HTML 之後，不久即會觸發 domContentLoaded 事件：瀏覽器已得知不要禁止 JavaScript，而且因為沒有其他禁止剖析器的指令碼，CSSOM 建構也可以同步進行了。
+<img src="images/waterfall-dom-css-js-async.png" alt="DOM, CSSOM, async JS" />
 
-此外，我們也可以嘗試另一種方法，也就是同時內嵌 CSS 和 JavaScript：
+Much better! The `domContentLoaded` event fires shortly after the HTML is parsed; the browser knows not to block on JavaScript and since there are no other parser blocking scripts the CSSOM construction can also proceed in parallel.
+
+Alternatively, we could have inlined both the CSS and JavaScript:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp_inlined.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM、內嵌 CSS 和內嵌 JS" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp_inlined.html){: target="_blank" .external }
 
-Note: _domContentLoaded_ 時間與前一個示例中的時間沒有區別：我們並沒有將 JavaScript 設定為非同步，而是將 CSS 和 JS 同時內嵌到網頁中。雖然我們的 HTML 網頁因此變得更大，但好處是瀏覽器無需等待擷取外部資源，因為每個元素都已納入網頁。
+<img src="images/waterfall-dom-css-inline-js-inline.png" alt="DOM, inline CSS, inline JS" />
 
-如您所見，即使是非常簡單的網頁，最佳化關鍵轉譯路徑也不是一件輕而易舉的事情：我們需要瞭解不同資源之間的依存關係圖，需要確定哪些資源是「關鍵資源」，而且我們必須在許多的策略中做出選擇，並找出在網頁中新增這些資源的適當方式。這個問題不是一個方案就能解決的，每個網頁都不盡相同，因此您必須按照相似的解決流程，找出最佳策略。
+Notice that the `domContentLoaded` time is effectively the same as in the previous example; instead of marking our JavaScript as async, we've inlined both the CSS and JS into the page itself. This makes our HTML page much larger, but the upside is that the browser doesn't have to wait to fetch any external resources; everything is right there in the page.
 
-話說回來，讓我們看看能否找出某些常見的效能模式...
+As you can see, even with a very simple page, optimizing the critical rendering path is a non-trivial exercise: we need to understand the dependency graph between different resources, we need to identify which resources are "critical," and we must choose among different strategies for how to include those resources on the page. There is no one solution to this problem; each page is different. You need to follow a similar process on your own to figure out the optimal strategy.
 
+That said, let's see if we can step back and identify some general performance patterns.
 
-## 效能模式
+## Performance patterns
 
-只要使用 HTML 標記就可組成最簡單的可用網頁：沒有 CSS、JavaScript 或其他類型的資源。如要轉譯此網頁，瀏覽器必須發出請求、等待 HTML 文件準備就緒、進行剖析、建構 DOM，最後再顯示在螢幕上：
+The simplest possible page consists of just the HTML markup; no CSS, no JavaScript, or other types of resources. To render this page the browser has to initiate the request, wait for the HTML document to arrive, parse it, build the DOM, and then finally render it on the screen:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom_nostyle.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom.png" alt="Hello world CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom_nostyle.html){: target="_blank" .external }
 
-**T<sub>0</sub> 和 T<sub>1</sub> 之間的時間表示網路和伺服器的處理時間。** 在最理想的情況下 (HTML 檔案較小)，我們僅需一個網路往返過程即可擷取整份文件；由於 TCP 傳輸協定的工作方式，較大的檔案可能需要多個往返過程，我們將在以後的課程中深入探討這個主題。**因此，在最理想的情況下，上述網頁具有一個往返過程 (最少) 關鍵轉譯路徑。**
+<img src="images/analysis-dom.png" alt="Hello world CRP" />
 
-現在，讓我們看看帶有外部 CSS 檔案的相同網頁：
+**The time between T<sub>0</sub> and T<sub>1</sub> captures the network and server processing times.** In the best case (if the HTML file is small), just one network roundtrip fetches the entire document. Due to how the TCP transports protocols work, larger files may require more roundtrips. **As a result, in the best case the above page has a one roundtrip (minimum) critical rendering path.**
+
+Now, let's consider the same page but with an external CSS file:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css.html){: target="_blank" .external }
 
-再重複一下，我們需要一個網路往返過程來擷取 HTML 文件，然後檢索到的標記告知我們還需要 CSS 檔案：這代表瀏覽器必須返回伺服器並取得 CSS，然後才能在螢幕上呈現網頁。**因此，這個網頁最少需要兩個往返過程才能顯示**。請記得，CSS 檔案可能需要多個往返過程，因此重點應放在如何以「最少」時間達成目標。
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-我們來定義用於描述關鍵轉譯路徑的詞彙：
+Once again, we incur a network roundtrip to fetch the HTML document, and then the retrieved markup tells us that we also need the CSS file; this means that the browser has to go back to the server and get the CSS before it can render the page on the screen. **As a result, this page incurs a minimum of two roundtrips before it can be displayed.** Once again, the CSS file may take multiple roundtrips, hence the emphasis on "minimum".
 
-* **關鍵資源**：可能禁止網頁初次轉譯的資源。
-* **關鍵路徑長度**：即往返過程數量，或擷取所有關鍵資源所需的總時間。
-* **關鍵位元組**：實現網頁初次轉譯所需的總位元組數，這是所有關鍵資源的傳輸檔案大小總和。
-第一個示例的單一 HTML 網頁包含一項關鍵資源 (HTML 文件)，關鍵路徑長度也與 1 個網路往返過程 (假設檔案較小) 相等，而且總關鍵位元組數正好是 HTML 文件本身的傳輸大小。
+Let's define the vocabulary we use to describe the critical rendering path:
 
-現在，我們將第一個示例與「HTML + CSS」示例的關鍵路徑特徵稍做比較：
+* **Critical Resource:** Resource that could block initial rendering of the page.
+* **Critical Path Length:** Number of roundtrips, or the total time required to fetch all of the critical resources.
+* **Critical Bytes:** Total number of bytes required to get to first render of the page, which is the sum of the transfer filesizes of all critical resources. Our first example, with a single HTML page, contained a single critical resource (the HTML document); the critical path length was also equal to one network roundtrip (assuming file was small), and the total critical bytes was just the transfer size of the HTML document itself.
 
-<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" class="center">
+Now let's compare that to the critical path characteristics of the HTML + CSS example above:
 
-* **2** 種關鍵資源
-* **2** 個或更多往返過程的最短關鍵路徑長度
-* **9** KB 的關鍵位元組
+<img src="images/analysis-dom-css.png" alt="DOM + CSSOM CRP" />
 
-我們必須同時使用 HTML 和 CSS 來建構轉譯樹狀結構，因此 HTML 和 CSS 都是關鍵資源：瀏覽器僅會在取得 HTML 文件之後擷取 CSS，因此關鍵路徑長度最少為兩個往返過程；兩種資源加起來的關鍵位元組總量最多為 9 KB。
+* **2** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **9** KB of critical bytes
 
-現在我們再於組合中新增一個額外的 JavaScript 檔案！
+We need both the HTML and CSS to construct the render tree. As a result, both HTML and CSS are critical resources: the CSS is fetched only after the browser gets the HTML document, hence the critical path length is at minimum two roundtrips. Both resources add up to a total of 9KB of critical bytes.
+
+Now let's add an extra JavaScript file into the mix.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-我們新增了 app.js (網頁上的外部 JavaScript 資源)，而且據我們目前所瞭解，這是一種剖析器禁止 (即關鍵) 資源。更糟的是，為了執行 JavaScript 檔案，我們還必須禁止並等待 CSSOM。請注意，在「style.css」下載和 CSSOM 建構完成之前，瀏覽器將會暫停。
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js.html){: target="_blank" .external }
 
-<img src="images/analysis-dom-css-js.png" alt="DOM、CSSOM 和 JavaScript CRP " class="center">
+We added `app.js`, which is both an external JavaScript asset on the page and a parser blocking (that is, critical) resource. Worse, in order to execute the JavaScript file we have to block and wait for CSSOM; recall that JavaScript can query the CSSOM and hence the browser pauses until `style.css` is downloaded and CSSOM is constructed.
 
-不過，如果我們實際查看該網頁的「網路瀑布流」，就會發現 CSS 和 JavaScript 請求幾乎會在同一時間發出：瀏覽器獲得 HTML，發現這兩種資源，然後發出兩項請求。因此，上述網頁具有下列關鍵路徑特徵：
+<img src="images/analysis-dom-css-js.png" alt="DOM, CSSOM, JavaScript CRP" />
 
-* **3** 種關鍵資源
-* **2** 個或更多往返過程的最短關鍵路徑長度
-* **11** KB 的關鍵位元組
+That said, in practice if we look at this page's "network waterfall," you'll see that both the CSS and JavaScript requests are initiated at about the same time; the browser gets the HTML, discovers both resources, and initiates both requests. As a result, the above page has the following critical path characteristics:
 
-現在，我們擁有三種關鍵資源，關鍵位元組總量為 11 KB，但是我們的關鍵路徑長度仍然是兩個往返過程，因為我們可以同時傳輸 CSS 和 JavaScript！ **瞭解關鍵轉譯路徑的特徵後，表示您將能確定關鍵資源，並瞭解瀏覽器將如何安排擷取時間。** 讓我們繼續分析示例...
+* **3** critical resources
+* **2** or more roundtrips for the minimum critical path length
+* **11** KB of critical bytes
 
-與網站開發人員交流之後，我們發現網頁中新增的 JavaScript 不必是禁止指令碼：我們的某些分析和其他程式碼不需要禁止網頁轉譯。瞭解這些要點後，我們就可以在指令碼標記中新增「async」屬性，取消對剖析器的禁止令：
+We now have three critical resources that add up to 11KB of critical bytes, but our critical path length is still two roundtrips because we can transfer the CSS and JavaScript in parallel. **Figuring out the characteristics of your critical rendering path means being able to identify the critical resources and also understanding how the browser will schedule their fetches.** Let's continue with our example.
+
+After chatting with our site developers, we realize that the JavaScript we included on our page doesn't need to be blocking; we have some analytics and other code in there that doesn't need to block the rendering of our page. With that knowledge, we can add the "async" attribute to the script tag to unblock the parser:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css-js-async.png" alt="DOM、CSSOM 和非同步 JavaScript CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_js_async.html){: target="_blank" .external }
 
-對指令碼採用非同步模式具有以下幾項優勢：
+<img src="images/analysis-dom-css-js-async.png" alt="DOM, CSSOM, async JavaScript CRP" />
 
-* 指令碼再也不會禁止剖析器，也不再是關鍵轉譯路徑的一部分。
-* 因為沒有其他關鍵指令碼，CSS 也不需要阻止 domContentLoaded 事件
-* domContentLoaded 事件越早觸發，其他應用程式邏輯就可越早開始執行
+An asynchronous script has several advantages:
 
-因此，我們的最佳化網頁恢復到具有兩種關鍵資源 (HTML 和 CSS)、具有兩個往返過程的最短關鍵路徑長度和 9 KB 的總關鍵位元組數量。
+* The script is no longer parser blocking and is not part of the critical rendering path.
+* Because there are no other critical scripts, the CSS doesn't need to block the `domContentLoaded` event.
+* The sooner the `domContentLoaded` event fires, the sooner other application logic can begin executing.
 
-最後，假設只有在列印時才需要用到 CSS 樣式表， 網頁看起來又會如何呢？
+As a result, our optimized page is now back to two critical resources (HTML and CSS), with a minimum critical path length of two roundtrips, and a total of 9KB of critical bytes.
+
+Finally, if the CSS stylesheet were only needed for print, how would that look?
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/analysis_with_css_nb_js_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM、非禁止性 CSS 和非同步 JavaScript CRP" class="center">
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/analysis_with_css_nb_js_async.html){: target="_blank" .external }
 
-因為 style.css 資源僅用於列印，因此，瀏覽器不必禁止它即可轉譯網頁。因此，只要 DOM 建構完成，瀏覽器即具備轉譯網頁的足夠資訊！ 所以，這個網頁僅具有一種關鍵資源 (HTML 檔案)，最小關鍵轉譯路徑長度為一個往返過程。
+<img src="images/analysis-dom-css-nb-js-async.png" alt="DOM, non-blocking CSS, and async JavaScript CRP" />
+
+Because the style.css resource is only used for print, the browser doesn't need to block on it to render the page. Hence, as soon as DOM construction is complete, the browser has enough information to render the page. As a result, this page has only a single critical resource (the HTML document), and the minimum critical rendering path length is one roundtrip.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

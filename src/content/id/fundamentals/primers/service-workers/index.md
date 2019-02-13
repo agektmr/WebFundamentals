@@ -1,128 +1,63 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pengalaman offline lengkap, sinkronisasi latar belakang berkala, notifikasi push&mdash;fungsi yang biasanya memerlukan aplikasi yang sudah ada di perangkat&mdash;akan hadir di web. Service worker menyediakan fondasi teknis yang diperlukan oleh semua fitur ini.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Rich offline experiences, periodic background syncs, push notifications&mdash;functionality that would normally require a native application&mdash;are coming to the web. Service workers provide the technical foundation that all these features rely on.
 
-{# wf_published_on: 2014-12-01 #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_published_on: 2014-12-01 #} {# wf_updated_on: 2019-01-09 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Service Worker: Pengantar {: .page-title }
+# Service Workers: an Introduction {: .page-title }
 
 {% include "web/_shared/contributors/mattgaunt.html" %}
 
-Pengalaman offline lengkap, sinkronisasi latar belakang berkala, notifikasi
-push&mdash;fungsi yang biasanya memerlukan
-aplikasi yang sudah ada di perangkat&mdash;akan hadir di web. Service worker menyediakan fondasi
-teknis yang diperlukan oleh semua fitur ini.
+Rich offline experiences, periodic background syncs, push notifications&mdash;functionality that would normally require a native application&mdash;are coming to the web. Service workers provide the technical foundation that all these features rely on.
 
-## Apa yang dimaksud dengan service worker
+## What is a service worker
 
-Service worker adalah skrip yang dijalankan browser di latar belakang,
-terpisah dari halaman web, yang membuka pintu ke berbagai fitur yang tidak memerlukan halaman
-web atau interaksi pengguna. Saat ini, service worker sudah menyertakan berbagai fitur seperti
-[notifikasi push](/web/updates/2015/03/push-notifications-on-the-open-web)
-dan [sinkronisasi latar belakang](/web/updates/2015/12/background-sync). Di masa mendatang,
-service worker mungkin mendukung fitur lainnya seperti sinkronisasi berkala atau geofencing.
-Fitur inti yang dibahas dalam tutorial ini adalah kemampuan mencegat dan
-menangani permintaan jaringan, termasuk mengelola cache
-respons lewat program.
+A service worker is a script that your browser runs in the background, separate from a web page, opening the door to features that don't need a web page or user interaction. Today, they already include features like [push notifications](/web/updates/2015/03/push-notifications-on-the-open-web) and [background sync](/web/updates/2015/12/background-sync). In the future, service workers might support other things like periodic sync or geofencing. The core feature discussed in this tutorial is the ability to intercept and handle network requests, including programmatically managing a cache of responses.
 
-Yang membuat API ini menarik adalah karena memungkinkan Anda mendukungpengalaman
-offline, yang memberikan developer kontrol penuh atas
-pengalaman.
+The reason this is such an exciting API is that it allows you to support offline experiences, giving developers complete control over the experience.
 
-Sebelum service worker, ada satu API lain yang memberi pengguna pengalaman offline
-di web, yang disebut
-[AppCache](//www.html5rocks.com/en/tutorials/appcache/beginner/){: .external }.
-Ada sejumlah masalah pada AppCache API yang dapat dihindari oleh service worker
-.
+Before service worker, there was one other API that gave users an offline experience on the web called [AppCache](//www.html5rocks.com/en/tutorials/appcache/beginner/){: .external }. There are a number of issues with the AppCache API that service workers were designed to avoid.
 
-Hal yang perlu diingat untuk service worker:
+Things to note about a service worker:
 
-* Ini adalah [JavaScript Worker](//www.html5rocks.com/en/tutorials/workers/basics/){: .external },
-  jadi tidak dapat mengakses DOM secara langsung. Melainkan, service worker dapat
-  berkomunikasi dengan halaman yang dikontrolnya dengan merespons pesan yang dikirimkan lewat
-  antarmuka [postMessage](https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage)
-  dan halaman yang dapat memanipulasi DOM jika diperlukan.
-* Service worker adalah proxy jaringan yang dapat diprogram, yang memungkinkan   Anda mengontrol cara
-  menangani permintaan jaringan dari halaman.
-* Service worker akan dihentikan jika tidak sedang digunakan, dan dimulai lagi saat diperlukan,
-  jadi Anda tidak dapat mengandalkan keadaan global dalam pengendali `onfetch` dan
-  `onmessage` service worker. Jika ada informasi yang perlu dipertahankan dan
-  digunakan kembali saat memulai ulang, service worker memiliki akses ke
-  [IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
-* Service worker menggunakan promise secara luas, jadi jika Anda baru mengenal promise,
-  sebaiknya berhenti membaca artikel ini dan lihat
-  [Promise, pengantar](/web/fundamentals/getting-started/primers/promises).
+* It's a [JavaScript Worker](//www.html5rocks.com/en/tutorials/workers/basics/){: .external }, so it can't access the DOM directly. Instead, a service worker can communicate with the pages it controls by responding to messages sent via the [postMessage](https://html.spec.whatwg.org/multipage/workers.html#dom-worker-postmessage) interface, and those pages can manipulate the DOM if needed.
+* Service worker is a programmable network proxy, allowing you to control how network requests from your page are handled.
+* It's terminated when not in use, and restarted when it's next needed, so you cannot rely on global state within a service worker's `onfetch` and `onmessage` handlers. If there is information that you need to persist and reuse across restarts, service workers do have access to the [IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
+* Service workers make extensive use of promises, so if you're new to promises, then you should stop reading this and check out [Promises, an introduction](/web/fundamentals/getting-started/primers/promises).
 
-## Siklus hidup service worker
+## The service worker life cycle
 
-Service worker memiliki siklus hidup yang sepenuhnya terpisah dari halaman web.
+A service worker has a lifecycle that is completely separate from your web page.
 
-Untuk menginstal service worker bagi situs, Anda perlu mendaftarkannya, yang Anda lakukan
-di JavaScript halaman. Mendaftarkan service worker akan menyebabkan browser
-memulai langkah penginstalan service worker di latar belakang.
+To install a service worker for your site, you need to register it, which you do in your page's JavaScript. Registering a service worker will cause the browser to start the service worker install step in the background.
 
-Biasanya selama langkah penginstalan, Anda perlu menyimpan cache beberapa aset statis. Jika
-semua file berhasil disimpan dalam cache, maka service worker akan
-terinstal. Jika ada file yang gagal didownload dan disimpan dalam cache, maka langkah penginstalan
-akan gagal dan service worker tidak akan diaktifkan (yakni tidak akan diinstal). Jika
-itu terjadi, jangan khawatir, coba lagi lain kali. Namun jika berhasil
-diinstal, berarti aset statis sudah masuk cache.
+Typically during the install step, you'll want to cache some static assets. If all the files are cached successfully, then the service worker becomes installed. If any of the files fail to download and cache, then the install step will fail and the service worker won't activate (i.e. won't be installed). If that happens, don't worry, it'll try again next time. But that means if it does install, you know you've got those static assets in the cache.
 
-Jika sudah terinstal, langkah aktivasi akan menyusul dan ini kesempatan
-besar untuk menangani manajemen cache lama, yang akan kita bahas di
-bagian pembaruan service worker.
+When installed, the activation step will follow and this is a great opportunity for handling any management of old caches, which we'll cover during the service worker update section.
 
-Setelah langkah aktivasi, service worker akan mengontrol semua halaman yang berada
-dalam cakupannya, meski halaman yang mendaftarkan service worker untuk
-pertama kali tidak akan dikontrol hingga dimuat lagi. Setelah
-dapat dikontrol, service worker akan berada dalam salah satu dari dua keadaan: yaitu service worker akan
-dihentikan untuk menghemat memori, atau akan menangani peristiwa pengambilan dan pesan yang terjadi
-saat permintaan jaringan atau pesan dibuat dari halaman Anda.
+After the activation step, the service worker will control all pages that fall under its scope, though the page that registered the service worker for the first time won't be controlled until it's loaded again. Once a service worker is in control, it will be in one of two states: either the service worker will be terminated to save memory, or it will handle fetch and message events that occur when a network request or message is made from your page.
 
-Di bawah ini versi siklus hidup service worker yang sangat disederhanakan saat
-penginstalan yang pertama.
+Below is an overly simplified version of the service worker lifecycle on its first installation.
 
-![siklus hidup service worker](images/sw-lifecycle.png)
+![service worker lifecycle](images/sw-lifecycle.png)
 
+## Prerequisites
 
-## Prasyarat
+### Browser support
 
-### Dukungan browser
+Browser options are growing. Service workers are supported by Chrome, Firefox and Opera. Microsoft Edge is now [showing public support](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/serviceworker/). Even Safari has dropped [hints of future development](https://trac.webkit.org/wiki/FiveYearPlanFall2015). You can follow the progress of all the browsers at Jake Archibald's [is Serviceworker ready](https://jakearchibald.github.io/isserviceworkerready/){: .external } site.
 
-Opsi browser semakin banyak. Service worker didukung oleh Chrome, Firefox, dan
-Opera. Microsoft Edge sekarang
-[menunjukkan dukungan publik](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/serviceworker/).
-Bahkan Safari telah memberikan [petunjuk development di masa mendatang](https://trac.webkit.org/wiki/FiveYearPlanFall2015).
-Anda dapat mengikuti perkembangan semua browser di situs Jake Archibald
-[is Serviceworker ready](https://jakearchibald.github.io/isserviceworkerready/){: .external }.
+### You need HTTPS
 
-### Anda memerlukan HTTPS
+During development you'll be able to use service worker through `localhost`, but to deploy it on a site you'll need to have HTTPS setup on your server.
 
-Selama development, Anda dapat menggunakan service worker melalui `localhost`, namun
-untuk menerapkannya di situs, Anda harus menyiapkan HTTPS di server.
+Using service worker you can hijack connections, fabricate, and filter responses. Powerful stuff. While you would use these powers for good, a man-in-the-middle might not. To avoid this, you can only register service workers on pages served over HTTPS, so we know the service worker the browser receives hasn't been tampered with during its journey through the network.
 
-Menggunakan service worker Anda dapat membajak koneksi, menirukan, dan memfilter
-respons. Fitur hebat. Walaupun kemampuan ini akan digunakan untuk kebaikan, namun tidak demikian dengan
-man-in-the-middle. Untuk menghindarinya, Anda hanya dapat mendaftarkan service
-worker pada halaman yang ditayangkan melalui HTTPS, jadi kita tahu service worker yang diterima browser
-belum dimodifikasi selama perjalanannya melalui jaringan.
+[GitHub Pages](https://pages.github.com/){: .external } are served over HTTPS, so they're a great place to host demos.
 
-[Halaman GitHub](https://pages.github.com/){: .external } ditayangkan melalui HTTPS, jadi
-sangat cocok untuk meng-host demo.
+If you want to add HTTPS to your server then you'll need to get a TLS certificate and set it up for your server. This varies depending on your setup, so check your server's documentation and be sure to check out [Mozilla's SSL config generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/) for best practices.
 
-Jika ingin menambahkan HTTPS ke server maka Anda harus mendapatkan sertifikat
-TLS dan menyiapkannya untuk server. Hal ini berbeda-beda sesuai dengan penyiapannya,
-jadi periksa dokumentasi server dan pastikan Anda membaca
-[SSL config generator Mozilla](https://mozilla.github.io/server-side-tls/ssl-config-generator/)
-untuk praktik terbaik.
+## Register A service worker
 
-## Mendaftarkan service worker
-
-Untuk menginstal service worker Anda perlu memulai prosesnya dengan
-**mendaftarkannya** di halaman. Pendaftaran ini akan memberi tahu browser tempat
-file JavaScript service worker Anda berada.
+To install a service worker you need to kick start the process by **registering** it in your page. This tells the browser where your service worker JavaScript file lives.
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -135,58 +70,38 @@ file JavaScript service worker Anda berada.
         });
       });
     }
+    
 
-Kode ini memeriksa untuk mengetahui apakah API service worker tersedia, dan jika tersedia,
-service worker di `/sw.js` telah terdaftar
-[setelah halaman dimuat](/web/fundamentals/instant-and-offline/service-worker/registration).
+This code checks to see if the service worker API is available, and if it is, the service worker at `/sw.js` is registered [once the page is loaded](/web/fundamentals/instant-and-offline/service-worker/registration).
 
-Anda dapat menampilkan `register()` setiap kali halaman dimuat tanpa masalah; browser akan
-mengetahui apakah service worker sudah terdaftar atau belum kemudian menangani
-dengan semestinya.
+You can call `register()` every time a page loads without concern; the browser will figure out if the service worker is already registered or not and handle it accordingly.
 
-Satu perbedaan kecil pada metode `register()` ini adalah lokasi
-file service worker. Dalam hal ini Anda akan tahu apakah file service worker berada di root
-domain. Ini berarti cakupan service worker adalah keseluruhan
-asal. Dengan kata lain, service worker ini akan menerima peristiwa `fetch` untuk
-semua yang ada di domain ini. Jika kita mendaftarkan file service worker di
-`/example/sw.js`, service worker nanti hanya akan melihat peristiwa `fetch` untuk halaman
-yang URL-nya dimulai dengan `/example/` (yakni `/example/page1/`, `/example/page2/`).
+One subtlety with the `register()` method is the location of the service worker file. You'll notice in this case that the service worker file is at the root of the domain. This means that the service worker's scope will be the entire origin. In other words, this service worker will receive `fetch` events for everything on this domain. If we register the service worker file at `/example/sw.js`, then the service worker would only see `fetch` events for pages whose URL starts with `/example/` (i.e. `/example/page1/`, `/example/page2/`).
 
-Kini Anda dapat memeriksa apakah service worker telah diaktifkan dengan masuk ke
-`chrome://inspect/#service-workers` dan mencari situs Anda.
+Now you can check that a service worker is enabled by going to `chrome://inspect/#service-workers` and looking for your site.
 
-![Periksa service worker](images/sw-chrome-inspect.png)
+![Inspect service workers](images/sw-chrome-inspect.png)
 
-Jika service worker telah diimplementasikan lebih dahulu, Anda juga dapat melihat detail service
-worker melalui `chrome://serviceworker-internals`. Mungkin ini tetap
-berguna, daripada cuma mempelajari siklus hidup service
-worker, namun jangan kaget jika telah digantikan sepenuhnya oleh
-`chrome://inspect/#service-workers` suatu saat nanti.
+When service worker was first being implemented, you could also view your service worker details through `chrome://serviceworker-internals`. This may still be useful, if for nothing more than learning about the life cycle of service workers, but don't be surprised if it gets replaced completely by `chrome://inspect/#service-workers` at a later date.
 
-Mungkin Anda akan merasakan gunanya saat menguji service worker di jendela samaran, jadi
-Anda dapat menutup dan membukanya kembali untuk mengetahui bahwa service worker sebelumnya tidak
-memengaruhi jendela baru. Semua pendaftaran dan cache yang dibuat dalam
-jendela samaran akan dihapus setelah jendela tersebut ditutup.
+You may find it useful to test your service worker in an Incognito window so that you can close and reopen knowing that the previous service worker won't affect the new window. Any registrations and caches created from within an Incognito window will be cleared out once that window is closed.
 
+## Install a service worker
 
-## Menginstal service worker
+After a controlled page kicks off the registration process, let's shift to the point of view of the service worker script, which handles the `install` event.
 
-Setelah halaman terkontrol memulai proses pendaftaran, mari beralih ke
-sudut pandang skrip service worker, yang menangani peristiwa `install`.
-
-Untuk contoh paling dasar, Anda perlu mendefinisikan callback untuk peristiwa install
-dan memutuskan file mana yang ingin Anda simpan dalam cache.
+For the most basic example, you need to define a callback for the install event and decide which files you want to cache.
 
     self.addEventListener('install', function(event) {
       // Perform install steps
     });
+    
 
+Inside of our `install` callback, we need to take the following steps:
 
-Di dalam callback `install`, kita perlu mengambil langkah-langkah berikut:
-
-1. Buka cache.
-2. Simpan cache file.
-3. Konfirmasi apakah semua aset yang diperlukan telah disimpan dalam cache atau tidak.
+1. Open a cache.
+2. Cache our files.
+3. Confirm whether all the required assets are cached or not.
 
 <div style="clear:both;"></div>
 
@@ -196,7 +111,7 @@ Di dalam callback `install`, kita perlu mengambil langkah-langkah berikut:
       '/styles/main.css',
       '/script/main.js'
     ];
-
+    
     self.addEventListener('install', function(event) {
       // Perform install steps
       event.waitUntil(
@@ -207,33 +122,19 @@ Di dalam callback `install`, kita perlu mengambil langkah-langkah berikut:
           })
       );
     });
+    
 
+Here you can see we call `caches.open()` with our desired cache name, after which we call `cache.addAll()` and pass in our array of files. This is a chain of promises (`caches.open()` and `cache.addAll()`). The `event.waitUntil()` method takes a promise and uses it to know how long installation takes, and whether it succeeded or not.
 
-Di sini Anda dapat melihat kita menampilkan `caches.open()` dengan nama cache yang diinginkan, setelah itu
-kita menampilkan `cache.addAll()` dan meneruskannya dalam array file. Ini adalah rantai
-promise (`caches.open()` dan `cache.addAll()`). Metode `event.waitUntil()` 
-mengambil promise dan menggunakannya untuk mengetahui berapa lama waktu yang diperlukan penginstalan, dan apakah
-berhasil atau tidak.
+If all the files are successfully cached, then the service worker will be installed. If **any** of the files fail to download, then the install step will fail. This allows you to rely on having all the assets that you defined, but does mean you need to be careful with the list of files you decide to cache in the install step. Defining a long list of files will increase the chance that one file may fail to cache, leading to your service worker not getting installed.
 
-Jika semua file berhasil disimpan dalam cache, maka service worker akan
-diinstal. Jika **ada** file yang gagal didownload, maka langkah penginstalan akan
-gagal. Ini memungkinkan Anda untuk mengandalkan aset yang telah didefinisikan, namun
-ini berarti Anda perlu berhati-hati dengan daftar file yang Anda putuskan untuk disimpan dalam cache pada
-langkah pemasangan. Mendefinisikan daftar file yang panjang akan meningkatkan kemungkinan adanya
-satu file yang mungkin gagal disimpan dalam cache, sehingga menyebabkan service worker tidak
-diinstal.
+This is just one example, you can perform other tasks in the `install` event or avoid setting an `install` event listener altogether.
 
-Ini baru satu contoh, Anda dapat melakukan tugas lain dalam peristiwa `install` atau
-sama sekali menghindari penyetelan event listener `install`.
+## Cache and return requests
 
-## Menyimpan cache dan mengembalikan permintaan
+Now that you've installed a service worker, you probably want to return one of your cached responses, right?
 
-Oleh karena sekarang telah menginstal service worker, Anda dapat
-  mengembalikan salah satu respons yang telah disimpan dalam cache, bukan?
-
-Setelah service worker diinstal dan pengguna membuka halaman berbeda
-atau me-refresh, service worker akan mulai menerima peristiwa `fetch`, contohnya
-terdapat di bawah.
+After a service worker is installed and the user navigates to a different page or refreshes, the service worker will begin to receive `fetch` events, an example of which is below.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -248,20 +149,13 @@ terdapat di bawah.
         )
       );
     });
+    
 
+Here we've defined our `fetch` event and within `event.respondWith()`, we pass in a promise from `caches.match()`. This method looks at the request and finds any cached results from any of the caches your service worker created.
 
-Di sini kita mendefinisikan peristiwa `fetch` dan dalam `event.respondWith()`, kita
-meneruskan sebuah promise dari `caches.match()`. Metode ini akan memperhatikan permintaan dan
-mencari hasil yang disimpan dalam cache dari salah satu cache yang dibuat oleh service worker.
+If we have a matching response, we return the cached value, otherwise we return the result of a call to `fetch`, which will make a network request and return the data if anything can be retrieved from the network. This is a simple example and uses any cached assets we cached during the install step.
 
-Jika ada respons yang cocok, kita menampilkan nilai yang disimpan dalam cache, jika tidak maka kita menampilkan
-hasil tampilan ke `fetch`, yang akan melakukan permintaan jaringan dan mengembalikan
-data jika ada sesuatu yang dapat diambil dari jaringan. Ini adalah contoh sederhana
-dan menggunakan aset yang kita simpan di cache selama langkah pemasangan.
-
-Jika ingin menyimpan permintaan baru secara kumulatif ke cache, kita dapat melakukannya dengan menangani
-respons permintaan fetch, lalu menambahkannya ke cache, seperti di bawah.
-
+If we want to cache new requests cumulatively, we can do so by handling the response of the fetch request and then adding it to the cache, like below.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -271,94 +165,62 @@ respons permintaan fetch, lalu menambahkannya ke cache, seperti di bawah.
             if (response) {
               return response;
             }
-
-            // IMPORTANT: Clone the request. A request is a stream and
-            // can only be consumed once. Since we are consuming this
-            // once by cache and once by the browser for fetch, we need
-            // to clone the response.
-            var fetchRequest = event.request.clone();
-
-            return fetch(fetchRequest).then(
+    
+            return fetch(event.request).then(
               function(response) {
                 // Check if we received a valid response
                 if(!response || response.status !== 200 || response.type !== 'basic') {
                   return response;
                 }
-
+    
                 // IMPORTANT: Clone the response. A response is a stream
                 // and because we want the browser to consume the response
                 // as well as the cache consuming the response, we need
                 // to clone it so we have two streams.
                 var responseToCache = response.clone();
-
+    
                 caches.open(CACHE_NAME)
                   .then(function(cache) {
                     cache.put(event.request, responseToCache);
                   });
-
+    
                 return response;
               }
             );
           })
         );
     });
+    
 
+What we are doing is this:
 
-Yang kita lakukan adalah:
+1. Add a callback to `.then()` on the `fetch` request.
+2. Once we get a response, we perform the following checks: 
+    1. Ensure the response is valid.
+    2. Check the status is `200` on the response.
+    3. Make sure the response type is **basic**, which indicates that it's a request from our origin. This means that requests to third party assets aren't cached as well.
+3. If we pass the checks, we [clone](https://fetch.spec.whatwg.org/#dom-response-clone) the response. The reason for this is that because the response is a [Stream](https://streams.spec.whatwg.org/){: .external }, the body can only be consumed once. Since we want to return the response for the browser to use, as well as pass it to the cache to use, we need to clone it so we can send one to the browser and one to the cache.
 
-1. Menambahkan callback ke `.then()` pada permintaan `fetch`.
-2. Setelah mendapatkan respons, kita melakukan pemeriksaan berikut:
-    1. Pastikan respons tersebut valid.
-    2. Pastikan status pada respons adalah `200`.
-    3. Pastikan tipe respons adalah **basic**, yang menandakan bahwa permintaan
-       tersebut berasal dari kita. Ini berarti bahwa permintaan kepada aset pihak ketiga
-       tidak disimpan dalam cache.
-3. Jika kita meneruskan pemeriksaan, kita [meng-clone](https://fetch.spec.whatwg.org/#dom-response-clone)
-   respons. Alasannya karena respons tersebut adalah
-   [Stream](https://streams.spec.whatwg.org/){: .external }, bodinya hanya dapat dikonsumsi
-   satu kali. Karena kita ingin menampilkan respons untuk digunakan browser, serta
-   meneruskannya ke cache untuk digunakan, kita perlu membuat clone-nya agar dapat mengirimkan satu ke
-   browser dan satu ke cache.
+## Update a service worker {: #update-a-service-worker }
 
-## Mengupdate service worker {: #update-a-service-worker }
+There will be a point in time where your service worker will need updating. When that time comes, you'll need to follow these steps:
 
-Akan ada saatnya service worker perlu
-diupdate. Jika saatnya tiba, Anda harus mengikuti langkah-langkah ini:
+1. Update your service worker JavaScript file. When the user navigates to your site, the browser tries to redownload the script file that defined the service worker in the background. If there is even a byte's difference in the service worker file compared to what it currently has, it considers it *new*.
+2. Your new service worker will be started and the `install` event will be fired.
+3. At this point the old service worker is still controlling the current pages so the new service worker will enter a `waiting` state.
+4. When the currently open pages of your site are closed, the old service worker will be killed and the new service worker will take control.
+5. Once your new service worker takes control, its `activate` event will be fired.
 
-1. Update file JavaScript service worker. Jika pengguna membuka
-   situs Anda, browser akan mencoba mendownload kembali file skrip yang mendefinisikan
-   service worker di latar belakang. Jika ada perbedaan byte pada
-   file service worker dibanding yang ada saat ini, maka akan dianggap
-   _new_.
-2. Service worker baru akan dimulai dan peristiwa `install` akan diaktifkan.
-3. Sekarang service worker lama masih mengontrol halaman saat ini
-   jadi service worker baru akan masuk status `waiting`.
-4. Jika halaman situs yang saat ini terbuka ditutup, service worker
-   lama akan dinonaktifkan dan service worker baru akan mengambil kontrol.
-5. Setelah service worker baru mengambil kontrol, peristiwa `activate`-nya akan
-   diaktifkan.
+One common task that will occur in the `activate` callback is cache management. The reason you'll want to do this in the `activate` callback is because if you were to wipe out any old caches in the install step, any old service worker, which keeps control of all the current pages, will suddenly stop being able to serve files from that cache.
 
-Satu tugas umum yang akan terjadi pada callback `activate` adalah pengelolaan cache.
-Alasan melakukannya dalam callback `activate` adalah karena jika Anda
-akan menghapus cache lama dalam langkah penginstalan, semua service worker lama,
-yang mempertahankan kontrol semua halaman saat ini, akan tiba-tiba berhenti
-menayangkan file dari cache tersebut.
+Let's say we have one cache called `'my-site-cache-v1'`, and we find that we want to split this out into one cache for pages and one cache for blog posts. This means in the install step we'd create two caches, `'pages-cache-v1'` and `'blog-posts-cache-v1'` and in the activate step we'd want to delete our older `'my-site-cache-v1'`.
 
-Katakanlah kita memiliki satu cache yang disebut `'my-site-cache-v1'`, dan kita menemukan bahwa kita
-ingin memisahkannya menjadi satu cache untuk halaman dan satu cache untuk entri blog.
-Ini berarti pada langkah penginstalan kita membuat dua cache, `'pages-cache-v1'` dan
-`'blog-posts-cache-v1'` serta pada langkah aktivasi kita ingin menghapus
-`'my-site-cache-v1'` lama.
-
-Kode berikut akan melakukannya dengan melakukan loop pada semua cache di
-service worker dan menghapus cache yang tidak ditentukan dalam
-daftar putih cache.
-
+The following code would do this by looping through all of the caches in the service worker and deleting any caches that aren't defined in the cache whitelist.
 
     self.addEventListener('activate', function(event) {
-
+    
       var cacheWhitelist = ['pages-cache-v1', 'blog-posts-cache-v1'];
-
+    
       event.waitUntil(
         caches.keys().then(function(cacheNames) {
           return Promise.all(
@@ -371,123 +233,86 @@ daftar putih cache.
         })
       );
     });
+    
 
-## Tantangan dan gotcha
+## Rough edges and gotchas
 
-Fitur ini benar-benar baru. Inilah kumpulan masalah yang
-mengganggu. Semoga bagian ini dapat dihapus secepatnya, namun untuk sekarang
-masalah ini cukup diperhatikan saja.
+This stuff is really new. Here's a collection of issues that get in the way. Hopefully this section can be deleted soon, but for now these are worth being mindful of.
 
+### If installation fails, we're not so good at telling you about it
 
-### Jika penginstalan gagal, berarti kami kurang baik menyampaikannya
+If a worker registers, but then doesn't appear in `chrome://inspect/#service-workers` or `chrome://serviceworker-internals`, it's likely failed to install due to an error being thrown, or a rejected promise being passed to `event.waitUntil()`.
 
-Jika service worker didaftarkan, namun kemudian tidak muncul di `chrome://inspect/#service-workers`
-atau `chrome://serviceworker-internals`, kemungkinan gagal
-diinstal karena ada error yang ditampilkan, atau ada promise ditolak yang diteruskan ke
-`event.waitUntil()`.
+To work around this, go to `chrome://serviceworker-internals` and check "Open DevTools window and pause JavaScript execution on service worker startup for debugging", and put a debugger statement at the start of your install event. This, along with [Pause on uncaught exceptions](/web/tools/chrome-devtools/javascript/breakpoints), should reveal the issue.
 
-Untuk mengatasinya, buka `chrome://serviceworker-internals` dan centang "Open
-DevTools window and pause JavaScript execution on service worker startup for
-debugging", dan tempatkan pernyataan debugger di awal peristiwa penginstalan.
-Artikel ini, serta
-[Jeda pada saat pengecualian yang tidak diketahui](/web/tools/chrome-devtools/javascript/breakpoints),
-akan mengungkapkan masalahnya.
+### The defaults of fetch()
 
+#### No credentials by default
 
-### Default dari pengambilan()
-
-#### Tidak ada kredensial secara default
-
-Jika Anda menggunakan `fetch`, secara default, permintaan tidak akan berisi kredensial seperti
-cookie. Jika Anda menginginkan kredensial, sebagai gantinya tampilkan:
+When you use `fetch`, by default, requests won't contain credentials such as cookies. If you want credentials, instead call:
 
     fetch(url, {
       credentials: 'include'
     })
+    
 
-
-Perilaku ini disengaja, dan dirasa lebih baik daripada default XHR
-yang lebih kompleks dalam mengirim kredensial jika URL sama asalnya, namun jika tidak, akan
-menghilangkannya. Perilaku pengambilan lebih seperti permintaan CORS lain,misalnya `<img
-crossorigin>`, yang tidak pernah mengirim cookie kecuali Anda memilih untuk ikut serta dengan `<img
+This behaviour is on purpose, and is arguably better than XHR's more complex default of sending credentials if the URL is same-origin, but omitting them otherwise. Fetch's behaviour is more like other CORS requests, such as `<img
+crossorigin>`, which never sends cookies unless you opt-in with `<img
 crossorigin="use-credentials">`.
 
-#### Kegagalan non-CORS secara default
+#### Non-CORS fail by default
 
-Secara default, mengambil resource dari URL pihak ketiga akan gagal jika tidak
-mendukung CORS. Anda dapat menambahkan opsi `no-CORS` ke Permintaan untuk mengatasinya,
-meski tindakan ini akan menyebabkan respons 'opaque', yaitu tidak dapat mengetahui
-apakah respons berhasil atau tidak.
+By default, fetching a resource from a third party URL will fail if it doesn't support CORS. You can add a `no-CORS` option to the Request to overcome this, although this will cause an 'opaque' response, which means you won't be able to tell if the response was successful or not.
 
     cache.addAll(urlsToPrefetch.map(function(urlToPrefetch) {
       return new Request(urlToPrefetch, { mode: 'no-cors' });
     })).then(function() {
       console.log('All resources have been fetched and cached.');
     });
+    
 
+### Handling responsive images
 
-### Menangani gambar responsif
+The `srcset` attribute or the `<picture>` element will select the most appropriate image asset at run time and make a network request.
 
-Atribut `srcset` atau elemen `<picture>` akan memilih aset gambar
-paling sesuai pada waktu proses dan melakukan permintaan jaringan.
+For service worker, if you wanted to cache an image during the install step, you have a few options:
 
-Untuk service worker, jika ingin menyimpan gambar dalam cache selama langkah penginstalan,
-ada beberapa opsi:
+1. Install all the images that the `<picture>` element and the `srcset` attribute will request.
+2. Install a single low-res version of the image.
+3. Install a single high-res version of the image.
 
-1. Instal semua gambar yang akan diminta oleh atribut  `<picture>` dan `srcset`
-.
-2. Instal satu versi resolusi rendah dari gambar.
-3. Instal satu versi resolusi tinggi dari gambar.
+Realistically you should be picking option 2 or 3 since downloading all of the images would be a waste of storage space.
 
-Secara realistis, opsi 2 atau 3 yang harus dipilih, karena mendownload semua
-gambar akan memboroskan ruang penyimpanan.
+Let's assume you go for the low res version at install time and you want to try and retrieve higher res images from the network when the page is loaded, but if the high res images fail, fallback to the low res version. This is fine and dandy to do but there is one problem.
 
-Anggaplah Anda memilih versi resolusi rendah pada saat penginstalan dan ingin mencoba
-serta mengambil gambar yang beresolusi lebih tinggi dari jaringan jika halaman telah dimuat, namun jika
-gambar resolusi tinggi ternyata gagal, lakukan fallback ke versi resolusi rendah. Ini boleh saja dan
-baik dilakukan, namun ada satu masalah.
+If we have the following two images:
 
-Jika kita memiliki dua gambar berikut:
-
-| Kepadatan Layar | Lebar | Tinggi |
+| Screen Density | Width | Height |
 | -------------- | ----- | ------ |
 | 1x             | 400   | 400    |
 | 2x             | 800   | 800    |
 
-Dalam gambar `srcset`, kita memiliki beberapa markup seperti ini:
-
+In a `srcset` image, we'd have some markup like this:
 
     <img src="image-src.png" srcset="image-src.png 1x, image-2x.png 2x" />
+    
 
-
-Jika kita menggunakan layar 2x, browser akan memilih untuk mendownload `image-2x.png`,
-jika kita offline Anda dapat `.catch()` permintaan ini dan menampilkan `image-src.png`
-jika disimpan dalam cache, namun browser menunggu gambar yang memperhitungkan
-piksel ekstra pada layar 2x, jadi gambar akan muncul sebagai
-200x200 CSS piksel, bukan 400x400 CSS piksel. Satu-satunya cara menyiasatinya adalah
-menyetel tinggi dan lebar tetap pada gambar.
-
+If we are on a 2x display, then the browser will opt to download `image-2x.png`, if we are offline you could `.catch()` this request and return `image-src.png` instead if it's cached, however the browser will expect an image that takes into account the extra pixels on a 2x screen, so the image will appear as 200x200 CSS pixels instead of 400x400 CSS pixels. The only way around this is to set a fixed height and width on the image.
 
     <img src="image-src.png" srcset="image-src.png 1x, image-2x.png 2x"
      style="width:400px; height: 400px;" />
+    
 
+For `<picture>` elements being used for art direction, this becomes considerably more difficult and will depend heavily on how your images are created and used, but you may be able to use a similar approach to srcset.
 
-Untuk elemen `<picture>` yang digunakan pada art direction, ini menjadi sangat
-sulit dan bergantung pada cara gambar dibuat dan digunakan,
-namun Anda mungkin dapat menggunakan pendekatan serupa untuk srcset.
+## Learn more
 
-## Pelajari lebih lanjut
+There is a list of documentation on service worker being maintained at [https://jakearchibald.github.io/isserviceworkerready/resources](https://jakearchibald.github.io/isserviceworkerready/resources.html) that you may find useful.
 
-Ada daftar dokumentasi tentang service worker yang disimpan di
-[https://jakearchibald.github.io/isserviceworkerready/resources](https://jakearchibald.github.io/isserviceworkerready/resources.html)
-yang mungkin berguna bagi Anda.
+## Get help
 
-## Mendapatkan bantuan
+If you get stuck then please post your questions on StackOverflow and use the '[service-worker](http://stackoverflow.com/questions/tagged/service-worker)' tag so that we can keep a track of issues and try and help as much as possible.
 
-Jika Anda mengalami masalah, silakan posting pertanyaan di StackOverflow dan gunakan tag
-'[service-worker](http://stackoverflow.com/questions/tagged/service-worker)'
-agar kami dapat memantau masalah dan mencoba membantu sebaik-baiknya.
-
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

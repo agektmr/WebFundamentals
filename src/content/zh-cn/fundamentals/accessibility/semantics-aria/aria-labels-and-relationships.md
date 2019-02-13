@@ -1,118 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:使用 ARIA 标签创建可访问元素说明
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using ARIA labels to create accessible element descriptions
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# ARIA Labels and Relationships {: .page-title }
 
-# ARIA 标签和关系 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+## Labels
 
-## 标签
-
-ARIA 提供了多种向元素添加标签和说明的机制。事实上，ARIA 是唯一一种可以添加可访问帮助或说明文本的方式。
-我们来看一下 ARIA 用于创建可访问标签的属性。
-
+ARIA provides several mechanisms for adding labels and descriptions to elements. In fact, ARIA is the only way to add accessible help or description text. Let's look at the properties ARIA uses to create accessible labels.
 
 ### aria-label
 
-`aria-label` 允许我们指定一个用作可访问标签的字符串。这将替换任何其他原生标记机制，例如 `label` 元素 &mdash;例如，如果 `button` 同时具有文本内容和 `aria-label`，将仅使用 `aria-label` 值。
+`aria-label` allows us to specify a string to be used as the accessible label. This overrides any other native labeling mechanism, such as a `label` element &mdash; for example, if a `button` has both text content and an `aria-label`, only the `aria-label` value will be used.
 
+You might use an `aria-label` attribute when you have some kind of visual indication of an element's purpose, such as a button that uses a graphic instead of text, but still need to clarify that purpose for anyone who cannot access the visual indication, such as a button that uses only an image to indicate its purpose.
 
-
-
-如果您有某种指明元素用途的视觉指示（例如，使用图形而不是文本的按钮），则可以使用 `aria-label` 属性，但是仍需要向无法获取视觉指示（例如，仅使用图像指示其用途的按钮）的任何人阐明该用途。
-
-
-
-
-
-![使用 aria-label 标识一个仅图像按钮](imgs/aria-label.jpg)
+![using aria-label to identify an image only button](imgs/aria-label.jpg)
 
 ### aria-labelledby
 
-`aria-labelledby` 允许我们将 DOM 中另一个元素的 ID 指定为当前元素的标签。
+`aria-labelledby` allows us to specify the ID of another element in the DOM as an element's label.
 
+![using aria-labelledby to identify a radio group](imgs/aria-labelledby.jpg)
 
-![使用 aria-labelledby 标识单选组](imgs/aria-labelledby.jpg)
+This is much like using a `label` element, with some key differences.
 
-这非常类似于使用 `label` 元素，但也存在一些关键区别。
+1. `aria-labelledby` may be used on any element, not just labelable elements.
+2. While a `label` element refers to the thing it labels, the relationship is reversed in the the case of `aria-labelledby` &mdash; the thing being labeled refers to the thing that labels it.
+3. Only one label element may be associated with a labelable element, but `aria-labelledby` can take a list of IDREFs to compose a label from multiple elements. The label will be concatenated in the order that the IDREFs are given.
+4. You can use `aria-labelledby` to refer to elements that are hidden and would otherwise not be in the accessibility tree. For example, you could add a hidden `span` next to an element you want to label, and refer to that with `aria-labelledby`.
+5. However, since ARIA only affects the accessibility tree, `aria-labelledby` does not give you the familiar label-clicking behavior you get from using a `label` element.
 
- 1. `aria-labelledby` 可以用于任何元素，而不仅仅是可标记元素。
- 1. `label` 元素引用其标记的对象，但对于 `aria-labelledby` 来说，关系则相反 &mdash; 被标记的对象引用标记它的元素。
+Importantly, `aria-labelledby` overrides **all** other name sources for an element. So, for example, if an element has both an `aria-labelledby` and an `aria-label`, or an `aria-labelledby` and a native HTML `label`, the `aria-labelledby` label always takes precedence.
 
+## Relationships
 
- 1. 只有一个标签元素与可标记元素关联，但是 `aria-labelledby` 可以利用一组 IDREF 从多个元素构建标签。标签将按照 IDREF 的提供顺序串联。
+`aria-labelledby` is an example of a *relationship attribute*. A relationship attribute creates a semantic relationship between elements on the page regardless of their DOM relationship. In the case of `aria-labelledby`, that relationship is "this element is labelled by that element".
 
- 1. 您可以使用 `aria-labelledby` 引用隐藏和不在可访问性树中的元素。
-例如，您可以在想要标记的元素旁添加一个隐藏的 `span`，然后使用 `aria-labelledby` 引用该元素。
-
-
- 1. 不过，由于 ARIA 仅影响可访问性树，`aria-labelledby` 并不会展现使用 `label` 元素时熟悉的标签点击行为。
-
-
-
-重要的是，`aria-labelledby` 将替换元素的**所有**其他名称源。
-因此，如果一个元素同时拥有 `aria-labelledby` 和 `aria-label` 或者`aria-labelledby` 和原生 HTML `label`，`aria-labelledby` 标签将始终具有最高优先级。
-
-
-
-## 关系
-
-`aria-labelledby` 是一个*关系属性*示例。无论页面元素的 DOM 属性如何，关系属性都会在它们之间创建语义关系。如果是 `aria-labelledby`，关系将是“此元素由另一个元素标记”。
-
-
-ARIA 规范列出了[八个关系属性](https://www.w3.org/TR/wai-aria/states_and_properties#attrs_relationships){: .external }。其中的六个（即 `aria-activedescendant`、`aria-controls`、`aria-describedby`、`aria-labelledby` 和 `aria-owns`）通过引用一个或多个元素的方式在页面元素之间创建一个新链接。各个属性的区别是链接的含义及其向用户呈现的方式。
-
+The ARIA specification lists [eight relationship attributes](https://www.w3.org/TR/wai-aria/states_and_properties#attrs_relationships){: .external }. Six of these, `aria-activedescendant`, `aria-controls`, `aria-describedby`, `aria-labelledby`, and `aria-owns`, take a reference to one or more elements to create a new link between elements on the page. The difference in each case is what that link means and how it is presented to users.
 
 ### aria-owns
 
-`aria-owns` 是使用最广泛的 ARIA 关系之一。此属性既允许我们告知辅助技术应将 DOM 中独立的一个元素视为当前元素的子项，也允许我们以不同顺序重排现有子元素。例如，如果一个弹出式子菜单在视觉上靠近其父菜单，但不能是其父项的 DOM 子项（否则会影响视觉呈现），您可以使用 `aria-owns` 将子菜单作为父菜单的子项呈现给屏幕阅读器。
+`aria-owns` is one of the most widely used ARIA relationships. This attribute allows us to tell assistive technology that an element that is separate in the DOM should be treated as a child of the current element, or to rearrange existing child elements into a different order. For example, if a pop-up sub-menu is visually positioned near its parent menu, but cannot be a DOM child of its parent because it would affect the visual presentation, you can use `aria-owns` to present the sub-menu as a child of the parent menu to a screen reader.
 
-
-
-
-
-![使用 aria-owns 在菜单与子菜单之间建立关系](imgs/aria-owns.jpg)
+![using aria-owns to establish a relationship between a menu and a submenu](imgs/aria-owns.jpg)
 
 ### aria-activedescendant
 
-`aria-activedescendant` 扮演着相关角色。与页面的活动元素是具有焦点的元素一样，设置元素的活动子项允许我们告知辅助技术，在一个元素的父项实际具有焦点时应作为焦点元素将该元素呈现给用户。例如，在列表框中，您可能希望将页面焦点停留在列表框容器上，但对当前选中的列表项持续更新列表框的 `aria-activedescendant` 属性。这样会让当前选定项以焦点项的形式显示给辅助技术。
+`aria-activedescendant` plays a related role. Just as the active element of a page is the one that has focus, setting the active descendant of an element allows us to tell assistive technology that an element should be presented to the user as the focused element when its parent actually has the focus. For example, in a listbox, you might want to leave page focus on the listbox container, but keep its `aria-activedescendant` attribute updated to the currently selected list item. This makes the currently selected item appear to assistive technology as if it is the focused item.
 
-
-![使用 aria-activedescendant 在列表框中建立关系](imgs/aria-activedescendant.jpg)
+![using aria-activedescendant to establish a relationship in a listbox](imgs/aria-activedescendant.jpg)
 
 ### aria-describedby
 
-`aria-describedby` 提供了一种可访问说明，方式与 `aria-labelledby` 提供标签的方式相同。
-与 `aria-labelledby` 一样，`aria-describedby` 可能引用不可见的元素，无论这些元素在 DOM 中隐藏，还是对辅助技术用户隐藏。如果存在用户可能需要的额外说明性文本，则不管该文本适用于辅助技术用户还是所有用户，这种技术都非常有用。
+`aria-describedby` provides an accessible description in the same way that `aria-labelledby` provides a label. Like `aria-labelledby`, `aria-describedby` may reference elements that are otherwise not visible, whether hidden from the DOM, or hidden from assistive technology users. This is a useful technique when there is some extra explanatory text that a user might need, whether it applies only to users of assistive technology or all users.
 
+A common example is a password input field that is accompanied by some descriptive text explaining the minimum password requirements. Unlike a label, this description may or may not ever be presented to the user; they may have a choice of whether to access it, or it may come after all the other information, or it may be pre-empted by something else. For example, if the user is entering information, their input will be echoed back and may interrupt the element's description. Thus, a description is a great way to communicate supplementary, but not essential, information; it won't get in the way of more critical information such as the element's role.
 
+![using aria-describedby to establish a relationship with a password field](imgs/aria-describedby.jpg)
 
-一个常见的示例是密码输入字段带有一些说明性文本，其中，说明性文本用于说明最低密码要求。
-与标签不同，此说明不一定会呈现给用户；用户可以选择是否访问说明，此说明可能跟在其他信息之后，也可能被其他内容抢占。例如，如果用户正在输入信息，他们的输入将回显并且可能中断元素的说明。因此，说明是一种用于传达补充但非必要信息的绝佳方式；它不会妨碍更关键的信息，例如元素角色。
+### aria-posinset & aria-setsize
 
+The remaining relationship attributes are a little different, and work together. `aria-posinset` ("position in set") and `aria-setsize` ("size of set") are about defining a relationship between sibling elements in a set, such as a list.
 
+When the size of a set cannot be determined by the elements present in the DOM &mdash; such as when lazy rendering is used to avoid having all of a large list in the DOM at once &mdash; `aria-setsize` can specify the actual set size, and `aria-posinset` can specify the element's position in the set. For example, in a set that might contain 1000 elements, you could say that a particular element has an `aria-posinset` of 857 even though it appears first in the DOM, and then use dynamic HTML techniques to ensure that the user can explore the full list on demand.
 
-![使用 aria-describedby 与密码字段建立关系](imgs/aria-describedby.jpg)
+![using aria-posinset and aria-setsize to establish a relationship in a list](imgs/aria-posinset.jpg)
 
-### aria-posinset 和 aria-setsize
+## Feedback {: #feedback }
 
-其余的关系属性略有不同并协同作用。`aria-posinset`（“在集中的位置”）和 `aria-setsize`（“集大小”）用于定义集（例如，列表）中同级元素之间的关系。
-
-
-
-如果无法通过 DOM 中存在的元素确定集的大小（例如，使用延迟渲染避免在 DOM 中生成大的列表时），`aria-setsize` 可以指定实际集大小，`aria-posinset` 可以指定元素在集中的位置。例如，在一个可能包含 1000 个元素的集中，您可以指定特定元素的 `aria-posinset` 为 857（即使其在 DOM 中位于首位），然后使用动态 HTML 技术确保用户可以根据需要查看完整列表。
-
-
-
-
-
-![使用 aria-posinset 和 aria-setsize 在列表中建立关系](imgs/aria-posinset.jpg)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

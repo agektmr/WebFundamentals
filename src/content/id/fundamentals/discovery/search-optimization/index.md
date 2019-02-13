@@ -1,133 +1,101 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Situs web tidak hanya dikunjungi oleh manusia, juga oleh perayap web mesin telusur. Pelajari cara meningkatkan akurasi penelusuran dan peringkat situs web Anda.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-08-30 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-30 #}
 
-# Optimalisasi Penelusuran {: .page-title }
+# Search Optimization {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-Situs web tidak hanya dikunjungi oleh manusia, juga oleh perayap web mesin telusur. Pelajari cara meningkatkan akurasi penelusuran dan peringkat situs web Anda.
+Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
 ### TL;DR {: .hide-from-toc }
-- Tentukan struktur URL laman web Anda.
-- Desain responsif adalah yang paling disarankan.
-- Gunakan <code>rel='canonical'</code> + <code>rel='alternate'</code> untuk masing-masing situs desktop/seluler.
-- Gunakan header <code>Vary HTTP</code> untuk URL tunggal yang secara dinamis menyajikan HTML desktop/seluler terpisah.
-- Gunakan <code>noindex</code> untuk laman yang ingin Anda batasi aksesnya hanya untuk orang yang mengetahui URL tersebut.
-- Gunakan mekanisme autentikasi yang relevan untuk laman yang Anda inginkan tetap privat.
 
-## Berikan struktur situs Anda pada mesin telusur
+* Determine the URL structure of your web page.
+* Responsive design is most recommended.
+* Use `rel='canonical'` + `rel='alternate'` for separate desktop/mobile sites.
+* Use `Vary HTTP` header for a single URL dynamically serving separate desktop/mobile HTMLs.
+* Use `noindex` for pages you want to limit access to those who know the URL.
+* Use relevant authentication mechanism for pages you want to keep private.
 
-Bagaimana munculnya situs web Anda dalam hasil penelusuran adalah hal penting dalam desain situs multi-perangkat. Panduan ini membantu Anda mengoptimalkan situs web untuk mesin telusur berdasarkan struktur URL-nya.
+## Give search engines your site structure
 
-Anda berencana membangun laman web yang responsif? Adakah versi khusus seluler
-dengan URL terpisah? Apakah Anda menyajikan versi desktop maupun
-versi seluler dari URL yang sama? Apa pun itu, Anda selalu bisa melakukan tugas yang lebih baik
-dalam mengoptimalkan situs web bagi mesin telusur.
+How your website appears in search results is important to multi-device site design. This guide helps you optimize your website for search engines based on its URL structure.
 
-### Berikan struktur URL untuk situs Anda
+Are you planning to build a responsive web page? Is there a mobile-specific version with a separate URL? Are you serving both the desktop version and the mobile version from the same URL? Regardless, you can always do a better job of optimizing your website for search engines.
 
-Ada sejumlah cara untuk menyajikan materi ke beberapa perangkat berbeda. Tiga metode
-paling umum adalah:
+### Give your site a URL structure
 
-**Desain web responsif:** menyajikan HTML yang sama dari satu URL dan menggunakan kueri media CSS
-untuk menentukan cara merender materi pada sisi klien.
-Misalnya, Desktop dan Seluler: http://www.example.com/
+There are several ways to serve content to different devices. The three most common methods are:
 
-**Situs seluler terpisah:** mengalihkan pengguna ke URL berbeda dengan bergantung pada
-agen-pengguna. Misalnya, Desktop: http://www.example.com/
-Seluler: http://m.example.com/
+**Responsive web design:** serves the same HTML from one URL and uses CSS media queries to determine how the content is rendered on the client side. For example, Desktop and Mobile: http://www.example.com/
 
-**Penyajian dinamis:** menyajikan HTML berbeda dari satu URL dengan bergantung pada
-agen-pengguna. Misalnya, Desktop dan Seluler: http://www.example.com/
+**Separate mobile site:** redirects users to a different URL depending on the user-agent. For example, Desktop: http://www.example.com/ Mobile: http://m.example.com/
 
-Pendekatan terbaik adalah menggunakan **desain web responsif**, walaupun banyak situs web menggunakan metode lain.
- 
-Tentukan struktur URL mana yang cocok dengan laman web Anda. Kemudian coba praktik terbaik
-yang terkait untuk mengoptimalkannya bagi mesin telusur.
+**Dynamic serving:** serves different HTML from one URL depending on the user- agent. For example, Desktop and Mobile: http://www.example.com/
 
-### Kami menyarankan desain web responsif
+The best approach is to use **responsive web design**, though many websites use other methods.
 
-Manfaat membuat situs web Anda jadi responsif adalah:
+Determine which URL structure suits your web page. Then try the respective best practices to optimize it for search engines.
 
-<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" >
+### We recommend responsive web design
 
-* Lebih mudah bagi pengguna untuk berbagi.
-* Pemuatan laman yang lebih cepat tanpa pengalihan.
-* URL tunggal untuk hasil penelusuran.
+The benefits of making your website responsive are:
+
+<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" />
+
+* Friendlier for user sharing.
+* Quicker page load without redirects.
+* Single URL for search results.
 
 <div style="clear:both;"></div>
-  
-Pelajari cara membangun situs web dengan desain web responsif di [Dasar-Dasar Desain Web Responsif](/web/fundamentals/design-and-ux/responsive/).
 
-### Gunakan `link[rel=canonical]` dan `link[rel=alternate]` saat menyajikan URL terpisah
+Learn to build websites with responsive web design at [Responsive Web Design Basics](/web/fundamentals/design-and-ux/responsive/).
 
-Menyajikan materi serupa pada versi desktop dan versi seluler di
-URL berbeda dapat menyebabkan kebingungan pada pengguna dan mesin telusur karena tidak
-jelas bagi penampil bahwa kedua versi sebenarnya identik. Anda harus menunjukkan:
+### Use `link[rel=canonical]` and `link[rel=alternate]` when serving separate URLs
 
-* Bahwa materi kedua URL adalah identik.
-* Mana yang versi seluler.
-* Mana yang versi desktop (kanonis).
+Serving similar contents on a desktop version and a mobile version at different URLs may cause confusion for both users and search engines because it's not obvious to viewers that they are intended to be identical. You should indicate:
 
-Informasi ini membantu mesin telusur menjadi lebih baik dalam mengindeks materi dan memastikan
-pengguna menemukan apa yang mereka cari dalam format yang cocok dengan perangkat mereka.
+* That the content of the two URLs are identical.
+* Which is the mobile version.
+* Which is the desktop (canonical) version.
 
-#### Gunakan alternatif untuk desktop
+This information helps search engines better index content and ensures that users find what they're looking for in a format that works for their device.
 
-Saat menyajikan versi desktop, tunjukkan bahwa ada versi seluler di
-URL lain dengan menambahkan tag `link` dengan atribut `rel="alternate" yang menunjukkan
-ke versi seluler di atribut `href`.
+#### Use alternate for desktop
 
-[http://www.example.com/](http://www.example.com/){: .external } HTML
+When serving the desktop version, indicate that there's a mobile version on another URL by adding a `link` tag with a `rel="alternate" attribute that points
+to the mobile version in the`href` attribute.
 
+<http://www.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="alternate" media="only screen and (max-width: 640px)" href="http://m.example.com/">
     
 
-#### Gunakan kanonis untuk seluler
+#### Use canonical for mobile
 
-Saat menyajikan versi seluler, tunjukkan bahwa ada versi desktop (kanonis)
-pada URL lain dengan menambahkan tag `link` dengan atribut `rel="canonical"` yang
-menunjukkan ke versi desktop di atribut `href`. Bantu mesin telusur
-memahami bahwa versi seluler secara eksplisit adalah untuk layar kecil dengan menambahkan atribut `media` dengan nilai `"only screen and (max-width: 640px)"`.
+When serving the mobile version, indicate that there's a desktop (canonical) version on another URL by adding a `link` tag with a `rel="canonical"` attribute that points to the desktop version in the `href` attribute. Help search engines understand that the mobile version is explicitly for small screens by adding a `media` attribute with a value of `"only screen and (max-width: 640px)"`.
 
-[http://m.example.com/](http://m.example.com/){: .external } HTML
-
+<http://m.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="canonical" href="http://www.example.com/">
     
-  
-<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" >
 
-### Gunakan header Vary HTTP
+<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" />
 
-Menyajikan HTML berbeda berdasarkan pada tipe perangkat akan mengurangi pengalihan yang tidak perlu,
-menyajikan HTML yang dioptimalkan, dan menyediakan URL tunggal bagi mesin telusur. Ada juga
-sejumlah kerugiannya:
+### Use the Vary HTTP header
 
-* Mungkin ada proxy perantara di antara browser pengguna dan server.
-Kecuali jika proxy mengetahui bahwa materi bervariasi menurut agen-pengguna, hasil yang disajikannya
-mungkin tidak seperti yang diharapkan.
-* Pengubahan materi yang bergantung pada risiko agen-pengguna dianggap sebagai 
-"[cloaking](https://support.google.com/webmasters/answer/66355)", yang merupakan
-pelanggaran terhadap Panduan Webmaster Google.
+Serving different HTML based on device type reduces unnecessary redirects, serves optimized HTML, and provides single URL for search engines. It also has several disadvantages:
 
-Dengan memungkinkan mesin telusur mengetahui bahwa materi bervariasi menurut agen-pengguna,
-mesin telusur bisa mengoptimalkan hasil penelusuran untuk agen-pengguna yang mengirim kueri tersebut.
+* There may be intermediate proxies between a user's browsers and the server. Unless the proxy knows that the content varies depending on user agent, it may serve unexpected results.
+* Changing contents depending on user agent risks being considered "[cloaking](https://support.google.com/webmasters/answer/66355)", which is a violation of Google’s Webmaster Guidelines.
 
-Untuk menunjukkan bahwa URL menyajikan HTML berbeda yang bergantung pada agen-pengguna, sediakan
-`Vary: User-Agent` dalam header HTTP. Ini memungkinkan indeks penelusuran memperlakukan
-versi seluler dan desktop secara terpisah, dan proxy perantara meng-cache
-materi tersebut secara halus.
+By letting search engines know that the content varies depending on user agent, they can optimize search results for the user agent that is sending queries.
 
-[http://www.example.com/](http://www.example.com/){: .external } Header HTTP
+To indicate that the URL serves different HTML depending on user agent, provide a b `Vary: User-Agent` in the HTTP header. This allows search indexing to treat desktop and mobile versions separately, and intermediate proxies to cache those contents gracefully.
 
+<http://www.example.com/>{: .external } HTTP Header
 
     HTTP/1.1 200 OK
     Content-Type: text/html
@@ -135,54 +103,37 @@ materi tersebut secara halus.
     Content-Length: 5710
     
 
-<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" >
+<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" />
 
-Untuk mengetahui selengkapnya tentang membangun struktur URL di desktop dan seluler, bacalah [tentang membangun situs web yang dioptimalkan untuk ponsel cerdas](/webmasters/smartphone-sites/).
+To learn more about building URL structure across desktop and mobile, read [about building smartphone-optimized websites](/webmasters/smartphone-sites/).
 
+## Control crawling and indexing from search engines
 
-## Kontrol perayapan dan pengindeksan dari mesin telusur
+Being listed properly on search engines is critical to delivering your website to the world, but poor configuration can cause unexpected content to be included in the results. This section helps you avoid such problems by explaining how crawlers work and how they index websites.
 
-Tercantum secara benar di mesin telusur sangatlah penting dalam menyajikan situs web Anda kepada
-dunia, namun konfigurasi yang buruk bisa menyebabkan materi yang tidak diharapkan disertakan
-dalam hasil penelusuran. Bagian ini membantu Anda menghindari masalah demikian dengan menjelaskan cara kerja
-perayap dan caranya mengindeks situs web.
+Sharing information has no better place than the web. When you publish a document, it's immediately available to the entire world. The page will be visible to anyone who knows the URL. That's where search engines come in. They need to be able to find your website.
 
-Tidak ada tempat yang lebih baik untuk berbagi informasi selain di web. Bila Anda mempublikasikan
-dokumen, maka dokumen itu akan langsung tersedia ke seluruh dunia. Laman akan
-terlihat oleh siapa saja yang mengetahui URL tersebut. Itulah tempat masuk mesin telusur. Mesin telusur harus dapat menemukan situs web Anda.
+However, there are some cases where you don't want people to find those documents even though you want to put them on the web. For example, a blog's admin page is something only certain people should have access to. There's no benefit to letting people find those pages through search engines.
 
-Akan tetapi, ada beberapa kasus di mana Anda tidak ingin orang menemukan dokumen
-itu walaupun Anda ingin menempatkannya di web. Misalnya, laman
-admin blog hanya boleh diakses oleh orang-orang tertentu. Tidak ada
-gunanya membiarkan orang menemukan laman itu melalui mesin telusur.
+This section also explains how to restrict certain pages from appearing in search results.
 
-Bagian ini juga menjelaskan cara membatasi laman agar tidak muncul dalam hasil penelusuran.
+### The difference between "crawl" and "index"
 
+Before you learn how to control search results, you need to understand how search engines interact with your web page. From your site's point of view, there are roughly two things search engines do to your site: crawling and indexing.
 
-### Perbedaan antara "merayapi" dan "mengindeks"
+**Crawling** is when a search engine bot fetches your web page to analyze its content. The content is stored in the search engine's database and can be used to populate search result details, rank pages, and discover new pages by following links.
 
-Sebelum mempelajari cara mengontrol hasil penelusuran, Anda perlu memahami cara mesin telusur berinteraksi dengan laman web. Dari sudut pandang situs Anda, setidaknya ada dua hal yang dilakukan mesin telusur pada situs: merayapi dan mengindeks.  
+**Indexing** is when a search engine stores a website's URL and any associated information in its database so it is ready to serve as a search result.
 
-**Merayapi** adalah bila bot mesin telusur mengambil laman web Anda untuk menganalisis materinya. Materi disimpan dalam database mesin telusur dan bisa digunakan untuk mengisikan detail hasil penelusuran, memeringkat laman, dan menemukan laman baru dengan mengikuti tautan.  
+Note: Many people confuse crawling with indexing. Prohibiting crawling doesn't mean that the page won't show up in the search results. For example, if a third-party website has a link to one of your web pages, it can still be indexed even though it's blocked from crawling. In this case, the search result lacks a detailed description.
 
-**Mengindeks** adalah bila mesin telusur menyimpan URL situs web dan semua informasi terkait dalam database-nya agar siap disajikan sebagai hasil penelusuran. 
+### Control crawling with robots.txt
 
-Note: Banyak orang yang tidak bisa membedakan antara merayapi dengan mengindeks. Melarang perayapan bukan berarti laman tidak akan ditampilkan dalam hasil penelusuran. Misalnya, jika situs web pihak ketiga memiliki tautan ke salah satu laman web Anda, laman itu tetap bisa diindeks walaupun telah diblokir dari perayapan. Dalam hal ini, hasil penelusuran tidak memiliki keterangan mendetail.
+You can use a text file called `robots.txt` to control how well-behaved crawlers access your web page. `Robots.txt` is a simple text file describing how you want search bots to crawl your site. (Not all crawlers necessarily respect `robots.txt`. Imagine that anyone can create their own stray crawlers.)
 
-### Kontrol perayapan dengan robots.txt
+Place `robots.txt` at the root directory of your website's host. For example, if your site's host is `http://pages.example.com/`, then the `robots.txt` file should be located at `http://pages.example.com/robots.txt`. If the domain has different schema, subdomains, or other ports, they are considered different hosts and should have `robots.txt` for each of their root directories.
 
-Anda bisa menggunakan file teks yang disebut `robots.txt` untuk mengontrol bagaimana perayap yang berperilaku-baik mengakses laman web Anda. `Robots.txt` adalah file teks biasa yang menjelaskan bagaimana Anda ingin
-bot telusur merayapi situs. (Tidak semua perayap perlu mematuhi
-`robots.txt`. Bayangkan bila ada orang bisa membuat perayap liar sendiri.)
-
-Tempatkan `robots.txt` pada direktori akar host situs web Anda. Misalnya,
-jika host situs Anda adalah `http://pages.example.com/`, maka file `robots.txt` harus
-ditempatkan di `http://pages.example.com/robots.txt`. Jika domain tersebut memiliki
-skema, subdomain, atau port lain yang berbeda, maka dianggap
-host berbeda dan harus memiliki `robots.txt` untuk setiap
-direktori akarnya.
-
-Inilah contoh ringkasnya:  
+Here's a quick example:
 
 **http://pages.example.com/robots.txt**
 
@@ -190,10 +141,9 @@ Inilah contoh ringkasnya:
     Disallow: /
     
 
-Ini menunjukkan bahwa Anda ingin melarang semua bot merayapi keseluruhan
-situs web.
+This indicates that you want to disallow all bots from crawling your entire website.
 
-Ini contoh yang lain:
+Here's another example:
 
 **http://pages.example.com/robots.txt**
 
@@ -201,54 +151,43 @@ Ini contoh yang lain:
     Disallow: /nogooglebot/
     
 
-Anda bisa menetapkan perilaku per bot (agen-pengguna) dengan menunjukkan
-nama agen-pengguna. Dalam kasus di atas, Anda melarang agen-pengguna yang disebut `Googlebot`
-untuk merayapi `/nogooglebot/` dan semua materi di bawah direktori ini.  
+You can specify the behavior per bot (user agent) by indicating a user-agent name. In the above case, you are disallowing the user agent called `Googlebot` from crawling `/nogooglebot/` and all contents below this directory.
 
-Ketahui selengkapnya tentang setiap bot mesin telusur di laman bantuannya:
+Learn more about each search engine's bots on their help pages:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_txt)
 * [Bing](http://www.bing.com/webmaster/help/how-to-create-a-robots-txt-file-cb7c31ec)
 * [Yandex](https://help.yandex.com/webmaster/controlling-robot/robots-txt.xml)
 
+Note: `robots.txt` is only required **if** you want to control the way your site is crawled. Do not return response code 500 for the url: `/robots.txt`. This terminates all subsequent crawls for the entire host resulting in empty search result details.
 
-Note: `robots.txt` hanya diperlukan **jika** Anda ingin mengontrol cara situs dirayapi. Jangan kembalikan kode respons 500 untuk URL: `/robots.txt`. Ini menghentikan semua perayapan selanjutnya untuk keseluruhan host sehingga mengakibatkan detail hasil penelusuran kosong.
+#### Test robots.txt
 
-#### Uji robots.txt
+Depending on which crawlers your robots.txt is targeting, search engine providers may provide a tool to test `robots.txt`. For example, for Google there's a validator in [Webmaster Tools](https://www.google.com/webmasters/tools/robots-testing-tool) that you can use to test your robots.txt.
 
-Bergantung pada perayap mana yang ditargetkan robots.txt, penyedia
-mesin telusur mungkin menyediakan alat (bantu) untuk menguji `robots.txt`. Misalnya, untuk Google 
-ada sebuah validator di
-[Alat WebMaster](https://www.google.com/webmasters/tools/robots-testing-tool)
-yang bisa Anda gunakan untuk menguji robots.txt.
+<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x" />
 
-<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x">
+Yandex provides [a similar tool](https://webmaster.yandex.com/tools/robotstxt/).
 
-Yandex menyediakan [alat (bantu) serupa](https://webmaster.yandex.com/tools/robotstxt/).  
+### Control search indexing with meta tags
 
-### Kontrol pengindeksan penelusuran dengan tag meta
+If you don't want your web page to show up in search results, robots.txt isn't the solution. You need to allow those pages to be crawled, and explicitly indicate that you don't want them to be indexed. There are two solutions:
 
-Jika Anda tidak ingin laman web ditampilkan dalam hasil penelusuran, maka robots.txt bukan
-solusinya. Anda perlu memperbolehkan semua laman itu dirayapi, dan secara eksplisit
-menunjukkan bahwa Anda tidak ingin laman itu diindeks. Ada dua solusinya:
-
-Untuk menunjukkan bahwa Anda tidak ingin laman HTML diindeks, gunakan semacam tag `<meta>` khusus, dengan atributnya disetel sebagai `name="robots"` dan `content="noindex"`.  
-
+To indicate you don't want an HTML page to be indexed, use a specific kind of `<meta>` tag, one with its attributes set as `name="robots"` and `content="noindex"`.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="robots" content="noindex" />
     
 
-Dengan mengubah nilai atribut `name` ke nama agen-pengguna tertentu, Anda bisa mempersempit cakupannya. Misalnya, `name="googlebot"` (membedakan huruf besar-kecil) menunjukkan bahwa Anda tidak ingin Googlebot mengindeks laman.  
-
+By changing the value of the `name` attribute to a specific user agent name, you can narrow the scope. For example, `name="googlebot"` (case insensitive) indicates that you don't want Googlebot to index the page.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="googlebot" content="noindex" />
     
 
-Opsi lainnya untuk tag meta robot antara lain:  
+Other options for the robots meta tag include:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/which-robots-metatags-does-bing-support-5198d240)
@@ -256,106 +195,104 @@ Opsi lainnya untuk tag meta robot antara lain:
 
 #### X-Robots-Tag
 
-Untuk menunjukkan bahwa Anda tidak ingin sumber daya seperti file gambar, stylesheet, atau skrip
-diindeks, tambahkan `X-Robots-Tag: noindex` dalam header HTTP.
-
+To indicate that you don't want resources such as images, stylesheets, or script files to be indexed, add `X-Robots-Tag: noindex` in an HTTP header.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: noindex
     Content-Type: text/html; charset=UTF-8
     
 
-Jika Anda ingin mempersempit cakupan pada agen-pengguna tertentu, sisipkan nama agen-pengguna sebelum `noindex`.  
-
+If you want to narrow the scope to a specific user agent, insert the user agent name before `noindex`.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: googlebot: noindex
     Content-Type: text/html; charset=UTF-8
     
 
-Untuk mengetahui selengkapnya tentang X-Robots-Tag:  
+To learn more about X-Robots-Tag:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/how-can-i-remove-a-url-or-page-from-the-bing-index-37c07477)
 
-Note: Jika Anda melarang perayapan menggunakan `robots.txt`, bot telusur mungkin tetap mengindeks laman itu tanpa mengetahui bahwa Anda tidak ingin laman itu diindeks. Hal ini bisa terjadi karena:<ul><li>Bot telusur mungkin menemukan laman web Anda dengan mengikuti tautan dari situs web lain.</li><li>Mesin telusur yang tidak bisa merayapi tidak bisa mendeteksi <code>noindex</code>.</li></ul>
+Note: If you disallow crawls using `robots.txt`,  search bots still may index those pages without knowing that you don't want those pages to be indexed. This can happen because:
 
-Jangan mengharapkan `robots.txt` untuk mengontrol indeks penelusuran.
+* Search bots may find your web pages by following links from other websites.
+* Search engines that can't crawl can't detect `noindex`.
 
-### Contoh menurut tipe materi
+Don't expect `robots.txt` to control search indexes.
 
-Apakah solusi terbaik untuk mengontrol perayapan dan pengindeksan? Inilah beberapa solusi contoh untuk tipe laman berbeda.
+### Examples by content type
 
-#### Dapat diakses dan ditelusuri sepenuhnya oleh siapa saja
+What are the best solutions to control crawling and indexing? Here are some example solutions for different types of pages.
 
-Kebanyakan laman di web bertipe ini.  
+#### Fully accessible and searchable by anyone
 
-* Tidak diperlukan `robots.txt`.
-* Tidak diperlukan tag meta robot.
+Most of the pages on the web are of this type.
 
-#### Akses terbatas pada orang yang mengetahui URL tersebut
+* No `robots.txt` required.
+* No robots meta tags required.
 
-Contohnya antara lain:  
+#### Limited access by people who know the URL
 
-* Laman proses masuk untuk konsol admin blog.
-* Materi pribadi yang dibagikan dengan meneruskan URL untuk pengguna internet pemula.
+Examples include:
 
-Dalam hal ini, Anda tidak ingin mesin telusur mengindeks laman-laman itu.  
+* Login page for a blog admin console.
+* Private content shared by passing a URL for novice internet users.
 
-* Tidak diperlukan `robots.txt`.
-* Gunakan tag meta `noindex` untuk laman HTML.
-* Gunakan `X-Robots-Tag: noindex` untuk sumber daya bukan HTML (gambar, pdf, dll).
+In this case, you don't want search engines to index those pages.
 
-Note: Bertanya-tanya apakah Anda harus melarang perayapan file JavaScript dan Stylesheet? <a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google berusaha sebaik mungkin untuk memahaminya</a> sehingga ia bisa menemukan materi yang tersedia melalui teknologi modern seperti AJAX. Anda tentunya harus memperbolehkan perayap untuk merayapi JavaScript.
+* No `robots.txt` required.
+* Use `noindex` meta tags for HTML pages.
+* Use `X-Robots-Tag: noindex` for non HTML resources (images, pdf, etc).
 
-#### Akses terbatas dari orang yang diizinkan
+Note: Wondering if you should prohibit crawling JavaScript and Stylesheet files? <a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google tries its best to understand them</a> so that it can find contents available through modern technologies such as AJAX. You should definitely allow crawlers to crawl JavaScript.
 
-Dalam hal ini, sekalipun seseorang menemukan URL tersebut, server akan menolak menyajikan hasilnya tanpa kredensial yang sesuai. Misalnya:  
+#### Restricted access from authorized people
 
-* Materi yang dibagikan secara pribadi di jaringan sosial.
-* Sistem biaya perusahaan.
+In this case, even if someone finds the URL, the server refuses to present the result without a proper credential. For example:
 
-Di tipe laman ini, mesin telusur tidak boleh merayapi maupun mengindeksnya.  
+* Privately shared content on a social network.
+* Enterprise expense system.
 
-* Kembalikan kode respons 401 "Unauthorized" bila akses tanpa
-kredensial yang sesuai (atau alihkan pengguna ke laman proses masuk).
-* Jangan gunakan `robots.txt` untuk melarang perayapan di laman ini. Jika tidak maka 401 tidak bisa dideteksi.
+In these types of pages, search engines should neither crawl nor index them.
 
-Mekanisme pembatasan di sini bisa berupa alamat IP, cookie, otorisasi dasar,
-OAuth, dll. Cara mengimplementasikan autentikasi/otorisasi demikian bergantung pada
-infrastruktur Anda dan di luar cakupan artikel ini.
+* Return response code 401 "Unauthorized" for an access without a proper credential (or redirect the user to a login page).
+* Don't use `robots.txt` to disallow crawling these pages. Otherwise, 401 can't be detected.
 
-### Minta penghapusan laman dari mesin telusur
+The restriction mechanism here can be an IP address, a cookie, basic auth, OAuth, etc. How to implement such authentication/authorization depends on your infrastructure and is beyond this article's scope.
 
-Anda mungkin perlu membuang hasil penelusuran bila:  
+### Request a page removal from a search engine
 
-* Laman sudah tidak ada lagi.
-* Laman terindeks secara tidak sengaja dengan menyertakan informasi rahasia.
+You might want to remove a search result when:
 
+* The page no longer exists.
+* A page was accidentally indexed that includes confidential information.
 
-Mesin telusur utama menyediakan cara untuk mengirim permintaan membuang laman demikian. Proses ini biasanya seperti berikut:  
+Major search engines provide a way to send a request to remove such pages. The process usually takes the following:
 
-1. Pastikan laman yang ingin Anda buang:
-    * Apakah sudah dihapus dari server dan mengembalikan 404
-    * Apakah telah dikonfigurasi untuk tidak diindeks (mis: noindex)
+1. Make sure the page you want removed:
+    
+    * Is already deleted from your server and returns 404
+    * Is configured not to be indexed (ex: noindex)
 
-1. Masuklah ke laman permintaan di setiap mesin telusur. (Google dan Bing mengharuskan Anda mendaftarkan dan memvalidasi kepemilikan situs web.)
-1. Kirim permintaan.
+2. Go to the request page on each search engine. (Google and Bing require you to register and validate ownership of your website.)
 
-<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x">
+3. Send a request.
 
-Periksa langkah-langkah konkret pada laman bantuan mesin telusur yang bersangkutan:  
+<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x" />
+
+Check out concrete steps at the respective search engine's help pages:
 
 * [Google](https://support.google.com/webmasters/answer/1663419)
 * [Bing](http://www.bing.com/webmaster/help/bing-content-removal-tool-cb6c294d)
 * [Yandex](https://help.yandex.com/webmaster/yandex-indexing/removing-from-index.xml)
 
-### Apendiks: Daftar agen-pengguna perayap
+### Appendix: List of crawler user agents
 
 * [Google](https://support.google.com/webmasters/answer/1061943)
 * [Bing](http://www.bing.com/webmaster/help/which-crawlers-does-bing-use-8c184ec0)
 * [Yandex](https://help.yandex.com/search/robots/logs.xml)
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

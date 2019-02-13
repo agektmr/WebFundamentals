@@ -1,116 +1,84 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:檢查和編輯頁面的 HTML 與 CSS。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and edit the HTML and CSS of your pages.
 
-{# wf_updated_on:2016-01-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 檢查和編輯頁面與樣式 {: .page-title }
+# Inspect and Edit Pages and Styles {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-使用 Chrome DevTools 的 Elements 面板檢查和實時編輯頁面的 HTML 與 CSS。
+Inspect and live-edit the HTML and CSS of a page using the Chrome DevTools Elements panel.
 
-
-![Chrome DevTools 的 Elements 面板](imgs/elements-panel.png)
-
+![Chrome DevTools Elements panel](imgs/elements-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- 在 Elements 面板中檢查和實時編輯 DOM 樹中的任何元素。
-- 在 Styles 窗格中查看和更改應用到任何選定元素的 CSS 規則。
-- 在 Computed 窗格中查看和修改選定元素的框模型。
-- 在 Sources 面板中查看在本地對頁面所做的更改。
 
+* Inspect and edit on the fly any element in the DOM tree in the Elements panel.
+* View and change the CSS rules applied to any selected element in the Styles pane.
+* View and edit a selected element's box model in the Computed pane.
+* View any changes made to your page locally in the Sources panel.
 
-## 實時編輯 DOM 節點
+## Live-edit a DOM node
 
-要實時編輯 DOM 節點，只需雙擊[選定元素](#inspect-an-element)，然後進行更改：
-
+To live-edit a DOM node, simply double-click a [selected element](#inspect-an-element) and make changes:
 
 <video src="animations/edit-element-name.mp4" style="max-width:100%;"
        loop muted autoplay controls></video>
 
-DOM 樹視圖會顯示樹的當前狀態；可能會與最初因其他原因加載的 HTML 不匹配。
-例如，您可以使用 JavaScript 修改 DOM 樹；瀏覽器引擎會嘗試修正無效的作者標記並生成意外的 DOM。
+The DOM tree view shows the current state of the tree; it may not match the HTML that was originally loaded for different reasons. For example, you can modify the DOM tree using JavaScript; the browser engine can try to correct invalid author markup and produce an unexpected DOM.
 
+## Live-edit a style
 
+Live-edit style property names and values in the **Styles** pane. All styles are editable, except the ones that are greyed out (as is the case with user agent stylesheets).
 
-## 實時編輯樣式
+To edit a name or value, click on it, make your changes, and press
+<kbd class="kbd">Tab</kbd> or <kbd class="kbd">Enter</kbd> to save the change.
 
-在 **Styles** 窗格中實時編輯樣式屬性名稱和值。所有樣式均可修改，除了灰色部分（與 User Agent 樣式表一樣）。
+![edit property name](imgs/edit-property-name.png)
 
+By default, your CSS modifications are not permanent, changes are lost when you reload the page. Set up [persistent authoring](/web/tools/setup/setup-workflow) if you want to persist your changes between page loads.
 
+## Examine and edit box model parameters
 
-要編輯名稱或值，請點擊它，進行更改，然後按 <kbd class="kbd">Tab</kbd> 或 <kbd class="kbd">Enter</kbd> 保存更改。
+Examine and edit the current element's box model parameters using the **Computed pane**. All values in the box model are editable, just click on them.
 
+![Computed pane](imgs/computed-pane.png)
 
-![編輯屬性名稱](imgs/edit-property-name.png)
+The concentric rectangles contain the **top**, **bottom**, **left**, **right** values for the current element's **padding**, **border**, and **margin** properties.
 
-默認情況下，您的 CSS 修改不是永久的，重新加載頁面時更改會丟失。
-如果您想要在頁面加載時保留更改，請設置[永久製作](/web/tools/setup/setup-workflow)。
+For non-statically positioned elements, a **position** rectangle is also displayed, containing the values of the **top**, **right**, **bottom**, and **left** properties.
 
- 
+![non-static computed element](imgs/computed-non-static.png)
 
-## 檢查和編輯框模型參數
+For `position: fixed` and `position: absolute` elements, the central field contains the actual **offsetWidth × offsetHeight** pixel dimensions of the selected element. All values can be modified by double-clicking them, like property values in the Styles pane. The changes are not, however, guaranteed to take effect, as this is subject to the concrete element positioning specifics.
 
-使用 **Computed** 窗格檢查和編輯當前元素的框模型參數。
-框模型中的所有值均可修改，只需點擊它們即可。
+![fixed computed element](imgs/computed-fixed.png)
 
-
-![Computed 窗格](imgs/computed-pane.png)
-
-同軸矩形包含當前元素 **padding**、**border** 和 **margin** 屬性的 **top**、**bottom**、**left**、**right** 值。
-
- 
-
-對於位置爲非靜態的元素，還會顯示 **position** 矩形，包含 **top**、**right**、**bottom** 和 **left** 屬性的值。
-
-
-
-![非靜態計算元素](imgs/computed-non-static.png)
-
-對於 `position: fixed` 和 `position: absolute` 元素，中心域包含選定元素實際的 **offsetWidth × offsetHeight** 像素尺寸。所有值都可以通過雙擊修改，就像 Styles 窗格中的屬性值一樣。
-不過，無法保證這些更改能夠生效，因爲這要取決於具體的元素定位詳情。
-
-
-
-![固定計算元素](imgs/computed-fixed.png)
-
-## 查看本地更改
+## View local changes
 
 <video src="animations/revisions.mp4" style="max-width:100%;"
        autoplay loop muted controls></video>
 
-要查看對頁面所做實時編輯的歷史記錄，請執行以下操作：
+To view a history of live-edits made to your page:
 
-1. 在 **Styles** 窗格中，點擊您修改的文件。DevTools 會將您帶到 **Sources** 面板。
-1. 右鍵點擊文件。
-1. 選擇 **Local modifications**。
+1. In the **Styles** pane, click on the file that you modified. DevTools takes you to the **Sources** panel.
+2. Right-click on the file. 
+3. Select **Local modifications**.
 
-要探索所做的更改，請執行以下操作：
+To explore the changes made:
 
-* 展開頂級文件名查看做出修改的時間 ![做出修改的時間](imgs/image_25.png){:.inline}。
-* 展開第二級項目查看修改相應的[不同](https://en.wikipedia.org/wiki/Diff)（前和後）。
+* Expand top-level file names to view the time ![time modification occurred](imgs/image_25.png){:.inline} a modification occurred.
+* Expand second-level items to view a [diff](https://en.wikipedia.org/wiki/Diff) (before and after) corresponding to the modification. A line with a pink background signifies a removal while a line with a green background signifies an addition.
 
-粉色背景的線表示移除，綠色背景的線表示添加。
+## Undo changes
 
+If you haven't [set up persistent authoring](/web/tools/setup/setup-workflow), any time you reload the page, all live-edits are lost.
 
-## 撤消更改
+Assuming you've set up persistent authoring, to undo changes:
 
-如果您未[設置永久製作](/web/tools/setup/setup-workflow)，每次您重新加載頁面時，所有的實時編輯都會丟失。
+* Use <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) to quickly undo minor changes to the DOM or styles via the Elements panel.
 
+* To undo all local modifications made to a file, open the **Sources** panel and select **revert** next to the filename.
 
-假設您已設置了永久製作，要撤消更改，請執行以下操作：
+## Feedback {: #feedback }
 
-* 使用 <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> (Windows) 或 <kbd class="kbd">Cmd</kbd>+<kbd class="kbd">Z</kbd> (Mac) 通過 Elements 面板快速撤消對 DOM 或樣式所做的細微更改。
-
-
-
-* 要撤消對文件所做的所有本地修改，請打開 **Sources** 面板，然後選擇文件名旁的 **revert**。
-
-
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

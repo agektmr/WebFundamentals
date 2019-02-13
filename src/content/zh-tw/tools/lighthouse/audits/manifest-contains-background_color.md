@@ -1,39 +1,30 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“清單包含背景色”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains background_color" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 清單包含背景色 {: .page-title }
+# Manifest Contains background_color {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-當您的網絡應用從用戶的主屏幕加載時，瀏覽器使用 `background_color` 屬性提取應用加載時瀏覽器的背景色。這會在啓
-動應用和加載應用的內容之間產生平穩過渡。
+When your web app is loading from a user's homescreen, the browser uses the `background_color` property to draw the background color of the browser while the app loads. This creates a smooth transition between launching the app and loading the app's content.
 
+## Recommendations {: #recommendations }
 
-## 如何通過此審查 {: #how }
-
-在您的網絡應用清單中添加一個 `background_color` 屬性。其值可以是任意有效的 CSS 顏色。
-
+Add a `background_color` property in your Web App Manifest. The value can be any valid CSS color.
 
     {
       ...
       "background_color": "cornflowerblue",
       ...
     }
+    
 
-有關向您展示如何在應用中正確實現和測試“添加到主屏幕”支持的指南清單，請查看
-[清單是否存在](manifest-exists#how)。
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
+Audit passes if the manifest contains a `background_color` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results. Lighthouse does not validate that the value is a valid CSS color.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-如果清單包含一個 `background_color` 屬性，則表示通過了審查。Lighthouse 提取的清單獨立於 Chrome 當前在頁面
-上使用的清單，這可能會產生不準確的結果。Lighthouse 不會驗證該值是否爲有效的 CSS 顏色。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,182 +1,156 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Tampilan pohon DOM di panel Elemen Chrome DevTools menampilkan struktur DOM laman web saat ini. Edit materi dan struktur laman Anda secara langsung melalui pembaruan DOM.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# Mengedit DOM {: .page-title }
+# Edit the DOM {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Tampilan pohon DOM di panel Elemen Chrome DevTools menampilkan struktur DOM laman web saat ini. Edit materi dan struktur laman Anda secara langsung melalui pembaruan DOM.
-
+The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
 ### TL;DR {: .hide-from-toc }
-- DOM mendefinisikan struktur laman Anda. Setiap simpul DOM adalah elemen laman, misalnya simpul header, simpul paragraf.
-- Edit langsung materi dan struktur laman Anda secara langsung melalui DOM yang di-render.
-- Ingat, Anda tidak bisa mengubah file sumber melalui perubahan DOM di panel Elements. Memuat ulang laman akan menghapus semua modifikasi pohon DOM.
-- Pantau kemunculan perubahan pada DOM menggunakan breakpoint DOM.
 
+* The DOM defines your page structure. Each DOM node is a page element, for example, a header node, paragraph node.
+* Live-edit the content and structure of your pages through the rendered DOM.
+* But remember, you can't modify source files through DOM changes in the Elements panel. Reloading the page erases any DOM tree modifications.
+* Watch for changes to the DOM using DOM breakpoints.
 
-## Memeriksa elemen {:#inspect-an-element}
+## Inspect an element {:#inspect-an-element}
 
-Gunakan **panel Elements** untuk memeriksa semua elemen di laman Anda dalam satu
-pohon DOM. Pilih elemen apa pun dan periksa gaya yang diterapkan padanya.
+Use the **Elements panel** to inspect all elements in your page in one DOM tree. Select any element and inspect the styles applied to it.<video autoplay muted src="animations/inspect-element.mp4"> </video> 
 
-<video autoplay muted src="animations/inspect-element.mp4">
-</video>
+There are several ways to inspect an element:
 
-Ada beberapa cara untuk memeriksa elemen:
+Right-click any element on the page and select **Inspect**.
 
-Klik kanan elemen apa pun pada laman dan pilih **Inspect**.
+![Inspect an element via right-click](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
 
-![Memeriksa elemen via klik-kanan](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
+Press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
 
-Tekan <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
-+ <kbd class="kbd">C</kbd> (Windows) atau <kbd class="kbd">Cmd</kbd>
-+ <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd> (Mac) untuk membuka
-DevTools dalam mode Inspect Element, lalu arahkan kursor ke atas elemen. DevTools
-otomatis menyorot elemen yang ke atasnya Anda arahkan kursor di panel
-**Elements**. Klik elemen untuk keluar dari mode inspect sekaligus membiarkan
-elemen disorot di dalam panel **Elements**. 
+* <kbd class="kbd">C</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>
+* <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd> (Mac) to open DevTools in Inspect Element mode, then hover over an element. DevTools automatically highlights the element that you are hovering over in the **Elements** panel. Click on the element to exit inspect mode while keeping the element highlighted within the **Elements** panel. 
 
-Klik tombol **Inspect Element**
-![ikon Inspect](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline}
-untuk masuk ke mode Inspect Element, lalu klik sebuah elemen.
+Click the **Inspect Element** button ![Inspect icon](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline} to go into Inspect Element Mode, then click on an element.
 
-Gunakan metode [`inspect`][inspect] di konsol, misalnya
-`inspect(document.body)`.
+Use the [`inspect`](/web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect) method in the console, such as `inspect(document.body)`.
 
-## Menavigasi DOM
+### View the rendered and natural sizes of an image {: #image-sizes }
 
-Jelajahi struktur DOM menggunakan mouse atau keyboard.
+Hover over an `img` tag in the **DOM Tree** to view the rendered and natural sizes of that image.
 
-Di samping simpul yang diciutkan, ada panah yang menunjuk ke kanan:
-![simpul diciutkan](imgs/collapsed-node.png){:.inline}
+![Rendered and natural image sizes](imgs/image-sizes.png)
 
-Di samping simpul yang diluaskan, ada panah yang menunjuk ke bawah:
-![simpul diluaskan](imgs/expanded-node.png){:.inline}
+### View which image in a source set (srcset) is being used {: #srcset }
 
-Menggunakan mouse:
+To view which version of an image in a `srcset` was loaded, select the `img` element, then evaluate `$0.currentSrc` in the **Console**.
 
-* Klik sekali untuk menyorot simpul.
-* Untuk meluaskan simpul, klik dua kali di mana saja atau klik tanda panah di  
-  sebelahnya.
-* Untuk menciutkan simpul, klik tanda panah di sebelahnya.
+Note: See [Enhance `img`s with `srcset` for high DPI devices](/web/fundamentals/design-and-ux/responsive/images#enhance_imgs_with_srcset_for_high_dpi_devices) to learn more about image optimization using `srcset`.
 
-Menggunakan keyboard:
+![currentSrc in the Console](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-console.png)
 
-* Tekan tombol **Panah Atas** untuk memilih simpul di atas simpul yang sekarang.
-* Tekan tombol **Panah Bawah** untuk memilih simpul di bawah simpul yang sekarang.
-* Tekan tombol **Panah Kanan** untuk meluaskan simpul yang diciutkan. Tekan
-  lagi untuk berpindah ke anak pertama dari simpul (yang sekarang sudah diluaskan). Anda bisa 
-  menggunakan teknik ini untuk secara cepat menavigasi simpul yang bertumpuk-tumpuk.
+Note: `$0` is a shortcut in the DevTools **Console**. It provides a reference to the currently-selected element in the **DOM Tree**.
 
-### Menavigasi jejak breadcrumb
+You can also view `currentSrc` via the **Properties** tab. The **Properties** tab only displays properties for the currently-selected element, so make sure that you've selected the correct element before viewing.
 
-Di bagian bawah panel Elements terdapat jejak breadcrumb. 
+![currentSrc in the Properties tab](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-properties.png)
 
-![Jejak breadcrumb](imgs/breadcrumb-body.png)
+## Navigate the DOM
 
-Simpul yang saat ini dipilih disorot dengan warna biru. Simpul di sebelah kiri adalah
-induk simpul saat ini. Dan di sebelah kirinya adalah induk dari induk tersebut.
-Dan begitu seterusnya hingga ke puncak pohon.
+Navigate through the DOM structure using your mouse or keyboard.
 
-![Perluas jejak breadcrumb](imgs/breadcrumb-footer.png)
+A collapsed node has an arrow next to it pointing right: ![collapsed node](imgs/collapsed-node.png){:.inline}
 
-Jika Anda menavigasi menaiki struktur, sorotan akan pindah:
+An expanded node has an arrow next to it pointing down: ![expanded node](imgs/expanded-node.png){:.inline}
 
-![Menavigasi ke arah atas jejak breadcrumb](imgs/breadcrumb-trail.png)
+Using your mouse:
 
-DevTools menampilkan sebanyak mungkin item di dalam jejak.
-Jika keseluruhan jejak tidak muat di bilah status, elipsis (...) 
-akan ditampilkan di tempat jejak terpotong. Klik tanda elipsis untuk menampilkan 
-elemen yang tersembunyi:
+* Click once to highlight a node.
+* To expand a node, double-click anywhere on it or click on the arrow next  
+    to it.
+* To collapse a node, click on the arrow next to it.
 
-![Elipsis breadcrumb](imgs/breadcrumb-ellipsis.png)
+Using your keyboard:
 
-## Mengedit simpul dan atribut DOM
+* Press the **Up Arrow** key to select the node above the current one.
+* Press the **Down Arrow** to select the node below the current one.
+* Press the **Right Arrow** key to expand a collapsed node. Press it again to move to the first child of the (now-expanded) node. You can use this technique to quickly navigate deeply-nested nodes.
 
-Untuk mengedit nama atau atribut simpul DOM:
+### Navigate the breadcrumb trail
 
-* Klik dua kali langsung pada nama atau atribut simpul.
-* Sorot simpul, tekan <kbd>Enter</kbd>, lalu tekan <kbd>Tab</kbd>
-  hingga nama atau atribut terpilih.
-* Buka [menu tindakan lainnya](#more-actions) dan pilih **Add Attribute** 
-  atau **Edit Attribute**. **Edit Attribute** sensitif konteks; bagian yang 
-  diklik menentukan apa yang diedit.
+At the bottom of the Elements panel is a breadcrumb trail.
 
-Tag penutup akan otomatis diperbarui setelah Anda selesai.
+![Breadcrumb trail](imgs/breadcrumb-body.png)
 
-<video autoplay muted src="animations/edit-element-name.mp4">
-</video>
+The currently selected node is highlighted in blue. The node to the left is the current node's parent. And to the left of that is the parent's parent. And so on, all the way up the tree.
 
-### Mengedit simpul DOM dan anaknya sebagai HTML
+![Extend breadcrumb trail](imgs/breadcrumb-footer.png)
 
-Untuk mengedit simpul DOM dan anaknya sebagai HTML:
+Navigating back up the structure moves the highlight:
 
-* Buka [menu more actions](#more-actions) dan pilih **Edit as HTML**. 
-* Tekan <kbd>F2</kbd> (Windows / Linux) atau <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
-* Tekan <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows / Linux) atau 
-  <kbd>Cmd</kbd>+<kbd>Enter</kbd> (Mac) untuk menyimpan perubahan. 
-* Tekan <kbd>Esc</kbd> untuk keluar dari editor tanpa menyimpan.
+![Navigate up breadcrumb trail](imgs/breadcrumb-trail.png)
 
-![edit sebagai HTML](imgs/edit-as-html.png)
+DevTools displays as many items as possible in the trail. If the entire trail doesn't fit in the status bar, an ellipsis (...) shows where the trail has been truncated. Click the ellipsis to show the hidden elements:
 
-## Memindahkan simpul DOM
+![Breadcrumb ellipsis](imgs/breadcrumb-ellipsis.png)
 
-Klik, tahan, dan seret simpul untuk memindahkannya.
+## Edit DOM nodes and attributes
 
-<video autoplay muted src="animations/move-node.mp4">
-</video>
+To edit a DOM node name or attribute:
 
-## Menghapus simpul DOM
+* Double-click directly on the node name or attribute.
+* Highlight the node, press <kbd>Enter</kbd>, and then press <kbd>Tab</kbd> until the name or attribute is selected.
+* Open the [more actions menu](#more-actions) and select **Add Attribute** or **Edit Attribute**. **Edit Attribute** is context-sensitive; the portion you click on determines what gets edited.
 
-Untuk menghapus simpul DOM:
+The closing tag is automatically updated when you're finished.<video autoplay muted src="animations/edit-element-name.mp4"> </video> 
 
-* Buka [menu more actions](#more-actions) dan pilih **Delete Node**.
-* Pilih simpul dan tekan tombol <kbd>Delete</kbd>.
+### Edit DOM node and its children as HTML
 
-Note: Jika Anda tidak sengaja menghapus simpul, tekan <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (atau <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> di Mac) untuk mengurungkan tindakan terakhir.
+To edit a DOM node and its children as HTML:
 
-## Menampilkan menu more actions {:#more-actions}
+* Open the [more actions menu](#more-actions) and select **Edit as HTML**. 
+* Press <kbd>F2</kbd> (Windows / Linux) or <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
+* Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Enter</kbd> (Mac) to save your changes. 
+* Press <kbd>Esc</kbd> to exit the editor without saving.
 
-Menu **more actions** memungkinkan Anda berinteraksi dengan simpul DOM dengan berbagai
-cara. Untuk menampilkan menu, klik kanan simpul atau pilih simpul
-, lalu tekan tombol **more actions**  (![tombol 
-more action](imgs/more-actions-button.png){:.inline}). Tombol ini hanya 
-ditampilkan pada elemen yang saat ini dipilih.
+![edit as HTML](imgs/edit-as-html.png)
 
-![menu more actions](imgs/more-actions-menu.png)
+## Move DOM node
 
-## Menggulir agar muncul dalam tampilkan
+Click, hold, and drag a node to move it.<video autoplay muted src="animations/move-node.mp4"> </video> 
 
-Saat Anda mengarahkan kursor ke atas atau memilih simpul DOM, simpul yang di-render akan disorot 
-di tampilan yang terlihat. Jika simpul digulir keluar dari layar, Anda akan melihat
-keterangan alat di atas tampilan jika simpul berada di atas
-tampilan yang terlihat saat ini dan keterangan alat di bagian bawah jika simpul berada di bawah
-tampilan yang terlihat saat ini. Misalnya, di tangkapan layar berikut, DevTools menandakan bahwa
-elemen yang saat ini dipilih di panel **Elements** berada di bawah tampilan yang terlihat.
+## Delete DOM node
 
-![elemen di bawah tampilan yang terlihat](imgs/below-viewport.png)
+To delete a DOM node:
 
-Untuk menggulir laman sehingga simpul muncul di tampilan yang terlihat
-,**klik kanan** simpul dan pilih **Scroll into View**.
+* Open the [more actions menu](#more-actions) and select **Delete Node**.
+* Select the node and press the <kbd>Delete</kbd> key.
 
-## Menyetel breakpoint DOM
+Note: If you delete a node by accident, <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (or <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> on Mac) to undo your last action.
 
-Setel breakpoint DOM untuk men-debug aplikasi JavaScript yang kompleks.
-Misalnya, jika JavaScript mengubah gaya elemen DOM,
-setel breakpoint DOM agar terpicu saat atribut elemen diubah. Picu breakpoint pada saat terjadi perubahan DOM berikut: perubahan subpohon, perubahan atribut, penghapusan simpul.
+## Show more actions menu {:#more-actions}
+
+The **more actions** menu lets you interact with a DOM node in a variety of ways. To view the menu, right-click on a node, or select a node and then press the **more actions** button (![more action 
+button](imgs/more-actions-button.png){:.inline})). The button is only displayed on the currently selected element.
+
+![more actions menu](imgs/more-actions-menu.png)
+
+## Scroll into view
+
+When you hover over or select a DOM node, the rendered node is highlighted in the viewport. If the node is scrolled offscreen, you'll see a tooltip at the top of the viewport if the node is above the current viewport, and a tooltip at the bottom if the node is below the current viewport. For example, in the screenshot below DevTools is indicating that the currently selected element in the **Elements** panel is below the viewport.
+
+![element below viewport](imgs/below-viewport.png)
+
+To scroll the page so the node appears in the viewport, **Right-click** the node and select **Scroll into View**.
+
+## Set DOM breakpoints
+
+Set DOM breakpoints to debug complex JavaScript applications. For example, if your JavaScript is changing the styling of a DOM element, set a DOM breakpoint to fire when the element's attributes are modified. Trigger a breakpoint on one of the following DOM changes: subtree change, attribute change, node removal.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.breakpoints #}
 
-### Perubahan Subpohon
+### Subtree Modifications
 
-Breakpoint perubahan subpohon dipicu saat sebuah elemen anak ditambahkan, dibuang, atau dipindahkan. Misalnya, jika Anda menetapkan breakpoint perubahan subpohon pada elemen `main-content`, kode berikut akan memicu breakpoint:
-
+A subtree modification breakpoint is triggered when a child element is added, removed, or moved. For example, if you set a subtree modification breakpoint on the `main-content` element, the following code triggers the breakpoint:
 
     var element = document.getElementById('main-content');
     //modify the element's subtree.
@@ -184,86 +158,73 @@ Breakpoint perubahan subpohon dipicu saat sebuah elemen anak ditambahkan, dibuan
     element.appendChild( mySpan );
     
 
-### Perubahan Atribut
+### Attribute Modifications
 
-Perubahan atribut terjadi saat atribut sebuah elemen (`class, id, name`) diubah secara dinamis:
-
+An attribute modification occurs when the attribute of an element (`class, id, name`) is changed dynamically:
 
     var element = document.getElementById('main-content');
     // class attribute of element has been modified.
     element.className = 'active';
     
 
-### Pembuangan Simpul
+### Node Removal
 
-Perubahan pembuangan simpul dipicu saat simpul
-tersebut dibuang dari DOM:
-
+A node removal modification is triggered when the node in question is removed from the DOM:
 
     document.getElementById('main-content').remove();
     
 
-## Berinteraksi dengan breakpoint DOM
+## Interact with DOM breakpoints
 
-Panel Elements maupun Sources memiliki panel untuk mengelola breakpoint 
-DOM.
+The Elements and Sources panels both include a pane for managing your DOM breakpoints.
 
-Setiap breakpoint ditampilkan dengan identifier elemen dan jenis breakpoint.
+Each breakpoint is listed with an element identifier and the breakpoint type.
 
-![Panel DOM breakpoints](imgs/dom-breakpoints-pane.png)
+![DOM breakpoints pane](imgs/dom-breakpoints-pane.png)
 
-Berinteraksi dengan breakpoint yang ditampilkan bisa dilakukan dengan cara berikut:
+Interact with each listed breakpoint in any of the following ways:
 
-* **Arahkan kursor** ke atas identifier elemen untuk menampilkan posisi terkait 
-  elemen pada laman (sama dengan mengarahkan kursor ke atas simpul di panel Elements).
-* **Klik** elemen untuk memilihnya di panel Elements.
-* **Centang atau kosongkan** kotak centang untuk mengaktifkan atau menonaktifkan breakpoint.
+* **Hover** over the element identifier to show the element's corresponding position on the page (similar to hovering over nodes in the Elements panel).
+* **Click** an element to select it in the Elements panel.
+* **Toggle** the checkbox to enable or disable the breakpoint.
 
-Bila Anda memicu breakpoint DOM, breakpoint itu akan disorot di panel 
-DOM Breakpoints. Panel **Call Stack** menampilkan **alasan** untuk 
-penjedaan debugger:
+When you trigger a DOM breakpoint, the breakpoint is highlighted in the DOM Breakpoints pane. The **Call Stack** pane displays the **reason** for a debugger pause:
 
-![Alasan breakpoint](imgs/breakpoint-reason.png)
+![Breakpoint reason](imgs/breakpoint-reason.png)
 
-## Menampilkan event listener elemen
+## View element event listeners
 
-Tampilkan event listener JavaScript yang terkait dengan simpul DOM di panel 
-**Event Listeners**. 
+View JavaScript event listeners associated with a DOM node in the **Event Listeners** pane.
 
-![panel event listeners](imgs/event-listeners-pane.png)
+![event listeners pane](imgs/event-listeners-pane.png)
 
-Item tingkat atas di panel Event Listeners menampilkan jenis kejadian yang 
-memiliki listener terdaftar.
+The top-level items in the Event Listeners pane show the event types that have registered listeners.
 
-Klik tanda panah di sebelah jenis kejadian (misalnya `click`) untuk melihat 
-daftar penangan kejadian yang terdaftar. Setiap penangan diidentifikasi oleh sebuah identifier elemen yang mirip pemilih 
-CSS, seperti `document` atau 
-`button#call-to-action`. Jika lebih dari satu penangan didaftarkan untuk 
-elemen yang sama, elemen akan ditampilkan berulang.
+Click the arrow next to the event type (for example `click`) to see a list of registered event handlers. Each handler is identified by a CSS selector-like element identifier, such as `document` or `button#call-to-action`. If more than one handler is registered for the same element, the element is listed repeatedly.
 
-Klik tanda panah luaskan di sebelah identifier elemen untuk melihat properti penangan kejadian. Panel Event Listeners menampilkan properti untuk setiap listener berikut:
+Click the expander arrow next to an element identifier to see the properties of the event handler. The Event Listeners pane lists the following properties for each listener:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Properti Event Listener &amp; Keterangan</th>
+      <th colspan="2">Event Listener Properties &amp; Description</th>
     </tr>
   </thead>
   <tbody>
-  	<tr>
+    <tr>
       <td data-th="Value"><code>handler</code></td>
-      <td data-th="Description">Berisi fungsi callback. Klik kanan fungsi dan pilih <strong>Show Function Definition</strong> untuk melihat tempat fungsi didefinisikan (jika kode sumber tersedia).</td>
+      <td data-th="Description">Contains a callback function. Right-click on the function and select <strong>Show Function Definition</strong> to view where the function is defined (if source code is available).</td>
     </tr>
     <tr>
       <td data-th="Value"><code>useCapture</code></td>
-      <td data-th="Description">Nilai boolean yang menyatakan apakah tanda <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> pada <code>addEventListener</code> telah disetel.</td>
+      <td data-th="Description">A boolean value stating whether the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> flag on <code>addEventListener</code> was set.</td>
     </tr>
   </tbody>
 </table>
 
-Note: Banyak ekstensi Chrome yang menambahkan event listener-nya sendiri ke DOM. Jika Anda melihat beberapa event listener yang tidak disetel oleh kode Anda, sebaiknya buka kembali laman Anda di [jendela Samaran](https://support.google.com/chrome/answer/95464). Jendela samaran mencegah ekstensi berjalan secara default.
+Note: Many Chrome extensions add their own event listeners onto the DOM. If you see a number of event listeners that aren't set by your code, you may want to reopen your page in an [Incognito window](https://support.google.com/chrome/answer/95464). Incognito windows prevent extensions from running by default.
 
-### Melihat event listener pendahulu
+### View ancestor event listeners
 
 {% comment %}
 
@@ -271,67 +232,67 @@ code for screenshot
 
 <!doctype html>
 <html>
-<body onload="console.log('onload');">
-  <div onfocus="console.log('focus');">
+<body onload="console.log('onload');"></p>
+
+<div onfocus="console.log('focus');">
     <button id="button" onclick="console.log('onclick');">click me</button>
   </div>
-</body>
+
+<p></body>
 </html>
 
 {% endcomment %}
 
-Bila kotak centang **Ancestors** diaktifkan, event listener untuk 
-pendahulu simpul yang saat ini dipilih akan ditampilkan, selain
-event listener untuk simpul yang saat ini dipilih.
+When the **Ancestors** checkbox is enabled, the event listeners for the ancestors of the currently selected node are displayed, in addition to the currently selected node's event listeners.
 
-![pendahulu diaktifkan](imgs/ancestors-enabled.png)
+![ancestors enabled](imgs/ancestors-enabled.png)
 
-Bila kotak centang dinonaktifkan, hanya event listener untuk simpul yang saat ini
-dipilih akan ditampilkan.
+When the checkbox is disabled, only the event listeners for the currently selected node are displayed.
 
-![pendahulu dinonaktifkan](imgs/ancestors-disabled.png)
+![ancestors disabled](imgs/ancestors-disabled.png)
 
-### Melihat listener kerangka kerja
+### View framework listeners
 
 {% comment %}
 
 code for screenshot
 
-<!doctype html>
-<html>
+<!doctype html> 
 <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
-<body>
-  <button id="button">click me, please</button>
-  <script>
+<button id="button">click me, please</button></p> 
+
+<script>
     $('#button').click(function() {
       $('#button').text('hehe, that tickled, thanks');
     });
   </script>
-</body>
-</html>
+
+ 
+
+</body> </html>
 
 {% endcomment %}
 
-Beberapa kerangka kerja dan pustaka JavaScript membungkus kejadian DOM bawaan ke dalam 
-API kejadian khususnya. Dulu, ini menyebabkan pemeriksaan event listener
-dengan DevTools menjadi sulit, karena definisi fungsi hanya akan mereferensi balik ke 
-kode kerangka kerja atau pustaka. Fitur **Framework listeners** memecahkan 
-masalah ini.
+Some JavaScript frameworks and libraries wrap native DOM events into their custom event APIs. In the past this made it hard to inspect the event listeners with DevTools, because the function definition would just reference back to the framework or library code. The **Framework listeners** feature solves this problem.
 
-Bila kotak centang **Framework listeners** diaktifkan, DevTools secara otomatis
-akan menyelesaikan bagian pembungkusan kerangka kerja atau pustaka kode kejadian, lalu
-memberitahukan tempat Anda sebenarnya mengikatkan kejadian itu di kode Anda sendiri.
+When the **Framework listeners** checkbox is enabled, DevTools automatically resolves the framework or library wrapping portion of the event code, and then tells you where you actually bound the event in your own code.
 
-![listener kerangka kerja diaktifkan](imgs/framework-listeners-enabled.png)
+![framework listeners enabled](imgs/framework-listeners-enabled.png)
 
-Bila kotak centang **Framework listeners** dinonaktifkan, kode event listener
-mungkin akan diselesaikan di suatu bagian di kode kerangka kerja atau pustaka. 
+When the **Framework listeners** checkbox is disabled, the event listener code will probably resolve somewhere in the framework or library code.
 
-![listener kerangka kerja dinonaktifkan](imgs/framework-listeners-disabled.png)
+![framework listeners disabled](imgs/framework-listeners-disabled.png)
 
+## Show HTML comments {: #show-html-comments }
 
+To show or hide HTML comments in the Elements panel:
 
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
+1. Open [Settings](/web/tools/chrome-devtools/ui#settings).
+2. Click the **Preferences** tab.
+3. Under the **Elements** section, check the **Show HTML comments** checkbox.
 
+To show or hide HTML comments in the **Elements** panel, [open **Settings**](#settings), go to the **Preferences** panel, find the **Elements** section, and then toggle the **Show HTML comments** checkbox.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

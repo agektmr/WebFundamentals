@@ -1,365 +1,222 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:爲慢速網絡和離線工作設計網頁體驗指南。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A guide to designing web experiences for slow networks and offline.
 
-{# wf_updated_on:2016-11-10 #}
-{# wf_published_on:2016-11-10 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-10 #} {# wf_blink_components: N/A #}
 
-# Offline UX 注意事項 {: .page-title }
+# Offline UX Considerations {: .page-title }
 
 {% include "web/_shared/contributors/mustafa.html" %}
 
-本文將介紹爲慢速網絡和離線工作打造出色體驗所需的多個設計注意事項。
+This article will take a look at multiple design considerations needed to create a great experience on both slow networks and offline.
 
+The quality of a network connection can be affected by a number of factors such as:
 
-網絡連接的質量會受許多因素的影響，例如：
+* Poor coverage of a provider. 
+* Extreme weather conditions.
+* Power outages.
+* Users travelling into “dead zones” such as buildings that block their network connections. 
+* Travelling on a train and going through a tunnel.
+* Internet connection is managed by a third party and time boxed when it will be active or inactive like in an airport or hotel.
+* Cultural practises that require limited or no internet access at specific times or days.
 
+Your goal is to provide a good experience that lessens the impact of changes in connectivity.
 
-* 網絡提供商的覆蓋範圍很差。 
-* 極端的天氣狀況。
-* 停電。
-* 用戶經過“死區”，如攔截其網絡連接的建築物。
- 
-* 用戶正在乘坐火車和經過隧道。
-* 互聯網連接由第三方（如機場或酒店）管理，並有啓用或禁用的時間限制。
+## What to show your users when they have a bad network connection?
 
-* 在特定時段或特定日期對互聯網進行限制或不允許訪問互聯網的文化習俗。
+The first question that must be asked is: what does success and failure of a network connection look like? A successful connection is your app's normal online experience. The failure of a connection, however, can be both the offline state of your app as well how the app behaves when there is a laggy network.
 
+When thinking about the success or failure of a network connection you need to ask yourself these important UX questions:
 
-您的目標是提供良好的體驗，從而減少網絡連接發生變化所產生的影響。
- 
+* How long do you wait to determine the success or failure of a connection? 
+* What can you do while success or failure is being determined? 
+* What should you do in the event of failure?
+* How do you inform the user of the above?
 
-## 當用戶的網絡連接不佳時您想向用戶顯示什麼？
+### Inform users of their current state and change of state
 
-第一個必須要問的問題是：網絡連接成功和失敗分別是怎樣的？
-成功的網絡連接指的是您的應用可以正常在線。
-不過，連接失敗分兩種情況：您的應用處於離線狀態以及在網速慢時應用如何響應。
+Inform the user of both the actions they can still take when they have a network failure and the current state of the application. For example, a notification could say:
 
+> “You seem to have a bad network connection. [Not to worry!] Messages will be “sent when the network is restored.”<figure class="attempt-left"> 
 
-在考慮網絡連接是否成功時，您需要問自己以下重要的 UX 問題：
+![Emojoy, the emoji messaging app informing the user when a change in state occurs.](images/emojoy-toast-message.png) <figcaption> Clearly inform the user when a change in state occurs as soon as possible. </figcaption> </figure> <figure class="attempt-right"> ![The I/O 2016 app informing the user when a change in state occurs.](images/io-toast-message.png) <figcaption> The Google I/O app used a material design "toast" to let the user know when it was offline. </figcaption> </figure> 
 
+<div class="clearfix">
+</div>
 
-* 爲確定連接是否成功您需要等待多長時間？ 
-* 在確定連接是否成功時您能做什麼？ 
-* 如果連接失敗，您應該怎麼做？
-* 您如何將上述情況通知給您的用戶？
+### Network connection improves or is restored
 
-### 通知用戶其當前狀態和狀態的變化
+How you deal with informing the user once their network connection has improved will depend largely on your application. For apps that require update information displayed as a priority such as a stock market app, auto-updating and notifying the user as soon as possible is crucial.
 
-通知用戶在網絡連接失敗時他們仍可以進行的操作以及應用的當前狀態。
-例如，可以顯示以下通知：
+It is recommended that you let the user know that your web app has been updated "in the background" by using a visual cue such as a material design toast element. This involves detecting both the initial registration of your service worker and that there's been an update to the service worker-managed content. You can see a code example of this <a 
+href="https://github.com/GoogleChrome/sw-precache/blob/master/demo/app/js/service-worker-registration.js#L29">function at work here</a>.
 
+One example of this would be <a href="https://www.chromestatus.com/features"> www.chromestatus.com</a>which posts a note to the user when the app has been updated.<figure> 
 
-> “You seem to have a bad network connection. [Not to worry!] Messages will be
-“sent when the network is restored.”
+<img class="attempt-right" 
+  src="images/weather-app.png" 
+  alt="An example of a weather app." /> <img class="attempt-left" 
+  src="images/chrome-status-app-updated.png" 
+  alt="Chrome Status uses a toast" /> <figcaption class="clearfix" style="clear:both;"> Some apps, like the weather app, need to auto update as old data is not of use to the user. Where Chrome Status lets the user know when content has been updated via a material design toast element. </figcaption> </figure> 
 
-<figure class="attempt-left">
-  <img src="images/emojoy-toast-message.png" alt="Emojoy，表情符號消息應用，當狀態發生變化時通知用戶。">
-  <figcaption>
-    當狀態發生變化時儘快清楚地通知用戶。
-</figcaption>
-</figure>
-<figure class="attempt-right">
-  <img src="images/io-toast-message.png" alt="I/O 2016 應用，當狀態發生變化時通知用戶。">
-  <figcaption>
-    Google I/O 應用使用一個 Material Design“toast”通知用戶其處於離線狀態。
-</figcaption>
-</figure>
+<div class="clearfix">
+</div>
 
-<div class="clearfix"></div>
+You may also show the last time the app was updated at all times in a prominent space. This would also be useful for a currency converter app, for example.<figure> 
 
-### 網絡連接已改善或已恢復
+<img class="attempt-left" 
+  src="images/material-money-rates-out-of-date.png" 
+  alt="Material money app that is out-of-date" /> <img class="attempt-right" 
+  src="images/material-money-rates-updated.png" 
+  alt="Material money has been updated" /> <figcaption class="clearfix" style="clear:both;"> Material Money shows the latest currency where possible and notifies the user when the app hasn’t been updated. </figcaption> </figure> 
 
-<figure class="attempt-right">
-  <img src="images/weather-app.png" alt="一個天氣應用示例。">
-  <figcaption>
-    某些應用，如這個天氣應用，需要自動更新，因爲舊數據對用戶沒有任何用。
-</figcaption>
-</figure>
+Other applications such as a news app could show a simple notification informing the user that there is newer content, with a tap-to-update function. The reason for doing that is if a user is currently reading an article an auto-update would refresh the page and they would lose where they were reading last.<figure> 
 
-在用戶的網絡連接改善後如何通知用戶在很大程度上取決於您的應用。
-對於需要將顯示的更新信息作爲優先級的應用，如股市應用，儘快自動更新和通知用戶非常重要。
+<img class="attempt-left" 
+  src="images/tailpiece-normal.png" 
+  alt="Example news app, Tailpiece in its normal state" /> <img class="attempt-right" 
+  src="images/tailpiece-tap-to-update.png" 
+  alt="Example news app, Tailpiece when its ready to be updated" /> <figcaption class="clearfix" style="clear:both;"> Tailpiece, an online newspaper will auto download the latest news but allow the users to refresh manually so they do not lose their place in the article. </figcaption> </figure> 
 
+### Contextual states and browse mode
 
+Each bit of UI may have its own context and functionality that will change depending on if it requires a successful connection. One example would be an e-commerce site that can be browsed offline through the Buy button and pricing is disabled until a connection has been reestablished.
 
-<div class="clearfix"></div>
+Other forms of contextual states could include data. For example, the financial application Robinhood allows users to buy stock and uses color and graphics to notify the user when the market is open. The whole interface turns white and then grays out when the market closes. When the value of stock increases or decreases, each individual stock widget turns green or red depending on its state.
 
-您可能還會始終在醒目位置顯示最後一次更新應用的時間。
-例如，這對於貨幣轉換應用同樣非常有用
+### Educate the user so they understand what the offline model is
 
-<figure>
-  <img class="attempt-left" src="images/material-money-rates-out-of-date.png" alt="過時的 Material Money 應用">
-  <img class="attempt-right" src="images/material-money-rates-updated.png" alt="Material Money 已更新">
-  <figcaption class="clearfix">
-    Material Money 儘可能顯示最新貨幣，並在應用尚未更新時通知用戶。
-</figcaption>
+Offline is a new mental model for everyone. You need to educate your users about what changes will occur when they don’t have a connection. Inform them of where large data is saved and give them settings to change the default behavior. Make sure you use multiple UI design components such as informative language, icons, notifications, color and imagery to convey these ideas collectively rather than relying on one design device, such as an icon on its own, to tell the whole story.
 
-</figure>
+## Providing an offline experience by default
 
-其他應用，如新聞應用，可顯示一個簡單通知，使用一個 tap-to-update 功能通知用戶有更新的內容。
-這樣做的原因是如果某個用戶目前在閱讀一篇文章，自動更新將刷新頁面，用戶將退出他們上次閱讀到的地方。
+If your app doesn't require much data, then cache that data by default. Users can become increasingly frustrated if they can only access their data with a network connection. Try to make the experience as stable as possible. An unstable connection will make your app feel untrustworthy, where an app that lessens the impact of a network failure will feel magical to the user.
 
+News sites could benefit from auto downloading and saving the latest news content of the day so a user could read today's news without a connection, perhaps downloading the text without the article images. Also adapt with the user's behavior so if the sports section is what they typically view, perhaps make this the priority data that is downloaded.<figure> 
 
+<img 
+  class="attempt-left" 
+  src="images/tailpiece-offline.png" 
+  alt="Tailpiece informs the user that they are offline with various design widgets" /> <img class="attempt-right" 
+  src="images/tailpiece-offline-sidebar.png" 
+  alt="Tailpiece has a navigational draw that shows what sections are ready for offline use." /> <figcaption class="clearfix"> If the device is offline Tailpiece will notify the user with a status message letting them know that they can still use the app. </figcaption> </figure> 
 
+## Inform the user when the app is ready for offline consumption
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-normal.png" alt="新聞應用示例，處於正常狀態的 Tailpiece">
-  <img class="attempt-right" src="images/tailpiece-tap-to-update.png" alt="新聞應用示例，準備更新時的 Tailpiece">
-  <figcaption class="clearfix">
-    在線新聞應用 Tailpiece 將自動下載最新新聞，但允許用戶手動刷新，以便他們不會退出己看到的文章中的位置。
-</figcaption>
+When a web app first loads you need to indicate to the user if it is ready for offline use. Do this with a [widget that provides brief feedback](https://material.google.com/components/snackbars-toasts.html "widget that provides brief feedback") about an operation through a message at the bottom of the screen, for example when a section has been synced or a data file has downloaded.
 
-</figure>
+Again think of the language you are using to make sure it is fit for your audience. Ensure the messaging is given the same in all instances where it’s used. The term offline is generally misunderstood by a non-techie audience so use action based language that your audience can relate to.<figure> 
 
-### 上下文狀態和瀏覽器模式
+<img class="attempt-left" src="images/io-offline-ready.png" alt="I/O app offline" /> <img class="attempt-right" src="images/chome-offline.png" alt="Chrome Status site is offline" /> <figcaption class="clearfix" style="clear:both;"> Both the Google I/O 2016 app and Chrome Status site notify the user when the app is ready for offline use. </figcaption> </figure> 
 
-UI 的每個字節都有自己的上下文和功能，其根據否需要成功聯網而發生變化。
-例如，某個電子商務網站可以通過 Buy 按鈕離線瀏覽，並在重新建立連接之前停用定價功能。
+### Make 'save for offline' an obvious part of the interface for data heavy apps
 
+If an application uses large amounts of data, make sure that there is a switch or pin to add an item for offline use rather than auto downloading, unless a user has specifically asked for this behavior via a settings menu. Make sure that the pin or download UI is not obscured by other UI elements and that the feature is obvious to the user.
 
+One example would be a music player that requires large data files. The user is aware of the associated data cost, but is also aware that they may want to use the player when they are offline. Downloading music for later use requires the user to plan ahead, so education about this may be required during onboarding.
 
-其他上下文狀態的表單可包含數據。例如，財務應用 Robinhood 允許用戶購買股票，並使用顏色和圖形通知用戶市場開盤時間。在市場收盤時，整個界面變爲白色，然後變爲灰色。
-當股價上漲或下跌時，每個單隻股票小部件根據其狀態變爲綠色或紅色。
+### Clarify what is accessible offline
 
+Be clear as to the option you are providing. You may need to show a tab or setting that shows an “offline library”, so the user can easily see what they have stored on their phone and what needs to be saved. Make sure the settings are concise and be clear where the data will be stored and who has access to it.
 
+### Show the actual cost of an action
 
-### 爲用戶提供指導，以便他們可以瞭解什麼是離線模式。
+Many users equate offline capability with 'downloading'. Users in countries where network connections regularly fail or aren't available often share content with other users, or save content for offline use when they have connectivity.
 
-離線模式對每個人來說都是一個全新的心智模式。您需要告訴用戶當他們無法聯網時會發生什麼變化。
-通知他們保存大型數據的位置，併爲其提供設置以更改默認行爲。
-確保您使用多個 UI 設計組件，如蘊含豐富信息的語言圖標、通知、顏色和圖像，以統一傳達這些概念，而不是依靠設計設備（如設計設備自己的圖標）來描述完整信息。
+Users on data plans may avoid downloading large files for fear of cost, so you may also want to display an associated cost so users can make an active comparison for a specific file or task. For example, if the music app above could detect if the user is on a data plan and show the file size so that users can see the true cost of a file.
 
+### Help prevent hacked experiences
 
+Often users hack an experience without realizing they are doing it. For example before cloud sharing apps like Google Drive, it was common for users to save large files and attach them to emails so they could carry on editing from a different device. It is important not to be pulled into their hacked experience but rather look at what they are trying to achieve. In other words instead of thinking of how you can make attaching a large attachment more user friendly, solve the problem of sharing large files across multiple devices.
 
+## Transferable experience from one device to another
 
+When making an experience with a flaky network connection, seek for it to sync correctly once the connection improves so that the experience is transferable. For example, imagine a travel app losing a network connection mid-way through a booking. When the connection is reestablished, the app syncs with the user's account and then they can continue their booking on their desktop device. Not being able to transfer experiences is incredibly jarring to users.
 
-## 默認情況下提供離線體驗 
+Inform the user of the current state of their data, for example, if the app has managed to sync or not. Educate them where possible but try not to overburden them with messaging.
 
-如果您的應用不需要許多數據，則默認情況下緩存該數據。如果用戶只能通過網絡連接訪問他們的數據，那麼用戶會越來越不滿。嘗試儘可能提供穩定的體驗。不穩定的網絡連接將使用戶感覺您的應用不可靠，可減少網絡失敗影響的應用會讓用戶覺得神奇。
+## Create inclusive design experiences
 
+When designing seek to be inclusive by providing meaningful design devices, simple language, standard iconography, and meaningful imagery that will guide the user to complete the action or task rather than hinder their progress.
 
+### Let simple concise language be a guide
 
-自動下載和保存當天最新新聞內容能夠讓新聞網站受益，用戶可閱讀當天新聞，無需聯網，可能會下載不含文章圖像的文本。同時也要適應用戶的行爲，如果用戶通常瀏覽體育專欄，則可能會優先下載此類數據。
-
-
-
-<figure>
-  <img class="attempt-left" src="images/tailpiece-offline.png" alt="Tailpiece 使用各種設計小部件通知用戶其處於離線狀態">
-  <img class="attempt-right" src="images/tailpiece-offline-sidebar.png" alt="Tailpiece 具有一個導航視圖，其顯示哪些部分可以離線使用。">
-  <figcaption class="clearfix">
-    如果設備處於離線狀態，Tailpiece 將使用一個狀態消息通知用戶，讓用戶知道他們仍可以使用此應用。
-</figcaption>
-
-</figure>
-
-## 當應用準備離線工作時通知用戶 
-
-當網絡應用首先加載時，您需要向用戶表明應用是否可離線工作。
-使用一個[小部件](https://material.google.com/components/snackbars-toasts.html "widget that provides brief feedback")來執行此操作，通過在屏幕底部顯示消息提供有關操作的簡要反饋，例如，某部分已同步或數據文件已下載時。
-
-
-
-
-同樣，考慮您目前使用的語言以確保它適合您的受衆。
-如果使用消息傳遞，則確保在所有實例中提供相同消息。
-非技術受衆往往對離線這個術語有誤解，因此，請使用基於操作的語言，以便您的受衆可以理解。
-
-
-
-<figure>
-  <img class="attempt-left" src="images/io-offline-ready.png" alt="離線工作的 I/O 應用">
-  <img class="attempt-right" src="images/chome-offline.png" alt="離線工作的 Chrome Status 網站">
-  <figcaption class="clearfix">
-    Google I/O 2016 應用和 Chrome Status 網站在應用可離線工作時通知用戶。
-</figcaption>
-
-</figure>
-
-### 對於非常耗費流量的應用，將“save for offline”置於界面的醒目位置
-
-如果某個應用使用大量數據，則確保有一個開關或圖釘以添加要離線使用的項目，而不是自動下載項目，除非用戶通過設置菜單特意要求此行爲。確保圖釘或下載 UI 不會被其他 UI 元素遮蔽，並且用戶可以很容易看到它們。
-
-
-
-
-例如，需要大型數據文件的音樂播放器。用戶瞭解相關流量費用，但也知道當他們處於離線狀態時可能需要使用此播放器。下載音樂供日後使用需要用戶提前做好計劃，因此，在安裝時需要用戶瞭解這一點。
-
-
-
-### 明確可以離線訪問的資源 
-
-理解您目前提供的選項。您可能需要顯示一個展示“offline library”的標籤或設置，以便用戶可以輕鬆查看他們在手機上存儲了什麼內容，以及需要保存什麼。確保此設置簡潔，並明確存儲數據的位置以及誰可以訪問這些數據。
-
-
-### 顯示操作的實際成本
-
-許多用戶都將離線功能等同於“downloading”。所在國家或地區經常掉線或無法聯網的用戶有連接網絡時通常會與其他用戶共享內容，或保存內容以供離線使用。
-
-
-
-有流量計劃的用戶因爲擔心流量費用可能避免下載大型文件，因此，您可能還需要顯示相關費用，以便用戶可以針對特定文件或任務進行有效的比較。例如，如果雲上面的音樂應用可以檢測用戶是否有流量計劃並顯示文件大小，那麼用戶就可以瞭解真實的下載文件費用。
-
-
-
-### 有助於防止黑客行爲 
-
-通常，用戶會無意識地出現黑客行爲。例如，在 Google Drive 等雲共享應用出現之前，用戶通常會保存大型文件，並將它們附加到電子郵件中以便他們可以從不同設備繼續編輯。請注意，不需要深入瞭解用戶的這種黑客行爲，而是要看他們想要實現什麼目。
-換言之，要解決跨多個設備共享大型文件的問題，而不是考慮如何更方便用戶附加大型附件。
-
-
-
-## 支持在設備之間傳輸數據
-
-在遇到不穩定的網絡連接時，在連接改善後尋求正確同步，以便資源是可傳輸。例如，想象一個在進行預定時掉線的旅遊應用。重新建立連接後，該應用與用戶的帳戶同步，然後，用戶可以在他們的桌面設備上繼續進行預定。
-無法傳輸數據對用戶的影響越來越大。
-
-
-通知用戶其數據的最新狀態，例如，應用是否已設法同步。
-儘可能通知用戶，但儘量不要通過傳遞消息使其負擔過重。
-
-
-## 打造包容性的設計體驗 
-
-打造包容性的設計時，可使用能夠指導用戶完成操作或任務而不是阻礙他們的進展的有效設計設備、單個語言、標準圖標和有效圖像。
-
-
-
-### 儘可能使用簡潔語言
-
-良好的 UX 不只是一個精心設計的界面。它還包含用戶執行的流程，以及應用中使用的語言。
-在解釋應用的狀態或單個 UI 組件時，請避免使用科技術語。
-我們認爲短語“app offline”可能無法向用戶傳達應用的當前狀態。
-
+Good UX is not just about a well designed interface. It includes the flow a user takes as well as the language used in the app. Avoid using tech jargon when explaining the state of the app or individual UI components. Consider that the phrase “app offline” might not convey to the user the current state of the app.
 
 <div class="attempt-left">
-  <figure>
-    <img src="images/download.png" alt="下載圖標示例就是一個很好的例子">
-    <figcaption class="success">
-      <b>宜</b>：使用可描述此操作的語言和圖像。
-</figcaption>
-  </figure>
+  <figure> <img src="images/download.png" alt="Download icon example is a good example" /> <figcaption class="success"> <b>DO</b>: Use language and imagery that describes the action. </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img src="images/service-worker-ready.png" alt="服務工作線程圖標示例則是個糟糕的例子">
-    <figcaption class="warning">
-      <b>忌</b>：避免使用可能讓人無法理解的抽象術語。
-</figcaption>
-  </figure>
+  <figure> <img src="images/service-worker-ready.png" alt="Service worker icon example is a bad example" /> <figcaption class="warning"> <b>DON'T</b>: Avoid abstract terms that may not be accessible. </figcaption> </figure>
 </div>
-<div class="clearfix"></div>
 
+<div class="clearfix">
+</div>
 
-### 使用多個設計設備打造容易理解的用戶體驗
+### Use multiple design devices to create accessible user experiences
 
-使用語言、顏色和可視組件展示狀態變化或當前狀態。
-只使用顏色展示狀態可能無法讓用戶注意到，而具有視力障礙的用戶也無法看到。另外，設計者的直覺是使用灰顯的 UI 來表示離線，但灰顯的 UI 在網絡上具有已加載的含義。灰顯的 UI 還用於表示某個元素已停用，如表單上的輸入元素。
-如果您僅使用顏色描述狀態，會產生混淆。
+Use language, color, and visual components to demonstrate a change of state or current status. Solely using color to demonstrate state may not be noticed by the user and may be inaccessible to users who suffer from visual disabilities. Also, the gut instinct for designers is to use grayed UI to represent offline, but this can have a loaded meaning on the web. Grayed UI is also used to mean that an element is disabled, such as input elements on a form. This can cause confusion if you ONLY use color to depict state.
 
-
-爲防止出現誤解的情況，可採用多種方式向用戶表達不同狀態：例如，使用顏色、標籤和 UI 組件。
-
+To prevent misunderstandings, express different states to the user in multiple ways: for example with color, labels and UI components.
 
 <div class="attempt-left">
-  <figure>
-    <img src="images/accessibility_color7_do.png" alt="以下示例使用顏色和文本顯示錯誤，效果很好。">
-    <figcaption class="success">
-      <b>宜</b>：使用混合設計元素表達含義
-     </figcaption>
-  </figure>
+  <figure> <img 
+    src="images/accessibility_color7_do.png" 
+    alt="Good example that uses color and text to show an error." /> <figcaption class="success"> <b>DO</b>: Use a mixture of design elements to convey meaning </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img src="images/accessibility_color8_dont.png" alt="以下示例僅使用顏色，效果很差。">
-    <figcaption class="warning">
-      <b>忌</b>：僅使用顏色描述所進行的操作。
-     </figcaption>
-  </figure>
+  <figure> <img src="images/accessibility_color8_dont.png" alt="Bad example only using color." /> <figcaption class="warning"> <b>DON'T</b>: Only use color to describe what is happening. </figcaption> </figure>
 </div>
 
-<div class="clearfix"></div>
+<div class="clearfix">
+</div>
 
-### 使用可表達含義的圖標 
+### Use icons that convey meaning
 
-確保使用有意義的文本標籤和圖標正確地表達信息。
-單獨使用圖標會出現問題，因爲網絡上的離線概念相對較新。
-用戶可能會誤解自己使用的圖標。例如，使用一個軟盤表示保存，老一輩的人能夠理解，但對於從未見過軟盤的年輕人來說這種比喻會使其感到困惑。同樣，我們知道，顯示“漢堡包”菜單圖標時如果不帶標籤會使用戶困惑。
+Make sure that information is conveyed correctly with meaningful text labels as well as icons. Icons alone can be problematic, since the concept of offline on the web is relatively new. Users may misunderstand icons used on their own. For example, using a floppy disc for save makes sense to an older generation but young users who have never seen a floppy disc may be confused by the metaphor. Likewise, the 'hamburger' menu icon has been known to confuse users when presented without a label.
 
+When introducing an offline icon try to remain consistent with the industry standard visual (if one exists) as well as providing a text label and description. For example, saving for offline might be a typical download icon or perhaps if the action involves syncing it could be a syncing icon. Some actions may be interpreted as saving for offline rather than demonstrating a network's status. Think of the action you are trying to convey rather than presenting the user with an abstract concept. For example, save or download data would be action based.
 
+<img src="images/download-icons-examples.png" alt="Various icon examples that convey offline" />
 
+Offline can mean a number of things depending on the context, such as download, export, pin etc.. For more inspiration checkout the [material design icon set](https://material.io/icons/ "material design icon set")
 
+### Use skeleton layouts with other feedback mechanisms
 
+A skeleton layout is essentially a wireframe version of your app that displays while content is being loaded. This helps demonstrate to the user that content is about to be loaded. Consider also using a preloader UI as well, with a text label informing the user that the app is loading. One example would be to pulsate the wireframe content giving the app the feeling that it is alive and loading. This reassures the user that something is happening and helps prevent resubmissions or refreshes of your app.<figure> 
 
-在引入離線圖標時應儘量與行業標準可視項（如有）保持一致，並提供文本標籤和說明。例如，保存以供離線使用可能指的是一個典型的下載圖標，如果此操作涉及同步，那麼它也可能是一個同步圖標。
-某些操作可理解爲保存以供離線使用，而不是展示網絡的狀態。要考慮您嘗試表達的操作，而不是向用戶展示抽象概念。
-例如，保存或下載數據應基於操作。
+<img class="attempt-left" src="images/tailpiece-skel-article.png" alt="Skeleton layout example" /> <img class="attempt-right" src="images/tailpiece-normal.png" alt="loaded article example" /> <figcaption class="clearfix"> Before and after of a skeleton layout. </figcaption> </figure> 
 
+### Don’t block content
 
-<img src="images/download-icons-exampels.png" alt="表示離線的各種圖標示例">
+In some applications, a user might trigger an action such as creating a new document. Some apps will try to connect to a server in order to sync the new document and to demonstrate this they display an intrusive loading modal dialog that covers the entire screen. This may work fine if the user has a stable network connection, but if the network is unstable they won’t be able to escape from this action and the UI effectively blocks them from doing anything else. Network requests that block content should be avoided. Allow the user to continue to browse your app and queue tasks that will be performed and synced once the connection has improved.
 
-根據上下文，離線可以有許多含義，如下載、導出、固定等。
-想獲得更多靈感，請查看 [Material Design 圖標集](https://material.io/icons/ "material design icon set")
+Demonstrate the state of an action by providing your users with feedback. For example, if a user is editing a doc, consider changing the feedback design so it is visibly different from when they are online but still shows that their file was “saved” and will sync when they have a network connection. This will educate the user about the different states available and reassure them that their task or action has been stored. This has the added benefit of the user growing more confident using your application.
 
+## Designing for the next billion
 
-### 通過其他反饋機制使用框架佈局 
+In many regions, low end devices are commonplace, connectivity is unreliable and, for many users, data is unaffordable. You will need to earn user trust by being transparent and frugal with data. Think about ways to help users on poor connections and simplify the interface to help speed up tasks. Always try to ask users before downloading data-heavy content.
 
-框架佈局是一個非常重要的應用框架版本，其在加載內容時顯示。
-框架佈局有助於向用戶展示將要加載的內容。
-同時考慮使用一個預加載程序 UI，以及一個通知用戶應用正在加載的文本標籤。
-例如，使線框圖內容發生震動，從而讓應用感覺它處於活動狀態並且正在加載中。這可向用戶保證正在進行操作，並有助於防止重新提交或刷新您的應用。
+Offer low bandwidth options for users on laggy connections. So if the network connection is slow, provide small assets. Offer an option to choose high or low quality assets.
 
+## Conclusion
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-skel-article.png" alt="框架佈局示例">
-  <img class="attempt-right" src="images/tailpiece-normal.png" alt="已加載的文章示例">
-  <figcaption class="clearfix">
-    使用框架佈局之前和之後。
-</figcaption>
-</figure>
+Education is key to this as users are unfamiliar with these concepts. Try to create associations with things that are familiar, e.g downloading for later use is the same as offlining data.
 
-### 請勿攔截內容
+When designing for unstable network connections, use these:
 
-在某些應用中，某個用戶可能會觸發一個操作，如創建一個新文檔。
-某些應用將嘗試連接到一個服務器以同步新文檔，並通過顯示一個覆蓋整個屏幕的侵入式加載模態對話框展示此操作。如果用戶具有穩定的網絡連接，則這樣做沒什麼問題，但如果網絡不穩定，用戶將無法退出此操作，並且 UI 有效地阻止用戶執行任何其他操作。應避免攔截內容的網絡請求。允許用戶繼續瀏覽您的應用和將執行的隊列任務，並在連接改善後進行同步。
+* Think how you design for the success, failure and instability of a network connection.
+* Data may be expensive, so be considerate to the user.
+* For most users globally, the tech environment is almost exclusively mobile.
+* Low end devices are commonplace, with limited storage, memory and processing power and, small displays and lower touchscreen quality. Make sure performance is a part of your design process. 
+* Allow users to browse your application when they are offline.
+* Inform users of their current state and of changes in states.
+* Try to provide offline by default if your app doesn't require much data.
+* If the app is data-heavy, educate users about how they can download for offline use.
+* Make experiences transferable between devices.
+* Utilize language, icons, imagery, typography and color to express ideas to the user collectively.
+* Provide reassurance and feedback to help the user.
 
+## Feedback {: #feedback }
 
-
-通過爲用戶提供反饋展示操作的狀態。例如，如果用戶正在編輯文檔，則考慮更改反饋設計，使它明顯不同於其在線時的狀態，但仍顯示用戶的文件已“保存”，並在具有網絡連接時同步。這將告訴用戶可用的不同狀態，並向用戶保證其任務或操作已經保存。這可讓用戶在使用您的應用時更加自信。
-
-
-## 專爲後十億用戶設計
-
-在許多地區，低端設備非常普遍，網絡連接不可靠，並且許多用戶承擔不起流量費用。
-您需要通過提供透明度和爲用戶節省流量來爭取用戶的信任。
-請思考可爲網絡不佳的用戶提供幫助的方式，並簡化界面以幫助加速處理任務。
-在下載非常耗費流量的內容時，始終嘗試詢問用戶。
-
-
-爲網速慢的用戶提供低帶寬選項。因此，如果網速慢，則提供少量資源。
-提供可選擇高質量或低質量資源的選項。
-
-
-##  結論
-
-爲用戶提供通知非常關鍵，因爲用戶不熟悉這些概念。嘗試與熟悉的操作建立關聯性，例如下載以供日後使用與離線保存數據意思相同。
-
-
-
-
-在爲不穩定的網絡連接進行設計時，請： 
-
-* 考慮如何針對網絡連接成功、連接失敗和不穩定進行設計。
-* 流量費可能十分高昂，因此，請爲用戶着想。
-* 對於全球的大多數用戶而言，技術環境幾乎都是使用手機。
-* 低端設備非常普遍，這些設備的存儲、內存和處理能力都非常有限，並且顯示屏較小，觸摸屏質量也較差。
-請確保在設計過程中考慮到性能問題。
-* 允許用戶在離線狀態下瀏覽您的應用。
-* 通知用戶其當前狀態和狀態的變化。
-* 如果您的應用不需要許多數據，則默認情況下嘗試提供離線服務。
-* 如果應用非常耗費流量，則告訴用戶他們應該如何下載以供離線使用。
-* 支持在設備之間傳輸數據。
-* 利用語言、圖標、圖像、字體和顏色以統一方式向用戶傳達概念。
-* 爲用戶提供保障和反饋以幫助用戶。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

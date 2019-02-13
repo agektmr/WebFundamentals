@@ -1,55 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Cache berisi start_url dari manifes".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Cache contains start_url from manifest" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-15 #}
-{# wf_published_on: 2016-09-15 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-15 #} {# wf_blink_components: N/A #}
 
-# Cache Berisi start_url Dari Manifes  {: .page-title }
+# Cache Contains start_url From Manifest {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Memastikan bahwa aplikasi web progresif diluncurkan dengan benar dari
-layar utama perangkat seluler secara offline.
+Ensures that a progressive web app properly launches from a mobile device homescreen while offline.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-1. Definisikan properti `start_url` dalam file `manifest.json` Anda.
-2. Pastikan service worker meng-cache dengan benar sumber daya yang
-   cocok dengan nilai `start_url`.
+1. Define a `start_url` property in your `manifest.json` file.
+2. Ensure that your service worker properly caches a resource that matches the value of `start_url`.
 
-Untuk mempelajari dasar-dasar penambahan aplikasi ke layar utama,
-lihat [Tambahkan Aplikasi Web Anda ke
-Layar Utama pengguna](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
-Ini adalah codelab praktik langsung langkah demi langkah untuk menambahkan fungsionalitas "add to
-homescreen" ke dalam aplikasi yang ada. Gunakan apa yang telah Anda pelajari dalam
-codelab ini untuk mengintegrasikan fungsionalitas "add to homescreen" dalam aplikasi Anda sendiri.
+To learn the basics of adding apps to homescreens, see [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen). This is a step-by-step, hands-on codelab in which you add "add to homescreen" functionality into an existing app. Use what you learn in this codelab to integrate "add to homescreen" functionality in your own app.
 
-Untuk bantuan selengkapnya mengenai cara meng-cache file dengan service worker bagi penggunaan secara offline,
-lihat bagian "Cara lulus audit" pada dokumen Lighthouse berikut:
-[URL merespons dengan 200 bila offline](http-200-when-offline#how)
+For more help on how to cache files with service workers for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations)
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Bila aplikasi web progresif diluncurkan dari layar utama perangkat seluler,
-aplikasi akan dibuka pada URL tertentu. URL itu didefinisikan dalam file
-`manifest.json` aplikasi sebagai properti `start_url`.
+When a progressive web app is launched from the homescreen of a mobile device, the app opens on a specific URL. That URL is defined in the app's `manifest.json` file as the `start_url` property.
 
-Audit ini akan mem-parse nilai `start_url` dari `manifest.json` kemudian
-memastikan bahwa sumber daya yang cocok telah disimpan sementara di cache milik service worker.
+This audit parses the value of `start_url` from `manifest.json` and then ensures that a matching resource is cached in the service worker's cache.
 
-**Jika service worker mengalihkan permintaan** `start_url` **, audit
-ini mungkin akan memberikan hasil yang tidak akurat**.
+**If your service worker redirects** `start_url` **requests, this audit may produce inaccurate results**.
 
-Satu kekurangan dari audit ini adalah karena memeriksa materi cache
-secara langsung, bukan meminta service worker untuk memenuhi permintaan `start_url`.
- Hal ini bisa memberikan hasil negatif palsu jika cache Anda kehilangan
-sumber daya yang cocok dengan nilai persis dari `start_url`, walaupun dalam
-skenario nyata permintaan berhasil dipenuhi karena service
-worker mengalihkan ke sumber daya lain dalam cache. Sebaliknya, audit bisa
-memberikan hasil positif palsu jika cache Anda berisi sumber daya yang
-cocok dengan `start_url`, namun service worker Anda mengalihkan permintaan tersebut ke
-sumber daya yang tidak ada.
+One shortcoming of this audit is that it inspects the cache contents directly, rather than asking the service worker to resolve the `start_url` request. This can produce a false negative result if your cache is missing a resource that matches the exact value of `start_url`, even though in real scenarios the request resolves successfully because the service worker redirects to another resource in the cache. Conversely, the audit can produce a false positive result if your cache contains a resource that matches `start_url`, but your service worker redirects the request to a non-existent resource.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

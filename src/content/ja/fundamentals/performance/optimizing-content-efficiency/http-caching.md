@@ -1,146 +1,141 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:前に取得したリソースをキャッシュに保存して再使用できることは、パフォーマンスを最適化するうえで非常に重要です。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Caching and reusing previously fetched resources is a critical aspect of optimizing for performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2013-12-31 #}
-{# wf_blink_components: Blink>Network #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>Network #}
 
-# HTTP キャッシュ {: .page-title }
+# HTTP Caching {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-ネットワーク経由で情報を取得するには時間もコストもかかります。 レスポンスが大きいと、クライアントとサーバー間のラウンドトリップを何度も繰り返す必要があるため、レスポンスが利用可能となってブラウザで処理できるようになるまで時間がかかります。さらに、ユーザー側ではデータの通信コストが発生します。 そのため、前に取得したリソースをキャッシュに保存して再使用できることは、パフォーマンスを最適化するうえで非常に重要です。
+Fetching something over the network is both slow and expensive. Large responses require many roundtrips between the client and server, which delays when they are available and when the browser can process them, and also incurs data costs for the visitor. As a result, the ability to cache and reuse previously fetched resources is a critical aspect of optimizing for performance.
 
+The good news is that every browser ships with an implementation of an HTTP cache. All you need to do is ensure that each server response provides the correct HTTP header directives to instruct the browser on when and for how long the browser can cache the response.
 
-幸い、どのブラウザにも HTTP キャッシュが実装されています。 したがって、各サーバーのレスポンスに正しい HTTP ヘッダー ディレクティブがあり、ブラウザがレスポンスをキャッシュに格納できるタイミングとその期間をブラウザに指示していることを確認するだけで済みます。
+Note: If you are using a WebView to fetch and display web content in your application, you might need to provide additional configuration flags to ensure that the HTTP cache is enabled, its size is set to a reasonable number to match your use case, and the cache is persisted. Check the platform documentation and confirm your settings.
 
-注: アプリケーションで WebView を使用してウェブ コンテンツを取得および表示している場合は、構成フラグを追加して、HTTP キャッシュの有効化、用途に合った適切なキャッシュ サイズ値の設定、キャッシュの永続化を確実に行う必要があります。 設定についてはプラットフォームのドキュメントを参照してください。
+<img src="images/http-request.png"  alt="HTTP request" />
 
-<img src="images/http-request.png"  alt="HTTP リクエスト">
+When the server returns a response, it also emits a collection of HTTP headers, describing its content-type, length, caching directives, validation token, and more. For example, in the above exchange, the server returns a 1024-byte response, instructs the client to cache it for up to 120 seconds, and provides a validation token ("x234dff") that can be used after the response has expired to check if the resource has been modified.
 
-サーバーではレスポンスを返すときに、コンテンツ タイプ、長さ、キャッシュ ディレクティブ、検証トークンなどを記述した一連の HTTP ヘッダーも送っています。 上記の Exchange の例では、サーバーは 1024 バイトのレスポンスを返し、クライアントにそのレスポンスを最大 120 秒間キャッシュに格納するよう指示して、検証トークン（"x234dff"）を提供します。この検証トークンは、レスポンスの有効期限が切れた後で、リソースに変更があったかどうかを確認するために使用できます。
-
-
-## ETag によるキャッシュされたレスポンスの検証
+## Validating cached responses with ETags
 
 ### TL;DR {: .hide-from-toc }
-* サーバーから ETag HTTP ヘッダーを介して検証トークンが渡される。
-* 検証トークンを使うことで効率的なリソース更新チェックが可能となる。リソースに変更がなければデータ転送は発生しない。
 
+* The server uses the ETag HTTP header to communicate a validation token.
+* The validation token enables efficient resource update checks: no data is transferred if the resource has not changed.
 
-初回の取得から 120 秒が経過し、ブラウザが同じリソースに対する新しいリクエストを開始したとしましょう。 まず、ブラウザはローカル キャッシュを調べて前回のレスポンスを見つけます。 残念ながら、レスポンスは有効期限切れのため使用できません。 この時点で、ブラウザは新しいリクエストを発行して完全なレスポンスを新たに取得することもできますが、 この処理は非効率的です。リソースに変更がなければ、キャッシュ内のデータとまったく同じものをダウンロードする必要はありません。
+Assume that 120 seconds have passed since the initial fetch and the browser has initiated a new request for the same resource. First, the browser checks the local cache and finds the previous response. Unfortunately, the browser can't use the previous response because the response has now expired. At this point, the browser could dispatch a new request and fetch the new full response. However, that’s inefficient because if the resource hasn't changed, then there's no reason to download the same information that's already in cache!
 
-この問題は、検証トークンを ETag ヘッダーに指定することで解決できます。 サーバーは任意のトークンを生成して返します。通常、このトークンはファイルのコンテンツのハッシュやその他のフィンガープリントです。 クライアントはフィンガープリントがどう生成されるかを認識する必要はありません。必要なのは次回のリクエストでそのフィンガープリントをサーバーに送信することだけです。 フィンガープリントが変わらなければリソースに変更はないので、ダウンロードを省略できます。
+That’s the problem that validation tokens, as specified in the ETag header, are designed to solve. The server generates and returns an arbitrary token, which is typically a hash or some other fingerprint of the contents of the file. The client doesn't need to know how the fingerprint is generated; it only needs to send it to the server on the next request. If the fingerprint is still the same, then the resource hasn't changed and you can skip the download.
 
-<img src="images/http-cache-control.png"  alt="HTTP Cache-Control の例">
+<img src="images/http-cache-control.png"  alt="HTTP Cache-Control example" />
 
-上記の例では、クライアントは "If-None-Match" HTTP リクエスト ヘッダー内で ETag トークンを自動的に提供し、 サーバーはそのトークンを現在のリソースと突き合わせて確認します。 リソースに変更がなければ、"304 Not Modified" レスポンスを返し、キャッシュ内のレスポンスに変更がなく、さらに 120 秒後に更新を延期できることをブラウザに通知します。 レスポンスを再度ダウンロードする必要がないため、時間と帯域幅を節約できます。
+In the preceding example, the client automatically provides the ETag token in the "If-None-Match" HTTP request header. The server checks the token against the current resource. If the token hasn't changed, the server returns a "304 Not Modified" response, which tells the browser that the response it has in cache hasn't changed and can be renewed for another 120 seconds. Note that you don't have to download the response again, which saves time and bandwidth.
 
-ウェブ デベロッパーとして、この高効率な再検証を利用するにはどうしたらよいでしょうか。実はブラウザがすべての作業を実行してくれます。 ブラウザは検証トークンが前に指定されたかどうかを自動的に検出し、発信リクエストにこのトークンを付加し、サーバーから受信したレスポンスに基づいて必要に応じてキャッシュのタイムスタンプを更新します。 **あとは、サーバーが実際に、必要な ETag トークンを提供していることを確認するだけです。 必要な構成フラグについては、サーバーの資料をご確認ください。**
+As a web developer, how do you take advantage of efficient revalidation? The browser does all the work on our behalf. The browser automatically detects if a validation token has been previously specified, it appends the validation token to an outgoing request, and it updates the cache timestamps as necessary based on the received response from the server. **The only thing left to do is to ensure that the server is providing the necessary ETag tokens. Check your server documentation for the necessary configuration flags.**
 
-注: ヒント: HTML5 Boilerplate プロジェクトには、人気の高いすべてのサーバー向けの<a href='https://github.com/h5bp/server-configs'>サンプル構成ファイル</a>が用意されており、構成フラグと設定ごとに詳細なコメントが記載されています。 リストでご希望のサーバーを見つけ、該当する設定を探してコピーするか、推奨される設定でサーバーが設定されていることを確認してください。
+Note: Tip: The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. Find your favorite server in the list, look for the appropriate settings, and copy/confirm that your server is configured with the recommended settings.
 
 ## Cache-Control
 
 ### TL;DR {: .hide-from-toc }
-* 各リソースでは Cache-Control HTTP ヘッダーによってキャッシュ ポリシーを規定可能です。
-* Cache-Control ディレクティブで、レスポンスのキャッシュを許可するユーザー、キャッシュを実施する条件、キャッシュに保存する期間を制御します。
 
+* Each resource can define its caching policy via the Cache-Control HTTP header.
+* Cache-Control directives control who can cache the response, under which conditions, and for how long.
 
-パフォーマンスの最適化の観点で、最良のリクエストとは、サーバーへの通信を必要としないリクエストです。レスポンスのローカルコピーがあれば、ネットワークによる待ち時間を完全に排除でき、データ転送のためにデータを読み込む必要もありません。 これを実現するため、HTTP 仕様では、ブラウザやその他の中間キャッシュに各レスポンスをキャッシュできる条件やキャッシュ期間を制御する[多様な Cache-Control ディレクティブ](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9)をサーバーで返すことができます。
+From a performance optimization perspective, the best request is a request that doesn't need to communicate with the server: a local copy of the response allows you to eliminate all network latency and avoid data charges for the data transfer. To achieve this, the HTTP specification allows the server to return [Cache-Control directives](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) that control how, and for how long, the browser and other intermediate caches can cache the individual response.
 
-注: Cache-Control ヘッダーは HTTP/1.1 仕様の一部として定義されたもので、レスポンス キャッシュ ポリシーの設定に使用されていた以前のヘッダー（Expires など）よりも優先されます。 最新のブラウザはすべて Cache-Control に対応しているので、必要なのは指定することだけです。
+Note: The Cache-Control header was defined as part of the HTTP/1.1 specification and supersedes previous headers (for example, Expires) used to define response caching policies. All modern browsers support Cache-Control, so that's all you need.
 
-<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control の例">
+<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control example" />
 
-### 「no-cache」と「no-store」
+### "no-cache" and "no-store"
 
-「no-cache」は、同じ URL に対する後続のリクエストへのレスポンスとして、以前返されたレスポンスを使用するには、まずサーバーに問い合わせてレスポンスに変更があったかどうかを確認する必要があることを示します。 そのため、適切な検証トークン（ETag）がある場合、no-cache を指定してもキャッシュされたレスポンスを検証するためのラウンドトリップは発生しますが、レスポンスに変更がなければダウンロードを省略できます。
+"no-cache" indicates that the returned response can't be used to satisfy a subsequent request to the same URL without first checking with the server if the response has changed. As a result, if a proper validation token (ETag) is present, no-cache incurs a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.
 
-一方、「no-store」はもっと単純です。 返されたレスポンスのバージョンにかかわらず、ブラウザのキャッシュやすべての中間キャッシュはそのレスポンスを一切格納できません。たとえば、個人の機密データや銀行データが含まれているレスポンスなどです。 ユーザーがこのアセットをリクエストするたびに、リクエストがサーバーに送信され、完全なレスポンスが毎回ダウンロードされます。
+By contrast, "no-store" is much simpler. It simply disallows the browser and all intermediate caches from storing any version of the returned response&mdash;for example, one containing private personal or banking data. Every time the user requests this asset, a request is sent to the server and a full response is downloaded.
 
-### 「public」と 「private」
+### "public" vs. "private"
 
-レスポンスが「public」とマークされている場合は、レスポンスに HTTP 認証が関連付けられているとしても、さらにレスポンスのステータス コードが通常キャッシュ可能になっていない場合でも、レスポンスをキャッシュに保存できます。 通常は、明示的なキャッシュ情報（「max-age」など）によってレスポンスがキャッシュ可能であることが指定されているため「public」は必要ありません。
+If the response is marked as "public", then it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn't normally cacheable. Most of the time, "public" isn't necessary, because explicit caching information (like "max-age") indicates that the response is cacheable anyway.
 
-一方、「private」レスポンスは、ブラウザのキャッシュには格納できますが、 通常、対象ユーザーは 1 人のため、中間キャッシュに格納することは認められません。 たとえば、個人的なユーザー情報を含む HTML ページはそのユーザーのブラウザでのみキャッシュに格納でき、CDN では格納できません。
+By contrast, the browser can cache "private" responses. However, these responses are typically intended for a single user, so an intermediate cache is not allowed to cache them. For example, a user's browser can cache an HTML page with private user information, but a CDN can't cache the page.
 
-### 「max-age」
+### "max-age"
 
-このディレクティブでは、取得したレスポンスを再使用できる最大時間を、リクエストの時刻を起点とする秒数で指定します。 たとえば、"max-age=60" は、レスポンスを 60 秒間キャッシュに格納して再使用できることを示します。
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request. For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
 
-## 最適な Cache-Control ポリシーの定義
+## Defining optimal Cache-Control policy
 
-<img src="images/http-cache-decision-tree.png"  alt="キャッシュ決定木">
+<img src="images/http-cache-decision-tree.png"  alt="Cache decision tree" />
 
-上記の決定木に従って、アプリケーションで使用する特定のリソース、または一連のリソースに最適なキャッシュ ポリシーを判別します。 理想的には、できるだけ多くのレスポンスを、できるだけ長い期間、クライアント上でキャッシュに保存し、レスポンスごとに検証トークンを提供して、効率的な再検証を実現することを目指しましょう。
+Follow the decision tree above to determine the optimal caching policy for a particular resource, or a set of resources, that your application uses. Ideally, you should aim to cache as many responses as possible on the client for the longest possible period, and provide validation tokens for each response to enable efficient revalidation.
 
 <table class="responsive">
+  
 <thead>
   <tr>
-    <th colspan="2">Cache-Control ディレクティブ &amp; 説明</th>
+    <th colspan="2">Cache-Control directives &amp; Explanation</th>
   </tr>
 </thead>
 <tr>
   <td data-th="cache-control">max-age=86400</td>
-  <td data-th="explanation">レスポンスは、最大 1 日（60 秒 x 60 分 x 24 時間）、ブラウザおよび任意の中間キャッシュでキャッシュに保存可能（つまり、「public」）</td>
+  <td data-th="explanation">Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).</td>
 </tr>
 <tr>
   <td data-th="cache-control">private, max-age=600</td>
-  <td data-th="explanation">レスポンスは、クライアントのブラウザで最大 10 分（60 秒 x 10 分）のみキャッシュに保存可能</td>
+  <td data-th="explanation">Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).</td>
 </tr>
 <tr>
   <td data-th="cache-control">no-store</td>
-  <td data-th="explanation">レスポンスはキャッシュに保存することが許可されず、リクエストごとに完全に取得する必要がある。</td>
+  <td data-th="explanation">Response is not allowed to be cached and must be fetched in full on every request.</td>
 </tr>
 </table>
 
-HTTP Archive によると、上位 300,000 件のサイト（Alexa のランクによる）の集計では、[ダウンロードした全レスポンスの半数近く](http://httparchive.org/trends.php#maxage0)をブラウザのキャッシュに保存できます。ページビューやアクセスを繰り返す場合、このことは大幅な削減につながります。 もちろん、これは、特定のアプリケーションでキャッシュに格納できるのはリソースの 50% である、という意味ではありません。 リソースの 90% 以上をキャッシュに格納できるサイトもあれば、キャッシュに一切格納できない個人的なデータや時間依存のデータが多いサイトもあります。
+According to HTTP Archive, among the top 300,000 sites (by Alexa rank), the browser can cache [nearly half of all the downloaded responses](http://httparchive.org/trends.php#maxage0), which is a huge savings for repeat pageviews and visits. Of course, that doesn’t mean that your particular application can cache 50% of the resources. Some sites can cache more than 90% of their resources, while other sites might have a lot of private or time-sensitive data that can’t be cached at all.
 
-**ページを調査してキャッシュに保存できるリソースを特定し、このリソースが適切な Cache-Control ヘッダーと ETag ヘッダーを返していることを確認してください。**
+**Audit your pages to identify which resources can be cached and ensure that they return appropriate Cache-Control and ETag headers.**
 
-## キャッシュされたレスポンスの無効化と更新
+## Invalidating and updating cached responses
 
 ### TL;DR {: .hide-from-toc }
-* ローカル キャッシュされたレスポンスはリソースの「有効期限」まで使用されます。
-* ファイルのコンテンツのフィンガープリントを URL に埋め込むことで、新しいバージョンのレスポンスに更新するようクライアントに強制することが可能です。
-* パフォーマンスを最適化するには各アプリケーションで独自のキャッシュ階層を規定することが必要です。
 
+* Locally cached responses are used until the resource "expires."
+* Embedding a file content fingerprint in the URL enables you to force the client to update to a new version of the response.
+* Each application needs to define its own cache hierarchy for optimal performance.
 
-ブラウザによるすべての HTTP リクエストは、まずブラウザのキャッシュにルーティングされ、リクエストを満たす有効なキャッシュ済みレスポンスがあるかどうかが確認されます。 一致するレスポンスがあると、そのレスポンスがキャッシュから読み取られるため、転送によるネットワーク遅延も、データの通信コストも発生しません。
+All HTTP requests that the browser makes are first routed to the browser cache to check whether there is a valid cached response that can be used to fulfill the request. If there's a match, the response is read from the cache, which eliminates both the network latency and the data costs that the transfer incurs.
 
-**ただし、キャッシュ済みレスポンスを更新または無効化する場合はどうでしょうか。** たとえば、CSS スタイルシートを最大 24 時間（max-age=86400）キャッシュに保存するよう指定してあったときに、デザイナーがすべてのユーザーに提供する必要のある更新をコミットしたとしましょう。 どれが CSS の「古い」キャッシュ コピーであるかをユーザーに伝え、ユーザーにキャッシュを更新してもらうにはどうするのでしょうか。このためには、少なくともリソースの URL を変更する必要があります。
+**However, what if you want to update or invalidate a cached response?** For example, suppose you've told your visitors to cache a CSS stylesheet for up to 24 hours (max-age=86400), but your designer has just committed an update that you'd like to make available to all users. How do you notify all the visitors who have what is now a "stale" cached copy of your CSS to update their caches? You can't, at least not without changing the URL of the resource.
 
-レスポンスをブラウザがキャッシュに格納すると、そのキャッシュ バージョンは、max-age や expires で指定されたとおりに有効期限が切れるまで、または他の何らかの理由でキャッシュから削除される（たとえば、ユーザーがブラウザのキャッシュを消去する）まで使用されます。 この結果、ページが作成された時点での異なるバージョンのファイルをそれぞれのユーザーが使用している状態が発生することがあります。リソースを取得したばかりのユーザーは新しいバージョンを使用することになる一方で、以前の（ただしまだ有効な）コピーをキャッシュに保存してあるユーザーは古いバージョンのレスポンスを使用することになります。
+After the browser caches the response, the cached version is used until it's no longer fresh, as determined by max-age or expires, or until it is evicted from cache for some other reason&mdash; for example, the user clearing their browser cache. As a result, different users might end up using different versions of the file when the page is constructed: users who just fetched the resource use the new version, while users who cached an earlier (but still valid) copy use an older version of its response.
 
-**では、クライアント側のキャッシュと迅速な更新の両方の長所を活かすにはどうすればよいでしょうか。** リソースの URL を変更して、コンテンツが変わるたびにユーザーが新しいレスポンスをダウンロードしなければならないようにすればよいのです。 通常、この処理はファイルのフィンガープリント、またはバージョン番号をファイル名に埋め込む（たとえば、style.**x234dff**.css など）で実現されます。
+**How do you get the best of both worlds: client-side caching and quick updates?** You change the URL of the resource and force the user to download the new response whenever its content changes. Typically, you do this by embedding a fingerprint of the file, or a version number, in its filename&mdash;for example, style.**x234dff**.css.
 
-<img src="images/http-cache-hierarchy.png"  alt="キャッシュ階層">
+<img src="images/http-cache-hierarchy.png"  alt="Cache hierarchy" />
 
-リソース単位のキャッシュ ポリシー機能によって「キャッシュ階層」を定義でき、各リソースをキャッシュに保存する期間だけでなく、訪問者に新しいバージョンが表示されるまでの期間も制御できます。 たとえば、上記の例を分析してみましょう。
+The ability to define per-resource caching policies allows you to define "cache hierarchies" that allow you to control not only how long each is cached for, but also how quickly visitors see new versions. To illustrate this, analyze the above example:
 
-* HTML は「no-cache」とマークされています。このため、ブラウザはリクエストごとに常にドキュメントを再検証し、コンテンツに変更があれば最新のバージョンを取得します。 また、HTML マークアップ内には CSS アセットと JavaScript アセットの URL にフィンガープリントも埋め込んであります。これらのファイルのコンテンツに変更があると、ページの HTML も変わり、HTML レスポンスの新しいコピーがダウンロードされることになります。
-* この CSS はブラウザと中間キャッシュ（たとえば、CDN）によってキャッシュに保存でき、1 年で期限切れになるように設定されています。 1 年という「ずっと先の有効期限」を使用しても問題ないのは、ファイルのフィンガープリントをファイル名に埋め込んであるためです。CSS が更新されると、URL も変更されます。
-* JavaScript の有効期限も 1 年に設定されていますが、private とマークされています。おそらく、これは CDN でキャッシュに保存してはいけないプライベート ユーザー データが含まれているためです。
-* 画像はバージョンも一意のフィンガープリントもなしでキャッシュに保存され、有効期限は 1 日に設定されています。
+* The HTML is marked with "no-cache", which means that the browser always revalidates the document on each request and fetches the latest version if the contents change. Also, within the HTML markup, you embed fingerprints in the URLs for CSS and JavaScript assets: if the contents of those files change, then the HTML of the page changes as well and a new copy of the HTML response is downloaded.
+* The CSS is allowed to be cached by browsers and intermediate caches (for example, a CDN), and is set to expire in 1 year. Note that you can use the "far future expires" of 1 year safely because you embed the file fingerprint in its filename: if the CSS is updated, the URL changes as well.
+* The JavaScript is also set to expire in 1 year, but is marked as private, perhaps because it contains some private user data that the CDN shouldn’t cache.
+* The image is cached without a version or unique fingerprint and is set to expire in 1 day.
 
-ETag、Cache-Control、一意の URL を組み合わせることで、長い有効期限、レスポンスのキャッシュを保存できる場所の制御、オンデマンド更新のすべての長所を活かすことができます。
+The combination of ETag, Cache-Control, and unique URLs allows you to deliver the best of all worlds: long-lived expiration times, control over where the response can be cached, and on-demand updates.
 
-## キャッシュのチェックリスト
+## Caching checklist
 
-最善のキャッシュ ポリシーは 1 つではありません。 トラフィックのパターン、提供するデータの種類、データ鮮度に関するアプリケーション固有の要件に応じて、リソースごとの適切な設定を規定および設定する必要があり、全体的な「キャッシュ階層」も構成する必要があります。
+There's no one best cache policy. Depending on your traffic patterns, type of data served, and application-specific requirements for data freshness, you must define and configure the appropriate per-resource settings, as well as the overall "caching hierarchy."
 
-次に、キャッシュ戦略に取り組むうえで押さえておきたい、おすすめの方法やテクニックを紹介します。
+Some tips and techniques to keep in mind as you work on caching strategy:
 
-* **一貫した URL を使用する:** 同じコンテンツを異なる URL で提供すると、そのコンテンツは何度も取得および格納されます。 注: [URL は大文字と小文字が区別されます](http://www.w3.org/TR/WD-html40-970708/htmlweb.html)。
-* **サーバーが検証トークン（ETag）を提供していることを確認する:** サーバーでリソースに変更がない場合、検証トークンがあれば同じデータを転送する必要がなくなります。
-* **中間でキャッシュに格納できるリソースを指定する:** すべてのユーザー間でレスポンスが変わらないリソースが、CDN などの中間でのキャッシュ候補です。
-* **リソースごとに最適なキャッシュ有効期限を決定する:** リソースによって更新要件は異なります。 リソースごとに適切な max-age を監査して決定します。
-* **サイトに最適なキャッシュ階層を決定する:** コンテンツのフィンガープリントを埋め込んだリソースの URL を使用し、さらに HTML ドキュメントの有効期限を短縮するか no-cache を指定することで、クライアントが更新データを取得する間隔を制御できます。
-* **離脱率を最小限に抑える:** リソースによって更新頻度は異なります。 JavaScript 関数、一連の CSS スタイルなど、リソースの特定の部分が頻繁に更新される場合は、そのコードを別のファイルとして提供することを検討してください。 それにより、コンテンツの残りの部分（変更頻度が低いライブラリ コードなど）はキャッシュから取得されて、更新を取得する際にダウンロードするコンテンツの量を最小限に抑えることができます。
+* **Use consistent URLs:** if you serve the same content on different URLs, then that content will be fetched and stored multiple times. Tip: note that [URLs are case sensitive](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
+* **Ensure that the server provides a validation token (ETag):** validation tokens eliminate the need to transfer the same bytes when a resource has not changed on the server.
+* **Identify which resources can be cached by intermediaries:** those with responses that are identical for all users are great candidates to be cached by a CDN and other intermediaries.
+* **Determine the optimal cache lifetime for each resource:** different resources may have different freshness requirements. Audit and determine the appropriate max-age for each one.
+* **Determine the best cache hierarchy for your site:** the combination of resource URLs with content fingerprints and short or no-cache lifetimes for HTML documents allows you to control how quickly the client picks up updates.
+* **Minimize churn:** some resources are updated more frequently than others. If there is a particular part of a resource (for example, a JavaScript function or a set of CSS styles) that is often updated, consider delivering that code as a separate file. Doing so allows the remainder of the content (for example, library code that doesn't change very often), to be fetched from cache and minimizes the amount of downloaded content whenever an update is fetched.
 
-## フィードバック {: .hide-from-toc }
+## Feedback {: .hide-from-toc }
 
 {% include "web/_shared/helpful.html" %}
 

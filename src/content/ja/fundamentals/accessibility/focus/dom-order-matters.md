@@ -1,31 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 既定の DOM 順序の重要性
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The importance of the default DOM order
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# DOM Order Matters {: .page-title }
 
-# DOM 順序の重要性 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
+Working with native elements is a great way to learn about focus behavior because they are automatically inserted into the tab order based on their position in the DOM.
 
-
-
-ネイティブ要素は、DOM での位置に基づいて自動的にタブオーダーに挿入されます。そのため、フォーカス動作について学ぶにはネイティブ要素を操作するのが一番です。
-
-
-
-たとえば、DOM に 3 つのボタン要素が順番に配置されているとします。
-`Tab` を押すと、各ボタンが順番にフォーカスされます。以下のコード ブロックをクリックして、フォーカス ナビゲーションの開始点を変えて、`Tab` を押してボタン間でフォーカスを移動させてみてください。
-
-
+For example, you might have three button elements, one after the other in the DOM. Pressing `Tab` focuses each button in order. Try clicking the code block below to move the focus navigation start point, then press `Tab` to move focus through the buttons.
 
     <button>I Should</button>
     <button>Be Focused</button>
     <button>Last!</button>
+    
 
 {% framebox height="80px" %}
 <button>I Should</button>
@@ -33,13 +21,12 @@ description: 既定の DOM 順序の重要性
 <button>Last!</button>
 {% endframebox %}
 
-CSS を使用すると、DOM での順序を保持したまま、異なる順序で要素を画面に表示できることに注意してください。たとえば、`float` などの CSS プロパティを使用して 1 つのボタンを右に移動した場合、ボタンが画面に表示される順序は変わりますが、DOM での順序は保持されるため、タブオーダーも変わりません。ページ全体をユーザーがタブで移動した場合、ボタンは直感的な順序ではフォーカスされません。以下のコード ブロックをクリックして、フォーカス ナビゲーションの開始点を変えて、`Tab` を押してボタン間でフォーカスを移動させてみてください。
-
-
+However, it's important to note that, using CSS, it's possible to have things exist in one order in the DOM but appear in a different order on screen. For example, if you use a CSS property like `float` to move one button to the right, the buttons appear in a different order on screen. But, because their order in the DOM remains the same, so does their tab order. When the user tabs through the page, the buttons gain focus in a non-intuitive order. Try clicking on the code block below to move the focus navigation start point, then press `Tab` to move focus through the buttons.
 
     <button style="float: right">I Should</button>
     <button>Be Focused</button>
     <button>Last!</button>
+    
 
 {% framebox height="80px" %}
 <button style="float: right;">I Should</button>
@@ -47,37 +34,27 @@ CSS を使用すると、DOM での順序を保持したまま、異なる順序
 <button>Last!</button>
 {% endframebox %}
 
-CSS を使用して画面上での要素の視覚的な位置を変更する場合は注意が必要です。フォーカスの位置がランダムに移動しているように見えるため、キーボードを使用するユーザーが混乱することがあります。このような理由から、WebAIM チェックリストの[セクション 1.3.2](http://webaim.org/standards/wcag/checklist#sc1.3.2){: .external } では、コード順によって決定される読み取りとナビゲーションの順序は、論理的かつ直感的にする必要があると既定されています。
+Be careful when changing the visual position of elements on screen using CSS. This can cause the tab order to jump around, seemingly at random, confusing users who rely on the keyboard. For this reason, the Web AIM checklist states [in section 1.3.2](http://webaim.org/standards/wcag/checklist#sc1.3.2){: .external } that the reading and navigation order, as determined by code order, should be logical and intuitive.
 
+As a rule, try tabbing through your pages every so often just to make sure you haven't accidentally messed up the tab order. It's a good habit to adopt, and one that doesn't require much effort.
 
+## Offscreen content
 
+What if you have content that isn't currently displayed, yet still needs to be in the DOM, such as a responsive side-nav? When you have elements like this that receive focus when they're off screen, it can seem as if the focus is disappearing and reappearing as the user tabs through the page &mdash; clearly an undesirable effect. Ideally, we should prevent the panel from gaining focus when it's off screen, and only allow it to be focused when the user can interact with it.
 
-原則として、ときどきページ上をタブで移動して、タブオーダーがおかしな順番になっていないことを確認してください。この確認作業にはそれほど手間がかからないので、習慣的に行うことをお勧めします。
+![an offscreen slide-in panel can steal focus](imgs/slide-in-panel.png)
 
+Sometimes you need to do a bit of detective work to figure out where focus has gone. You can use `document.activeElement` from the console to figure out which element is currently focused.
 
-##  画面外のコンテンツ
-レスポンシブ サイド ナビゲーションなど、現在表示されていなくても DOM で必要なコンテンツがある場合はどうすべきでしょうか。このように、画面外にある状態でフォーカスを受け取る要素があると、ユーザーがページ上をタブで移動した際に、フォーカスが消えたり再表示されたりするように見えることがあります。これは明らかに望ましくない状況です。理想的には、パネルが画面外にあるときはフォーカスを受け取らないようにして、ユーザーが操作できる状態でのみフォーカスが当たるようにする必要があります。
+Once you know which off screen element is being focused, you can set it to `display: none` or `visibility: hidden`, and then set it back to `display:
+block` or `visibility: visible` before showing it to the user.
 
+![a slide-in panel set to display none](imgs/slide-in-panel2.png)
 
+![a slide-in panel set to display block](imgs/slide-in-panel3.png)
 
-![画面外のスライドイン パネルによるフォーカスの妨げ](imgs/slide-in-panel.png)
+In general, we encourage developers to tab through their sites before each publish to see that the tab order doesn't disappear or jump out of a logical sequence. If it does, you should make sure you are appropriately hiding offscreen content with `display: none` or `visibility: hidden`, or that you rearrange elements' physical positions in the DOM so they are in a logical order.
 
-フォーカスの位置を確認するために、多少の検出作業が必要になる場合があります。
-現在フォーカスされている要素を確認するには、コンソールで `document.activeElement` を使用します。
+## Feedback {: #feedback }
 
-
-現在フォーカスが当たっている画面外の要素を特定したら、それを `display: none` または `visibility: hidden` に設定して、ユーザーに表示する前に `display:
-block` または `visibility: visible` に戻すことができます。
-
-
-![display none に設定されたスライドイン パネル](imgs/slide-in-panel2.png)
-
-![display block に設定されたスライドイン パネル](imgs/slide-in-panel3.png)
-
-一般に、公開前にデベロッパー側でサイト上をタブで移動し、フォーカスが消えたり、論理的ではない順序で移動したりしないことを確認することをお勧めします。問題がある場合は、`display: none` または `visibility: hidden` で画面外のコンテンツを適切に非表示にするか、要素の DOM での物理的な位置を変更して論理的な順序になるようにする必要があります。
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

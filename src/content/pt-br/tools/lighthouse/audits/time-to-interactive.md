@@ -1,33 +1,50 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência da auditoria do Lighthouse "Tempo até interatividade".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Time to Interactive" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-10-01 #} {# wf_published_on: 2018-08-16 #} {# wf_blink_components: Platform>DevTools #}
 
-# Tempo até interatividade  {: .page-title }
+# Time to Interactive {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-O carregamento da página é um aspecto fundamental de como o usuário observa o desempenho da sua
-página. Consulte [Medição de desempenho com o método RAIL](/web/fundamentals/performance/rail) para obter mais informações.
+<blockquote>
+  <p>
+    Load is not a single moment in time — it’s an experience that no one metric can fully capture.
+    There are multiple moments during the load experience that can affect whether a user perceives
+    it as "fast" or "slow".
+  </p>
+  <p>--- <a class="external" href="https://w3c.github.io/paint-timing/">Paint Timing spec</a></p>
+</blockquote>
 
-Esta auditoria identifica o tempo que uma página leva para aparentar que está preparada para
-permitir que o usuário interaja com ela.
+The Time to Interactive (TTI) metric measures how long it takes a page to become interactive. "Interactive" is defined as the point where:
 
-## Como ser aprovado na auditoria {: #how }
+* The page has displayed useful content, which is measured with [First Contentful Paint](/web/tools/lighthouse/audits/first-contentful-paint).
+* Event handlers are registered for most visible page elements.
+* The page responds to user interactions within 50 milliseconds.
 
-Confira os recursos da seção [Como ser aprovado na auditoria](speed-index#how)
-da auditoria Índice de velocidade para obter mais informações sobre como melhorar o desempenho de carregamento da página.
-Quanto mais baixa for sua pontuação no Tempo até interatividade, melhor.
+Some sites optimize content visibility at the expense of interactivity. This can create a frustrating user experience. The site appears to be ready, but when the user tries to interact with it, nothing happens.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Recommendations {: #recommendations }
 
-Tempo até interatividade é definido como o momento em que o layout se estabilizou,
-as principais fontes Web estão visíveis, e o encadeamento principal está com disponibilidade suficiente para aceitar
-entradas do usuário.
+To improve your TTI score, defer or remove unnecessary JavaScript work that occurs during page load. See [Optimize JavaScript Bootup](/web/fundamentals/performance/optimizing-content-efficiency/javascript-startup-optimization/) and [Reduce JavaScript Payloads with Tree Shaking](/web/fundamentals/performance/optimizing-javascript/tree-shaking/), and [Reduce JavaScript Payloads with Code Splitting](/web/fundamentals/performance/optimizing-javascript/code-splitting/).
 
-Observe que esta métrica ainda está em estágio inicial e está sujeita a mudanças.
+### Tracking TTI in the real world {: #RUM }
 
+To measure when TTI actually occurs on your users' devices, see [Tracking TTI](/web/fundamentals/performance/user-centric-performance-metrics#tracking_tti). The code snippet describes how to programmatically access TTI data and submit it to Google Analytics.
 
-{# wf_devsite_translation #}
+TTI can be difficult to track in the wild. You may prefer to track [First Input Delay](/web/updates/2018/05/first-input-delay), instead.
+
+## More information {: #more-info }
+
+See [Definition](https://github.com/WICG/time-to-interactive#definition){: .external } for more details on how exactly TTI is calculated.
+
+This metric was previously called Consistently Interactive.
+
+Sources:
+
+* [Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/interactive.js){:.external}
+* [Time to Interactive Explainer](https://github.com/WICG/time-to-interactive){: .external }
+* [First Interactive and Consistently Interactive](https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c){: .external }
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

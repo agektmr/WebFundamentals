@@ -1,503 +1,510 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Dalam codelab ini, Anda akan mempelajari cara men-debug service worker menggunakan panel Aplikasi DevTools yang baru. Anda juga akan mempelajari cara menyimulasikan pemberitahuan Push untuk memastikan bahwa langganan Anda disetel dengan benar.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: In this codelab, you'll learn how to debug a service worker using the new DevTools Application panel. You'll also learn how to simulate a Push notification to verify your subscription is properly setup.
 
-{# wf_updated_on: 2016-10-19 #}
-{# wf_published_on: 2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# Men-debug Service Worker {: .page-title }
+# Debugging Service Workers {: .page-title }
 
 {% include "web/_shared/contributors/robdodson.html" %}
 
+## Introduction
 
+Service Workers give developers the amazing ability to handle spotty networks and create truly offline-first web apps. But being a new technology means they can sometimes be difficult to debug, especially as we wait for our tools to catch up.
 
-## Pengantar
+This codelab will walk you through creating a basic Service Worker and demonstrate how to use the new Application panel in Chrome DevTools to debug and inspect your worker.
 
-
-
-
-Service Worker memberikan developer kemampuan luar biasa untuk menangani jaringan turun-naik dan membuat aplikasi web pertama yang benar-benar offline. Namun menjadi sebuah teknologi baru berarti ini kadang-kadang sulit di-debug, terutama saat kami menunggu alat kami mengejar ketertinggalan.
-
-Codelab ini akan memandu Anda membuat Service Worker dasar dan menunjukkan cara menggunakan panel Application baru di Chrome DevTools untuk men-debug dan memeriksa worker.
-
-### Apa yang akan kita bangun?
+### What are we going to be building?
 
 ![6ffdd0864a80600.png](img/6ffdd0864a80600.png)
 
-Dalam code lab ini, Anda akan bekerja dengan aplikasi web progresif yang sangat sederhana dan mempelajari teknik yang bisa digunakan dalam aplikasi Anda sendiri ketika mengalami masalah.
+In this code lab you'll work with an extremely simple progressive web app and learn techniques you can employ in your own applications when you encounter issues.
 
-Karena code lab ini berfokus pada pembelajaran terhadap alat, jangan ragu untuk berhenti pada beberapa titik dan bereksperimen. Bermainlah dengan kode, segarkan laman, buka tab baru, dll. Cara terbaik untuk mempelajari alat debugging adalah dengan merusak sesuatu dan kemudian bekerja keras memperbaikinya.
+Because this code lab is focused on teaching you tools, feel free to stop at various points and experiment. Play with the code, refresh the page, open new tabs, etc. The best way to learn debugging tools is just to break things and get your hands dirty fixing them.
 
-### Apa yang akan Anda pelajari
+### What you'll learn
 
-* Cara memeriksa Service Worker dengan panel Application
-* Cara mengeksplorasi Cache dan IndexedDB
-* Cara menyimulasikan kondisi jaringan yang berbeda
-* Cara menggunakan pernyataan debugger dan breakpoint untuk men-debug Service Worker
-* Cara menyimulasikan kejadian Push
+* How to inspect a Service Worker with the Application panel
+* How to explore the Cache and IndexedDB
+* How to simulate different network conditions
+* How to use debugger statements and breakpoints to debug a Service Worker
+* How to simulate Push events
 
-### Apa yang Anda butuhkan
+### What you'll need
 
-* Chrome 52 atau di atasnya
-* Pasang [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), atau gunakan server web pilihan Anda.
-* Kode contoh
-* Editor teks
-* Pengetahuan dasar tentang HTML, CSS dan JavaScript
+* Chrome 52 or above
+* Install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), or use your own web server of choice.
+* The sample code
+* A text editor
+* Basic knowledge of HTML, CSS and JavaScript
 
-Codelab ini berfokus pada debugging Service Worker dan mengasumsikan beberapa pengetahuan dasar tentang bekerja dengan Service Worker. Beberapa konsep yang dipoles atau diblokir kodenya (misalnya gaya atau JavaScript yang tidak-relevan) disediakan bagi Anda cukup dengan salin dan tempel. Jika Anda baru dalam dunia Service Worker pastikan untuk [membaca API Primer](/web/fundamentals/primers/service-worker/) sebelum melanjutkan.
+This codelab is focused on debugging Service Workers and assumes some prior knowledge of working with Service Workers. Some concepts are glossed over or code blocks (for example styles or non-relevant JavaScript) are provided for you to simply copy and paste. If you are new to Service Workers be sure to [read through the API Primer](/web/fundamentals/primers/service-worker/) before proceeding.
 
+## Getting set up
 
-## Persiapan
+### Download the Code
 
+You can download all of the code for this codelab, by clicking the following button:
 
+[Download source code](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
 
+Unpack the downloaded zip file. This will unpack a root folder (`debugging-service-workers-master`), which contains one folder for each step of this codelab, along with all of the resources you will need.
 
-### Mengunduh Kode
+The `step-NN` folders contain the desired end state of each step of this codelab. They are there for reference. We'll be doing all our coding work in the directory called `work`.
 
-Anda bisa mengunduh semua kode untuk codelab ini, dengan mengeklik tombol berikut:
+### Install and verify web server
 
-[Tautan](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
+While you're free to use your own web server, this codelab is designed to work well with the Chrome Web Server. If you don't have that app installed yet, you can install it from the Chrome Web Store.
 
-Mengekstrak file zip yang diunduh. Ini akan mengekstrak folder root (`debugging-service-workers-master`), yang berisi satu folder untuk setiap langkah codelab, bersama dengan semua sumber daya yang Anda butuhkan.
+[Install Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
 
-Folder `step-NN` berisi status akhir yang diinginkan dari setiap langkah codelab ini. Folder tersebut digunakan sebagai referensi. Kita akan melakukan semua pekerjaan pengkodean di direktori yang disebut `work`.
+After installing the Web Server for Chrome app, click on the Apps shortcut on the bookmarks bar:
 
-### Memasang dan memverifikasi server web
+![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)<aside class="key-point">
 
-Meskipun Anda bebas menggunakan server web sendiri, codelab ini dirancang untuk bekerja dengan baik bersama Server Web Chrome. Jika Anda belum memasang aplikasi tersebut, Anda bisa memasangnya dari Toko Web Chrome.
+<p>More help:  <a href="https://support.google.com/chrome_webstore/answer/3060053?hl=en">Add and open Chrome apps</a></p>
 
-[Tautan](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
+</aside> 
 
-Setelah memasang aplikasi Web Server for Chrome, klik pada pintasan Apps di bilah bookmark: 
-
-![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)
-
-Pada jendela berikutnya, klik ikon Web Server: 
+In the ensuing window, click on the Web Server icon:
 
 ![dc07bbc9fcfe7c5b.png](img/dc07bbc9fcfe7c5b.png)
 
-Berikutnya, Anda akan melihat dialog ini, yang memungkinkan Anda mengonfigurasi server web lokal:
+You'll see this dialog next, which allows you to configure your local web server:
 
 ![433870360ad308d4.png](img/433870360ad308d4.png)
 
-Klik tombol __choose folder__, dan pilih folder `work`. Ini memungkinkan Anda untuk menyajikan pekerjaan yang sedang berlangsung melalui URL yang disorot dalam dialog server web (di bagian __Web Server URL(s)__).
+Click the **choose folder** button, and select the `work` folder. This will enable you to serve your work in progress via the URL highlighted in the web server dialog (in the **Web Server URL(s)** section).
 
-Di bawah Options, centang kotak di sebelah "Automatically show index.html", seperti yang ditampilkan di bawah ini:
+Under Options, check the box next to "Automatically show index.html", as shown below:
 
 ![8937a38abc57e3.png](img/8937a38abc57e3.png)
 
-Kemudian berhenti dan restart server dengan menggeser toggle yang berlabel "Web Server: STARTED" ke kiri dan kemudian kembali ke kanan.
+Then stop and restart the server by sliding the toggle labeled "Web Server: STARTED" to the left and then back to the right.
 
 ![daefd30e8a290df5.png](img/daefd30e8a290df5.png)
 
-Sekarang kunjungi situs pekerjaan dalam browser web Anda (dengan mengeklik Web Server URL yang disorot) dan Anda akan melihat laman yang terlihat seperti ini:
+Now visit your work site in your web browser (by clicking on the highlighted Web Server URL) and you should see a page that looks like this:
 
 ![693305d127d9fe80.png](img/693305d127d9fe80.png)
 
-Jelas sekali, aplikasi ini belum melakukan sesuatu yang menarik. Kita akan menambahkan fungsionalitas sehingga kita bisa memverifikasi bahwa ini bekerja secara offline di langkah berikutnya. 
+Obviously, this app is not yet doing anything interesting. We'll add functionality so we can verify it works offline in subsequent steps.<aside class="key-point">
 
+<p>From this point forward, all testing/verification should be performed using this web server setup. You'll usually be able to get away with simply refreshing your test browser tab.</p>
 
-## Memperkenalkan tab Application
+</aside> 
 
+## Introducing the Application tab
 
+### Inspecting the Manifest
 
+Building a Progressive Web Apps requires tying together a number of different core technologies, including Service Workers and Web App Manifests, as well as useful enabling technologies, like the Cache Storage API, IndexedDB, and Push Notifications. To make it easy for developers to get a coordinated view of each of these technologies the Chrome DevTools has incorporated inspectors for each in the new Application panel.
 
-### Memeriksa Manifes
+* Open the Chrome DevTools and click on the tab that says **Application**
 
-Membangun Progressive Web App memerlukan perpaduan sejumlah teknologi inti yang berbeda, termasuk Service Worker dan Manifes Aplikasi Web, serta teknologi pendukung, seperti Cache Storage API, IndexedDB, dan Pemberitahuan Push. Untuk memberi kemudahan bagi developer agar mendapatkan tampilan yang terkoordinasi untuk setiap teknologi, Chrome DevTools telah memasukkan pemeriksa untuk masing-masing teknologi dalam panel Application yang baru.
+![5d18df60c53a0420.png](img/5d18df60c53a0420.png)
 
-* Buka Chrome DevTools dan klik pada tab yang bertuliskan __Application__.
+Look in the sidebar and notice **Manifest** is currently highlighted. This view shows important information related to the `manifest.json` file such as its application name, start URL, icons, etc.
 
-![b380532368b4f56c.png](img/b380532368b4f56c.png)
-
-Lihat di bilah sisi dan perhatikan bahwa __Manifest__ saat ini sedang disorot. Tampilan ini menunjukkan informasi penting yang berkaitan dengan file `manifest.json` seperti nama aplikasi, URL awal, ikon, dll.
-
-Meskipun kita tidak akan membahasnya dalam codelab ini, perhatikan bahwa ada tombol __Add to homescreen__ yang bisa digunakan untuk menyimulasikan pengalaman menambahkan aplikasi ke homescreen pengguna.
+Although we won't be covering it in this codelab, note that there is an **Add to homescreen** button which can be used to simulate the experience of adding the app to the user's homescreen.
 
 ![56508495a6cb6d8d.png](img/56508495a6cb6d8d.png)
 
-### Memeriksa Service Worker
+### Inspecting the Service Workers
 
-Di masa lalu, pemeriksaan Service Worker mengharuskan pembongkaran internal Chrome dan yang pasti bukanlah pengalaman pengguna yang paling ramah. Semua itu berubah dengan tab __Application__ yang baru!
+In the past, inspecting a Service Worker required poking around in Chrome internals and was definitely not the most user friendly experience. All of that changes with the new **Application** tab!
 
-* Klik pada item menu __Service Workers__ di bawah item __Manifest__ yang saat ini dipilih
+* Click on the **Service Workers** menu item below the currently selected **Manifest** item
 
-![3dea544e6b44979d.png](img/3dea544e6b44979d.png)
+![d4eeba0a3c66a04.png](img/d4eeba0a3c66a04.png)
 
-Tampilan __Service Workers__ memberikan informasi tentang Service Worker yang aktif dalam posisinya saat ini. Di sepanjang baris atas ada serangkaian kotak centang.
+The **Service Workers** view provides information about Service Workers which are active in the current origin. Along the top row there are a series of checkboxes.
 
-* __Offline __- Akan menyimulasikan saat terputus dari jaringan. Hal ini berguna untuk dengan cepat memverifikasi bahwa penangan fetch Service Worker Anda bekerja dengan benar.
-* __Update on reload__ - Akan memaksa Service Worker saat ini agar diganti oleh Service Worker baru (jika developer telah membuat pembaruan untuk `service-worker.js`). Biasanya browser akan menunggu sampai pengguna menutup semua tab yang berisi situs ini sebelum memperbarui ke Service Worker yang baru.
-* __Bypass for network__ - Akan memaksa browser untuk mengabaikan Service Worker aktif dan mengambil sumber daya dari jaringan. Hal ini sangat berguna dalam situasi saat Anda ingin bekerja pada CSS atau JavaScript dan tidak perlu mengkhawatirkan tentang Service Worker yang secara tidak sengaja melakukan caching dan mengembalikan file lama.
-* __Show all__ - Akan menampilkan daftar semua Service Worker aktif tidak peduli posisinya.
+* **Offline** - Will simulate being disconnected from the network. This can be useful to quickly verify that your Service Worker fetch handlers are working properly.
+* **Update on reload** - Will force the current Service Worker to be replaced by a new Service Worker (if the developer has made updates to their `service-worker.js`). Normally the browser will wait until a user closes all tabs that contain the current site before updating to a new Service Worker.
+* **Bypass for network** - Will force the browser to ignore any active Service Worker and fetch resources from the network. This is extremely useful for situations where you want to work on CSS or JavaScript and not have to worry about the Service Worker accidentally caching and returning old files.
+* **Show all** - Will show a list of all active Service Workers regardless of the origin.
 
-Di bawah ini Anda akan melihat informasi yang berkaitan dengan Service Worker yang aktif saat ini (jika ada). Salah satu bidang yang paling berguna adalah bidang __Status__, yang menunjukkan status Service Worker saat ini. Karena ini adalah pertama kalinya aplikasi dimulai, Service Worker berhasil dipasang dan diaktifkan, sehingga menampilkan lingkaran hijau untuk menunjukkan bahwa semuanya berjalan baik.
+Below that you will see information relating to the current active Service Worker (if there is one). One of the most useful fields is the **Status** field, which shows the current state of the Service Worker. Since this is the first time starting the app, the current Service Worker has successfully installed and been activated, so it displays a green circle to indicate everything's good.<aside class="key-point">
 
-Perhatikan nomor ID di sebelah indikator status berwarna hijau. Itu adalah ID untuk Service Worker yang sedang aktif. Ingat atau tuliskan hal tersebut karena kami akan menggunakannya untuk perbandingan sebentar lagi.
+<p>If you had installed a service worker on this localhost port previously, you will see an orange circle as well, indicating that the new service worker is waiting to activate. If this is the case, click <strong>skipWaiting</strong>.</p>
 
-* Dalam editor teks Anda, buka file `service-worker.js`
+</aside> 
 
-Kode untuk Service Worker saat ini cukup sederhana, hanya beberapa log konsol.
+Note the ID number next to the green status indicator. That's the ID for the currently active Service Worker. Remember it or write it down as we'll use it for a comparison in just a moment.
+
+* In your text editor, open the `service-worker.js` file
+
+The code for the current Service Worker is quite simple, just a couple of console logs.
 
     self.addEventListener('install', function(event) {
       console.log('Service Worker installing.');
     });
     
     self.addEventListener('activate', function(event) {
-      console.log('Service Worker activating.');  
-    });
-
-Jika Anda beralih lagi ke DevTools dan melihat di Konsol, Anda bisa melihat bahwa kedua log telah dihasilkan dengan sukses.
-
-![5fcfd389f5357c09.png](img/5fcfd389f5357c09.png)
-
-Mari kita memperbarui kode bagi `service-worker.js` untuk melihatnya melalui perubahan daur hidup.
-
-* Lakukan pembaruan komentar di `service-worker.js` sehingga mereka berisi pesan baru
-
-    self.addEventListener('install', function(event) {
-      console.log('A *new* Service Worker is installing.');
+      console.log('Service Worker activating.');
     });
     
-    self.addEventListener('activate', function(event) {
-      console.log('Finally active. Ready to start serving content!');  
-    });
 
-* Segarkan laman dan buka konsol di DevTools
+If you switch back to the DevTools and look in the Console you can see that both logs have been output successfully.
 
-Konsol membuat log `A *new* Service Worker is installing.` namun tidak menunjukkan pesan ke-2 tentang Service Worker baru yang sedang aktif.
+![a8c1d1bb2a14eb24.png](img/a8c1d1bb2a14eb24.png)
 
-* Beralih ke tab Application di DevTools
+Let's update the code for the `service-worker.js` to watch it go through a lifecycle change.
 
-Pada tab Application sekarang ada dua indikator status, masing-masing merepresentasikan status dua Service Worker kita.
+* Update the comments in `service-worker.js` so they contain new messages
+    
+    self.addEventListener('install', function(event) { console.log('A *new* Service Worker is installing.'); });
+    
+    self.addEventListener('activate', function(event) { console.log('Finally active. Ready to start serving content!'); });
 
-![2e41dbf21437944c.png](img/2e41dbf21437944c.png)
+* Refresh the page and open the console in DevTools
 
-Perhatikan ID Service Worker pertama. Itu harus cocok dengan ID Service Worker asli. Ketika Anda memasang Service Worker baru, worker sebelumnya tetap aktif sampai waktu berikutnya pengguna mengunjungi laman.
+The console logs `A *new* Service Worker is installing.` but doesn't show the 2nd message about the new Service Worker being active.
 
-Indikator status kedua menunjukkan Service Worker baru yang kami edit. Sekarang Service Worker ini dalam status menunggu.
+* Switch to the Application tab in DevTools
 
-Cara termudah untuk memaksa Service Worker baru agar aktif adalah dengan tombol __skipWaiting__.
+In the Application tab there are now two status indicators, each representing the state of our two Service Workers.
+
+![67548710d5ca4936.png](img/67548710d5ca4936.png)
+
+Note the ID of the first Service Worker. It should match the original Service Worker ID. When you install a new Service Worker, the previous worker remains active until the next time the user visits the page.
+
+The second status indicator shows the new Service Worker we just edited. Right now it's in a waiting state.<aside class="key-point">
+
+<p><strong>Try it!</strong></p>
+
+<p>If a user has multiple tabs open for the same page, it will continue using the old Service Worker until those tabs are closed. Try opening a few more tabs and visiting this same page and notice how the Application panel still shows the old Service Worker as active.</p>
+
+</aside> 
+
+An easy way to force the new Service Worker to activate is with the **skipWaiting** button.
 
 ![7a60e9ceb2db0ad2.png](img/7a60e9ceb2db0ad2.png)
 
-* Klik tombol skipWaiting dan kemudian beralih ke Konsol
+* Click the skipWaiting button and then switch to the Console
 
-Perhatikan bahwa sekarang konsol mencatat log pesan dari penangan kejadian `activate`
+Note that the console now logs the message from the `activate` event handler:
 
-`Finally active. Ready to start serving content!`
+`Finally active. Ready to start serving content!`<aside class="key-point">
 
+<p><strong>Skip waiting</strong></p>
 
-## Menjelajahi cache
+<p>Having to click the <code>skipWaiting</code> button all the time can get a little annoying. If you'd like your Service Worker to force itself to become active you can include the line <code>self.skipWaiting()</code> in the <code>install</code> event handler. You can learn more about the <code>skipWaiting</code> method in  <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-skipwaiting">the Service Workers spec</a>.</p>
 
+</aside> 
 
+## Exploring the cache
 
+Managing your own offline file cache with a Service Worker is an incredible super power. The new **Application** panel has a number of useful tools for exploring and modifying your stored resources which can be very helpful during development time.
 
-Mengelola sendiri cache file offline Anda dengan Service Worker adalah kekuatan super yang luar biasa. Panel __Application__ yang baru memiliki beberapa alat yang berguna untuk menjelajahi dan memodifikasi sumber daya tersimpan yang bisa sangat membantu selama waktu development.
+### Add caching to your Service Worker
 
-### Menambahkan caching untuk Service Worker Anda
+Before you can inspect the cache you'll need to write a little code to store some files. Pre-caching files during the Service Worker's install phase is a useful technique to guarantee that crucial resources are available to user if they happen to go offline. Let's start there.
 
-Sebelum bisa memeriksa cache, Anda harus menulis sedikit kode untuk menyimpan beberapa file. Pre-caching file selama fase pemasangan Service Worker adalah teknik yang berguna untuk menjamin bahwa sumber daya penting tersedia bagi pengguna jika mereka kebetulan sedang offline. Mari kita mulai dari sana.
-
-* Sebelum memperbarui `service-worker.js`, buka panel __Application__ DevTools, masuk ke menu __Service Workers__, dan centang kotak yang bertuliskan __Update on reload__
+* Before updating the `service-worker.js`, open the DevTools **Application** panel, navigate to the **Service Workers** menu, and check the box that says **Update on reload**
 
 ![d4bcfb0983246797.png](img/d4bcfb0983246797.png)
 
-Trik berguna ini akan memaksa laman untuk menggunakan Service Worker terbaru, sehingga Anda tidak perlu mengeklik pilihan __skipWaiting__ setiap kali Anda ingin membuat perubahan terhadap Service Worker.
+This useful trick will force the page to use whatever Service Worker is the latest, so you don't have to click the **skipWaiting** option every time you want to make changes to your Service Worker.
 
-* Berikutnya, perbarui kode dalam `service-worker.js` sehingga terlihat seperti ini
+* Next, update the code in `service-worker.js` so it looks like this
 
-```
-var CACHE_NAME = 'my-site-cache-v1';
-var urlsToCache = [
-  '/',
-  '/styles/main.css',
-  '/scripts/main.js',
-  '/images/smiley.svg'
-];
+    var CACHE_NAME = 'my-site-cache-v1';
+    var urlsToCache = [
+      '/',
+      '/styles/main.css',
+      '/scripts/main.js',
+      '/images/smiley.svg'
+    ];
+    
+    self.addEventListener('install', function(event) {
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
+    self.addEventListener('activate', function(event) {
+      console.log('Finally active. Ready to start serving content!');
+    });
+    
 
-self.addEventListener('install', function(event) {
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
+* Refresh the page
 
-self.addEventListener('activate', function(event) {
-  console.log('Finally active. Ready to start serving content!');  
-});
-```
+In the Application panel you might notice a warning shows up. This seems scary but it's just telling you that your old Service Worker was forcibly updated. Since that was the intention, this is totally O.K., but it can serve as a useful warning so you don't forget to turn the checkbox off when you're done editing the `service-worker.js` file.
 
-* Segarkan laman
+![c6363ac5b51e06b1.png](img/c6363ac5b51e06b1.png)
 
-Anda mungkin melihat sebuah Kesalahan muncul pada panel Application. Ini terlihat menakutkan, namun mengeklik tombol __details__ memperlihatkan bahwa itu hanyalah panel __Application__ yang memberi tahu bahwa Service Worker Anda yang lama secara paksa diperbarui. Karena itu memang tujuannya, ini sepenuhnya AMAN, namun bisa menjadi peringatan yang berguna sehingga Anda tidak lupa menonaktifkan kotak centang ketika Anda selesai mengedit file `service-worker.js`.
+### Inspecting Cache Storage
 
-![a039ca69d2179199.png](img/a039ca69d2179199.png)
+Notice that the **Cache Storage** menu item in the **Application** panel now has a caret indicating it can be expanded. If you don't see it, right click on **Cache Storage** and choose **Refresh Caches** (this doesn't actually do anything to the caches, it just updates the DevTools UI).
 
-### Memeriksa Penyimpanan Cache
+* Click to expand the **Cache Storage** menu, then click on `my-site-cache-v1`
 
-Perhatikan bahwa item menu __Cache Storage__ di panel __Application__ sekarang memiliki tanda sisipan yang menunjukkan bahwa itu dapat diluaskan.
+![7990023bd9e8fe7a.png](img/7990023bd9e8fe7a.png)
 
-* Klik untuk meluaskan menu __Cache Storage__, lalu klik `my-site-cache-v1`
-
-![af2b3981c63b1529.png](img/af2b3981c63b1529.png)
-
-Di sini Anda bisa melihat semua file yang di-cache oleh Service Worker. Jika Anda perlu menghapus file dari cache, Anda bisa klik-kanan di atasnya dan pilih opsi __delete__ dari menu konteks. Demikian pula, Anda bisa menghapus seluruh cache dengan mengeklik-kanan pada `my-site-cache-v1` dan memilih delete.
+Here you can see all of the files cached by the Service Worker. If you need to remove a file from the cache you can right-click on it and select the **delete** option from the context menu. Similarly, you can delete the entire cache by right-clicking on `my-site-cache-v1` and choosing delete.
 
 ![5c8fb8f7948066e6.png](img/5c8fb8f7948066e6.png)
 
-### Membersihkan slate
+### Cleaning the slate
 
-Seperti yang mungkin Anda perhatikan, bersama dengan __Cache Storage__, ada sejumlah item menu lain yang berkaitan dengan sumber daya yang tersimpan, termasuk: Local Storage, Session Storage, IndexedDB, Web SQL, Cookies, dan Application Cache ("AppCache"). Memiliki kontrol granular dari masing-masing sumber daya ini dalam satu panel akan sangat berguna! Namun jika Anda berada dalam sebuah skenario di mana Anda ingin menghapus semua sumber daya yang tersimpan, pasti akan sangat melelahkan bila harus mengunjungi setiap item menu dan menghapus isinya. Sebagai gantinya, Anda bisa menggunakan opsi __Clear storage__ untuk membersihkan slate dalam satu gerakan (perhatikan bahwa ini juga akan membatalkan pendaftaran semua Service Worker).
+As you may have noticed, along with **Cache Storage**, there are a number of other menu items related to stored resources, including: Local Storage, Session Storage, IndexedDB, Web SQL, Cookies, and Application Cache ("AppCache"). Having granular control of each of these resources all in one panel is extremely useful! But if you were in a scenario where you wanted to delete all of the stored resources it would be pretty tedious to have to visit each menu item and delete their contents. Instead, you can use the **Clear storage** option to clean the slate in one fell swoop (note that this will also unregister any Service Workers).
 
-* Pilih opsi menu __Clear storage__
-* Klik tombol __Clear site data__ untuk menghapus semua sumber daya yang tersimpan
+* Select the **Clear storage** menu option
+* Click the **Clear selected** button to delete all stored resources
 
-![59838a73a2ea2aaa.png](img/59838a73a2ea2aaa.png)
+![744eb12fec050d31.png](img/744eb12fec050d31.png)
 
-Jika Anda kembali dan mengeklik `my-site-cache-v1`, Anda sekarang akan melihat bahwa semua file yang tersimpan telah dihapus.
+If you go back to **Cache Storage** you'll now see that all the stored files have been deleted.
 
-![317d24238f05e69c.png](img/317d24238f05e69c.png)
+![3d8552f02b82f4d5.png](img/3d8552f02b82f4d5.png)<aside class="key-point">
 
-__Ada apa dengan roda gigi?__
+<p><strong>TIP:</strong> You can also use a new Incognito window for testing and debugging Service Workers. When the Incognito window is closed, Chrome will remove any cached data or installed Service Worker, ensuring that you always start from a clean state.</p>
 
-Karena Service Worker mampu membuat permintaan jaringan sendiri, akan sangat berguna saat bisa mengidentifikasi lalu lintas jaringan yang berasal dari worker itu sendiri.
+</aside> 
 
-* Selagi `my-site-cache-v1` masih kosong, beralihlah ke panel Network
-* Segarkan laman
+**What's with the gear?**
 
-Pada panel Network, Anda akan melihat serangkaian permintaan awal untuk file seperti `main.css`, diikuti oleh ronde permintaan kedua, dengan awalan ikon roda gigi, yang tampaknya mengambil aset yang sama.
+Because the Service Worker is able to make its own network requests, it can be useful to identify network traffic which originated from the worker itself.
 
-![2ba393cf3d41e087.png](img/2ba393cf3d41e087.png)
+* While `my-site-cache-v1` is still empty, switch over to the Network panel
+* Refresh the page
 
-Ikon roda gigi menandakan bahwa permintaan tersebut datang dari Service Worker itu sendiri. Secara khusus, ini adalah permintaan yang dibuat oleh penangan `install` Service Worker untuk mengisi cache offline.
+In the Network panel, you should see an initial set of request for files like `main.css`, followed by a second round of requests, prefixed with a gear icon, which seem to fetch the same assets.
 
+![8daca914fe2d9dc7.png](img/8daca914fe2d9dc7.png)
 
-## Menyimulasikan kondisi jaringan yang berbeda
+The gear icon signifies that these requests came from the Service Worker itself. Specifically, these are the requests being made by the Service Worker's `install` handler to populate the offline cache.<aside class="key-point">
 
+<p><strong>Learn More</strong>: For a deeper understanding of the Network panel identifies Service Worker traffic take a look at  <a href="http://stackoverflow.com/a/33655173/385997">this StackOverflow discussion</a>.</p>
 
+</aside> 
 
+## Simulating different network conditions
 
-Salah satu fitur luar biasa dari Service Worker adalah kemampuan mereka untuk menyajikan materi yang di-cache untuk pengguna bahkan ketika mereka offline. Untuk memverifikasi semuanya bekerja seperti yang direncanakan, mari kita menguji beberapa alat throttling jaringan yang disediakan Chrome.
+One of the killer features of Service Workers is their ability to serve cached content to users even when they're offline. To verify everything works as planned, let's test out some of the network throttling tools that Chrome provides.
 
-### Menyajikan permintaan saat offline
+### Serving requests while offline
 
-Agar bisa menyajikan materi offline, Anda harus menambahkan penangan `fetch` untuk `service-worker.js` Anda
+In order to serve offline content, you'll need to add a `fetch` handler to your `service-worker.js`
 
-* Tambahkan kode berikut ke `service-worker.js` setelah penangan `activate`
+* Add the following code to `service-worker.js` just after the `activate` handler
 
-```
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-```
+    self.addEventListener('fetch', function(event) {
+      event.respondWith(
+        caches.match(event.request)
+          .then(function(response) {
+            // Cache hit - return response
+            if (response) {
+              return response;
+            }
+            return fetch(event.request);
+          }
+        )
+      );
+    });
+    
 
-* Beralihlah ke panel __Application__ dan verifikasi bahwa __Update on reload__ masih tercentang
-* Segarkan laman untuk memasang Service Worker yang baru
-* Hapus centang __Update on reload__
-* Centang __Offline__
+* Switch to the **Application** panel and verify that **Update on reload** is still checked
+* Refresh the page to install the new Service Worker
+* Uncheck **Update on reload**
+* Check **Offline**
 
-Panel __Application__ Anda akan terlihat seperti ini sekarang:
+Your **Application** panel should look like this now:
 
-![873b58278064b627.png](img/873b58278064b627.png)
+![54d7f786f2a8838e.png](img/54d7f786f2a8838e.png)
 
-Perhatikan bahwa panel __Network__ sekarang memiliki tanda peringatan berwarna kuning untuk menunjukkan bahwa Anda sedang offline (dan untuk mengingatkan bahwa Anda harus menghapus centang pada kotak centang jika ingin melanjutkan pengembangan dengan jaringan).
+Notice the **Network** panel now has a yellow warning sign to indicate that you're offline (and to remind you that you'll want to uncheck that checkbox if you want to continue developing with the network).
 
-Dengan penangan `fetch` sudah di tempatnya, dan aplikasi Anda disetel ke __Offline__, sekarang adalah momen yang menentukan. Segarkan laman dan jika semuanya berjalan dengan baik, Anda seharusnya tetap bisa melihat materi situs, meskipun tidak ada yang datang dari jaringan. Anda bisa beralih ke panel __Network__ untuk memverifikasi bahwa semua sumber daya yang disajikan berasal dari Cache Storage. Perhatikan pada kolom __Size__, diberitahukan bahwa sumber daya tersebut datang `(from Service Worker)`. Sinyal tersebut yang memberi tahu kita bahwa Service Worker mencegat permintaan, dan menyajikan respons dari cache bukannya mengakses jaringan.
+With your `fetch` handler in place, and your app set to **Offline**, now is the moment of truth. Refresh the page and if all goes well you should continue to see site content, even though nothing is coming from the network. You can switch to the **Network** panel to verify that all of the resources are being served from Cache Storage. Notice in the **Size** column it says these resources are coming `(from Service Worker)`. That's the signal that tells us the Service Worker intercepted the request, and served a response from the cache instead of hitting the network.
 
-![a6f485875ca088db.png](img/a6f485875ca088db.png)
+![96f2065b2f0adece.png](img/96f2065b2f0adece.png)
 
-Anda akan melihat bahwa ada permintaan yang gagal (seperti untuk Service Worker baru atau `manifest.json`). Hal tersebut bukanlah sebuah masalah dan bisa diperkirakan.
+You'll notice that there are failed requests (like for a new Service Worker or `manifest.json`). That's totally fine and expected.
 
-### Pengujian jaringan lambat atau naik-turun
+### Testing slow or flaky networks
 
-Karena kita sebagai pengguna perangkat seluler mendapat banyak kualitas koneksi yang berbeda, kita terus bergerak di antara berbagai status konektivitas. Tidak hanya itu, ada banyak tempat di dunia yang kecepatan standar jaringannya adalah 3G dan 2G. Untuk memverifikasi bahwa aplikasi kita bekerja dengan baik untuk pengguna ini, kita harus menguji bahwa aplikasi tetap berkinerja tinggi bahkan pada koneksi lambat.
+Because we use our mobile devices in a plethora of different contexts, we're constantly moving between various states of connectivity. There are also many parts of the world where 3G and 2G speeds are the norm. To verify that our app works well for these consumers, we should test that it is performant even on a slower connection.
 
-Untuk memulai, mari kita menyimulasikan bagaimana aplikasi akan berfungsi pada jaringan yang lambat ketika Service Worker tidak bekerja.
+To start, let's simulate how the application works on a slow network when the Service Worker is not in play.
 
-* Dari panel __Application__, hapus centang __Offline__
-* Centang __Bypass for network__
+* From the **Application** panel, uncheck **Offline**
+* Check **Bypass for network**
 
-![739dc5811e4aa937.png](img/739dc5811e4aa937.png)
+![d9ea0e24a6ef374e.png](img/d9ea0e24a6ef374e.png)
 
-Opsi __Bypass for network__ akan memberi tahu browser untuk melewati service worker saat dibutuhkan untuk membuat permintaan jaringan. Ini berarti tidak akan ada yang bisa datang dari Cache Storage, ini seperti jika kita sama sekali tidak memasang Service Worker.
+The **Bypass for network** option will tell the browser to skip our service worker when it needs to make a network request. This means nothing will be able to come from Cache Storage, it will be as if we have no Service Worker installed at all.
 
-* Berikutnya, beralih ke panel __Network__
-* Gunakan menu tarik-turun __Network Throttle__ untuk menyetel kecepatan jaringan ke `Regular 2G`
+* Next, switch to the **Network** panel
+* Use the **Network Throttle** dropdown to set the network speed to `Regular 2G`
 
-Menu tarik-turun __Network Throttle__ terletak di bagian kanan atas panel __Network__, tepat di sebelah kotak centang __Offline__ pada panel __Network__. Secara default ini disetel ke `No throttling`.
+The **Network Throttle** dropdown is located in the top right of the **Network** panel, right next to the **Network** panel's own **Offline** checkbox. By default it is set to `No throttling`.
 
-![c59b54a853215598.png](img/c59b54a853215598.png)
+![662a15b44afb6633.png](img/662a15b44afb6633.png)
 
-* Dengan kecepatan disetel ke `Regular 2G`, segarkan laman
+* With the speed set to `Regular 2G`, refresh the page
 
-Perhatikan bahwa waktu respons meningkat tinggi! Sekarang setiap aset membutuhkan waktu beberapa ratus milidetik untuk diunduh.
+Notice the response times jump way up! Now each asset takes several hundred milliseconds to download.
 
-![70e461338a0bb051.png](img/70e461338a0bb051.png)
+![9774a4c588a6604c.png](img/9774a4c588a6604c.png)
 
-Mari kita lihat bagaimana keadaan bisa berbeda bila Service Worker kembali diaktifkan.
+Let's see how things differ with our Service Worker back in play.
 
-* Dengan jaringan masih disetel ke `Regular 2G`, beralihlah kembali ke tab __Application__
-* Hapus centang pada kotak centang __Bypass for network__
-* Beralih kembali ke panel __Network__
-* Segarkan laman
+* With the network still set to `Regular 2G`, switch back to the **Application** tab
+* Uncheck the **Bypass for network** checkbox
+* Switch back to the **Network** panel
+* Refresh the page
 
-Sekarang waktu respons menjadi super cepat hanya beberapa milidetik per sumber daya. Untuk pengguna di jaringan lambat, ini adalah perbedaan seperti malam dan siang!
+Now our response times jump down to a blazing fast few milliseconds per resource. For users on slower networks this is a night and day difference!
 
-![f0f6d3b0a1b1f18d.png](img/f0f6d3b0a1b1f18d.png)
+![44253f3de0e694b8.png](img/44253f3de0e694b8.png)<aside class="warning">
 
+<p>Before proceeding make sure you set the <strong>Network Throttle</strong> back to <code>No throttling</code></p>
 
-## Ingat, ini hanyalah JavaScript
+</aside> 
 
+## Remember, it's just JavaScript
 
+Service Workers can feel like magic, but under the hood they're really just regular JavaScript files. This means you can use existing tools like `debugger` statements and breakpoints to debug them.
 
+### Working with the debugger
 
-Service Worker bisa terasa seperti keajaiban, namun pada dasarnya mereka hanyalah file JavaScript biasa. Ini berarti Anda bisa menggunakan alat yang ada seperti pernyataan `debugger` dan breakpoint untuk mendebug-nya.
+Many developers rely on good old `console.log()` when they have an issue in their app. But there's a much more powerful tool available in the toolbox: `debugger`.
 
-### Bekerja dengan debugger
+Adding this one line to your code will pause execution and open up the **Sources** panel in the DevTools. From here you can step through functions, inspect objects, and even use the console to run commands against the current scope. This can be especially useful for debugging a cranky Service Worker.
 
-Banyak developer mengandalkan `console.log()` lama yang bagus ketika mereka memiliki masalah dengan aplikasi. Tapi ada alat (bantu) yang jauh lebih kuat yang tersedia di toolbox: `debugger`.
+To test it out, let's debug our `install` handler.
 
-Menambahkan satu baris ini ke kode Anda akan menjeda eksekusi dan membuka panel __Sources__ di DevTools. Dari sini Anda bisa melangkah melalui fungsi, memeriksa objek, dan bahkan menggunakan konsol untuk menjalankan perintah terhadap cakupan saat ini. Ini sangat berguna terutama untuk men-debug Service Worker yang rewel.
+* Add a `debugger` statement to the beginning of your `install` handler in `service-worker.js`
 
-Untuk mengujinya, mari kita men-debug penangan `install` kita.
+    self.addEventListener('install', function(event) {
+      debugger;
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
 
-* Tambahkan pernyataan `debugger` ke awal penangan `install` Anda di `service-worker.js`
+* Refresh the page
 
-```
-self.addEventListener('install', function(event) {
-  debugger;
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
-```
+The application will pause execution and switch panels over to **Sources** where the `debugger` statement is now highlighted in `service-worker.js`.
 
-* Dari panel __Application__, segarkan laman
-* Klik pada __skipWaiting__ untuk mengaktifkan Service Worker baru
-* Segarkan laman lagi untuk mengizinkan penangan `fetch` berjalan
+![2f20258491acfaa8.png](img/2f20258491acfaa8.png)<aside class="key-point">
 
-Aplikasi akan menjeda eksekusi dan beralih panel ke __Sources__ dengan pernyataan `debugger` sekarang disorot di `service-worker.js`.
+<p><strong>Learn More</strong>: A full explanation of the <strong>Sources</strong> panel is outside the scope of this codelab but you can  <a href="/web/tools/chrome-devtools/debug/">learn more about the debugging capabilities of the DevTools</a> on the Google Developers site.</p>
 
-![d960b322c020d6cc.png](img/d960b322c020d6cc.png)
+</aside> 
 
-Ada banyak sekali alat berguna yang tersedia dalam tampilan ini. Salah satu alat (bantu) tersebut adalah pemeriksa __Scope__, yang memungkinkan kita melihat status objek sekarang dalam cakupan fungsi saat ini.
+There are a ton of useful tools available in this view. One such tool is the **Scope** inspector, which let's us see the current state of objects in the current function's scope.
 
-* Klik pada menu tarik-turun `event: ExtendableEvent`
+* Click on the `event: InstallEvent` dropdown
 
-![5116146f838a566.png](img/5116146f838a566.png)
+![3fa715abce820cea.png](img/3fa715abce820cea.png)
 
-Dari sini Anda bisa mempelajari segala macam informasi yang berguna tentang objek dalam-cakupan saat ini. Misalnya, melihat bidang `type` Anda bisa memverifikasi bahwa objek kejadian saat ini adalah untuk kejadian `install`.
+From here you can learn all sorts of useful information about the current in-scope objects. For instance, looking at the `type` field you can verify that the current event object is for the `install` event.
 
-### Menggunakan breakpoint sebagai gantinya
+* when you've finished exploring the **Scope** inspector, press the Resume button
 
-Bila Anda sudah memeriksa kode di panel __Sources__, Anda mungkin akan lebih mudah menyetel breakpoint, dibandingkan menambahkan pernyataan `debugger` ke file Anda yang sesungguhnya. Sebuah breakpoint mempunyai tujuan yang sama (membekukan eksekusi dan memungkinkan Anda memeriksa aplikasi) namun bisa disetel dari dalam DevTools.
+![97cd70fb204fa26b.png](img/97cd70fb204fa26b.png)
 
-Untuk menyetel breakpoint, Anda harus mengeklik nomor baris tempat Anda menginginkan aplikasi menghentikan eksekusi.
+This allows the script to resume executing after the break. Finally, let's complete the activation of the new service worker.
 
-* Dari panel __Sources__, gulir bawah ke baris 25 dari `service-worker.js` dan klik pada nomor baris
+* Return to the **Service Workers** section of the **Application** panel
+* Click on **skipWaiting** to activate the new Service Worker
 
-![da7b5f76723ca525.png](img/da7b5f76723ca525.png)
+### Using breakpoints instead
 
-Ini akan menyetel breakpoint pada awal penangan `fetch` sehingga Anda bisa memeriksa objek kejadiannya.
+If you're already inspecting your code in the **Sources** panel, you may find it easier to set a breakpoint, versus adding `debugger` statements to your actual files. A breakpoint serves a similar purpose (it freezes execution and lets you inspect the app) but it can be set from within DevTools itself.
 
-* Segarkan laman
+To set a breakpoint you need to click the line number where you'd like the application to halt execution.
 
-Perhatikan bahwa, mirip dengan ketika Anda menggunakan pernyataan `debugger`, eksekusi kini berhenti pada baris dengan breakpoint. Ini berarti Anda sekarang bisa memeriksa objek `FetchEvent` yang melewati aplikasi Anda dan menentukan sumber daya yang diminta.
+* From the **Sources** panel, scroll down to line 39 of `service-worker.js` and click on the line number
 
-* Dalam pemeriksa __Scope__, luaskan objek `event`
-* Luaskan objek `request`
-* Perhatikan properti `url`
+![dabccb06c7231b3e.png](img/dabccb06c7231b3e.png)
+
+This will set a breakpoint at the beginning of the `fetch` handler so you can inspect its event object.
+
+* Refresh the page
+
+Notice that, similar to when you used the `debugger` statement, execution has now stopped on the line with the breakpoint. This means you can now inspect the `FetchEvent` objects passing through your app and determine what resources they were requesting.
+
+* In the **Scope** inspector, expand the `event` object
+* Expand the `request` object
+* Note the `url` property
 
 ![f9b0c00237b4400d.png](img/f9b0c00237b4400d.png)
 
-Anda bisa melihat bahwa `FetchEvent` meminta sumber daya pada `http://127.0.0.1:8887/`, yang merupakan `index.html` kita. Karena aplikasi menangani banyak permintaan `fetch`, Anda bisa meninggalkan breakpoint di tempatnya dan melanjutkan eksekusi. Ini akan memungkinkan Anda memeriksa setiap `FetchEvent` saat melewati aplikasi. Teknik yang sangat berguna untuk memeriksa dengan sangat detail semua permintaan dalam aplikasi Anda.
+You can see that this `FetchEvent` was requesting the resource at `http://127.0.0.1:8887/`, which is our `index.html`. Because the app will handle many `fetch` requests, you can leave the breakpoint in place and resume execution. This will let you inspect each `FetchEvent` as it passes through the app. A very useful technique for getting a fine grained look at all the requests in your app.
 
-* Tekan tombol __Resume__ untuk mengizinkan eksekusi skrip dilanjutkan
+* Press the **Resume** button to allow script execution to continue
 
-![ce7b5e8df4e8bc07.png](img/ce7b5e8df4e8bc07.png)
+![66b08c42b47a9987.png](img/66b08c42b47a9987.png)
 
-Setelah beberapa saat, eksekusi akan berhenti sebentar pada breakpoint yang sama. Periksa properti `event.request.url` dan perhatikan bahwa itu sekarang menampilkan `http://127.0.0.1:8887/styles/main.css`. Anda bisa melanjutkan cara ini untuk melihatnya meminta `smiley.svg`, `main.js`, dan yang terakhir `manifest.json`.
+After a moment, execution will pause on the same breakpoint. Check the `event.request.url` property and note it now displays `http://127.0.0.1:8887/styles/main.css`. You can continue in this way to watch it request `smiley.svg`, `main.js`, and finally the `manifest.json`.
 
+When you are finished exploring, remove any breakpoints and comment out the `debugger` call so that they don't interfere with the rest of the lab.
 
-## Menguji pemberitahuan Push
+## Testing Push notifications
 
+Push notifications are an important part of creating an engaging experience. Because notifications require coordination between an application server, a messaging service (like Google Cloud Messaging), and your Service Worker, it can be useful to test the Service Worker in isolation first to verify it is setup properly.
 
+### Adding Push support
 
+You may have noticed a button in the center of the application asking for the user to **Subscribe for Push Notifications**. This button is already wired up to request the Push notification permission from the user when clicked.
 
-Pemberitahuan push adalah bagian penting dari menciptakan pengalaman yang menarik. Karena notifikasi memerlukan koordinasi antara server aplikasi, layanan pesan (seperti Google Cloud Messaging), dan Service Worker Anda, ada baiknya menguji Service Worker secara tersendiri terlebih dulu untuk memverifikasi bahwa itu telah disetel dengan benar.
+![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)<aside class="warning">
 
-### Menambahkan dukungan Push
+<p>The code used to set up this Push subscription is just for demo purposes and should not be used in production. For a thorough guide on setting up Push notifications  <a href="/web/fundamentals/engage-and-retain/push-notifications/">see this post</a> on the Google Developers site.</p>
 
-Anda mungkin memerhatikan tombol di tengah aplikasi yang meminta pengguna untuk __Subscribe for Push Notifications__. Tombol ini sudah disambungkan untuk meminta izin pemberitahuan Push dari pengguna saat diklik.
+</aside> 
 
-![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)
+The only remaining step is to add support for the `push` event to `service-worker.js`.
 
-Satu-satunya langkah yang tersisa adalah menambahkan dukungan untuk kejadian `push` ke `service-worker.js`.
+* Open `service-worker.js` and add the following lines after the `fetch` handler
 
-* Buka `service-worker.js` dan tambahkan baris berikut setelah penangan `fetch`
+    self.addEventListener('push', function(event) {
+      var title = 'Yay a message.';
+      var body = 'We have received a push message.';
+      var icon = '/images/smiley.svg';
+      var tag = 'simple-push-example-tag';
+      event.waitUntil(
+        self.registration.showNotification(title, {
+          body: body,
+          icon: icon,
+          tag: tag
+        })
+      );
+    });
+    
 
-```
-self.addEventListener('push', function(event) {  
-  var title = 'Yay a message.';  
-  var body = 'We have received a push message.';  
-  var icon = '/images/smiley.svg';  
-  var tag = 'simple-push-example-tag';
-  event.waitUntil(  
-    self.registration.showNotification(title, {  
-      body: body,  
-      icon: icon,  
-      tag: tag  
-    })  
-  );  
-});
-```
+With the handler in place it's easy to simulate a Push event.
 
-Dengan penangan sudah siap, sangat mudah untuk menyimulasikan kejadian Push.
-
-* Buka panel __Application__
-* Segarkan laman, ketika Anda melihat Service Worker baru memasuki fase `waiting`, klik tombol __skipWaiting__
-* Klik tombol __Subscribe to Push Notifications__
-* Menyetujui konfirmasi izin
+* Open the **Application** panel
+* Refresh the page, when you see the new Service Worker enter the `waiting` phase, click on the **skipWaiting** button
+* Click on the **Subscribe to Push Notifications** button in the app
+* Accept the permission prompt
 
 ![a8a8fa8d35b0667a.png](img/a8a8fa8d35b0667a.png)
 
-* Terakhir, klik tombol __Push__, di sebelah __Update__ dan __Unregister__
+* Finally, click the **Push** button, next to **Update** and **Unregister** back in the **Application** tab
 
 ![eacd4c5859f5f3ff.png](img/eacd4c5859f5f3ff.png)
 
-Sekarang Anda bisa melihat pemberitahuan Push muncul di bagian kanan atas layar, yang memastikan bahwa Service Worker menangani kejadian `push` seperti yang diharapkan.
+You should now see a Push notification appear in the top right of the screen, confirming that the Service Worker is handling `push` events as expected.
 
 ![b552ed129bc6cdf6.png](img/b552ed129bc6cdf6.png)
 
-Kerja bagus!
+Nice work!
 
-Sekarang setelah Anda memiliki beberapa alat debugging dalam toolbox, Anda sudah mempunyai alat yang lengkap untuk memperbaiki setiap masalah yang muncul dalam proyek Anda. Satu-satunya yang tersisa bagi Anda adalah segera beraksi dan membangun Progressive Web App yang luar biasa!
+Now that you have some debugging tools in your toolbox, you should be well equipped to fix-up any issues that arise in your project. The only thing left is for you to get out there and build the next amazing Progressive Web App!
 
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-
-
-
-## Menemukan masalah, atau memiliki masukan? {: .hide-from-toc }
-Bantu kami menjadikan code lab lebih baik dengan mengirimkan 
-[masalah](https://github.com/googlecodelabs/debugging-service-workers/issues) hari ini. Dan terima kasih!
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlecodelabs/debugging-service-workers/issues) today. And thanks!

@@ -1,144 +1,112 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Configure criação persistente no Chrome DevTools para poder ver as mudanças imediatamente e salvá-las no disco.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-{# wf_updated_on: 2015-07-30 #}
-{# wf_published_on: 2015-07-08 #}
+{# wf_updated_on: 2018-04-20 #} {# wf_published_on: 2015-07-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# Configurar persistência com os Espaços de trabalho do DevTools {: .page-title }
+# Set Up Persistence with DevTools Workspaces {: .page-title }
 
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+Warning: This version of Workspaces is only available in Chrome 62 or lower. Check what version of Chrome you're running at `chrome://version`. See [Save Changes To Disk With Workspaces](/web/tools/chrome-devtools/workspaces/) to learn how to use the version of Workspaces that's available in Chrome 63 and later.
 
-Configure criação persistente no Chrome DevTools para poder ver as mudanças imediatamente e salvá-las no disco.
+{% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-O Chrome DevTools permite alterar elementos e estilos
-em uma página web e ver as mudanças imediatamente.
-Por padrão, atualize o navegador para apagar as mudanças,
-a menos que você tenha as copiado e colado manualmente em um editor externo.
+Set up persistent authoring in Chrome DevTools so you can both see your changes immediately and save those changes to disk.
 
-Espaços de trabalho permitem persistir essas mudanças no disco
-sem precisar sair do Chrome DevTools.
-Mapeie recursos fornecidos por um servidor web local em arquivos de um disco
-e visualize mudanças promovidas nesses arquivos como se elas estivessem sendo fornecidas.
+Chrome DevTools lets you change elements and styles on a web page and see your changes immediately. By default, refresh the browser and the changes go away unless you've manually copied and pasted them to an external editor.
 
+Workspaces lets you persist those changes to disk without having to leave Chrome DevTools. Map resources served from a local web server to files on a disk and view changes made to those files as if they were being served.
 
 ### TL;DR {: .hide-from-toc }
-- Não copie mudanças para arquivos locais manualmente. Use espaços de trabalho para manter mudanças feitas no DevTools para os recursos locais.
-- Organize seus arquivos locais no navegador. Mapeie arquivos em URLs.
-- Depois de configurar os espaços de trabalho persistentes, as mudanças de estilo promovidas no painel Elements são mantidas automaticamente, mas as mudanças do DOM não são. Em vez disso, mantenha mudanças de elemento no painel Sources.
 
+* Don't manually copy changes to local files. Use workspaces to persist changes made in DevTools to your local resources.
+* Stage your local files to your browser. Map files to URLs.
+* Once persistent workspaces are set-up, style changes made in the Elements panel are persisted automatically; DOM changes aren't. Persist element changes in the Sources panel instead.
 
-## Adicionar arquivos-fonte locais ao espaço de trabalho
+## Add local source files to workspace
 
-Para tornar editáveis arquivos-fontes de uma pasta local no painel Sources:
+To make a local folder's source files editable in the Sources panel:
 
-1. Clique com o botão direito no painel à esquerda.
-2. Selecione **Add Folder to Workspace**.
-3. Escolha o local da pasta local que deseja mapear.
-4. Clique em **Allow** para dar ao Chrome acesso à pasta. 
+1. Right-click in the left-side panel.
+2. Select **Add Folder to Workspace**.
+3. Choose location of local folder that you want to map.
+4. Click **Allow** to give Chrome access to the folder. 
 
-![Adicionar pasta ao espaço de trabalho](imgs/addfolder.png)
+![Add Folder to Workspace](imgs/addfolder.png)
 
-Normalmente, a pasta local contém os arquivos-fonte originais do site que foram usados para preencher o servidor com dados do site. Se você não deseja alterar esses arquivos originais pelo espaço de trabalho, faça uma cópia da pasta e especifique-a como a pasta do espaço de trabalho.
+Typically, the local folder contains the site's original source files that were used to populate the site on the server. If you do not want to change those original files via the workspace, make a copy of the folder and specify it as the workspace folder instead.
 
-## Organizar mudanças persistidas
+## Stage persisted changes
 
-Você já mapeou sua pasta local para o espaço de trabalho,
-mas o navegador ainda está fornecendo os conteúdos de rede da pasta.
-Para organizar mudanças persistentes automaticamente no navegador,
-mapeie os arquivos locais da pasta em um URL:
+You've already mapped your local folder to your workspace, but the browser is still serving the network folder contents. To automatically stage persistent changes in the browser, map local files in the folder to a URL:
 
-1. Clique com o botão direito ou segure Ctrl e clique em um arquivo no painel esquerdo de Sources.
-2. Escolha **Map to File System Resource**.
-3. Selecione o arquivo local no espaço de trabalho persistente.
-4. Recarregue a página no Chrome.
+1. Right-click or Control+click on a file in the Sources left-side panel.
+2. Choose **Map to File System Resource**.
+3. Select the local file in the persistent workspace.
+4. Reload the page in Chrome.
 
-![Mapear arquivo em URL](imgs/maptoresource.png)
+![Map file to URL](imgs/maptoresource.png)
 
-Depois disso,
-o Chrome carrega o URL mapeado,
-exibindo os conteúdos do espaço de trabalho
-em vez dos conteúdos de rede.
-Trabalhe diretamente nos arquivos locais sem precisar
-alternar repetidamente entre o Chrome e um editor externo.
+Thereafter, Chrome loads the mapped URL, displaying the workspace contents instead of the network contents. Work directly in the local files without having to repeatedly switch between Chrome and an external editor.
 
-## Limitações
+## Limitations
 
-Mesmo com o poder dos Espaços de trabalho, há algumas limitações que você deve conhecer.
+As powerful as Workspaces are, there are some limitations you should be aware of.
 
-* Somente mudanças de estilo promovidas no painel Elements são mantidas. Mudanças no DOM não são mantidas.
+* Only style changes in the Elements panel are persisted; changes to the DOM are not persisted.
 
-* Somente estilos definidos em um arquivo CSS externo podem ser salvos. Mudanças a `element.style` ou a estilos embutidos não são mantidas (se houver estilos embutidos, você pode alterá-los no painel Sources).
+* Only styles defined in an external CSS file can be saved. Changes to `element.style` or to inline styles are not persisted. (If you have inline styles, they can be changed on the Sources panel.)
 
-* Mudanças de estilo no painel Elements são mantidas imediatamente sem precisar salvá-las explicitamente — 
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> ou <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac) — se você tiver o recurso CSS mapeado em um arquivo local.
+* Style changes in the Elements panel are persisted immediately without an explicit save -- 
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">S</kbd> (Mac) -- if you have the CSS resource mapped to a local file.
 
-* Se estiver mapeando arquivos com um servidor remoto em vez de com um servidor local, ao atualizar a página, o Chrome a recarregará a partir do servidor remoto. Suas mudanças ainda se manterão no disco e serão reaplicadas se você continuar editando em Espaços de trabalho.
+* If you are mapping files from a remote server instead of a local server, when you refresh the page, Chrome reloads the page from the remote server. Your changes still persist to disk and are reapplied if you continue editing in Workspaces.
 
-* Você deve usar o caminho completo para um arquivo mapeado no navegador. Até os arquivos de índice devem incluir .html no URL para ser possível ver a versão organizada.
+* You must use the full path to a mapped file in the browser. Even your index files must include .html in the URL, in order to see the staged version.
 
-## Gerenciamento de arquivos locais
+## Local file management
 
-Além de editar arquivos existentes,
-você também pode adicionar e excluir arquivos
-na pasta local mapeada que estiver usando nos Espaços de trabalho.
+In addition to editing existing files, you can also add and delete files in the local mapped directory you’re using for Workspaces.
 
-### Adicionar arquivo
+### Add file
 
-Para adicionar um arquivo:
+To add a file:
 
-1. Clique com o botão direito em uma pasta no painel esquerdo de Sources.
-2. Selecione **New File**.
-3. Dê um nome ao novo arquivo incluindo sua extensão (por exemplo, `newscripts.js`) e pressione **Enter**, o arquivo será adicionado à pasta local.
+1. Right-click a folder in the left Sources pane.
+2. Select **New File**.
+3. Type a name for the new file including its extension (e.g., `newscripts.js`) and press **Enter**; the file is added to the local folder.
 
-### Excluir arquivo
+### Delete file
 
-Para excluir o arquivo:
+To delete a file:
 
-1. Clique com o botão direito no arquivo no painel esquerdo de Sources.
-2. Selecione **Delete** e clique em **Yes** para confirmar.
+1. Right-click on the file in the left Sources pane.
+2. Choose **Delete** and click **Yes** to confirm.
 
-### Fazer cópia de segurança de um arquivo
+### Back up a file
 
-Antes de promover mudanças substanciais em um arquivo,
-é válido duplicar o original para fins de segurança.
+Before making substantial changes to a file, it's useful to duplicate the original for back-up purposes.
 
-Para duplicar um arquivo:
+To duplicate a file:
 
-1. Clique com o botão direito no arquivo no painel esquerdo de Sources.
-2. Selecione **Make a Copy...**.
-3. Dê um nome ao arquivo incluindo sua extensão (por exemplo, `mystyles-org.css`) e pressione **Enter**.
+1. Right-click on the file in the left Sources pane.
+2. Choose **Make a Copy...**.
+3. Type a name for the file including its extension (e.g., `mystyles-org.css`) and press **Enter**.
 
-### Atualizar
+### Refresh
 
-Ao criar ou excluir arquivos diretamente nos Espaços de trabalho,
-a pasta Sources atualiza automaticamente para exibir as mudanças de arquivo.
-Para forçar uma atualização em qualquer momento, clique com o botão direito em uma pasta e selecione **Refresh**.
+When you create or delete files directly in Workspaces, the Sources directory automatically refreshes to show the file changes. To force a refresh at any time, right-click a folder and choose **Refresh**.
 
-Isso também é útil se você alterar arquivos que estão abertos simultaneamente em um editor externo e quiser que as mudanças apareçam no DevTools. Normalmente, o DevTools captura essas mudanças automaticamente, mas se você quiser ter certeza, basta atualizar a página conforme descrito acima.
+This is also useful if you change files that are concurrently open in an external editor and want the changes to show up in DevTools. Usually DevTools catches such changes automatically, but if you want to be certain, just refresh the folder as described above.
 
-### Buscar arquivos ou texto
+### Search for files or text
 
-Para buscar um arquivo carregado no DevTools,
-pressione <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> ou <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac)
-para abrir uma caixa de diálogo de busca.
-Você ainda pode fazer isso em Espaços de trabalho,
-mas a busca englobará tanto arquivos remotos carregados
-quanto arquivos locais na pasta do Espaço de trabalho.
+To search for a loaded file in DevTools, press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">O</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">O</kbd> (Mac) to open a search dialog. You can still do this in Workspaces, but the search is expanded to both the remote loaded files and the local files in your Workspace folder.
 
-Para buscar uma string dentre arquivos:
+To search for a string across files:
 
-1. Abra a janela de busca: clique no botão **Show Drawer**![Exibir gaveta](imgs/show_drawer_button.png){:.inline} e, em seguida, clique em **Search** ou pressione
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> ou <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac).
-2. Digite a string no campo de busca e pressione **Enter**.
-3. Se a string for uma expressão regular ou precisar ser indiferente a letras maiúsculas e minúsculas, marque a caixa correta.
+1. Open the search window: click the **Show Drawer** button ![Show drawer](imgs/show_drawer_button.png){:.inline} and then click the **Search**; or press
+<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd> or <kbd class="kbd">Cmd</kbd> + <kbd class="kbd">Opt</kbd> + <kbd class="kbd">F</kbd> (Mac).
+2. Type a string into the search field and press **Enter**.
+3. If the string is a regular expression or needs to be case-insensitive, click the appropriate box.
 
-![Buscar strings dentre arquivos](imgs/searchacross.png)
+![Search for string across files](imgs/searchacross.png)
 
-Os resultados da busca são exibidos na gaveta Console, listados por nome de arquivo, com o número de correspondências em cada arquivo indicado. Use as setas **Expand** ![Expand](imgs/expand_button.png){:.inline} e **Collapse** ![Collapse](imgs/collapse_button.png){:.inline} para expandir ou recolher os resultados de um determinado arquivo.
-
-
-
-{# wf_devsite_translation #}
+The search results are shown in the Console drawer, listed by file name, with the number of matches in each file indicated. Use the **Expand** ![Expand](imgs/expand_button.png){:.inline} and **Collapse** ![Collapse](imgs/collapse_button.png){:.inline} arrows to expand or collapse the results for a given file.

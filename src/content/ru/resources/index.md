@@ -1,77 +1,44 @@
-project_path: /web/_project.yaml
-book_path: /web/resources/_book.yaml
+project_path: /web/_project.yaml book_path: /web/resources/_book.yaml
 
-{# wf_updated_on: 2017-07-24 #}
-{# wf_published_on: 2016-08-26 #}
+{# wf_updated_on: 2017-07-24 #} {# wf_published_on: 2016-08-26 #}
 
-# Ресурсы {: .page-title }
+# Resources {: .page-title }
 
-Хотите принять участие в [/web](/web/)? Мы ** любим** наших
-[контрибьюторов](contributors). Посылая bug reports, pull requests и помогая
-[переводить](translations) статьи более чем на 15 языков, **вы** помогаете
-делать [/web](/web/) и интернет лучше!
+Want to get involved in [/web](/web/)? We **love** our <contributors>. By submitting bug reports, pull requests and helping to [translate](translations) content into more than 15 different languages, **you've** helped to make [/web](/web/) and the web better!
 
-## Нашли проблему или что-то, что требует обновления?
+## Found an issue or something need to be updated?
 
-Вы можете [создать issue](https://github.com/Google/WebFundamentals/issues) в
-нашем [GitHub репозитории](https://github.com/Google/WebFundamentals/){:
-.external } и кто-нибудь посмотрит на неё, или вы можете исправить это
-самостоятельно, отправив [pull request](#submitting-a-pull-request)!
+You can [file an issue](https://github.com/Google/WebFundamentals/issues) on our [GitHub repository](https://github.com/Google/WebFundamentals/){: .external } and someone will take a look, or you can fix it yourself by submitting a [pull request](#submitting-a-pull-request)!
 
-## Хотите помочь перевести контент?
+## Want to help translate content?
 
-Перевод контента это отличный способ начать! Посмотрите наши [инструкции по
-переводу](translations), чтобы лучше узнать как начать переводить.
+Translating content is a great place to start! Check out our [translation guidelines](translations) for more details on how to get started.
 
-## Отправка pull request {: #submitting-a-pull-request }
+## Submitting a pull request {: #submitting-a-pull-request }
 
-Мы бы хотели принять ваши исправления! Однако, перед этим мы должны преодолеть
-несколько юридических препятствий.
+We'd love to accept your code patches! However, before we can take them, we have to jump a couple of legal hurdles.
 
-### Лицензионные соглашения участника
+### Contributor License Agreements
 
-Пожалуйста заполните или индивидуальное или корпоративное Лицензионное
-Соглашение Участника (CLA).
+Please fill out either the individual or corporate Contributor License Agreement.
 
-- Если вы являетесь автором оригинального исходного кода и вы уверены, что вы
-владелец интеллектуальной собственности - подпишите [индивидуальный
-CLA](/open-source/cla/individual).
-- Если вы работаете в компании, которая хочет позволить вам внести свой вклад -
-подпишите [корпоративный CLA](/open-source/cla/corporate).
+* If you are an individual writing original source code and you're sure you own the intellectual property, then sign an [individual CLA](/open-source/cla/individual).
+* If you work for a company that wants to allow you to contribute your work, then sign a [corporate CLA](/open-source/cla/corporate).
 
-Пройдите по одной из двух ссылок выше, чтобы получить соответствующий CLA и
-инструкции как подписать и вернуть его.
+Follow either of the two links above to access the appropriate CLA and instructions for how to sign and return it.
 
-1. Подпишите лицензионное соглашение участника выше.
-2. Решите, какой код вы хотите отправить. Отправление должно быть набором
-изменений, которые затрагивают одну из проблем в [issue
-tracker](https://github.com/Google/WebFundamentals/issues).Пожалуйста, не
-смешивайте несколько логических изменений в одном отправлении, так как это
-затрудняет отслеживание истории. Если вы хотите сделать изменение (например
-добавить пример или функцию), у которого нет соответствующей проблемы в issue
-tracker, пожалуйста, создайте её.
-3. **Отправка**: Когда вы готовы к отправке, шлите нам Pull Request. Не забудьте
-добавить номер проблемы, которую вы исправили и имя, которое вы указали в
-подписанном CLA.
+1. Sign the contributors license agreement above.
+2. Decide which code you want to submit. A submission should be a set of changes that addresses one issue in the [issue tracker](https://github.com/Google/WebFundamentals/issues). Please don't mix more than one logical change per submission, because it makes the history hard to follow. If you want to make a change (e.g. add a sample or feature) that doesn't have a corresponding issue in the issue tracker, please create one.
+3. **Submitting**: When you are ready to submit, send us a Pull Request. Be sure to include the issue number you've fixed and the name you used to sign the CLA.
 
-### Стиль статей
+### Article Styles
 
-Посмотрите на [пример статьи](writing-an-article) и [руководство по markdown
-синтаксису](markdown-syntax).
+Looking for the [sample article](writing-an-article) and [markdown syntax guide](markdown-syntax), this is it.
 
-### Стиль кода
+### Code Styles
 
-Если ваша статья содержит код, пожалуйста убедитесь, что он соответствует
-[требуемому стилю](https://google.github.io/styleguide/javascriptguide.xml).
-Иначе, мы будем вынуждены просить вас поправить недочеты, а это никого не
-радует.
+If your contribution contains code, please make sure that it follows [the style guide](https://google.github.io/styleguide/javascriptguide.xml). Otherwise, we will have to ask you to make changes, and that's no fun for anyone.
 
-### Еще советы
+### Other Tips
 
-Для упрощения просмотра PR, пожалуйста сделайте в ваших HTML файлах перенос слов
-на 80 символов или меньше.
-
-
-
-Translated by
-{% include "web/_shared/contributors/dmitryskripunov.html" %}
+To simplify PR reviews, please word-wrap HTML files at 80 characters or fewer.

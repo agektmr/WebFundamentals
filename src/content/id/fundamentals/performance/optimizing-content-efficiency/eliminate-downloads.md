@@ -1,33 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Anda harus mengaudit sumber daya secara berkala untuk memastikan setiap sumber daya membantu memberikan pengalaman pengguna yang lebih baik.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should audit your resources periodically to ensure that each resource is helping deliver a better user experience.
 
-{# wf_updated_on: 2016-08-29 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Meniadakan Unduhan yang Tidak Perlu {: .page-title }
+# Eliminating Unnecessary Downloads {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
 ### TL;DR {: .hide-from-toc }
-* Inventarisir aset Anda dan aset pihak ketiga di laman Anda.
-* Ukur kinerja setiap aset: nilainya dan kinerja teknisnya.
-* Tentukan apakah sumber daya menyediakan nilai yang mencukupi.
 
-Sumber daya tercepat dan paling dioptimalkan adalah sumber daya yang tidak dikirim. Anda harus meniadakan sumber daya yang tidak perlu dari aplikasi. Mempertanyakan, dan mengunjungi kembali secara berkala asumsi implisit dan eksplisit dengan tim Anda merupakan sebuah kebiasaan yang baik. Inilah beberapa contohnya:
+* Inventory your own assets and third-party assets on your pages.
+* Measure the performance of each asset: its value and its technical performance.
+* Determine if the resources are providing sufficient value.
 
-* Anda selalu menyertakan sumber daya X di laman, namun apakah biaya mengunduh dan menampilkannya sepadan dengan nilai yang diberikannya kepada pengguna? Bisakah Anda mengukur dan membuktikan nilainya?
-* Apakah sumber daya (terutama jika itu adalah sumber daya pihak ketiga) memberikan kinerja yang konsisten? Apakah sumber daya ini jalur penting, atau perlu menjadi jalur penting? Jika sumber daya ada dalam jalur penting, bisakah sumber daya itu menjadi satu-satunya titik kegagalan bagi situs? Yaitu, jika sumber daya tersebut tidak ada, apakah itu akan memengaruhi kinerja dan pengalaman pengguna laman Anda?
-* Apakah sumber daya ini memerlukan atau memiliki SLA (Perjanjian Tingkat Layanan)? Apakah sumber daya ini mengikuti praktik terbaik kinerja: kompresi, cache, dst?
+The fastest and best-optimized resource is a resource not sent. You should eliminate unnecessary resources from your application. It’s a good practice to question, and periodically revisit, the implicit and explicit assumptions with your team. Here are a few examples:
 
-Seringkali, laman berisi sumber daya yang tidak perlu, atau lebih buruk lagi, menghambat kinerja laman tanpa memberi banyak nilai tambah bagi pengunjung atau situs host. Ini juga berlaku untuk sumber daya dan widget pihak pertama dan pihak ketiga.
+* You've always included resource X on your pages, but does the cost of downloading and displaying it offset the value it delivers to the user? Can you measure and prove its value?
+* Does the resource (especially if it's a third-party resource) deliver consistent performance? Is this resource in the critical path, or need to be? If the resource is in the critical path, could it be a single point of failure for the site? That is, if the resource is unavailable, does it affect performance and the user experience of your pages?
+* Does this resource need or have an SLA? Does this resource follow performance best practices: compression, caching, and so on?
 
-* Situs A memutuskan untuk menampilkan korsel foto di berandanya agar pengunjung bisa melihat pratinjau beberapa foto dengan sekali klik cepat. Semua foto dimuat saat laman telah dimuat, dan pengguna menyusuri setiap foto.
-    * **Pertanyaan:** Pernahkah Anda mengukur jumlah pengguna yang menampilkan beberapa foto sekaligus di korsel? Anda mungkin menyebabkan overhead yang tinggi karena mengunduh sumber daya yang tidak pernah ditampilkan oleh kebanyakan pengunjung.
-* Situs B telah memutuskan untuk memasang widget pihak ketiga untuk menampilkan materi terkait, meningkatkan keterlibatan sosial, atau memberikan beberapa layanan lainnya.
-    * **Pertanyaan:** Pernahkah Anda melacak jumlah pengunjung yang menggunakan widget atau mengeklik materi yang disediakan widget? Apakah interaksi yang dihasilkan widget ini cukup menjadi pembenaran overhead-nya?
+Too often, pages contain resources that are unnecessary, or worse, that hinder page performance without delivering much value to the visitor or to the site they're hosted on. This applies equally to first-party and third-party resources and widgets:
 
-Menentukan apakah akan meniadakan unduhan yang tidak perlu sering kali memerlukan banyak pemikiran dan pengukuran yang cermat. Untuk hasil terbaik, inventarisir dan pertimbangkan kembali pertanyaan ini bagi setiap aset di laman Anda.
+* Site A has decided to display a photo carousel on its homepage to allow the visitor to preview multiple photos with a quick click. All of the photos are loaded when the page is loaded, and the user advances through the photos. 
+    * **Question:** Have you measured how many users view multiple photos in the carousel? You might be incurring high overhead by downloading resources that most visitors never view.
+* Site B has decided to install a third-party widget to display related content, improve social engagement, or provide some other service. 
+    * **Question:** Have you tracked how many visitors use the widget or click-through on the content that the widget provides? Is the engagement that this widget generates enough to justify its overhead?
 
+Determining whether to eliminate unnecessary downloads often requires a lot of careful thinking and measurement. For best results, periodically inventory and revisit these questions for every asset on your pages.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

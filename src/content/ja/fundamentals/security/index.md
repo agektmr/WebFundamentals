@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: セキュリティは重要なトピックです。HTTPS が重要な理由と HTTPS をサーバーにデプロイする方法について説明します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Security is a big topic, learn about HTTPS, why it's important and how you can deploy it to your servers.
 
-{# wf_updated_on:2016-09-09 #}
-{# wf_published_on:2015-09-08 #}
+{# wf_updated_on: 2018-10-30 #} {# wf_published_on: 2015-09-08 #} {# wf_blink_components: Blink>SecurityFeature,Internals>Network>SSL #}
 
-# セキュリティとアイデンティティ {: .page-title }
+# Security and Identity {: .page-title }
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="pgBQn_z3zRE"
@@ -13,48 +10,53 @@ description: セキュリティは重要なトピックです。HTTPS が重要�
   </iframe>
 </div>
 
-セキュリティは重要なトピックです。まずはこのページで概要をご確認ください。 
+Security is a big topic, here are a few things to get you started.
 
 <div class="clearfix"></div>
 
+## Encrypting Data in Transit
 
-##  送信中のデータの暗号化
+<img src="/web/images/content-https-2x.jpg" class="attempt-right" />
 
-<img src="/web/images/content-https-2x.jpg" class="attempt-right">
+One of the most critical security features, and one that is required for many modern APIs and [progressive web apps](/web/progressive-web-apps/) is [**HTTPS**](encrypt-in-transit/why-https), sometimes referred to as secure HTTP.
 
-多くの最新の API と [Progressive Web App](/web/progressive-web-apps/) に必要な最も重要なセキュリティ機能の 1 つは、[セキュアな HTTP（HTTPS）](encrypt-in-transit/why-https)です。HTTPS が必要なのは、機密性の高い情報を通信するウェブサイトのみであると一般的に思われていますが、これは誤りです。プライバシーとセキュリティの観点からユーザーを保護することに加えて、Service Worker や Payment Request API などの多くの新しいブラウザ機能で HTTPS が必須になっています。
+Some people mistakenly believe that the only sites that need HTTPS are sites that handle some level of sensitive communication, like personal or financial data. But this isn't true. Every site should be using HTTPS, HTTPS helps to prevents people from listening into what's crossing the wire, and helps prevent it from being tampered with while in transit. Do you want your ISP or school to know every site you were looking at?
 
-[サーバーでの HTTPS の有効化](/web/fundamentals/security/encrypt-in-transit/enable-https)
+And if privacy and security weren't enough of a reason to protect your users, many new browser features like service workers, the Payment Request API, and even some older APIs like GeoLocation now require HTTPS.
+
+[Enabling HTTPS on Your Servers](/web/fundamentals/security/encrypt-in-transit/enable-https)
 
 <div class="attempt-left">
-  <h2>コンテンツ セキュリティ ポリシー</h2>
+  <h2>Content Security Policy</h2>
   <p>
-    コンテンツ セキュリティ ポリシー（CSP）でサポートされる種類豊富なディレクティブを利用すると、ページへの読み込みが可能なリソースおよびページの読み込み元のリソースをより細かく制御できるようになります。<br>
-
-
-    <a href="csp/">詳細を見る</a>
+    Content Security Policy or CSP provides a rich set of directives that
+    enable granular control over the resources a page is allowed to load and
+    where they're loaded from.<br>
+    <a href="csp/">Learn More</a>
   </p>
 </div>
-<div class="attempt-right">
-  <h2>混合コンテンツの防止</h2>
-  <p>
-    HTTPS の実装で最も時間のかかる作業の 1 つは、HTTPS と HTTP が混在するコンテンツを見つけて修正することです。
-幸いにも、この作業に役立つツールがいくつかあります。<br>
 
-    <a href="prevent-mixed-content/what-is-mixed-content">スタートガイド</a>
+<div class="attempt-right">
+  <h2>Prevent Mixed Content</h2>
+  <p>
+    One of the more time-consuming tasks in implementing HTTPS is finding and
+    fixing content that mixes both HTTPS and HTTP. Fortunately there are tools
+    to help you help you with this.<br>
+    <a href="prevent-mixed-content/what-is-mixed-content">Get Started</a>
   </p>
 </div>
 
 <div style="clear:both"></div>
 
-##  関連リソース
+## Related Resources
+
+* [Learn Web Security with Google](https://www.youtube.com/watch?v=tgEIo7ZSkbQ)
+* [Getting the Green Lock: HTTPS Stories from the Field](https://www.youtube.com/watch?v=GoXgl9r0Kjk)
 
 ### Chrome DevTools
 
-* [セキュリティの問題を理解する](/web/tools/chrome-devtools/security)
+* [Understand Security Issues](/web/tools/chrome-devtools/security)
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

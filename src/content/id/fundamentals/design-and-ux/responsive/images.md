@@ -1,36 +1,23 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Sebuah gambar bernilai 1000 kata, dan gambar adalah bagian tidak terpisahkan dari setiap laman. Namun mereka juga yang bertanggung jawab untuk sebagian besar byte yang diunduh.  Dengan desain web responsif, tidak hanya layout yang bisa berubah berdasarkan karakteristik perangkat, namun gambar juga.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A picture is worth 1000 words, and images play an integral part of every page. But they also often account for most of the downloaded bytes. With responsive web design not only can our layouts change based on device characteristics, but images as well.
 
-{# wf_updated_on: 2018-12-15 #}
-{# wf_published_on: 2014-04-29 #}
+{# wf_updated_on: 2018-12-15 #} {# wf_blink_components: Blink>Image #} {# wf_published_on: 2014-04-29 #}
 
-# Gambar {: .page-title }
+# Images {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
+Responsive web design means that not only can our layouts change based on device characteristics, but content can change as well. For example, on high resolution (2x) displays, high resolution graphics ensure sharpness. An image that is 50% width may work just fine when the browser is 800px wide, but uses too much real estate on a narrow phone, and requires the same bandwidth overhead when scaled down to fit a smaller screen.
 
-Desain web responsif berarti bahwa tidak hanya layout yang bisa berubah berdasarkan karakteristik
-perangkat, namun materi juga dapat berubah.  Misalnya, pada tampilan
-(2x) resolusi tinggi, grafis resolusi tinggi memastikan ketajaman. Gambar
-dengan lebar 50% mungkin bekerja dengan baik ketika browser lebarnya 800 px, namun
-menggunakan terlalu banyak properti pada layar ponsel yang sempit, dan memerlukan overhead bandwidth
-yang sama ketika diperkecil agar muat pada layar yang lebih kecil.
+## Art direction
 
-## Tujuan seni
+<img src="img/art-direction.png" alt="Art direction example"
+srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x" />
 
-<img src="img/art-direction.png" alt="Contoh tujuan seni"
-srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x">
-
-Pada saat lainnya, gambar mungkin harus diubah lebih drastis: dengan mengubah
-ukuran, memotong dan bahkan mengganti seluruh gambar.  Dalam hal ini,
-mengubah gambar biasanya disebut sebagai tujuan seni.  Lihat
-[responsiveimages.org/demos/](https://responsiveimages.org/demos/){: .external } untuk contoh
-selengkapnya.
+Other times the image may need to be changed more drastically: changing the proportions, cropping, and even replacing the entire image. In this case, changing the image is usually referred to as art direction. See [responsiveimages.org/demos/](https://responsiveimages.org/demos/) for more examples.
 
 {% include "web/_shared/udacity/ud882.html" %}
 
-## Gambar di markup
+## Images in markup 
 
 <style>
   .side-by-side {
@@ -52,42 +39,31 @@ selengkapnya.
   }
 </style>
 
-Elemen `img` adalah kuat&mdash;itu mengunduh, mengonversi dan merender materi&mdash;dan browser modern mendukung berbagai format gambar.  Memasukkan gambar yang
-bekerja di seluruh perangkat tidak berbeda pada desktop, dan hanya membutuhkan beberapa
-ubahan kecil untuk menciptakan pengalaman pengguna yang baik.
+ 
 
+The `img` element is powerful&mdash;it downloads, decodes, and renders content&mdash;and modern browsers support a range of image formats. Including images that work across devices is no different than for desktop, and only requires a few minor tweaks to create a good experience.
 
 ### TL;DR {: .hide-from-toc }
 
-- Gunakan ukuran relatif bagi gambar untuk mencegah mereka secara tanpa sengaja meluap dari kontainer.
-- Gunakan elemen `picture` ketika Anda ingin menetapkan gambar yang berbeda bergantung pada karakteristik perangkat (alias tujuan seni).
-- Gunakan `srcset` dan deskriptor `x` dalam elemen `img` untuk memberikan petunjuk ke browser tentang gambar terbaik yang digunakan saat memilih dari kepadatan yang berbeda.
-- Jika laman Anda hanya memiliki satu atau dua gambar dan itu tidak digunakan di tempat lain pada situs Anda, pertimbangkan menggunakan gambar inline untuk mengurangi permintaan file.
+* Use relative sizes for images to prevent them from accidentally overflowing the container.
+* Use the `picture` element when you want to specify different images depending on device characteristics (a.k.a. art direction).
+* Use `srcset` and the `x` descriptor in the `img` element to give hints to the browser about the best image to use when choosing from different densities.
+* If your page only has one or two images and these are not used elsewhere on your site, consider using inline images to reduce file requests.
 
+### Use relative sizes for images
 
-### Gunakan ukuran relatif untuk gambar
+Remember to use relative units when specifying widths for images to prevent them from accidentally overflowing the viewport. For example, `width: 50%;` causes the image width to be 50% of the containing element (not 50% of the viewport or 50% of actual pixel size).
 
-Ingatlah untuk menggunakan unit relatif ketika menetapkan lebar gambar untuk mencegah gambar
-tanpa sengaja meluap dari tampilan yang terlihat.  Misalnya, `width: 50%;`
-menyebabkan lebar gambar menjadi 50% dari elemen yang terkandung (bukan 50% dari tampilan yang terlihat atau
-50% dari ukuran piksel yang sebenarnya).
-
-Karena CSS memungkinkan materi meluap dari kontainernya, Anda mungkin perlu menggunakan
-max-width: 100% untuk mencegah gambar dan materi lainnya meluap.  Misalnya
-:
-
+Because CSS allows content to overflow its container, you may need to use max- width: 100% to prevent images and other content from overflowing. For example:
 
     img, embed, object, video {
       max-width: 100%;
     }
+    
 
+Be sure to provide meaningful descriptions via the `alt` attribute on `img` elements; these help make your site more accessible by giving context to screen readers and other assistive technologies.
 
-Pastikan untuk memberikan keterangan penuh arti melalui atribut `alt` pada elemen `img`
-; ini akan membantu membuat situs Anda lebih mudah diakses dengan memberikan konteks untuk
-pembaca layar dan teknologi pendukung lainnya.
-
-
-### Tingkatkan `img` dengan `srcset` untuk perangkat DPI tinggi
+### Enhance `img`s with `srcset` for high DPI devices
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="Pzc5Dly_jEM"
@@ -95,49 +71,29 @@ pembaca layar dan teknologi pendukung lainnya.
   </iframe>
 </div>
 
-Atribut `srcset` meningkatkan perilaku elemen
-`img`, sehingga memudahkan saat memberikan beberapa file gambar
-untuk karakteristik perangkat yang berbeda. Serupa dengan `image-set`
-[fungsi CSS](#use-image-set-to-provide-high-res-images)
-bawaan dari CSS, `srcset` memungkinkan browser untuk memilih gambar
-terbaik bergantung pada karakteristik perangkat, misalnya menggunakan
-gambar 2x pada tampilan 2x, dan berpotensi di masa mendatang, gambar 1x pada
-perangkat 2x saat berada di jaringan bandwidth yang terbatas.
+The `srcset` attribute enhances the behavior of the `img` element, making it easy to provide multiple image files for different device characteristics. Similar to the `image-set` [CSS function](#use-image-set-to-provide-high-res-images) native to CSS, `srcset` allows the browser to choose the best image depending on the characteristics of the device, for example using a 2x image on a 2x display, and potentially in the future, a 1x image on a 2x device when on a limited bandwidth network.
 
-
-<div style="clear:both;"></div>
-
+<div style="clear:both;">
+</div>
 
     <img src="photo.png" srcset="photo@2x.png 2x" ...>
+    
 
+On browsers that don't support `srcset`, the browser simply uses the default image file specified by the `src` attribute. This is why it is important to always include a 1x image that can be displayed on any device, regardless of capabilities. When `srcset` is supported, the comma-separated list of image/conditions is parsed prior to making any requests, and only the most appropriate image is downloaded and displayed.
 
-Pada browser yang tidak mendukung `srcset`, browser hanya menggunakan file gambar
-default yang ditentukan oleh atribut `src`.  Inilah sebabnya mengapa penting untuk
-selalu menyertakan gambar 1x yang bisa ditampilkan pada perangkat apa pun, terlepas dari
-kemampuannya.  Ketika `srcset` didukung, daftar yang dipisahkan koma dari
-gambar/kondisi di-parse sebelum membuat permintaan, dan hanya gambar paling
-sesuai yang diunduh dan ditampilkan.
+While the conditions can include everything from pixel density to width and height, only pixel density is well-supported today. To balance current behavior with future features, stick with simply providing the 2x image in the attribute.
 
-Meskipun ketentuan bisa berisi segala sesuatu dari kepadatan piksel hingga lebar dan
-tinggi, hanya kepadatan piksel yang didukung dengan baik pada saat ini.  Untuk menyeimbangkan perilaku
-saat ini dengan fitur masa mendatang, bertahanlah dengan hanya menyediakan gambar 2x di
-atribut.
+### Art direction in responsive images with `picture`
 
-### Tujuan seni dalam gambar responsif dengan `picture`
+<img class="attempt-right" src="img/art-direction.png" alt="Art direction example"
+srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x" />
 
-<img class="attempt-right" src="img/art-direction.png" alt="Contoh tujuan seni"
-srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x">
+To change images based on device characteristics, also known as art direction, use the `picture` element. The `picture` element defines a declarative solution for providing multiple versions of an image based on different characteristics, like device size, device resolution, orientation, and more.
 
-Untuk mengubah gambar berdasarkan karakteristik perangkat, juga dikenal sebagai tujuan
-seni, gunakan elemen `picture`.  Elemen
-`picture` mendefinisikan solusi deklaratif untuk
-menyediakan beberapa versi dari sebuah gambar berdasarkan karakteristik
-yang berbeda, seperti ukuran perangkat, resolusi perangkat, orientasi,
-dan lainnya.
+<div style="clear:both;">
+</div>
 
-<div style="clear:both;"></div>
-
-Dogfood: Elemen `picture` mulai mendarat di browser. Meskipun belum tersedia di semua browser, kami merekomendasikan penggunaannya karena kompatibilitas mundur yang kuat dan potensi penggunaan [Picturefill polyfill](https://scottjehl.github.io/picturefill/){: .external }. Lihat situs [ResponsiveImages.org](http://responsiveimages.org/#implementation) untuk lebih jelasnya.
+Dogfood: The `picture` element is beginning to land in browsers. Although it's not available in every browser yet, we recommend its use because of the strong backward compatibility and potential use of the [Picturefill polyfill](https://scottjehl.github.io/picturefill/). See the [ResponsiveImages.org](http://responsiveimages.org/#implementation) site for further details.
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="QINlm3vjnaY"
@@ -145,191 +101,215 @@ Dogfood: Elemen `picture` mulai mendarat di browser. Meskipun belum tersedia di 
   </iframe>
 </div>
 
-Gunakan elemen <code>picture</code> ketika sumber gambar
-terdapat di beberapa kepadatan, atau ketika desain responsif menentukan
-gambar yang agak berbeda pada beberapa jenis layar.  Serupa dengan elemen
-<code>video</code>, beberapa elemen <code>source</code> bisa
-dimasukkan, sehingga memungkinkan untuk menentukan file gambar yang berbeda
-bergantung pada kueri media atau format gambar.
+Use the `picture` element when an image source exists in multiple densities, or when a responsive design dictates a somewhat different image on some types of screens. Similar to the <code>video</code> element, multiple `source` elements can be included, making it possible to specify different image files depending on media queries or image format.
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media.html" region_tag="picture" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media.html" region_tag="picture" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/media.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media.html){: target="_blank" .external }
 
-Pada contoh di atas, jika lebar browser setidaknya 800 px, maka salah satu dari
-`head.jpg` atau `head-2x.jpg` akan digunakan, bergantung pada resolusi perangkat.
-Jika lebar browser antara 450 px dan 800 px, maka `head-small.jpg` atau
-`head-small-2x.jpg` akan digunakan, bergantung pada resolusi perangkat.
-Untuk lebar layar kurang dari 450 px dan kompatibilitas mundur dengan elemen
-`picture` tidak didukung, browser merender elemen `img`
-sebagai gantinya, dan harus selalu disertakan.
+In the above example, if the browser width is at least 800px then either `head.jpg` or `head-2x.jpg` is used, depending on the device resolution. If the browser is between 450px and 800px, then either `head-small.jpg` or `head-small-
+2x.jpg` is used, again, depending on the device resolution. For screen widths less than 450px and backward compatibility where the `picture` element isn’t supported, the browser renders the `img` element instead, and should always be included.
 
-#### Gambar ukuran relatif
+#### Relative sized images
 
-Ketika ukuran akhir gambar tidak diketahui, bisa sulit untuk menentukan
-deskriptor kepadatan bagi sumber gambar.  Hal ini terutama berlaku untuk
-gambar yang membentang seimbang dengan lebar browser dan bisa berubah-ubah, tergantung
-pada ukuran browser.
+When the final size of the image isn’t known, it can be difficult to specify a density descriptor for the image sources. This is especially true for images that span a proportional width of the browser and are fluid, depending on the size of the browser.
 
-Alih-alih menyediakan ukuran gambar dan kepadatan tetap, Anda bisa menetapkan ukuran masing-masing
-gambar yang disediakan dengan menambahkan deskriptor lebar bersama dengan
-ukuran elemen gambar, yang memungkinkan browser untuk secara otomatis menghitung
-kepadatan piksel efektif dan memilih gambar terbaik untuk diunduh.
+Instead of supplying fixed image sizes and densities, you can specify the size of each supplied image by adding a width descriptor along with the size of the image element, allowing the browser to automatically calculate the effective pixel density and choose the best image to download.
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/sizes.html" region_tag="picture" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/sizes.html" region_tag="picture" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/sizes.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/sizes.html){: target="_blank" .external }
 
-
-Contoh di atas merender sebuah gambar yang berukuran setengah lebar tampilan yang terlihat
-(`sizes="50vw"`), dan bergantung pada lebar browser dan rasio piksel
-perangkat, yang memungkinkan browser memilih gambar yang tepat terlepas dari
-seberapa besar jendela browsernya. Misalnya, tabel di bawah ini menunjukkan gambar
-mana yang akan dipilih browser:
+The above example renders an image that is half the viewport width (`sizes="50vw"`), and depending on the width of the browser and its device pixel ratio, allows the browser to choose the correct image regardless of how large the browser window is. For example, the table below shows which image the browser would choose:
 
 <table class="">
-  <thead>
-    <tr>
-      <th data-th="Browser width">Lebar browser</th>
-      <th data-th="Device pixel ratio">Rasio piksel perangkat</th>
-      <th data-th="Image used">Gambar yang digunakan</th>
-      <th data-th="Effective resolution">Resolusi efektif</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Browser width">400 px</td>
-      <td data-th="Device pixel ratio">1</td>
-      <td data-th="Image used"><code>200.png</code></td>
-      <td data-th="Effective resolution">1x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">400 px</td>
-      <td data-th="Device pixel ratio">2</td>
-      <td data-th="Image used"><code>400.png</code></td>
-      <td data-th="Effective resolution">2x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">320 px</td>
-      <td data-th="Device pixel ratio">2</td>
-      <td data-th="Image used"><code>400.png</code></td>
-      <td data-th="Effective resolution">2,5x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">600 px</td>
-      <td data-th="Device pixel ratio">2</td>
-      <td data-th="Image used"><code>800.png</code></td>
-      <td data-th="Effective resolution">2,67x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">640 px</td>
-      <td data-th="Device pixel ratio">3</td>
-      <td data-th="Image used"><code>1000.png</code></td>
-      <td data-th="Effective resolution">3,125x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">1100 px</td>
-      <td data-th="Device pixel ratio">1</td>
-      <td data-th="Image used"><code>1400.png</code></td>
-      <td data-th="Effective resolution">1,27x</td>
-    </tr>
-  </tbody>
+  <tr>
+    <th data-th="Browser width">
+      Browser width
+    </th>
+    
+    <th data-th="Device pixel ratio">
+      Device pixel ratio
+    </th>
+    
+    <th data-th="Image used">
+      Image used
+    </th>
+    
+    <th data-th="Effective resolution">
+      Effective resolution
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      400px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      1
+    </td>
+    
+    <td data-th="Image used">
+      <code>200.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      1x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      400px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      2
+    </td>
+    
+    <td data-th="Image used">
+      <code>400.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      2x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      320px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      2
+    </td>
+    
+    <td data-th="Image used">
+      <code>400.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      2.5x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      600px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      2
+    </td>
+    
+    <td data-th="Image used">
+      <code>800.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      2.67x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      640px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      3
+    </td>
+    
+    <td data-th="Image used">
+      <code>1000.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      3.125x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      1100px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      1
+    </td>
+    
+    <td data-th="Image used">
+      <code>1400.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      1.27x
+    </td>
+  </tr>
 </table>
 
+#### Account for breakpoints in responsive images
 
-#### Memperhitungkan breakpoint dalam gambar responsif
+In many cases, the image size may change depending on the site’s layout breakpoints. For example, on a small screen, you might want the image to span the full width of the viewport, while on larger screens, it should only take a small proportion.
 
-Dalam banyak kasus, ukuran gambar bisa berubah bergantung pada breakpoint
-layout situs.  Misalnya, pada layar kecil, Anda mungkin menginginkan agar gambar
-membentang penuh pada tampilan yang terlihat, sementara di layar yang lebih besar, itu hanya
-menggunakan sebagian kecilnya.
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/breakpoints.html" region_tag="picture" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/breakpoints.html" region_tag="picture" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/breakpoints.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/breakpoints.html){: target="_blank" .external }
 
-Atribut `sizes` pada contoh di atas, menggunakan beberapa kueri media untuk
-menentukan ukuran gambar. Ketika lebar browser lebih besar dari
-600 px, gambar berukuran 25% dari lebar tampilan yang terlihat, saat lebarnya antara 500 px
-dan 600 px, gambar berukuran 50% dari lebar tampilan yang terlihat, dan saat lebarnya di bawah 500 px, lebarnya
-maksimal.
+The `sizes` attribute, in the above example, uses several media queries to specify the size of the image. When the browser width is greater than 600px, the image is 25% of the viewport width; when it is between 500px and 600px, the image is 50% of the viewport width; and below 500px, it is full width.
 
+### Make product images expandable<figure class="attempt-right"> 
 
-### Membuat gambar produk yang bisa diperbesar
+<img src="img/sw-make-images-expandable-good.png" srcset="img/sw-make-images-expandable-good.png 1x, img/sw-make-images-expandable-good-2x.png 2x" alt="J. Crews website with expandable product image" /> <figcaption class="success"> J. Crew's website with expandable product image. </figcaption> </figure> 
 
-<figure class="attempt-right">
-  <img src="img/sw-make-images-expandable-good.png" srcset="img/sw-make-images-expandable-good.png 1x, img/sw-make-images-expandable-good-2x.png 2x" alt="Situs web J. Crews dengan gambar produk yang diperluas">
-  <figcaption class="success">
-    Situs web J. Crews dengan gambar produk yang diperluas.
-  </figcaption>
-</figure>
+Customers want to see what they're buying. On retail sites, users expect to be able to view high resolution closeups of products to get a better look at details, and [study participants](/web/fundamentals/getting-started/principles/#make-product-images-expandable) got frustrated if they weren't able to.
 
-Konsumen ingin melihat apa yang mereka beli.  Pada situs ritel, pengguna berharap untuk
-bisa melihat tampilan-dekat resolusi tinggi dari produk agar bisa melihatnya secara lebih
-detail, dan [partisipan penelitian](/web/fundamentals/getting-started/principles/#make-product-images-expandable) merasa frustrasi jika mereka tidak dapat melakukannya.
+A good example of tappable, expandable images is provided by the J. Crew site. A disappearing overlay indicates that an image is tappable, providing a zoomed in image with fine detail visible.
 
-Sebuah contoh bagus dari gambar yang bisa diketuk dan diperbesar disediakan oleh situs J. Crew.
-Sebuah overlay yang menghilang menunjukkan bahwa gambar bisa diketuk, yang memunculkan gambar
-yang diperbesar dengan detail halus terlihat.
+<div style="clear:both;">
+</div>
 
-<div style="clear:both;"></div>
+### Other image techniques
 
-### Teknik gambar lainnya
+#### Compressive images
 
-#### Gambar kompresif
+The [compressive image technique](http://www.html5rocks.com/en/mobile/high-dpi/#toc-tech-overview) serves a highly compressed 2x image to all devices, no matter the actual capabilities of the device. Depending on the type of image and level of compression, image quality may not appear to change, but the file size drops significantly.
 
-[Teknik gambar kompresif](http://www.html5rocks.com/en/mobile/high-dpi/#toc-tech-overview)
-menyajikan gambar 2x kompresi sangat tinggi untuk semua perangkat, tidak peduli kemampuan
-sebenarnya dari perangkat tersebut.  Tergantung pada tipe gambar dan tingkat
-kompresi, kualitas gambar mungkin tidak terlihat berubah, namun ukuran file turun
-secara signifikan.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/compressive.html){: target="_blank" .external }
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/compressive.html){: target="_blank" .external }
+Caution: Use caution with the compressive technique because of the increased memory and decoding costs it requires. Resizing large images to fit on smaller screens is expensive and can be particularly painful on low-end devices where both memory and processing is limited.
 
-Perhatian: Gunakan teknik kompresi dengan hati-hati karena peningkatan biaya decoding dan memori yang diperlukan. Mengubah ukuran gambar besar agar muat pada layar yang lebih kecil tidak mudah dilakukan dan bisa sangat merugikan pada perangkat low-end karena memori dan kemampuan prosesor terbatas.
+#### JavaScript image replacement
 
-#### Pengganti gambar JavaScript
+JavaScript image replacement checks the capabilities of the device and "does the right thing." You can determine device pixel ratio via `window.devicePixelRatio`, get screen width and height, and even potentially do some network connection sniffing via `navigator.connection` or issuing a fake request. When you've collected all of this information, you can decide which image to load.
 
-Pengganti gambar JavaScript memeriksa kemampuan perangkat dan "melakukan
-hal yang benar." Anda bisa menentukan rasio piksel perangkat melalui
-`window.devicePixelRatio`, memperoleh lebar dan tinggi layar, dan bahkan berpotensi melakukan
-beberapa sniffing koneksi jaringan melalui `navigator.connection` atau mengeluarkan permintaan
-palsu. Bila telah mengumpulkan semua informasi ini, Anda bisa memutuskan gambar
-mana yang akan dimuat.
+One big drawback to this approach is that using JavaScript means that you will delay image loading until at least the look-ahead parser has finished. This means that images won't even start downloading until after the `pageload` event fires. In addition, the browser will most likely download both the 1x and 2x images, resulting in increased page weight.
 
-Salah satu kelemahan besar dalam pendekatan ini adalah bahwa menggunakan JavaScript berarti bahwa Anda akan
-menunda pemuatan gambar sampai setidaknya parser lihat-depan telah diselesaikan. Bahkan ini
-berarti bahwa gambar tidak akan mulai diunduh sampai kejadian `pageload`
-sudah diaktifkan. Selain itu, browser kemungkinan besar akan mengunduh gambar
-1x dan 2x, yang mengakibatkan peningkatan ukuran laman.
+#### Inlining images: raster and vector
 
+There are two fundamentally different ways to create and store images&mdash;and this affects how you deploy images responsively.
 
-#### Menyisipkan gambar: bitmap dan vektor
+**Raster images** &mdash; such as photographs and other images, are represented as a grid of individual dots of color. Raster images might come from a camera or scanner, or be created with the HTML canvas element. Formats like PNG, JPEG, and WebP are used to store raster images.
 
-Ada dua cara yang berbeda secara mendasar untuk membuat dan menyimpan gambar&mdash;dan ini memengaruhi bagaimana Anda menerapkan gambar secara responsif.
-
-**Gambar bitmap**&mdash;seperti foto dan gambar lainnya&mdash;direpresentasikan sebagai grid dari titik-titik individu warna. Gambar bitmap mungkin berasal dari kamera atau pemindai, atau dibuat dengan elemen kanvas HTML. Format seperti PNG, JPEG dan WebP digunakan untuk menyimpan gambar bitmap.
-
-**Gambar vektor**&mdash; seperti logo dan seni garis&mdash;didefinisikan sebagai serangkaian rangkaian kurva, garis, bentuk, warna isian dan gradien. Gambar vektor bisa dibuat dengan program seperti Adobe Illustrator atau Inkscape, atau ditulis tangan dalam kode menggunakan format vektor seperti SVG.
+**Vector images** such as logos and line art are defined as a set of curves, lines, shapes, fill colors and gradients. Vector images can be created with programs like Adobe Illustrator or Inkscape, or handwritten in code using a vector format such as SVG.
 
 ##### SVG
 
-SVG memungkinkan untuk memasukkan grafis vektor responsif dalam laman web. Keuntungan dari format file vektor dibandingkan format file bitmap adalah bahwa browser bisa merender gambar vektor dalam ukuran apa saja. Format vektor menggambarkan geometri gambar&mdash;bagaimana itu dibuat dari garis, kurva, warna dan sebagainya. Format bitmap, di sisi lain, hanya memiliki informasi tentang titik-titik individu warna, sehingga browser harus menebak cara mengisi kekosongan saat penskalaan.
+SVG makes it possible to include responsive vector graphics in a web page. The advantage of vector file formats over raster file formats is that the browser can render a vector image at any size. Vector formats describe the geometry of the image&mdash;how it's constructed from lines, curves, and colors and so on. Raster formats, on the other hand, only have information about individual dots of color, so the browser has to guess how to fill in the blanks when scaling.
 
-Di bawah ini adalah dua versi dari gambar yang sama: gambar PNG di sebelah kiri dan SVG di sebelah kanan. SVG terlihat bagus pada berbagai ukuran, sedangkan PNG di sebelahnya mulai terlihat buram pada ukuran layar yang lebih besar.
+Below are two versions of the same image: a PNG image on the left and an SVG on the right. The SVG looks great at any size, whereas the PNG next to it starts to look blurry at larger display sizes.
 
-<img class="side-by-side" src="img/html5.png" alt="Logo HTML5, format PNG" />
-<img class="side-by-side" src="img/html5.svg" alt="Logo HTML5, format SVG" />
+<img class="side-by-side" src="img/html5.png" alt="HTML5 logo, PNG format" /> <img class="side-by-side" src="img/html5.svg" alt="HTML5 logo, SVG format" />
 
-Jika Anda ingin mengurangi jumlah permintaan file yang dibuat laman, Anda bisa mengkodekan gambar menjadi inline menggunakan format Data URI atau SVG. Jika Anda melihat sumber dari laman ini, Anda akan melihat bahwa kedua logo berikut dideklarasikan inline: URI Data dan SVG.
+If you want to reduce the number of file requests your page makes, you can code images inline using SVG or Data URI format. If you view the source of this page, you'll see that both logos below are declared inline: a Data URI and an SVG.
 
 <img class="side-by-side" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiB
       BZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW
@@ -385,383 +365,249 @@ Jika Anda ingin mengurangi jumlah permintaan file yang dibuat laman, Anda bisa m
     jQ3OS44MjgsMjQyLjM4IDQ3OS44MjgsMjQyLjUwMiA0ODAsMjQyLjUwMiA1OTkuNjQsMjQyLjUw
     MiA1OTkuOCwyNDIuNTAyIDYwMC43OTYsMjMxLjMzOCANCgkJCQk2MDMuMDU5LDIwNi4xNTkgNjA
     0LjI0NywxOTIuODMzIDQ4MCwxOTIuODMzIDQ3OS44MjgsMTkyLjgzMyA0NzkuODI4LDIyMy42OD
-    IgCQkJIi8+DQoJCTwvZz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==">
-<svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-  width="396.74px" height="560px" viewBox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166       "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445      "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362       "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021       "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517      "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042       "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517      "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517      "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069       "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682       "/></g></g></g></svg>
+    IgCQkJIi8+DQoJCTwvZz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==" /> <svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="396.74px" height="560px" viewbox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166 "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445 "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362 "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021 "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517 "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042 "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517 "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517 "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069 "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682 "/></g></g></g></svg>
 
-SVG memiliki [dukungan yang luar biasa](http://caniuse.com/svg-html5) pada seluler dan desktop, dan [alat optimalisasi](https://sarasoueidan.com/blog/svgo-tools/) bisa secara signifikan mengurangi ukuran SVG. Dua logo SVG inline berikut terlihat sama, namun yang satu berukuran sekitar 3 KB dan lainnya hanya 2KB:
+SVG has [great support](http://caniuse.com/svg-html5) on mobile and desktop, and [optimization tools](https://sarasoueidan.com/blog/svgo-tools/) can significantly reduce SVG size. The following two inline SVG logos look identical, but one is around 3KB and the other only 2KB:
 
-<svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="396.74px" height="560px" viewBox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166       "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445      "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362       "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021       "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517      "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042       "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517      "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517      "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069       "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682       "/></g></g></g></svg><svg class="side-by-side" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="50%" height="560px" viewBox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.7,242.5 414.3,293.4 479.8,293.4 480,293.4 480,242.5 479.8,242.5"/><path fill="#E44D26" d="M281.63 110.053l36.106 404.968L479.757 560l162.47-45.042l36.144-404.905H281.63z M611.283 489.2 L480 525.572V474.03l-0.229 0.063L378.031 445.85l-6.958-77.985h22.98h26.879l3.536 39.612l55.315 14.937l0.046-0.013v-0.004 L480 422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283 489.176z"/><polygon fill="#F16529" points="480,192.8 604.2,192.8 603.1,206.2 600.8,231.3 599.8,242.5 599.6,242.5 480,242.5 480,293.4 581.9,293.4 595.3,293.4 594.1,306.7 582.4,437.5 581.6,445.9 480,474 480,474 480,525.6 611.3,489.2 642.2,143.2 480,143.2"/><polygon fill="#F16529" points="541,343 480,343 480,422.4 535.2,407.4"/><polygon fill="#EBEBEB" points="414.3,293.4 409.7,242.5 479.8,242.5 479.8,242.4 479.8,223.7 479.8,192.8 355.5,192.8 356.6,206.2 368.9,343 479.8,343 479.8,293.4"/><polygon fill="#EBEBEB" points="479.8,474.1 479.8,422.4 479.8,422.4 424.5,407.5 420.9,367.9 394.1,367.9 371.1,367.9 378,445.9 479.8,474.1 480,474 480,474"/><polygon points="343.8,50.2 366.9,50.2 366.9,75.5 392.1,75.5 392.1,0 366.9,0 366.9,24.9 343.8,24.9 343.8,0 318.5,0 318.5,75.5 343.8,75.5"/><polygon points="425.3,25 425.3,75.5 450.5,75.5 450.5,25 472.8,25 472.8,0 403.1,0 403.1,25 425.3,25"/><polygon points="508.5,38.1 525.9,64.9 526.3,64.9 543.7,38.1 543.7,75.5 568.9,75.5 568.9,0 542.5,0 526.3,26.5 510.2,0 483.8,0 483.8,75.5 508.5,75.5"/><polygon points="642.2,50.6 606.7,50.6 606.7,0 581.4,0 581.4,75.5 642.2,75.5"/><polygon fill="#FFFFFF" points="480,474 581.6,445.9 582.4,437.5 594.1,306.7 595.3,293.4 581.9,293.4 480,293.4 479.8,293.4 479.8,343 480,343 541,343 535.2,407.4 480,422.4 479.8,422.4 479.8,422.4 479.8,474.1"/><polygon fill="#FFFFFF" points="479.8,242.4 479.8,242.5 480,242.5 599.6,242.5 599.8,242.5 600.8,231.3 603.1,206.2 604.2,192.8 480,192.8 479.8,192.8 479.8,223.7"/></g></g></g></svg>
+<svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="396.74px" height="560px" viewbox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166 "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445 "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362 "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021 "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517 "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042 "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517 "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517 "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069 "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682 "/></g></g></g></svg><svg class="side-by-side" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="50%" height="560px" viewbox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.7,242.5 414.3,293.4 479.8,293.4 480,293.4 480,242.5 479.8,242.5"/><path fill="#E44D26" d="M281.63 110.053l36.106 404.968L479.757 560l162.47-45.042l36.144-404.905H281.63z M611.283 489.2 L480 525.572V474.03l-0.229 0.063L378.031 445.85l-6.958-77.985h22.98h26.879l3.536 39.612l55.315 14.937l0.046-0.013v-0.004 L480 422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283 489.176z"/><polygon fill="#F16529" points="480,192.8 604.2,192.8 603.1,206.2 600.8,231.3 599.8,242.5 599.6,242.5 480,242.5 480,293.4 581.9,293.4 595.3,293.4 594.1,306.7 582.4,437.5 581.6,445.9 480,474 480,474 480,525.6 611.3,489.2 642.2,143.2 480,143.2"/><polygon fill="#F16529" points="541,343 480,343 480,422.4 535.2,407.4"/><polygon fill="#EBEBEB" points="414.3,293.4 409.7,242.5 479.8,242.5 479.8,242.4 479.8,223.7 479.8,192.8 355.5,192.8 356.6,206.2 368.9,343 479.8,343 479.8,293.4"/><polygon fill="#EBEBEB" points="479.8,474.1 479.8,422.4 479.8,422.4 424.5,407.5 420.9,367.9 394.1,367.9 371.1,367.9 378,445.9 479.8,474.1 480,474 480,474"/><polygon points="343.8,50.2 366.9,50.2 366.9,75.5 392.1,75.5 392.1,0 366.9,0 366.9,24.9 343.8,24.9 343.8,0 318.5,0 318.5,75.5 343.8,75.5"/><polygon points="425.3,25 425.3,75.5 450.5,75.5 450.5,25 472.8,25 472.8,0 403.1,0 403.1,25 425.3,25"/><polygon points="508.5,38.1 525.9,64.9 526.3,64.9 543.7,38.1 543.7,75.5 568.9,75.5 568.9,0 542.5,0 526.3,26.5 510.2,0 483.8,0 483.8,75.5 508.5,75.5"/><polygon points="642.2,50.6 606.7,50.6 606.7,0 581.4,0 581.4,75.5 642.2,75.5"/><polygon fill="#FFFFFF" points="480,474 581.6,445.9 582.4,437.5 594.1,306.7 595.3,293.4 581.9,293.4 480,293.4 479.8,293.4 479.8,343 480,343 541,343 535.2,407.4 480,422.4 479.8,422.4 479.8,422.4 479.8,474.1"/><polygon fill="#FFFFFF" points="479.8,242.4 479.8,242.5 480,242.5 599.6,242.5 599.8,242.5 600.8,231.3 603.1,206.2 604.2,192.8 480,192.8 479.8,192.8 479.8,223.7"/></g></g></g></svg>
 
 ##### Data URI
 
-Data URI menyediakan cara untuk menyertakan file, seperti gambar, inline dengan menetapkan src dari elemen <code>img</code> sebagai string mengenkode Base64 menggunakan format berikut:
-
+Data URIs provide a way to include a file, such as an image, inline by setting the src of an `img` element as a Base64 encoded string using the following format:
 
     <img src="data:image/svg+xml;base64,[data]">
+    
 
-
-Awal kode untuk logo HTML5 di atas terlihat seperti ini:
-
+The start of the code for the HTML5 logo above looks like this:
 
     <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiB
     BZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW ...">
+    
 
+(The full version is over 5000 characters in length!)
 
-(Versi lengkap lebih dari 5000 karakter panjangnya!)
+Drag 'n' drop tool such as [jpillora.com/base64-encoder](https://jpillora.com/base64-encoder) are available to convert binary files such as images to Data URIs. Just like SVGs, Data URIs are [well supported](http://caniuse.com/datauri) on mobile and desktop browsers.
 
-Alat (bantu) seret dan lepas seperti [jpillora.com/base64-encoder](https://jpillora.com/base64-encoder) tersedia untuk mengonversi file biner seperti gambar ke Data URI. Sama seperti SVG, Data URI [didukung dengan baik](http://caniuse.com/datauri) pada browser seluler dan desktop.
+##### Inlining in CSS
 
-##### Penyisipan di CSS
+Data URIs and SVGs can also be inlined in CSS&mdash;and this is supported on both mobile and desktop. Here are two identical-looking images implemented as background images in CSS; one Data URI, one SVG:
 
-URI Data dan SVG juga bisa disisipkan dalam CSS&mdash;dan ini didukung pada perangkat seluler dan desktop. Berikut adalah dua gambar serupa yang diimplementasikan sebagai gambar latar di CSS; sebuah URI Data, sebuah SVG:
+<span class="side-by-side" id="data_uri"></span> <span class="side-by-side" id="svg"></span>
 
-<span class="side-by-side" id="data_uri"></span>
-<span class="side-by-side" id="svg"></span>
+##### Inlining pros & cons
 
-##### Menyisipkan kelebihan & kekurangan
+Inline code for images can be verbose&mdash;especially Data URIs&mdash;so why would you want to use it? To reduce HTTP requests! SVGs and Data URIs can enable an entire web page, including images, CSS and JavaScript, to be retrieved with one single request.
 
-Kode inline untuk gambar bisa bertele-tele&mdash;terutama URI Data&mdash;jadi mengapa Anda mau menggunakannya? Untuk mengurangi permintaan HTTP! SVG dan Data URI bisa mengaktifkan seluruh laman web, termasuk gambar, CSS dan JavaScript, yang dapat diambil dengan satu permintaan.
+On the downside:
 
-Sisi negatifnya:
+* On mobile, Data URIs can be [significantly slower](https://www.mobify.com/blog/data-uris-are-slow-on-mobile/) to display on mobile than images from an external `src`.
+* Data URIs can considerably increase the size of an HTML request.
+* They add complexity to your markup and your workflow.
+* The Data URI format is considerably bigger than binary (up to 30%) and therefore doesn't reduce total download size.
+* Data URIs cannot be cached, so must be downloaded for every page they're used on.
+* They're not supported in IE 6 and 7, incomplete support in IE8.
+* With HTTP/2, reducing the number of asset requests will become less of a priority.
 
-* Pada perangkat seluler, Data URI bisa [secara signifikan lebih lambat](https://www.mobify.com/blog/data-uris-are-slow-on-mobile/) untuk ditampilkan pada perangkat seluler daripada gambar dari <code>src</code> eksternal.
-* Data URI bisa cukup banyak meningkatkan ukuran permintaan HTML.
-* Mereka menambahkan kompleksitas pada markup dan alur kerja Anda.
-* Format Data URI jauh lebih besar dari biner (hingga 30%) dan oleh karena itu tidak mengurangi jumlah ukuran unduhan.
-* Data URI tidak bisa di-cache, sehingga harus diunduh untuk setiap laman yang menggunakannya.
-* Mereka tidak didukung dalam IE 6 dan 7, dukungan tidak lengkap dalam IE8.
-* Dengan HTTP/2, mengurangi jumlah permintaan aset akan menjadi berkurang prioritasnya.
+As with all things responsive, you need to test what works best. Use developer tools to measure download file size, the number of requests, and the total latency. Data URIs can sometimes be useful for raster images&mdash;for example, on a homepage that only has one or two photos that aren't used elsewhere. If you need to inline vector images, SVG is a much better option.
 
-Seperti pada segala sesuatu yang responsif, Anda harus menguji apa yang terbaik. Gunakan alat developer untuk mengukur ukuran file unduhan, jumlah permintaan, dan jumlah latensi. URI Data kadang-kadang bisa berguna untuk gambar bitmap&mdash;misalnya, pada beranda yang hanya memiliki satu atau dua foto yang tidak digunakan di tempat lain. Jika Anda membutuhkan gambar vektor inline, SVG adalah pilihan yang jauh lebih baik.
+## Images in CSS
 
-
-
-## Gambar di CSS
-
-Properti `background` CSS adalah alat (bantu) yang efektif untuk menambahkan gambar kompleks
-ke elemen, memudahkan ketika ingin menambahkan beberapa gambar, membuat pengulangan,
-dan banyak lagi.  Ketika dikombinasikan dengan kueri media, properti latar belakang menjadi
-lebih efektif lagi, memungkinkan pemuatan gambar bersyarat berdasarkan resolusi
-layar, ukuran tampilan yang terlihat, dan lainnya.
-
+The CSS `background` property is a powerful tool for adding complex images to elements, making it easy to add multiple images, and causing them to repeat, and more. When combined with media queries, the background property becomes even more powerful, enabling conditional image loading based on screen resolution, viewport size, and more.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan gambar terbaik untuk karakteristik tampilan, pertimbangkan ukuran layar, resolusi perangkat dan layout laman.
-- Ubah properti `background-image` dalam CSS untuk tampilan DPI tinggi menggunakan kueri media dengan `min-resolution` dan `-webkit-min-device-pixel-ratio`.
-- Gunakan srcset untuk memberikan gambar resolusi tinggi selain gambar 1x dalam markup.
-- Pertimbangkan biaya kinerja ketika menggunakan teknik pengganti gambar JavaScript atau ketika menyajikan gambar resolusi tinggi sangat terkompresi untuk perangkat resolusi rendah.
 
+* Use the best image for the characteristics of the display, consider screen size, device resolution, and page layout.
+* Change the `background-image` property in CSS for high DPI displays using media queries with `min-resolution` and `-webkit-min-device-pixel-ratio`.
+* Use srcset to provide high resolution images in addition to the 1x image in markup.
+* Consider the performance costs when using JavaScript image replacement techniques or when serving highly compressed high resolution images to lower resolution devices.
 
-### Gunakan kueri media untuk pemuatan gambar bersyarat atau tujuan seni
+### Use media queries for conditional image loading or art direction
 
-Kueri media tidak hanya memengaruhi layout laman; Anda juga bisa menggunakannya untuk
-memuat gambar secara bersyarat atau memberikan tujuan seni bergantung pada lebar
-tampilan yang terlihat.
+Media queries not only affect the page layout; you can also use them to conditionally load images or to provide art direction depending on the viewport width.
 
-Misalnya dalam contoh di bawah ini, pada layar yang lebih kecil, hanya `small.png` yang
-diunduh dan diaplikasikan ke materi `div`, sementara di layar yang lebih besar
-`background-image: url(body.png)` diaplikasikan ke tubuh dan `background-image:
+For example, in the sample below, on smaller screens only `small.png` is downloaded and applied to the content `div`, while on larger screens `background-image: url(body.png)` is applied to the body and `background-image:
 url(large.png)` is applied to the content `div`.
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/conditional-mq.html" region_tag="conditional" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/conditional-mq.html" region_tag="conditional" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/conditional-mq.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/conditional-mq.html){: target="_blank" .external }
 
-### Gunakan image-set untuk memberikan gambar resolusi tinggi
+### Use image-set to provide high res images
 
-Fungsi `image-set()` dalam CSS meningkatkan perilaku properti `background`,
-sehingga memudahkan saat memberikan beberapa file gambar untuk karakteristik
-perangkat yang berbeda.  Hal ini memungkinkan browser untuk memilih gambar terbaik tergantung pada
-karakteristik perangkat, misalnya menggunakan gambar 2x pada tampilan 2x,
-atau gambar 1x pada perangkat 2x ketika berada pada jaringan bandwidth terbatas.
-
+The `image-set()` function in CSS enhances the behavior `background` property, making it easy to provide multiple image files for different device characteristics. This allows the browser to choose the best image depending on the characteristics of the device, for example using a 2x image on a 2x display, or a 1x image on a 2x device when on a limited bandwidth network.
 
     background-image: image-set(
       url(icon1x.jpg) 1x,
       url(icon2x.jpg) 2x
     );
+    
 
+In addition to loading the correct image, the browser also scales it accordingly. In other words, the browser assumes that 2x images are twice as large as 1x images, and so scales the 2x image down by a factor of 2, so that the image appears to be the same size on the page.
 
-Selain memuat gambar yang benar, browser juga mengubah ukurannya
-secara sesuai. Dengan kata lain, browser berasumsi bahwa gambar 2x berukuran dua kali
-lebih besar dari gambar 1x, lalu menurunkan ukuran gambar 2x dengan faktor 2, sehingga
-gambar yang muncul mempunyai ukuran yang sama pada laman.
+Support for `image-set()` is still new and is only supported in Chrome and Safari with the `-webkit` vendor prefix. Take care to include a fallback image for when `image-set()` is not supported; for example:
 
-Dukungan untuk `image-set()` masih baru dan hanya didukung di Chrome dan
-Safari dengan awalan vendor `-webkit`.  Berhati-hatilah saat menyertakan
-gambar fallback ketika `image-set()` tidak didukung; misalnya:
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-set.html" region_tag="imageset" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-set.html" region_tag="imageset" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/image-set.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/image-set.html){: target="_blank" .external }
 
-Hal di atas memuat aset yang tepat di browser yang mendukung image-set; jika tidak akan
-kembali ke aset 1x. Kekurangan yang nyata adalah bahwa meskipun dukungan browser
-`image-set()` rendah, kebanyakan browser mendapatkan aset 1x.
+The above loads the appropriate asset in browsers that support image-set; otherwise it falls back to the 1x asset. The obvious caveat is that while `image-set()` browser support is low, most browsers get the 1x asset.
 
-### Menggunakan kueri media untuk memberikan gambar resolusi tinggi atau tujuan seni
+### Use media queries to provide high res images or art direction
 
-Kueri media bisa membuat aturan berdasarkan
-[rasio piksel perangkat](http://www.html5rocks.com/en/mobile/high-dpi/#toc-bg),
-sehingga bisa menentukan gambar yang berbeda untuk tampilan 2x versus 1x.
-
+Media queries can create rules based on the [device pixel ratio](http://www.html5rocks.com/en/mobile/high-dpi/#toc-bg), making it possible to specify different images for 2x versus 1x displays.
 
     @media (min-resolution: 2dppx),
     (-webkit-min-device-pixel-ratio: 2)
     {
       /* High dpi styles & resources here */
     }
+    
 
+Chrome, Firefox, and Opera all support the standard `(min-resolution: 2dppx)`, while the Safari and Android browsers both require the older vendor prefixed syntax without the `dppx` unit. Remember, these styles are only loaded if the device matches the media query, and you must specify styles for the base case. This also provides the benefit of ensuring something is rendered if the browser doesn't support resolution-specific media queries.
 
-Chrome, Firefox dan Opera semua mendukung `(min-resolution: 2dppx)` standar,
-sementara Safari dan browser Android keduanya membutuhkan sintaks berawalan vendor yang lebih lama
-tanpa unit `dppx`.  Ingatlah, gaya ini hanya dimuat jika perangkat
-cocok dengan kueri media, dan Anda harus menetapkan gaya untuk kejadian dasar.  Ini
-juga memberikan manfaat untuk memastikan sesuatu dirender jika browser
-tidak mendukung kueri media resolusi spesifik.
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-query-dppx.html" region_tag="mqdppx" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-query-dppx.html" region_tag="mqdppx" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/media-query-dppx.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-query-dppx.html){: target="_blank" .external }
 
-Anda juga bisa menggunakan sintaks min-width untuk menampilkan gambar alternatif tergantung pada
-ukuran tampilan yang terlihat.  Teknik ini memiliki keuntungan bahwa gambar tidak
-diunduh jika kueri media tidak sesuai.  Misalnya, `bg.png` hanya
-diunduh dan diaplikasikan ke `body` jika lebar browser 500px atau lebih besar:
-
+You can also use the min-width syntax to display alternative images depending on the viewport size. This technique has the advantage that the image is not downloaded if the media query doesn't match. For example, `bg.png` is only downloaded and applied to the `body` if the browser width is 500px or greater:
 
     @media (min-width: 500px) {
       body {
         background-image: url(bg.png);
       }
     }
+    
 
+## Use SVG for icons
 
-
-## Menggunakan SVG untuk ikon
-
-Ketika menambahkan ikon ke laman Anda, gunakan ikon SVG jika memungkinkan atau dalam kasus
-tertentu, karakter unicode.
-
+When adding icons to your page, use SVG icons where possible or in some cases, unicode characters.
 
 ### TL;DR {: .hide-from-toc }
-- Menggunakan SVG atau unicode sebagai ikon bukannya gambar bitmap.
 
+* Use SVG or unicode for icons instead of raster images.
 
-### Ganti ikon sederhana dengan unicode
+### Replace simple icons with unicode
 
-Banyak font mengikutsertakan dukungan untuk berbagai karakter unicode, yang bisa digunakan
-sebagai pengganti gambar. Tidak seperti gambar, font unicode akan diskalakan dengan baik dan terlihat baik tidak
-peduli seberapa kecil atau besar mereka ditampilkan di layar.
+Many fonts include support for the myriad of unicode glyphs, which can be used instead of images. Unlike images, unicode fonts scale well and look good no matter how small or large they appear on screen.
 
-Selain himpunan karakter normal, unicode mungkin memasukkan simbol untuk
-panah (&#8592;), operator matematika (&#8730;), bentuk geometris
-(&#9733;), gambar kontrol (&#9654;), notasi musik (&#9836;),
-huruf Yunani (&#937;), bahkan bidak catur (&#9822;).
+Beyond the normal character set, unicode may include symbols for arrows (&#8592;), math operators (&#8730;), geometric shapes (&#9733;), control pictures (&#9654;), music notation (&#9836;), Greek letters (&#937;), even chess pieces (&#9822;).
 
-Memasukkan karakter unicode dilakukan secara sama dengan memberi nama entitas:
-`&#XXXX`, dengan `XXXX` merepresentasikan angka karakter unicode. Misalnya:
-
+Including a unicode character is done in the same way named entities are: `&#XXXX`, where `XXXX` represents the unicode character number. For example:
 
     You're a super &#9733;
-
+    
 
 You're a super &#9733;
 
-### Ganti ikon kompleks dengan SVG
+### Replace complex icons with SVG
 
-Untuk persyaratan ikon kompleks lainnya, ikon SVG biasanya ringan,
-mudah digunakan, dan bisa diberi gaya dengan CSS. SVG memiliki sejumlah keunggulan dibandingkan
-gambar bitmap:
+For more complex icon requirements, SVG icons are generally lightweight, easy to use, and can be styled with CSS. SVG have a number of advantages over raster images:
 
-* Mereka adalah grafis vektor yang bisa diskalakan secara tak terbatas.
-* Efek CSS seperti warna, bayangan, transparansi, dan animasi
-  bisa dibuat dengan mudah.
-* Gambar SVG bisa disisipkan langsung dalam dokumen.
-* Mereka semantik.
-* Ikon SVG menyediakan aksesibilitas yang lebih baik dengan atribut yang sesuai.
+* They're vector graphics that can be infinitely scaled.
+* CSS effects such as color, shadowing, transparency, and animations are straightforward.
+* SVG images can be inlined right in the document.
+* They are semantic.
+* They provide better accessibility with the appropriate attributes.
 
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-svg.html" region_tag="iconsvg" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-svg.html" region_tag="iconsvg" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/icon-svg.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/icon-svg.html){: target="_blank" .external }
 
-### Gunakan font ikon dengan hati-hati
+### Use icon fonts with caution<figure class="attempt-right"> 
 
-<figure class="attempt-right">
-  <img src="img/icon-fonts.png" class="center" srcset="img/icon-fonts.png 1x, img/icon-fonts-2x.png 2x" alt="Contoh laman yang menggunakan FontAwesome untuk ikon font.">
-  <figcaption>
-    <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/icon-font.html" target="_blank" class="external">
-      Contoh laman yang menggunakan FontAwesome untuk ikon font.
-    </a>
-  </figcaption>
-</figure>
+<img src="img/icon-fonts.png" class="center" srcset="img/icon-fonts.png 1x, img/icon-fonts-2x.png 2x" alt="Example of a page that uses FontAwesome for its font icons." /> <figcaption> <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/icon-font.html" target="_blank" class="external"> Example of a page that uses FontAwesome for its font icons. </a> </figcaption> </figure> 
 
-Font ikon memang populer, dan mudah digunakan, namun memiliki beberapa kekurangan jika
-dibandingkan dengan ikon SVG:
+Icon fonts are popular, and can be easy to use, but have some drawbacks compared to SVG icons:
 
-* Mereka grafis vektor yang bisa secara tak terbatas diskalakan, namun
-  anti-alias mungkin menghasilkan ikon tidak setajam yang diharapkan.
-* Penataan gaya terbatas dengan CSS.
-* Pemosisian sempurna hingga tingkat piksel bisa sulit dilakukan, tergantung pada tinggi-baris,
-  pengaturan jarak huruf, dll.
-* Font ikon bukan semantik, dan sulit digunakan dengan pembaca layar atau
-  teknologi bantu lainnya.
-* Kecuali dengan benar tercakup, Font ikon bisa menghasilkan ukuran file yang besar hanya karena menggunakan
-  subset kecil dari ikon yang tersedia.
+* They're vector graphics that can be infinitely scaled, but may be anti-aliased resulting in icons that aren’t as sharp as expected.
+* Limited styling with CSS.
+* Pixel perfect positioning can be difficult, depending on line-height, letter spacing, etc.
+* They aren't semantic, and can be difficult to use with screen readers or other assistive technology.
+* Unless properly scoped, they can result in a large file size for only using a small subset of the icons available.
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-font.html" region_tag="iconfont" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-font.html" region_tag="iconfont" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/icon-font.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/icon-font.html){: target="_blank" .external }
 
-Ada ratusan font ikon gratis dan berbayar yang tersedia termasuk [Font
-Awesome](https://fortawesome.github.io/Font-Awesome/),
-[Pictos](http://pictos.cc/){: .external }, dan [Glyphicons](https://glyphicons.com/).
+There are hundreds of free and paid icon fonts available including [Font Awesome](https://fortawesome.github.io/Font-Awesome/), [Pictos](http://pictos.cc/){: .external }, and [Glyphicons](https://glyphicons.com/).
 
-Pastikan untuk menyeimbangkan bobot permintaan HTTP tambahan dan ukuran file dengan
-kebutuhan ikon. Misalnya, jika Anda hanya membutuhkan beberapa ikon, mungkin
-lebih baik untuk menggunakan gambar atau sprite gambar.
+Be sure to balance the weight of the additional HTTP request and file size with the need for the icons. For example, if you only need a handful of icons, it may be better to use an image or an image sprite.
 
+## Optimize images for performance
 
-## Mengoptimalkan gambar untuk kinerja
-
-Gambar sering menjadi sumber besarnya byte yang diunduh dan juga sering kali menempati
-sejumlah besar ruang visual pada laman. Akibatnya, mengoptimalkan
-gambar bisa menghasilkan beberapa penghematan byte terbesar dan meningkatkan
-kinerja situs web Anda: semakin sedikit byte yang harus diunduh browser,
-semakin sedikit persaingan untuk mendapatkan bandwidth klien dan semakin cepat
-browser mengunduh dan menampilkan semua aset.
-
+Images often account for most of the downloaded bytes and also often occupy a significant amount of the visual space on the page. As a result, optimizing images can often yield some of the largest byte savings and performance improvements for your website: the fewer bytes the browser has to download, the less competition there is for client's bandwidth and the faster the browser can download and display all the assets.
 
 ### TL;DR {: .hide-from-toc }
-- Jangan hanya secara acak memilih format gambar&mdash;pahami format berbeda yang tersedia dan gunakan format yang paling cocok.
-- Sertakan alat kompresi dan optimalisasi gambar ke dalam alur kerja Anda untuk mengurangi ukuran file.
-- Kurangi jumlah permintaan http dengan menempatkan gambar yang sering digunakan ke dalam image sprites.
-- Untuk mempercepat waktu muat laman awal dan mengurangi ukurannya, pertimbangkan memuat gambar hanya setelah mereka bergulir ke dalam tampilan.
 
+* Don't just randomly choose an image format&mdash;understand the different formats available and use the format best suited.
+* Include image optimization and compression tools into your workflow to reduce file sizes.
+* Reduce the number of http requests by placing frequently used images into image sprites.
+* To improve the initial page load time and reduce the initial page weight, consider loading images only after they’ve scrolled into view.
 
-### Memilih format yang tepat
+### Choose the right format
 
-Ada dua tipe gambar yang bisa dipertimbangkan: [gambar vektor](https://en.wikipedia.org/wiki/Vector_graphics)
-dan [gambar bitmap](https://en.wikipedia.org/wiki/Raster_graphics).
-Untuk gambar bitmap, Anda juga harus memilih format kompresi yang tepat,
-misalnya: `GIF`, `PNG`, `JPG`.
+There are two types of images to consider: [vector images](https://en.wikipedia.org/wiki/Vector_graphics) and [raster images](https://en.wikipedia.org/wiki/Raster_graphics). For raster images, you also need to choose the right compression format, for example: `GIF`, `PNG`, `JPG`.
 
-**Gambar bitmap**, seperti foto dan gambar lainnya, direpresentasikan sebagai sebuah
-grid dari titik atau piksel individual. Gambar bitmap biasanya diperoleh dari kamera atau
-pemindai, atau bisa dibuat di browser dengan elemen `canvas`.  Saat
-ukuran gambar semakin besar, begitu juga ukuran filenya.  Ketika diskalakan dengan ukuran lebih besar dari
-aslinya, gambar bitmap menjadi buram karena browser harus menebak cara
-mengisi piksel yang hilang.
+**Raster images**, like photographs and other images, are represented as a grid of individual dots or pixels. Raster images typically come from a camera or scanner, or can be created in the browser with the `canvas` element. As the image size gets larger, so does the file size. When scaled larger than their original size, raster images become blurry because the browser needs to guess how to fill in the missing pixels.
 
-**Gambar vektor**, seperti logo dan seni garis, didefinisikan oleh rangkaian kurva,
-garis, bentuk dan warna isi. Gambar vektor dibuat dengan program seperti
-Adobe Illustrator atau Inkscape dan disimpan ke format vektor seperti
-[`SVG`](https://css-tricks.com/using-svg/).  Karena gambar vektor dibangun di atas konsep
-primitif sederhana, gambar tersebut bisa diskalakan tanpa penurunan kualitas atau
-perubahan ukuran file.
+**Vector images**, such as logos and line art, are defined by a set of curves, lines, shapes, and fill colors. Vector images are created with programs like Adobe Illustrator or Inkscape and saved to a vector format like [`SVG`](https://css-tricks.com/using-svg/). Because vector images are built on simple primitives, they can be scaled without any loss in quality or change in file size.
 
-Ketika memilih format yang tepat, kita harus mempertimbangkan asal
-gambar (bitmap atau vektor), dan materi (warna, animasi, teks, dll).
-Tidak ada satu format yang bisa cocok untuk semua jenis gambar, dan masing-masing memiliki kelebihan dan
-kekurangan tersendiri.
+When choosing the appropriate format, it is important to consider both the origin of the image (raster or vector), and the content (colors, animation, text, etc). No one format fits all image types, and each has its own strengths and weaknesses.
 
-Mulailah dengan panduan ini ketika memilih format yang tepat:
+Start with these guidelines when choosing the appropriate format:
 
-* Gunakan `JPG` untuk gambar fotografis.
-* Gunakan `SVG` untuk seni vektor dan grafis warna solid seperti logo dan seni garis.
-  Jika seni vektor tidak tersedia, coba gunakan `WebP` atau `PNG`.
-* Gunakan `PNG` daripada `GIF` karena memberikan warna yang lebih banyak dan menawarkan rasio kompresi
-  lebih baik.
-* Untuk animasi yang lebih panjang pertimbangkan untuk menggunakan `<video>`, yang memberikan kualitas
-  gambar lebih baik dan memberikan pengguna kontrol saat pemutaran.
+* Use `JPG` for photographic images.
+* Use `SVG` for vector art and solid color graphics such as logos and line art. If vector art is unavailable, try `WebP` or `PNG`.
+* Use `PNG` rather than `GIF` as it allows for more colors and offers better compression ratios.
+* For longer animations consider using `<video>`, which provides better image quality and gives the user control over playback.
 
-### Mengurangi ukuran file
+### Reduce the file size
 
-Anda bisa memperkecil ukuran file gambar secara signifikan dengan melakukan "pascapemrosesan" gambar setelah
-penyimpanan. Ada beberapa alat untuk kompresi gambar&mdash;lossy dan lossless,
-online, GUI, baris perintah.  Jika memungkinkan, akan lebih baik mengotomatiskan optimalisasi
-gambar sehingga itu mendapat prioritas utama dalam alur kerja Anda.
+You can reduce image file size considerably by "post-processing" the images after saving. There are a number of tools for image compression&mdash;lossy and lossless, online, GUI, command line. Where possible, it's best to try automating image optimization so that it's a first-class citizen in your workflow.
 
-Ada beberapa alat yang bisa melakukan kompresi lossless lebih baik pada file `JPG`
-dan `PNG`, tanpa memengaruhi kualitas gambar. Untuk `JPG`, cobalah
-[jpegtran](http://jpegclub.org/){: .external } atau
-[jpegoptim](http://freshmeat.net/projects/jpegoptim/){: .external } (hanya tersedia di Linux;
-jalankan dengan --menghilangkan-semua opsi). Untuk `PNG`, cobalah
-[OptiPNG](http://optipng.sourceforge.net/){: .external } atau
-[PNGOUT](http://www.advsys.net/ken/util/pngout.htm).
+Several tools are available that perform further, lossless compression on `JPG` and `PNG` files with no effect on image quality. For `JPG`, try [jpegtran](http://jpegclub.org/) or [jpegoptim](http://freshmeat.net/projects/jpegoptim/) (available on Linux only; run with the --strip-all option). For `PNG`, try [OptiPNG](http://optipng.sourceforge.net/) or [PNGOUT](http://www.advsys.net/ken/util/pngout.htm).
 
-### Gunakan image sprites
+### Use image sprites
 
-<img src="img/sprite-sheet.png" class="attempt-right" alt="Sprite sheet gambar yang digunakan dalam contoh">
+<img src="img/sprite-sheet.png" class="attempt-right" alt="Image sprite sheet used in example" />
 
-CSS spriting adalah sebuah teknik dengan sejumlah gambar digabungkan dalam satu gambar
-"sprite sheet". Anda kemudian bisa menggunakan setiap gambar tersebut dengan menetapkan
-gambar latar untuk elemen (sprite sheet) ditambah offset untuk menampilkan
-bagian yang benar.
+CSS spriting is a technique whereby a number of images are combined into a single "sprite sheet" image. You can then use individual images by specifying the background image for an element (the sprite sheet) plus an offset to display the correct part.
 
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-sprite.html" region_tag="sprite" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-sprite.html" region_tag="sprite" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media//image-sprite.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/image-sprite.html){: target="_blank" .external }
 
-Spriting memiliki keuntungan yaitu mengurangi jumlah unduhan yang diperlukan untuk mendapatkan
-beberapa gambar, sambil tetap mengaktifkan caching.
+Spriting has the advantage of reducing the number of downloads required to get multiple images, while still enabling caching.
 
-### Pertimbangkan lazy loading
+### Consider lazy loading
 
-Lazy loading bisa secara signifikan mempercepat pemuatan pada laman panjang yang memasukkan banyak
-gambar di paro bawah dengan memuatnya saat diperlukan atau ketika materi
-utama selesai dimuat dan dirender.  Selain peningkatan
-kinerja, menggunakan lazy loading bisa menciptakan pengalaman gulir tak terbatas.
+Lazy loading can significantly speed up loading on long pages that include many images below the fold by loading them either as needed or when the primary content has finished loading and rendering. In addition to performance improvements, using lazy loading can create infinite scrolling experiences.
 
-Hati-hati saat membuat laman gulir tak terbatas&mdash;karena materi dimuat
-ketika terlihat, mesin telusur mungkin tidak akan pernah melihat materi tersebut.  Selain itu,
-pengguna yang mencari informasi yang mereka harapkan bisa dilihat di footer,
-tidak akan pernah melihat footer karena materi baru selalu dimuat.
+Be careful when creating infinite scrolling pages&mdash;because content is loaded as it becomes visible, search engines may never see that content. In addition, users who are looking for information they expect to see in the footer, never see the footer because new content is always loaded.
 
+## Avoid images completely
 
+Sometimes the best image isn't actually an image at all. Whenever possible, use the native capabilities of the browser to provide the same or similar functionality. Browsers generate visuals that would have previously required images. This means that browsers no longer need to download separate image files thus preventing awkwardly scaled images. You can use unicode or special icon fonts to render icons.
 
-## Jangan gunakan gambar sama sekali
+### Place text in markup instead of embedded in images
 
-Terkadang, gambar terbaik sama sekali bukanlah sebuah gambar. Bila memungkinkan,
-gunakan kemampuan bawaan browser untuk menyediakan fungsionalitas yang sama atau
-serupa.  Browser menghasilkan visual gambar yang
-diperlukan sebelumnya.   Ini berarti bahwa browser tidak perlu lagi mengunduh
-file gambar yang terpisah sehingga mencegah gambar diskalakan dengan canggung.  Anda bisa menggunakan unicode atau font ikon khusus untuk merender ikon.
+Wherever possible, text should be text and not embedded into images. For example, using images for headlines or placing contact information&mdash;like phone numbers or addresses&mdash;directly into images prevents users from copying and pasting the information; it makes the information inaccessible for screen readers, and it isn't responsive. Instead, place the text in your markup and if necessary use webfonts to achieve the style you need.
 
-### Tempatkan teks dalam markup bukannya disematkan pada gambar
+### Use CSS to replace images
 
-Bila memungkinkan, teks harus berupa teks dan tidak disematkan ke dalam gambar. Misalnya,
-menggunakan gambar sebagai judul atau menempatkan informasi kontak&mdash;seperti nomor
-telepon atau alamat&mdash;secara langsung pada gambar untuk mencegah pengguna
-menyalin dan menempelkan informasi; hal ini membuat informasi tidak bisa diakses pembaca layar, dan
-tidak responsif.  Sebagai gantinya, letakkan teks dalam markup Anda dan jika perlu gunakan
-webfonts untuk memperoleh gaya yang Anda butuhkan.
-
-### Gunakan CSS sebagai pengganti gambar
-
-Browser modern bisa menggunakan fitur CSS untuk menciptakan gaya yang sebelumnya
-memerlukan gambar.  Misalnya: gradien kompleks bisa dibuat dengan menggunakan properti
-`background`, bayangan dapat dibuat dengan menggunakan `box-shadow`, dan sudut
-membulat bisa ditambahkan dengan properti `border-radius`.
+Modern browsers can use CSS features to create styles that would previously have required images. For example: complex gradients can be created using the `background` property, shadows can be created using `box-shadow`, and rounded corners can be added with the `border-radius` property. 
 
 <style>
   p#noImage {
@@ -779,15 +625,11 @@ membulat bisa ditambahkan dengan properti `border-radius`.
   }
 </style>
 
-<p id="noImage">
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque sit
-amet augue eu magna scelerisque porta ut ut dolor. Nullam placerat egestas
-nisl sed sollicitudin. Fusce placerat, ipsum ac vestibulum porta, purus
-dolor mollis nunc, pharetra vehicula nulla nunc quis elit. Duis ornare
-fringilla dui non vehicula. In hac habitasse platea dictumst. Donec
-ipsum lectus, hendrerit malesuada sapien eget, venenatis tempus purus.
-</p>
+ 
 
+<p id="noImage">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque sit amet augue eu magna scelerisque porta ut ut dolor. Nullam placerat egestas nisl sed sollicitudin. Fusce placerat, ipsum ac vestibulum porta, purus dolor mollis nunc, pharetra vehicula nulla nunc quis elit. Duis ornare fringilla dui non vehicula. In hac habitasse platea dictumst. Donec ipsum lectus, hendrerit malesuada sapien eget, venenatis tempus purus.
+</p>
 
     <style>
       div#noImage {
@@ -797,11 +639,10 @@ ipsum lectus, hendrerit malesuada sapien eget, venenatis tempus purus.
         background: linear-gradient(rgba(9, 130, 154, 1), rgba(9, 130, 154, 0.5));
       }
     </style>
+    
 
+Keep in mind that using these techniques does require rendering cycles, which can be significant on mobile. If over-used, you'll lose any benefit you may have gained and it may hinder performance.
 
-Harap diingat bahwa menggunakan teknik ini tidak memerlukan siklus rendering, yang
-bisa cukup signifikan pada perangkat seluler.  Jika digunakan berlebihan, Anda akan kehilangan manfaat yang mungkin telah
-didapatkan dan mungkin menghambat kinerja.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

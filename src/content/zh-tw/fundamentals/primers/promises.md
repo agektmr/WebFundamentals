@@ -1,144 +1,138 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:"Promise 可簡化延遲和異步計算。Promise 代表一個尚未完成的操作。"
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: "Promises simplify deferred and asynchronous computations. A promise represents an operation that hasn't completed yet."
 
-{# wf_published_on:2013-12-16 #}
-{# wf_updated_on:2018-12-14 #}
+{# wf_published_on: 2013-12-16 #} {# wf_updated_on: 2018-12-14 #} {# wf_blink_components: Blink>JavaScript #}
 
-# JavaScript Promise：簡介 {: .page-title }
+# JavaScript Promises: an Introduction {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-女士們，先生們，請做好準備，迎接網頁開發史上的關鍵時刻。
+Developers, prepare yourself for a pivotal moment in the history of web development.
 
+<em>[Drumroll begins]</em>
 
-<em>[鼓點響起]</em>
+Promises have arrived natively in JavaScript!
 
-Promise 已獲得 JavaScript 的原生支持！
+<em>[Fireworks explode, glittery paper rains from above, the crowd goes wild]</em>
 
-<em>[煙花綻放、彩紙飄飄、人羣沸騰]</em>
+At this point you fall into one of these categories:
 
-此刻，您可能屬於以下其中某一類：
+* People are cheering around you, but you're not sure what all the fuss is about. Maybe you're not even sure what a "promise" is. You'd shrug, but the weight of glittery paper is weighing down on your shoulders. If so, don't worry about it, it took me ages to work out why I should care about this stuff. You probably want to begin at the [beginning](#whats-all-the-fuss-about).
+* You punch the air! About time right? You've used these Promise things before but it bothers you that all implementations have a slightly different API. What's the API for the official JavaScript version? You probably want to begin with the [terminology](#promise-terminology).
+* You knew about this already and you scoff at those who are jumping up and down like it's news to them. Take a moment to bask in your own superiority, then head straight to the [API reference](#promise-api-reference).
 
-* 人羣在您身邊歡呼雀躍，但是您感到莫名其妙。可能您甚至連“promise”是什麼都不知道。因此您聳聳肩，但是從天而降的彩紙雖輕如鴻毛卻讓您無法釋懷。如果真是這樣，您也無需擔心，我可花了很長的時間才弄明白爲什麼我應該關注它。您可能想從[開始](#whats-all-the-fuss-about)處開始。
-* 您非常抓狂！覺得晚了一步，對嗎？您可能之前使用過這些 Promise，但讓您困擾的是，不同版本的 API 各有差異。JavaScript 官方版本的 API 是什麼？您可能想要從[術語](#promise-terminology)開始。
-* 您已知道這些，您會覺得那些上竄下跳的人很好笑，居然把它當作新聞。您可以先自豪一把，然後直接查看 [API 參考](#promise-api-reference)
+## What's all the fuss about? {: #whats-all-the-fuss-about }
 
-##  人們究竟爲何歡呼雀躍？ {: #whats-all-the-fuss-about }
+JavaScript is single threaded, meaning that two bits of script cannot run at the same time; they have to run one after another. In browsers, JavaScript shares a thread with a load of other stuff that differs from browser to browser. But typically JavaScript is in the same queue as painting, updating styles, and handling user actions (such as highlighting text and interacting with form controls). Activity in one of these things delays the others.
 
-JavaScript 是單線程工作，這意味着兩段腳本不能同時運行，而是必須一個接一個地運行。在瀏覽器中，JavaScript 與因瀏覽器而異的其他 N 種任務共享一個線程。但是通常情況下 JavaScript 與繪製、更新樣式和處理用戶操作（例如，高亮顯示文本以及與格式控件交互）處於同一隊列。操作其中一項任務會延遲其他任務。
+As a human being, you're multithreaded. You can type with multiple fingers, you can drive and hold a conversation at the same time. The only blocking function we have to deal with is sneezing, where all current activity must be suspended for the duration of the sneeze. That's pretty annoying, especially when you're driving and trying to hold a conversation. You don't want to write code that's sneezy.
 
-我們人類是多線程工作。您可以使用多個手指打字，可以一邊開車一邊與人交談。唯一一個會妨礙我們的是打噴嚏，因爲當我們打噴嚏的時候，所有當前進行的活動都必須暫停。這真是非常討厭，尤其是當您在開車並想與人交談時。您可不想編寫像打噴嚏似的代碼。
-
-您可能已使用事件和回調來解決該問題。以下是一些事件：
+You've probably used events and callbacks to get around this. Here are events:
 
     var img1 = document.querySelector('.img-1');
-
+    
     img1.addEventListener('load', function() {
       // woo yey image loaded
     });
-
+    
     img1.addEventListener('error', function() {
       // argh everything's broken
     });
+    
 
+This isn't sneezy at all. We get the image, add a couple of listeners, then JavaScript can stop executing until one of those listeners is called.
 
-這可不會像打噴嚏那樣打斷您。我們獲得圖片、添加幾個偵聽器，之後 JavaScript 可停止執行，直至其中一個偵聽器被調用。
-
-遺憾的是，在上例中，事件有可能在我們開始偵聽之前就發生了，因此我們需要使用圖像的“complete”屬性來解決該問題：
+Unfortunately, in the example above, it's possible that the events happened before we started listening for them, so we need to work around that using the "complete" property of images:
 
     var img1 = document.querySelector('.img-1');
-
+    
     function loaded() {
       // woo yey image loaded
     }
-
+    
     if (img1.complete) {
       loaded();
     }
     else {
       img1.addEventListener('load', loaded);
     }
-
+    
     img1.addEventListener('error', function() {
       // argh everything's broken
     });
+    
 
-這不會捕獲出錯的圖像，因爲在此之前我們沒有機會偵聽到錯誤。遺憾的是，DOM 也沒有給出解決之道。而且，這還只是加載一個圖像，如果加載一組圖像，情況會更復雜。
+This doesn't catch images that error'd before we got a chance to listen for them; unfortunately the DOM doesn't give us a way to do that. Also, this is loading one image, things get even more complex if we want to know when a set of images have loaded.
 
+## Events aren't always the best way
 
-##  事件並不總是最佳方法
-
-事件對於同一對象上發生多次的事情（如 keyup、touchstart 等）非常有用。對於這些事件，實際您並不關注在添加偵聽器之前所發生的事情。但是，如果關係到異步成功/失敗，理想的情況是您希望：
+Events are great for things that can happen multiple times on the same object&mdash;keyup, touchstart etc. With those events you don't really care about what happened before you attached the listener. But when it comes to async success/failure, ideally you want something like this:
 
     img1.callThisIfLoadedOrWhenLoaded(function() {
       // loaded
     }).orIfFailedCallThis(function() {
       // failed
     });
-
+    
     // and…
     whenAllTheseHaveLoaded([img1, img2]).callThis(function() {
       // all loaded
     }).orIfSomeFailedCallThis(function() {
       // one or more failed
     });
+    
 
-這是 promise 所執行的任務，但以更好的方式命名。如果 HTML 圖像元素有一個返回 promise 的“ready”方法，我們可以執行：
+This is what promises do, but with better naming. If HTML image elements had a "ready" method that returned a promise, we could do this:
 
     img1.ready().then(function() {
       // loaded
     }, function() {
       // failed
     });
-
+    
     // and…
     Promise.all([img1.ready(), img2.ready()]).then(function() {
       // all loaded
     }, function() {
       // one or more failed
     });
+    
 
+At their most basic, promises are a bit like event listeners except:
 
-最基本的情況是，promise 有點類似於事件偵聽器，但有以下兩點區別：
+* A promise can only succeed or fail once. It cannot succeed or fail twice, neither can it switch from success to failure or vice versa.
+* If a promise has succeeded or failed and you later add a success/failure callback, the correct callback will be called, even though the event took place earlier.
 
-* promise 只能成功或失敗一次，而不能成功或失敗兩次，也不能從成功轉爲失敗或從失敗轉爲成功。
-* 如果 promise 已成功或失敗，且您之後添加了成功/失敗回調，則將會調用正確的回調，即使事件發生在先。
+This is extremely useful for async success/failure, because you're less interested in the exact time something became available, and more interested in reacting to the outcome.
 
-這對於異步成功/失敗尤爲有用，因爲您可能對某些功能可用的準確時間不是那麼關注，更多地是關注對結果作出的反應。
+## Promise terminology {: #promise-terminology }
 
+[Domenic Denicola](https://twitter.com/domenic) proof read the first draft of this article and graded me "F" for terminology. He put me in detention, forced me to copy out [States and Fates](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md) 100 times, and wrote a worried letter to my parents. Despite that, I still get a lot of the terminology mixed up, but here are the basics:
 
-##  Promise 術語 {: #promise-terminology }
+A promise can be:
 
-[Domenic Denicola](https://twitter.com/domenic) 校對了本篇文章的初稿，並在術語方面給我打分爲“F”。他把我留下來，強迫我抄寫[狀態和結果](https://github.com/domenic/promises-unwrapping/blob/master/docs/states-and-fates.md) 100 遍，並給我的父母寫了封告狀信。儘管如此，我還是對很多術語混淆不清，以下是幾個基本的概念：
+* **fulfilled** - The action relating to the promise succeeded
+* **rejected** - The action relating to the promise failed
+* **pending** - Hasn't fulfilled or rejected yet
+* **settled** - Has fulfilled or rejected
 
-promise 可以是：
+[The spec](https://www.ecma-international.org/ecma-262/#sec-promise-objects) also uses the term **thenable** to describe an object that is promise-like, in that it has a `then` method. This term reminds me of ex-England Football Manager [Terry Venables](https://en.wikipedia.org/wiki/Terry_Venables) so I'll be using it as little as possible.
 
-* **已執行** - 與 promise 有關的操作成功
-* **已拒絕** - 與 promise 有關的操作失敗
-* **待定** - 尚未執行或拒絕
-* **已解決** - 已執行或拒絕
+## Promises arrive in JavaScript!
 
-
-[本規範](https://www.ecma-international.org/ecma-262/#sec-promise-objects)還使用術語 **thenable** 來描述類似於 promise 的對象，並使用 `then` 方法。該術語讓我想起前英格蘭國家隊教練 [Terry Venables](https://en.wikipedia.org/wiki/Terry_Venables)，因此我將盡可能不用這個術語。
-
-
-##  Promise 在 JavaScript 中受支持！
-
-Promise 有一段時間以庫的形式出現，例如：
+Promises have been around for a while in the form of libraries, such as:
 
 * [Q](https://github.com/kriskowal/q)
 * [when](https://github.com/cujojs/when)
 * [WinJS](https://msdn.microsoft.com/en-us/library/windows/apps/br211867.aspx)
 * [RSVP.js](https://github.com/tildeio/rsvp.js)
 
-以上這些與 JavaScript promise 都有一個名爲 [Promise/A+](https://github.com/promises-aplus/promises-spec) 的常見標準化行爲。如果您是 jQuery 用戶，他們還有一個類似於名爲 [Deferred](https://api.jquery.com/category/deferred-object/) 的行爲。但是，Deferred 與 Promise/A+ 不兼容，這就使得它們[存在細微差異且沒那麼有用](https://thewayofcode.wordpress.com/tag/jquery-deferred-broken/)，因此需注意。此外，jQuery 還有 [Promise 類型](https://api.jquery.com/Types/#Promise)，但它只是 Deferred 的子集，因此仍存在相同的問題。
+The above and JavaScript promises share a common, standardized behaviour called [Promises/A+](https://github.com/promises-aplus/promises-spec). If you're a jQuery user, they have something similar called [Deferreds](https://api.jquery.com/category/deferred-object/). However, Deferreds aren't Promise/A+ compliant, which makes them [subtly different and less useful](https://thewayofcode.wordpress.com/tag/jquery-deferred-broken/), so beware. jQuery also has [a Promise type](https://api.jquery.com/Types/#Promise), but this is just a subset of Deferred and has the same issues.
 
-儘管 promise 實現遵照標準化行爲，但其整體 API 有所不同。JavaScript promise 在 API 中類似於 RSVP.js。下面是創建 promise 的步驟：
+Although promise implementations follow a standardized behaviour, their overall APIs differ. JavaScript promises are similar in API to RSVP.js. Here's how you create a promise:
 
     var promise = new Promise(function(resolve, reject) {
       // do a thing, possibly async, then…
-
+    
       if (/* everything turned out fine */) {
         resolve("Stuff worked!");
       }
@@ -146,95 +140,86 @@ Promise 有一段時間以庫的形式出現，例如：
         reject(Error("It broke"));
       }
     });
+    
 
+The promise constructor takes one argument, a callback with two parameters, resolve and reject. Do something within the callback, perhaps async, then call resolve if everything worked, otherwise call reject.
 
-Promise 構造函數包含一個參數和一個帶有 resolve（解析）和 reject（拒絕）兩個參數的回調。在回調中執行一些操作（例如異步），如果一切都正常，則調用 resolve，否則調用 reject。
+Like `throw` in plain old JavaScript, it's customary, but not required, to reject with an Error object. The benefit of Error objects is they capture a stack trace, making debugging tools more helpful.
 
-與普通舊版 JavaScript 中的 `throw` 一樣，通常拒絕時會給出 Error 對象，但這不是必須的。Error 對象的優點在於它們能夠捕捉堆疊追蹤，因而使得調試工具非常有用。
-
-以下是有關 promise 的使用示例：
+Here's how you use that promise:
 
     promise.then(function(result) {
       console.log(result); // "Stuff worked!"
     }, function(err) {
       console.log(err); // Error: "It broke"
     });
+    
 
+`then()` takes two arguments, a callback for a success case, and another for the failure case. Both are optional, so you can add a callback for the success or failure case only.
 
-`then()` 包含兩個參數：一個用於成功情形的回調和一個用於失敗情形的回調。這兩個都是可選的，因此您可以只添加一個用於成功情形或失敗情形的回調。
+JavaScript promises started out in the DOM as "Futures", renamed to "Promises", and finally moved into JavaScript. Having them in JavaScript rather than the DOM is great because they'll be available in non-browser JS contexts such as Node.js (whether they make use of them in their core APIs is another question).
 
-JavaScript promise 最初是在 DOM 中出現並稱爲“Futures”，之後重命名爲“Promises”，最後又移入 JavaScript。在 JavaScript 中使用比在 DOM 中更好，因爲它們將在如 Node.js 等非瀏覽器 JS 環境中可用（而它們是否會在覈心 API 中使用 Promise 則是另外一個問題）。
+Although they're a JavaScript feature, the DOM isn't afraid to use them. In fact, all new DOM APIs with async success/failure methods will use promises. This is happening already with [Quota Management](https://dvcs.w3.org/hg/quota/raw-file/tip/Overview.html#idl-def-StorageQuota), [Font Load Events](http://dev.w3.org/csswg/css-font-loading/#font-face-set-ready), [ServiceWorker](https://github.com/slightlyoff/ServiceWorker/blob/cf459d473ae09f6994e8539113d277cbd2bce939/service_worker.ts#L17), [Web MIDI](https://webaudio.github.io/web-midi-api/#widl-Navigator-requestMIDIAccess-Promise-MIDIOptions-options), [Streams](https://github.com/whatwg/streams#basereadablestream), and more.
 
-儘管它們是 JavaScript 的一項功能，但 DOM 也能使用。實際上，採用異步成功/失敗方法的所有新 DOM API 均使用 promise。[Quota Management](https://dvcs.w3.org/hg/quota/raw-file/tip/Overview.html#idl-def-StorageQuota)、[Font Load Events](http://dev.w3.org/csswg/css-font-loading/#font-face-set-ready)、[ServiceWorker](https://github.com/slightlyoff/ServiceWorker/blob/cf459d473ae09f6994e8539113d277cbd2bce939/service_worker.ts#L17)、[Web MIDI](https://webaudio.github.io/web-midi-api/#widl-Navigator-requestMIDIAccess-Promise-MIDIOptions-options)[Streams](https://github.com/whatwg/streams#basereadablestream) 等等都已經在使用 promise。
+## Browser support & polyfill
 
+There are already implementations of promises in browsers today.
 
-##  瀏覽器支持和 polyfill
+As of Chrome 32, Opera 19, Firefox 29, Safari 8 & Microsoft Edge, promises are enabled by default.
 
-現在，promise 已在各瀏覽器中實現。
+To bring browsers that lack a complete promises implementation up to spec compliance, or add promises to other browsers and Node.js, check out [the polyfill](https://github.com/jakearchibald/ES6-Promises#readme) (2k gzipped).
 
-在 Chrome 32、Opera 19、Firefox 29、Safari 8 和 Microsoft Edge 中，promise 默認啓用。
+## Compatibility with other libraries
 
-如要使沒有完全實現 promise 的瀏覽器符合規範，或向其他瀏覽器和 Node.js 中添加 promise，請查看 [polyfill](https://github.com/jakearchibald/ES6-Promises#readme)（gzip 壓縮大小爲 2k）。
+The JavaScript promises API will treat anything with a `then()` method as promise-like (or `thenable` in promise-speak *sigh*), so if you use a library that returns a Q promise, that's fine, it'll play nice with the new JavaScript promises.
 
-
-##  與其他庫的兼容性
-
-JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise 一樣（或按 promise 的說法爲 `thenable`）來處理，因此，如果您使用返回 Q promise 的庫也沒問題，因爲它能與新 JavaScript promise 很好地兼容。
-
-如我之前所提到的，jQuery 的 Deferred 不那麼有用。幸運的是，您可以將其轉爲標準 promise，這值得儘快去做：
-
+Although, as I mentioned, jQuery's Deferreds are a bit … unhelpful. Thankfully you can cast them to standard promises, which is worth doing as soon as possible:
 
     var jsPromise = Promise.resolve($.ajax('/whatever.json'))
+    
 
-
-這裏，jQuery 的 `$.ajax` 返回了一個 Deferred。由於它使用 `then()` 方法，因此 `Promise.resolve()` 可將其轉爲 JavaScript promise。但是，有時 deferred 會將多個參數傳遞給其回調，例如：
+Here, jQuery's `$.ajax` returns a Deferred. Since it has a `then()` method, `Promise.resolve()` can turn it into a JavaScript promise. However, sometimes deferreds pass multiple arguments to their callbacks, for example:
 
     var jqDeferred = $.ajax('/whatever.json');
-
+    
     jqDeferred.then(function(response, statusText, xhrObj) {
       // ...
     }, function(xhrObj, textStatus, err) {
       // ...
     })
+    
 
-
-
-而 JS promise 會忽略除第一個之外的所有參數：
-
+Whereas JS promises ignore all but the first:
 
     jsPromise.then(function(response) {
       // ...
     }, function(xhrObj) {
       // ...
     })
+    
 
+Thankfully this is usually what you want, or at least gives you access to what you want. Also, be aware that jQuery doesn't follow the convention of passing Error objects into rejections.
 
+## Complex async code made easier
 
-幸好，通常這就是您想要的，或者至少爲您提供了方法讓您獲得所想要的。另請注意，jQuery 不遵循將 Error 對象傳遞到 reject 這一慣例。
+Right, let's code some things. Say we want to:
 
+1. Start a spinner to indicate loading
+2. Fetch some JSON for a story, which gives us the title, and urls for each chapter
+3. Add title to the page
+4. Fetch each chapter
+5. Add the story to the page
+6. Stop the spinner
 
-##  複雜異步代碼讓一切變得更簡單
+… but also tell the user if something went wrong along the way. We'll want to stop the spinner at that point too, else it'll keep on spinning, get dizzy, and crash into some other UI.
 
-對了，讓我們寫一些代碼。比如說，我們想要：
+Of course, you wouldn't use JavaScript to deliver a story, [serving as HTML is faster](https://jakearchibald.com/2013/progressive-enhancement-is-faster/), but this pattern is pretty common when dealing with APIs: Multiple data fetches, then do something when it's all done.
 
-1. 啓動一個轉環來提示加載
-1. 獲取一個故事的 JSON，確定每個章節的標題和網址
-1. 向頁面中添加標題
-1. 獲取每個章節
-1. 向頁面中添加故事
-1. 停止轉環
+To start with, let's deal with fetching data from the network:
 
-…但如果此過程發生錯誤，也要向用戶顯示。我們也想在那一點停止轉環，否則，它將不停地旋轉、眩暈並撞上其他 UI 控件。
+## Promisifying XMLHttpRequest
 
-當然，您不會使用 JavaScript 來提供故事，[以 HTML 形式提供會更快](https://jakearchibald.com/2013/progressive-enhancement-is-faster/)，但是這種方式在處理 API 時很常見：多次提取數據，然後在全部完成後執行其他操作。
-
-首先，讓我們從網絡中獲取數據：
-
-##  對 XMLHttpRequest 執行 promise
-
-舊 API 將更新爲使用 promise，如有可能，採用後向兼容的方式。`XMLHttpRequest` 是主要候選對象，不過，我們可編寫一個作出 GET 請求的簡單函數：
-
-
+Old APIs will be updated to use promises, if it's possible in a backwards compatible way. `XMLHttpRequest` is a prime candidate, but in the mean time let's write a simple function to make a GET request:
 
     function get(url) {
       // Return a new promise.
@@ -242,7 +227,7 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
         // Do the usual XHR stuff
         var req = new XMLHttpRequest();
         req.open('GET', url);
-
+    
         req.onload = function() {
           // This is called even on 404 etc
           // so check the status
@@ -256,113 +241,108 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
             reject(Error(req.statusText));
           }
         };
-
+    
         // Handle network errors
         req.onerror = function() {
           reject(Error("Network Error"));
         };
-
+    
         // Make the request
         req.send();
       });
     }
+    
 
-
-現在讓我們來使用這一功能：
+Now let's use it:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }, function(error) {
       console.error("Failed!", error);
     })
+    
 
+Now we can make HTTP requests without manually typing `XMLHttpRequest`, which is great, because the less I have to see the infuriating camel-casing of `XMLHttpRequest`, the happier my life will be.
 
-[點擊此處瞭解實際操作](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/getting-started/primers/story.json){: target="_blank" .external }，檢查 DevTools 中的控制檯以查看結果。現在我們無需手動鍵入 `XMLHttpRequest` 即可作出 HTTP 請求，這真是太讚了，因爲越少看到令人討厭的書寫得參差不齊的 `XMLHttpRequest`，我就越開心。
+## Chaining
 
+`then()` isn't the end of the story, you can chain `then`s together to transform values or run additional async actions one after another.
 
-##  鏈接
+### Transforming values
 
-`then()` 不是最終部分，您可以將各個 `then` 鏈接在一起來改變值，或依次運行額外的異步操作。
-
-
-###  改變值
-只需返回新值即可改變值：
+You can transform values simply by returning the new value:
 
     var promise = new Promise(function(resolve, reject) {
       resolve(1);
     });
-
+    
     promise.then(function(val) {
       console.log(val); // 1
       return val + 2;
     }).then(function(val) {
       console.log(val); // 3
     })
+    
 
-
-舉一個實際的例子，讓我們回到：
+As a practical example, let's go back to:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     })
+    
 
-
-
-這裏的 response 是 JSON，但是我們當前收到的是其純文本。我們可以將 get 函數修改爲使用 JSON [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#responseType)，不過我們也可以使用 promise 來解決這個問題：
+The response is JSON, but we're currently receiving it as plain text. We could alter our get function to use the JSON [`responseType`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#responseType), but we could also solve it in promises land:
 
     get('story.json').then(function(response) {
       return JSON.parse(response);
     }).then(function(response) {
       console.log("Yey JSON!", response);
     })
+    
 
-
-
-由於 `JSON.parse()` 採用單一參數並返回改變的值，因此我們可以將其簡化爲：
+Since `JSON.parse()` takes a single argument and returns a transformed value, we can make a shortcut:
 
     get('story.json').then(JSON.parse).then(function(response) {
       console.log("Yey JSON!", response);
     })
+    
 
-
-[瞭解實際操作](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/getting-started/primers/story.json){: target="_blank" .external }，檢查 DevTools 中的控制檯以查看結果。實際上，我們可以讓 `getJSON()` 函數更簡單：
-
+In fact, we could make a `getJSON()` function really easily:
 
     function getJSON(url) {
       return get(url).then(JSON.parse);
     }
+    
 
-`getJSON()` 仍返回一個 promise，該 promise 獲取 URL 後將 response 解析爲 JSON。
+`getJSON()` still returns a promise, one that fetches a url then parses the response as JSON.
 
+### Queuing asynchronous actions
 
-###  異步操作隊列
+You can also chain `then`s to run async actions in sequence.
 
-您還可以鏈接多個 `then`，以便按順序運行異步操作。
-
-當您從 `then()` 回調中返回某些內容時，這有點兒神奇。如果返回一個值，則會以該值調用下一個 `then()`。但是，如果您返回類似於 promise 的內容，下一個 `then()` 則會等待，並僅在 promise 產生結果（成功/失敗）時調用。例如：
+When you return something from a `then()` callback, it's a bit magic. If you return a value, the next `then()` is called with that value. However, if you return something promise-like, the next `then()` waits on it, and is only called when that promise settles (succeeds/fails). For example:
 
     getJSON('story.json').then(function(story) {
       return getJSON(story.chapterUrls[0]);
     }).then(function(chapter1) {
       console.log("Got chapter 1!", chapter1);
     })
+    
 
+Here we make an async request to `story.json`, which gives us a set of URLs to request, then we request the first of those. This is when promises really start to stand out from simple callback patterns.
 
-
-這裏我們向 `story.json` 發出異步請求，這可讓我們請求一組網址，隨後我們請求其中的第一個。這是 promise 從簡單回調模式中脫穎而出的真正原因所在。
-
-您甚至可以採用更簡短的方法來獲得章節內容：
+You could even make a shortcut method to get chapters:
 
     var storyPromise;
-
+    
     function getChapter(i) {
       storyPromise = storyPromise || getJSON('story.json');
-
+    
       return storyPromise.then(function(story) {
         return getJSON(story.chapterUrls[i]);
       })
     }
-
+    
     // and using it is simple:
     getChapter(0).then(function(chapter) {
       console.log(chapter);
@@ -370,43 +350,40 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
     }).then(function(chapter) {
       console.log(chapter);
     })
+    
 
+We don't download `story.json` until `getChapter` is called, but the next time(s) `getChapter` is called we reuse the story promise, so `story.json` is only fetched once. Yay Promises!
 
-直到 `getChapter` 被調用，我們才下載 `story.json`，但是下次 `getChapter` 被調用時，我們重複使用 story romise，因此 `story.json` 僅獲取一次。耶，Promise！
+## Error handling
 
-
-##  錯誤處理
-
-正如我們之前所看到的，`then()` 包含兩個參數：一個用於成功，一個用於失敗（按照 promise 中的說法，即執行和拒絕）：
+As we saw earlier, `then()` takes two arguments, one for success, one for failure (or fulfill and reject, in promises-speak):
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }, function(error) {
       console.log("Failed!", error);
     })
+    
 
-
-您還可以使用 `catch()`：
-
+You can also use `catch()`:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }).catch(function(error) {
       console.log("Failed!", error);
     })
+    
 
-
-`catch()` 沒有任何特殊之處，它只是 `then(undefined, func)` 的錦上添花，但可讀性更強。注意，以上兩個代碼示例行爲並不相同，後者相當於：
+There's nothing special about `catch()`, it's just sugar for `then(undefined, func)`, but it's more readable. Note that the two code examples above do not behave the same, the latter is equivalent to:
 
     get('story.json').then(function(response) {
       console.log("Success!", response);
     }).then(undefined, function(error) {
       console.log("Failed!", error);
     })
+    
 
-
-兩者之間的差異雖然很微小，但非常有用。Promise 拒絕後，將跳至帶有拒絕回調的下一個 `then()`（或具有相同功能的 `catch()`）。如果是 `then(func1, func2)`，則 `func1` 或 `func2` 中的一個將被調用，而不會二者均被調用。但如果是 `then(func1).catch(func2)`，則在 `func1` 拒絕時兩者均被調用，因爲它們在該鏈中是單獨的步驟。看看下面的代碼：
-
+The difference is subtle, but extremely useful. Promise rejections skip forward to the next `then()` with a rejection callback (or `catch()`, since it's equivalent). With `then(func1, func2)`, `func1` or `func2` will be called, never both. But with `then(func1).catch(func2)`, both will be called if `func1` rejects, as they're separate steps in the chain. Take the following:
 
     asyncThing1().then(function() {
       return asyncThing2();
@@ -423,28 +400,27 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
     }).then(function() {
       console.log("All done!");
     })
+    
 
-
-
-以上流程與常規的 JavaScript try/catch 非常類似，在“try”中發生的錯誤直接進入 `catch()` 塊。以下是上述代碼的流程圖形式（因爲我喜歡流程圖）：
-
+The flow above is very similar to normal JavaScript try/catch, errors that happen within a "try" go immediately to the `catch()` block. Here's the above as a flowchart (because I love flowcharts):
 
 <div style="position: relative; padding-top: 93%;">
-  <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden" src="imgs/promise-flow.svg" frameborder="0" allowtransparency="true"></iframe>
+  <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden"
+   src="imgs/promise-flow.svg" frameborder="0" allowtransparency="true"></iframe>
 </div>
 
+Follow the blue lines for promises that fulfill, or the red for ones that reject.
 
-藍線表示執行的 promise 路徑，紅路表示拒絕的 promise 路徑。
+### JavaScript exceptions and promises
 
-###  JavaScript 異常和 promise
-當 promise 被明確拒絕時，會發生拒絕；但是如果是在構造函數回調中引發的錯誤，則會隱式拒絕。
+Rejections happen when a promise is explicitly rejected, but also implicitly if an error is thrown in the constructor callback:
 
     var jsonPromise = new Promise(function(resolve, reject) {
       // JSON.parse throws an error if you feed it some
       // invalid JSON, so this implicitly rejects:
       resolve(JSON.parse("This ain't JSON"));
     });
-
+    
     jsonPromise.then(function(data) {
       // This never happens:
       console.log("It worked!", data);
@@ -452,11 +428,11 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
       // Instead, this happens:
       console.log("It failed!", err);
     })
+    
 
+This means it's useful to do all your promise-related work inside the promise constructor callback, so errors are automatically caught and become rejections.
 
-這意味着，在 promise 構造函數回調內部執行所有與 promise 相關的任務很有用，因爲錯誤會自動捕獲並進而拒絕。
-
-對於在 `then()` 回調中引發的錯誤也是如此。
+The same goes for errors thrown in `then()` callbacks.
 
     get('/').then(JSON.parse).then(function() {
       // This never happens, '/' is an HTML page, not JSON
@@ -466,14 +442,11 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
       // Instead, this happens:
       console.log("It failed!", err);
     })
+    
 
+### Error handling in practice
 
-
-###  錯誤處理實踐
-
-在我們的故事和章節中，我們可使用 catch 來向用戶顯示錯誤：
-
-
+With our story and chapters, we can use catch to display an error to the user:
 
     getJSON('story.json').then(function(story) {
       return getJSON(story.chapterUrls[0]);
@@ -484,12 +457,11 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
     }).then(function() {
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
+If fetching `story.chapterUrls[0]` fails (e.g., http 500 or user is offline), it'll skip all following success callbacks, which includes the one in `getJSON()` which tries to parse the response as JSON, and also skips the callback that adds chapter1.html to the page. Instead it moves onto the catch callback. As a result, "Failed to show chapter" will be added to the page if any of the previous actions failed.
 
-
-如果獲取 `story.chapterUrls[0]` 失敗（例如，http 500 或用戶離線），它將跳過所有後續成功回調，包括 `getJSON()` 中嘗試將響應解析爲 JSON 的回調，而且跳過將 chapter1.html 添加到頁面的回調。然後，它將移至 catch 回調。因此，如果任一前述操作失敗，“Failed to show chapter”將會添加到頁面。
-
-與 JavaScript 的 try/catch 一樣，錯誤被捕獲而後續代碼繼續執行，因此，轉環總是被隱藏，這正是我們想要的。以上是下面一組代碼的攔截異步版本：
+Like JavaScript's try/catch, the error is caught and subsequent code continues, so the spinner is always hidden, which is what we want. The above becomes a non-blocking async version of:
 
     try {
       var story = getJSONSync('story.json');
@@ -500,11 +472,9 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
       addTextToPage("Failed to show chapter");
     }
     document.querySelector('.spinner').style.display = 'none'
+    
 
-
-您可能想出於記錄目的而 `catch()`，而無需從錯誤中恢復。爲此，只需再次拋出錯誤。我們可以使用 `getJSON()` 方法執行此操作：
-
-
+You may want to `catch()` simply for logging purposes, without recovering from the error. To do this, just rethrow the error. We could do this in our `getJSON()` method:
 
     function getJSON(url) {
       return get(url).then(JSON.parse).catch(function(err) {
@@ -512,43 +482,39 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
         throw err;
       });
     }
+    
 
+So we've managed to fetch one chapter, but we want them all. Let's make that happen.
 
-至此，我們已獲取其中一個章節，但我們想要所有的章節。讓我們嘗試來實現。
+## Parallelism and sequencing: getting the best of both
 
-
-##  並行式和順序式：兩者兼得
-
-
-異步並不容易。如果您覺得難以着手，可嘗試按照同步的方式編寫代碼。在本例中：
+Thinking async isn't easy. If you're struggling to get off the mark, try writing the code as if it were synchronous. In this case:
 
     try {
       var story = getJSONSync('story.json');
       addHtmlToPage(story.heading);
-
+    
       story.chapterUrls.forEach(function(chapterUrl) {
         var chapter = getJSONSync(chapterUrl);
         addHtmlToPage(chapter.html);
       });
-
+    
       addTextToPage("All done");
     }
     catch (err) {
       addTextToPage("Argh, broken: " + err.message);
     }
-
+    
     document.querySelector('.spinner').style.display = 'none'
+    
 
-[試一下](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/primers/sync-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/sync-example.html)
 
-
-這樣可行（查看[代碼](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/getting-started/primers/sync-example.html){: target="_blank" .external }）！
-但這是同步的情況，而且在內容下載時瀏覽器會被鎖定。要使其異步，我們使用 `then()` 來依次執行任務。
-
+That works (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/sync-example.html))! But it's sync and locks up the browser while things download. To make this work async we use `then()` to make things happen one after another.
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       // TODO: for each url in story.chapterUrls, fetch &amp; display
     }).then(function() {
       // And we're all done!
@@ -560,10 +526,9 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
       // Always hide the spinner
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-
-
-但是我們如何遍歷章節的 URL 並按順序獲取呢？以下方法**行不通**：
+But how can we loop through the chapter urls and fetch them in order? This **doesn't work**:
 
     story.chapterUrls.forEach(function(chapterUrl) {
       // Fetch chapter
@@ -572,18 +537,17 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
         addHtmlToPage(chapter.html);
       });
     })
+    
 
+`forEach` isn't async-aware, so our chapters would appear in whatever order they download, which is basically how Pulp Fiction was written. This isn't Pulp Fiction, so let's fix it.
 
+### Creating a sequence
 
-`forEach` 不是異步的，因此我們的章節內容將按照下載的順序顯示，這就亂套了。我們這裏不是非線性敘事小說，因此得解決該問題。
-
-
-###  創建序列
-我們想要將 `chapterUrls` 數組轉變爲 promise 序列，這可通過 `then()` 來實現：
+We want to turn our `chapterUrls` array into a sequence of promises. We can do that using `then()`:
 
     // Start off with a promise that always resolves
     var sequence = Promise.resolve();
-
+    
     // Loop through our chapter urls
     story.chapterUrls.forEach(function(chapterUrl) {
       // Add these actions to the end of the sequence
@@ -593,16 +557,13 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
         addHtmlToPage(chapter.html);
       });
     })
+    
 
+This is the first time we've seen `Promise.resolve()`, which creates a promise that resolves to whatever value you give it. If you pass it an instance of `Promise` it'll simply return it (**note:** this is a change to the spec that some implementations don't yet follow). If you pass it something promise-like (has a `then()` method), it creates a genuine `Promise` that fulfills/rejects in the same way. If you pass in any other value, e.g., `Promise.resolve('Hello')`, it creates a promise that fulfills with that value. If you call it with no value, as above, it fulfills with "undefined".
 
-這是我們第一次看到 `Promise.resolve()`，這種 promise 可解析爲您賦予的任何值。如果向其傳遞一個 `Promise` 實例，它也會將其返回（**Note: **這是對本規範的一處更改，某些實現尚未遵循）。如果將類似於 promise 的內容（帶有 `then()` 方法）傳遞給它，它將創建以相同方式執行/拒絕的真正 `Promise`。如果向其傳遞任何其他值，例如 `Promise.resolve('Hello')`，它在執行時將以該值創建一個 promise。如果調用時不帶任何值（如上所示），它在執行時將返回“undefined”。
+There's also `Promise.reject(val)`, which creates a promise that rejects with the value you give it (or undefined).
 
-
-此外還有 `Promise.reject(val)`，它創建的 promise 在拒絕時將返回賦予的值（或“undefined”）。
-
-我們可以使用 [`array.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) 將上述代碼整理如下：
-
-
+We can tidy up the above code using [`array.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce):
 
     // Loop through our chapter urls
     story.chapterUrls.reduce(function(sequence, chapterUrl) {
@@ -613,16 +574,15 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
         addHtmlToPage(chapter.html);
       });
     }, Promise.resolve())
+    
 
+This is doing the same as the previous example, but doesn't need the separate "sequence" variable. Our reduce callback is called for each item in the array. "sequence" is `Promise.resolve()` the first time around, but for the rest of the calls "sequence" is whatever we returned from the previous call. `array.reduce` is really useful for boiling an array down to a single value, which in this case is a promise.
 
-
-這與之前示例的做法相同，但是不需要獨立的“sequence”變量。我們的 reduce 回調針對數組中的每項內容進行調用。首次調用時，“sequence”爲 `Promise.resolve()`，但是對於餘下的調用，“sequence”爲我們從之前調用中返回的值。`array.reduce` 確實非常有用，它將數組濃縮爲一個簡單的值（在本例中，該值爲 promise）。
-
-讓我們彙總起來：
+Let's put it all together:
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       return story.chapterUrls.reduce(function(sequence, chapterUrl) {
         // Once the last chapter's promise is done…
         return sequence.then(function() {
@@ -643,32 +603,28 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
       // Always hide the spinner
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[試一下](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/primers/async-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-example.html)
 
-這裏我們已實現它（查看[代碼](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/getting-started/primers/async-example.html){: target="_blank" .external }），即同步版本的完全異步版本。但是我們可以做得更好。此時，我們的頁面正在下載，如下所示：
-
+And there we have it (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-example.html)), a fully async version of the sync version. But we can do better. At the moment our page is downloading like this:
 
 <figure>
   <img src="imgs/promise1.gif">
 </figure>
 
-瀏覽器的一個優勢在於可以一次下載多個內容，因此我們一章章地下載就失去了其優勢。我們希望同時下載所有章節，然後在所有下載完畢後進行處理。幸運的是，API 可幫助我們實現：
-
+Browsers are pretty good at downloading multiple things at once, so we're losing performance by downloading chapters one after the other. What we want to do is download them all at the same time, then process them when they've all arrived. Thankfully there's an API for this:
 
     Promise.all(arrayOfPromises).then(function(arrayOfResults) {
       //...
     })
+    
 
-
-
-`Promise.all` 包含一組 promise，並創建一個在所有內容成功完成後執行的 promise。您將獲得一組結果（即一組 promise 執行的結果），其順序與您與傳入 promise 的順序相同。
-
-
+`Promise.all` takes an array of promises and creates a promise that fulfills when all of them successfully complete. You get an array of results (whatever the promises fulfilled to) in the same order as the promises you passed in.
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       // Take an array of promises and wait on them all
       return Promise.all(
         // Map our array of chapter urls to
@@ -688,26 +644,26 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
     }).then(function() {
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[試一下](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/primers/async-all-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-all-example.html)
 
-根據連接情況，這可能比一個個依次加載要快幾秒鐘（查看[代碼](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/getting-started/primers/async-all-example.html){: target="_blank" .external }），而且代碼也比我們第一次嘗試的要少。章節將按任意順序下載，但在屏幕中以正確順序顯示。
-
+Depending on connection, this can be seconds faster than loading one-by-one (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-all-example.html)), and it's less code than our first try. The chapters can download in whatever order, but they appear on screen in the right order.
 
 <figure>
   <img src="imgs/promise2.gif">
 </figure>
 
-不過，我們仍可以提升用戶體驗。第一章下載完後，我們可將其添加到頁面。這可讓用戶在其他章節下載完畢前先開始閱讀。第三章下載完後，我們不將其添加到頁面，因爲還缺少第二章。第二章下載完後，我們可添加第二章和第三章，後面章節也是如此添加。
+However, we can still improve perceived performance. When chapter one arrives we should add it to the page. This lets the user start reading before the rest of the chapters have arrived. When chapter three arrives, we wouldn't add it to the page because the user may not realize chapter two is missing. When chapter two arrives, we can add chapters two and three, etc etc.
 
-爲此，我們使用 JSON 來同時獲取所有章節，然後創建一個向文檔中添加章節的順序：
+To do this, we fetch JSON for all our chapters at the same time, then create a sequence to add them to the document:
 
     getJSON('story.json').then(function(story) {
       addHtmlToPage(story.heading);
-
+    
       // Map our array of chapter urls to
       // an array of chapter json promises.
-      // This makes sure they all download parallel.
+      // This makes sure they all download in parallel.
       return story.chapterUrls.map(getJSON)
         .reduce(function(sequence, chapterPromise) {
           // Use reduce to chain the promises together,
@@ -728,30 +684,25 @@ JavaScript promise API 將任何使用 `then()` 方法的結構都當作 promise
     }).then(function() {
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[試一下](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/primers/async-best-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-best-example.html)
 
-我們做到了（查看[代碼](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/getting-started/primers/async-best-example.html){: target="_blank" .external }），兩全其美！下載所有內容所花費的時間相同，但是用戶可先閱讀前面的內容。
-
+And there we go (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-best-example.html)), the best of both! It takes the same amount of time to deliver all the content, but the user gets the first bit of content sooner.
 
 <figure>
   <img src="imgs/promise3.gif">
 </figure>
 
-在這個小示例中，所有章節幾乎同時下載完畢，但是如果一本書有更多、更長的章節，一次顯示一個章節的優勢便會更明顯。
+In this trivial example, all of the chapters arrive around the same time, but the benefit of displaying one at a time will be exaggerated with more, larger chapters.
 
+Doing the above with [Node.js-style callbacks or events](https://gist.github.com/jakearchibald/0e652d95c07442f205ce) is around double the code, but more importantly isn't as easy to follow. However, this isn't the end of the story for promises, when combined with other ES6 features they get even easier.
 
-使用 [Node.js-style 回調或事件](https://gist.github.com/jakearchibald/0e652d95c07442f205ce)來執行以上示例需兩倍代碼，更重要的是，沒那麼容易實施。然而，promise 功能還不止如此，與其他 ES6 功能組合使用時，它們甚至更容易。
+## Bonus round: promises and generators
 
+This next bit involves a whole bunch of new ES6 features, but it's not something you need to understand to use promises in your code today. Treat it like a movie trailer for some upcoming blockbuster features.
 
-##  友情贈送：promise 和 generator
-
-
-以下內容涉及一整套 ES6 新增功能，但您目前在使用 promise 編碼時無需掌握它們。可將其視爲即將上映的好萊塢大片電影預告。
-
-ES6 還爲我們提供了 [generator](http://wiki.ecmascript.org/doku.php?id=harmony:generators)，它可讓某些功能在某個位置退出（類似於“return”），但之後能以相同位置和狀態恢復，例如：
-
-
+ES6 also gives us [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Generators), which allow functions to exit at a particular point, like "return", but later resume from the same point and state, for example:
 
     function *addGenerator() {
       var i = 0;
@@ -759,9 +710,9 @@ ES6 還爲我們提供了 [generator](http://wiki.ecmascript.org/doku.php?id=har
         i += yield i;
       }
     }
+    
 
-
-注意函數名稱前面的星號，這表示 generator。yield 關鍵字是我們的返回/恢復位置。我們可按下述方式使用：
+Notice the star before the function name, this makes it a generator. The yield keyword is our return/resume point. We can use it like this:
 
     var adder = addGenerator();
     adder.next().value; // 0
@@ -769,9 +720,9 @@ ES6 還爲我們提供了 [generator](http://wiki.ecmascript.org/doku.php?id=har
     adder.next(5).value; // 10
     adder.next(5).value; // 15
     adder.next(50).value; // 65
+    
 
-
-但是這對於 promise 而言意味着什麼呢？您可以使用返回/恢復行爲來編寫異步代碼，這些代碼看起來像同步代碼，而且實施起來也與同步代碼一樣簡單。對各行代碼的理解無需過多擔心，藉助於幫助程序函數，我們可使用 `yield` 來等待 promise 得到解決：
+But what does this mean for promises? Well, you can use this return/resume behaviour to write async code that looks like (and is as easy to follow as) synchronous code. Don't worry too much about understanding it line-for-line, but here's a helper function that lets us use `yield` to wait for promises to settle:
 
     function spawn(generatorFunc) {
       function continuer(verb, arg) {
@@ -792,9 +743,9 @@ ES6 還爲我們提供了 [generator](http://wiki.ecmascript.org/doku.php?id=har
       var onRejected = continuer.bind(continuer, "throw");
       return onFulfilled();
     }
+    
 
-
-…在上述示例中我幾乎是[從 Q 中逐字般過來](https://github.com/kriskowal/q/blob/db9220d714b16b96a05e9a037fa44ce581715e41/q.js#L500)，並針對 JavaScript promise 進行了改寫。因此，我們可以採用顯示章節的最後一個最佳示例，結合新 ES6 的優勢，將其轉變爲：
+… which I pretty much [lifted verbatim fromQ](https://github.com/kriskowal/q/blob/db9220d714b16b96a05e9a037fa44ce581715e41/q.js#L500), but adapted for JavaScript promises. With this, we can take our final best-case chapter example, mix it with a load of new ES6 goodness, and turn it into:
 
     spawn(function *() {
       try {
@@ -802,18 +753,18 @@ ES6 還爲我們提供了 [generator](http://wiki.ecmascript.org/doku.php?id=har
         // returning the result of the promise
         let story = yield getJSON('story.json');
         addHtmlToPage(story.heading);
-
+    
         // Map our array of chapter urls to
         // an array of chapter json promises.
-        // This makes sure they all download parallel.
+        // This makes sure they all download in parallel.
         let chapterPromises = story.chapterUrls.map(getJSON);
-
+    
         for (let chapterPromise of chapterPromises) {
           // Wait for each chapter to be ready, then add it to the page
           let chapter = yield chapterPromise;
           addHtmlToPage(chapter.html);
         }
-
+    
         addTextToPage("All done");
       }
       catch (err) {
@@ -822,116 +773,137 @@ ES6 還爲我們提供了 [generator](http://wiki.ecmascript.org/doku.php?id=har
       }
       document.querySelector('.spinner').style.display = 'none';
     })
+    
 
-[試一下](https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/primers/async-generators-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/primers/async-generators-example.html)
 
-這跟之前的效用完全相同，但讀起來容易多了。Chrome 和 Opera 當前支持該功能（查看[代碼](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/getting-started/primers/async-generators-example.html){: target="_blank" .external }），而且 Microsoft Edge 中也可使用該功能（需要在 `about:flags` 中打開 **Enable experimental JavaScript features** 設置）。在即將發佈的版本中，該功能默認啓用。
+This works exactly as before but is so much easier to read. This works in Chrome and Opera today (see [code](https://github.com/googlesamples/web-fundamentals/blob/gh-pages/fundamentals/primers/async-generators-example.html)), and works in Microsoft Edge by going to `about:flags` and turning on the **Enable experimental JavaScript features** setting. This will be enabled by default in an upcoming version.
 
+This throws together a lot of new ES6 stuff: promises, generators, let, for-of. When we yield a promise, the spawn helper waits for the promise to resolve and returns the final value. If the promise rejects, spawn causes our yield statement to throw an exception, which we can catch with normal JavaScript try/catch. Amazingly simple async coding!
 
-它將納入很多新的 ES6 元素：promise、generator、let、for-of。我們生成一個 promise 後，spawn 幫助程序將等待該 promise 來解析並返回一個終值。如果 promise 拒絕，spawn 會讓 yield 語句拋出異常，我們可通過常規的 JavaScript try/catch 來捕獲此異常。異步編碼竟如此簡單！
+This pattern is so useful, it's coming to ES7 in the form of [async functions](https://jakearchibald.com/2014/es7-async-functions/). It's pretty much the same as above, but no need for a `spawn` method.
 
+## Promise API reference {: #promise-api-reference }
 
-此模式非常有用，在 ES7 中它將以[異步功能](https://jakearchibald.com/2014/es7-async-functions/)的形式提供。它幾乎與上述編碼示例相同，但無需使用 `spawn` 方法。
+All methods work in Chrome, Opera, Firefox, Microsoft Edge, and Safari unless otherwise noted. The [polyfill](https://github.com/jakearchibald/ES6-Promises#readme) provides the below for all browsers.
 
-
-##  Promise API 參考 {: #promise-api-reference }
-
-所有方法在 Chrome、Opera、Firefox、Microsoft Edge 和 Safari 中均可使用，除非另有說明。[polyfill](https://github.com/jakearchibald/ES6-Promises#readme) 爲所有瀏覽器提供以下方法。
-
-
-###  靜態方法
+### Static Methods
 
 <table class="responsive methods">
+  
 <tr>
-<th colspan="2">方法彙總</th>
+<th colspan="2">Method summaries</th>
 </tr>
 <tr>
   <td><code>Promise.resolve(promise);</code></td>
-  <td> 返回 promise（僅當  <code>promise.function Object() { [native code] } == Promise</code> 時）</td>
+  <td>Returns promise (only if <code>promise.constructor == Promise</code>)</td>
 </tr>
 <tr>
   <td><code>Promise.resolve(thenable);</code></td>
-  <td> 從 thenable 中生成一個新 promise。thenable 是具有 `then()` 方法的類似於 promise 的對象。</td>
+  <td>
+    Make a new promise from the thenable. A thenable is promise-like in as
+    far as it has a `then()` method.
+  </td>
 </tr>
 <tr>
   <td><code>Promise.resolve(obj);</code></td>
-  <td> 在此情況下，生成一個 promise 並在執行時返回  <code>obj</code>。</td>
+  <td>Make a promise that fulfills to <code>obj</code>. in this situation.</td>
 </tr>
 <tr>
   <td><code>Promise.reject(obj);</code></td>
-  <td> 生成一個 promise 並在拒絕時返回  <code>obj</code>。爲保持一致和調試之目的（例如堆疊追蹤）， <code>obj</code> 應爲  <code>instanceof Error</code>。</td>
+  <td>
+    Make a promise that rejects to <code>obj</code>. For consistency and
+    debugging (e.g. stack traces), <code>obj</code> should be an
+    <code>instanceof Error</code>.
+  </td>
 </tr>
 <tr>
   <td><code>Promise.all(array);</code></td>
-  <td> 生成一個 promise，該 promise 在數組中各項執行時執行，在任意一項拒絕時拒絕。每個數組項均傳遞給  <code>Promise.resolve</code>，因此數組可能混合了類似於 promise 的對象和其他對象。執行值是一組有序的執行值。拒絕值是第一個拒絕值。</td>
+  <td>
+    Make a promise that fulfills when every item in the array fulfills, and
+    rejects if (and when) any item rejects. Each array item is passed to
+    <code>Promise.resolve</code>, so the array can be a mixture of
+    promise-like objects and other objects. The fulfillment value is
+    an array (in order) of fulfillment values. The rejection value is
+    the first rejection value.
+  </td>
 </tr>
 <tr>
   <td><code>Promise.race(array);</code></td>
-  <td> 生成一個 Promise，該 Promise 在任意項執行時執行，或在任意項拒絕時拒絕，以最先發生的爲準。</td>
+  <td>
+    Make a Promise that fulfills as soon as any item fulfills, or rejects as
+    soon as any item rejects, whichever happens first.
+  </td>
 </tr>
 </table>
 
-Note: 我對 `Promise.race` 的實用性表示懷疑；我更傾向於使用與之相對的 `Promise.all`，它僅在所有項拒絕時才拒絕。
+Note: I'm unconvinced of `Promise.race`'s usefulness; I'd rather have an opposite of `Promise.all` that only rejects if all items reject.
 
-###  構造函數
+### Constructor
 
-<table class="responsive function Object() { [native code] }s">
+<table class="responsive constructors">
+  
 <tr>
-<th colspan="2"> 構造函數</th>
+<th colspan="2">Constructor</th>
 </tr>
 <tr>
   <td><code>new Promise(function(resolve, reject) {});</code></td>
   <td>
     <p>
       <code>resolve(thenable)</code><br>
-      Promise 依據  <code>thenable</code> 的結果而執行/拒絕。
+      Your promise will be fulfilled/rejected with the outcome of
+      <code>thenable</code>
     </p>
 
     <p>
       <code>resolve(obj)</code><br>
-      Promise 執行並返回  <code>obj</code>
+      Your promise is fulfilled with <code>obj</code>
     </p>
 
     <p>
       <code>reject(obj)</code><br>
-      Promise 拒絕並返回  <code>obj</code>。爲保持一致和調試（例如堆疊追蹤），obj 應爲  <code>instanceof Error</code>。
-
-      在構造函數回調中引發的任何錯誤將隱式傳遞給  <code>reject()</code>。
-</p>
-
+      Your promise is rejected with <code>obj</code>. For consistency and
+      debugging (e.g., stack traces), obj should be an <code>instanceof
+      Error</code>.  Any errors thrown in the constructor callback will be
+      implicitly passed to <code>reject()</code>.
+    </p>
   </td>
 </tr>
 </table>
 
-###  實例方法
+### Instance Methods
 
 <table class="responsive methods">
+  
 <tr>
-<th colspan="2"> 實例方法</th>
+<th colspan="2">Instance Methods</th>
 </tr>
 <tr>
   <td><code>promise.then(onFulfilled, onRejected)</code></td>
   <td>
-    當/如果“promise”解析，則調用 <code>onFulfilled</code>。當/如果“promise”拒絕，則調用  <code>onRejected</code>。
-兩者均可選，如果任意一個或兩者都被忽略，則調用鏈中的下一個  <code>onFulfilled</code>/<code>onRejected</code>。
-
-
-    兩個回調都只有一個參數：執行值或拒絕原因。 <code>then()</code> 將返回一個新 promise，它相當於從  <code>onFulfilled</code>/<code>onRejected</code> 中返回、
-    通過  <code>Promise.resolve</code> 傳遞的值。如果在回調中引發了錯誤，返回的 promise 將拒絕並返回該錯誤。
-</td>
-
+    <code>onFulfilled</code> is called when/if "promise" resolves.
+    <code>onRejected</code> is called when/if "promise" rejects. Both are
+    optional, if either/both are omitted the next
+    <code>onFulfilled</code>/<code>onRejected</code> in the chain is called.
+    Both callbacks have a single parameter, the fulfillment value or
+    rejection reason. <code>then()</code> returns a new promise equivalent to
+    the value you return from <code>onFulfilled</code>/<code>onRejected</code>
+    after being passed through <code>Promise.resolve</code>. If an error is
+    thrown in the callback, the returned promise rejects with that error.
+  </td>
 </tr>
 <tr>
   <td><code>promise.catch(onRejected)</code></td>
-  <td> 對  <code>promise.then(undefined, onRejected)</code></td> 的錦上添花
+  <td>Sugar for <code>promise.then(undefined, onRejected)</code></td>
 </tr>
 </table>
 
+## Feedback {: .hide-from-toc }
 
+{% include "web/_shared/helpful.html" %}
 
-Anne van Kesteren、Domenic Denicola、Tom Ashworth、Remy Sharp、Addy Osmani、Arthur Evans 和 Yutaka Hirano 對本篇文章進行了校對，提出了建議並作出了修正，特此感謝！
+<div class="clearfix"></div>
 
-此外，[Mathias Bynens](https://mathiasbynens.be/){: .external } 負責本篇文章的[更新部分](https://github.com/html5rocks/www.html5rocks.com/pull/921/files)，特此致謝。
+Many thanks to Anne van Kesteren, Domenic Denicola, Tom Ashworth, Remy Sharp, Addy Osmani, Arthur Evans, and Yutaka Hirano who proofread this and made corrections/recommendations.
 
-
-{# wf_devsite_translation #}
+Also, thanks to [Mathias Bynens](https://mathiasbynens.be/) for [updating various parts](https://github.com/html5rocks/www.html5rocks.com/pull/921/files) of the article.

@@ -1,94 +1,73 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools Command Line API menawarkan beragam cara untuk mengamati dan memeriksa event listener
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners
 
-{# wf_updated_on: 2015-08-02 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Memantau Kejadian {: .page-title }
+# Monitor Events {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Chrome DevTools Command Line API menawarkan beragam cara untuk mengamati dan memeriksa event listener. JavaScript berperan utama di laman interaktif, dan browser menyediakan banyak alat berguna untuk men-debug kejadian dan penangan kejadian.
-
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} The Chrome DevTools Command Line API offers various ways to observe and inspect event listeners. JavaScript plays a central role in interactive pages, and the browser provides you some useful tools to debug events and event handlers.
 
 ### TL;DR {: .hide-from-toc }
-- Memantau kejadian bertipe tertentu dengan <code>monitorEvents()</code>.
-- Menggunakan <code>unmonitorEvents()</code> untuk berhenti memantau.
-- Mengetahui daftar listener suatu elemen DOM dengan <code>getEventListeners()</code>.
-- Menggunakan panel Event Listeners Inspector untuk mendapatkan informasi tentang event listener.
 
+- Listen to events of a certain type using `monitorEvents()`.
+- Use `unmonitorEvents()` to stop listening.
+- Get listeners of a DOM element using `getEventListeners()`.
+- Use the Event Listeners Inspector panel to get information on event listeners.
 
-## Memantau kejadian
+## Monitor events
 
-Metode [monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events)
-memerintahkan DevTools untuk membuat log yang mencatat informasi mengenai target yang ditetapkan.
+The [monitorEvents()](/web/tools/chrome-devtools/debug/command-line/command-line-reference#monitoreventsobject-events) method instructs the DevTools to log information on the specified targets.
 
-Parameter pertama adalah objek yang akan dipantau.
-Semua kejadian pada objek itu akan dikembalikan jika tidak ada parameter kedua.
-Untuk menetapkan kejadian yang akan dipantau,
-teruskan string atau larik string sebagai parameter kedua.
+The first parameter is the object to monitor. All events return if the second parameter is not provided. To specify the events to listen to, pass either a string or an array of strings as the second parameter.
 
-Untuk memantau kejadian klik pada tubuh laman:
+Listen to click events on the body of the page:
 
     monitorEvents(document.body, "click");
+    
 
-Jika kejadian yang dipantau adalah *tipe kejadian* yang didukung
-dan dipetakan DevTools ke serangkaian nama kejadian standar,
-metode ini akan memantau kejadian bertipe itu.
+If the monitored event is a supported *event type* that the DevTools maps to a set of standard event names, then the method listens to the events for that type.
 
-[Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) memiliki pemetaan penuh *tipe kejadian* ke kejadian yang dicakupnya.
+The [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference) has a full mapping of *event types* to the events they cover.
 
-Untuk berhenti memantau kejadian,
-panggil metode `unmonitorEvents()` dan masukkan objek yang akan dihentikan pemantauannya.
+To stop monitoring events, call the `unmonitorEvents()` method and give it the object to stop monitoring.
 
-Untuk berhenti memantau kejadian pada objek `body`:
+Stop listening to events on the `body` object:
 
     unmonitorEvents(document.body);
+    
 
-## Menampilkan event listener yang terdaftar pada objek
+## View event listeners registered on objects
 
-[getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject)
-mengembalikan event listener yang terdaftar pada objek yang ditetapkan.
+The [getEventListeners() API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#geteventlistenersobject) returns the event listeners registered on the specified object.
 
-Nilai kembaliannya adalah objek yang berisi larik untuk setiap tipe kejadian yang terdaftar (`click` atau `keydown`, misalnya).
-Anggota setiap larik adalah objek yang menjelaskan
-listener yang terdaftar untuk setiap tipe.
-Misalnya,
-kode berikut menampilkan daftar semua event listener yang terdaftar pada objek dokumen:
+The return value is an object that contains an array for each registered event type (`click` or `keydown`, for example). The members of each array are objects that describe the listener registered for each type. For example, the following code lists all the event listeners registered on the document object:
 
     getEventListeners(document);
+    
 
-![Keluaran penggunaan getEventListeners()](images/events-call-geteventlisteners.png)
+![Output of using getEventListeners()](images/events-call-geteventlisteners.png)
 
-Jika terdaftar lebih dari satu listener pada objek yang ditetapkan,
-larik akan berisi satu anggota untuk setiap listener.
-Dalam contoh berikut,
-ada dua event listener yang terdaftar pada elemen #scrollingList untuk kejadian `mousedown`:
+If more than one listener is registered on the specified object, then the array contains a member for each listener. In the following example, there are two event listeners registered on the #scrollingList element for the `mousedown` event:
 
-![Tampilan event listener yang dilampirkan ke mousedown](images/events-geteventlisteners_multiple.png)
+![View of the event listeners attached to mousedown](images/events-geteventlisteners_multiple.png)
 
-Luaskan lagi setiap objek ini untuk mempelajari propertinya:
+Further expand each of these objects to explore their properties:
 
-![Tampilan yang diperluas dari objek listener](images/events-geteventlisteners_expanded.png)
+![Expanded view of listener object](images/events-geteventlisteners_expanded.png)
 
-## Menampilkan listener yang terdaftar pada elemen DOM
+## View event listeners registered on DOM elements
 
-Secara default,
-panel *Event Listeners* di Elements Inspector menampilkan semua kejadian yang terhubung ke suatu laman:
+By default, the *Event Listeners* panel in the Elements Inspector shows all the events attached to a page:
 
-![Panel event listeners](images/events-eventlisteners_panel.png)
+![Event listeners panel](images/events-eventlisteners_panel.png)
 
-Filter membatasi kejadian hanya pada simpul yang dipilih:
+The filter limits the events just to the selected node:
 
-![Panel event listeners, difilter menurut simpul saja](images/events-eventlisteners_panel_filtered.png)
+![Event listeners panel, filtered by selected node only](images/events-eventlisteners_panel_filtered.png)
 
-Dengan meluaskan objek, panel menampilkan perincian event listener.
-Dalam contoh ini,
-laman memiliki dua event listener yang terhubung lewat jQuery:
+By expanding the object, the panel shows the event listener details. In this example, the page has two event listeners attached via jQuery:
 
-![Tampilan event listeners diluaskan](images/events-eventlisteners_panel_details.png)
+![Expanded view of the event listeners](images/events-eventlisteners_panel_details.png)
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

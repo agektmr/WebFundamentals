@@ -1,26 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: JavaScript を読みやすい形式に変換するには、Chrome DevTools で [Pretty-Print] アイコンをクリックします。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Transform your JavaScript into a more readable form by clicking the Pretty-Print icon in Chrome DevTools.
 
-{# wf_updated_on:2016-02-21 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 読みやすい形式への JavaScript の変換 {: .page-title }
+# Make JavaScript Look Pretty {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/kaycebasques.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/kaycebasques.html" %}
 
-[**Sources**] パネルでスクリプトを表示しているときに、圧縮されたスクリプトを人が読みやすい形式に変換するには、[**Pretty-Print**]
-![[Pretty-Print] アイコン](imgs/prettyprint-icon.png){:.inline} アイコンをクリックします。
+Warning: This page is deprecated. See [Make a minified file readable](reference#format) for up-to-date information.
 
+When viewing a script in the **Sources** panel, click the **Pretty-Print** ![the pretty-print icon](imgs/prettyprint-icon.png){:.inline} icon to transform a minified script into a more human-readable form.
 
-[**Sources**] パネルでは、圧縮されたスクリプトは次のように見えます。
+Here is how a minified script might look in the **Sources** panel:
 
-![圧縮されたスクリプト](imgs/pretty-print-off.jpg)
+![a minified script](imgs/pretty-print-off.jpg)
 
-[**Pretty-Print**] アイコンをクリックすると、同じスクリプトが次のように見えます。
+Here is how the same script looks after clicking the **Pretty-Print** icon:
 
-![[Pretty-Print] アイコンをクリックした後の圧縮されたスクリプト](imgs/pretty-print-on.jpg)
+![a minified script after pretty print](imgs/pretty-print-on.jpg)
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,145 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Uso de rótulos ARIA para criar descrições acessíveis de elementos
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using ARIA labels to create accessible element descriptions
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# ARIA Labels and Relationships {: .page-title }
 
-# Rótulos e Relações de ARIA {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+## Labels
 
-## Rótulos
-
-ARIA fornece vários mecanismos para adicionar rótulos e descrições a elementos.
-Na verdade, ARIA é a única maneira de adicionar texto acessível de ajuda ou descrição. Vejamos
-as propriedades que ARIA usa para criar rótulos acessíveis.
+ARIA provides several mechanisms for adding labels and descriptions to elements. In fact, ARIA is the only way to add accessible help or description text. Let's look at the properties ARIA uses to create accessible labels.
 
 ### aria-label
 
-`aria-label` nos permite especificar uma string para ser usado como o rótulo acessível.
-Este substitui qualquer outro mecanismo de rotulagem nativo, como um elemento `label`
-&mdash; por exemplo, se um `button` tem um conteúdo de texto e um `aria-label`,
-somente o valor `aria-label` será usado.
+`aria-label` allows us to specify a string to be used as the accessible label. This overrides any other native labeling mechanism, such as a `label` element &mdash; for example, if a `button` has both text content and an `aria-label`, only the `aria-label` value will be used.
 
-Você pode usar um atributo `aria-label` quando tem algum tipo de indicação
-visual da finalidade de um elemento, como um botão que utiliza um gráfico, em vez
-de texto, mas ainda precisa esclarecer essa finalidade para quem não consegue acessar
-a indicação visual, como um botão que usa apenas uma imagem para indicar
-sua finalidade.
+You might use an `aria-label` attribute when you have some kind of visual indication of an element's purpose, such as a button that uses a graphic instead of text, but still need to clarify that purpose for anyone who cannot access the visual indication, such as a button that uses only an image to indicate its purpose.
 
-![usando aria-label para identificar um botão sinalizado apenas por imagem ](imgs/aria-label.jpg)
+![using aria-label to identify an image only button](imgs/aria-label.jpg)
 
 ### aria-labelledby
 
-`aria-labelledby` nos permite especificar o ID de outro elemento no DOM como
-o rótulo de um elemento.
+`aria-labelledby` allows us to specify the ID of another element in the DOM as an element's label.
 
-![usando aria-labelledby para identificar um grupo de opção](imgs/aria-labelledby.jpg)
+![using aria-labelledby to identify a radio group](imgs/aria-labelledby.jpg)
 
-Isso é muito parecido com usar um elemento `label`, com algumas diferenças fundamentais.
+This is much like using a `label` element, with some key differences.
 
- 1. `aria-labelledby` pode ser usado em qualquer elemento, não apenas em elementos rotuláveis.
- 1. Enquanto um elemento `label` refere-se àquilo que ele rotula, a relação é
-revertida caso a `aria-labelledby` &mdash; coisa  a ser rotulada
-refira-se àquilo que ela rotula.
- 1. Somente um elemento de rótulo pode estar associado a um elemento rotulável, mas
-`aria-labelledby` pode tomar uma lista de IDREFS para compor
-um rótulo de múltiplos elementos. O rótulo será concatenado na ordem em que os IDREFS são
-    fornecidos.
- 1. Você pode usar `aria-labelledby` para se referir a elementos que estão ocultos e que
-    de outra forma, não estariam na árvore de acessibilidade. Por exemplo, você pode adicionar um
-    `span` oculto  ao lado de um elemento que deseja rotular, e referir-se a ele com
-    `aria-labelledby`.
- 1. No entanto, como ARIA só afeta a árvore de acessibilidade, `aria-labelledby`
-    não proporciona o comportamento familiar de clicar no rótulo obtido ao se usar um
-elemento    `label`.
+1. `aria-labelledby` may be used on any element, not just labelable elements.
+2. While a `label` element refers to the thing it labels, the relationship is reversed in the the case of `aria-labelledby` &mdash; the thing being labeled refers to the thing that labels it.
+3. Only one label element may be associated with a labelable element, but `aria-labelledby` can take a list of IDREFs to compose a label from multiple elements. The label will be concatenated in the order that the IDREFs are given.
+4. You can use `aria-labelledby` to refer to elements that are hidden and would otherwise not be in the accessibility tree. For example, you could add a hidden `span` next to an element you want to label, and refer to that with `aria-labelledby`.
+5. However, since ARIA only affects the accessibility tree, `aria-labelledby` does not give you the familiar label-clicking behavior you get from using a `label` element.
 
-É importante notar que, `aria-labelledby` modifica **todas** as outras fontes de nome para um
-elemento. Assim, por exemplo, se um elemento tem um `aria-labelledby` e um
-`aria-label`, ou um `aria-labelledby` e um `label` HTML nativo, o
-rótulo `aria-labelledby` sempre tem precedência.
+Importantly, `aria-labelledby` overrides **all** other name sources for an element. So, for example, if an element has both an `aria-labelledby` and an `aria-label`, or an `aria-labelledby` and a native HTML `label`, the `aria-labelledby` label always takes precedence.
 
-## Relações
+## Relationships
 
-`aria-labelledby` é um exemplo de um *atributo de relação*. Um atributo de relação
-cria uma relação semântica entre elementos na página,
-independentemente de sua relação DOM. No caso de `aria-labelledby`, essa
-relação é "este elemento é rotulado por aquele elemento".
+`aria-labelledby` is an example of a *relationship attribute*. A relationship attribute creates a semantic relationship between elements on the page regardless of their DOM relationship. In the case of `aria-labelledby`, that relationship is "this element is labelled by that element".
 
-A especificação ARIA lista [oito atributos de
-relação](https://www.w3.org/TR/wai-aria/states_and_properties#attrs_relationships){: .external }.
-Seis deles, `aria-activedescendant`, `aria-controls`, `aria-describedby`,
-`aria-labelledby`, e `aria-owns`, fazem referência a um ou mais elementos para
-criar uma nova ligação entre elementos da página. A diferença, em cada caso, é
-o que essa ligação significa e como ela é apresentada aos usuários.
+The ARIA specification lists [eight relationship attributes](https://www.w3.org/TR/wai-aria/states_and_properties#attrs_relationships){: .external }. Six of these, `aria-activedescendant`, `aria-controls`, `aria-describedby`, `aria-labelledby`, and `aria-owns`, take a reference to one or more elements to create a new link between elements on the page. The difference in each case is what that link means and how it is presented to users.
 
 ### aria-owns
 
-`aria-owns` é uma das relações ARIA mais amplamente utilizadas. Este atributo
-nos permite informar à tecnologia assistiva que um elemento que está separado no
-DOM deve ser tratado como um filho do elemento atual, ou para reorganizar
-os elementos filhos existentes em uma ordem diferente. Por exemplo, se um sub-menu
-de pop-up está posicionado visualmente perto de seu menu pai, mas não pode
-ser um filho DOM de seu pai, porque isso afetaria a apresentação visual,
-você pode usar `aria-owns` para apresentar o sub-menu como um filho do menu pai a um
-leitor de tela.
+`aria-owns` is one of the most widely used ARIA relationships. This attribute allows us to tell assistive technology that an element that is separate in the DOM should be treated as a child of the current element, or to rearrange existing child elements into a different order. For example, if a pop-up sub-menu is visually positioned near its parent menu, but cannot be a DOM child of its parent because it would affect the visual presentation, you can use `aria-owns` to present the sub-menu as a child of the parent menu to a screen reader.
 
-![usando aria-owns para estabelecer uma relação entre um menu e um sub-menu](imgs/aria-owns.jpg)
+![using aria-owns to establish a relationship between a menu and a submenu](imgs/aria-owns.jpg)
 
 ### aria-activedescendant
 
-`aria-activedescendant` desempenha um papel relacionado. Assim como o elemento ativo de uma
-página é aquele que tem o foco, definir o descendente ativo de um elemento
-nos permite informar à tecnologia assistiva que um elemento deve ser apresentado
-ao usuário como o elemento em foco quando o seu pai, na verdade, tem o foco. Por
-exemplo, em uma caixa de listagem, você pode querer deixar a página focar no
-recipiente da caixa de listagem, mas manter seu atributo `aria-activedescendant` atualizado para o item da lista
-selecionado no momento. Isso faz com que o item selecionado no momento apareça para a
-tecnologia assistiva como se fosse o item em foco.
+`aria-activedescendant` plays a related role. Just as the active element of a page is the one that has focus, setting the active descendant of an element allows us to tell assistive technology that an element should be presented to the user as the focused element when its parent actually has the focus. For example, in a listbox, you might want to leave page focus on the listbox container, but keep its `aria-activedescendant` attribute updated to the currently selected list item. This makes the currently selected item appear to assistive technology as if it is the focused item.
 
-![usando aria-activedescendant para estabelecer uma relação em uma caixa de listagem](imgs/aria-activedescendant.jpg)
+![using aria-activedescendant to establish a relationship in a listbox](imgs/aria-activedescendant.jpg)
 
 ### aria-describedby
 
-`aria-describedby` fornece uma descrição acessível da mesma forma que
-`aria-labelledby` fornece um rótulo. Como `aria-labelledby`, `aria-describedby`
-pode fazer referência a elementos que de outro modo não são visíveis, estejam eles ocultos do
-DOM, ou ocultos para usuários de tecnologia assistiva. Esta é uma técnica útil quando existe
-algum texto explicativo extra que um usuário pode precisar, quer aplique-se apenas
-a usuários de tecnologia assistiva ou a todos os usuários.
+`aria-describedby` provides an accessible description in the same way that `aria-labelledby` provides a label. Like `aria-labelledby`, `aria-describedby` may reference elements that are otherwise not visible, whether hidden from the DOM, or hidden from assistive technology users. This is a useful technique when there is some extra explanatory text that a user might need, whether it applies only to users of assistive technology or all users.
 
-Um exemplo comum é um campo de entrada de senha que é acompanhado por
-algum texto descritivo que explica os requisitos mínimos da senha. Ao contrário de um rótulo,
-esta descrição pode ou não ser apresentada ao usuário; ele pode ter a
-escolha de se acessá-la, ou ela pode vir depois de todas as outras informações,
-ou pode ser influenciada por outra coisa. Por exemplo, se o usuário estiver inserindo
-informações, essa interação será ecoada de volta e pode interromper a descrição 
-do elemento. Portanto, uma descrição é uma ótima maneira de comunicar informações
-suplementares, mas não essenciais; ela não fica no caminho de informações
- mais críticas, como o papel do elemento.
+A common example is a password input field that is accompanied by some descriptive text explaining the minimum password requirements. Unlike a label, this description may or may not ever be presented to the user; they may have a choice of whether to access it, or it may come after all the other information, or it may be pre-empted by something else. For example, if the user is entering information, their input will be echoed back and may interrupt the element's description. Thus, a description is a great way to communicate supplementary, but not essential, information; it won't get in the way of more critical information such as the element's role.
 
-![usando aria-describedby para estabelecer uma relação com um campo de senha](imgs/aria-describedby.jpg)
+![using aria-describedby to establish a relationship with a password field](imgs/aria-describedby.jpg)
 
 ### aria-posinset & aria-setsize
 
-Os atributos de relação restantes são um pouco diferentes, e trabalhar em conjunto.
-`aria-posinset` ("posição no conjunto") e `aria-setsize` ("tamanho do conjunto")
-definem uma relação entre elementos irmãos em um conjunto, como uma lista.
+The remaining relationship attributes are a little different, and work together. `aria-posinset` ("position in set") and `aria-setsize` ("size of set") are about defining a relationship between sibling elements in a set, such as a list.
 
-Quando o tamanho de um conjunto não pode ser determinado pelos elementos presentes no DOM
-&mdash; como quando renderização lenta é usada para evitar ter toda uma grande lista
-no DOM de uma só vez, &mdash; `aria-setsize` pode especificar o tamanho real do conjunto, e
-`aria-posinset`pode especificar a posição do elemento no conjunto. Por exemplo, em um
-conjunto que pode conter 1.000 elementos, você pode dizer que determinado
-elemento tem um `aria-posinset` de 857, embora ele apareça em primeiro no DOM,
-e depois usar técnicas de HTML dinâmico para garantir que o usuário possa explorar a lista completa
- sob demanda.
+When the size of a set cannot be determined by the elements present in the DOM &mdash; such as when lazy rendering is used to avoid having all of a large list in the DOM at once &mdash; `aria-setsize` can specify the actual set size, and `aria-posinset` can specify the element's position in the set. For example, in a set that might contain 1000 elements, you could say that a particular element has an `aria-posinset` of 857 even though it appears first in the DOM, and then use dynamic HTML techniques to ensure that the user can explore the full list on demand.
 
-![usando aria-posinset e aria-setsize para estabelecer uma relação em uma lista](imgs/aria-posinset.jpg)
+![using aria-posinset and aria-setsize to establish a relationship in a list](imgs/aria-posinset.jpg)
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

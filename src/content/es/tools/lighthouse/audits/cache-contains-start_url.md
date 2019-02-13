@@ -1,55 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "Caché contiene start_url del manifiesto".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Cache contains start_url from manifest" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-15 #}
-{# wf_published_on: 2016-09-15 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-15 #} {# wf_blink_components: N/A #}
 
-# Caché contiene start_url del manifiesto  {: .page-title }
+# Cache Contains start_url From Manifest {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Asegura que una app web progresiva se inicie de manera adecuada desde la pantalla de inicio del
-dispositivo móvil mientras está sin conexión.
+Ensures that a progressive web app properly launches from a mobile device homescreen while offline.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-1. Define una propiedad `start_url` en tu archivo `manifest.json` .
-2. Asegúrate de que tu service worker almacene adecuadamente en caché un recurso que coincida con
-   el valor de `start_url`.
+1. Define a `start_url` property in your `manifest.json` file.
+2. Ensure that your service worker properly caches a resource that matches the value of `start_url`.
 
-Para conocer los conceptos básicos sobre agregar apps a las pantallas de inicio,
-consulta [Agrega tu app web a la pantalla de inicio de un
-usuario](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
-Se trata de un codelab práctico paso a paso en el cual agregas la funcionalidad "add to
-homescreen" en una app existente. Aplica lo que aprendiste en
-este codelab para integrar la funcionalidad "add to homescreen" en tu propia app.
+To learn the basics of adding apps to homescreens, see [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen). This is a step-by-step, hands-on codelab in which you add "add to homescreen" functionality into an existing app. Use what you learn in this codelab to integrate "add to homescreen" functionality in your own app.
 
-Para obtener más ayuda sobre cómo almacenar en caché a archivos con service workers para uso sin conexión,
-consulta la sección "Cómo aprobar la auditoría" del siguiente documento de Lighthouse:
-[La URL responde con 200 cuando está sin conexión](http-200-when-offline#how)
+For more help on how to cache files with service workers for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations)
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Cuando una app web progresiva se inicia desde la pantalla de inicio de un dispositivo
-móvil, la app se abre en una URL específica. La URL se define en el archivo
-`manifest.json` de la app como la propiedad `start_url` .
+When a progressive web app is launched from the homescreen of a mobile device, the app opens on a specific URL. That URL is defined in the app's `manifest.json` file as the `start_url` property.
 
-Esta auditoría analiza el valor de `start_url` desde `manifest.json` y luego
-asegura que un recurso coincidente se almacene en la caché del service worker.
+This audit parses the value of `start_url` from `manifest.json` and then ensures that a matching resource is cached in the service worker's cache.
 
-**Si tu service worker redirecciona las solicitudes** `start_url` **, esta auditoría
-puede producir resultados incorrectos**.
+**If your service worker redirects** `start_url` **requests, this audit may produce inaccurate results**.
 
-Una deficiencia de esta auditoría es que inspecciona directamente el contenido almacenado en caché
-, en lugar de pedir al service worker que resuelva la solicitud `start_url`
-. Esto puede producir un resultado falso negativo si tu caché carece de
-un recurso que coincida con el valor exacto de `start_url`, pese a que en
-escenarios reales la solicitud se resuelve de manera exitosa debido a que el service
-worker redirecciona a otro recurso en la caché. Por el contrario, la auditoría puede
-producir un resultado falso positivo si tu caché contiene un recurso que
-coincide con `start_url`, pero tu service worker redirecciona la solicitud a
-un recurso inexistente.
+One shortcoming of this audit is that it inspects the cache contents directly, rather than asking the service worker to resolve the `start_url` request. This can produce a false negative result if your cache is missing a resource that matches the exact value of `start_url`, even though in real scenarios the request resolves successfully because the service worker redirects to another resource in the cache. Conversely, the audit can produce a false positive result if your cache contains a resource that matches `start_url`, but your service worker redirects the request to a non-existent resource.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

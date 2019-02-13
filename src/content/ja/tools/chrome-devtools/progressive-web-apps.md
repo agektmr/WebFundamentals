@@ -1,184 +1,129 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: [Application] パネルを使用して、ウェブアプリ マニフェスト、Service Worker、Service Worker のキャッシュの調査、変更、およびデバッグを行うことができます。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Application panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on:2016-07-25 #}
+{# wf_updated_on: 2018-11-20 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: Platform>DevTools #}
 
-# Progressive Web App のデバッグ {: .page-title }
+# Debug Progressive Web Apps {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-[<strong>Application</strong>] パネルを使用して、ウェブアプリ マニフェスト、Service Worker、Service Worker のキャッシュの調査、変更、およびデバッグを行うことができます。
+Use the **Application** panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
+Related Guides:
 
-関連ガイド: 
+* [Progressive Web Apps](/web/progressive-web-apps)
 
-* [Progressive Web App](/web/progressive-web-apps)
-
-このガイドでは、[**Application**] パネルの Progressive Web App 機能のみについて説明します。
-その他のペインの使用方法については、このガイドの最後のセクション、[[Application] パネルに関するその他のガイド](#other)をご覧ください。
-
-
-
+This guide only discusses the Progressive Web App features of the **Application** panel. If you're looking for help on the other panes, check out the last section of this guide, [Other Application panel guides](#other).
 
 ### TL;DR {: .hide-from-toc }
-- ウェブアプリ マニフェストを調べ、ホーム画面への追加イベントをトリガーするには、[<strong>App Manifest</strong>] ペインを使用します。
-- サービスの登録解除や更新、プッシュ イベントのエミュレート、オフライン操作、Service Worker の停止など、Service Worker に関連する広範なタスクには、[<strong>Service Worker</strong>] ペインを使用します。
-- [<strong>Cache Storage</strong>] ペインには、Service Worker のキャッシュが表示されます。
-- [<strong>Clear Storage</strong>] ペインでは、ボタンを 1 回クリックするだけで、Service Worker の登録を解除し、すべてのストレージとキャッシュを消去することができます。
 
+* Use the **Manifest** pane to inspect your web app manifest and trigger Add to Homescreen events.
+* Use the **Service Workers** pane for a whole range of service-worker-related tasks, like unregistering or updating a service, emulating push events, going offline, or stopping a service worker.
+* View your service worker cache from the **Cache Storage** pane.
+* Unregister a service worker and clear all storage and caches with a single button click from the **Clear storage** pane.
 
-##  ウェブアプリ マニフェスト{:#manifest}
+## Web app manifest {:#manifest}
 
-ユーザーがモバイルのホーム画面にアプリを追加できるようにするには、ウェブアプリ マニフェストが必要です。
-マニフェストは、ホーム画面でのアプリの表示、ホーム画面から起動したときのユーザーの送信先、起動時のアプリの外観を定義します。
+If you want your users to be able to add your app to their mobile homescreens, you need a web app manifest. The manifest defines how the app appears on the homescreen, where to direct the user when launching from homescreen, and what the app looks like on launch.
 
+Related Guides:
 
+* [Improve user experiences with a Web App Manifest](/web/fundamentals/web-app-manifest)
+* [Using App Install Banners](/web/fundamentals/app-install-banners)
 
-関連ガイド:
+Once you've got your manifest set up, you can use the **Manifest** pane of the **Application** panel to inspect it.
 
-* [ウェブアプリ マニフェストによるユーザー エクスペリエンスの向上](/web/fundamentals/web-app-manifest)
-* [アプリのインストール バナーの使用](/web/fundamentals/app-install-banners)
+![manifest pane](images/manifest.png)
 
+* To look at the manifest source, click the link below **App Manifest** label (`https://airhorner.com/manifest.json` in the screenshot above).
+* Press the **Add to homescreen** button to simulate an Add to Homescreen event. Check out the next section for more information.
+* The **Identity** and **Presentation** sections just display fields from the manifest source in a more user-friendly display.
+* The **Icons** section displays every icon that you've specified.
 
-マニフェストを設定したら、[**Application**] パネルの [**Manifest**] ペインを使用して調べることができます。
+### Simulate Add to Homescreen events {:#add-to-homescreen}
 
+A web app can only be added to a homescreen when the site is visited at least twice, with at least five minutes between visits. While developing or debugging your Add to Homescreen workflow, this criteria can be inconvenient. The **Add to homescreen** button on the **App Manifest** pane lets you simulate Add to Homescreen events whenever you want.
 
-![[Manifest] ペイン][manifest]
+You can test out this feature with the [Google I/O 2016 progressive web app](https://events.google.com/io2016/){: .external }, which has proper support for Add to Homescreen. Clicking on **Add to Homescreen** while the app is open prompts Chrome to display the "add this site to your shelf" banner, which is the desktop equivalent of the "add to homescreen" banner for mobile devices.
 
-* マニフェスト ソースを確認するには、[**App Manifest**] ラベルの下のリンク（上のスクリーンショットでは `https://airhorner.com/manifest.json`）をクリックします。
-* ホーム画面への追加イベントをシミュレートするには、[**Add to homescreen**] ボタンをクリックします。
-詳細については、次のセクションをご覧ください。
-* [**Identity**] セクションと [**Presentation**] セクションには、マニフェスト ソースの項目がわかりやすく表示されます。
-* [**Icons**] セクションには、指定したすべてのアイコンが表示されます。
+![add to desktop shelf](images/io.png)
 
-[manifest]: images/manifest.png
+**Tip**: Keep the **Console** drawer open while simulating Add to Homescreen events. The Console tells you if your manifest has any issues and logs other information about the Add to Homescreen lifecycle.
 
-###  ホーム画面への追加イベントのシミュレート{:#add-to-homescreen}
+The **Add to Homescreen** feature cannot yet simulate the workflow for mobile devices. Notice how the "add to shelf" prompt was triggered in the screenshot above, even though DevTools is in Device Mode. However, if you can successfully add your app to your desktop shelf, then it'll work for mobile, too.
 
-ウェブアプリをホーム画面に追加できるのは、サイトに少なくとも 2 回アクセスし、アクセスの間隔が 5 分以上である場合のみです。
-ホーム画面への追加ワークフローを開発またはデバッグする際、この条件が不便な場合があります。[**App Manifest**] ペインの [**Add to homescreen**] ボタンを使用すると、必要に応じていつでもホーム画面への追加イベントをシミュレートできます。
+If you want to test out the genuine mobile experience, you can connect a real mobile device to DevTools via [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging/remote-debugging), and then click the **Add to Homescreen** button (on DevTools) to trigger the "add to homescreen" prompt on the connected mobile device.
 
+## Service workers {:#service-workers}
 
+Service workers are a fundamental technology in the future web platform. They are scripts that the browser runs in the background, separate from a web page. These scripts enable you to access features that don't need a web page or user interaction, like push notifications, background sync, and offline experiences.
 
+Related Guides:
 
-ホーム画面への追加を正式にサポートしている [Google I/O 2016 Progressive Web App](https://events.google.com/io2016/){: .external } でこの機能をテストすることができます。アプリが開いているときに [**Add to homescreen**] をクリックすると、Chrome ではバナー「add this site to your shelf」が表示されます。これは、モバイル端末の「add to homescreen」バナーに相当するデスクトップ用のバナーです。
+* [Intro to Service Workers](/web/fundamentals/primers/service-worker)
+* [Push Notifications: Timely, Relevant, and Precise](/web/fundamentals/push-notifications)
 
+The **Service Workers** pane in the **Application** panel is the main place in DevTools to inspect and debug service workers.
 
+![service worker pane](images/sw.png)
 
-![デスクトップ シェルフへの追加][shelf]
+* If a service worker is installed to the currently open page, then you'll see it listed on this pane. For example, in the screenshot above there's a service worker installed for the scope of `https://events.google.com/io2016/`.
+* The **Offline** checkbox puts DevTools into offline mode. This is equivalent to the offline mode available from the **Network** panel, or the `Go offline` option in the [Command Menu](/web/tools/chrome-devtools/ui#command-menu).
+* The **Update on reload** checkbox forces the service worker to update on every page load.
+* The **Bypass for network** checkbox bypasses the service worker and forces the browser to go to the network for requested resources.
+* The **Update** button performs a one-time update of the specified service worker.
+* The **Push** button emulates a push notification without a payload (also known as a [tickle](/web/fundamentals/push-notifications/how-push-works)).
+* The **Sync** button emulates a background sync event.
+* The **Unregister** button unregisters the specified service worker. Check out [Clear storage](#clear-storage) for a way to unregister a service worker and wipe storage and caches with a single button click.
+* The **Source** line tells you when the currently running service worker was installed. The link is the name of the service worker's source file. Clicking on the link sends you to the service worker's source.
+* The **Status** line tells you the status of the service worker. The number on this line (`#1` in the screenshot above) indicates how many times the service worker has been updated. If you enable the **update on reload** checkbox you'll notice that the number increments on every page load. Next to the status you'll see a **start** button (if the service worker is stopped) or a **stop** button (if the service worker is running). Service workers are designed to be stopped and started by the browser at any time. Explicitly stopping your service worker using the **stop** button can simulate that. Stopping your service worker is a great way to test how your code behaves when the service worker starts back up again. It frequently reveals bugs due to faulty assumptions about persistent global state.
+* The **Clients** line tells you the origin that the service worker is scoped to. The **focus** button is mostly useful when you've enabled the **show all** checkbox. When that checkbox is enabled, all registered service workers are listed. If you click on the **focus** button next to a service worker that is running in a different tab, Chrome focuses on that tab.
 
-**使い方**:ホーム画面への追加イベントをシミュレートしている間は [**Console**] ドロワーを開いたままにしておいてください。
-コンソールでは、マニフェストに問題があった場合はそのことが示され、また、ホーム画面への追加のライフサイクルに関するその他の情報がログ記録されます。
+If the service worker causes any errors, a new label called **Errors** shows up.
 
+![service worker with errors](images/sw-error.png)
 
-[**Add to homescreen**] 機能は、モバイル端末でのワークフローのシミュレーションにはまだ対応していません。
-DevTools が Device Mode であっても、上のスクリーンショットで「add to shelf」プロンプトがトリガーされている点に注意してください。
-ただし、デスクトップ シェルフに問題なくアプリを追加できれば、モバイルでも動作します。
+## Service worker caches {:#caches}
 
+The **Cache Storage** pane provides a read-only list of resources that have been cached using the (service worker) [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
 
+![service worker cache pane](images/sw-cache.png)
 
-モバイル自体で操作をテストするには、[リモート デバッグ][remote
-debugging]を使用して実際のモバイル端末を DevTools に接続し、（DevTools で）[**Add to homescreen**] ボタンをクリックして、接続したモバイル端末で「add to homescreen」プロンプトをトリガーします。
+Note that the first time you open a cache and add a resource to it, DevTools might not detect the change. Reload the page and you should see the cache.
 
+If you've got two or more caches open, you'll see them listed below the **Cache Storage** dropdown.
 
+![multiple service worker caches](images/multiple-caches.png)
 
-[shelf]: images/io.png
-[remote debugging]: /web/tools/chrome-devtools/debug/remote-debugging/remote-debugging
+## Quota usage {:#opaque-responses}
 
-##  Service Worker{:#service-workers}
+Some responses within the Cache Storage pane may be flagged as being "[opaque](/web/fundamentals/glossary#opaque-response)". This refers to a response retrieved from a different origin, like from a [CDN](/web/fundamentals/glossary#CDN) or remote API, when [CORS](https://fetch.spec.whatwg.org/#http-cors-protocol) is not enabled.
 
-Service Worker は、将来のウェブ プラットフォームの基礎となるテクノロジーです。これは、ウェブページとは別に、ブラウザがバックグラウンドで実行するスクリプトです。これらのスクリプトを使用すると、プッシュ通知、バックグラウンド同期、オフライン操作など、ウェブページやユーザーによる操作を必要としない機能にアクセスできます。
+In order to avoid leakage of cross-domain information, there's significant padding added to the size of an opaque response used for calculating storage quota limits (i.e. whether a `QuotaExceeded` exception is thrown) and reported by the [`navigator.storage` API](/web/updates/2017/08/estimating-available-storage-space).
 
+The details of this padding vary from browser to browser, but for Google Chrome, this means that the *minimum* size that any single cached opaque response contributes to the overall storage usage is [approximately 7 megabytes](https://bugs.chromium.org/p/chromium/issues/detail?id=796060#c17). You should keep this in mind when determining how many opaque responses you want to cache, since you could easily exceeded storage quota limitations much sooner than you'd otherwise expect based on the actual size of the opaque resources.
 
+Related Guides:
 
+* [Stack Overflow: What limitations apply to opaque responses?](https://stackoverflow.com/q/39109789/385997)
+* [Workbox: Understanding Storage Quota](/web/tools/workbox/guides/storage-quota#beware_of_opaque_responses)
 
-関連ガイド:
+## Clear storage {:#clear-storage}
 
-* [Service Worker の概要](/web/fundamentals/primers/service-worker)
-* [プッシュ通知:タイムリー、有用、的確](/web/fundamentals/push-notifications)
+The **Clear Storage** pane is a very useful feature when developing progressive web apps. This pane lets you unregister service workers and clear all caches and storage with a single button click. Check out the section below to learn more.
 
+Related Guides:
 
-[**Application**] パネルの [**Service Workers**] ペインは、DevTools で Service Worker の調査やデバッグを行う際の主要な場所です。
+* [Clear Storage](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
 
+## Other Application panel guides {:#other}
 
-![[Service Workers] ペイン][sw]
+Check out the guides below for more help on the other panes of the **Application** panel.
 
-* 現在開いているページに Service Worker がインストールされている場合、このペインに表示されます。
-たとえば、上のスクリーンショットでは、`https://events.google.com/io2016/` のスコープについて Service Worker がインストールされています。
+Related Guides:
 
-* [**Offline**] チェックボックスをオンにすると、DevTools はオフライン モードになります。これは、[**Network**] パネルや、[コマンド メニュー][cm]の [`Go offline`] オプションから使用できるオフライン モードと同じです。
-* [**Update on reload**] チェックボックスをオンにすると、ページが読み込まれるたびに Service Worker が強制的に更新されます。
-* [**Bypass for network**] チェックボックスをオンにすると、Service Worker がバイパスされ、ブラウザは、リクエストされたリソースのためにネットワークにアクセスするよう強制されます。
-* [**Update**] ボタンを使用すると、指定した Service Worker の 1 回限りの更新が実行されます。
-* [**Push**] ボタンを使用すると、ペイロードを含まないプッシュ通知（[通知][tickle]とも呼ばれる）がエミュレートされます。
-* [**Sync**] ボタンを使用すると、バックグラウンド同期イベントがエミュレートされます。
-* [**Unregister**] ボタンを使用すると、指定した Service Worker の登録が解除されます。1 回のボタンクリックするだけで、Service Worker の登録を解除し、ストレージとキャッシュを消去する方法については、[ストレージの消去](#clear-storage)をご覧ください。
-* [**Source**] 行では、現在実行中の Service Worker がインストールされた日時を確認できます。
-リンクは、Service Worker のソースファイルの名前です。リンクをクリックすると、Service Worker のソースに送信されます。
-* [**Status**] 行では、Service Worker のステータスを確認できます。この行の数字（上のスクリーンショットでは `#1`）は、Service Worker が更新された回数を示します。
-[**Update on reload**] チェックボックスをオンにした場合、ページが読み込まれるたびにこの数が増えます。
-ステータスの横には、[**start**] ボタン（Service Worker が停止している場合）または [**stop**] ボタン（Service Worker が実行中の場合）が表示されます。Service Worker は、ブラウザによっていつでも停止および起動されるように設計されています。
-Service Worker を [**stop**] ボタンを使用して明示的に停止すると、これをシミュレートできます。 Service Worker が再起動されたときにコードがどのように動作するかをテストするには、Service Worker を停止するのが最適な方法です。
-これにより、永続的なグローバル状態についての前提が間違っているために発生するバグが明らかになることがよくあります。
-* [**Clients**] 行では、Service Worker のスコープのオリジンを確認できます。
-[**focus**] ボタンは主に、[**Show all**] チェックボックスをオンにしている場合に便利です。
-このチェックボックスをオンにすると、登録されているすべての Service Worker が表示されます。
-別のタブで実行されている Service Worker の横にある [**focus**] ボタンをクリックすると、そのタブにフォーカスが移動します。
+* [Inspect page resources](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
+* [Inspect and manage local storage and caches](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
 
+## Feedback {: #feedback }
 
-Service Worker でエラーが発生すると、[**Errors**] という新しいラベルが表示されます。
-
-
-![エラーが発生している Service Worker][errors]
-
-[sw]: images/sw.png
-[cm]: /web/tools/chrome-devtools/settings#command-menu
-[tickle]: /web/fundamentals/push-notifications/how-push-works
-[errors]: images/sw-error.png
-
-##  Service Worker のキャッシュ{:#caches}
-
-[**Cache Storage**] ペインには、（Service Worker の）[Cache API][sw-cache] を使用してキャッシュされているリソースの読み取り専用のリストが表示されます。
-
-
-![Service Worker のキャッシュ ペイン][sw-cache-pane]
-
-はじめてキャッシュを開いてリソースを追加したときには、DevTools で変更が検出されないことがあります。
-ページが再読み込みされるとキャッシュが表示されます。
-
-キャッシュを 2 つ以上開いている場合は、[**Cache Storage**] ドロップダウンの下に表示されます。
-
-
-![Service Worker の複数のキャッシュ][multiple-caches]
-
-[sw-cache]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-[sw-cache-pane]: images/sw-cache.png
-[multiple-caches]: images/multiple-caches.png
-
-##  ストレージの消去{:#clear-storage}
-
-[**Clear Storage**] ペインは、Progressive Web App を開発する際に役立つ機能です。
-このペインでは、ボタンを 1 回クリックするだけで、Service Worker の登録を解除し、すべてのキャッシュとストレージを消去することができます。
-詳細については、次のセクションをご覧ください。
-
-
-関連ガイド:
-
-* [ストレージの消去](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
-
-
-##  [Application] パネルに関するその他のガイド{:#other}
-
-[**Application**] パネルのその他のペインの詳細については、次のガイドをご覧ください。
-
-
-関連ガイド:
-
-* [ページリソースの調査](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
-* [ローカル ストレージおよびキャッシュの調査と管理](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

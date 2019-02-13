@@ -1,219 +1,189 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Use o painel Timeline do Chrome DevTools para registrar e analisar todas as atividades no seu aplicativo enquanto ele está em execução. É o melhor lugar para começar a investigar problemas de desempenho percebidos no seu aplicativo.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Chrome DevTools Timeline panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
-{# wf_updated_on: 2016-03-07 #}
-{# wf_published_on: 2015-06-08 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-06-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# Como usar a ferramenta Timeline {: .page-title }
+# How to Use the Timeline Tool {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Use o painel <em>Timeline</em> do Chrome DevTools para registrar e
-analisar todas as atividades no seu aplicativo enquanto ele está em execução. É o melhor 
-lugar para começar a investigar problemas de desempenho percebidos no seu 
-aplicativo.
+Warning: This page is deprecated. See [Performance Analysis Reference](reference) for up-to-date information.
 
-![Ferramenta Timeline](imgs/timeline-panel.png)
+Use the Chrome DevTools *Timeline* panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
+![Timeline tool](imgs/timeline-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- Faça uma gravação na Timeline para analisar cada evento que ocorreu depois de um carregamento da página ou de uma interação do usuário.
-- Visualize FPS, CPU e solicitações de rede na seção Overview.
-- Clique em um evento dentro do Flame Chart para ver detalhes.
-- Aumente o zoom em uma seção de uma gravação para facilitar a análise.
 
+* Make a Timeline recording to analyze every event that occurred after a page load or a user interaction.
+* View FPS, CPU, and network requests in the Overview pane.
+* Click on an event within the Flame Chart to view details about it.
+* Zoom in on a section of a recording to make analysis easier.
 
-## Visão geral do painel Timeline {:#timeline-overview}
+## Timeline panel overview {:#timeline-overview}
 
-O painel Timeline é composto por quatro seções:
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#record">Record performance</a></li>
+    <li><a href="reference#fps-chart">The FPS chart</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+  </ul>
+</aside>
 
-1. **Controls**. Comece ou pare uma gravação e 
-   configure que informações serão capturadas durante ela.
-2. **Overview**. Um resumo de alto nível do desempenho da página. Veja mais sobre 
-   isso abaixo.
-3. **Flame Chart**. Uma visualização do rastreamento de pilha do CPU. 
+The Timeline panel consists of four panes:
 
-   Você pode ver linhas verticais com um, dois ou três pontos no **Flame Chart**. A 
-   linha azul representa o evento `DOMContentLoaded`. A linha verde representa 
-   o tempo da primeira coloração. A linha vermelha representa o evento `load`.
+1. **Controls**. Start a recording, stop a recording, and configure what information is captured during the recording.
+2. **Overview**. A high-level summary of page performance. More on this below.
+3. **Flame Chart**. A visualization of the CPU stack trace.
+    
+    You may see one to three dotted, vertical lines on your **Flame Chart**. The blue line represents the `DOMContentLoaded` event. The green line represents time to first paint. The red line represents the `load` event.
 
-4. **Details**. Quando um evento é selecionado, esta seção mostra mais informações 
-   sobre esse evento. Quando nenhum evento é selecionado, esta seção mostra informações 
-   sobre o período selecionado. 
+4. **Details**. When an event is selected, this pane shows more information about that event. When no event is selected, this pane shows information about the selected time frame.
 
-![painel timeline comentado](imgs/timeline-annotated.png)
+![annotated timeline panel](imgs/timeline-annotated.png)
 
-### Seção Overview
+### Overview pane
 
-A seção **Overview** é composta de três diagramas:
+The **Overview** pane consists of three graphs:
 
-1. **FPS**. Quadros por segundo. Quanto maior for a barra verde, maior será o 
-   FPS. Os blocos vermelhos acima do diagrama de FPS indica quadros longos, que são 
-   prováveis candidatos a [enrolação][jank].
-2. **CPU**. Recursos de CPU. Este [gráfico de área][ac] indica que tipos de evento 
-   consumiram recursos da CPU.
-3. **NET**. Cada barra colorida representa um recurso. Quanto maior for a barra, mais
-   tempo levará para recuperar o recurso. A parte mais clara de cada barra 
-   representa o tempo de espera (o tempo entre quando o recurso foi solicitado
-   e o tempo em que o primeiro byte foi baixado). A parte mais escura
-   representa o tempo de transferência (o intervalo entre os tempos de quando o primeiro e o último bytes
-   foram baixados).
+1. **FPS**. Frames Per Second. The higher the green bar, the higher the FPS. The red blocks above the FPS graph indicate long frames, which are likely candidates for [jank](/web/fundamentals/performance/rendering/).
+2. **CPU**. CPU resources. This [area chart](https://en.wikipedia.org/wiki/Area_chart) indicates what type of events consumed CPU resources. 
+3. **NET**. Each colored bar represents a resource. The longer the bar, the longer it took to retrieve the resource. The lighter portion of each bar represents waiting time (the time between when the resource was requested up until the time that the first byte was downloaded). The darker portion represents transfer time (the time between when the first and last bytes were downloaded).
+    
+    Bars are color coded as follows: <!-- source: https://goo.gl/eANVFf -->
 
-   As barras são codificadas por cor da seguinte forma:
-   <!-- source: https://goo.gl/eANVFf -->
-   
-   * Os arquivos HTML são **<span style="color:hsl(214, 67%, 66%)">azuis</span>**.
-   * Os scripts são **<span style="color:hsl(43, 83%, 64%)">amarelos</span>**.
-   * As folhas de estilo são **<span style="color:hsl(256, 67%, 70%)">roxas</span>**.
-   * Os arquivos de mídia são **<span style="color:hsl(109, 33%, 55%)">verdes</span>**.
-   * Os recursos diversos são 
-     **<span style="color:hsl(0, 0%, 70%)">cinza</span>**.
+* HTML files are **<span style="color:hsl(214, 67%, 66%)">blue</span>**.
+* Scripts are **<span style="color:hsl(43, 83%, 64%)">yellow</span>**.
+* Stylesheets are **<span style="color:hsl(256, 67%, 70%)">purple</span>**.
+* Media files are **<span style="color:hsl(109, 33%, 55%)">green</span>**.
+* Miscellaneous resources are **<span style="color:hsl(0, 0%, 70%)">grey</span>**.
 
-![seção overview, comentada](imgs/overview-annotated.jpg)
+![overview pane, annotated](imgs/overview-annotated.jpg)
 
-[ac]: https://en.wikipedia.org/wiki/Area_chart 
-[jank]: /web/fundamentals/performance/rendering/
+## Make a recording
 
-## Fazer uma gravação
+Warning: This page is deprecated. See [Record performance](reference#record) for up-to-date information.
 
-Para fazer uma gravação de um *carregamento de página*, abra o painel **Timeline**, abra a 
-página que deseja registrar e recarregue-a. O painel **Timeline** 
-grava automaticamente o recarregamento da página.
+To make a recording of a *page load*, open the **Timeline** panel, open the page that you want to record, and then reload the page. The **Timeline** panel automatically records the page reload.
 
-Para fazer uma gravação de uma *interação da página*, abra o painel **Timeline** e
-comece a gravar pressionando o botão **Record** 
-(![botão record](imgs/record-off.png){:.inline}) ou digitando o atalho 
-de teclado <kbd>Cmd</kbd>+<kbd>E</kbd> (Mac) ou <kbd>Ctrl</kbd>+<kbd>E</kbd> 
-(Windows/Linux). O botão **Record** fica vermelho durante uma gravação. Realize 
-as interações na página e pressione o botão **Record** ou digite o 
-atalho de teclado novamente para parar a gravação.
+To make a recording of a *page interaction*, open the **Timeline** panel, then start the recording by pressing the **Record** button (![record button](imgs/record-off.png){:.inline}) or by typing the keyboard shortcut <kbd>Cmd</kbd>+<kbd>E</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>E</kbd> (Windows / Linux). The **Record** button turns red during a recording. Perform your page interactions, and then press the **Record** button or type the keyboard shortcut again to stop the recording.
 
-Quando a gravação acabar, o DevTools supõe qual parte da gravação
-é mais relevante para você e aproxima o zoom nela automaticamente.
+When the recording is finished, DevTools guesses what portion of the recording is most relevant to you, and automatically zooms to that portion.
 
-### Dicas de gravação
+### Recording tips
 
-* **Mantenha as gravações com o menor tamanho possível.** Gravações mais curtas geralmente facilitam 
-  a análise.
-* **Evite ações desnecessárias**. Evite ações (cliques de mouse, carregamentos de rede 
-  etc.) que sejam irrelevantes à atividade que você deseja gravar e analisar.
-  Por exemplo, se quiser registrar eventos que ocorrem depois de clicar em um botão de 
-  Login, não role a página, carregue imagens etc.
-* **Ativar o cache do navegador**. Ao gravar operações de rede, é uma 
-  boa ideia desativar o cache do navegador no painel Settings do DevTools ou
-  na gaveta [**Network conditions**][nc].
-* **Desativar extensões**. As extensões do Chrome podem adicionar ruído não relacionado às 
-  gravações do seu aplicativo na Timeline. Abra uma janela do Chrome no 
-  [modo de navegação anônima][incognito] ou crie um novo 
-  [perfil de usuário do Chrome][new chrome profile] para garantir que o ambiente
-  não tenha extensões.
+* **Keep recordings as short as possible**. Shorter recordings generally make analysis easier.
+* **Avoid unnecessary actions**. Avoid actions (mouse clicks, network loads, etc.) that are extraneous to the activity you want to record and analyze. For example, if you want to record events that occur after you click a Login button, don’t also scroll the page, load an image, and so on.
+* **Disable the browser cache**. When recording network operations, it’s a good idea to disable the browser’s cache from the DevTools Settings panel or the [**Network conditions**](/web/tools/chrome-devtools/network-performance/reference#network-conditions) drawer.
+* **Disable extensions**. Chrome extensions can add unrelated noise to Timeline recordings of your application. Open a Chrome window in [incognito mode](https://support.google.com/chrome/answer/95464), or create a new [Chrome user profile](https://support.google.com/chrome/answer/142059) to ensure that your environment has no extensions.
 
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-[modo de navegação anônima]: https://support.google.com/chrome/answer/95464
-[novo perfil do chrome]: https://support.google.com/chrome/answer/142059
+## View recording details
 
-## Visualizar detalhes da gravação
+Warning: This page is deprecated. See [View main thread ](reference#main) for up-to-date information.
 
-Ao selecionar um evento no **Flame Chart**, a seção **Details** exibe 
-informações adicionais sobre o evento.
+When you select an event in the **Flame Chart**, the **Details** pane displays additional information about the event.
 
-![seção details](imgs/details-pane.png)
+![details pane](imgs/details-pane.png)
 
-Algumas guias, como a **Summary**, estão presentes para todos os tipos de evento. Outras abas só
-estão disponíveis para determinados tipos de evento. Consulte a [Referência de eventos 
-da Timeline][event reference] para obter detalhes sobre cada tipo de gravação.
+Some tabs, like **Summary**, are present for all event types. Other tabs are only available to certain event types. See the [Timeline event reference](/web/tools/chrome-devtools/profile/evaluate-performance/performance-reference) for details on each record type.
 
-[event reference]: /web/tools/chrome-devtools/profile/evaluate-performance/performance-reference
+## Capture screenshots during recording {:#filmstrip}
 
-## Capturar imagens da tela durante a gravação {:#filmstrip}
+Warning: This page is deprecated. See [Capture screenshots while recording](reference#screenshots) for up-to-date information.
 
-O painel **Timeline** pode capturar imagens da tela durante o carregamento de uma página. Este recurso
-é conhecido como **Filmstrip**.
+The **Timeline** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
-Marque a caixa de seleção **Screenshots** na seção **Controls** antes de fazer
-uma gravação para capturar imagens da tela da gravação. As capturas de tela são
-exibidas abaixo da seção **Overview**.
+Enable the **Screenshots** checkbox in the **Controls** pane before you make a recording to capture screenshots of the recording. The screenshots are displayed below the **Overview** pane.
 
-![gravação da linha do tempo com filmstrip](imgs/timeline-filmstrip.png)
+![timeline recording with filmstrip](imgs/timeline-filmstrip.png)
 
-Passe o cursor sobre **Screenshots** ou a seção **Overview** para visualizar uma 
-imagem aproximada desse ponto na gravação. Mova o cursor para a esquerda e para a
-direita para simular uma animação da gravação.
+Hover your mouse over the **Screenshots** or **Overview** pane to view a zoomed screenshot of that point in the recording. Move your mouse left and right to simulate an animation of the recording.
 
 <video src="animations/hover.mp4" autoplay muted loop controls></video>
 
-## Perfil JavaScript {:#profile-js}
+## Profile JavaScript {:#profile-js}
 
-Marque a caixa de seleção **JS Profile** antes de realizar uma gravação para capturar 
-pilhas JavaScript na gravação da linha do tempo. Quando o criador de perfis JS estiver 
-ativo, o Flame Chart exibirá todas as funções JavaScript que forem chamadas. 
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#disable-js-samples">Disable JavaScript
+      samples</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+    <li><a href="reference#activities">View activities</a></li>
+  </ul>
+</aside>
 
-![flame chart com perfil JS ativo](imgs/js-profile.png)
+Enable the **JS Profile** checkbox before you take a recording to capture JavaScript stacks in your timeline recording. When the JS profiler is enabled, your flame chart shows every JavaScript function that was called.
 
-## Coloração de perfil {:#profile-painting}
+![flame chart with JS profile enabled](imgs/js-profile.png)
 
-Ative a caixa de seleção **Paint** antes de realizar uma gravação para receber mais informações
-sobre os eventos de **Paint**. Quando a criação de perfil de cor estiver ativa e você clicar
-em um evento de **Paint**, uma nova guia **Paint Profiler** será exibida na seção
-**Details** para exibir informações muito mais específicas sobre o evento.
+## Profile painting {:#profile-painting}
 
-![criador de perfis de cor](imgs/paint-profiler.png)
+Warning: This page is deprecated. See [View paint profiler](reference#paint-profiler) for up-to-date information.
 
-### Configurações de renderização {:#rendering-settings}
+Enable the **Paint** checkbox before you take a recording to gain more insight into **Paint** events. When paint profiling is enabled and you click on a **Paint** event, a new **Paint Profiler** tab is displayed in the **Details** pane that shows much more granular information about the event.
 
-Abra o menu principal do DevTools e selecione **More tools** > **Rendering settings**
-para acessar as configurações de renderização que podem ser úteis para depurar problemas de cor.
-As configurações de renderização abrem como uma guia próxima à gaveta **Console** (pressione
-<kbd>esc</kbd> para exibir a gaveta, caso ela esteja oculta).
+![paint profiler](imgs/paint-profiler.png)
 
-![configurações de renderização](imgs/rendering-settings.png)
+### Rendering settings {:#rendering-settings}
 
-## Buscar gravações
+Warning: This page is deprecated. See [Analyze rendering performance with the Rendering tab](reference#rendering) for up-to-date information.
 
-Ao analisar eventos, você pode querer se concentrar em um tipo de evento. Por
-exemplo, talvez você precise visualizar os detalhes de cada evento `Parse HTML`. 
+Open the main DevTools menu and select **More tools** > **Rendering settings** to access rendering settings that may be helpful when debugging paint issues. The rendering settings opens up as a tab next to the **Console** drawer (press
+<kbd>esc</kbd> to show the drawer, if it's hiding).
 
-Pressione <kbd>Cmd</kbd>+<kbd>F</kbd> (Mac) ou <kbd>Ctrl</kbd>+<kbd>F</kbd> 
-(Windows/Linux) com a **Timeline** em foco para abrir uma barra de ferramentas de busca.
-Digite o nome do tipo de evento que quer inspecionar, como `Event`.
+![rendering settings](imgs/rendering-settings.png)
 
-A barra de ferramentas só se aplica ao período atualmente selecionado. Todos os eventos 
-externos ao período de tempo selecionado não são incluídos nos resultados. 
+## Search records
 
-As setas para cima e para baixo movem você cronologicamente pelos resultados. Assim, o
-primeiro resultado representa o evento mais antigo no período selecionado e
-o último resultado representa o último evento. Sempre que você pressionar a seta
-para cima ou a para baixo, um novo evento será selecionado, e você poderá ver seus detalhes no
-painel **Details**. Pressionar as setas para cima e para baixo é equivalente a clicar 
-em um evento no **Flame Chart**.
+Warning: This page is deprecated. See [Search activities](reference#search) for up-to-date information.
 
-![barra de ferramentas de busca](imgs/find-toolbar.png)
+While looking at events you may want to focus on one type of events. For example, perhaps you need to view the details of every `Parse HTML` event.
 
-## Aumentar o zoom em uma seção da Timeline {:#zoom}
+Press <kbd>Cmd</kbd>+<kbd>F</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>F</kbd> (Windows / Linux) while the **Timeline** is in focus to open a Find toolbar. Type in the name of the event type that you wish to inspect, such as `Event`.
 
-Você pode aumentar o zoom em uma seção de uma gravação para facilitar a análise. Você usa
-o painel **Overview** para aproximar a vista em uma seção da gravação. Depois de aumentar o zoom,
-o **Flame Chart** tem o zoom ajustado automaticamente para corresponder à mesma seção.
+The toolbar only applies to the currently selected timeframe. Any events outside of the selected timeframe are not included in the results.
 
-![aumentar zoom em uma seção de uma gravação da linha do tempo](imgs/zoom.png)
+The up and down arrows move you chronologically through the results. So, the first result represents the earliest event in the selected timeframe, and the last result represents the last event. Every time that you press the up or down arrow, a new event is selected, so you can view its details in the **Details** pane. Pressing the up and down arrows is equivalent to clicking on an event in the **Flame Chart**.
 
-Para aumentar o zoom em uma seção da Timeline:
+![find toolbar](imgs/find-toolbar.png)
 
-* No painel **Overview**, arraste uma seleção da Timeline com o cursor.
-* Ajuste os controles deslizantes cinza na área da régua.
+## Zoom in on a Timeline section {:#zoom}
 
-Depois de selecionar uma seção, você pode usar as teclas <kbd>W</kbd>,<kbd>A</kbd>,
-<kbd>S</kbd> e <kbd>D</kbd> para ajustar a seleção. <kbd>W</kbd> 
-e <kbd>S</kbd> aproximam e afastam a vista, respectivamente. <kbd>A</kbd> e 
-<kbd>D</kbd> movem para a esquerda e para a direita, respectivamente.
+Warning: This page is deprecated. See [Select a portion of a recording](reference#select) for up-to-date information.
 
-## Salvar e carregar gravações
+You can zoom in on a section of a recording to make analysis easier. You use the **Overview** pane to zoom in on a section of the recording. After zooming, the **Flame Chart** is automatically zoomed to match the same section.
 
-Você pode salvar e abrir gravações clicando com o botão direito dentro das seções 
-**Overview** ou **Flame Chart** e selecionando a respectiva opção.
+![zoom in on a section of a timeline recording](imgs/zoom.png)
 
-![salvar e abrir gravações](imgs/save-open.png)
+To zoom in on a Timeline section:
 
+* In the **Overview** pane, drag out a Timeline selection with your mouse.
+* Adjust the gray sliders in the ruler area.
 
-{# wf_devsite_translation #}
+Once you have a section selected, you can use the <kbd>W</kbd>,<kbd>A</kbd>,
+<kbd>S</kbd>, and <kbd>D</kbd> keys to adjust your selection. <kbd>W</kbd> and <kbd>S</kbd> zoom in and zoom out, respectively. <kbd>A</kbd> and 
+<kbd>D</kbd> move left and right, respectively.
+
+## Save and load recordings
+
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#save">Save a recording</a></li>
+    <li><a href="reference#load">Load a recording pane</a></li>
+  </ul>
+</aside>
+
+You can save and open recordings by right-clicking inside the **Overview** or **Flame Chart** panes and selecting the relevant option.
+
+![save and open recordings](imgs/save-open.png)
+
+You can also share saved recordings using [timeline-viewer](https://chromedevtools.github.io/timeline-viewer/).
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

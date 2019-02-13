@@ -1,102 +1,86 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:从 Application 面板检查和删除 Cookie。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and delete cookies from the Application panel.
 
-{# wf_updated_on:2016-07-28 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 检查和删除 Cookie {: .page-title }
+# Inspect and Delete Cookies {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-从 <strong>Application</strong> 面板检查和删除 Cookie。
+Inspect and delete cookies from the
+<strong>Application</strong> panel.
 
-
-![Cookies 窗格](imgs/cookies.png)
-
+![cookies pane](imgs/cookies.png)
 
 ### TL;DR {: .hide-from-toc }
-- 查看与 Cookie 有关的详细信息，例如名称、值、网域和大小，等等。
-- 删除单个 Cookie、选定网域的 Cookie 或所有网域的全部 Cookie。
 
+* View detailed information about a cookie, such as its name, value, domain, size, and more.
+* Delete a single cookie, cookies from a selected domain, or all cookies from all domains.
 
-## 概览 {:#cookies}
+## Overview {:#cookies}
 
-使用 **Cookies** 窗格可以查看和删除 Cookie。您无法修改 Cookie 值。
+Use the **Cookies** pane to view and delete cookies. You cannot modify cookie values.
 
+![cookies pane](/web/tools/chrome-devtools/manage-data/imgs/cookies.png)
 
-![Cookies 窗格][cookies]
+Cookies are listed by domain. This includes the main document as well as all nested frames. Selecting one of these “frame groups” displays all cookies, for all resources, for all frames in that group. There are two consequences of this grouping to be aware of:
 
-Cookie 按网域列示。其中包括主文档和所有嵌套的框架。
-选择一个“框架组”将显示该组中所有资源、所有框架的所有 Cookie。
-请注意，这种分组方式有两个结果：
+* Cookies from different domains may appear in the same frame group.
+* The same cookie may appear in several frame groups.
 
+## Fields {:#fields}
 
-* 来自不同网域的 Cookie 可能显示在相同的框架组中。
-* 相同 Cookie 可能出现在多个框架组中。
-
-[cookies]: /web/tools/chrome-devtools/manage-data/imgs/cookies.png
-
-## 字段 {:#fields}
-
-为每个 Cookie 提供了以下字段：
+The following fields are provided for each cookie:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Cookie 字段和说明</th>
+      <th colspan="2">Cookie Field &amp; Description</th>
     </tr>
   </thead>
   <tbody>
         <tr>
       <td data-th="Cookie Field">Name</td>
-      <td data-th="Description">Cookie 的名称。</td>
+      <td data-th="Description">The cookie's name.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Value</td>
-      <td data-th="Description">Cookie 的值。</td>
+      <td data-th="Description">The cookie's value.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Domain</td>
-      <td data-th="Description">Cookie 的网域。</td>
+      <td data-th="Description">The cookie's domain.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Path</td>
-      <td data-th="Description">Cookie 的路径。</td>
+      <td data-th="Description">The cookie's path.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Expires / Maximum Age</td>
-      <td data-th="Description">Cookie 的过期时间或最长寿命。对于会话 Cookie，此字段始终为“Session”。</td>
+      <td data-th="Description">The cookie's expiration time, or maximum age. For session cookies, this field is always "Session".</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Size</td>
-      <td data-th="Description">Cookie 的大小（以字节为单位）。</td>
+      <td data-th="Description">The cookie's size in bytes.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">HTTP</td>
-      <td data-th="Description">如果存在，指示应仅在 HTTP 上使用 Cookie，并且不允许 JavaScript 修改。</td>
+      <td data-th="Description">If present, indicates that cookies should be used only over HTTP, and JavaScript modification is not allowed.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Secure</td>
-      <td data-th="Description">如果存在，指示此 Cookie 的通信必须通过加密传输进行。</td>
+      <td data-th="Description">If present, indicates that communication for this cookie must be over an encrypted transmission.</td>
     </tr>
   </tbody>
 </table>
 
-## 删除 Cookie {:#delete}
+## Delete cookies {:#delete}
 
-可以通过多种方式删除 Cookie：
+There are a few ways you can delete cookies:
 
-* 选择 Cookie 并按 **Delete** 按钮
-(![Delete 按钮][delete]{:.inline}) 可以删除相应 Cookie。
-* 按 **Clear** 按钮 (![Clear 按钮][cos]{:.inline}) 可以删除指定框架组的所有 Cookie。
+* Select a cookie and press the **delete** button (![delete button](imgs/delete.png){:.inline}) to delete just that cookie.
+* Press the **clear** button (![clear button](imgs/clear-object-store.png){:.inline}) to delete all cookies for the specified frame group.
+* Right-click on the **Domain** value of a cookie and select **Clear all from "..."** (where **"..."** is the name of the domain) to delete all cookies from that domain.
 
-* 右键点击 Cookie 的**Domain**值，然后选择 **Clear all from "..."**（其中 **"..."** 是网域的名称）可以删除来自该网域的所有 Cookie。
+## Feedback {: #feedback }
 
-
-
-[delete]: imgs/delete.png
-[cos]: imgs/clear-object-store.png
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

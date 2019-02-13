@@ -1,32 +1,31 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“首次有效繪製”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "First Meaningful Paint" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-10-05 #} {# wf_blink_components: N/A #}
 
-# 首次有效繪製 {: .page-title }
+# First Meaningful Paint {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-頁面加載對用戶如何看待對您的頁面性能起着關鍵作用。
-如需瞭解詳細信息，請參閱[使用 RAIL 方法測量性能](/web/fundamentals/performance/rail)。
+Page load is a key aspect of how a user perceives the performance of your page. See [Measure Performance with the RAIL Method](/web/fundamentals/performance/rail) for more information.
 
-此審查可確定用戶感覺到頁面主要內容處於可見狀態的時間。
+This audit identifies the time at which the user feels that the primary content of the page is visible.
 
+## Recommendations {: #recommendations }
 
-## 如何通過此審查 {: #how }
+The lower your First Meaningful Paint score, the faster that the page appears to display its primary content.
 
-“首次有效繪製”分數越低，頁面顯示其主要內容的速度就越快。
+[Optimizing the Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) is particularly helpful towards achieving a faster First Meaningful Paint.
 
+### Tracking FMP in the real world {: #RUM }
 
-[優化關鍵渲染路徑](/web/fundamentals/performance/critical-rendering-path/)對於實現更快的首次有效繪製非常有幫助。
+To measure when FMP actually occurs on your users' devices, see [Tracking FMP using hero elements](/web/fundamentals/performance/user-centric-performance-metrics#tracking_fmp_using_hero_elements).
 
+See [Assessing Loading Performance in Real Life with Navigation and Resource Timing](/web/fundamentals/performance/navigation-and-resource-timing/) for more on collecting real-user metrics with the User Timing API. The [User Timing Marks and Measures](/web/tools/lighthouse/audits/user-timing) Lighthouse audit enables you to see User Timing data in your report.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-首次有效繪製至關重要，在該繪製後，將發生最重大的首屏佈局變更，並加載網絡字體。
-請參閱以下規範以瞭解更多信息：[首次有效繪製：一個基於佈局的方法](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view)。
+First Meaningful Paint is essentially the paint after which the biggest above-the-fold layout change has happened, and web fonts have loaded. See the documentation to learn more: [First Meaningful Paint: A Layout-Based Approach](https://docs.google.com/document/d/1BR94tJdZLsin5poeet0XoTW60M0SjvOJQttKT-JK8HI/view).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

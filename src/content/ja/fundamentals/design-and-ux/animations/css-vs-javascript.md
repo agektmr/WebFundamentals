@@ -1,28 +1,24 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: アニメーション化には CSS または JavaScript を使用できます。条件に応じて、どちらを使用すべきかを見ていきましょう。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You can animate with CSS or JavaScript. Which should you use, and why?
 
-{# wf_updated_on: 2016-08-25 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# CSS アニメーションと JavaScript のアニメーションの比較 {: .page-title }
+# CSS Versus JavaScript Animations {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-ウェブ上でアニメーションを作成するには、主に 2 通りの方法（CSS の使用および JavaScript の使用）があります。どちらの方法を選択するのかは、プロジェクトの他の依存関係、および実現しようとする効果の種類に大きく依存します。
+There are two primary ways to create animations on the web: with CSS and with JavaScript. Which one you choose really depends on the other dependencies of your project, and what kinds of effects you're trying to achieve.
 
 ### TL;DR {: .hide-from-toc }
-* UI 要素の状態の切り替えなど単純な一度切りの遷移には、CSS アニメーションを使用します。
-* バウンス、停止、一時停止、巻き戻し、スローダウンなど、高度な効果を実現したい場合は、JavaScript アニメーションを使用します。
-* JavaScript でアニメーション化する場合は、Web Animations API などの使いやすい最新のフレームワークを使用します。
 
+* Use CSS animations for simpler "one-shot" transitions, like toggling UI element states.
+* Use JavaScript animations when you want to have advanced effects like bouncing, stop, pause, rewind, or slow down.
+* If you choose to animate with JavaScript, use the Web Animations API or a modern framework that you're comfortable with.
 
-基本的なアニメーションはほとんど CSS でも JavaScript でも作成できますが、作業負荷と所要時間に差が出ます（[CSS と JavaScript のパフォーマンス比較](animations-and-performance#css-vs-javascript-performance) を参照してください）。それぞれに長所と短所があるため、以下のガイドラインを参考にしてください。
+Most basic animations can be created with either CSS or JavaScript, but the amount of effort and time differs (see also [CSS vs JavaScript Performance](animations-and-performance#css-vs-javascript-performance)). Each has its pros and cons, but these are good guidelines:
 
-* **UI 要素の状態がシンプルで自己完結的な場合は、CSS を使用します。**サイドからナビゲーション メニューをスライドさせたり、ツールチップを表示したりする場合は、CSS 遷移とアニメーションが理想的です。状態を制御するために最終的に JavaScript を使用することになっても、アニメーション自身は CSS 内にあります。
-* **アニメーションを細かく制御する必要がある場合は、JavaScript を使用します。**Web Animations API は、現在 Chrome と Opera で利用できる標準ベースのアプローチです。実際のオブジェクトを使用できるため、複雑なオブジェクト指向のアプリケーションにとっては理想的です。停止、一時停止、スローダウン、逆再生が必要な場合は、JavaScript も便利です。
-* **シーン全体を手動で調整する場合は、`requestAnimationFrame` を直接使用します。**これは JavaScript の高度なアプローチですが、ゲームを作成する場合や HTML キャンバスに描画する場合に役立ちます。
+* **Use CSS when you have smaller, self-contained states for UI elements.** CSS transitions and animations are ideal for bringing a navigation menu in from the side, or showing a tooltip. You may end up using JavaScript to control the states, but the animations themselves will be in your CSS.
+* **Use JavaScript when you need significant control over your animations.** The Web Animations API is the standards-based approach, available today in Chrome and Opera. This provides real objects, ideal for complex object-oriented applications. JavaScript is also useful when you need to stop, pause, slow down, or reverse.
+* **Use `requestAnimationFrame` directly when you want to orchestrate an entire scene by hand.** This is an advanced JavaScript approach, but can be useful if you're building a game or drawing to an HTML canvas.
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="WaNoqBAp8NI"
@@ -30,16 +26,15 @@ description: アニメーション化には CSS または JavaScript を使用�
   </iframe>
 </div>
 
-一方、jQuery の [`.animate()`](https://api.jquery.com/animate/){: .external } メソッドや [GreenSock の TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) など、アニメーション機能を含む JavaScript フレームワークを既に使用している場合は、通常、それを継続して使用するほうが便利です。
+Alternatively, if you're already using a JavaScript framework that includes animation functionality, such as via jQuery's [`.animate()`](https://api.jquery.com/animate/){: .external } method or [GreenSock's TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified), then you may find it more convenient overall to stick with that for your animations.
 
 <div class="clearfix"></div>
 
-##  CSS によるアニメーション
+## Animate with CSS
 
-画面上で何かを動かすには、 CSS によるアニメーションを使用するのが最も単純な方法です。動作を自分で指定するこのアプローチは、*宣言型*といいます。
+Animating with CSS is the simplest way to get something moving on screen. This approach is described as *declarative*, because you specify what you'd like to happen.
 
-X 軸と Y 軸の両方に対して、要素を 100 ピクセルずつ動かす CSS を以下に示します。ここでは、移動時間を 500 ミリ秒に設定した CSS 遷移を使用しています。`move` クラスが追加されると、`transform` 値が変更されて遷移が始まります。
-
+Below is some CSS that moves an element 100px in both the X and Y axes. It's done by using a CSS transition that's set to take 500ms. When the `move` class is added, the `transform` value is changed and the transition begins.
 
     .box {
       -webkit-transform: translate(0, 0);
@@ -54,20 +49,19 @@ X 軸と Y 軸の両方に対して、要素を 100 ピクセルずつ動かす 
       transform: translate(100px, 100px);
     }
     
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-simple.html){: target="_blank" .external }
 
-遷移の継続時間のほかに、「イージング」のオプションもあります。基本的に、アニメーションの印象はイージングによって決まります。イージングについての詳細は、[イージングの基本](the-basics-of-easing)のガイドを参照してください。
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-simple.html){: target="_blank" .external }
 
-上記のスニペットと同様に、アニメーションを管理するために別の CSS クラスを作成する場合は、JavaScript を使用して各アニメーションのオンとオフを切り替えることができます。
+Besides the transition's duration, there are options for the *easing*, which is essentially how the animation feels. For more information about easing, see [The Basics of Easing](the-basics-of-easing) guide.
 
+If, as in the above snippet, you create separate CSS classes to manage your animations, you can then use JavaScript to toggle each animation on and off:
 
     box.classList.add('move');
     
 
-こうすると、アプリケーションが均衡化されます。ターゲット要素に対して適切なクラスを設定すれば、アニメーションの操作はブラウザに任せて、JavaScript による状態の管理に専念できます。この手法を採用すると、要素の `transitionend` イベントを監視できます。ただし、旧バージョンの Internet Explorer をサポートしなくてもよい場合に限ります（これらのイベントはバージョン 10 以降でサポートされます）。他のブラウザはすべて、当面は、このイベントをサポートしています。
+Doing this provides a nice balance to your apps. You can focus on managing state with JavaScript, and simply set the appropriate classes on the target elements, leaving the browser to handle the animations. If you go down this route, you can listen to `transitionend` events on the element, but only if you’re able to forego support for older versions of Internet Explorer; version 10 was the first version to support these events. All other browsers have supported the event for some time.
 
-遷移の終了を監視するのに必要な JavaScript は次のとおりです。
-
+The JavaScript required to listen for the end of a transition looks like this:
 
     var box = document.querySelector('.box');
     box.addEventListener('transitionend', onTransitionEnd, false);
@@ -77,16 +71,15 @@ X 軸と Y 軸の両方に対して、要素を 100 ピクセルずつ動かす 
     }
     
 
-CSS 遷移のほかに、CSS アニメーションも使用できます。これにより、個々のアニメーション キーフレーム、継続時間、反復処理をより細かく制御できます。
+In addition to using CSS transitions, you can also use CSS animations, which allow you to have much more control over individual animation keyframes, durations, and iterations.
 
-注: アニメーションになじみのない方のために説明すると、キーフレームは手書きのアニメーションに由来する古い用語です。アニメーション作成者は、あるアクションに対してキーフレームと呼ばれる特定のフレームを作成します。キーフレームは特定のモーションの主要な部分をキャプチャするものです。その後、アニメーション作成者は、キーフレームの間にすべての個別フレームを描き始めます。本日、CSS アニメーションで同様のプロセスを実行します。このプロセスでは、特定の時点で CSS プロパティが持つ必要のある値をブラウザに指示すると、ブラウザがギャップを埋めます。
+Note: If you’re new to animations, keyframes are an old term from hand-drawn animations. Animators would create specific frames for a piece of action, called key frames, which would capture things like the most extreme part of some motion, and then they would set about drawing all the individual frames in between the keyframes. We have a similar process today with CSS animations, where we instruct the browser what values CSS properties need to have at given points, and it fills in the gaps.
 
-たとえば遷移と同じ方法を用いて、クリックなどのユーザー操作がなくても無限に繰り返すアニメーションをボックスに適用することが可能です。また、複数のプロパティを同時に変更することもできます。
-
+You can, for example, animate the box in the same way with transitions, but have it animate without any user interactions like clicking, and with infinite repetitions. You can also change multiple properties at the same time:
 
     /**
      * This is a simplified version without
-     * vendor prefixes.With them included
+     * vendor prefixes. With them included
      * (which you will need), things get far
      * more verbose!
      */
@@ -128,18 +121,17 @@ CSS 遷移のほかに、CSS アニメーションも使用できます。これ
     }
     
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-keyframes.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-keyframes.html){: target="_blank" .external }
 
-CSS アニメーションでは、ターゲット要素とは別にアニメーション自体を定義し、アニメーション名プロパティを使用して必要なアニメーションを選択します。
+With CSS animations you define the animation itself independently of the target element, and use the animation-name property to choose the required animation.
 
-一部の CSS アニメーションには今でもベンダー プレフィックスが付いており、Safari、Safari Mobile、Android では `-webkit-` が使用されています。Chrome、Opera、Internet Explorer、Firefox はすべてプレフィックスなしでリリースされています。プレフィックスを付けたバージョンの CSS を作成する必要がある場合は、さまざまなツールを利用できます。これらのツールを使用すると、ソースファイル内ではプレフィックスなしのバージョンを書くことができます。
+CSS animations are still somewhat vendor prefixed, with `-webkit-` being used in Safari, Safari Mobile, and Android. Chrome, Opera, Internet Explorer, and Firefox all ship without prefixes. Many tools can help you create the prefixed versions of the CSS you need, allowing you to write the unprefixed version in your source files.
 
-##  JavaScript と Web Animations API によるアニメーション
+## Animate with JavaScript and the Web Animations API
 
-JavaScript によるアニメーションの作成は、CSS による遷移やアニメーションの作成よりも複雑ですが、通常、デベロッパーにとっては非常に強力な手法となります。[Web Animations API](https://w3c.github.io/web-animations/) を使用すると、特定の CSS プロパティのアニメーション化や、構成可能な効果オブジェクトの作成が可能になります。
+Creating animations with JavaScript is, by comparison, more complex than writing CSS transitions or animations, but it typically provides developers significantly more power. You can use the [Web Animations API](https://w3c.github.io/web-animations/) to either animate specific CSS properties or build composable effect objects.
 
-JavaScript アニメーションは、コードの一部としてインラインで記述する*命令型*です。他のオブジェクト内にカプセル化することもできます。前述の CSS 遷移を再現するために必要な JavaScript を以下に示します。
-
+JavaScript animations are *imperative*, as you write them inline as part of your code. You can also encapsulate them inside other objects. Below is the JavaScript that you would need to write to re-create the CSS transition described earlier:
 
     var target = document.querySelector('.box');
     var player = target.animate([
@@ -151,13 +143,14 @@ JavaScript アニメーションは、コードの一部としてインライン
     });
     
 
-デフォルトでは、ウェブ アニメーションは要素の体裁のみを変更します。オブジェクトを移動先の位置に保持したい場合は、サンプルのように、アニメーションが完了したときにその基盤となるスタイルを変更する必要があります。
+By default, Web Animations only modify the presentation of an element. If you'd like to have your object remain at the location it has moved to, then you should modify its underlying styles when the animation has finished, as per our sample.
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-wa.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-wa.html){: target="_blank" .external }
 
-Web Animations API は、W3C の新しい標準です。Chrome と Opera ではネイティブでサポートされており、[Firefox 向けの API は積極的に開発中です](https://birtles.github.io/areweanimatedyet/){: .external }。その他の最新ブラウザについては、[Polyfill を利用できます](https://github.com/web-animations/web-animations-js)。
+The Web Animations API is a new standard from the W3C. It is supported natively in Chrome and Opera, and is in [active development for Firefox](https://birtles.github.io/areweanimatedyet/){: .external }. For other modern browsers, [a polyfill is available](https://github.com/web-animations/web-animations-js).
 
-JavaScript アニメーションを使用すると、あらゆるステップで要素のスタイルを細かく制御できるため、アニメーションのスローダウン、一時停止、停止、逆再生、要素の操作などを適切に実行することができます。動作を適切にカプセル化できるため、複雑なオブジェクト指向のアプリケーションを作成する場合に特に便利な方法です。
+With JavaScript animations, you're in total control of an element's styles at every step. This means you can slow down animations, pause them, stop them, reverse them, and manipulate elements as you see fit. This is especially useful if you're building complex, object-oriented applications, because you can properly encapsulate your behavior.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

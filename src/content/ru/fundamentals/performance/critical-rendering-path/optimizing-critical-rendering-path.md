@@ -1,37 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Чтобы добиться скорейшей загрузки страницы, необходимо минимизировать число первоочередных ресурсов, число байтов и продолжительность обработки.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Оптимизация процесса визуализации {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-Чтобы добиться скорейшей загрузки страницы, необходимо минимизировать следующие показатели:
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-* **число первоочередных ресурсов;**
-* **число байтов;**
-* **продолжительность обработки.**
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-Первоочередной ресурс - это файл, который может задержать визуализацию страницы. Чем меньше таких ресурсов содержит страница, тем меньше работы нужно проделать браузеру для вывода контента на экран; во-вторых, снижается конкуренция за мощности компьютера (например, центральный процессор).
+**The general sequence of steps to optimize the critical rendering path is:**
 
-То же самое относится к числу байтов - совокупному размеру первоочередных ресурсов. Чем меньше размер, тем быстрее браузер скачает файлы и выведет их на экран. Чтобы уменьшить число байтов, сократите количество ресурсов, устранив их или поменяв приоритет, а также оптимизируйте скрипты, разметку и стили.
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-Наконец, помните, что продолжительность обработки зависит от связей между первоочередными ресурсами: например, чтобы скачать один ресурс, браузеру сначала нужно обработать другой. Размер файлов также имеет значение - для скачивания больших файлов требуется несколько соединений с сервером.
+## Feedback {: #feedback }
 
-Все эти характеристики связаны друг с другом, но это не означает, что их можно менять одновременно. Например, даже если вам не удастся сократить число ресурсов и продолжительность обработки, вы уменьшите число байтов и выиграете на этом.
-
-**Чтобы оптимизировать процесс визуализации, нужно выполнить следующие действия:**
-
-1. Выяснить количество ресурсов и байтов, определить продолжительность обработки.
-2. Минимизировать количество первоочередных ресурсов: устранить их, отложить их скачивание, использовать асинхронные скрипты и т. д.
-3. Найти оптимальный порядок загрузки оставшихся ресурсов. Чем быстрее браузер получит все ресурсы, тем меньше времени займет визуализация.
-4. Минимизировать число байтов, чтобы сократить время их скачивания и число соединений.
-
-
-
+{% include "web/_shared/helpful.html" %}

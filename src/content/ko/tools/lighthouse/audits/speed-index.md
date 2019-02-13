@@ -1,38 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 'Speed Index' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Speed Index" Lighthouse audit.
 
-{# wf_updated_on: 2018-11-10 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-11-10 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# Speed Index  {: .page-title }
+# Speed Index {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-Speed Index는 페이지 콘텐츠가 얼마나 빠르게
-시각적으로 채워지는지 보여주는 페이지 로드 성능 지표입니다. 점수가 낮을수록 좋습니다.
+Speed Index is a page load performance metric that shows you how quickly the contents of a page are visibly populated. The lower the score, the better.
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-Speed Index 점수를 낮추려면 페이지를 최적화하여
-시각적으로 빠르게 로드해야 합니다. 다음 두 가지에서부터 시작하면 좋습니다.
+To lower your Speed Index score, you need to optimize your page to visually load faster. Two good starting places are:
 
-* [콘텐츠 효율성 최적화](/web/fundamentals/performance/optimizing-content-efficiency/)
-* [주요 렌더링 경로 최적화](/web/fundamentals/performance/critical-rendering-path/)
+* [Optimizing Content Efficiency](/web/fundamentals/performance/optimizing-content-efficiency/).
+* [Optimizing the Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse는
-[Speedline](https://github.com/pmdartus/speedline)이라는
-노드 모듈을 사용하여 Speed Index 점수를 생성합니다.
+Lighthouse uses a node module called [Speedline](https://github.com/pmdartus/speedline) to generate the Speed Index score.
 
-Speed Index를 구성하는 알고리즘과 방법론에 대한 자세한 내용은
-[Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index)를 참조하세요.
+For more information on the algorithms and methodologies behind Speed Index, see [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index).
 
-목표 점수는 로그 정규 분포의 누적 분포 함수로
-계산됩니다. 자세한 내용은 감사의
-[소스](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/speed-index.js)에서
-코멘트를 확인하세요.
+The target score is computed by a cumulative distribution function of a log-normal distribution. Check out the comments in the [source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/speed-index.js) of the audit if you need to know more.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

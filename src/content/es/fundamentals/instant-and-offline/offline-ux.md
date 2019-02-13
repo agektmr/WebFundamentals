@@ -1,408 +1,222 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Guía para diseñar experiencias web para redes lentas y sin conexión.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A guide to designing web experiences for slow networks and offline.
 
-{# wf_updated_on: 2016-11-10 #}
-{# wf_published_on: 2016-11-10 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-10 #} {# wf_blink_components: N/A #}
 
-# Consideraciones sobre la experiencia de usuario sin conexión {: .page-title }
+# Offline UX Considerations {: .page-title }
 
 {% include "web/_shared/contributors/mustafa.html" %}
 
-En este artículo, se analizarán diversas consideraciones de diseño necesarias para crear
-una gran experiencia en redes lentas y sin conexión.
+This article will take a look at multiple design considerations needed to create a great experience on both slow networks and offline.
 
-La calidad de una conexión de red puede verse afectada por varios factores,
-como estos:
+The quality of a network connection can be affected by a number of factors such as:
 
-* Cobertura deficiente de un proveedor. 
-* Condiciones ambientales extremas.
-* Cortes de energía.
-* Usuarios que atraviesan “zonas muertas”, como edificios que bloquean
- las conexiones de red. 
-* Viajar en tren y pasar por un túnel.
-* Un tercero administra la conexión a Internet y le asigna tiempo para
- estar activa o inactiva, como en un aeropuerto u hotel.
-* Prácticas culturales que requieren poco o ningún acceso a Internet en momentos o
- días específicos.
+* Poor coverage of a provider. 
+* Extreme weather conditions.
+* Power outages.
+* Users travelling into “dead zones” such as buildings that block their network connections. 
+* Travelling on a train and going through a tunnel.
+* Internet connection is managed by a third party and time boxed when it will be active or inactive like in an airport or hotel.
+* Cultural practises that require limited or no internet access at specific times or days.
 
-Tu objetivo es proporcionar una buena experiencia que disminuya el impacto de los cambios
-en la conectividad. 
+Your goal is to provide a good experience that lessens the impact of changes in connectivity.
 
-## ¿Qué debes mostrar a los usuarios cuando tienen una conexión de red deficiente?
+## What to show your users when they have a bad network connection?
 
-La primera pregunta que se debe hacer es: ¿cómo se ven el éxito y la falla en
-una conexión de red? Una conexión exitosa ofrece la experiencia en
-línea usual de la app. La falla de la conexión, sin embargo, puede referirse tanto el estado sin conexión
-de la app como el comportamiento de la app cuando la red está retardada.
+The first question that must be asked is: what does success and failure of a network connection look like? A successful connection is your app's normal online experience. The failure of a connection, however, can be both the offline state of your app as well how the app behaves when there is a laggy network.
 
-Cuando pienses en el éxito o la falla de una conexión de red, debes hacerte
-estas importantes preguntas sobre la experiencia de usuario:
+When thinking about the success or failure of a network connection you need to ask yourself these important UX questions:
 
-* ¿Cuánto esperas para determinar el éxito o la falla de una conexión? 
-* ¿Qué puedes hacer mientras se determina el éxito o la falla? 
-* ¿Qué debes hacer ante una falla?
-* ¿Cómo informas al usuario sobre todo lo anterior?
+* How long do you wait to determine the success or failure of a connection? 
+* What can you do while success or failure is being determined? 
+* What should you do in the event of failure?
+* How do you inform the user of the above?
 
-### Informar a los usuarios sobre su estado actual y el cambio de estado
+### Inform users of their current state and change of state
 
-Informa al usuario sobre las acciones que todavía pueden realizar cuando se produce una
-falla en la red y el estado actual de la app. Por ejemplo, una notificación
-podría decir esto:
+Inform the user of both the actions they can still take when they have a network failure and the current state of the application. For example, a notification could say:
 
-> “Parece que tienes una conexión de red deficiente. [¡No te preocupes!]. Los mensajes se
-enviarán cuando la red se restaure”.
+> “You seem to have a bad network connection. [Not to worry!] Messages will be “sent when the network is restored.”<figure class="attempt-left"> 
 
-<figure class="attempt-left">
-  <img src="images/emojoy-toast-message.png" alt="Emojoy, la app de mensajería con emojis, informa al usuario cuando se produce un cambio en el estado.">
-  <figcaption>
-    Informa claramente al usuario cuando se produce un cambio en el estado lo antes posible.
-  </figcaption>
-</figure>
-<figure class="attempt-right">
-  <img src="images/io-toast-message.png" alt="La app I/O 2016 informa al usuario cuando se produce un cambio en el estado.">
-  <figcaption>
-    La app Google I/O usó una notificación del sistema de diseño material para informar al usuario que estaba sin conexión.
-  </figcaption>
-</figure>
+![Emojoy, the emoji messaging app informing the user when a change in state occurs.](images/emojoy-toast-message.png) <figcaption> Clearly inform the user when a change in state occurs as soon as possible. </figcaption> </figure> <figure class="attempt-right"> ![The I/O 2016 app informing the user when a change in state occurs.](images/io-toast-message.png) <figcaption> The Google I/O app used a material design "toast" to let the user know when it was offline. </figcaption> </figure> 
 
-<div class="clearfix"></div>
+<div class="clearfix">
+</div>
 
-### La conexión de red mejora o se restaura
+### Network connection improves or is restored
 
-<figure class="attempt-right">
-  <img src="images/weather-app.png" alt="Un ejemplo de una app de estado del tiempo.">
-  <figcaption>
-    Algunas apps, como esta app de estado del tiempo, deben actualizarse automáticamente porque los datos viejos no son útiles para el usuario.
-  </figcaption>
-</figure>
+How you deal with informing the user once their network connection has improved will depend largely on your application. For apps that require update information displayed as a priority such as a stock market app, auto-updating and notifying the user as soon as possible is crucial.
 
-Cómo informes al usuario cuando la conexión de red ha mejorado
-dependerá en gran medida de tu app. Para las apps que requieren como prioridad que se muestre
-información actualizada, por ejemplo, una app del mercado bursátil, la actualización automática
-y la notificación del usuario lo antes posible son esenciales.
+It is recommended that you let the user know that your web app has been updated "in the background" by using a visual cue such as a material design toast element. This involves detecting both the initial registration of your service worker and that there's been an update to the service worker-managed content. You can see a code example of this <a 
+href="https://github.com/GoogleChrome/sw-precache/blob/master/demo/app/js/service-worker-registration.js#L29">function at work here</a>.
 
-<div class="clearfix"></div>
+One example of this would be <a href="https://www.chromestatus.com/features"> www.chromestatus.com</a>which posts a note to the user when the app has been updated.<figure> 
 
-También puedes mostrar la última vez que la app se actualizó en todo momento en un espacio
-prominente. Esto también sería importante para una app de conversión de monedas, por ejemplo.
+<img class="attempt-right" 
+  src="images/weather-app.png" 
+  alt="An example of a weather app." /> <img class="attempt-left" 
+  src="images/chrome-status-app-updated.png" 
+  alt="Chrome Status uses a toast" /> <figcaption class="clearfix" style="clear:both;"> Some apps, like the weather app, need to auto update as old data is not of use to the user. Where Chrome Status lets the user know when content has been updated via a material design toast element. </figcaption> </figure> 
 
-<figure>
-  <img class="attempt-left" src="images/material-money-rates-out-of-date.png" alt="App Moterial Money desactualizada">
-  <img class="attempt-right" src="images/material-money-rates-updated.png" alt="App Moterial Money actualizada">
-  <figcaption class="clearfix">
-    Material Money muestra el último valor de las monedas siempre que es posible y notifica al
-    usuario cuando la app no ha sido actualizada.
-  </figcaption>
-</figure>
+<div class="clearfix">
+</div>
 
-Otras apps, como las apps de noticias, podrían mostrar una notificación simple en la que se informe
-al usuario que hay contenido más nuevo, con una función de presionar para actualizar. El motivo
-para hacerlo es que, si un usuario está leyendo un artículo, una actualización automática
-actualizaría la página y el usuario perdería el artículo.
+You may also show the last time the app was updated at all times in a prominent space. This would also be useful for a currency converter app, for example.<figure> 
 
+<img class="attempt-left" 
+  src="images/material-money-rates-out-of-date.png" 
+  alt="Material money app that is out-of-date" /> <img class="attempt-right" 
+  src="images/material-money-rates-updated.png" 
+  alt="Material money has been updated" /> <figcaption class="clearfix" style="clear:both;"> Material Money shows the latest currency where possible and notifies the user when the app hasn’t been updated. </figcaption> </figure> 
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-normal.png" alt="App de noticias de ejemplo, Tailpiece, en estado normal">
-  <img class="attempt-right" src="images/tailpiece-tap-to-update.png" alt="App de noticias de ejemplo, Tailpiece, lista para actualizarse">
-  <figcaption class="clearfix">
-    Tailpiece, un periódico en línea, descargará automáticamente las últimas noticias, pero
-    permitirá que los usuarios la actualicen manualmente para que no pierdan el artículo que están leyendo.
-  </figcaption>
-</figure>
+Other applications such as a news app could show a simple notification informing the user that there is newer content, with a tap-to-update function. The reason for doing that is if a user is currently reading an article an auto-update would refresh the page and they would lose where they were reading last.<figure> 
 
-### Estados contextuales y modo de exploración
+<img class="attempt-left" 
+  src="images/tailpiece-normal.png" 
+  alt="Example news app, Tailpiece in its normal state" /> <img class="attempt-right" 
+  src="images/tailpiece-tap-to-update.png" 
+  alt="Example news app, Tailpiece when its ready to be updated" /> <figcaption class="clearfix" style="clear:both;"> Tailpiece, an online newspaper will auto download the latest news but allow the users to refresh manually so they do not lose their place in the article. </figcaption> </figure> 
 
-Cada parte de la IU puede tener su propio contexto y funcionalidad que cambiarán
-según si requiere o no una conexión exitosa. Un ejemplo sería un sitio de
-comercio electrónico que se puede explorar sin conexión, pero que tiene el botón Comprar y los precios
-inhabilitados hasta el restablecimiento de la conexión.
+### Contextual states and browse mode
 
-Otras formas de estados contextuales podrían incluir los datos. Por ejemplo, la app
-financiera Robinhood permite a los usuarios comprar acciones, y usa colores y gráficos para
-informarles cuando el mercado está abierto. Toda la interfaz se pone blanca y
-cambia a gris cuando el mercado cierra. Cuando el valor de las acciones aumenta o
-disminuye, cada widget de acciones individual se torna verde o rojo según su
-estado.
+Each bit of UI may have its own context and functionality that will change depending on if it requires a successful connection. One example would be an e-commerce site that can be browsed offline through the Buy button and pricing is disabled until a connection has been reestablished.
 
-### Enseñar al usuario para que comprenda cuál es el modelo de uso sin conexión
+Other forms of contextual states could include data. For example, the financial application Robinhood allows users to buy stock and uses color and graphics to notify the user when the market is open. The whole interface turns white and then grays out when the market closes. When the value of stock increases or decreases, each individual stock widget turns green or red depending on its state.
 
-El uso sin conexión es un modelo mental nuevo para todos. Tienes que enseñar a los usuarios
-qué cambios se producirán cuando no tengan conexión. Infórmales dónde
-se guardan los datos grandes y ofréceles opciones de configuración para cambiar el comportamiento predeterminado. Asegúrate
-de usar diversos componentes de diseño de IU, como lenguaje informativo, íconos,
-notificaciones, color e imágenes, para transmitir estas ideas juntas, en lugar de
-basarte en un solo dispositivo de diseño, como un ícono, para contar toda la
-historia.
+### Educate the user so they understand what the offline model is
 
-## Proporcionar una experiencia de uso sin conexión de manera predeterminada 
+Offline is a new mental model for everyone. You need to educate your users about what changes will occur when they don’t have a connection. Inform them of where large data is saved and give them settings to change the default behavior. Make sure you use multiple UI design components such as informative language, icons, notifications, color and imagery to convey these ideas collectively rather than relying on one design device, such as an icon on its own, to tell the whole story.
 
-Si tu app no requiere muchos datos, almacénelos en caché de manera predeterminada. Los usuarios
-pueden frustrarse cada vez más si solo pueden acceder a los datos con una
-conexión de red. Intenta que la experiencia sea tan estable como sea posible. Una
-conexión inestable hará que el usuario sienta que tu app no es de confianza; mientras que, si la app
-disminuye el impacto de una falla de la red, el usuario la considerará mágica.
+## Providing an offline experience by default
 
-Los sitios nuevos podrían beneficiarse de la descarga automática y el almacenamiento de las últimas noticias
-del día de manera que el usuario pueda leer las noticias de hoy sin conexión,
-tal vez, descargando el texto sin las imágenes. También podrían adaptarse al
-comportamiento del usuario. Por lo que, si el usuario suele leer la sección de deportes, podrían
-hacer que estos fueran los datos prioritarios para descargar.
+If your app doesn't require much data, then cache that data by default. Users can become increasingly frustrated if they can only access their data with a network connection. Try to make the experience as stable as possible. An unstable connection will make your app feel untrustworthy, where an app that lessens the impact of a network failure will feel magical to the user.
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-offline.png" alt="Tailpiece informa al usuario que no tiene conexión con diversos widgets de diseño.">
-  <img class="attempt-right" src="images/tailpiece-offline-sidebar.png" alt="Tailpiece tiene un menú de navegación que muestra qué secciones están listas para el uso sin conexión.">
-  <figcaption class="clearfix">
-    Si el dispositivo no tiene conexión, Tailpiece notificará al usuario con un mensaje
-    de estado, en el que le informará que puede seguir usando la app.
-  </figcaption>
-</figure>
+News sites could benefit from auto downloading and saving the latest news content of the day so a user could read today's news without a connection, perhaps downloading the text without the article images. Also adapt with the user's behavior so if the sports section is what they typically view, perhaps make this the priority data that is downloaded.<figure> 
 
-## Informar al usuario cuando la app está lista para uso sin conexión 
+<img 
+  class="attempt-left" 
+  src="images/tailpiece-offline.png" 
+  alt="Tailpiece informs the user that they are offline with various design widgets" /> <img class="attempt-right" 
+  src="images/tailpiece-offline-sidebar.png" 
+  alt="Tailpiece has a navigational draw that shows what sections are ready for offline use." /> <figcaption class="clearfix"> If the device is offline Tailpiece will notify the user with a status message letting them know that they can still use the app. </figcaption> </figure> 
 
-Cuando una app web se carga por primera vez, debes indicar al usuario si está
-lista para usarla sin conexión. Haz esto con un
-[widget que proporcione comentarios breves](https://material.google.com/components/snackbars-toasts.html "widget that provides brief feedback")
-sobre una operación mediante un mensaje en la parte inferior de la pantalla, 
-por ejemplo, cuando se sincronizó una sección o se descargó un archivo de datos.
+## Inform the user when the app is ready for offline consumption
 
-Reitero, presta atención al lenguaje que usas a fin de asegurarte de que sea adecuado
-para tu público. Asegúrate de que el mensaje sea el mismo en todas las instancias en las que se
-use. El término “sin conexión” suele comprenderse incorrectamente en los públicos sin conocimiento técnico,
-así que usa lenguaje basado en la acción que sea comprensible para tu público.
+When a web app first loads you need to indicate to the user if it is ready for offline use. Do this with a [widget that provides brief feedback](https://material.google.com/components/snackbars-toasts.html "widget that provides brief feedback") about an operation through a message at the bottom of the screen, for example when a section has been synced or a data file has downloaded.
 
+Again think of the language you are using to make sure it is fit for your audience. Ensure the messaging is given the same in all instances where it’s used. The term offline is generally misunderstood by a non-techie audience so use action based language that your audience can relate to.<figure> 
 
-<figure>
-  <img class="attempt-left" src="images/io-offline-ready.png" alt="App I/O sin conexión.">
-  <img class="attempt-right" src="images/chome-offline.png" alt="El sitio Chrome Status no tiene conexión.">
-  <figcaption class="clearfix">
-    Tanto la app Google I/O 2016 como el sitio Chrome Status notifican al usuario cuando
-    la app está lista para usarla sin conexión.
-  </figcaption>
-</figure>
+<img class="attempt-left" src="images/io-offline-ready.png" alt="I/O app offline" /> <img class="attempt-right" src="images/chome-offline.png" alt="Chrome Status site is offline" /> <figcaption class="clearfix" style="clear:both;"> Both the Google I/O 2016 app and Chrome Status site notify the user when the app is ready for offline use. </figcaption> </figure> 
 
-### Convertir “guardar para uso sin conexión” en una parte obvia de la interfaz para apps que consumen muchos datos
+### Make 'save for offline' an obvious part of the interface for data heavy apps
 
-Si una app consume grandes cantidades de datos, asegúrate de que haya un interruptor o
-una fijación para agregar una opción para uso sin conexión, en lugar de descarga automática, a menos que un
-usuario haya solicitado específicamente este comportamiento mediante el menú de configuración. Asegúrate
-de que la fijación o la IU de descarga no queden ocultas por otros elementos de la IU y de que la
-función sea obvia para el usuario.
+If an application uses large amounts of data, make sure that there is a switch or pin to add an item for offline use rather than auto downloading, unless a user has specifically asked for this behavior via a settings menu. Make sure that the pin or download UI is not obscured by other UI elements and that the feature is obvious to the user.
 
+One example would be a music player that requires large data files. The user is aware of the associated data cost, but is also aware that they may want to use the player when they are offline. Downloading music for later use requires the user to plan ahead, so education about this may be required during onboarding.
 
-Un ejemplo sería un reproductor de música que requiere archivos de datos grandes. El usuario
-conoce el costo de datos asociado, pero también sabe que puede querer usar
-el reproductor sin conexión. La descarga de música para escucharla más adelante requiere
-planificación por parte del usuario, por lo que es posible que sea necesario enseñarle sobre esto durante su
-incorporación.
+### Clarify what is accessible offline
 
-### Aclarar a qué se puede acceder sin conexión 
+Be clear as to the option you are providing. You may need to show a tab or setting that shows an “offline library”, so the user can easily see what they have stored on their phone and what needs to be saved. Make sure the settings are concise and be clear where the data will be stored and who has access to it.
 
-Sé claro sobre la opción que proporcionas. Tal vez, tengas que mostrar una pestaña o una
-configuración que tenga una “biblioteca de uso sin conexión” para que el usuario pueda ver fácilmente qué
-tiene almacenado en el teléfono y qué tiene que guardar. Asegúrate de que la configuración
-sea concisa y clara sobre dónde se guardarán los datos y quién tendrá acceso a ellos.
+### Show the actual cost of an action
 
-### Mostrar el costo real de una acción
+Many users equate offline capability with 'downloading'. Users in countries where network connections regularly fail or aren't available often share content with other users, or save content for offline use when they have connectivity.
 
-Muchos usuarios equiparan el funcionamiento sin conexión con “descarga”. Los usuarios en países
-donde las conexiones de red fallan regularmente o no están disponibles, a menudo comparten contenido
-con otros usuarios o guardan contenido para uso sin conexión cuando tienen conectividad.
+Users on data plans may avoid downloading large files for fear of cost, so you may also want to display an associated cost so users can make an active comparison for a specific file or task. For example, if the music app above could detect if the user is on a data plan and show the file size so that users can see the true cost of a file.
 
-Los usuarios con planes de datos pueden evitar la descarga de archivos más grandes por temor a los costos.
-Por esto, podrías mostrar el costo asociado para que los usuarios puedan realizar una comparación
-activa para un archivo o tarea específicos.  Un ejemplo sería, tomando la app de música que mencionamos antes,
-que esta pudiera detectar si el usuario tiene un plan de datos y mostrara el tamaño del archivo para que el usuario
-pudiera ver el costo real de un archivo.
+### Help prevent hacked experiences
 
-### Ayuda para prevenir las experiencias modificadas 
+Often users hack an experience without realizing they are doing it. For example before cloud sharing apps like Google Drive, it was common for users to save large files and attach them to emails so they could carry on editing from a different device. It is important not to be pulled into their hacked experience but rather look at what they are trying to achieve. In other words instead of thinking of how you can make attaching a large attachment more user friendly, solve the problem of sharing large files across multiple devices.
 
-Con frecuencia, los usuarios modifican una experiencia sin darse cuenta. Por ejemplo,
-antes de la aparición de las apps para compartir en la nube, como Google Drive, era común que los usuarios guardaran archivos
-grandes y los adjuntaran a correos electrónicos para poder seguir con la edición en otro
-dispositivo. Es importante no centrarse en su experiencia modificada, sino
-más bien en descubrir qué intentan lograr. En otras palabras, en lugar de pensar en
-qué puedes hacer para que adjuntar un archivo grande sea más fácil, resuelve el
-problema de compartir archivos grandes entre diferentes dispositivos.
+## Transferable experience from one device to another
 
-## Experiencia transferible de un dispositivo a otro
+When making an experience with a flaky network connection, seek for it to sync correctly once the connection improves so that the experience is transferable. For example, imagine a travel app losing a network connection mid-way through a booking. When the connection is reestablished, the app syncs with the user's account and then they can continue their booking on their desktop device. Not being able to transfer experiences is incredibly jarring to users.
 
-Cuando crees una experiencia para una conexión de red débil, busca que se sincronice
-correctamente cuando la conexión mejore para que la experiencia sea transferible.
-Por ejemplo, imagina una app de viajes que pierde la conexión de red a mitad de una
-reservación. Cuando la conexión se restablece, la app se sincroniza con la cuenta
-del usuario, quien puede seguir con la reservación en el dispositivo de escritorio. No
-poder transferir experiencias es increíblemente molesto para los usuarios.
+Inform the user of the current state of their data, for example, if the app has managed to sync or not. Educate them where possible but try not to overburden them with messaging.
 
-Informa al usuario sobre el estado actual de los datos, por ejemplo, si la app pudo
-sincronizarse o no. Enséñales cuando sea posible, pero trata de no abrumarlos
-con los mensajes.
+## Create inclusive design experiences
 
-## Creación de experiencias de diseño inclusivas 
+When designing seek to be inclusive by providing meaningful design devices, simple language, standard iconography, and meaningful imagery that will guide the user to complete the action or task rather than hinder their progress.
 
-Cuando diseñes, ten como objetivo ser inclusivo y proporciona dispositivos de diseño significativos,
-lenguaje simple, iconografía estándar e imágenes pertinentes que guiarán al
-usuario para completar la acción o la tarea, en lugar de obstaculizar su progreso.
+### Let simple concise language be a guide
 
-### Dejar que un lenguaje simple y conciso sean la guía
-
-Una experiencia del usuario buena no solo se refiere a una interfaz bien diseñada. Incluye el flujo que el usuario
-sigue y el lenguaje que se usa en la app. Evita usar la jerga técnica cuando
-expliques el estado de la app o de los componentes individuales de la IU. Ten en cuenta que
-la frase “app sin conexión” podría no indicar nada al usuario sobre el estado actual de la app.
+Good UX is not just about a well designed interface. It includes the flow a user takes as well as the language used in the app. Avoid using tech jargon when explaining the state of the app or individual UI components. Consider that the phrase “app offline” might not convey to the user the current state of the app.
 
 <div class="attempt-left">
-  <figure>
-    <img src="images/download.png" alt="El ícono de descarga es un buen ejemplo.">
-    <figcaption class="success">
-      <b>LO QUE DEBES HACER</b>: Usar lenguaje e imágenes que describan la acción.
-     </figcaption>
-  </figure>
+  <figure> <img src="images/download.png" alt="Download icon example is a good example" /> <figcaption class="success"> <b>DO</b>: Use language and imagery that describes the action. </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img src="images/service-worker-ready.png" alt="El ícono del service worker es un mal ejemplo.">
-    <figcaption class="warning">
-      <b>LO QUE NO DEBES HACER</b>: Usar términos abstractos que pueden no ser accesibles. 
-     </figcaption>
-  </figure>
+  <figure> <img src="images/service-worker-ready.png" alt="Service worker icon example is a bad example" /> <figcaption class="warning"> <b>DON'T</b>: Avoid abstract terms that may not be accessible. </figcaption> </figure>
 </div>
-<div class="clearfix"></div>
 
+<div class="clearfix">
+</div>
 
-### Usar múltiples dispositivos de diseño para crear experiencias de usuario accesibles
+### Use multiple design devices to create accessible user experiences
 
-Usa lenguaje, color y componentes visuales para demostrar un cambio en el estado o
-el estado actual. Es posible que el usuario no note los cambios si solamente se
-usa color para demostrar el estado, lo que, por otro lado, puede no servir para los usuarios que tienen discapacidades visuales.
-Además, el instinto de los diseñadores es atenuar la IU para representar el estado sin conexión,
-pero esto puede tener diferentes significados en la Web. La IU atenuada también se usa para indicar
-que un elemento está inhabilitado, como elementos de entrada en un formulario. Esto puede generar
-confusión si ÚNICAMENTE usas color para indicar el estado.
+Use language, color, and visual components to demonstrate a change of state or current status. Solely using color to demonstrate state may not be noticed by the user and may be inaccessible to users who suffer from visual disabilities. Also, the gut instinct for designers is to use grayed UI to represent offline, but this can have a loaded meaning on the web. Grayed UI is also used to mean that an element is disabled, such as input elements on a form. This can cause confusion if you ONLY use color to depict state.
 
-Para evitar las confusiones, muestra al usuario los diferentes estados de maneras
-diversas, por ejemplo, con color, etiquetas y componentes de la IU.
+To prevent misunderstandings, express different states to the user in multiple ways: for example with color, labels and UI components.
 
 <div class="attempt-left">
-  <figure>
-    <img src="images/accessibility_color7_do.png" alt="Un buen ejemplo en el que se usan color y texto para mostrar un error.">
-    <figcaption class="success">
-      <b>LO QUE DEBES HACER</b>: Usar una combinación de elementos de diseño para transmitir el mensaje.
-     </figcaption>
-  </figure>
+  <figure> <img 
+    src="images/accessibility_color7_do.png" 
+    alt="Good example that uses color and text to show an error." /> <figcaption class="success"> <b>DO</b>: Use a mixture of design elements to convey meaning </figcaption> </figure>
 </div>
+
 <div class="attempt-right">
-  <figure>
-    <img src="images/accessibility_color8_dont.png" alt="Un mal ejemplo en el que solo se usa color.">
-    <figcaption class="warning">
-      <b>LO QUE NO DEBES HACER</b>: Usar solamente color para describir qué está sucediendo.
-     </figcaption>
-  </figure>
+  <figure> <img src="images/accessibility_color8_dont.png" alt="Bad example only using color." /> <figcaption class="warning"> <b>DON'T</b>: Only use color to describe what is happening. </figcaption> </figure>
 </div>
 
-<div class="clearfix"></div>
+<div class="clearfix">
+</div>
 
-### Usar íconos que transmitan significado 
+### Use icons that convey meaning
 
-Asegúrate de que la información se transmita correctamente con etiquetas de texto significativo, al igual que
-íconos. Usar solo íconos puede ser un problema, ya que el concepto del uso sin conexión
-en la Web es relativamente nuevo. Los usuarios pueden interpretar incorrectamente los íconos que se usan solos. Por
-ejemplo, usar un disquete para “guardar datos” tiene sentido para una generación mayor, pero
-los usuarios jóvenes que nunca vieron un disquete pueden confundirse con la metáfora.
-Asimismo, el ícono de menú de “hamburguesa” ha confundido a algunos usuarios cuando se lo ha presentado
-sin una etiqueta.
+Make sure that information is conveyed correctly with meaningful text labels as well as icons. Icons alone can be problematic, since the concept of offline on the web is relatively new. Users may misunderstand icons used on their own. For example, using a floppy disc for save makes sense to an older generation but young users who have never seen a floppy disc may be confused by the metaphor. Likewise, the 'hamburger' menu icon has been known to confuse users when presented without a label.
 
+When introducing an offline icon try to remain consistent with the industry standard visual (if one exists) as well as providing a text label and description. For example, saving for offline might be a typical download icon or perhaps if the action involves syncing it could be a syncing icon. Some actions may be interpreted as saving for offline rather than demonstrating a network's status. Think of the action you are trying to convey rather than presenting the user with an abstract concept. For example, save or download data would be action based.
 
-Cuando introduzcas un ícono de “sin conexión”, intenta seguir la presentación
-visual estándar del sector (si existe una) y de incluir etiquetas de texto y una
-descripción. Por ejemplo, para “guardar para uso sin conexión”, podría usarse un ícono típico de descarga o
-, tal vez, si la acción incluye sincronización, podría usarse un ícono de sincronización. Algunas acciones
-pueden interpretarse como “guardar para uso sin conexión”, en lugar de demostrar el estado de la
-red. Piensa en la acción que intentas transmitir, en vez de presentar al
-usuario un concepto abstracto. Por ejemplo, guardar o descargar datos estarían basados en una
-acción.
+<img src="images/download-icons-examples.png" alt="Various icon examples that convey offline" />
 
-<img src="images/download-icons-exampels.png" alt="Varios ejemplos de íconos que indican el estado sin conexión.">
+Offline can mean a number of things depending on the context, such as download, export, pin etc.. For more inspiration checkout the [material design icon set](https://material.io/icons/ "material design icon set")
 
-“Sin conexión” puede significar varias cosas según el contexto, como descarga, 
-exportación, fijación, etc. Para obtener más ideas, consulta el
-[conjunto de íconos de diseño material](https://material.io/icons/ "material design icon set").
+### Use skeleton layouts with other feedback mechanisms
 
-### Usar diseños de esquema con otro mecanismo de comentarios 
+A skeleton layout is essentially a wireframe version of your app that displays while content is being loaded. This helps demonstrate to the user that content is about to be loaded. Consider also using a preloader UI as well, with a text label informing the user that the app is loading. One example would be to pulsate the wireframe content giving the app the feeling that it is alive and loading. This reassures the user that something is happening and helps prevent resubmissions or refreshes of your app.<figure> 
 
-Un diseño de esquema es esencialmente una versión de malla de tu app que se muestra
-mientras se carga contenido. Esto ayuda a demostrar al usuario que el contenido
-está por cargarse. Considera usar también una IU de precargador, con una etiqueta
-de texto en la que se informe al usuario que la app está realizando una carga. Un ejemplo sería
-hacer que el contenido de malla lata y dé la sensación de que la app está viva y
-cargando. Esto asegura al usuario que algo está pasando y ayuda a prevenir
-los reenvíos o las actualizaciones de la app.
+<img class="attempt-left" src="images/tailpiece-skel-article.png" alt="Skeleton layout example" /> <img class="attempt-right" src="images/tailpiece-normal.png" alt="loaded article example" /> <figcaption class="clearfix"> Before and after of a skeleton layout. </figcaption> </figure> 
 
-<figure>
-  <img class="attempt-left" src="images/tailpiece-skel-article.png" alt="Ejemplo de diseño de esquema">
-  <img class="attempt-right" src="images/tailpiece-normal.png" alt="Ejemplo de artículo cargado">
-  <figcaption class="clearfix">
-    Antes y después de un diseño de esquema
-  </figcaption>
-</figure>
+### Don’t block content
 
-### No bloquear contenido
+In some applications, a user might trigger an action such as creating a new document. Some apps will try to connect to a server in order to sync the new document and to demonstrate this they display an intrusive loading modal dialog that covers the entire screen. This may work fine if the user has a stable network connection, but if the network is unstable they won’t be able to escape from this action and the UI effectively blocks them from doing anything else. Network requests that block content should be avoided. Allow the user to continue to browse your app and queue tasks that will be performed and synced once the connection has improved.
 
-En algunas apps, un usuario podría desencadenar una acción, como crear un documento
-nuevo. Algunas apps intentarán conectarse a un servidor a fin de sincronizar el documento
-nuevo y, para demostrarlo, presentarán un diálogo modal de carga intrusivo
-que ocupa toda la pantalla. Esto puede funcionar bien si el usuario tiene una conexión
-de red estable, pero, si esta es inestable, no podrán salir de esta acción
-y la IU les impedirá hacer algo más.
-Es un requisitos de la red que el contenido bloqueado se evite. Permite que el usuario
-siga explorando tu app, pon en cola las tareas que se llevarán a cabo y realiza la sincronización
-cuando la conexión mejore.
+Demonstrate the state of an action by providing your users with feedback. For example, if a user is editing a doc, consider changing the feedback design so it is visibly different from when they are online but still shows that their file was “saved” and will sync when they have a network connection. This will educate the user about the different states available and reassure them that their task or action has been stored. This has the added benefit of the user growing more confident using your application.
 
-Demuestra el estado de una acción proporcionando a los usuarios comentarios. Por
-ejemplo, si un usuario está editando un documento, piensa en cambiar el diseño de los comentarios para que sea
-visiblemente diferente de cuando está en línea, pero que indique que el archivo se
-“guardó” y se sincronizará cuando haya una conexión de red. Esto le enseñará
-al usuario los estados diferentes disponibles y le asegurará que su tarea
-o acción fue guardada. Esto aporta el beneficio adicional de que el usuario adquiere más confianza
-en el uso de tu app.
+## Designing for the next billion
 
-## Diseño para los siguientes mil millones
+In many regions, low end devices are commonplace, connectivity is unreliable and, for many users, data is unaffordable. You will need to earn user trust by being transparent and frugal with data. Think about ways to help users on poor connections and simplify the interface to help speed up tasks. Always try to ask users before downloading data-heavy content.
 
-En muchas regiones, los dispositivos de gama baja son comunes, la conectividad no es confiable
-y muchos usuarios no pueden afrontar el pago de datos. Deberás ganarte la confianza de los usuarios
-siendo claro y ahorrativo con los datos. Piensa en maneras de ayudar a los usuarios con conexiones
-deficientes y simplifica la interfaz para facilitar la aceleración de las tareas. Siempre trata de preguntar
-a los usuarios antes de descargar contenido que consume muchos datos.
+Offer low bandwidth options for users on laggy connections. So if the network connection is slow, provide small assets. Offer an option to choose high or low quality assets.
 
-Ofrece opciones de ancho de banda bajo para los usuarios con conexiones débiles. Por lo tanto, si la conexión
-de red es lenta, proporciona activos pequeños. Ofrece una opción para elegir entre activos de calidad
-alta o baja.
+## Conclusion
 
-## Conclusión
+Education is key to this as users are unfamiliar with these concepts. Try to create associations with things that are familiar, e.g downloading for later use is the same as offlining data.
 
-La enseñanza es la clave aquí, ya que los usuarios no están familiarizados con estos conceptos. Intenta crear
-asociaciones con cosas que sean familiares, por ejemplo, “descargar para usar más tarde” es lo
-mismo que “datos para uso sin conexión”.
+When designing for unstable network connections, use these:
 
+* Think how you design for the success, failure and instability of a network connection.
+* Data may be expensive, so be considerate to the user.
+* For most users globally, the tech environment is almost exclusively mobile.
+* Low end devices are commonplace, with limited storage, memory and processing power and, small displays and lower touchscreen quality. Make sure performance is a part of your design process. 
+* Allow users to browse your application when they are offline.
+* Inform users of their current state and of changes in states.
+* Try to provide offline by default if your app doesn't require much data.
+* If the app is data-heavy, educate users about how they can download for offline use.
+* Make experiences transferable between devices.
+* Utilize language, icons, imagery, typography and color to express ideas to the user collectively.
+* Provide reassurance and feedback to help the user.
 
-Cuando diseñes para conexiones de red inestables, ten en cuenta lo siguiente: 
+## Feedback {: #feedback }
 
-* Piensa en cómo diseñas para el funcionamiento correcto, con falla o inestable de una
-  conexión de red.
-* Los datos pueden ser costosos, así que sé considerado con el usuario.
-* Para la mayoría de los usuarios del mundo, el entorno tecnológico es casi exclusivamente móvil.
-* Los dispositivos de gama baja son comunes y tienen almacenamiento, memoria y potencia 
-  de procesamiento limitados, pantallas pequeñas y pantallas táctiles de baja calidad. Asegúrate de que el rendimiento 
-  sea una parte de tu proceso de diseño. 
-* Permite que los usuarios exploren tu app cuando estén sin conexión.
-* Informa a los usuarios sobre el estado actual y de los cambios en el estado.
-* Intenta brindar la opción de uso sin conexión de manera predeterminada si tu app no requiere muchos datos.
-* Si tu app consume muchos datos, enseña al usuario cómo puede realizar descargas para
-  el uso sin conexión.
-* Haz que las experiencias sean transferibles entre dispositivos.
-* Utiliza conjuntamente lenguaje, íconos, imágenes, tipografía y color para transmitir ideas al 
-  usuario.
-* Proporciona seguridad y comentarios para ayudar al usuario.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

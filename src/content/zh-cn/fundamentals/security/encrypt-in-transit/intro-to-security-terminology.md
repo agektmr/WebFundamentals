@@ -1,49 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:在迁移到 HTTPS 时，开发者面对两个难题，即概念和术语。本指南将为您简要介绍概念和术语。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Two of the hurdles developers face when migrating to HTTPS are concepts and terminology. This guide provides a brief overview of both.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# 重要的安全术语 {: .page-title }
+# Important Security Terminology {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-  
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
+
 ### TL;DR {: .hide-from-toc }
 
-* 公钥/私钥用于给浏览器与服务器之间的消息签名并将消息解密。
-* 证书颁发机构 (CA) 是一个组织，对公钥与公共 DNS 名称（例如“www.foobar.com”）之间的映射进行证实。
-* 证书签名请求 (CSR) 是一种数据格式，将一个公钥与拥有该公钥的实体的某些相关元数据绑定在一起
+* Public/private keys are used to sign and decrypt messages between the browser and the server.
+* A certificate authority (CA) is an organization that vouches for the mapping between the public keys and public DNS names (such as "www.foobar.com").
+* A certificate signing request (CSR) is a data format that bundles a public key together with some metadata about the entity that owns the key
 
-## 什么是公钥和私钥对？
+## What are the public and private key pairs?
 
-**公钥/私钥对**是一对很大的数字，可用作加密密钥和解密密钥，并且共用一种特别的数学关系。一种常见的密钥对系统是 **[RSA 加密系统](https://en.wikipedia.org/wiki/RSA_(cryptosystem)){: .external}**。
-**公钥**用于加密消息，并且消息只能使用对应的**私钥**来解密。您的网络服务器将其公钥公布到全球，客户端（例如网络浏览器）将使用此密钥来建立一个与您的服务器安全通信的通道。
+A **public/private key pair** is a pair of very large numbers that are used as encryption and decryption keys, and that share a special mathematical relationship. A common system for key pairs is the **[RSA cryptosystem](https://en.wikipedia.org/wiki/RSA_(cryptosystem)){: .external}**. The **public key** is used to encrypt messages, and the messages can only be feasibly decrypted with the corresponding **private key**. Your web server advertises its public key to the world, and clients (such as web browsers) use that to bootstrap a secure channel to your server.
 
+## What is a certificate authority?
 
+A **certification authority (CA)** is an organization that vouches for the mapping between public keys and public DNS names (such as "www.foobar.com"). For example, how is a client to know if a particular public key is the *true* public key for www.foobar.com? A priori, there is no way to know. A CA vouches for a particular key as being the true one for a particular site by using its own private key to **[cryptographically sign](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Signing_messages){: .external}** the website's public key. This signature is computationally infeasible to forge. Browsers (and other clients) maintain **trust anchor stores** containing the public keys owned by the well-known CAs, and they use those public keys to **cryptographically verify** the CA's signatures.
 
-## 什么是证书颁发机构？
+An **X.509 certificate** is a data format that bundles a public key together with some metadata about the entity that owns the key. In the case of the web, the owner of the key is the site operator, and the important metadata is the DNS name of the web server. When a client connects to an HTTPS web server, the web server presents its certificate for the client to verify. The client verifies that the certificate has not expired, that the DNS name matches the name of the server the client is trying to connect to, and that a known trust anchor CA has signed the certificate. In most cases, CAs do not directly sign web server certificates; usually, there is a **chain of certificates** linking a trust anchor to an intermediate signer or signers, and finally to the web server's own certificate (the **end entity**).
 
-**证书颁发机构 (CA)** 是一个组织，对公钥和与公共 DNS 名称（例如“www.foobar.com”）之间的映射进行证实。例如，客户端如何知道特定公钥是否为 www.foobar.com 的真实公钥？按理说，无法知道。CA 证实特定密钥是特定网站的真实密钥，它使用自己的私钥来**[加密签名](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Signing_messages){: .external}**该网站的公钥。此签名在计算上是无法伪造的。浏览器（和其他客户端）维护**信任锚存储库**，它包含知名 CA 拥有的公钥，并且它们使用这些公钥来**加密验证** CA 的签名。
+## What is a certificate signing request?
 
+A **certificate signing request (CSR)** is a data format which, like a certificate, bundles a public key together with some metadata about the entity that owns the key. However, clients do not interpret CSRs; CAs do. When you seek to have a CA vouch for your web server's public key, you send the CA a CSR. The CA validates the information in the CSR and uses it to generate a certificate. The CA then sends you the final certificate, and you install that certificate (or, more likely, a certificate chain) and your private key on your web server.
 
+## Feedback {: #feedback }
 
-
-**X.509 证书**是一种数据格式，将一个公钥与拥有该公钥的实体的某些相关元数据绑定在一起。
-就网络而言，密钥的所有者是网站运营商，并且重要的元数据是网络服务器的 DNS 名称。当客户端连接 HTTPS 网络服务器时，网络服务器提供其证书供客户端验证。
-客户端验证此证书没有过期，DNS 名称与客户端正尝试连接的服务器名称一致，并且已知的信任锚 CA 已给此证书签名。在大多数情况下，CA 并不直接给网络服务器证书签名；通常有一个**证书链**将一个信任锚链接到一个或多个中间签名者，最终链接到网络服务器自己的证书（**终端实体**）。
-
-
-
-
-## 什么是证书签名请求？
-
-**证书签名请求 (CSR)** 是一种数据格式，就像证书，将一个公钥与拥有该公钥的实体的某些相关元数据绑定在一起。但是，客户端并不解释 CSR；由 CA 解释。当您希望让 CA 证实您的网络服务器公钥时，就向 CA 发送 CSR。
-CA 验证 CSR 中的信息，并使用它来生成证书。然后 CA 向您发送最终证书，您在网络服务器上安装该证书（或更可能是证书链）和私钥。
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

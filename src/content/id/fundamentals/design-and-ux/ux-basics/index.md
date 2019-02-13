@@ -1,382 +1,221 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Panduan langkah demi langkah untuk dasar-dasar desain UX.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A step-by-step guide to the basics of UX design.
 
-{# wf_updated_on: 2016-10-01 #}
-{# wf_published_on: 2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: N/A #}
 
-# Dasar-Dasar UX {: .page-title }
+# Basics of UX {: .page-title }
 
 {% include "web/_shared/contributors/mustafa.html" %}
 
-Artikel ini memperkenalkan alur kerja yang bisa membantu tim, produk, startup dan
-perusahaan membuat proses yang kokoh dan berarti untuk mengembangkan pengalaman
-pengguna yang lebih baik bagi para pelanggan. Anda bisa menggunakan bagian proses yang berbeda
-secara terpisah, namun proses ini idealnya bekerja sangat baik bila dilakukan dalam serangkaian langkah.
+This article introduces a workflow that can help teams, products, startups and companies create a robust and meaningful process for developing a better user experience for their customers. You could use different parts of the process separately but they ideally work best as a series of steps.
 
-Panduan ini banyak meminjam dari metodologi Design Sprint yang digunakan beberapa
-tim di Google untuk memecahkan masalah dan tantangan seperti
-[Self Driving Car](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external}
-dan [Project Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external}.
+This guide borrows heavily from the Design Sprint methodology that multiple teams across Google use to troubleshoot and solve challenges such as the [Self Driving Car](https://www.google.com/selfdrivingcar/ "Self Driving Car"){:target="_blank" .external} and [Project Loon](https://www.solveforx.com/loon/ "Project Loon"){:target="_blank" .external}.
 
 ### Double Diamond
 
-Alur kerja ini didasarkan pada apa yang kita sebut dalam lingkaran UX sebagai double diamond, dipopulerkan
-oleh [British Design Council](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external},
-dengan tim Anda terbagi untuk memahami ide melalui penelitian dan kemudian
-berkumpul untuk mendefinisikan tantangan, membaginya untuk membuat sketsa secara individual, berbagi
-ide, memutuskan apa yang terbaik ke depannya, uji dan validasi.
+This flow work is based on what we in UX circles call the double diamond, made popular by the [British Design Council](https://www.designcouncil.org.uk/ "British Design Council"){:target="_blank" .external}, where your team diverges to understand an idea through research and then converges to define the challenge, diverges to sketch it individually, share the ideas, decide on what the best way forward is, test and validate.
 
 <figure>
-  <img src="images/double-diamond.png" alt="Fase proyek meliputi; Memahami, Mendefinisikan, Membagi, Memutuskan, Prototipe dan Validasi">
-  <figcaption>Model proses desain ''double diamond' yang dipelopori oleh British Design Council, langkah-langkahnya melibatkan tahapan proyek berikut; <em>Memahami</em>, <em>Mendefinisikan</em>, <em>Membagi</em>, <em>Memutuskan</em>, <em>Prototipe</em> dan <em>Validasi</em>.</figcaption>
+  <img src="images/double-diamond.png" alt="Phases of a project include; Understand, Define, Diverge, Decide, Prototype and Validate">
+  <figcaption>The 'double diamond' design process model pioneered by the British Design Council, the steps involve these phases of a project; <em>Understand</em>, <em>Define</em>, <em>Diverge</em>, <em>Decide</em>, <em>Prototype</em> and <em>Validate</em>.</figcaption>
 </figure>
 
-## Menyetel panggung
+## Setting the stage
 
-Hal pertama adalah memulai dengan tantangan mendasar dan menulisnya
-seperti proposal, tanyakan pada diri Anda sendiri, "apa masalah yang sesungguhnya coba saya
-pecahkan?".  Pernyataan tantangan adalah keterangan singkat yang ditetapkan ke proyek
-yang berisi tujuan Anda.
+First thing is to start with the underlying challenge at hand and write it out like a proposal, asking yourself, “what is the problem I’m actually trying to solve?”. The challenge statement is the brief you are setting for the project that includes your goal.
 
-Tantangan ini bisa fitur produk saat ini yang perlu disaring
-atau produk yang sama sekali baru. Apapun tugas Anda, cukup sesuaikan
-bahasa agar sesuai dengan tujuan yang ingin Anda capai. Pernyataan harus
-dikaitkan dengan tujuan tim Anda, berfokus pada pengguna, memberikan inspirasi dan ringkas.
+This challenge could be for an existing product feature that needs to be refined or a completely new product altogether. Whatever your task may be, simply adjust the language to fit the goal you are trying to achieve. A statement should be tied to your team goals, focused on your audience, inspiring and concise.
 
-Berikut adalah beberapa contoh produk nyata yang telah saya kerjakan di
-masa lalu;
+These are some real life examples of products that I have worked on in the past;
 
-* Merancang sebuah sistem untuk mengelola pengobatan dan perawatan lanjutan pasien penderita
-  clubfoot.
+- Design a system to manage the treatment and follow-up care of patients with clubfoot.
 
-* Membuat sebuah aplikasi yang menyederhanakan sistem keuangan kompleks dan menguranginya ke
-  hal-hal penting saja.
+- Create an app that simplifies complex financial systems and pare them down to the essentials.
 
-* Merancang aplikasi seluler yang konsisten di seluruh platform yang berbeda tanpa mengorbankan
-  merek.
+- Design a consistent mobile app across different platforms without sacrificing the brand.
 
-### Memperbarui pernyataan tantangan Anda
+### Updating your challenge statement
 
-Setelah Anda menulis beberapa variasi tujuan, presentasikan ke tim Anda untuk
-mendapatkan sebuah konsensus. Anda mungkin perlu memasukkan batas waktu karena ini akan membantu tim
-berfokus pada masalah. Jadi dengan penambahan tersebut, penyesuaian untuk daftar di atas bisa
-menjadi:
+Once you have written several variations of the goal, present it to your team to get a consensus. You may want to include a deadline as this will help the team focus on the problem. So with the added adjustments, the list above could be:
 
-* Merancang sebuah sistem untuk mengelola pengobatan dan perawatan lanjutan anak-anak di bawah
-  usia 2 tahun penderita clubfoot diluncurkan pada Q1 tahun ini.
-* Membuat aplikasi keuangan sederhana yang memungkinkan Anda membeli dan menjual saham cukup dengan mengetuk
-  tombol tanpa membutuhkan pengetahuan dasar dunia keuangan, dengan peluncuran awal
-  Juli 2017.
-* Menghasilkan panduan desain yang fleksibel di beberapa platform dan memosisikan
-  merek perusahaan secara efektif pada setiap platform hingga akhir tahun ini.
+- Design a system to manage the treatment and follow-up care of children under the age of 2 with clubfoot for launch in Q1 this year.
+- Create a simple financial app that allows you to buy and sell shares at the tap of a button without prior knowledge of the financial world, with initial launch on July 2017.
+- Produce a design guide that is flexible across multiple platforms and positions the company's brand effectively on each platform by the end of this year.
 
-Ketika pernyataan tantangan selesai, tampilkan dalam tempat yang menonjol sehingga
-Anda bisa melihatnya saat bekerja. Anda harus memeriksanya kembali
-secara konstan, bahkan mungkin memperbarui atau memodifikasinya selama proyek Anda berjalan.
+When the challenge statement is finished, display it in a prominent place so that you can see it while you work. You will need to refer back to it constantly, perhaps even updating or modifying it throughout your project.
 
-## Memvalidasi masalah
+## Validating the problem
 
-Langkah berikutnya adalah meneliti tantangan dan mempelajari masalah tersebut. Apa yang perlu Anda
-ketahui adalah apakah pemahaman tim Anda tentang masalah adalah valid.
-Cukup sering kita melihat masalah dari sudut pandang kita sendiri, yang berbahaya
-karena kebanyakan dari kita di dunia teknologi sebenarnya adalah power user dan pada kenyataannya merupakan pengguna
-minoritas. Kita adalah minoritas vokal dan bisa tertipu saat berpikir sesuatu
-dapat menjadi masalah padahal tidak.
+The next step is to research the challenge and learn about the problem. What you need to discover is whether your team's understanding of the problem is valid. Quite often we look at problems from our own point of view, which is dangerous as most of us in tech are actually power users and are in fact a minority of users. We are a vocal minority and can be fooled into thinking something is actually a problem when it isn’t.
 
-Ada berbagai metode pengumpulan data untuk memvalidasi tantangan. Masing-masing
-bergantung pada tim dan jika Anda memiliki akses ke pengguna. Tujuannya adalah untuk mendapatkan
-pemahaman yang lebih baik dari masalah yang dihadapi.
+There are various methods of collecting data to validate the challenge. Each one depends on your team and if you have access to users. The objective is to have a better understanding of the problem at hand.
 
-### Wawancara internal dengan para pemangku kepentingan
+### Internal interviews with stakeholders
 
 <figure>
-  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="Wawancara dengan para pemangku kepentingan bisa informatif untuk menemukan wawasan dalam sebuah perusahaan atau tim.">
-  <figcaption>Wawancara dengan para pemangku kepentingan bisa informatif untuk menemukan wawasan dalam sebuah perusahaan atau tim.</figcaption>
+  <img src="images/stakeholder-interviews.jpg" class="attempt-right" alt="Interviews with stakeholders can be informative for discovering insights across a company or team.">
+  <figcaption>Interviews with stakeholders can be informative for discovering insights across a company or team.</figcaption>
 </figure>
 
-Proses wawancara termasuk melakukan wawancara kepada setiap anggota tim dan pemangku kepentingan
-di perusahaan Anda, dari pemasaran hingga keuangan. Ini akan membantu Anda menemukan apa yang mereka
-pikir tantangan nyata dan apa solusi potensial yang bisa mereka pikirkan.
-Ketika saya mengatakan solusi, saya tidak berbicara tentang solusi teknis di sini, melainkan
-apa yang bisa menjadi skenario terbaik dan tujuan akhir bagi perusahaan atau produk.
-Misalnya menggunakan tantangan di atas "memiliki software clubfoot di 80%
-fasilitas medis hingga akhir tahun ini" dapat menjadi tujuan besar yang menjadi target.
+The interviewing process involves interviewing each team member and stakeholder at your company, from marketing to accounts. This will help you find what they think the real challenges are and what they think potential solutions could be. When I say solution I am not speaking about technical solutions here, but rather what would be the best case scenario and end goal for the company or product. For example using the challenges above “having our clubfoot software in 80% of medical facilities by the end of the year” would be a great goal to aim for.
 
-Ada sebuah peringatan. Metode validasi adalah yang paling tidak disukai karena
-menghambat diskusi dan kolaborasi tim, berpotensi menciptakan suasana
-tertutup dalam sebuah organisasi. Meskipun demikian, ini bisa menghasilkan beberapa informasi bagus
-tentang klien dan tantangan desain yang bisa saja Anda lewatkan.
+There is one caveat. This method of validation is the least favoured as it prevents team discussion and collaboration, potentially creating a siloed atmosphere in an organization. Nevertheless it can yield some good information about the clients and the design challenge that you could otherwise miss.
 
-### Presentasi kilat
+### Lightning talks
 
 <figure>
-  <img src="images/lightning-talks.jpg" alt="Presentasi kilat adalah presentasi sangat singkat yang hanya berlangsung beberapa menit.">
-  <figcaption>Presentasi kilat adalah presentasi sangat singkat yang hanya berlangsung beberapa menit.</figcaption>
+  <img src="images/lightning-talks.jpg" alt="A lightning talk is a very short presentation lasting only a few minutes.">
+  <figcaption>A lightning talk is a very short presentation lasting only a few minutes.</figcaption>
 </figure>
 
-Mirip dengan wawancara internal, namun kali ini Anda menghadirkan setiap
-pemangku kepentingan dalam satu ruangan. Kemudian Anda Memilih lima atau enam orang pemangku kepentingan
-(pemasaran, penjualan, desain, keuangan, penelitian dll.) untuk berbicara, masing-masing
-berfokus pada tantangan dari perspektif mereka selama maksimal 10 menit.
-Topiknya harus mencakup presentasi mereka:
+This is similar to the internal interviews, but this time you get every stakeholder into a single room. Then you Elect five or six of those stakeholders (marketing, sales, design, accounts, research etc.) to give a talk, each focusing on the challenge from their perspective for a maximum of 10 minutes. The topics they must cover in their presentation should be:
 
-* Tujuan bisnis
-* Tantangan proyek dari sudut pandang mereka (ini bisa faktor teknis,
-  pengumpulan penelitian, pembuatan desain dll..)
-* Penelitian pengguna yang Anda miliki saat ini
+- Goals of the business
+- Challenges of the project from their point of view (these could be technical, research gathering, design creation etc..)
+- User research that you have currently
 
-Berikan waktu 5 menit di akhir untuk sesi pertanyaan, dengan orang yang dipilih mencatat
-semuanya. Setelah selesai, Anda mungkin ingin memperbarui tantangan untuk merefleksikan
-pembelajaran yang baru. Tujuannya adalah untuk mengumpulkan daftar poin-poin utama yang bisa mendorong
-fitur atau alur yang membantu Anda mencapai tujuan produk.
+Leave 5 minutes at the end for questions, with an elected person taking notes throughout. Once you are done you might want to update the challenge to reflect new learnings. The goal is to collect a list of bullet points that can drive a feature or flow that helps your achieve your products goal.
 
-### Wawancara pengguna
-<figure>
-  <img src="images/user-interviews.jpg" class="attempt-right" alt="Wawancara pengguna adalah cara yang bagus untuk mempelajari tentang titik derita orang di setiap tugas yang diberikan.">
-  <figcaption>Wawancara pengguna adalah cara yang bagus untuk mempelajari tentang titik derita orang di setiap tugas yang diberikan.</figcaption>
-</figure>
-
-Ini mungkin adalah cara terbaik untuk belajar tentang pengalaman pengguna, titik derita,
-dan alur. Aturlah setidaknya lima wawancara pengguna, lebih banyak lagi jika Anda memiliki akses kepada
-mereka. Jenis pertanyaan yang Anda tanyakan kepada mereka harus mencakup:
-
-- Bagaimana mereka menyelesaikan tugas yang ada? Misalnya, Anda ingin menyelesaikan
-  tantangan untuk aplikasi keuangan di atas, Anda bisa bertanya kepada mereka "bagaimana Anda membeli saham
-  dan efek saat ini?"
-- Apa yang mereka suka tentang alur ini?
-- Apa yang tidak mereka suka tentang alur ini?
-- Apa produk sejenis yang saat ini digunakan pengguna?
-    *  Apa yang mereka suka?
-    *  Apa yang tidak mereka suka?
-- Jika mereka memiliki tongkat ajaib dan bisa mengubah satu hal tentang proses ini
-  hal apakah itu?
-
-Ide melakukan wawancara adalah agar pengguna berbicara tentang tantangan yang mereka
-alami. Ini bukanlah poin diskusi untuk Anda, itulah mengapa Anda harus
-tetap diam. Hal ini semakin benar ketika pengguna berhenti berbicara, selalu berikan waktu
-sebentar karena mereka bisa saja sedang mengumpulkan pemikirannya. Anda akan terkejut melihat betapa
-banyak orang yang akan terus berbicara setelah berhenti sejenak selama beberapa detik.
-
-Catat seluruhnya dan jika mungkin rekam percakapan tersebut untuk membantu Anda
-merekam apa pun yang mungkin Anda lewatkan. Tujuannya adalah membandingkan tantangan terhadap
-wawasan pengguna yang Anda kumpulkan. Apakah mereka selaras? Apakah Anda mempelajari sesuatu yang
-membantu memperbarui pernyataan tantangan?
-
-### Penelitian bidang etnografi
+### User interviews
 
 <figure>
-  <img src="images/field-interviews.jpg" class="attempt-right" alt="Melihat pengguna dalam lingkungan alami mereka adalah cara yang bagus untuk memahami bagaimana pengguna mengatasi tantangan mereka sendiri.">
-  <figcaption>Melihat pengguna dalam lingkungan alami mereka adalah cara yang bagus untuk memahami bagaimana pengguna mengatasi tantangan mereka sendiri.</figcaption>
+  <img src="images/user-interviews.jpg" class="attempt-right" alt="User interviews are a great way to learn about a persons pain points in any given task.">
+  <figcaption>User interviews are a great way to learn about a person's pain points in any given task.</figcaption>
 </figure>
 
-Ini adalah bidang tempat Anda mengamati pengguna, dalam konteks saat melakukan
-sesuatu seperti bagaimana mereka berbelanja, bagaimana mereka melakukan perjalanan ke tempat kerja,
-bagaimana mereka mengirim pesan SMS dll.. Alasannya adalah karena dalam beberapa kasus orang akan memberi tahu
-apa yang mereka pikir ingin Anda dengarkan. Namun jika Anda menyaksikan sendiri pengguna melakukan tindakan dan
-tugasnya, ini bisa menjadi penuh wawasan. Pada dasarnya Anda mengamati tanpa
-mengganggu, mencatat hal-hal yang mereka rasa mudah atau sulit dan hal-hal yang mungkin
-mereka lewatkan. Tujuannya adalah untuk melibatkan diri Anda dalam lingkungan pengguna agar
-lebih berempati dengan titik derita mereka.
+This is perhaps the best way of learning about the user's journey, pain points, and flow. Arrange at least five user interviews, more if you have access to them. The sorts of questions you ask them should include:
 
-Teknik ini biasanya melibatkan beberapa pekerjaan yang dilakukan selama periode waktu yang lebih lama dan
-membutuhkan peneliti untuk memimpin bagian proyek ini. Namun inilah yang mungkin
-paling berwawasan karena Anda bisa melihat sekelompok orang yang Anda pelajari di
-lingkungan alami mereka.
+- How do they complete an existing task? For example, say you want to solve the challenge for the financial app above, you could ask them “how do you buy shares and stocks at the moment?”
+- What do they like about this flow?
+- What do they dislike about this flow?
+- What similar products does the user currently use? 
+    - What do they like?
+    - What do they dislike?
+- If they had a magic wand and could change one thing about this process what would it be?
 
-### Mengumpulkan semuanya
+The idea of interviewing is to get the user to speak about the challenges they have. It is not a discussion point for you, which is why you must remain as quiet as possible. This is even true when a user stops speaking, always wait a moment as they could be gathering their thoughts. You would be surprised at how much someone will continue to speak after they have stopped for a few seconds.
 
-Setelah Anda menyelesaikan tahap pembelajaran proyek, Anda harus mengambil satu
-pemeriksaan terakhir pada tantangan Anda. Apakah Anda di jalur yang benar? Apakah ada sesuatu yang perlu Anda
-sesuaikan? Tuliskan semua hal yang telah Anda pelajari dan kelompokkan mereka ke dalam
-kategori. Ini bisa menjadi dasar dari fitur atau alur, bergantung pada
-masalah yang Anda selesaikan. Juga bisa digunakan untuk memperbarui dan merevisi
-tantangan.
+Take notes throughout and if possible record the conversation to help you capture anything you might have missed. The goal is to compare the challenge to the user insights that you gather. Do they align? Did you learn anything that helps you update your challenge statement?
 
-Setelah Anda memiliki masukan dan wawasan yang cukup, saatnya untuk menerapkan pengetahuan itu untuk
-membuat pemetaan proyek.
-
-## Pemetaan proyek
-
-Masalah yang coba Anda selesaikan biasanya terdiri dari berbagai tipe
-orang (atau pemain), masing-masing dengan andil di alur proyek. Berdasarkan
-pembelajaran, Anda perlu mendaftar para pemain. Ini bisa jadi tipe pengguna atau
-pemangku kepentingan, misalnya, "dokter yang merawat clubfoot", "pasien yang menderita
-clubfoot", "perawat yang merawat pasien", dll.. Tuliskan masing-masing pemain
-di sisi kiri selembar kertas atau tulis pada
-papan tulis jika Anda memilikinya. Di sisi sebelah kanan, tuliskan tujuan masing-masing pemain.
-
-Yang terakhir untuk setiap pemain, tuliskan jumlah langkah yang diperlukan untuk
-mencapai tujuan mereka. Misalnya untuk "dokter yang merawat clubfoot" tujuannya
-adalah "menyembuhkan pasien yang menderita clubfoot", sehingga langkah-langkahnya adalah "mendaftarkan pasien
-dalam sistem", "memulai rencana kesehatan", "membuat siklus ulasan
-kesehatan medis" dan "melakukan prosedur medis".
+### Ethnographic field research
 
 <figure>
-  <img src="images/project-map.jpg" alt="Pemetaan proyek merencanakan langkah-langkah utama untuk setiap pengguna atau pemain dalam alur">
-  <figcaption>Pemetaan proyek merencanakan langkah-langkah utama untuk setiap pengguna atau pemain dalam alur.</figcaption>
+  <img src="images/field-interviews.jpg" class="attempt-right" alt="Seeing users in their natural environment is a great way to understand how they solve their own challenges.">
+  <figcaption>Seeing users in their natural environment is a great way to understand how they solve their own challenges.</figcaption>
 </figure>
 
-Hasilnya adalah pemetaan proyek dengan langkah-langkah utama dalam prosesnya. Anggap saja itu
-sebagai ringkasan proyek tanpa terlalu banyak detail. Ini juga memungkinkan anggota tim
-menilai apakah pemetaan cocok dengan pernyataan tantangan. Kemudian, ketika Anda memecah
-setiap langkahnya, akan ada detail lebih lanjut. Namun untuk saat ini, pemetaan proyek memberikan Anda
-rincian tingkat tinggi dari langkah yang perlu diambil pengguna untuk menyelesaikan tujuan akhir mereka.
+This is where you observe the user in the field, in context while doing something like how they do their shopping, how they travel to work, how they send SMS messages etc.. The reason is in some cases people will tell you what they think you want to hear. But if you watch users perform actions and tasks on their own it can be insightful. Basically you are observing without interfering, noting things which they find easy or difficult and things they may have missed. The goal is to immerse yourself in the user's environment to better empathize with their pain points.
 
-## Wireframing dan storyboarding
+This technique usually involves some work done over a longer period of time and requires a researcher to lead this part of the project. But it is perhaps the most insightful as you get to see a group of people that you are studying in their natural environments.
+
+### Gathering it altogether
+
+Once you have completed the learnings phase of your project you need to take one last look at your challenge. Are you on the right path? Is there anything you need to adjust? Write down all of the things you have learnt and group them into categories. These could become the basis of a feature or a flow, depending on the problem you are solving. They could also be used to update and revise the challenge.
+
+Once you have enough feedback and insight it is time to apply that knowledge to creating a project map.
+
+## Project Map
+
+The problem you are trying to solve is usually made up of different types of people (or players), each with a stake in the project's flow. Based on your learnings you need to list out the possible players. It could be a user type or stakeholder, for example, “a doctor who treats clubfoot”, “a patient who has clubfoot”, “a care giver who looks after patient”, etc.. Write down each player on a the left hand side of a sheet of paper or if you have access to one, on a whiteboard. On the right hand side write each player's goals.
+
+Finally for each player, write down the number of steps required for them to reach their goal. For example for "a doctor who treats clubfoot” the goal would be “cure a patient with clubfoot”, so the steps could be “register the patient in the system”, “start them on medical a plan”, “create a review cycle of their medical health” and “perform medical procedure”.
+
+<figure>
+  <img src="images/project-map.jpg" alt="Project maps plot out the main steps for each user or player in a flow">
+  <figcaption>Project maps plot out the main steps for each user or player in a flow.</figcaption>
+</figure>
+
+The result is a project map with the main steps in the process. Think of it as an overview of the project without too many details. It also lets team members judge whether the map matches the challenge statement. Later, when you break down each step, there will be more details. But for now a project map gives you a high level breakdown of the steps a user will take to complete their end goal.
+
+## Wireframing and storyboarding
 
 ### Crazy 8s
 
-Untuk ini, saya menyarankan metode yang disebut crazy 8s yang meliputi pelipatan
-kertas dua kali lebih banyak sehingga Anda memiliki delapan panel. Kemudian pada setiap panelnya Anda menggambar
-sebuah ide berdasarkan semua yang telah Anda pelajari sejauh ini. Berikan diri Anda sepuluh menit agar
-muncul dengan ide-ide untuk mengisi semua panel yang berjumlah delapan. Jika Anda memberikan diri Anda waktu lebih dari 20
-menit, Anda bisa mulai menunda-nunda, pergi membuat kopi, memeriksa email,
-mengobrol dengan tim Anda dan pada dasarnya menghindari melakukan pekerjaan. Anda
-ingin menciptakan rasa urgensi dalam langkah ini karena memaksa Anda untuk bekerja dengan cepat
-dan lebih efektif.
+For this, I recommend a method called crazy 8s that involves folding a piece of paper twice over so that you have eight panels. Then in each panel you draw out an idea based on all that you have learnt so far. Give yourself ten minutes to come up with ideas to fill all eight panels. If you give yourself more than 20 minutes you may start to procrastinate, go make yourself a coffee, check email, have a general chat with your team and essentially avoid doing the work. You want to create a sense of urgency in this step as it forces you to work quickly and more effectively.
 
-Jika Anda bekerja dengan tim, suruh mereka semua untuk melakukan hal ini juga. Proses
-ini akan menyentak otak Anda dan membuat Anda berpikir tentang tantangan.
-Biasanya sketsa akan menjadi wireframe desain antarmuka.
+If you are working with a team get everyone to do their own as well. This process will kick start your brain and get you thinking about the challenge. Generally the sketch will be an interface design wireframe.
 
-Setelahnya, Anda dan semua orang di tim menyajikan ide-idenya ke kelompok.
-Setiap orang harus menjelaskan masing-masing delapan ide mereka secara rinci dan mengapa mereka memilih untuk
-mengambil jalur tersebut. Ingatkan setiap anggota tim untuk menggunakan pembelajaran untuk
-pembenaran ide-ide mereka. Setelah semua orang mengemukakan idenya, saatnya memilih
-ide-ide tersebut. Setiap orang mendapat dua titik tempelan dan bisa memberikan suara pada ide mana pun. Mereka bisa
-memberikan kedua suaranya untuk sebuah ide jika mereka benar-benar menyukainya.
-
+Afterwards, you and everyone on your team presents their ideas to the group. Everyone must explain each of their eight ideas in detail and why they chose to go down a specific path. Remind each team member to use the learnings for justification of their ideas. Once everyone has presented it's time to vote on the ideas. Each person gets two sticky dots and can vote on any idea. They can give both votes to a single idea if they really like it.
 
 <!-- <figure>
-  <img src="images/voting-ideas.jpg"   alt="Anda bisa membuat catatan pada posting-nya dan memberikan suara langsung pada konsep atau sketsa">
-  <figcaption>Anda bisa membuat catatan pada posting-nya dan memberikan suara langsung pada konsep atau sketsa.</figcaption>
+  <img src="images/voting-ideas.jpg"   alt="You can take notes on post-its and vote on concepts or the sketches themselves">
+  <figcaption>You can take notes on post-its and vote on concepts or the sketches themselves.</figcaption>
 </figure> -->
 
-
 <figure  class="attempt-left">
-  <img src="images/crazy-8s.jpg" alt="Crazy 8s adalah cara yang bagus untuk memasukkan semua ide Anda ke dalam laman".>
-  <figcaption>Crazy 8s adalah cara yang bagus untuk memasukkan semua ide Anda ke dalam laman.</figcaption>
+  <img src="images/crazy-8s.jpg" alt="Crazy 8s are a great way to get all of your ideas onto one page">
+  <figcaption>Crazy 8s are a great way to get all of your ideas onto one page.</figcaption>
 </figure>
 
 <figure class="attempt-right">
-  <img src="images/detailed-wireframe.jpg"   alt="Sekarang Anda harus melakukan desain terperinci berdasarkan apa yang telah Anda pelajari.">
-  <figcaption>Sekarang Anda harus melakukan desain terperinci berdasarkan apa yang telah Anda pelajari.</figcaption>
+  <img src="images/detailed-wireframe.jpg"   alt="Now you need to do a detailed design based on what you have learned.">
+  <figcaption>Now you need to do a detailed design based on what you have learned.</figcaption>
 </figure>
 
 <div class="clearfix"></div>
 
-### Menyaring desain Anda
+### Refine your design
 
-Setelah pemungutan suara mengambil ide dengan suara terbanyak dan membuat sketsa ide akhir.
-Anda juga bisa meminjam ide lain yang Anda dengar dari rekan kerja.
-Berikan diri Anda waktu sepuluh menit untuk menyelesaikan tugas ini. Setelah selesai,
-presentasikan kembali ide ini ke tim Anda dan lakukan pemungutan suara seperti sebelumnya.
+After the voting take the idea with the most votes and sketch out a final idea. You can borrow from the other ideas that you heard from your colleagues as well. Give yourself another ten minutes to complete this task. Once you are done, again present the ideas to your team and vote like before.
 
-### Membuat storyboard ide
-
+### Storyboard the idea
 
 <figure>
-  <img src="images/storyboard.jpg" class="attempt-right" alt="Storyboard melibatkan perpaduan sketsa dan ide Anda ke dalam alur komprehensif.">
-  <figcaption>Storyboard melibatkan perpaduan sketsa dan ide Anda ke dalam alur komprehensif.</figcaption>
+  <img src="images/storyboard.jpg" class="attempt-right" alt="The storyboard involves combining your sketches and ideas into a comprehensive flow.">
+  <figcaption>The storyboard involves combining your sketches and ideas into a comprehensive flow.</figcaption>
 </figure>
 
-Dengan desain di tangan, saatnya untuk membuat storyboard interaksi dengan pengguna.
-Di titik ini Anda sebaiknya sudah berpikir tentang langkah berbeda yang diambil
-pengguna. Cukup biasa untuk menggabungkan salah satu dari desain rekan Anda ke dalam
-alur. Anda memerlukan proses langkah demi langkah yang jelas dengan beberapa titik
-di mana pengguna mungkin berbeda. Lihat kembali pemetaan proyek untuk memvalidasi
-desain terhadap tujuan Anda.
+With your design in hand, it's time to storyboard it's engagement with the user. By this point you should have already thought about the different steps a user takes. It's quite common to incorporate one of your colleagues' designs into the flow as well. You want to have a clear step-by-step process with some points where the user might diverge. Refer back to the project map to validate your design against the goal.
 
 <div class="clearfix"></div>
 
-## Membuat prototipe
+## Creating a prototype
 
-Membuat prototipe bukan tentang menciptakan potongan kode yang sempurna, namun untuk membuat
-sesuatu yang bisa dipercaya bila digunakan oleh seseorang. Alat yang digunakan untuk membuat
-prototipe berbeda dari orang ke orang. Beberapa alat seperti Keynote atau Powerpoint karena
-memaksa Anda untuk memikirkan alur dan tidak merancang detail. Anda mungkin ingin meluangkan
-waktu untuk mempelajari alat seperti Balsamiq, Marvel atau Framer yang bisa memberikan
-kontrol perilaku yang lebih banyak. Apapun alat (bantu) yang Anda gunakan pastikan itu adalah alat yang membuat Anda
-fokus pada alur dan terlihat nyata. Anda harus menguji prototipe pada pengguna yang nyata
-sehingga sebisa mungkin dapat dipercaya tapi pada saat yang bersamaan tidak memerlukan
-berminggu-minggu jam kerja untuk dibuat.
+Creating a prototype is not about molding the perfect piece of code but to make something that is believable when used by someone. Tools used to create a prototype vary from person to person. Some like Keynote or Powerpoint as it forces you to think of the flow and not design details. You might want to invest time into learning tools like Balsamiq, Marvel or Framer which can give you more behavioral controls. Whatever tool you use make sure it is one that makes you focus on the flow and looks real. You need to test the prototype on real people so it needs to be as believable as possible but at the same time it shouldn’t take weeks of work to create.
 
 <figure>
-  <img src="images/prototyping.jpg"  alt="Prototipe harus cukup nyata untuk bisa dipercaya">
-  <figcaption>Prototipe harus cukup nyata untuk bisa dipercaya.</figcaption>
+  <img src="images/prototyping.jpg"  alt="Prototypes need to be real enough to be believable">
+  <figcaption>Prototypes need to be real enough to be believable.</figcaption>
 </figure>
 
-Membuat prototipe adalah keseimbangan antara waktu dan realitas, jadi berhati-hatilah agar tidak
-melenceng ke salah satu sisi secara ekstrim. Bila tidak, waktu Anda bisa saja terbuang percuma.
+Creating a prototype is a balance between time and realness, so be careful not to sway to much into either extreme. Either way, you could end up wasting time.
 
-## Pengujian-kegunaan desain Anda
+## Usability-test your designs
 
-Akan bagus sekali jika Anda memiliki lab pengujian. Bila tidak, membuat lab tidak sulit
-asalkan Anda memperhatikan pembuatan lingkungan yang nyaman bagi pengguna serta
-tidak mengganggu mereka. Pengujian biasanya melibatkan pengguna dan dua orang dari
-tim Anda, satu mencatat dan lainnya mengajukan pertanyaan. Persiapan yang baik adalah dengan
-menggunakan aplikasi seperti Hangouts dan merekam tindakannya, ini juga berguna jika Anda
-menginginkan seluruh tim untuk mengamati dari ruangan yang berbeda. Hal ini cukup
-menakutkan bagi kami sebagai pembuat aplikasi untuk melakukannya saat kami melihat desain kami keluar di alam liar.
-Ini bisa menjadi pengalaman yang menyegarkan dan menenangkan.
+It's great if you have a testing lab. If you don't, creating one isn't difficult as long as you're mindful of creating a comfortable environment for your users that isn't distracting. Testing usually involves the user and two people from your team, one taking notes and the other asking questions. A good set up is to use an app like Hangouts and record their actions, this is also handy if you want the rest of the team to observe from a different room. This can be quite scary for us as app makers to do as we are seeing our designs out in the wild. It can be both a refreshing and sobering experience.
 
 <figure>
-  <img src="images/usability-testing.jpg"  alt="Storyboard termasuk menempatkan semua sketsa dan ide bersama-sama ke dalam alur yang komprehensif.">
-  <figcaption>Storyboard termasuk menempatkan semua sketsa dan ide bersama-sama ke dalam alur yang komprehensif.</figcaption>
+  <img src="images/usability-testing.jpg"  alt="The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.">
+  <figcaption>The storyboard involves putting all of your sketches and ideas together into a comprehensive flow.</figcaption>
 </figure>
 
-### Pertanyaan untuk ditanyakan
+### Questions to ask
 
-Saat menguji desain Anda, minta pengguna untuk melakukan tugas di aplikasi dan minta mereka
-agar berbicara dengan suara keras serta mengungkapkan apa yang mereka lakukan dan mengapa. Ini mungkin terdengar aneh
-dilakukan, namun hal ini membantu Anda mengetahui apa yang mereka pikirkan. Cobalah untuk tidak mengganggu atau memberi tahu
-mereka apa yang harus dilakukan saat mereka terhenti. Cukup tanyakan kepada pengguna mengapa mereka mengambil
-alur tertentu setelah mereka menyelesaikan (atau TIDAK menyelesaikan).
+When testing your design, ask the user to perform tasks in your app and get them to speak aloud and verbalize what they're doing and why. This is an odd thing to do but it helps you hear what they're thinking. Try not to interrupt or tell them what they should do when they get stuck. Simply ask them why they took a particular flow after they have completed (or NOT completed).
 
-Apa yang perlu Anda ketahui:
+What you need to find out is:
 
-- Apa yang mereka suka dari prototipe?
-- Apa yang mereka tidak suka dari prototipe?
-- Apa saja titik deritanya?
-  - Mengapa alur bekerja
-  - Mengapa alur tidak bekerja
-- Apa yang ingin mereka tingkatkan?
-- Apakah keseluruhan desain/alur memenuhi kebutuhan mereka?
+- What do they like about the prototype?
+- What do they dislike about the prototype?
+- What are the pain points? 
+    - Why did a flow work
+    - Why did a flow not work
+- What would they like to improve?
+- Does the overall design/flow meet their needs?
 
-## Mengunjungi kembali desain dan rentetan pengujian lagi
+## Revisit designs and another round of testing
 
-Anda memiliki prototipe yang bekerja dengan masukan. Sekarang saatnya merevisi desain
-Anda, dan menganalisis apa yang berhasil dan apa yang tidak. Jangan takut untuk membuat
-storyboard wireframe yang benar-benar baru dan membuat prototipe baru. Memulai lagi dari awal bisa
-membuat alur yang lebih baik dibandingkan mencoba untuk memindahkan sesuatu pada prototipe Anda sebelumnya. Cobalah
-agar jangan terlalu sayang karena itu hanyalah prototipe.
+You have a working prototype with feedback. Now it’s time to revise your designs, and analyze what worked and what didn’t. Don't be afraid to create a completely new wireframe storyboard and make a new prototype. Starting over can create a better flow than trying to move things on your earlier prototype. Try not to be too precious of it because it is just a prototype.
 
-Setelah puas dengan desain, Anda bisa mengujinya lagi dan menyempurnakannya
-lagi. Dalam kasus di mana prototipe sama sekali tidak mencapai target, Anda mungkin
-berpikir proyek itu gagal. Nyatanya, tidak. Anda mungkin menghabiskan
-waktu development lebih sedikit dibandingkan jika Anda telah membangun desain dan mengetahui lebih
-banyak tentang apa yang benar-benar disukai pengguna. Dengan design sprints, kami memiliki filosofi yaitu
-Anda menang atau Anda belajar, jadi jangan terlalu menyalahkan diri sendiri jika ide tersebut
-tidak bekerja seperti yang direncanakan.
+Once you are happy with your designs you can test it again and refine it some more. In cases where the prototype didn’t hit the mark at all, well you might think the project has failed. In actual fact it hasn’t. You've likely spent less development time than if you had actually built the design and you know more bout what user's actually like. With design sprints we have a philosophy where you either win or you learn, so don’t beat yourself up too much if the idea didn't work as planned.
 
-## Buatlah!
+## Make it!
 
-Anda telah menguji ide. Pengguna menyukainya. Pemangku kepentingan berinvestasi
-karena mereka telah terlibat sejak awal. Sekarang saat yang tepat untuk
-membuatnya. Sekarang, Anda harus memiliki gagasan yang jelas tentang apa yang perlu dilakukan dan apa
-prioritas dari pengalaman ini. Pada setiap tonggak bersejarah proyek, Anda mungkin ingin
-memperkenalkan pengujian kegunaan untuk membantu memvalidasi pekerjaan dan menjaga Anda tetap
-di jalur.
+You have tested your ideas. The user likes them. The stakeholders are invested because they've been involved since the beginning. Now it's time to make the thing. By now you should have a clear idea of what needs to be made and what the priorities of the experience are. At each milestone of the project you may want to introduce usability testing to help validate your work and keeping you on track.
 
-Saya tidak bisa menekankan betapa pentingnya mencari tahu sebanyak mungkin informasi sebelum Anda
-berkomitmen untuk banyak pekerjaan, waktu dan energi pada sesuatu yang mungkin saja tidak menjadi
-solusi yang tepat.
+I can’t stress how important it is to find out as much as possible before you commit to a lot of work, time and energy on something that might not be the right solution.
 
-Artikel ini seharusnya bisa memberikan landasan dasar bagi Anda tentang UX dan arti pentingnya. UX
-bukanlah sesuatu yang harus dipandang sebagai peran seorang desainer atau
-peneliti. Ini sebenarnya adalah tanggung jawab semua orang yang terlibat dalam proyek
-sehingga saya selalu merekomendasikan keterlibatan dalam setiap kesempatan.
+This article should now give you a basic grounding in UX and its importance. UX isn’t something that should be looked upon as a role for a designer or researcher. It is actually the responsibility of everyone involved in a project so I would recommend involvement at every opportunity.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,99 +1,120 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Прорисовка – это процесс заполнения пикселей, которые затем будут скомпонованы и выведены на экраны пользователей. Зачастую этот процесс является задачей, которая выполняется в конвейере дольше всего и выполнения которой следует избегать при любой возможности
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# Упрощение и сокращение областей прорисовки {: .page-title }
+# Simplify Paint Complexity and Reduce Paint Areas {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-Прорисовка – это процесс заполнения пикселей, которые затем будут скомпонованы и выведены на экраны пользователей. Зачастую этот процесс является задачей, которая выполняется в конвейере дольше всего и выполнения которой следует избегать при любой возможности
+Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
 ### TL;DR {: .hide-from-toc }
-- Изменение любого свойства, кроме transform и opacity, вызывает прорисовку.
-- Прорисовка зачастую является самой затратной частью конвейера. Избегайте ее при любой возможности.
-- Сокращайте области прорисовки путем размещения элементов на отдельных слоях и оптимизации анимации.
-- Оценивайте сложность прорисовки и затраты на нее с помощью средства профилирования Chrome DevTools. Снижайте сложность при любой возможности.
 
+* Changing any property apart from transforms or opacity always triggers paint.
+* Paint is often the most expensive part of the pixel pipeline; avoid it where you can.
+* Reduce paint areas through layer promotion and orchestration of animations.
+* Use the Chrome DevTools paint profiler to assess paint complexity and cost; reduce where you can.
 
-Если запускается перерасчет макета, _всегда запускается и прорисовка_, поскольку изменение геометрии элемента означает, что его пиксели нужно привести в порядок!
+## Triggering Layout And Paint
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="Полный конвейер пикселей">
+If you trigger layout, you will *always trigger paint*, since changing the geometry of any element means its pixels need fixing!
 
-Прорисовка также запускается при изменении свойств, не связанных с геометрией, таких как фон, цвет текста или тени. В этих случаях перерасчитывать макет не придется, а конвейер будет иметь следующий вид:
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="The full pixel pipeline." />
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="Конвейер пикселей без перерасчета макета.">
+You can also trigger paint if you change non-geometric properties, like backgrounds, text color, or shadows. In those cases layout won’t be needed and the pipeline will look like this:
 
-## Для быстрого определения проблем с прорисовкой используйте Chrome DevTools
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="The pixel pipeline without layout." />
 
-С помощью Chrome DevTools можно быстро определить области, на которые распространяется прорисовка. Перейдите в DevTools и нажмите на клавиатуре клавишу Escape. На открывшейся панели перейдите на вкладку прорисовки и установите флажок "Show paint rectangles" (Показать прямоугольники прорисовки) :
+## Use Chrome DevTools to quickly identify paint bottlenecks
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg"  alt="Параметр отображения прямоугольников прорисовки в DevTools.">
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="The show paint rectangles option in DevTools.">
+  </figure>
+</div>
 
-Когда установлен этот параметр, экран в Chrome будет мигать зеленым каждый раз, когда выполняется прорисовка. Если зеленым мигает весь экран или области экрана, которые предположительно не должны были прорисовываться, то следует провести более детальный анализ.
+You can use Chrome DevTools to quickly identify areas that are being painted. Go to DevTools and hit the escape key on your keyboard. Go to the rendering tab in the panel that appears and choose “Show paint rectangles”.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="Страница, мигающая зеленым при прорисовке.">
+<div style="clear:both;"></div>
 
-На шкале времени Chrome DevTools имеется средство, которое позволяет получить более подробные сведения, – профилировщик прорисовки. Чтобы включить его, перейдите на шкалу времени и установите флажок "Paint" вверху окна. Важно, чтобы _этот флажок находился в установленном состоянии только при профилировании проблем с прорисовкой_, поскольку, когда он установлен, потребляются дополнительные ресурсы и профилирование производительности даст искаженные результаты. Лучше всего использовать это средство, когда вам требуются сведения о том, какие объекты на странице были прорисованы.
+With this option switched on Chrome will flash the screen green whenever painting happens. If you’re seeing the whole screen flash green, or areas of the screen that you didn’t think should be painted, then you should dig in a little further.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg"  alt="Переключатель для включения профилирования прорисовки в Chrome DevTools.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="The page flashing green whenever painting occurs." />
 
-После этого можно включить запись, а информация о прорисовке будет намного более подробной. При щелчке протокола прорисовки в кадре откроется профилировщик прорисовки для этого кадра:
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="The toggle to enable paint profiling in Chrome DevTools.">
+  </figure>
+</div>
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg"  alt="Кнопка для открытия профилировщика прорисовки.">
+There’s an option in the Chrome DevTools timeline which will give you more information: a paint profiler. To enable it, go to the Timeline and check the “Paint” box at the top. It’s important to *only have this switched on when trying to profile paint issues*, as it carries an overhead and will skew your performance profiling. It’s best used when you want more insight into what exactly is being painted.
 
-При щелчке профилировщика прорисовки открывается представление, в котором указано, какие объекты подверглись прорисовке, сколько это заняло времени, а также отдельные вызовы прорисовки, которые потребовались:
+<div style="clear:both;"></div>
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Профилировщик прорисовки Chrome DevTools.">
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="The button to bring up the paint profiler." class="screenshot">
+  </figure>
+</div>
 
-Этот профилировщик позволяет определить и область, и сложность прорисовки (фактически это время, которое занимает прорисовка). А это именно те аспекты, которые необходимо исправлять, если избежать прорисовки совершенно невозможно.
+From here you can now run a Timeline recording, and paint records will carry significantly more detail. By clicking on a paint record in a frame you will now get access to the Paint Profiler for that frame:
 
-## Перемещайте на отдельные слои элементы, которые двигаются или исчезают с экрана
+<div style="clear:both;"></div>
 
-Прорисовка не всегда формирует одно изображение в памяти. На самом деле, при необходимости браузер может сформировать несколько изображений или слоев для компоновки.
+Clicking on the paint profiler brings up a view where you can see what got painted, how long it took, and the individual paint calls that were required:
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="Представление слоев для компоновки.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler." />
 
-Преимущество этого подхода состоит в том, что элементы, которые регулярно заново прорисовываются или двигаются на экране с помощью свойств transform, можно обрабатывать, не затрагивая другие элементы. Это тоже самое, что и работа с графикой в Sketch, GIMP или Photoshop, где отдельные слои можно обрабатывать и располагать друг на друге для создания итогового изображения.
+This profiler lets you know both the area and the complexity (which is really the time it takes to paint), and both of these are areas you can look to fix if avoiding paint is not an option.
 
-Лучший способ создания новыхе слоев – это использование свойства CSS `will-change`. Такой способ работает в Chrome, Opera и Firefox. Со значением `transform` это свойство создает новый слой:
+## Promote elements that move or fade
 
+Painting is not always done into a single image in memory. In fact, it’s possible for the browser to paint into multiple images, or compositor layers, if necessary.
+
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="A representation of compositor layers." />
+
+The benefit of this approach is that elements that are regularly repainted, or are moving on screen with transforms, can be handled without affecting other elements. This is the same as with art packages like Sketch, GIMP, or Photoshop, where individual layers can be handled and composited on top of each other to create the final image.
+
+The best way to create a new layer is to use the `will-change` CSS property. This will work in Chrome, Opera and Firefox, and, with a value of `transform`, will create a new compositor layer:
 
     .moving-element {
       will-change: transform;
     }
     
 
-Для браузеров, которые не поддерживают свойство `will-change`, но будут работать быстрее, если создавать слои, таких как Safari и Mobile Safari, необходимо воспользоваться (немного неправильно) трехмерным преобразованием для принудительного формирования нового слоя:
-
+For browsers that don’t support `will-change`, but benefit from layer creation, such as Safari and Mobile Safari, you need to (mis)use a 3D transform to force a new layer:
 
     .moving-element {
       transform: translateZ(0);
     }
     
 
-Однако не следует создавать слишком много слоев, поскольку каждый из них занимает место в памяти и требует управления. Подробные сведения об этом приведены в разделе [Используйте свойства, вызывающие только компоновку, и контролируйте количество слоев] (stick-to-compositor-only-properties-and-manage-layer-count).
+Care must be taken not to create too many layers, however, as each layer requires both memory and management. There is more information on this in the [Stick to compositor-only properties and manage layer count](stick-to-compositor-only-properties-and-manage-layer-count) section.
 
-Если вы переместили элемент на новый слой, воспользуйтесь DevTools, чтобы убедиться в том, что это дало выигрыш по производительности. **Не перемещайте элементы на отдельные слои без профилирования.**
+If you have promoted an element to a new layer, use DevTools to confirm that doing so has given you a performance benefit. **Don't promote elements without profiling.**
 
-## Сокращайте области прорисовки
+## Reduce paint areas
 
-Несмотря на возможность размещения элементов на отдельных слоях иногда все же необходимо выполнять прорисовку. Большая проблема с прорисовкой заключается в том, что браузеры объединяют вместе две области, которые требуется прорисовать, из-за чего заново прорисованным может быть весь экран. Так, например, если у вас есть фиксированный заголовок вверху страницы и область прорисовки в низу экрана, заново прорисованным может быть весь экран.
+Sometimes, however, despite promoting elements, paint work is still necessary. A large challenge of paint issues is that browsers union together two areas that need painting, and that can result in the entire screen being repainted. So, for example, if you have a fixed header at the top of the page, and something being painted at the bottom the screen, the entire screen may end up being repainted.
 
-Note: На экранах с высоким разрешением элементы с фиксированным положением автоматически переносятся на собственный слой. Этого не происходит на экранах с низким разрешением, поскольку при переносе визуализация текста меняется с субпиксельной на монохромную, поэтому перемещение на слой должно выполняться вручную
+Note: On High DPI screens elements that are fixed position are automatically promoted to their own compositor layer. This is not the case on low DPI devices because the promotion changes text rendering from subpixel to grayscale, and layer promotion needs to be done manually.
 
-Сокращение областей прорисовки зачастую заключается в том, чтобы анимация и переходы не слишком перекрывались, или в том, чтобы найти возможность избежать анимации определенных частей страницы.
+Reducing paint areas is often a case of orchestrating your animations and transitions to not overlap as much, or finding ways to avoid animating certain parts of the page.
 
-## Снижайте сложность прорисовки
-При выполнении прорисовки одни операции требуют больше ресурсов, чем другие. Например, все, что связано с событием blur (тень и т. п.), будет прорисовываться дольше чем, скажем, красный квадрат. Однако для CSS это не всегда очевидно: строки `background: red;` и `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` не выглядят так, что по производительности они значительно отличаются, но на самом деле это так и есть.
+## Simplify paint complexity
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg"  alt="Время на прорисовку части экрана.">
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="The time taken to paint part of the screen.">
+  </figure>
+</div>
 
-Показанный выше профилировщик прорисовки позволит определить, необходимо ли вам искать другие способы достижения этих эффектов. Спросите себя, возможно ли использовать менее затратный набор стилей или иные средства достижения конечного результата.
+When it comes to painting, some things are more expensive than others. For example, anything that involves a blur (like a shadow, for example) is going to take longer to paint than -- say -- drawing a red box. In terms of CSS, however, this isn’t always obvious: `background: red;` and `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` don’t necessarily look like they have vastly different performance characteristics, but they do.
 
-Следует при любой возможности избегать прорисовки во время анимации, поскольку тех **10 мс**, которые у вас есть в каждом кадре, недостаточно для выполнения этой работы, особенно на мобильных устройствах.
+The paint profiler above will allow you to determine if you need to look at other ways to achieve effects. Ask yourself if it’s possible to use a cheaper set of styles or alternative means to get to your end result.
 
+Where you can you always want to avoid paint during animations in particular, as the **10ms** you have per frame is normally not long enough to get paint work done, especially on mobile devices.
 
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

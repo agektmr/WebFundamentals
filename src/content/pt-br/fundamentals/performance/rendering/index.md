@@ -1,112 +1,75 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Os usuários percebem se os sites e aplicativos não funcionam bem. Por isso, é essencial otimizar o desempenho da renderização.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Users notice if sites and apps don't run well, so optimizing rendering performance is crucial!
 
-{# wf_updated_on: 2015-03-20 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# Desempenho da renderização {: .page-title }
+# Rendering Performance {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-O usuário da web de hoje em dia
-[espera que as páginas que acessam sejam interativas e simples](https://paul.kinlan.me/what-news-readers-want/),
-e esse é o ponto que você precisa concentrar cada vez mais seu tempo e esforço. Além
-de carregar rapidamente, as páginas também devem funcionar bem. A rolagem deve
-acompanhar o dedo imediatamente e as animações e interações devem ser muito fluidas.
+Users of today’s web [expect that the pages they visit will be interactive and smooth](https://paul.kinlan.me/what-news-readers-want/) and that’s where you need to increasingly focus your time and effort. Pages should not only load quickly, but also run well; scrolling should be stick-to-finger fast, and animations and interactions should be silky smooth.
 
-Para criar sites e aplicativos de alto desempenho, você precisa saber como o HTML, JavaScript e CSS são tratado pelo navegador e certifique-se de que o código que escrever (e outro código de terceiros que incluir) funcione da forma mais eficaz possível.
+To write performant sites and apps you need to understand how HTML, JavaScript and CSS is handled by the browser, and ensure that the code you write (and the other 3rd party code you include) runs as efficiently as possible.
 
-## 60 fps e as taxas de atualização dos dispositivos
+## 60fps and Device Refresh Rates
 
 <div class="attempt-right">
   <figure>
-    <img src="images/intro/response.jpg" alt="Usuário interagindo com um website.">
+    <img src="images/intro/response.jpg" alt="User interacting with a website.">
   </figure>
 </div>
 
-Atualmente, a maioria dos dispositivos atualiza as telas **60 vezes por segundo**. Se há
-uma animação ou transição em execução ou se o usuário está rolando as páginas, o
-navegador precisa acompanhar a taxa de atualização do dispositivo e enviar uma nova imagem,
-ou quadro, para cada atualização da tela.
+Most devices today refresh their screens **60 times a second**. If there’s an animation or transition running, or the user is scrolling the pages, the browser needs to match the device’s refresh rate and put up 1 new picture, or frame, for each of those screen refreshes.
 
+Each of those frames has a budget of just over 16ms (1 second / 60 = 16.66ms). In reality, however, the browser has housekeeping work to do, so all of your work needs to be completed inside **10ms**. When you fail to meet this budget the frame rate drops, and the content judders on screen. This is often referred to as **jank**, and it negatively impacts the user's experience.
 
-Cada um desses quadros tem uma cota de apenas 16 ms (1 segundo/60 = 16,66 ms).
-Mas, na verdade, o navegador tem que arrumar tudo, então todo o seu
-trabalho deve ser concluído em **10 ms**. Se você estourar essa
-cota, a taxa de quadros cairá e o conteúdo travará na tela. Isso é muitas
-vezes chamado de **instabilidade** (jank) e impacta negativamente a experiência do usuário.
+## The pixel pipeline
 
-## O funil de pixels
+There are five major areas that you need to know about and be mindful of when you work. They are areas you have the most control over, and key points in the pixels-to-screen pipeline:
 
-Há cinco áreas principais que você precisa conhecer e considerar enquanto
-trabalha. Essas áreas são aquelas sobre as quais você tem maior controle e consistem nos pontos principais do funil
-de fornecimento de pixels à tela:
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-<img src="images/intro/frame-full.jpg"  alt="O pipeline de pixels completo">
+* **JavaScript**. Typically JavaScript is used to handle work that will result in visual changes, whether it’s jQuery’s `animate` function, sorting a data set, or adding DOM elements to the page. It doesn’t have to be JavaScript that triggers a visual change, though: CSS Animations, Transitions, and the Web Animations API are also commonly used.
+* **Style calculations**. This is the process of figuring out which CSS rules apply to which elements based on matching selectors, for example, `.headline` or `.nav > .nav__item`. From there, once rules are known, they are applied and the final styles for each element are calculated.
+* **Layout**. Once the browser knows which rules apply to an element it can begin to calculate how much space it takes up and where it is on screen. The web’s layout model means that one element can affect others, for example the width of the `<body>` element typically affects its children’s widths and so on all the way up and down the tree, so the process can be quite involved for the browser.
+* **Paint**. Painting is the process of filling in pixels. It involves drawing out text, colors, images, borders, and shadows, essentially every visual part of the elements. The drawing is typically done onto multiple surfaces, often called layers.
+* **Compositing**. Since the parts of the page were drawn into potentially multiple layers they need to be drawn to the screen in the correct order so that the page renders correctly. This is especially important for elements that overlap another, since a mistake could result in one element appearing over the top of another incorrectly.
 
-* **JavaScript**. Geralmente, o JavaScript é usado para tratar o trabalho que resultará em mudanças visuais, seja na função `animate` do jQuery, classificando um conjunto de dados ou adicionando elementos DOM à página. No entanto, não é necessariamente o JavaScript que aciona uma mudança visual: animações CSS, transições e Web Animations API também são bastante usados.
-* **Cálculos de estilo**. Esse é o processo de descoberta de que regras CSS se aplicam a que elementos com base nos seletores de correspondência, como por exemplo, `.headline` ou `.nav > .nav__item`. A partir deste ponto, quando as regras são conhecidas, elas são aplicadas e os estilos finais de cada elemento são calculados.
-* **Layout**. Quando o navegador sabe quais regras aplicar a um elemento, pode começar a calcular quanto espaço ocupa e onde está na tela. O modelo de layout da web indica que um elemento pode afetar outros. Por exemplo, a largura do elemento `<body>` normalmente afeta o comprimento de seus secundários, e assim por diante em toda a extensão da árvore, por isso, o processo pode exigir muito do navegador.
-* **Coloração**. A coloração é o processo de preencher os pixels. Esse processo envolve desenhar texto, cores, imagens, bordas e sombras. Basicamente, toda a parte visual dos elementos. O desenho é geralmente realizado em várias superfícies, frequentemente chamadas de camadas.
-* **Composição**. Como as partes da página foram possivelmente desenhadas em várias camadas, elas precisam ser desenhadas na tela na ordem correta para que a página seja renderizada corretamente. Isso é especialmente importante para elementos sobrepostos, pois um erro pode resultar em um elemento aparecendo incorretamente acima de outro.
+Each of these parts of the pipeline represents an opportunity to introduce jank, so it's important to understand exactly what parts of the pipeline your code triggers.
 
-Cada uma dessas partes do pipeline é uma oportunidade de introduzir instabilidade. Portanto, é importante compreender exatamente quais as partes do pipeline acionadas pelo seu código.
+Sometimes you may hear the term "rasterize" used in conjunction with paint. This is because painting is actually two tasks: 1) creating a list of draw calls, and 2) filling in the pixels.
 
-Às vezes, você pode ouvir o termo "rasterizar" junto com gravação.
-Isso porque a gravação são, na verdade, duas tarefas: 1) criar uma lista de chamadas
-de desenho e 2) preencher com pixels.
+The latter is called "rasterization" and so whenever you see paint records in DevTools, you should think of it as including rasterization. (In some architectures creating the list of draw calls and rasterizing are done in different threads, but that isn't something under developer control.)
 
-A segunda é chamada de "rasterização" e sempre que você vir registros de gravação no
-DevTools, pense neles considerando a rasterização (em algumas
-arquiteturas, a criação da lista de chamadas de desenho e a rasterização são feitas
-encadeamentos diferentes, mas isso não está sob o controle do desenvolvedor).
-
-Você nem sempre precisará mexer em todas as partes do funil de cada quadro.
-Na verdade, o funil _geralmente_ trabalha de três formas para um determinado quadro
-quando se realiza uma mudança visual: com o JavaScript, o CSS ou o Web
-Animations:
+You won’t always necessarily touch every part of the pipeline on every frame. In fact, there are three ways the pipeline *normally* plays out for a given frame when you make a visual change, either with JavaScript, CSS, or Web Animations:
 
 ### 1. JS / CSS > Style > Layout > Paint > Composite
 
-<img src="images/intro/frame-full.jpg"  alt="O pipeline de pixels completo">
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-Se você alterar uma propriedade "layout" de forma que ela altere a geometria de um
-elemento, como sua largura, altura ou posição à esquerda ou no topo, o navegador precisará verificar
-todos os outros elementos e executar um reestruturar o fluxo da página. Todas as áreas
-afetadas precisarão ser coloridas novamente e os elementos coloridos finais precisarão
-ser compostos novamente.
+If you change a “layout” property, so that’s one that changes an element’s geometry, like its width, height, or its position with left or top, the browser will have to check all the other elements and “reflow” the page. Any affected areas will need to be repainted, and the final painted elements will need to be composited back together.
 
 ### 2. JS / CSS > Style > Paint > Composite
 
-<img src="images/intro/frame-no-layout.jpg" alt="O pipeline de pixels sem layout.">
+<img src="images/intro/frame-no-layout.jpg" alt="The  pixel pipeline without layout." />
 
-Se você alterou uma propriedade "paint only", como uma imagem de fundo, a cor de um texto ou
-sombras, ou seja, propriedades que não afetam o layout da página, o navegador pulará
-o layout, mas ainda fará a gravação.
+If you changed a “paint only” property, like a background image, text color, or shadows, in other words one that does not affect the layout of the page, then the browser skips layout, but it will still do paint.
 
 ### 3. JS / CSS > Style > Composite
 
-<img src="images/intro/frame-no-layout-paint.jpg" alt="O pipeline de pixels sem layout ou pintura.">
+<img src="images/intro/frame-no-layout-paint.jpg" alt="The pixel pipeline without layout or paint." />
 
-Se você alterar uma propriedade que não exige layout nem gravação, o navegador
-executará apenas a composição.
+If you change a property that requires neither layout nor paint, and the browser jumps to just do compositing.
 
-Essa versão final é a mais barata e a melhor para pontos críticos do ciclo
-de vida de um aplicativo, como animações ou rolagem.
+This final version is the cheapest and most desirable for high pressure points in an app's lifecycle, like animations or scrolling.
 
-Observação: Para saber qual das três versões acima será acionada quando se alterar qualquer propriedade CSS, acesse [CSS Triggers](https://csstriggers.com). E se você quiser um atalho para obter animações de alto desempenho, leia a seção sobre [como alterar as propriedades compositor-only](stick-to-compositor-only-properties-and-manage-layer-count).
+Note: If you want to know which of the three versions above changing any given CSS property will trigger head to [CSS Triggers](https://csstriggers.com). And if you want the fast track to high performance animations, read the section on [changing compositor-only properties](stick-to-compositor-only-properties-and-manage-layer-count).
 
-O desempenho é a arte de evitar trabalho e fazer com que todo trabalho realizado seja o mais
-eficiente possível. Em muitos casos, basta trabalhar a favor do navegador, e não
-contra ele. É importante lembrar que o trabalho listado acima no funil
-é diferente em termos de custo computacional: algumas tarefas exigem mais do
-que outras.
+Performance is the art of avoiding work, and making any work you do as efficient as possible. In many cases it's about working with the browser, not against it. It’s worth bearing in mind that the work listed above in the pipeline differ in terms of computational cost; some tasks are more expensive than others!
 
-Vamos detalhar as diferentes partes do pipeline. Vamos dar uma olhada
-nos problemas comuns e também em como diagnosticá-los e corrigi-los.
+Let’s take a dive into the different parts of the pipeline. We’ll take a look at the common issues, as well how to diagnose and fix them.
 
 {% include "web/_shared/udacity/ud860.html" %}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,38 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "Índice de velocidad".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Speed Index" Lighthouse audit.
 
-{# wf_updated_on: 2018-11-10 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-11-10 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# Índice de velocidad  {: .page-title }
+# Speed Index {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-El Índice de velocidad es una métrica de rendimiento de carga de página que muestra qué tan rápido
-se completan visiblemente los contenidos de una página. Cuanto menor es el puntaje, mejor.
+Speed Index is a page load performance metric that shows you how quickly the contents of a page are visibly populated. The lower the score, the better.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Para reducir el puntaje del Índice de velocidad, debes optimizar tu página
-para que se cargue visualmente más rápido. Los siguientes son dos buenos puntos de inicio:
+To lower your Speed Index score, you need to optimize your page to visually load faster. Two good starting places are:
 
-* [Optimización del ahorro de contenido](/web/fundamentals/performance/optimizing-content-efficiency/).
-* [Optimización de la ruta de acceso de representación crítica](/web/fundamentals/performance/critical-rendering-path/).
+* [Optimizing Content Efficiency](/web/fundamentals/performance/optimizing-content-efficiency/).
+* [Optimizing the Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse usa un módulo de nodo denominado
-[Speedline](https://github.com/pmdartus/speedline)
-para generar el puntaje de Índice de velocidad.
+Lighthouse uses a node module called [Speedline](https://github.com/pmdartus/speedline) to generate the Speed Index score.
 
-Para obtener más información sobre los algoritmos y las metodologías detrás del Índice de velocidad,
-consulta [Índice de velocidad](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index).
+For more information on the algorithms and methodologies behind Speed Index, see [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index).
 
-El puntaje objetivo se calcula mediante una función de distribución acumulativa de una
-distribución lognormal. Consulta los comentarios de la
-[fuente](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/speed-index.js)
-de la auditoría si necesitas obtener más información.
+The target score is computed by a cumulative distribution function of a log-normal distribution. Check out the comments in the [source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/speed-index.js) of the audit if you need to know more.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

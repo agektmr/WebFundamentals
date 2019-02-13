@@ -1,62 +1,55 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: De forma predeterminada, la CSS se trata como un recurso que bloquea la representación. Aprende a evitar que bloquee la representación.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: By default CSS is treated as a render blocking resource. Learn how to prevent it from blocking rendering.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>CSS #}
 
-# CSS que bloquea la representación {: .page-title }
+# Render Blocking CSS {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-De forma predeterminada, la CSS se trata como un recurso que bloquea la representación. Esto significa que el
-navegador no representará ningún contenido procesado hasta que se construya el
-CSSOM. Asegúrate de que tu CSS sea simple, proporciónala tan rápido como sea
-posible, y usa tipos y consultas de medios para desbloquear la representación.
+By default, CSS is treated as a render blocking resource, which means that the browser won't render any processed content until the CSSOM is constructed. Make sure to keep your CSS lean, deliver it as quickly as possible, and use media types and queries to unblock rendering.
 
-En la [construcción del árbol de representación](render-tree-construction), vimos que la ruta de representación crítica requiere el DOM y el CSSOM para construir el árbol de representación. Esto genera una importante consecuencia para el rendimiento: **tanto HTML como CSS son recursos que bloquean la representación.** HTML es evidente, ya que sin el DOM no tendríamos nada para representar, pero el requisito de CSS puede ser menos obvio. ¿Qué ocurriría si intentáramos representar una página típica sin bloquear la representación en CSS?
+In the [render tree construction](render-tree-construction) we saw that the critical rendering path requires both the DOM and the CSSOM to construct the render tree. This creates an important performance implication: **both HTML and CSS are render blocking resources.** The HTML is obvious, since without the DOM we would not have anything to render, but the CSS requirement may be less obvious. What would happen if we try to render a typical page without blocking rendering on CSS?
 
 ### TL;DR {: .hide-from-toc }
-- De forma predeterminada, la CSS se trata como un recurso que bloquea la representación.
-- Los tipos de medios y las consultas de medios nos permiten marcar algunos recursos CSS como no bloqueadores de la representación.
-- Todos los recursos CSS, independientemente de su conducta de bloqueo o no bloqueo, se descargan a través del navegador.
 
+* By default, CSS is treated as a render blocking resource.
+* Media types and media queries allow us to mark some CSS resources as non-render blocking.
+* The browser downloads all CSS resources, regardless of blocking or non-blocking behavior.
 
 <div class="attempt-left">
   <figure>
-    <img src="images/nytimes-css-device.png" alt="NYTimes con CSS">
-    <figcaption>The New York Times con CSS</figcaption>
+    <img src="images/nytimes-css-device.png" alt="NYTimes with CSS">
+    <figcaption>The New York Times with CSS</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/nytimes-nocss-device.png" alt="NYTimes sin CSS">
-    <figcaption>The New York Times sin CSS (FOUC)</figcaption>
+    <img src="images/nytimes-nocss-device.png" alt="NYTimes without CSS">
+    <figcaption>The New York Times without CSS (FOUC)</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-El ejemplo anterior, en el cual se muestra el sitio web del NYTimes con CSS y sin CSS, demuestra la razón por la cual se bloquea la representación hasta que CSS esté disponible;---sin CSS, la página no se puede usar. La experiencia de la derecha a menudo se conoce como “destello de contenido sin estilo” (FOUC). El navegador bloquea la representación hasta contar con el DOM y el CSSOM.
+The above example, showing the NYTimes website with and without CSS, demonstrates why rendering is blocked until CSS is available\---without CSS the page is relatively unusable. The experience on the right is often referred to as a "Flash of Unstyled Content" (FOUC). The browser blocks rendering until it has both the DOM and the CSSOM.
 
-> **_CSS es un recurso que bloquea la representación. Proporciónala al cliente lo más rápido posible para optimizar el tiempo de la primera representación._**
+> ***CSS is a render blocking resource. Get it to the client as soon and as quickly as possible to optimize the time to first render.***
 
-No obstante, ¿qué ocurre si hay algunos estilos de CSS que solo se usan en ciertas condiciones (por ejemplo, cuando se imprime la página o cuando se proyecta en un monitor grande)? Sería bueno no tener que bloquear la representación en estos recursos.
+However, what if we have some CSS styles that are only used under certain conditions, for example, when the page is being printed or being projected onto a large monitor? It would be nice if we didn’t have to block rendering on these resources.
 
-Los “tipos de medios” y las “consultas de medios” de CSS nos permiten abordar estos casos de uso:
-
+CSS "media types" and "media queries" allow us to address these use cases:
 
     <link href="style.css" rel="stylesheet">
     <link href="print.css" rel="stylesheet" media="print">
     <link href="other.css" rel="stylesheet" media="(min-width: 40em)">
     
 
-Una [consulta de medios](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) consiste en un tipo de medio y un número de expresiones de cero en adelante; estos comprueban las condiciones de funciones de medios específicas. Por ejemplo, nuestra primera declaración de la hoja de estilo no proporciona tipos ni consultas de medios. Por ello, se aplicará en todos los casos; es decir, siempre bloqueará la representación. Por otro lado, la segunda declaración de la hoja de estilo solo se aplica cuando se imprime el contenido.---Tal vez quieras ordenar el diseño, cambiar las fuentes, etc., y de ahí que esta declaración de la hoja de estilo no necesita bloquear la representación de la página. Por último, la última declaración de la hoja de estilo proporciona una “consulta de medios” que ejecuta el navegador: si las condiciones coinciden, el navegador bloqueará la representación hasta que la hoja de estilo se haya descargado y procesado.
+A [media query](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) consists of a media type and zero or more expressions that check for the conditions of particular media features. For example, our first stylesheet declaration doesn't provide a media type or query, so it applies in all cases; that is to say, it is always render blocking. On the other hand, the second stylesheet declaration applies only when the content is being printed\---perhaps you want to rearrange the layout, change the fonts, and so on, and hence this stylesheet declaration doesn't need to block the rendering of the page when it is first loaded. Finally, the last stylesheet declaration provides a "media query," which is executed by the browser: if the conditions match, the browser blocks rendering until the style sheet is downloaded and processed.
 
-Al usar consultas de medios, nuestra presentación puede orientarse a casos de uso específicos, como la representación frente a la impresión, y a condiciones dinámicas, como cambios en la orientación de la pantalla y cambios de tamaño de eventos, entre otras. **Cuando declares tus recursos de hoja de estilo, presta mucha atención al tipo y a las consultas de medios ya que tendrán un gran impacto en el rendimiento de la ruta de representación crítica.**
+By using media queries, we can tailor our presentation to specific use cases, such as display versus print, and also to dynamic conditions such as changes in screen orientation, resize events, and more. **When declaring your style sheet assets, pay close attention to the media type and queries; they greatly impact critical rendering path performance.**
 
-Consideremos algunos ejemplos prácticos:
-
+Let's consider some hands-on examples:
 
     <link href="style.css"    rel="stylesheet">
     <link href="style.css"    rel="stylesheet" media="all">
@@ -64,17 +57,13 @@ Consideremos algunos ejemplos prácticos:
     <link href="print.css"    rel="stylesheet" media="print">
     
 
-* La primera declaración bloquea la representación y coincide en todas las condiciones.
-* La segunda declaración también bloquea la representación; “all” es el tipo predeterminado; por lo tanto, si no especificas un tipo, se establece implícitamente. Por lo tanto, la primera y la segunda declaración son equivalentes.
-* La tercera declaración presenta una consulta de medios dinámica, que se evaluará durante la carga de la página. Según la orientación del dispositivo durante la carga de la página, portrait.css podría o no bloquear la representación.
-* La última declaración solo se aplica durante la impresión de la página. Por lo tanto, no bloquea la representación cuando se carga la página por primera vez en el navegador.
+* The first declaration is render blocking and matches in all conditions.
+* The second declaration is also render blocking: "all" is the default type so if you don’t specify any type, it’s implicitly set to "all". Hence, the first and second declarations are actually equivalent.
+* The third declaration has a dynamic media query, which is evaluated when the page is loaded. Depending on the orientation of the device while the page is loading, portrait.css may or may not be render blocking.
+* The last declaration is only applied when the page is being printed so it is not render blocking when the page is first loaded in the browser.
 
-Por último, ten en cuenta que “bloqueo de la representación” solo hace referencia a si el navegador debe demorar la representación inicial de la página en el recurso en cuestión. En cualquiera de estos casos, el recurso CSS se descarga de todos modos a través del navegador, aunque con una prioridad más baja para los recursos que no bloqueen la representación.
+Finally, note that "render blocking" only refers to whether the browser has to hold the initial rendering of the page on that resource. In either case, the browser still downloads the CSS asset, albeit with a lower priority for non-blocking resources.
 
-<a href="adding-interactivity-with-javascript" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Adding Interactivity with JS">
-  <button>A continuación: Agregar interactividad con JavaScript</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

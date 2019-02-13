@@ -1,40 +1,30 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk "Manifes Berisi background_color" audit Lighthouse.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains background_color" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# Manifes Berisi Warna Latar Belakang  {: .page-title }
+# Manifest Contains background_color {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Ketika aplikasi web memuat dari layar beranda pengguna, browser menggunakan properti
-`background_color` untuk menggambar warna latar belakang browser selagi
-aplikasi dimuat. Hal ini menciptakan transisi yang mulus antara peluncuran aplikasi dan
-pemuatan materi aplikasi.
+When your web app is loading from a user's homescreen, the browser uses the `background_color` property to draw the background color of the browser while the app loads. This creates a smooth transition between launching the app and loading the app's content.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Tambahkan properti `background_color` di Manifes Aplikasi Web Anda. Nilainya bisa semua warna
-CSS yang valid.
+Add a `background_color` property in your Web App Manifest. The value can be any valid CSS color.
 
     {
       ...
       "background_color": "cornflowerblue",
       ...
     }
+    
 
-Lihat [Manifest Exists](manifest-exists#how)
-untuk daftar panduan yang mengajarkan Anda cara
-mengimplementasikan dan menguji dukungan "Add to Homescreen" dalam aplikasi Anda dengan benar.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Audit diteruskan jika manifes berisi properti `background_color`.
-Manifes yang diambil Lighthouse berbeda dari yang digunakan Chrome
-pada laman, yang mungkin bisa menyebabkan hasil yang tidak akurat. Lighthouse tidak
-memvalidasi bahwa nilainya adalah warna CSS yang valid.
+Audit passes if the manifest contains a `background_color` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results. Lighthouse does not validate that the value is a valid CSS color.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

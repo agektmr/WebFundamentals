@@ -1,89 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Introducción al árbol de accesibilidad
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to the Accessibility Tree
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-10-04 #}
+# The Accessibility Tree {: .page-title }
 
-# El árbol de accesibilidad {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+Imagine that you're building a user interface *for screen reader users only*. Here, you don't need to create any visual UI at all, but just provide enough information for the screen reader to use.
 
+What you'd be creating is a kind of API describing the page structure, similar to the DOM API, but you can get away with less information and fewer nodes, because a lot of that information is only useful for visual presentation. It might look something like this.
 
+![screen reader DOM API mockup](imgs/treestructure.jpg)
 
-Imagina que estás compilando una interfaz de usuario *solo para usuarios de lector de pantalla*.
-Aquí, no necesitas crear una IU visual, solo tienes que brindar suficiente
-información para que use el lector de pantalla.
+This is basically what the browser actually presents to the screen reader. The browser takes the DOM tree and modifies it into a form that is useful to assistive technology. We refer to this modified tree as the *Accessibility Tree*.
 
-Lo que crearías es una especie de API que describe la estructura de la página, similar
-a la API del DOM, pero puedes terminar con menos información y menos nodos,
-porque mucha de esa información solo es útil para la presentación visual. Puede
-lucir así.
+You might visualize the accessibility tree as looking a bit like an old web page from the '90s: a few images, lots of links, perhaps a field and a button.
 
-![maqueta de la API del DOM de lector de pantalla](imgs/treestructure.jpg)
+![a 1990s style web page](imgs/google1998.png)
 
-Esto es básicamente lo que el navegador le presenta el lector de pantalla. El
-navegador toma el árbol del DOM y lo modifica para generar un formulario útil para
-la tecnología asistencial. A este árbol modificado lo llamamos *Árbol
-de accesibilidad*.
+Visually scanning down a page like this case gives you an experience similar to what a screen reader user would get. The interface is there, but it is simple and direct, much like an accessibility tree interface.
 
-Puedes visualizar el árbol de accesibilidad como semejante a una vieja página web
-de la década del 90: pocas imágenes, muchos vínculos, tal vez un campo y un botón.
+The accessibility tree is what most assistive technologies interact with. The flow goes something like this.
 
-![una página web estilo 1990](imgs/google1998.png)
+1. An application (the browser or other app) exposes a semantic version of its UI to assistive technology via an API.
+2. The assistive technology may use the information it reads via the API to create an alternative user interface presentation for the user. For example, a screen reader creates an interface in which the user hears a spoken representation of the app.
+3. The assistive technology may also allow the user to interact with the app in a different way. For example, most screen readers provide hooks to allow a user to easily simulate a mouse click or finger tap.
+4. The assistive technology relays the user intent (such as "click") back to the app via the accessibility API. The app then has the responsibility to interpret the action appropriately in the context of the original UI.
 
-El escaneo visual de una página como esta te brinda una experiencia similar a
-la que tendría el usuario de lector de pantalla. La interfaz está allí, pero es simple
-y directa, como una interfaz de árbol de accesibilidad.
+For web browsers, there's an extra step in each direction, because the browser is in fact a platform for web apps that run inside it. So the browser needs to translate the web app into an accessibility tree, and must make sure that the appropriate events get fired in JavaScript based on the user actions that come in from the assistive technology.
 
-El árbol de accesibilidad es con lo que la mayoría de las tecnologías asistenciales interactúan. El
-flujo es parecido a esto.
+But that is all the browser's responsibility. Our job as web developers is just to be aware that this is going on, and to develop web pages that take advantage of this process to create an accessible experience for our users.
 
- 1. Una app (el navegador u otra app) expone una versión de semantic de su
-    IU para tecnología asistencial vía una API.
- 1. La tecnología asistencial puede usar la información que lee vía la API para
-    crear una presentación de interfaz de usuario alternativa para el usuario. Por ejemplo,
-    un lector de pantalla crea una interfaz en la que el usuario escucha una representación
-    hablada de la app.
- 1. La tecnología asistencial también puede permitirle al usuario interactuar con la app de
-    otra manera. Por ejemplo, la mayoría de los lectores de pantalla brindan vínculos que le permiten al
-    usuario simular fácilmente un clic de mouse o el presionar con el dedo.
- 1. La tecnología asistencial transmite la intención del usuario (como "clic") a
-    la app a través de la API de accesibilidad. La app tiene la responsabilidad de
-    interpretar la acción en forma correcta en el contexto de la IU original.
+We do this by ensuring that we express the semantics of our pages correctly: making sure that the important elements in the page have the correct accessible roles, states, and properties, and that we specify accessible names and descriptions. The browser can then let the assistive technology access that information to create a customized experience.
 
-Para los navegadores web, existe un paso adicional en cada dirección, porque el navegador
-es una plataforma de apps web que se ejecuten en él. Por eso, el navegador necesita
-traducir la app web en un árbol de accesibilidad, y tiene que asegurarse de que se activen los
-eventos apropiados en JavaScript según las acciones del usuario que vienen
-de la tecnología asistencial.
+## Semantics in native HTML
 
-Pero eso es responsabilidad del navegador. Nuestra tarea como programadores web es
-estar al tanto de que esto sucede y desarrollar páginas web que aprovechen
-este proceso para crear una experiencia accesible para nuestros usuarios.
+A browser can transform the DOM tree into an accessibility tree because much of the DOM has *implicit* semantic meaning. That is, the DOM uses native HTML elements that are recognized by browsers and work predictably on a variety of platforms. Accessibility for native HTML elements such as links or buttons is thus handled automatically. We can take advantage of that built-in accessibility by writing HTML that expresses the semantics of our page elements.
 
-Hacemos esto asegurándonos de expresar los semantics de nuestras páginas correctamente:
-asegurándonos de que los elementos importantes de la página tengan los estados, propiedades y roles
-accesibles correctos, y que especifiquen nombres y
-descripciones accesibles. El navegador puede permitirle a la tecnología asistencial acceder a esa
-información para crear una experiencia personalizada.
-
-## Semantics en HTML nativo
-
-Un navegador puede transformar el árbol del DOM en un árbol de accesibilidad porque gran parte
-del DOM tiene significado de semantic *implícito*. Es decir, el DOM usa elementos de
-HTML nativos reconocidos por los navegadores y que trabajan en forma predictiva en varias
-plataformas. La accesibilidad para elementos de HTML nativos como vínculos o botones se
-controla automáticamente. Podemos aprovechar esa accesibilidad incorporada
-escribiendo HTML que expresen los semantics de los elementos de nuestra página.
-
-Sin embargo, a veces usamos elementos que parecen elementos nativos, pero no lo son.
-Por ejemplo, este "botón" no es un botón.
+However, sometimes we use elements that look like native elements but aren't. For example, this "button" isn't a button at all.
 
 {% framebox height="60px" %}
+
 <style>
     .fancy-btn {
         display: inline-block;
@@ -95,99 +52,75 @@ Por ejemplo, este "botón" no es un botón.
         cursor: pointer;
     }
 </style>
+
 <div class="fancy-btn">Give me tacos</div>
+
 {% endframebox %}
 
-Se puede construir en HTML de varias formas, una de ellas es la siguiente.
-
+It might be constructed in HTML in any number of ways; one way is shown below.
 
     <div class="button-ish">Give me tacos</div>
     
 
-Cuando no usamos un elemento botón real, el lector de pantalla no tiene forma de saber
-sobre qué ha aterrizado. Además, tendríamos que hacer el trabajo adicional [de agregar
-tabindex](/web/fundamentals/accessibility/focus/using-tabindex) para que sea
-utilizable para usuarios solo de teclado porque, como se codifica ahora, solo se puede usar
-con mouse.
+When we don't use an actual button element, the screen reader has no way to know what it has landed on. Also, we would have to do the extra work [of adding tabindex](/web/fundamentals/accessibility/focus/using-tabindex) to make it usable to keyboard-only users because, as it is coded now, it can only be used with a mouse.
 
-Podemos solucionar esto fácilmente usando un elemento `button` común en lugar de un `div`.
-El uso de un elemento nativo también tiene le beneficio de ocuparse de las interacciones
-de teclado por nosotros. Y recuerda que no tienes que perder tus elegantes efectos
-visuales solo porque uses un elemento nativo. Puedes darles estilo a los elementos nativos para
-que luzcan como quieres y mantener los semantics y
-el comportamiento implícitos.
+We can easily fix this by using a regular `button` element instead of a `div`. Using a native element also has the benefit of taking care of keyboard interactions for us. And remember that you don't have to lose your spiffy visual effects just because you use a native element; you can style native elements to make them look the way you want and still retain the implicit semantics and behavior.
 
-Antes observamos que los lectores de pantalla anunciarán el rol, nombre,
-estado y valor de un elemento. Al usar el elemento de semantic correcto, el rol, estado y valor
-están cubiertos, pero también tenemos que asegurarnos que hacer que el nombre de un elemento
-sea detectable.
+Earlier we noted that screen readers will announce an element's role, name, state, and value. By using the right semantic element, role, state, and value are covered, but we must also ensure that we make an element's name discoverable.
 
-A grandes rasgos, existen dos tipos de nombres:
+Broadly, there are two types of names:
 
- - las *etiquetas visibles*, que todos los usuarios usan para asociar el significado a un
-   elemento, y
- - las *alternativas de texto*, que solo se usan cuando no hay necesidad de etiqueta
-   visual.
+- *Visible labels*, which are used by all users to associate meaning with an element, and
+- *Text alternatives*, which are only used when there is no need for a visual label.
 
-Para los elementos de nivel de texto, no tenemos que hacer nada, porque, por definición,
-tendrán contenido de texto. Sin embargo, para los elementos de control o entrada, y el contenido
-visual como imágenes, tenemos que asegurarnos de especificar un nombre. De hecho,
-brindar alternativas de texto para cualquier contenido que no sea texto es [el primer
-artículo de la lista de comprobación de WebAIM](http://webaim.org/standards/wcag/checklist#g1.1).
+For text-level elements, we don't need to do anything, because by definition it will have some text content. However, for input or control elements, and visual content like images, we need to make sure that we specify a name. In fact, providing text alternatives for any non-text content is [the very first item on the WebAIM checklist](http://webaim.org/standards/wcag/checklist#g1.1).
 
-Una forma de hacerlo es seguir su recomendación de que "Las entradas de formulario tienen
-etiquetas de texto asociadas". Existen dos formas de asociar una etiqueta a un elemento
-de formulario, como una casilla de verificación. Cualquiera de los métodos hace que el texto de la etiqueta también
-se convierta en un objetivo de clic para la casilla de verificación, lo cual también es útil para usuarios de mouse o
-pantalla táctil. Para asociar una etiqueta a un elemento,
+One way to do that is to follow their recommendation that "Form inputs have associated text labels." There are two ways to associate a label with a form element, such as a checkbox. Either of the methods causes the label text to also become a click target for the checkbox, which is also helpful for mouse or touchscreen users. To associate a label with an element, either
 
- - Coloca el elemento de entrada dentro de un elemento de etiqueta
+- Place the input element inside a label element
 
 <div class="clearfix"></div>
 
     <label>
       <input type="checkbox">Receive promotional offers?</input>
     </label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <label style="font-size: 16px; color: #212121;">
         <input type="checkbox">Receive promotional offers?</input>
     </label>
 </div>
+
 {% endframebox %}
 
+or
 
-o
-
- - Usa el atributo `for` de la etiqueta y haz referencia al `id` del elemento
+- Use the label's `for` attribute and refer to the element's `id`
 
 <div class="clearfix"></div>
 
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
 </div>
+
 {% endframebox %}
-    
 
-Cuando se etiqueta correctamente la casilla de verificación, el lector de pantalla puede informar que
-el elemento tiene un rol de casilla de verificación y se llama "Receive
-promotional offers?".
+When the checkbox has been labeled correctly, the screen reader can report that the element has a role of checkbox, is in a checked state, and is named "Receive promotional offers?".
 
-![salida de texto en pantalla de VoiceOver que muestra la etiqueta en oralidad de una casilla de verificación](imgs/promo-offers.png)
+![on-screen text output from VoiceOver showing the spoken label for a checkbox](imgs/promo-offers.png)
 
-Success: Puedes usar el lector de pantalla para encontrar etiquetas
-asociadas en forma incorrecta tocando la pantalla y verificando los roles, estados y
-nombres en la oralidad.
+Success: You can actually use the screen reader to find improperly-associated labels by tabbing through the page and verifying the spoken roles, states, and names.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

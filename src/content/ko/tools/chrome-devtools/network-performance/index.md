@@ -1,10 +1,6 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 네트워크 성능 분석 시작하기.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Get started analyzing network performance.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-01-17 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-17 #} {# wf_blink_components: Platform>DevTools #} 
 
 <style>
 .devtools-inline {
@@ -16,239 +12,149 @@ figcaption {
 }
 </style>
 
-# Chrome DevTools에서 네트워크 성능 분석 시작하기 {: .page-title }
+ 
+
+# Get Started with Analyzing Network Performance in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-참고: 로드 속도 향상의 종합적인
-접근 방식에 대해서는 [웹사이트 속도 최적화](/web/tools/chrome-devtools/speed/get-started)를 참조하세요. 이 가이드에는 로드 성능 분석을 위한
-권장 워크플로가 담겨 있습니다.
+Note: See [Optimize Website Speed](/web/tools/chrome-devtools/speed/get-started) for a comprehensive approach to improving load speed. That tutorial contains the recommended workflow for analyzing load performance.
 
-Chrome DevTools Network 패널을 사용하는 방법을 배워 페이지가 느리게 로드되는 이유를
-단계별 대화식 가이드로 알아보세요.
+Learn how to use the Chrome DevTools Network panel to understand why a page loads slowly in this step-by-step, interactive tutorial.
 
-## 1단계: DevTools 설정 {: #set-up }
+## Step 1: Set up DevTools {: #set-up }
 
-모바일 이용자로부터 사이트의 특정 페이지가
-느리다는 보고를 수신했다고 가정해 봅시다. 여러분이 할 일은 이 페이지를 빠르게 하는 것입니다.
+Suppose that you're receiving reports from mobile users that a particular page on your site is slow. Your job is to make the page fast.
 
-1. **Open Slow Page**를 클릭합니다. 이 페이지가 새 탭에서 열립니다.
+1. Click **Open Slow Page**. The page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Slow Page Opened"> <button>Open Slow Page</button> </a>
 
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v1.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Slow Page Opened">
-       <button>Open Slow Page</button>
-     </a>
+2. While the page is in focus, press <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux) to open DevTools on the page.
 
-1. 페이지가 포커스 상태일 때
-   <kbd>Cmmd</kbd>+<kbd>Option</kbd>+<kbd>I</kbd>(Mac)를 누르거나
-   <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>(Windows, Linux)를 눌러
-   이 페이지에 DevTools을 엽니다.
+3. In DevTools, click the **Network** tab.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, opened on the slow
+          page that you're going to diagnose.](imgs/get-started-network-panel.png) <figcaption> **Figure 1**. The Chrome DevTools Network panel, opened next to the slow page that you're going to diagnose. </figcaption> </figure> 
+    <aside class="note"> 
+    
+    **Note:** For the rest of the screenshots, DevTools is <a
+   href="/web/tools/chrome-devtools/ui#placement" target="_blank"> undocked to a separate window</a>, so that you can see its contents better. </aside>
+4. Enable **Capture Screenshots** ![Capture
+Screenshots](imgs/capture-screenshots.png){:.devtools-inline}, which turns blue when enabled. DevTools captures screenshots during the page load.
 
-1. DevTools에서 **Network** 탭을 클릭합니다.
+## Step 2: Emulate a mobile user's experience {: #emulate }
 
-     <figure>
-       <img src="imgs/get-started-network-panel.png"
-         alt="Chrome DevTools Network 패널, 진단할
-              느린 페이지에서 열린 모습.">
-       <figcaption>
-         <b>그림 1</b>. Chrome DevTools Network 패널, 진단할
-              느린 페이지 옆에 열린 모습.
-       </figcaption>
-     </figure>
+Testing network performance on a laptop or desktop can be deceiving. Your internet connection is much faster than a mobile user's, and your browser caches resources from previous visits.
 
-     <aside class="note">
-       <b>참고:</b> 나머지 스크린샷의 경우, 콘텐츠를 더 잘 볼 수 있도록 DevTools이 <a
-       href="/web/tools/chrome-devtools/ui#placement" target="_blank">
-       고정되지 않은 별도의 창</a>으로
-       열려있습니다.
-     </aside>
+1. Check the **Disable Cache** checkbox. When this checkbox is enabled, DevTools doesn't serve any resources from the cache. This more accurately emulates what first-time users experience when they view your page.
 
-1. **Capture Screenshots** ![스크린샷
-   캡처][screenshots]을 활성화합니다.{:.devtools-inline}활성화되면 파란색으로 변합니다.
-   DevTools가 페이지 로드 중 스크린샷을 캡처합니다.
-
-## 2단계: 모바일 사용자의 경험 에뮬레이션 {: #emulate }
-
-노트북이나 데스크탑에서 네트워크 성능을 테스트하면 잘못된 결과가 나올 수 있습니다. 여러분의
-인터넷 연결은 모바일 사용자보다 훨씬 빠르며, 브라우저가 이전 방문에서 리소스를
-캐시합니다.
-
-1. **Disable Cache** 확인란을 선택합니다. 이
-  확인란이 활성화되면 DevTools는 캐시로부터 어떤 리소스도 제공하지 않습니다.
-   이렇게 하면 처음 사용하는 사용자가 페이지를 볼 때의
-  환경을 더욱 정확하게 에뮬레이션할 수 있습니다.
-
-1. 현재 **No Throttling**이라고 표시된 드롭다운 메뉴에서
-  **Regular 2G**를 선택합니다. DevTools가 네트워크 연결을 스로틀링하여
-   일반 2G 환경을 시뮬레이션합니다. 이것이 연결이 불량한 곳에서
-   여러분의 사이트를 방문하는 모바일 사용자의 환경입니다.
+2. From the dropdown menu that currently says **No Throttling**, select **Regular 2G**. DevTools throttles the network connection to simulate a regular 2G experience. This is how mobile users experience your site in places with poor connections.
 
 <figure>
   <img src="imgs/get-started-setup.svg"
-    alt="스크린샷 설정,
-         캐시 중단, 스로틀링 후의 Chrome DevTools Network 패널.">
+    alt="The Chrome DevTools Network panel, after setting up screenshots,
+         cache disabling, and throttling.">
   <figcaption>
-    <b>그림 2</b>. 모바일 사용자의 환경을 에뮬레이션하도록 설정된
-    Chrome DevTools Network 패널 왼쪽에서부터 오른쪽으로 스크린샷, 캐시
-    중단, 스로틀링이 파란색으로 테두리가
-    처져 있습니다.
+    <b>Figure 2</b>. The Chrome DevTools Network panel, set up to emulate
+    a mobile user's experience. Screenshots, cache
+    disabling, and throttling are outlined in blue, from left to right,
+    respectively.
   </figcaption>
 </figure>
 
-이것은 최악의 상황을 설정한 것입니다. 이 설정에서 페이지가 빠르게
-로드된다면, 모든 사용자에게 빠른 것입니다.
+This is a worst-case setup. If you can get your page loading fast on this setup, it'll be fast for all your users!
 
-[screenshots]: imgs/capture-screenshots.png
+## Step 3: Analyze requests {: #analyze }
 
-## 3단계: 요청 분석 {: #analyze }
+Figure out what's making the page slow by reloading the page and analyzing the requests that come in.
 
-페이지를 새로고침하고 들어오는 요청을 분석하여 페이지를
-느리게 하는 원인을 찾습니다.
+### Part A: Find render-blocking scripts
 
-### 파트 A: 렌더 차단 스크립트 찾기
+When the browser encounters a `<script>` tag, it must pause rendering and execute the script immediately. Find scripts that aren't needed for page load and mark them asynchronous or defer their execution to speed up load time.
 
-브라우저가 `<script>` 태그를 마주하면 반드시 렌더링을 일시 중지하고 즉시 스크립트를
-실행해야 합니다. 로드 시간을 향상하기 위해 페이지 로드에 필요하지 않은 스크립트를 찾고
-비동기로 표시하거나 실행을 지연하세요.
+1. Press <kbd>Command</kbd>+<kbd>R</kbd> (Mac) or <kbd>Control</kbd>+<kbd>R</kbd> (Windows, Linux) to reload the page. On a good Wi-Fi connection, the page takes more than 10 seconds to load completely.
+    
+    <figure> 
+    
+    ![The Chrome DevTools Network panel, after reloading the page.](imgs/get-started-post-load.png) <figcaption> **Figure 3**. The Chrome DevTools Network panel, after reloading the page. </figcaption> </figure>
+2. Note the value for [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) in the [Summary pane](reference#summary), on the bottom of the Network panel. You should see a value of at least 4 seconds. When you see this event firing late like this, be on the lookout for scripts that are delaying the main document's load and parse.
 
-1. <kbd>Cmmd</kbd>+<kbd>R</kbd>(Mac)을 누르거나
-   <kbd>Ctrl</kbd>+<kbd>R</kbd>(Windows, Linux)을 눌러 페이지를 새로고침합니다.
-   양호한 Wi-Fi 연결에서 이 페이지가 완전히 로드하는 데
-  10초 이상 소요됩니다.
+3. Click **main.js** to investigate that request further. DevTools shows a set of new tabs that provide more information about this request.
 
-     <figure>
-       <img src="imgs/get-started-post-load.png"
-         alt="페이지 새로고침 후의 Chrome DevTools Network 패널.">
-       <figcaption>
-         <b>그림 3</b>. 페이지 새로고침 후의
-         Chrome DevTools Network 패널.
-       </figcaption>
-     </figure>
+4. Click the **Preview** tab to view the request's source code. You can see that the script just hangs for 4000ms. By marking this script with the `async` attribute and moving it to the bottom of the document's `<body>`, the page can load without waiting for the script.
+    
+    <figure> 
+    
+    ![Viewing the source code for main.js in the Preview pane.](imgs/get-started-preview.png) <figcaption> **Figure 4**. Viewing the source code for `main.js` in the Preview pane. </figcaption> </figure>
 
-1. Network 패널의 하단에 위치한 [Summary
-  창](reference#summary)의 [`DOMContentLoaded`][DOMContentLoaded] 값을 확인하세요.
-   최소 4초의 값이 나타나야 합니다. 이렇게 느리게 시작되는
-  이벤트를 확인했을 때, 기본 문서의 로딩 및 파싱을
-  지연하는 스크립트를 경계해야 합니다.
+See [Parser-blocking versus asynchronous JavaScript](/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript) to learn more about render-blocking scripts.
 
-1. **main.js**을 클릭하여 해당 요청을 더 조사합니다. DevTools는
-   해당 요청에 관한 더 많은 정보를 제공하는 새로운 탭의 집합을 표시합니다.
+### Part B: Find large requests
 
-1. **Preview** 탭을 클릭하여 이 요청의 소스 코드를 봅니다. 스크립트가 4000ms 동안 멈춰있기만 한 것을
-   볼 수 있습니다.
-   이 스크립트를 `async` 속성으로 표시하고
-  문서의 `<body>` 하단으로 이동시키면 페이지가
-  해당 스크립트를 기다리지 않고 로드됩니다.
+When the page loaded, did you notice that the DevTools logo took a long time to load? It's not blocking the load, but it's making the page *appear* slow. Users like it when pages *appear* fast.
 
-     <figure>
-       <img src="imgs/get-started-preview.png"
-         alt="Preview 창에서 main.js의 소스 코드 보기">
-       <figcaption>
-         <b>그림 4</b>. Preview 창에서 <code>main.js</code>의
-         소스 코드 보기
-       </figcaption>
-     </figure>
+1. Click **Close** ![Close](imgs/close.png){:.devtools-inline} so that you can see the [**Requests pane**](reference#requests) again.
 
-[파서 차단과 비동기 자바스크립트 비교][async]를 확인하여 렌더 차단 스크립트에 관해 자세히
-알아보세요.
+2. Double-click on the top-left screenshot.
 
-### 파트 B: 대형 요청 찾기
+3. Press your right-arrow key to scan through the set of screenshots. The time below the screenshot indicates when the screenshot was taken. The screenshot takes multiple seconds to load. That means it's probably too large of a file.
 
-페이지가 로드되었을 때 DevTools 로고가 로드되는 데
-오랜 시간이 걸린다는 것을 눈치 채셨나요? 이것이 로드를 차단하지는 않지만 페이지가 느리게 *나타나게*
-합니다. 사용자는 페이지가 빠르게 *나타나는* 것을 좋아합니다.
+4. Click anywhere outside of the screenshot to minimize it.
 
-1. **Close** ![닫기][close]를 클릭하여{:.devtools-inline} 다시
-   [**Requests 창**](reference#requests)이 보이게 합니다.
+5. Hover over the [Waterfall](reference#waterfall) for the `logo-1024px.png` request. The request spends most of its time downloading the image. This confirms that the image is too large.
+    
+    <figure> 
+    
+    ![The waterfall for logo-1024px.png.](imgs/get-started-waterfall.png) <figcaption> **Figure 5**. The waterfall for `logo-1024px.png`. </figcaption> </figure>
 
-1. 스크린샷의 왼쪽 상단을 두 번 클릭합니다.
+## Step 4: Verify fixes on updated page {: #verify }
 
-1. 오른쪽 방향키를 눌러 여러 개의 스크린샷을 스캔합니다. 스크린샷 아래
-  시간은 스크린샷이 캡처된 시간을 나타냅니다. 이
-  스크린샷은 로드하는 데 수 초가 소요됩니다. 즉, 너무 큰 파일일
-  수 있습니다.
+You're just about done. Suppose now that you've already made two changes to the page:
 
-1. 스크린샷 바깥의 임의의 부분을 클릭하여 최소화합니다.
+* You moved the script to the bottom of the `<body>` and marked it `async` to prevent it from blocking the page load.
+* You converted the logo to SVG to reduce its size.
 
-1. `logo-1024px.png`
-  요청에 대한 [Waterfall](reference#waterfall)에 마우스를 가져갑니다. 이 요청은 대부분의 시간을
-  이미지 다운로드에 사용합니다. 즉, 이미지가 너무 크다는 것을 보여줍니다.
+All that's left to do is to test out the updated page to verify that your fixes do indeed make the page load faster.
 
-     <figure>
-       <img src="imgs/get-started-waterfall.png"
-         alt="logo-1024px.png에 대한 Waterfall">
-       <figcaption>
-         <b>그림 5</b>. <code>logo-1024px.png</code>에 대한 Waterfall
-       </figcaption>
-     </figure>
+1. Click **Open Fast Page**. The fixed page opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
+   target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
+   data-category="DevTools / Network / Get Started"
+   data-label="Fast Page Opened"> <button>Open Fast Page</button> </a>
 
-[DOMContentLoaded]: https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
+2. Set up DevTools the same as before. Screenshots and cache disabling should be on, and network throttling should be set to **Regular 2G**.
 
-[async]: /web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript#parser_blocking_versus_asynchronous_javascript
-
-[close]: imgs/close.png 
-
-## 4단계: 업데이트된 페이지 수정 사항 검증 {: #verify }
-
-거의 다 끝났습니다. 이미 페이지에 두 가지를 변경했다고
-가정합시다.
-
-* 스크립트를 `<body>`의 하단으로 이동시키고 `async`로
- 표시하여 페이지 로드 차단을 방지했습니다.
-* 로고 크기를 줄이기 위해 SVG로 변환했습니다.
-
-해야 할 남은 일은 업데이트된 페이지를 테스트하여 수정
-사항이 실제로 페이지 로드를 빠르게 하는지 검증하는 것입니다.
-
-1. **Open Fast Page**를 클릭합니다. 수정된 페이지가 새 탭에서 열립니다.
-
-     <a href="https://googlechrome.github.io/devtools-samples/network/gs/v2.html"
-       target="devtools" class="gc-analytics-event" rel="noopener noreferrer"
-       data-category="DevTools / Network / Get Started"
-       data-label="Fast Page Opened">
-       <button>Open Fast Page</button>
-     </a>
-
-1. DevTools를 이전과 동일하게 설정합니다. 스크린샷 및 캐시 중지가
-  켜져 있어야 하며, 네트워크 스로틀링은 **Regular 2G**로 설정되어야 합니다.
-1. 페이지를 새로고침합니다. 페이지가 훨씬 빠르게 로드됩니다.
-
-     <figure>
-       <img src="imgs/get-started-post-fix.png"
-         alt="수정 사항 적용 후 페이지 로드 기록">
-       <figcaption>
-         <b>그림 6</b>. 수정 사항 적용 후
-         페이지 로드 기록 이전에는 페이지가 시각적으로 완전히
-         나타나는 데 약 10초가 걸렸습니다. 이제 약 1초밖에 걸리지 않습니다.
-       </figcaption>
-     </figure>
+3. Reload the page. The page loads much faster.
+    
+    <figure> 
+    
+    ![A recording of the page's load, after applying the fixes.](imgs/get-started-post-fix.png) <figcaption> **Figure 6**. A recording of the page's load, after applying the fixes. The page used to take about 10 seconds to appear visually complete. Now it only takes about 1 second. </figcaption> </figure>
 
 <aside class="note">
-  <b>참고</b>: 이 페이지가 훨씬 빠르게 로드되지만 여전히 약
-  5초간 사용할 수 없습니다. 그 이유는 페이지의 기본 스레드에 멈춰 있는
-  스크립트를 아직 실행하기 때문입니다.
+  <b>Note</b>: Although the page loads much faster, it's still unusable for
+  about 5 seconds. This is because it still runs the script that hangs
+  the main thread of the page.
 </aside>
 
-## 다음 단계 {: #next-steps }
+## Next Steps {: #next-steps }
 
-잘 하셨습니다. 여러분은 이제 Chrome DevTools Network
-패널의 진정한 전문가입니다. 음... 전문가 수준은 아닌가요? 어쨌든 기술과 지식의
-훌륭한 토대를 갖추었습니다.
+Good job. You are now a bona fide expert in the Chrome DevTools Network panel. Well... maybe not an expert. You do have an excellent foundation of skills and knowledge, though.
 
-* <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / CRP"
-  href="/web/fundamentals/performance/critical-rendering-path">주요
-  렌더링 경로</a>를 참조하여 광속 페이지
-  로딩에 관해 자세히 알아보세요.
-* 더 많은 네트워크 문제를 포착하려면 <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Issues Guide" href="issues">Network
-  문제 가이드</a>를 참조하세요.
-* Network 패널 기능에 관한 종합 목록은 <a class="gc-analytics-event" data-category="DevTools / Network /
-  Get Started" data-label="Next Steps / Reference" href="reference">Network
-  패널 레퍼런스</a>를 참조하세요.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / CRP"
+href="/web/fundamentals/performance/critical-rendering-path">Critical Rendering Path</a> to learn more about the theory of lightning-fast page loading.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Issues Guide" href="issues">Network Issues Guide</a> to learn how to spot more network issues.
+* See <a class="gc-analytics-event" data-category="DevTools / Network /
+Get Started" data-label="Next Steps / Reference" href="reference">Network Panel Reference</a> for a comprehensive list of Network panel features.
 
-## 의견 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

@@ -1,43 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk "Properti tampilan Manifes Telah Disetel" audit Lighthouse.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest's display Property Is Set" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# Properti Tampilan Manifes Telah Disetel  {: .page-title }
+# Manifest's display Property Is Set {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Ketika aplikasi diluncurkan dari layar beranda, Anda bisa menggunakan properti `display`
-di Manifes Aplikasi Web untuk menentukan mode tampilan bagi aplikasi.
+When your app is launched from the homescreen, you can use the `display` property in your Web App Manifest to specify the display mode for the app.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Tambahkan properti `display` ke Manifes Aplikasi Web Anda dan setel ke salah satu
-nilai berikut: `fullscreen`, `standalone`, atau `browser`.
+Add a `display` property to your Web App Manifest and set it to one of the following values: `fullscreen`, `standalone`, or `browser`.
 
     {
       ...
       "display": "fullscreen",
       ...
     }
+    
 
-Lihat [Referensi MDN untuk properti
-tampilan](https://developer.mozilla.org/en-US/docs/Web/Manifest#display) untuk
-informasi selengkapnya tentang masing-masing nilai ini.
+See [MDN's reference for the display property](https://developer.mozilla.org/en-US/docs/Web/Manifest#display) for more information on each of these values.
 
-Lihat [Manifest Exists](manifest-exists#how)
-untuk daftar panduan yang mengajarkan Anda cara
-mengimplementasikan dan menguji dukungan "Add to Homescreen" dalam aplikasi Anda dengan benar.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse mengambil manifes dan memverifikasi bahwa terdapat properti `display` dan
-nilainya adalah `fullscreen`, `standalone`, atau `browser`.
+Lighthouse fetches the manifest and verifies that the `display` property exists and that it's value is `fullscreen`, `standalone`, or `browser`.
 
-Manifes yang diambil Lighthouse berbeda dari yang digunakan Chrome
-pada laman, yang mungkin bisa menyebabkan hasil yang tidak akurat.
+The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

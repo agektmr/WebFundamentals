@@ -1,70 +1,51 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Use a ferramenta do criador de perfil de alocação para encontrar objetos que não foram coletados da lixeira corretamente e continuam retendo memória.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
-{# wf_updated_on: 2015-07-08 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Como usar a ferramenta do criador de perfil de alocação {: .page-title }
+# How to Use the Allocation Profiler Tool {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-Use a ferramenta do criador de perfil de alocação para encontrar objetos que não foram coletados da lixeira corretamente e continuam retendo memória.
+{% include "web/_shared/contributors/megginkearney.html" %} Use the allocation profiler tool to find objects that aren't being properly garbage collected, and continue to retain memory.
 
+## How the tool works
 
-## Como a ferramenta funciona
+The **allocation profiler** combines the detailed snapshot information of the [heap profiler](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots) with the incremental updating and tracking of the [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool). Similar to these tools, tracking objects’ heap allocation involves starting a recording, performing a sequence of actions, then stop the recording for analysis.
 
-O **criador de perfil de alocação** combina as informações detalhadas de instantâneo do
-[criador de perfil da pilha](/web/tools/chrome-devtools/profile/memory-problems/heap-snapshots)
-com a atualização incremental e o rastreamento do
-[painel Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool).
-De forma semelhante a essas ferramentas, o rastreamento da alocação de pilha de um objeto envolve iniciar uma gravação,
-executar uma sequência de ações e interromper a gravação para análise.
+The tool takes heap snapshots periodically throughout the recording (as frequently as every 50 ms!) and one final snapshot at the end of the recording.
 
-A ferramenta gera periodicamente instantâneos da pilha durante toda a gravação (a intervalos de 50 ms!) e um instantâneo final ao final da gravação.
+![Allocation profiler](imgs/object-tracker.png)
 
-![Criador de perfil de alocação](imgs/object-tracker.png)
+Note: The number after the @ is an object ID that persists among multiple snapshots taken. This allows precise comparison between heap states. Displaying an object's address makes no sense, as objects are moved during garbage collections.
 
-Observação: o número após o @ é um ID de objeto que persiste entre os diversos instantâneos criados. Isto permite a comparação precisa entre estados de pilha. Exibir o endereço de um objeto não faz sentido, já que os objetos são movidos durante as coletas de lixo.
+## Enable allocation profiler
 
-## Ativar o criador de perfil de alocação
+To begin using the allocation profiler:
 
-Para começar a usar o criador de perfil de alocação:
+1. Make sure you have the latest [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html).
+2. Open the Developer Tools and click on the gear icon in the lower right.
+3. Now, open the Profiler panel, you should see a profile called "Record Heap Allocations"
 
-1. Verifique se você tem o [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html) mais recente.
-2. Abra as ferramentas de desenvolvedor e clique no ícone de engrenagem no canto inferior direito.
-3. Agora, abra o painel Profiler. Você deverá ver um perfil denominado "Record Heap Allocations"
+![Record heap allocations profiler](imgs/record-heap.png)
 
-![Criador de perfil Record heap allocations](imgs/record-heap.png)
+## Read a heap allocation profile
 
-## Ler um perfil de alocação de pilha
+The heap allocation profile shows where objects are being created and identifies the retaining path. In the snapshot below, the bars at the top indicate when new objects are found in the heap.
 
-O perfil de alocação de pilha mostra onde os objetos são criados e identifica o caminho de retenção.
-No instantâneo a seguir, as barras na parte superior indicam quando novos objetos são encontrados na pilha.
+The height of each bar corresponds to the size of the recently allocated objects, and the color of the bars indicate whether or not those objects are still live in the final heap snapshot. Blue bars indicate objects that are still live at the end of the timeline, Gray bars indicate objects that were allocated during the timeline, but have since been garbage collected:
 
-A altura de cada barra corresponde ao tamanho dos objetos recentemente alocados
-e a cor das barras indica se esses objetos ainda estão ativos no instantâneo final da pilha.
-Barras azuis indicam objetos que ainda estão ativos no final da linha do tempo e
-barras cinza indicam objetos que foram alocados durante a linha do tempo,
-mas que já foram coletados como lixo:
+![Allocation profiler snapshot](imgs/collected.png)
 
-![Instantâneo do criador de perfil de alocação](imgs/collected.png)
+In the snapshot below, an action was performed 10 times. The sample program caches five objects, so the last five blue bars are expected. But the leftmost blue bar indicates a potential problem.
 
-No instantâneo a seguir, uma ação foi executada 10 vezes.
-O programa de exemplo armazena em cache cinco objetos, portanto, as últimas cinco barras azuis são normais.
-Mas a barra azul mais à esquerda indica um possível problema.
+You can then use the sliders in the timeline above to zoom in on that particular snapshot and see the objects that were recently allocated at that point:
 
-Você pode usar os controles deslizantes na linha do tempo acima para aumentar o zoom nesse instantâneo específico
-e ver os objetos alocados recentemente naquele momento:
+![Zoom in on snapshot](imgs/sliders.png)
 
-![Aumentar o zoom no instantâneo](imgs/sliders.png)
+Clicking on a specific object in the heap will show its retaining tree in the bottom portion of the heap snapshot. Examining the retaining path to the object should give you enough information to understand why the object was not collected, and you can make the necessary code changes to remove the unnecessary reference.
 
-Um clique em um objeto específico da pilha mostrará sua árvore de retenção na parte inferior do instantâneo da pilha. Examinar o caminho de retenção para o objeto deve dar a você informações suficiente para entender por que o objeto não foi coletado, e, assim, será possível fazer as mudanças adequadas no código para remover a referência desnecessárias.
+## View memory allocation by function {: #allocation-profiler }
 
-## Ver a alocação de memória por função {: #allocation-profiler }
+You can also view memory allocation by JavaScript function. See [Investigate memory allocation by function](index#allocation-profile) for more information.
 
-Você também pode ver a alocação de memória por função do JavaScript. Consulte
-[Investigar a alocação de memória por função](index#allocation-profile) para
-obter mais informações.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,232 +1,196 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Puedes influenciar el modo en que aparece tu sitio cuando se comparte por redes sociales; para ello, debes agregar alguna líneas de código a cada página. De esta manera puedes atraer a más personas a tu sitio, ya que proporcionas vistas previas con más información de lo que estaría disponible de otra forma.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
-{# wf_updated_on: 2014-11-08 #}
-{# wf_published_on: 2014-10-07 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-10-07 #}
 
-# Detección social {: .page-title }
+# Social Discovery {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-Puedes influenciar el modo en que aparece tu sitio cuando se comparte por redes sociales; para ello,
-debes agregar algunas líneas de código a cada página. De esta manera puedes atraer a más personas a
-tu sitio, ya que proporcionas vistas previas con más información de lo que estaría
-disponible de otra forma.
-
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help bring more people to your site by providing previews with richer information than would otherwise be available.
 
 ### TL;DR {: .hide-from-toc }
-- Usa microdatos de schema.org para suministrar el título, la descripción y una imagen de la página para Google+.
-- Usa Open Graph Protocol (OGP) para suministrar el título, la descripción y una imagen de la página para Facebook.
-- Usa Twitter Cards para suministrar el título, la descripción, una imagen y la id de Twitter para Twitter.
 
-Puedes influenciar el modo en que aparece tu sitio cuando se comparte por redes sociales; para ello,
-debes agregar algunas líneas de código a cada página. Lo anterior puede ayudar a incrementar la interacción de los usuarios gracias al
-suministro de vistas previas con más información de lo que estaría disponible de otra forma.
-Sin estas vistas previas, los sitios sociales solo brindarán información básica, sin imágenes o
-información útil de otro tipo. 
+* Use schema.org microdata to provide page title, description, and an image for Google+.
+* Use Open Graph Protocol (OGP) to provide page title, description, and an image for Facebook.
+* Use Twitter Cards to provide page title, description, an image, and a Twitter id for Twitter.
 
-¿Sobre cuál crees que es más probable que se haga clic? Las personas se sienten más atraídas por las imágenes
-y están más seguras de que les gustará lo que encontrarán cuando tienen una vista previa
-anterior.
+You can influence the way your site appears when shared via social media by adding a few lines of code to each page. This can help increase engagement by providing previews with richer information than would otherwise be available. Without it, social sites will provide only basic information, without images or other helpful information.
+
+Which one do you think is more likely to be clicked? People are drawn to images and feel more confident they'll like what they find when they have an early preview.
 
 <div class="attempt-left">
   <figure>
     <img src="imgs/gplus-snippet-2.png" srcset="imgs/gplus-snippet-2.png 1x,
       imgs/gplus-snippet-2-2x.png 2x" />
     <figcaption class="success">
-      Con el marcado adecuado: se incluye el título correcto, una breve
-descripción y una imagen. Agregar estos elementos puede ayudar a
-incrementar la interacción de los usuarios.
- </figcaption>
+      With the appropriate markup: the correct title, a short
+      description, and an image are included. Adding these items can help
+      increase engagement.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="imgs/gplus-snippet-1.png" srcset="imgs/gplus-snippet-1.png 1x,
       imgs/gplus-snippet-1-2x.png 2x" />
     <figcaption class="warning">
-      Sin el marcado adecuado, solo se incluye el título de la
-página.
- </figcaption>
+      Without the proper mark up, only the page title is
+      included.
+     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Cuando alguien que está en una red social quiere compartir tu sitio web con sus amigos,
-probablemente agregarán notas para explicar lo grandioso que es y lo compartirán.
-Sin embargo, describir un sitio web tiende a ser engorroso y puede hacer que se pierda lo central del
-punto de vista del propietario de la página. Algunos servicios restringen la cantidad de caracteres que los usuarios pueden
-ingresar en sus notas.
+When someone on a social network wants to share your website with their friends, they would probably add some notes explaining how awesome it is, and share it. But describing a website tends be cumbersome and can miss the point from the page owner's point of view. Some services restrict the number of characters users can put in the note.
 
-Al agregar los metadatos correctos en tu página, puedes simplificar el proceso de
-compartir para los usuarios, ya que suministrar el título, una descripción y una imagen
-atractiva. De esta manera, no tienen que perder tiempo valioso (o caracteres valiosos)
-describiendo el enlace.
+By adding the appropriate metadata to your pages, you can simplify the sharing process for users by providing the title, a description, and an attractive image. This means they don't have to spend valuable time (or characters) describing the link.
 
-## Usa schema.org + microdatos para ofrecer fragmentos enriquecidos en Google+
+## Use schema.org + microdata to provide rich snippets on Google+
 
-Los rastreadores usan diversos métodos para analizar una página y comprender su contenido. Al usar
-[microdatos](http://www.w3.org/TR/microdata/){: .external }, y vocabulario
-[schema.org](https://schema.org/){: .external }, ayudas a los sitios sociales y a los motores
-de búsqueda a comprender mejor los contenidos de la página.
+Crawlers use many methods to parse a page and understand its content. By using [microdata](http://www.w3.org/TR/microdata/){: .external }, and [schema.org](https://schema.org/){: .external } vocabulary, you help social sites and search engines better understand the contents of the page.
 
-A continuación, te mostramos un ejemplo:
+Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="microdata" adjust_indentation="auto" %}
 </pre>
 
-Mientras la mayoría de los metadatos están incorporados en la sección de encabezado de una página web, los microdatos
-viven donde existe el contexto.
+While most metadata are embedded in the head section of a web page, microdata lives where the context exists.
 
-### Agrega `itemscope` para definir el alcance de los microdatos
-Al agregar `itemscope`, puedes especificar la etiqueta como un bloque de contenidos sobre un
-elemento en particular.
+### Add `itemscope` to define microdata scope
 
-### Agrega `itemtype` para definir el tipo de tu sitio web
-Puedes especificar el tipo de elemento utilizando el atributo `itemtype` con el
-`itemscope`. El valor de un `itemtype` se puede determinar según el tipo
-de contenido de tu página web. Debes poder encontrar uno que sea relevante
-en [esta página](https://schema.org/docs/full.html).
+By adding `itemscope`, you can specify the tag as a block of contents about a particular item.
 
-### Agregar `itemprop` para describir cada elemento utilizando vocabulario schema.org
-`itemprop` define las propiedades para `itemtype` en el alcance. Para suministrar
-metadatos a sitios sociales, los valores `itemprop` típicos son `name`, `description`,
- y por último `image`.
+### Add `itemtype` to define type of your website
 
-### Obtén más información
-Estos microdatos proveen información semántica a los rastreadores, generalmente para
-[Google+](https://plus.google.com/){: .external } y Búsqueda de Google. Para obtener más información sobre
-fragmentos y representación en Google+, lee los siguientes documentos:
+You can specify the type of item by using the `itemtype` attribute along with the `itemscope`. The value of an `itemtype` can be determined according to the type of content on your web page. You should be able to find one that is relevant in [this page](https://schema.org/docs/full.html).
 
-* [Representación de artículos - Plataforma Google+](/+/web/snippet/article-rendering)
-* [Fragmento - Plataforma Google+](/+/web/snippet/)
+### Add `itemprop` to describe each item using schema.org vocabulary
 
-### Valida fragmentos enriquecidos
-Para validar fragmentos enriquecidos en Google+, puedes usar las siguientes herramientas:
+`itemprop` defines properties for `itemtype` in the scope. For providing metadata to social sites, typical `itemprop` values are `name`, `description`, and `image`.
 
-* [Herramienta de prueba de datos estructurados](https://www.google.com/webmasters/tools/richsnippets) - Herramientas para webmasters de Google  
+### Learn more
+
+These microdata provide semantic information to crawlers, typically for [Google+](https://plus.google.com/){: .external } and Google Search. To learn more about snippets and rendering on Google+, read the following documents:
+
+* [Article Rendering - Google+ Platform](/+/web/snippet/article-rendering)
+* [Snippet - Google+ Platform](/+/web/snippet/)
+
+### Validate rich snippets
+
+In order to validate rich snippets on Google+, you can use tools such as:
+
+* [Structured Data Testing Tool](https://www.google.com/webmasters/tools/richsnippets) - Webmaster Tools
 
 <img src="imgs/webmaster-tools.png" srcset="imgs/webmaster-tools.png 1x, imgs/webmaster-tools-2x.png 2x" />
 
-## Usa Open Graph Protocol (OGP) para suministrar fragmentos enriquecidos en Facebook
+## Use Open Graph Protocol (OGP) to provide rich snippets on Facebook
 
-[Open Graph Protocol (OGP)](http://ogp.me/){: .external } suministra a Facebook los
-metadatos necesarios para permitir que las páginas web tengan la misma funcionalidad que otros
-objetos de Facebook.
+The [Open Graph Protocol (OGP)](http://ogp.me/){: .external } provides Facebook with the metadata necessary to allow web pages to have the same functionality as other Facebook objects.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="ogp" adjust_indentation="auto" %}
 </pre>
 
-Cuando se incluyen en la sección de encabezado de tu página, estos metadatos proveen información enriquecida de
-fragmentos cuando se comparte la página.
+When included in the head section of your page, this metadata provides rich snippet information when the page is shared.
 
-### Usa etiquetas `meta` `og:` con espacio de nombres para describir los metadatos
-Una etiqueta `meta` incluye un atributo de `property` y un atributo `content`.
-Las propiedades y los contenidos pueden tomar los siguientes valores:
+### Use `og:` namespaced `meta` tags to describe metadata
+
+A `meta` tag consists of a `property` attribute and a `content` attribute. Properties and contents may take the following values:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Property">Propiedad</th>
-      <th data-th="Content">Contenido</th>
+      <th data-th="Property">Property</th>
+      <th data-th="Content">Content</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Property"><code>og:title</code></td>
-      <td data-th="Content">El título de la página web.</td>
+      <td data-th="Content">The title of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:description</code></td>
-      <td data-th="Content">La descripción de la página web.</td>
+      <td data-th="Content">The description of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:url</code></td>
-      <td data-th="Content">La url canónica de la página web.</td>
+      <td data-th="Content">The canonical url of the web page.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:image</code></td>
-      <td data-th="Content">URL a una imagen adjuntada a la publicación compartida.</td>
+      <td data-th="Content">URL to an image attached to the shared post.</td>
     </tr>
     <tr>
       <td data-th="Property"><code>og:type</code></td>
-      <td data-th="Content">Una cadena que indica el tipo de la página web. Puedes encontrar la adecuada para tu página web <a href="https://developers.facebook.com/docs/reference/opengraph/">aquí</a>.</td>
+      <td data-th="Content">A string that indicates the type of the web page. You can find one that is suitable for your web page <a href="https://developers.facebook.com/docs/reference/opengraph/">here</a>.</td>
     </tr>
   </tbody>
 </table>
 
-Estas metaetiquetas proporcionan información semántica a los rastreadores desde los sitios sociales,
-generalmente desde [Google+](https://plus.google.com/){: .external } y
-[Facebook](https://www.facebook.com/){: .external }.
+These meta tags provide semantic information to crawlers from social sites, typically from [Google+](https://plus.google.com/){: .external } and [Facebook](https://www.facebook.com/){: .external }.
 
-### Obtén más información
-Para obtener más información sobre los elementos que puedes adjuntar a la publicación de Facebook, visita el sitio oficial de
-Open Graph Protocol.
+### Learn more
+
+To learn more about things you can attach to the post on Facebook, visit the official Open Graph Protocol site.
 
 * [ogp.me](http://ogp.me/){: .external }
 
-### Valida los fragmentos enriquecidos
-Para validar tu marcado en Facebook, puedes usar las siguientes herramientas:
+### Validate rich snippets
 
-* [Depurador](https://developers.facebook.com/tools/debug/){: .external }
+In order to validate your markup on Facebook, you can use tools such as:
 
-## Usa Twitter Cards para suministrar fragmentos enriquecidos en Twitter
-[Twitter Cards](https://dev.twitter.com/docs/cards) son una extensión al
-Open [Graph Protocol aplicable para Twitter](https://twitter.com/){: .external }. Te permiten
-agregar elementos adjuntos multimedia como imágenes y video a los Tweets con un enlace a
-tu página web. Al agregar los metadatos adecuados, los Tweets con enlaces a tu
-página tendrán una tarjeta agregada que incluye los detalles enriquecidos que agregaste.
+* [Debugger](https://developers.facebook.com/tools/debug/){: .external }
 
-### Usa metaetiquetas `twitter:` con espacio de nombres para describir los metadatos
-Para que una Twitter Card funcione, [tu dominio debe ser
-aprobado](https://cards-dev.twitter.com/validator) y debe
-contener una metaetiqueta que contiene `twitter:card` como el atributo `name` en lugar del atributo
-`property`.
-  
-Aquí puedes ver un ejemplo rápido:
+## Use Twitter Cards to provide rich snippets on Twitter
+
+[Twitter Cards](https://dev.twitter.com/cards/overview) are an extension to the Open [Graph Protocol applicable for Twitter](https://twitter.com/){: .external }. They allow you to add media attachments like images and video to Tweets with a link to your web page. By adding the appropriate metadata, Tweets with links to your page will have a card added that includes the rich detail you've added.
+
+### Use `twitter:` namespaced meta tags to describe metadata
+
+In order to get a Twitter Card working, [your domain must be approved](https://cards-dev.twitter.com/validator) and must contain a meta tag that has `twitter:card` as the `name` attribute instead of `property` attribute.
+
+Here's a quick example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites.html" region_tag="twitter" adjust_indentation="auto" %}
 </pre>
 
-Al asignar la id de Twitter al valor de twitter:site, Twitter incorpora esta
-información en la publicación compartida, de manera que las personas puedan interactuar fácilmente con el propietario
-de la página.
+By assigning the Twitter id to the value of twitter:site, Twitter embeds this information in the shared post so that people can easily engage with the page owner.
 
 <img src="imgs/twitter-card.png" srcset="imgs/twitter-card.png 1x, imgs/twitter-card-2x.png 2x" />
 
-### Obtén más información
-Para obtener más información sobre Twitter Cards, visita:
+### Learn more
 
-* [Sitio del programador de Twitter](https://dev.twitter.com/docs/cards)
+To learn more about Twitter Cards, visit:
 
-### Valida fragmentos enriquecidos
-Para validar tu marcado, Twitter proporciona lo siguiente:
+* [Twitter's developer site](https://dev.twitter.com/cards)
 
-* [Validador de Cards](https://cards-dev.twitter.com/validator)
+### Validate rich snippets
 
-## La mejor práctica
-Dadas las tres opciones, lo mejor que puedes hacer es incluirlas todas en tu
-página web. A continuación, te mostramos un ejemplo:
+In order to validate your markup, Twitter provides:
+
+* [Card Validator](https://cards-dev.twitter.com/validator)
+
+## The Best Practice
+
+Given all three options, the best thing you can do is to include them all in your web page. Here's an example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/discovery/social-discovery/_code/social-sites2.html" region_tag="best_practice" adjust_indentation="auto" %}
 </pre>
 
-Nota que los microdatos y el OGP comparten cierto marcado:
+Notice that microdata and OGP share some markup:
 
-* `itemscope` se ubica en la etiqueta `head`
-* `title` y `description` se comparten entre microdatos y OGP
-* `itemprop="image"` está utilizando la etiqueta `link` con el atributo `href` en lugar de
-reutilizar la etiqueta `meta` con `property="og:image"`
-  
-Por último, asegúrate de validar que tu página web aparezca como lo esperas en cada
-sitio social antes de publicarla.
+* `itemscope` is located at `head` tag
+* `title` and `description` are shared between microdata and OGP
+* `itemprop="image"` is using `link` tag with `href` attribute instead of reusing `meta` tag with `property="og:image"`
 
+Lastly, make sure to validate that your web page appears as expected on each social site before publishing.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

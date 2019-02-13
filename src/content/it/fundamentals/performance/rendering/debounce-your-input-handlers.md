@@ -1,90 +1,61 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: I gestori di input sono una potenziale causa di problemi di prestazioni nelle tue app poiché possono bloccare il completamento dei frame e possono causare lavori di layout aggiuntivi e non necessari.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
-{# wf_updated_on: 2017-12-07 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>JavaScript #}
 
-# Ridurre i rimbalzi dei gestori di input {: .page-title}
+# Debounce Your Input Handlers {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-I gestori di input sono una potenziale causa di problemi di prestazioni nelle
-tue app, poiché possono bloccare il completamento dei frame e possono causare
-operazioni di layout aggiuntive non necessarie.
+Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
 ### TL;DR {: .hide-from-toc }
 
-- Evita gestori di input a esecuzione prolungata; possono bloccare lo scrolling.
-- Non apportare modifiche di stile nei gestori di input.
-- Riduci i rimbalzi dei tuoi gestori; archivia i valori degli eventi e
-gestisci le modifiche di stile nella richiesta callback successiva di
-requestAnimationFrame.
+* Avoid long-running input handlers; they can block scrolling.
+* Do not make style changes in input handlers.
+* Debounce your handlers; store event values and deal with style changes in the next requestAnimationFrame callback.
 
-## Evita gestori di input a esecuzione prolungata
+## Avoid long-running input handlers
 
-Il caso più veloce possibile è quando un utente interagisce con la pagina.  Il
-thread di composizione pagina può prendere l'input touch dell'utente e
-semplicemente spostarne il contenuto. Ciò non richiede alcun intervento da parte
-del thread principale dove vengono eseguiti JavaScript, layout, stili o paint.
+In the fastest possible case, when a user interacts with the page, the page’s compositor thread can take the user’s touch input and simply move the content around. This requires no work by the main thread, where JavaScript, layout, styles, or paint are done.
 
-<img src="images/debounce-your-input-handlers/compositor-scroll.jpg"
-alt="Lightweight scrolling; compositor only.">
+<img src="images/debounce-your-input-handlers/compositor-scroll.jpg" alt="Lightweight scrolling; compositor only." />
 
-Se tuttavia alleghi un gestore di input, come `touchstart` , `touchmove` o
-`touchend` il thread di composizione deve attendere che questo gestore termini
-l'esecuzione perché potresti voler chiamare `preventDefault()` e
-interrompere lo scorrimento del tocco. Anche se non si chiama `preventDefault()`
-il compositore deve attendere e pertanto lo scroll dell'utente viene bloccato, il
-che può causare rallentamenti e frame persi.
+If, however, you attach an input handler, like `touchstart`, `touchmove`, or `touchend`, the compositor thread must wait for this handler to finish executing because you may choose to call `preventDefault()` and stop the touch scroll from taking place. Even if you don’t call `preventDefault()` the compositor must wait, and as such the user’s scroll is blocked, which can result in stuttering and missed frames.
 
-<img src="images/debounce-your-input-handlers/ontouchmove.jpg" alt="Heavy
-scrolling; compositor is blocked on JavaScript.">
+<img src="images/debounce-your-input-handlers/ontouchmove.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-In breve dovresti assicurarti che qualsiasi gestore di input esegui venga
-elaborato rapidamente e consentire al compositore di svolgere il proprio lavoro.
+In short, you should make sure that any input handlers you run should execute quickly and allow the compositor to do its job.
 
-## Evita i cambiamenti di stile nei gestori di input
+## Avoid style changes in input handlers
 
-I gestori di input come quelli per lo scroll e il touch sono programmati per
-essere eseguiti prima di ogni callback `requestAnimationFrame`.
+Input handlers, like those for scroll and touch, are scheduled to run just before any `requestAnimationFrame` callbacks.
 
-Se apporti una modifica visiva all'interno di uno di questi gestori all'inizio
-della `requestAnimationFrame` ci saranno cambiamenti di stile in sospeso. Se
-leggi *quindi* le proprietà visive all'inizio della callback
-`requestAnimationFrame`, come suggerito in "[Evita layout grandi,
-complessi e thrashing](avoid-large-complex-layouts-and-layout-thrashing) ",
-attiverai una richiesta di layout sincrono forzato!
+If you make a visual change inside one of those handlers, then at the start of the `requestAnimationFrame`, there will be style changes pending. If you *then* read visual properties at the start of the requestAnimationFrame callback, as the advice in “[Avoid large, complex layouts and layout thrashing](avoid-large-complex-layouts-and-layout-thrashing)” suggests, you will trigger a forced synchronous layout!
 
-<img src="images/debounce-your-input-handlers/frame-with-input.jpg" alt="Heavy
-scrolling; compositor is blocked on JavaScript.">
+<img src="images/debounce-your-input-handlers/frame-with-input.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-##  Riduci i rimbalzi dei gestori di scorrimento
+## Debounce your scroll handlers
 
-La soluzione ad entrambi i problemi di cui sopra è la stessa: devi sempre
-eseguire il rimbalzo delle modifiche visive alla prossima callback
-`requestAnimationFrame`:
+The solution to both of the problems above is the same: you should always debounce visual changes to the next `requestAnimationFrame` callback:
 
-```
-function onScroll (evt) {
+    function onScroll (evt) {
+    
+      // Store the scroll value for laterz.
+      lastScrollY = window.scrollY;
+    
+      // Prevent multiple rAF callbacks.
+      if (scheduledAnimationFrame)
+        return;
+    
+      scheduledAnimationFrame = true;
+      requestAnimationFrame(readAndUpdatePage);
+    }
+    
+    window.addEventListener('scroll', onScroll);
+    
 
-  // Store the scroll value for laterz.
-  lastScrollY = window.scrollY;
+Doing this also has the added benefit of keeping your input handlers light, which is awesome because now you’re not blocking things like scrolling or touch on computationally expensive code!
 
-  // Prevent multiple rAF callbacks.
-  if (scheduledAnimationFrame)
-    return;
+## Feedback {: #feedback }
 
-  scheduledAnimationFrame = true;
-  requestAnimationFrame(readAndUpdatePage);
-}
-
-window.addEventListener('scroll', onScroll);
-```
-
-In questo modo hai anche il vantaggio di mantenere i gestori di input leggeri,
-che è fantastico, perché non blocca attività come lo scrolling o
-il touch di codice computazionalmente costoso!
-
-Translated by
-{% include "web/_shared/contributors/lucaberton.html" %}
+{% include "web/_shared/helpful.html" %}

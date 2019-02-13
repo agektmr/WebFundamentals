@@ -1,219 +1,189 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Gunakan panel Timeline Chrome DevTools untuk merekam dan menganalisis semua aktivitas di aplikasi saat sedang berjalan. Panel ini merupakan tempat terbaik untuk memulai investigasi masalah kinerja yang dirasakan pada aplikasi Anda.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Chrome DevTools Timeline panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
-{# wf_updated_on: 2016-03-07 #}
-{# wf_published_on: 2015-06-08 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-06-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cara Menggunakan Alat (Bantu) Timeline {: .page-title }
+# How to Use the Timeline Tool {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Gunakan panel <em>Timeline</em> Chrome DevTools untuk merekam 
-dan menganalisis semua aktivitas di aplikasi saat sedang berjalan. Panel ini merupakan tempat 
-terbaik untuk memulai investigasi masalah kinerja yang dirasakan pada 
-aplikasi Anda.
+Warning: This page is deprecated. See [Performance Analysis Reference](reference) for up-to-date information.
 
-![Alat (bantu) timeline](imgs/timeline-panel.png)
+Use the Chrome DevTools *Timeline* panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
+![Timeline tool](imgs/timeline-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- Buat rekaman Timeline untuk menganalisis setiap kejadian yang terjadi setelah laman dimuat atau setelah interaksi pengguna.
-- Menampilkan FPS, CPU, dan permintaan jaringan di panel Overview.
-- Klik kejadian di dalam Flame Chart untuk menampilkan detail tentangnya.
-- Memperbesar bagian rekaman untuk mempermudah analisis.
 
+* Make a Timeline recording to analyze every event that occurred after a page load or a user interaction.
+* View FPS, CPU, and network requests in the Overview pane.
+* Click on an event within the Flame Chart to view details about it.
+* Zoom in on a section of a recording to make analysis easier.
 
-## Ringkasan panel Timeline {:#timeline-overview}
+## Timeline panel overview {:#timeline-overview}
 
-Panel Timeline terdiri dari empat panel:
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#record">Record performance</a></li>
+    <li><a href="reference#fps-chart">The FPS chart</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+  </ul>
+</aside>
 
-1. **Controls**. Memulai rekaman, menghentikan rekaman, dan 
-    mengonfigurasi informasi apa saja yang akan direkam selama rekaman.
-2. **Overview**. Ringkasan tingkat tinggi kinerja laman. Selengkapnya tentang ini 
-   di bawah.
-3. **Flame Chart**. Visualisasi pelacakan tumpukan CPU. 
+The Timeline panel consists of four panes:
 
-   Anda mungkin melihat satu sampai tiga garis bertitik vertikal di **Flame Chart**. Garis 
-    biru menggambarkan kejadian `DOMContentLoaded`. Garis hijau menggambarkan 
-   "time to first paint' atau saat laman pertama kali terlihat oleh pengguna. Garis merah menggambarkan kejadian `load`.
+1. **Controls**. Start a recording, stop a recording, and configure what information is captured during the recording.
+2. **Overview**. A high-level summary of page performance. More on this below.
+3. **Flame Chart**. A visualization of the CPU stack trace.
+    
+    You may see one to three dotted, vertical lines on your **Flame Chart**. The blue line represents the `DOMContentLoaded` event. The green line represents time to first paint. The red line represents the `load` event.
 
-4. **Details**. Bila sebuah kejadian dipilih, panel ini menampilkan informasi selengkapnya 
-   tentang kejadian tersebut. Bila tidak ada kejadian yang dipilih, panel ini menunjukkan informasi 
-   tentang bingkai waktu yang dipilih. 
+4. **Details**. When an event is selected, this pane shows more information about that event. When no event is selected, this pane shows information about the selected time frame.
 
-![panel timeline teranotasi](imgs/timeline-annotated.png)
+![annotated timeline panel](imgs/timeline-annotated.png)
 
-### Panel Overview
+### Overview pane
 
-Panel **Overview** terdiri dari tiga grafik:
+The **Overview** pane consists of three graphs:
 
-1. **FPS**. Frame Per Second atau Bingkai Per Detik. Semakin tinggi bilah hijau, semakin tinggi 
-   FPS. Blok merah di atas grafik FPS menunjukkan bingkai panjang, yang merupakan 
-   potensi [tampilan tersendat atau "jank"][jank].
-2. **CPU**. Sumber daya CPU. [Bagan area][ac] ini menunjukkan jenis kejadian apa 
-   yang menggunakan sumber daya CPU.
-3. **NET**. Setiap bilah berwarna mewakili satu sumber daya. Semakin panjang bilah, semakin
-   lama waktu yang dibutuhkan untuk mengambil sumber daya. Bagian yang berwarna lebih muda di tiap bilah 
-   menggambarkan waktu tunggu (waktu antara sumber daya diminta
-   sampai dengan waktu byte pertama diunduh). Bagian yang berwarna lebih gelap
-   menggambarkan waktu transfer (waktu antara byte pertama dan terakhir
-   diunduh).
+1. **FPS**. Frames Per Second. The higher the green bar, the higher the FPS. The red blocks above the FPS graph indicate long frames, which are likely candidates for [jank](/web/fundamentals/performance/rendering/).
+2. **CPU**. CPU resources. This [area chart](https://en.wikipedia.org/wiki/Area_chart) indicates what type of events consumed CPU resources. 
+3. **NET**. Each colored bar represents a resource. The longer the bar, the longer it took to retrieve the resource. The lighter portion of each bar represents waiting time (the time between when the resource was requested up until the time that the first byte was downloaded). The darker portion represents transfer time (the time between when the first and last bytes were downloaded).
+    
+    Bars are color coded as follows: <!-- source: https://goo.gl/eANVFf -->
 
-   Bilah diberi tanda warna sebagai berikut:
-   <!-- source: https://goo.gl/eANVFf -->
-   
-   * File HTML berwarna **<span style="color:hsl(214, 67%, 66%)">biru</span>**.
-   * Skrip berwarna **<span style="color:hsl(43, 83%, 64%)">kuning</span>**.
-   * Stylesheet berwarna **<span style="color:hsl(256, 67%, 70%)">ungu</span>**.
-   * File media berwarna **<span style="color:hsl(109, 33%, 55%)">hijau</span>**.
-   * Sumber daya lainnya berwarna 
-     **<span style="color:hsl(0, 0%, 70%)">abu-abu</span>**.
+* HTML files are **<span style="color:hsl(214, 67%, 66%)">blue</span>**.
+* Scripts are **<span style="color:hsl(43, 83%, 64%)">yellow</span>**.
+* Stylesheets are **<span style="color:hsl(256, 67%, 70%)">purple</span>**.
+* Media files are **<span style="color:hsl(109, 33%, 55%)">green</span>**.
+* Miscellaneous resources are **<span style="color:hsl(0, 0%, 70%)">grey</span>**.
 
-![panel overview, teranotasi](imgs/overview-annotated.jpg)
+![overview pane, annotated](imgs/overview-annotated.jpg)
 
-[ac]: https://en.wikipedia.org/wiki/Area_chart 
-[jank]: /web/fundamentals/performance/rendering/
+## Make a recording
 
-## Membuat sebuah rekaman
+Warning: This page is deprecated. See [Record performance](reference#record) for up-to-date information.
 
-Untuk membuat rekaman *pemuatan laman*, buka panel **Timeline**, buka laman 
-yang ingin Anda rekam, lalu muat ulang laman. Panel **Timeline** 
-secara otomatis merekam muat ulang laman.
+To make a recording of a *page load*, open the **Timeline** panel, open the page that you want to record, and then reload the page. The **Timeline** panel automatically records the page reload.
 
-Untuk membuat rekaman *interaksi laman*, buka panel **Timeline**, lalu
-mulai perekaman dengan menekan tombol **Record** 
-(![tombol record](imgs/record-off.png){:.inline}) atau dengan mengetikkan pintasan 
-keyboard <kbd>Cmd</kbd>+<kbd>E</kbd> (Mac) atau <kbd>Ctrl</kbd>+<kbd>E</kbd> 
-(Windows/Linux). Tombol **Record** menjadi merah selama perekaman berlangsung. Lakukan 
-interaksi laman, dan kemudian tekan tombol **Record** atau ketik 
-pintasan keyboard lagi untuk menghentikan perekaman.
+To make a recording of a *page interaction*, open the **Timeline** panel, then start the recording by pressing the **Record** button (![record button](imgs/record-off.png){:.inline}) or by typing the keyboard shortcut <kbd>Cmd</kbd>+<kbd>E</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>E</kbd> (Windows / Linux). The **Record** button turns red during a recording. Perform your page interactions, and then press the **Record** button or type the keyboard shortcut again to stop the recording.
 
-Ketika rekaman selesai, DevTools menebak bagian rekaman yang
-paling relevan bagi Anda, dan secara otomatis memperbesar ke bagian itu.
+When the recording is finished, DevTools guesses what portion of the recording is most relevant to you, and automatically zooms to that portion.
 
-### Tip rekaman
+### Recording tips
 
-* **Usahakan rekaman sesingkat mungkin**. Rekaman yang singkat secara umum memudahkan 
-   analisis.
-* **Hindari tindakan yang tidak perlu**. Hindari tindakan (klik mouse, pemuatan jaringan, 
-  dsb.) yang menambah beban pada aktivitas yang ingin Anda rekam dan analisis.
-  Misalnya, jika Anda ingin merekam kejadian yang terjadi setelah Anda mengeklik tombol 
-  Login, jangan secara bersamaan menggulir laman, memuat gambar, dan lain sebagainya.
-* **Nonaktifkan cache browser**. Saat merekam operasi jaringan, sebaiknya 
-  nonaktifkan cache browser dari panel Settings DevTools atau
-  panel samping [**Network conditions**][nc].
-* **Nonaktifkan ekstensi**. Ekstensi Chrome bisa menambah noise yang tidak terkait ke 
-  rekaman Timeline aplikasi Anda. Buka jendela Chrome dalam 
-  [mode penyamaran][incognito], atau buat 
-  [profil pengguna Chrome][new chrome profile] yang baru untuk memastikan bahwa lingkungan Anda
-  tidak memiliki ekstensi.
+* **Keep recordings as short as possible**. Shorter recordings generally make analysis easier.
+* **Avoid unnecessary actions**. Avoid actions (mouse clicks, network loads, etc.) that are extraneous to the activity you want to record and analyze. For example, if you want to record events that occur after you click a Login button, don’t also scroll the page, load an image, and so on.
+* **Disable the browser cache**. When recording network operations, it’s a good idea to disable the browser’s cache from the DevTools Settings panel or the [**Network conditions**](/web/tools/chrome-devtools/network-performance/reference#network-conditions) drawer.
+* **Disable extensions**. Chrome extensions can add unrelated noise to Timeline recordings of your application. Open a Chrome window in [incognito mode](https://support.google.com/chrome/answer/95464), or create a new [Chrome user profile](https://support.google.com/chrome/answer/142059) to ensure that your environment has no extensions.
 
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-[incognito]: https://support.google.com/chrome/answer/95464
-[new chrome profile]: https://support.google.com/chrome/answer/142059
+## View recording details
 
-## Menampilkan detail perekaman
+Warning: This page is deprecated. See [View main thread ](reference#main) for up-to-date information.
 
-Ketika Anda memilih sebuah kejadian di **Flame Chart**, panel **Details** menampilkan 
-informasi tambahan tentang kejadian tersebut.
+When you select an event in the **Flame Chart**, the **Details** pane displays additional information about the event.
 
-![panel details](imgs/details-pane.png)
+![details pane](imgs/details-pane.png)
 
-Beberapa tab, seperti **Summary**, hadir untuk semua jenis kejadian. Tab lain hanya
-tersedia untuk beberapa jenis kejadian tertentu. Lihat [referensi 
-kejadian Timeline][event reference] untuk detail mengenai setiap jenis perekaman.
+Some tabs, like **Summary**, are present for all event types. Other tabs are only available to certain event types. See the [Timeline event reference](/web/tools/chrome-devtools/profile/evaluate-performance/performance-reference) for details on each record type.
 
-[event reference]: /web/tools/chrome-devtools/profile/evaluate-performance/performance-reference
+## Capture screenshots during recording {:#filmstrip}
 
-## Mengambil tangkapan layar saat merekam {:#filmstrip}
+Warning: This page is deprecated. See [Capture screenshots while recording](reference#screenshots) for up-to-date information.
 
-Panel **Timeline** bisa merekam tangkapan layar selama pemuatan laman. Fitur ini
-dikenal sebagai **Filmstrip**.
+The **Timeline** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
-Aktifkan kotak centang **Screenshots** di panel **Controls** sebelum Anda membuat
-rekaman untuk merekam tangkapan layar dari rekaman. Tangkapan layar
-ditampilkan di bawah panel **Overview**.
+Enable the **Screenshots** checkbox in the **Controls** pane before you make a recording to capture screenshots of the recording. The screenshots are displayed below the **Overview** pane.
 
-![perekaman timeline dengan filmstrip](imgs/timeline-filmstrip.png)
+![timeline recording with filmstrip](imgs/timeline-filmstrip.png)
 
-Arahkan kursor mouse ke atas **Screenshots** atau panel **Overview** untuk menampilkan tangkapan layar 
-yang diperbesar di titik rekaman tersebut. Gerakkan mouse ke kiri dan
-kanan untuk menyimulasikan animasi perekaman.
+Hover your mouse over the **Screenshots** or **Overview** pane to view a zoomed screenshot of that point in the recording. Move your mouse left and right to simulate an animation of the recording.
 
 <video src="animations/hover.mp4" autoplay muted loop controls></video>
 
-## Profil JavaScript {:#profile-js}
+## Profile JavaScript {:#profile-js}
 
-Aktifkan kotak centang **JS Profile** sebelum Anda merekam untuk menangkap 
-tumpukan JavaScript dalam rekaman timeline Anda. Ketika JS profiler 
-diaktifkan, bagan api akan menunjukkan semua fungsi JavaScript yang dipanggil. 
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#disable-js-samples">Disable JavaScript
+      samples</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+    <li><a href="reference#activities">View activities</a></li>
+  </ul>
+</aside>
 
-![bagan api dengan JS profile diaktifkan](imgs/js-profile.png)
+Enable the **JS Profile** checkbox before you take a recording to capture JavaScript stacks in your timeline recording. When the JS profiler is enabled, your flame chart shows every JavaScript function that was called.
 
-## Profil painting {:#profile-painting}
+![flame chart with JS profile enabled](imgs/js-profile.png)
 
-Aktifkan kotak centang **Paint** sebelum Anda merekam untuk mendapatkan wawasan
-yang lebih dalam mengenai kejadian **Paint**. Ketika paint profiling diaktifkan dan Anda mengeklik
-pada kejadian **Paint**, tab **Paint Profiler** baru akan ditampilkan di panel 
-**Details** yang menunjukkan lebih banyak informasi terperinci mengenai kejadian tersebut.
+## Profile painting {:#profile-painting}
 
-![profiler paint](imgs/paint-profiler.png)
+Warning: This page is deprecated. See [View paint profiler](reference#paint-profiler) for up-to-date information.
 
-### Setelan Rendering {:#rendering-settings}
+Enable the **Paint** checkbox before you take a recording to gain more insight into **Paint** events. When paint profiling is enabled and you click on a **Paint** event, a new **Paint Profiler** tab is displayed in the **Details** pane that shows much more granular information about the event.
 
-Buka menu DevTools utama dan pilih **More tools** > **Rendering settings**
-untuk mengakses setelan render yang mungkin bisa membantu ketika mendebug masalah paint.
-Setelan render terbuka sebagai tab di sebelah panel samping **Console** (tekan
-<kbd>esc</kbd> untuk menampilkan panel samping tersebut, jika tersembunyi).
+![paint profiler](imgs/paint-profiler.png)
 
-![setelan rendering](imgs/rendering-settings.png)
+### Rendering settings {:#rendering-settings}
 
-## Penelusuran rekaman
+Warning: This page is deprecated. See [Analyze rendering performance with the Rendering tab](reference#rendering) for up-to-date information.
 
-Saat melihat kejadian, Anda mungkin ingin berfokus pada satu jenis kejadian. Misalnya,
-mungkin Anda perlu melihat detail setiap kejadian `Parse HTML`. 
+Open the main DevTools menu and select **More tools** > **Rendering settings** to access rendering settings that may be helpful when debugging paint issues. The rendering settings opens up as a tab next to the **Console** drawer (press
+<kbd>esc</kbd> to show the drawer, if it's hiding).
 
-Tekan <kbd>Cmd</kbd>+<kbd>F</kbd> (Mac) atau <kbd>Ctrl</kbd>+<kbd>F</kbd> 
-(Windows / Linux) selagi **Timeline** berada di fokus untuk membuka bilah alat Find.
-Ketikkan nama jenis kejadian yang ingin Anda periksa, seperti `Event`.
+![rendering settings](imgs/rendering-settings.png)
 
-Bilah alat hanya berlaku pada rentang waktu yang saat ini dipilih. Kejadian 
-apa pun di luar rentang waktu yang dipilih tidak disertakan ke dalam hasil. 
+## Search records
 
-Panah atas dan bawah akan mengarahkan Anda secara kronologis di hasil. Jadi,
-hasil pertama mewakili kejadian paling awal di rentang waktu yang dipilih, dan
-hasil terakhir mewakili kejadian terakhir. Setiap kali Anda menekan panah
-atas atau bawah, sebuah kejadian baru dipilih, sehingga Anda bisa menampilkan detailnya di panel
-**Details**. Menekan panah atas dan bawah sama dengan mengeklik 
-sebuah kejadian di **Flame Chart**.
+Warning: This page is deprecated. See [Search activities](reference#search) for up-to-date information.
 
-![bilah alat find](imgs/find-toolbar.png)
+While looking at events you may want to focus on one type of events. For example, perhaps you need to view the details of every `Parse HTML` event.
 
-## Memperbesar bagian Timeline {:#zoom}
+Press <kbd>Cmd</kbd>+<kbd>F</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>F</kbd> (Windows / Linux) while the **Timeline** is in focus to open a Find toolbar. Type in the name of the event type that you wish to inspect, such as `Event`.
 
-Anda bisa memperbesar bagian rekaman untuk mempermudah analisis. Gunakan
-panel **Overview** untuk memperbesar bagian rekaman. Setelah dilakukan zoom,
-**Flame Chart** secara otomatis diperbesar agar sesuai dengan bagian yang sama.
+The toolbar only applies to the currently selected timeframe. Any events outside of the selected timeframe are not included in the results.
 
-![memperbesar bagian perekaman timeline](imgs/zoom.png)
+The up and down arrows move you chronologically through the results. So, the first result represents the earliest event in the selected timeframe, and the last result represents the last event. Every time that you press the up or down arrow, a new event is selected, so you can view its details in the **Details** pane. Pressing the up and down arrows is equivalent to clicking on an event in the **Flame Chart**.
 
-Untuk memperbesar bagian Timeline:
+![find toolbar](imgs/find-toolbar.png)
 
-* Di panel **Overview**, seret pilihan Timeline dengan mouse Anda.
-* Atur penggeser abu-abu di area penggaris.
+## Zoom in on a Timeline section {:#zoom}
 
-Setelah menentukan bagian yang dipilih, Anda bisa menggunakan tombol <kbd>W</kbd>,<kbd>A</kbd>,
-<kbd>S</kbd>, dan <kbd>D</kbd> untuk menyesuaikan pilihan Anda. <kbd>W</kbd> 
-dan <kbd>S</kbd> masing-masing untuk memperbesar dan memperkecil. <kbd>A</kbd> dan 
-<kbd>D</kbd> masing-masing untuk bergerak ke kiri dan ke kanan.
+Warning: This page is deprecated. See [Select a portion of a recording](reference#select) for up-to-date information.
 
-## Menyimpan dan memuat rekaman
+You can zoom in on a section of a recording to make analysis easier. You use the **Overview** pane to zoom in on a section of the recording. After zooming, the **Flame Chart** is automatically zoomed to match the same section.
 
-Anda bisa menyimpan dan membuka rekaman dengan mengeklik kanan di dalam panel 
-**Overview** atau **Flame Chart** dan memilih opsi yang relevan.
+![zoom in on a section of a timeline recording](imgs/zoom.png)
 
-![menyimpan dan membuka rekaman](imgs/save-open.png)
+To zoom in on a Timeline section:
 
+* In the **Overview** pane, drag out a Timeline selection with your mouse.
+* Adjust the gray sliders in the ruler area.
 
-{# wf_devsite_translation #}
+Once you have a section selected, you can use the <kbd>W</kbd>,<kbd>A</kbd>,
+<kbd>S</kbd>, and <kbd>D</kbd> keys to adjust your selection. <kbd>W</kbd> and <kbd>S</kbd> zoom in and zoom out, respectively. <kbd>A</kbd> and 
+<kbd>D</kbd> move left and right, respectively.
+
+## Save and load recordings
+
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#save">Save a recording</a></li>
+    <li><a href="reference#load">Load a recording pane</a></li>
+  </ul>
+</aside>
+
+You can save and open recordings by right-clicking inside the **Overview** or **Flame Chart** panes and selecting the relevant option.
+
+![save and open recordings](imgs/save-open.png)
+
+You can also share saved recordings using [timeline-viewer](https://chromedevtools.github.io/timeline-viewer/).
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

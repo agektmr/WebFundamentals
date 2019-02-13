@@ -1,66 +1,60 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para las auditorías de Lighthouse "El sitio no usa etiquetas de enlaces que demoran la primera pintura" y "El sitio no usa etiquetas de secuencias de comandos en el encabezado que demoran la primera pintura".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Render-blocking stylesheets" and "Render-blocking scripts" Lighthouse audits.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-12-01 #}
+{# wf_updated_on: 2018-12-17 #} {# wf_published_on: 2016-12-01 #} {# wf_blink_components: N/A #}
 
-# El sitio no usa recursos que demoran la primera pintura  {: .page-title }
+# Render-Blocking Resources {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Las cargas rápidas de las páginas proporcionan una mayor captación de usuarios, aumentan el número de vistas de la página y
- mejoran la conversión.
+Fast page loads result in higher user engagement, more pageviews, and improved conversion.
 
-Puedes mejorar la velocidad de carga de la página si integras enlaces y secuencias de comandos que
-son necesarios para la primera pintura y difieres los innecesarios.
+You can improve your page load speed by inlining links and scripts that are required for first paint, and deferring those that aren't.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-En tu informe, Lighthouse enumera todos los enlaces o secuencias de comandos detectados que bloquean la representación
-representación. El objetivo es reducir esta cantidad.
+In your report, Lighthouse lists all of the render-blocking links or scripts that it has detected. The goal is to reduce this number.
 
-Tal como se menciona en [Cómo se implementa la auditoría](#implementation), Lighthouse
-indica tres tipos de enlaces que bloquean la representación: secuencias de comandos, hojas de estilo e importaciones
-HTML. La forma en que optimizas depende del tipo de recurso con el que trabajas.
+Lighthouse flags three types of render-blocking links: scripts, stylesheets, and HTML imports. How you optimize depends on what type of resource you're working with.
 
-Note: Si a continuación se hace referencia a un recurso como "crítico", significa que el
-recurso es necesario para la primera pintura o es crucial para la funcionalidad central de la
-página.
+Note: When a resource is referred to as "critical" below, it means that the resource is required for first paint or is crucial to the page's core functionality.
 
-* Respecto de las secuencias de comandos críticas, considera integrarlas en tu HTML. Respecto de las secuencias de comandos
-  no críticas, considera marcarlas con los atributos `async` o `defer` .
-  Para obtener más información, consulta [Cómo agregar interactividad con JavaScript][js].
-* Respecto de las hojas de estilo, considera dividir tus estilos en archivos diferentes,
-  organizados por consulta de medios y luego agrega un atributo `media` a cada
-  enlace de hoja de estilo. Cuando carga una página, el navegador solo bloquea la primera
-  pintura para recuperar las hojas de estilo que coinciden con el dispositivo del usuario. Para más información, consulta
-  [Bloqueo de representación de CSS][css].
-* Respecto de las importaciones HTML no críticas, márcalas con el atributo `async`. Como regla
-  general, `async` debe usarse con importaciones HTML la mayor cantidad de veces posible.
+* For critical scripts, consider inlining them in your HTML. For non-critical scripts, consider marking them with the `async` or `defer` attributes. See [Adding Interactivity with JavaScript](/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript) to learn more.
+* For stylesheets, consider splitting up your styles into different files, organized by media query, and then adding a `media` attribute to each stylesheet link. When loading a page, the browser only blocks the first paint to retrieve the stylesheets that match the user's device. See [Render-Blocking CSS](/web/fundamentals/performance/critical-rendering-path/render-blocking-css) to learn more. Build tools like [critical](https://github.com/addyosmani/critical/) can help you extract and inline critical CSS.
+* For non-critical HTML imports, mark them with the `async` attribute. As a general rule, `async` should be used with HTML imports as much as possible.
 
-[js]: /web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript
-[css]: /web/fundamentals/performance/critical-rendering-path/render-blocking-css
+### Identify render-blocking code {: #coverage }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Use the [Coverage](/web/updates/2017/04/devtools-release-notes#coverage) tab in Chrome DevTools to identify non-critical CSS and JS.
 
-Lighthouse identifica tres tipos de recursos de bloqueo.
+<figure>
+  <img src="/web/updates/images/2017/04/coverage.png"
+       alt="The Coverage tab."/>
+  <figcaption>
+    <b>Figure 1</b>. The Coverage tab
+  </figcaption>
+</figure>
 
-Una etiqueta `<script>` que:
+## More information {: #more-info }
 
-* está en el `<head>` del documento.
-* No posee un atributo `defer`.
-* No posee un atributo `async`.
+Lighthouse identifies three types of blocking resources.
 
-Una etiqueta `<link rel="stylesheet">` que:
+A `<script>` tag that:
 
-* no posee un atributo `disabled`. Cuando este atributo está presente,
-  el navegador no descarga la hoja de estilo.
-* No posee un atributo `media` que coincide con el dispositivo del usuario.
+* Is in the `<head>` of the document.
+* Does not have a `defer` attribute.
+* Does not have an `async` attribute.
 
-Una etiqueta `<link rel="import">` que:
+A `<link rel="stylesheet">` tag that:
 
-* No posee un atributo `async`.
+* Does not have a `disabled` attribute. When this attribute is present, some browsers do not download the stylesheet. Note that this attribute is not supported in all browsers.
+* Does not have a `media` attribute that matches the user's device.
 
+A `<link rel="import">` tag that:
 
-{# wf_devsite_translation #}
+* Does not have an `async` attribute.
+
+[Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/byte-efficiency/render-blocking-resources.js){: .external }
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

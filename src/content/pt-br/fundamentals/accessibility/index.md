@@ -1,381 +1,217 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Melhorando a acessibilidade para páginas da Web
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Improving accessibility for web pages
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-06-26 #}
 
-{# wf_updated_on: 2016-06-26 #}
-{# wf_published_on: 2016-06-26 #}
+# Accessibility {: .page-title }
 
-#  Acessibilidade {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
-
-
-Este conjunto de documentos é uma versão baseada em texto de parte do conteúdo abordado no
-[Curso da Udacity sobre
-Acessibilidade](https://www.udacity.com/course/web-accessibility--ud891){: .external }.
-Em vez de uma transcrição direta do vídeo curso, ele pretende ser um 
-tratamento mais conciso de princípios e práticas de acessibilidade, utilizando o
-conteúdo do curso original como base.
+This document set is a text-based version of part of the content covered in the [Udacity course on Accessibility](https://www.udacity.com/course/web-accessibility--ud891){: .external }. Rather than a direct transcription of the video course, it is meant to be a more concise treatment of accessibility principles and practices, using the course's original content as a base.
 
 ### TL;DR {: .hide-from-toc }
-- Aprenda o que acessibilidade significa e como ela se aplica ao desenvolvimento de Web.
-- Aprenda a fazer sites da Web acessíveis e utilizáveis para todos.
-- Aprenda a incluir a acessibilidade básica com impacto mínimo no desenvolvimento.
-- Aprenda que recursos de HTML estão disponíveis e como usá-los para
-  melhorar acessibilidade.
-- Aprenda sobre técnicas avançadas de acessibilidade para criar experiências
-refinadas de acessibilidade.
 
+- Learn what accessibility means and how it applies to web development.
+- Learn how to make web sites accessible and usable for everyone.
+- Learn how to include basic accessibility with minimal development impact.
+- Learn what HTML features are available and how to use them to improve accessibility.
+- Learn about advanced accessibility techniques for creating polished accessibility experiences.
 
-Entender a acessibilidade, seu escopo, e seu impacto pode fazer de você um
-desenvolvedor de Web melhor. Este guia destina-se a ajudá-lo a entender como você pode tornar
-seus websites acessível e utilizável para todos.
+Understanding accessibility, its scope, and its impact can make you a better web developer. This guide is intended to help you understand how you can make your websites accessible and usable for everyone.
 
-"Acessibilidade" pode ser difícil de soletrar, mas não tem que ser difícil
-de realizar. Neste guia, você verá como obter algumas vitórias fáceis para
-ajudar a melhorar a acessibilidade com o mínimo esforço, como pode usar o que
-é integrado no HTML para criar interfaces mais acessíveis e robustas, e como
-aproveitar algumas técnicas avançadas para a criação de experiências acessíveis refinadas.
+"Accessibility" can be difficult to spell, but it doesn't have to be difficult to accomplish. In this guide, you will see how to get some easy wins to help improve accessibility with minimal effort, how you can use what's built in to HTML to create more accessible and robust interfaces, and how to leverage some advanced techniques for creating polished accessible experiences.
 
-Também vai descobrir que muitas dessas técnicas ajudarão a criar interfaces
-que são mais agradáveis e fácil de usar para *todos* os usuários, não apenas
- para pessoas com deficiência.
+You'll also find that many of these techniques will help you create interfaces that are more pleasant and easy to use for *all* users, not just for those with disabilities.
 
-Naturalmente, muitos desenvolvedores têm apenas uma compreensão obscura do que
-acessibilidade significa &mdash; algo a ver com contratos com o governo, listas
-de verificação e leitores de tela, certo? &mdash; e há muitos equívocos acerca disso.
-Por exemplo, muitos desenvolvedores sentem que abordar a acessibilidade os obrigará
- a escolher entre criar uma experiência agradável e atraente, e uma que seja
-desajeitada e feia, mas acessível.
+Of course, many developers have only a hazy understanding of what accessibility means &mdash; something to do with government contracts, checklists, and screen readers, right? &mdash; and there are plenty of misconceptions floating around. For example, many developers feel that addressing accessibility will force them to choose between creating a delightful and attractive experience, and one that is clunky and ugly but accessible.
 
-Obviamente, este não é o caso, então vamos esclarecer isso antes de
-começar qualquer outra coisa. O que queremos dizer com acessibilidade e estamos aqui para
-aprender o quê?
+That is, of course, not the case at all, so let's clear that up before we get into anything else. What do we mean by accessibility, and what are we here to learn about?
 
-## O que é acessibilidade?
-Em termos gerais, quando dizemos que um site é acessível, queremos dizer que o
-conteúdo do site está disponível, e sua funcionalidade pode ser operada, literalmente,
-por *qualquer pessoa*. Como desenvolvedores, é fácil supor que todos os usuários podem enxergar
-e usar um teclado, mouse ou tela sensível ao toque, e conseguem interagir com
-o conteúdo da página da mesma maneira que nós. Isso pode levar a uma experiência que funciona bem para algumas pessoas,
-mas cria problemas que vão desde aborrecimentos simples a obstáculos
-intransponíveis para outras.
+## What is accessibility?
 
-Acessibilidade, então, refere-se à experiência de usuários que possam estar fora
-da estreita faixa do usuário "típico", que pode acessar ou interagir com as coisas
-de maneira diferente do que se espera. Especificamente, refere-se a usuários que experimentam
-algum tipo de deficiência ou incapacidade &mdash; e tenha em mente que
-a experiência pode ser não-física ou temporária.
+Broadly speaking, when we say a site is accessible, we mean that the site's content is available, and its functionality can be operated, by literally *anyone*. As developers, it's easy to assume that all users can see and use a keyboard, mouse, or touch screen, and can interact with your page content the same way you do. This can lead to an experience that works well for some people, but creates issues that range from simple annoyances to show-stoppers for others.
 
-Por exemplo, embora a tendência seja centrar o debate sobre acessibilidade em usuários
-com deficiências físicas, todos nós podemos nos identificar com a experiência
-de usar uma interface que não é acessível a nós por outras razões. Você já teve um
-problema para usar um site para desktop em um telefone celular, ou viu a
-mensagem "Este conteúdo não está disponível na sua região", ou não conseguiu
-encontrar um menu familiar em um tablet? Todas estas são questões de acessibilidade.
+Accessibility, then, refers to the experience of users who might be outside the narrow range of the "typical" user, who might access or interact with things differently than you expect. Specifically, it concerns users who are experiencing some type of impairment or disability &mdash; and bear in mind that that experience might be non-physical or temporary.
 
-Ao aprender mais, você vai descobrir que abordar as questões de acessibilidade
-neste sentido mais amplo e mais geral quase sempre melhora a experiência
-do usuário para todos. Vejamos um exemplo:
+For example, although we tend to center our discussion of accessibility on users with physical impairments, we can all relate to the experience of using an interface that is not accessible to us for other reasons. Have you ever had a problem using a desktop site on a mobile phone, or seen the message "This content is not available in your area", or been unable to find a familiar menu on a tablet? Those are all accessibility issues.
 
-![um formulário com acessibilidade ruim](imgs/pooraccess.jpg)
+As you learn more, you'll find that addressing accessibility issues in this broader, more general sense almost always improves the user experience for everyone. Let's look at an example:
 
-Este formulário tem vários problemas de acessibilidade.
+![a form with poor accessibility](imgs/pooraccess.jpg)
 
- - O texto está em baixo contraste, que é difícil para usuários com pouca visão lerem.
- - Ter rótulos à esquerda e os campos à direita dificulta sua associação para
-muitas pessoas, e quase a impossibilita para alguém que precisa aumentar o zoom
-para usar a página; imagine olhar isso em um telefone e ter que deslocar
-a tela para descobrir o que se refere a quê.
- - O rótulo "Lembrar das informações?" não está associado com a caixa de seleção,
-então você tem que tocar ou clicar apenas no pequeno quadrado, em vez de simplesmente
-clicar no rótulo; além disso, alguém que usa um leitor de tela
- teria dificuldade para entender a associação.
+This form has several accessibility issues.
 
-Agora, vamos usar nossa varinha acessibilidade e ver o formulário com esses problemas
-corrigidos. Vamos escurecer o texto, modificar o design para que os rótulos fiquem
-próximos das coisas a que se referem, e corrigir o rótulo a ser associado com a
-caixa de seleção para seja possível alterná-la, também clicando no rótulo.
+- The text is low contrast, which is hard for low-vision users to read.
+- Having labels on the left and fields on the right makes it hard for many people to associate them, and almost impossible for someone who needs to zoom in to use the page; imagine looking at this on a phone and having to pan around to figure out what goes with what.
+- The "Remember details?" label isn't associated with the checkbox, so you have to tap or click only on the tiny square rather than just clicking the label; also, someone using a screen reader would have trouble figuring out the association.
 
-![um formulário com acessibilidade melhorada](imgs/betteraccess.jpg)
+Now let's wave our accessibility wand and see the form with those issues fixed. We're going to make the text darker, modify the design so that the labels are close to the things they're labeling, and fix the label to be associated with the checkbox so you can toggle it by clicking the label as well.
 
-Qual você prefere usar? Se disse "a versão acessível", você está a caminho de
-compreender uma das principais premissas deste guia. Muitas vezes, algo que bloqueia totalmente
-alguns usuários também é uma área de dificuldade para muitos outros, por isso,
-ao corrigir o problema de acessibilidade, você melhora a experiência para todos.
+![a form with improved accessibility](imgs/betteraccess.jpg)
 
-## Diretrizes de Acessibilidade para Conteúdo de Web
+Which would you rather use? If you said "the accessible version", you're on your way to understanding a main premise of this guide. Often, something that's a complete blocker for a few users is also a pain point for many others, so by fixing the accessibility issue you improve the experience for everyone.
 
-Neste guia faremos referência às [Web Content Accessibility Guidelines
-(WCAG) 2.0](https://www.w3.org/TR/WCAG20/){: .external }, um conjunto de
-diretrizes e melhores práticas reunidas por especialistas em acessibilidade
-para abordar o que "acessibilidade" significa de forma metódica. Vários países realmente exigem
-o uso dessas diretrizes em seus requisitos legais de acessibilidade na Web.
+## Web Content Accessibility Guidelines
 
-As WCAG são organizadas em torno de quatro princípios frequentemente referidos pela sigla *POUR*:
+Throughout this guide we'll refer to the [Web Content Accessibility Guidelines (WCAG) 2.0](https://www.w3.org/TR/WCAG20/){: .external }, a set of guidelines and best practices put together by accessibility experts to address what "accessibility" means in a methodical way.
 
- - **Perceptível**: Os usuários conseguem perceber o conteúdo? Isso nos ajuda a ter em mente
-   que só porque algo é perceptível com um sentido, como a visão, isso
-   não significa que todos os usuários podem percebê-lo.
+WCAG is organized around four principles often called by the acronym *POUR*:
 
- - **Operável**: Os usuários conseguem usar componentes da IU e navegar pelo conteúdo? Por
-   exemplo, algo que requer uma interação de passar cursor não pode ser operado por
-   alguém que não consegue usar um mouse ou tela sensível ao toque.
+- **Perceivable**: Can users perceive the content? This helps us keep in mind that just because something is perceivable with one sense, such as sight, that doesn't mean that all users can perceive it.
 
- - **Understandable**(compreensível): Os usuários conseguem entender o conteúdo? Os usuários conseguem entender a
-   interface e ela é consistente o suficiente para evitar a confusão?
+- **Operable**: Can users use UI components and navigate the content? For example, something that requires a hover interaction cannot be operated by someone who can't use a mouse or touch screen.
 
- - **Robusto**: O conteúdo pode ser consumido por uma grande variedade de agentes
-   de usuário (navegadores)? Ele funciona com a tecnologia assistiva?
+- **Understandable**: Can users understand the content? Can users understand the interface and is it consistent enough to avoid confusion?
 
-Embora as WCAG forneçam uma visão abrangente do que significa o conteúdo ser
-acessível, elas também pode ser um pouco impressionantes. Para ajudar a atenuar isso, o grupo
-[WebAIM](http://webaim.org/){: .external } (Web Accessibility in Mind) simplificou
-as diretrizes WCAG em uma lista de verificação fácil de seguir, destinada
-especificamente ao conteúdo da Web.
+- **Robust**: Can the content be consumed by a wide variety of user agents (browsers)? Does it work with assistive technology?
 
-A [lista de verificação WebAIM](http://webaim.org/standards/wcag/checklist){: .external }
- pode fornecer um breve resumo de alto nível do que você precisa
-implementar, enquanto também faz link com a especificação WCAG subjacente 
-caso precise de uma definição expandida.
+While WCAG provides a comprehensive overview of what it means for content to be accessible, it can also be a bit overwhelming. To help mitigate this, the [WebAIM](http://webaim.org/){: .external } (Web Accessibility in Mind) group has distilled the WCAG guidelines into an easy-to-follow checklist, targeted specifically for web content.
 
-Com esta ferramenta em mãos, você pode traçar um rumo para seu trabalho de
-acessibilidade e ter certeza de que, contanto que seu projeto cumpra os critérios
-descritos, seus usuários devem ter uma experiência positiva ao acessar seu conteúdo.
+The [WebAIM checklist](http://webaim.org/standards/wcag/checklist){: .external } can give you a short, high-level summary of what you need to implement, while also linking to the underlying WCAG specification if you need an expanded definition.
 
-## Entendendo a diversidade dos usuários
+With this tool in hand, you can chart a direction for your accessibility work and be confident that, as long as your project meets the outlined criteria, your users should have a positive experience accessing your content.
 
-Ao aprender sobre acessibilidade, é útil ter uma compreensão da
-diversificada gama de usuários no mundo e os tipos de tópicos de acessibilidade
-que os afetam. Para explicar melhor, eis uma pergunta sessão informativa de perguntas e respostas
-com Victor Tsaran, Gerente de Programa Técnico do Google, que é totalmente cego.
+## Understanding users' diversity
+
+When learning about accessibility, it helps to have an understanding of the diverse range of users in the world and the kinds of accessibility topics that affect them. To explain further, here's an informative question/answer session with Victor Tsaran, a Technical Program Manager at Google, who is totally blind.
 
 <figure class="attempt-right">
-  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">	
+  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">    
   <figcaption>Victor Tsaran</figcaption>
 </figure>
 
-<hr>
+<hr />
 
-> *Com que você trabalha no Google?*
+> *What do you work on at Google?*
 
-Aqui no Google meu trabalho é ajudar a garantir que os nossos produtos funcionem
-para todos os nossos diversos usuários, independentemente de deficiência ou habilidade.
+Here at Google my job is to help ensure that our products work for all of our diverse users, regardless of impairment or ability.
 
-> *Que tipos de deficiências os usuários têm?*
+> *What kinds of impairments do users have?*
 
-Quando pensamos sobre os tipos de deficiências que dificultam o acesso de
-alguém ao nosso conteúdo, muitas pessoas imediatamente imaginam um
-usuário cego como eu. E é verdade, esta deficiência realmente pode tornar frustrante ou mesmo
-impossível usar muitos websites.
+When we think about the kinds of impairments which would make it difficult for someone to access our content, many people will immediately picture a blind user like me. And it's true, this impairment can really make it frustrating or even impossible to use a lot of web sites.
 
-Muitas das técnicas modernas da Web têm o efeito colateral de criar sites
-que não funcionam bem com as ferramentas usadas por usuários
-cegos para acessar a Web. Porém, na verdade, a acessibilidade é muito mais que isso. Achamos útil
-pensar em deficiências classificadas em quatro grupos abrangentes:
-visual, motora, auditiva e cognitiva.
+A lot of modern web techniques have the unfortunate side effect of creating sites which don't work well with the tools used by blind users to access the web. However, there is actually more to accessibility than that. We find it useful think of impairments falling into four broad buckets: visual, motor, hearing, and cognitive.
 
-> *Vamos analisar uma categoria por vez. Você pode dar alguns exemplos de deficiências
-visuais?*
+> *Let's go through those one at a time. Can you give some examples of visual impairments?*
 
-As deficiências visuais podem ser divididas em algumas categorias: Usuários sem nenhuma visão,
-como eu, podem usar um leitor de tela, braile, ou a combinação dos dois.
+Visual impairments can be split into a few categories: Users with no vision, like me, might use a screen reader, braille, or combination of the two.
 
 <figure class="attempt-right">
-  <img src="imgs/braille-reader.png" alt="Um leitor de braile">	
-  <figcaption>Um leitor de braile</figcaption>
+  <img src="imgs/braille-reader.png" alt="A braille reader">    
+  <figcaption>A braille reader</figcaption>
 </figure>
 
-Porém, é realmente muito raro alguém não ter literalmente nenhuma visão,
-mas ainda assim, há uma boa chance que você conheça ou tenha conhecido
-pelo menos uma pessoa que não consegue enxergar nada. No entanto, também há um número muito maior do que chamamos usuários
-com baixa visão.
+Now, it's actually pretty unusual to have literally no vision, but still, there's a good chance you know or have met at least one person who can't see at all. However there are also a much larger number of what we call low-vision users.
 
-Esta é uma faixa ampla, de alguém como minha esposa, que não tem córneas
-&mdash; por isso, embora basicamente consiga enxergar as coisas, ela tem dificuldade em ler textos
-e é considerada legalmente cega &mdash; a alguém que pode apenas ter
-visão ruim e precisar usar óculos muito fortes.
+This is a broad range, from someone like my wife, who doesn't have any corneas &mdash; so while she can basically see things she has a hard time reading print and is considered legally blind &mdash; to someone who might have just poor vision and needs to wear very strong prescription glasses.
 
-Há uma variedade enorme, então, naturalmente, existe uma grande variedade de acomodações
-que as pessoas nesta categoria usam: algumas utilizam um leitor de tela ou
-uma tela em Braille (já ouvi até falar de uma mulher que lê Braille exibido na tela
-porque é mais fácil de enxergar que o texto comum), ou elas podem usar tecnologia de
-texto para voz sem a funcionalidade completa de leitor de tela, ou podem usar
-um ampliador de tela, que amplia parte da tela, ou podem apenas usar o zoom
-do navegador para aumentar todas as fontes. Também podem usar opções
-de alto contraste, como um modo de alto contraste do sistema operacional,
-uma extensão de alto contraste do navegador ou um tema de alto contraste para um site.
+There's a huge range, and so naturally there's a big range of accommodations that people in this category use: some do use a screen reader or a braille display (I've even heard of one woman who reads braille displayed on-screen because it's easier to see than printed text), or they might use text-to-speech technology without the full screen reader functionality, or they might use a screen magnifier which zooms in on part of the screen, or they might just use their browser zoom to make all the fonts bigger. They might also use high-contrast options like an operating system high-contrast mode, a high-contrast browser extension or a high-contrast theme for a website.
 
 <figure class="attempt-right">
-  <img src="imgs/high-contrast.png" alt="Modo de alto contraste">	
-  <figcaption>Modo de alto contraste</figcaption>
+  <img src="imgs/high-contrast.png" alt="High-contrast mode">   
+  <figcaption>High-contrast mode</figcaption>
 </figure>
 
-Muitos usuários usam até mesmo uma combinação destas coisas, como minha amiga Laura, que
-usa uma combinação de modo de alto contraste, zoom do navegador e texto para voz.
+A lot of users even use a combination of these, like my friend Laura who uses a combination of high-contrast mode, browser zoom and text-to-speech.
 
-Baixa visão é algo com que muitas pessoas podem se identificar. Para começar, todos temos uma
-piora da visão à com a idade, por isso, mesmo que você ainda não tenha
-experimentado isso, há uma boa chance de ter ouvido seus pais reclamarem. Porém, muitas pessoas
-experimentam a frustração de levar o laptop para uma janela ensolarada só para
-descobrir que de repente não conseguem ler nada! Ou qualquer um que tenha feito
-cirurgia a laser ou talvez apenas precisou ler algo do outro lado da sala pode ter
-usado uma dessas acomodações que mencionei. Portanto, acho bastante fácil os
-desenvolvedores terem alguma empatia por usuários de baixa visão.
+Low vision is something a lot of people can relate to. For a start, we all experience deteriorating vision as we age, so even if you haven't experienced it there's a good chance you've heard your parents complain about it. But a lot of people experience the frustration of taking their laptop out by a sunny window only to find they suddenly can't read anything! Or anyone who's had laser surgery or maybe just has to read something from across the room might have used one of those accommodations I mentioned. So I think it's pretty easy for developers to have some empathy for low-vision users.
 
-Ah, e não devo esquecer de mencionar as pessoas com visão ruim das cores &mdash;
- cerca de 9% dos homens têm algum tipo de deficiência de visão de cores! Além de cerca de 1% das
-mulheres. Eles podem ter dificuldade em distinguir vermelho de verde, ou amarelo de azul.
-Pense nisso da próxima vez que projetar validação de formulário.
+Oh, and I shouldn't forget to mention people with poor color vision &mdash; about 9% of males have some form of color vision deficiency! Plus about 1% of females. They may have trouble distinguishing red and green, or yellow and blue. Think about that the next time you design form validation.
 
-> *E quanto a deficiências motoras?*
+> *What about motor impairments?*
 
-Sim, deficiências motoras ou deficiências de destreza. Este grupo varia muito, desde
-pessoas que preferem não usar um mouse, pois talvez tenham tido alguma LER ou
-algo assim, e acham doloroso, até alguém que possa estar fisicamente paralisado e
-ter uma faixa limitada de movimento em certas partes do corpo.
+Yes, motor impairments, or dexterity impairments. This group ranges all the way from those who would prefer not to use a mouse, because perhaps they've had some RSI or something and find it painful, to someone who may be physically paralyzed and have limited range of motion for certain parts of their body.
 
 <figure class="attempt-right">
-  <img src="imgs/eye-tracking.png" alt="Uma pessoa usando um dispositivo de rastreamento ocular">	
-  <figcaption>Um dispositivo de rastreamento ocular</figcaption>
+  <img src="imgs/eye-tracking.png" alt="A person using an eye tracking device"> 
+  <figcaption>An eye tracking device</figcaption>
 </figure>
 
-Usuários com deficiência motora podem usar teclado, dispositivo de switch, controle de voz,
-ou mesmo um dispositivo de rastreamento ocular para interagir com o computador.
+Motor impaired users may use a keyboard, switch device, voice control, or even an eye-tracking device to interact with their computer.
 
-Assim como as deficiências visuais, a mobilidade também pode ser um problema
-temporário ou situacional: Talvez você tenha quebrado o pulso da mão que usa para manipular o mouse. Talvez o trackpad de seu laptop
-esteja quebrado, ou você simplesmente esteja viajando um trem instável. Pode haver uma série
-de situações em que a mobilidade de um usuário é limitada, e certificar-se
-de atendê-los, melhora a experiência geral, tanto para pessoas com deficiência
-permanente, quanto para aquelas que temporariamente não podem
-usar uma IU baseada no ponteiro.
+Similar to vision impairments, mobility can also be a temporary or situational issue: Maybe you have a broken wrist on your mouse hand. Maybe the trackpad is broken on your laptop, or you're just riding on a shaky train. There can be a lot of situations where a user's mobility is impeded, and by making sure we cater for them we improve the experience overall, both for anyone with a permanent impairment but also for anyone who temporarily finds that they can't use a pointer-based UI.
 
-> *Ótimo, vamos falar sobre deficiências auditivas.*
+> *Great, let's talk about hearing impairments.*
 
-Este grupo pode ir de pessoas totalmente surdas até aquelas com dificuldade de audição. E,
-assim como a visão, a audição tende a piorar com a idade. Muitas pessoas usam affordances comuns,
-como aparelhos auditivos.
+This group can range from the profoundly deaf through to hard-of-hearing. And much like eyesight, our hearing tends to degrade with age. Many of us use common affordances like hearing aids to help us.
 
 <figure class="attempt-right">
-  <img src="imgs/screen-captions.png" alt="Um televisor com legendas na parte inferior">	
-  <figcaption>Legendas na tela</figcaption>
+  <img src="imgs/screen-captions.png" alt="A television with captions at the bottom">   
+  <figcaption>Screen captions</figcaption>
 </figure>
 
-Para usuários com deficiência auditiva, precisamos ter certeza de que não estamos
-dependendo de som; portanto, certificar-se de usar coisas como legendas e
-transcrições de vídeo, e fornecer algum tipo de alternativa, se o som for parte da interface.
+For hearing-impaired users we need to make sure that we're not relying on sound, so making sure to use things like video captions and transcripts, and providing some kind of alternative, if sound is part of the interface.
 
-E, como vimos nas deficiências visual e motora, é realmente fácil imaginar
-uma situação onde alguém com audição excelente também pode se
-beneficiar destas acomodações. Muitos de meus amigos dizem que adoram quando os vídeos têm
-legendas e transcrições, porque isso significa que, se estiverem em um escritório sem
-divisórias e não tiverem seus fones de ouvido consigo, eles ainda podem ver o vídeo!
+And like we saw with vision and motor impairments, it's really easy to imagine a situation where someone whose ears work fine would benefit from these accommodations as well. A lot of my friends say they love it when videos have captions and transcripts because it means that if they're in an open plan office and didn't bring their headphones, they can still watch the video!
 
-> *Tudo bem, você pode nos falar um pouco sobre deficiências cognitivas?*
+> *All right, can you tell us a bit about cognitive impairments?*
 
-Há uma série de condições cognitivas como TDA, Dislexia e Autismo,
-que pode significar que as pessoas desejam ou precisam acessar as coisas de forma diferente. As
-acomodações para estes grupos são naturalmente extremamente diversificadas,
-mas certamente encontramos alguma sobreposição com outras áreas, como usar a
-funcionalidade de zoom para facilitar a leitura ou concentração. Além disso, esses usuários podem achar que
-um design realmente minimalista funciona melhor, porque minimiza a distração e carga cognitiva.
+There's a range of cognitive conditions like ADD, Dyslexia, and Autism, which can mean that people want or need to access things differently. The accommodations for these groups are naturally extremely diverse, but we definitely find some overlap with other areas, like using zoom functionality to make reading or concentrating easier. Also, these users may find that really minimal design works best because it minimizes distraction and cognitive load.
 
-Acho que todos podem se identificar com o estresse da sobrecarga cognitiva,
-por isso, é óbvio que, se criarmos algo que funciona bem para uma pessoa
-com uma deficiência cognitiva, estaremos criando algo que será uma experiência
-agradável para todos.
+I think everyone can relate to the stress of cognitive overload, so it's obvious that if we create something that works well for someone with a cognitive impairment, we're going to be creating something which is going to be a pleasant experience for everyone.
 
-> *Então, como você resumiria o que pensa sobre acessibilidade?*
+> *So, how would you summarize how you think about accessibility?*
 
-Ao se analisar a ampla gama de habilidades e deficiências que as pessoas
-podem ter, você pode ver que o design e construção de produtos somente
-para pessoas que têm visão, audição, destreza e cognição perfeitas parece
-incrivelmente limitado. Isso é quase autodestrutivo porque estamos criando
-uma experiência mais estressante e menos utilizável para todos e, para alguns
-usuários, criando uma experiência que, na verdade, os exclui completamente.
+When you look at the broad range of abilities and disabilities that people might have, you can see that designing and building products only for people who have perfect vision, hearing, dexterity, and cognition seems incredibly narrow. It's almost self-defeating, because we're creating a more stressful and less usable experience for everyone, and for some users creating an experience which actually excludes them altogether.
 
-<hr>
+<hr />
 
-Nesta entrevista, Victor identificou uma série de deficiências e as classificou
-em quatro grandes categorias: *visual*, *motora*, *auditiva* e *cognitiva*. Ele
-também apontou que cada tipo de deficiência pode ser *situacional*,
-*temporária* ou *permanente*.
+In this interview, Victor identified a range of impairments, and placed them into four broad categories: *visual*, *motor*, *hearing*, and *cognitive*. He also pointed out that each type of impairment might be *situational*, *temporary*, or *permanent*.
 
-Vejamos alguns exemplos reais de deficiências de acesso e ver onde elas
-se encaixam dentro dessas categorias e tipos. Observe que algumas deficiências podem se encaixar em
-mais de uma categoria ou tipo.
+Let's take a look at some real-world examples of access impairments and see where they fall within those categories and types. Note that some impairments may fall into more than one category or type.
 
 <table>
   <tr>
     <th></th>
-    <th>Situacional</th>
-    <th>Temporária</th>
-    <th>Permanente</th>
+    <th>Situational</th>
+    <th>Temporary</th>
+    <th>Permanent</th>
   </tr>
   <tr>
     <th>Visual</th>
     <td></td>
-    <td>concussão</td>
-    <td>cegueira</td>
+    <td>concussion</td>
+    <td>blindness</td>
   </tr>
   <tr>
-    <th>Motora</th>
-    <td>segurando um bebê</td>
-    <td>braço quebrado, LER*</td>
-    <td>LER*</td>
+    <th>Motor</th>
+    <td>holding a baby</td>
+    <td>broken arm, RSI*</td>
+    <td>RSI*</td>
   </tr>
   <tr>
-    <th>Auditiva</th>
-    <td>escritório barulhento</td>
+    <th>Hearing</th>
+    <td>noisy office</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
-    <th>Cognitiva</th>
+    <th>Cognitive</th>
     <td></td>
-    <td>concussão</td>
+    <td>concussion</td>
     <td></td>
   </tr>
 </table>
 
-*Lesões por Esforços Repetitivos: por exemplo, síndrome do túnel do carpo,
-cotovelo de tenista, dedo em gatilho
+*Repetitive Strain Injury: e.g., carpal tunnel syndrome, tennis elbow, trigger finger
 
-## Próximas etapas
+## Next steps
 
-Já avançamos bem no assunto. Você leu sobre
+We've covered quite a bit of ground already! You have read about
 
- - o que é acessibilidade e porque é importante para todos
- - as WCAG e a lista de verificação de acessibilidade do WebAIM
- - diferentes tipos de deficiências a considerar
+- what accessibility is and why it matters for everyone
+- the WCAG and the WebAIM accessibility checklist
+- different types of impairments you should consider
 
-No resto do guia, vamos mergulhar nos aspectos práticos da
-criação de sites da Web acessíveis. Organizaremos este esforço em três assuntos
-principais:
+For the rest of the guide, we'll dive into the practical aspects of creating accessible web sites. We'll organize this effort around three main subject areas:
 
- - [**Foco**](/web/fundamentals/accessibility/focus): Veremos como construir
-coisas que podem ser operadas com um teclado em vez do mouse. Isto é
-importante para usuários com deficiências motoras, é claro, mas também
-garante que sua IU esteja em boa forma para todos os usuários.
+- [**Focus**](/web/fundamentals/accessibility/focus): We'll look at how to build things that can be operated with a keyboard instead of a mouse. This is important for users with motor impairments, of course, but it also ensures that your UI is in good shape for all users.
 
- - [**Semântica**](/web/fundamentals/accessibility/semantics-builtin): Certificaremos
-a expressão de nossa interface do usuário de forma robusta, que funciona com
-uma variedade de tecnologias assistivas.
+- [**Semantics**](/web/fundamentals/accessibility/semantics-builtin): We'll make sure that we express our user interface in a robust way that works with a variety of assistive technologies.
 
- - [**Estilo**](/web/fundamentals/accessibility/accessible-styles): Consideraremos o design
-visual e analisaremos algumas técnicas para tornar os elementos visuais da
-interface tão flexíveis e úteis quanto possível.
+- [**Styling**](/web/fundamentals/accessibility/accessible-styles): We'll consider visual design and look at some techniques for making the visual elements of the interface as flexible and usable as possible.
 
-Cada um desses assuntos poderia preencher um curso inteiro, portanto não vamos cobrir todos os aspectos
-de criação de sites da Web acessíveis. No entanto, forneceremos informações
-suficientes para a começar, e apontaremos alguns bons lugares onde você pode aprender mais
-sobre cada tópico.
+Each of those subjects could fill a whole course, so we won't cover every aspect of creating accessible web sites. However, we'll give you enough information to get started, and point you to some good places where you can learn more about each topic.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

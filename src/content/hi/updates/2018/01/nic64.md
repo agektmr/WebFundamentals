@@ -1,17 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: What's new in Chrome 64 for developers?
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: What's new in Chrome 64 for developers?
 
-{# wf_published_on: 2018-01-23 #}
-{# wf_updated_on: 2018-10-30 #}
+{# wf_published_on: 2018-01-23 #} {# wf_updated_on: 2018-03-05 #} {# wf_featured_image: /web/updates/images/generic/new-in-chrome.png #} {# wf_tags: chrome64,new-in-chrome,observers,ux,regex,media,modules,responsive #} {# wf_featured_snippet: Chrome 64 adds support for ResizeObservers, which will notify you when an element’s content rectangle has changed its size. Modules can now access to host specific metadata with import.metadata The pop-up blocker gets strong and plenty more. Let’s dive in and see what’s new for developers in Chrome 64! #} {# wf_blink_components: N/A #}
 
-{# wf_featured_image: /web/updates/images/generic/new-in-chrome.png #}
-{# wf_tags: chrome64,new-in-chrome,observers,ux,regex,media,modules,responsive #}
-{# wf_featured_snippet: Chrome 64 adds support for ResizeObservers, which will notify you when an element’s content rectangle has changed its size. Modules can now access to host specific metadata with import.metadata The pop-up blocker gets strong and plenty more. Let’s dive in and see what’s new for developers in Chrome 64! #}
-{# wf_blink_components: N/A #}
-
-# क्रोम 64 में नया {: .page-title }
+# New in Chrome 64 {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
@@ -23,28 +14,28 @@ description: What's new in Chrome 64 for developers?
   </iframe>
 </div>
 
-* [`ResizeObservers`](#resizeobserver) लिए समर्थन, आपको सूचित करेगा जब किसी तत्व की सामग्री आयताकार ने अपना आकार बदल दिया है।
-* मॉड्यूल अब [import.meta](#import-meta) साथ होस्ट विशिष्ट मेटाडेटा तक पहुंच सकते हैं।
-* [pop-up blocker](#popup-blocker) मजबूत हो जाता है।
-* [`window.alert()`](#window-alert) अब फोकस नहीं बदलता है।
+* Support for [`ResizeObservers`](#resizeobserver), will notify you when an element’s content rectangle has changed its size.
+* Modules can now access to host specific metadata with [import.meta](#import-meta).
+* The [pop-up blocker](#popup-blocker) gets strong.
+* [`window.alert()`](#window-alert) no longer changes focus.
 
-और [plenty more](#more) !
+And there’s [plenty more](#more)!
 
-मैं पीट लीपेज हूं। आइए देखें और क्रोम 64 में डेवलपर्स के लिए नया क्या है!
+I’m Pete LePage. Let’s dive in and see what’s new for developers in Chrome 64!
 
 <div class="clearfix"></div>
 
-Note: परिवर्तनों की पूरी सूची चाहते हैं? [Chromium source repository change list](https://chromium.googlesource.com/chromium/src/+log/63.0.3239.84..64.0.3282.140) ।
+Note: Want the full list of changes? Check out the [Chromium source repository change list](https://chromium.googlesource.com/chromium/src/+log/63.0.3239.84..64.0.3282.140).
 
 ## `ResizeObserver` {: #resizeobserver }
 
-किसी तत्व के आकार में परिवर्तन होने पर ट्रैकिंग दर्द का थोड़ा सा हो सकता है। सबसे अधिक संभावना है कि आप दस्तावेज़ के `resize` ईवेंट में श्रोता संलग्न करेंगे, फिर `getBoundingClientRect` या `getComputedStyle` कॉल करें। लेकिन, दोनों लेआउट थ्रैशिंग का कारण बन सकते हैं।
+Tracking when an element’s size changes can be a bit of a pain. Most likely, you’ll attach a listener to the document’s `resize` event, then call `getBoundingClientRect` or `getComputedStyle`. But, both of those can cause layout thrashing.
 
-और क्या होगा यदि ब्राउज़र विंडो आकार बदल नहीं पाई, लेकिन दस्तावेज़ में एक नया तत्व जोड़ा गया था? या आपने किसी तत्व को `display: none` जोड़ा है? वे दोनों पृष्ठ के भीतर अन्य तत्वों के आकार को बदल सकते हैं।
+And what if the browser window didn’t change size, but a new element was added to the document? Or you added `display: none` to an element? Both of those can change the size of other elements within the page.
 
-जब भी कोई तत्व का आकार बदलता है तो `ResizeObserver` आपको सूचित करता है, और तत्व की नई ऊंचाई और चौड़ाई प्रदान करता है, जिससे लेआउट थ्रैशिंग का खतरा कम हो जाता है।
+`ResizeObserver` notifies you whenever an element’s size changes, and provides the new height and width of the element, reducing the risk of layout thrashing.
 
-अन्य पर्यवेक्षकों की तरह, इसका उपयोग करना बहुत आसान है, `ResizeObserver` ऑब्जेक्ट बनाएं और कन्स्ट्रक्टर को कॉलबैक पास करें। कॉलबैक को `ResizeOberverEntries` की एक सरणी दी `ResizeOberverEntries` - प्रति `ResizeOberverEntries` तत्व में एक प्रविष्टि - जिसमें तत्व के लिए नए आयाम होते हैं।
+Like other Observers, using it is pretty simple, create a `ResizeObserver` object and pass a callback to the constructor. The callback will be given an array of `ResizeOberverEntries` – one entry per observed element – which contain the new dimensions for the element.
 
 ```js
 const ro = new ResizeObserver( entries => {
@@ -60,44 +51,37 @@ const ro = new ResizeObserver( entries => {
 ro.observe(someElement);
 ```
 
-अधिक जानकारी और असली दुनिया के उदाहरणों के लिए [`ResizeObserver`: It's like `document.onresize` for Elements](/web/updates/2016/10/resizeobserver) देखें।
+Check out [`ResizeObserver`: It's like `document.onresize` for Elements](/web/updates/2016/10/resizeobserver) for more details and real world examples.
 
+## Improved Pop-up Blocker {: #popup-blocker }
 
-## बेहतर पॉप-अप अवरोधक {: #popup-blocker }
+I hate tab-unders. You know them, it’s when a page opens a pop-up to some destination AND navigates the page. Usually one of them is an ad or something that you didn’t want.
 
-मुझे टैब-अंडर से नफरत है। आप उन्हें जानते हैं, यह तब होता है जब कोई पृष्ठ किसी गंतव्य पर पॉप-अप खुलता है और पृष्ठ पर नेविगेट करता है। आमतौर पर उनमें से एक विज्ञापन या ऐसा कुछ है जिसे आप नहीं चाहते थे।
-
-क्रोम 64 में शुरू होने से, इन प्रकार के नेविगेशन अवरुद्ध हो जाएंगे, और क्रोम उपयोगकर्ता को कुछ मूल यूआई दिखाएगा - अगर वे चाहते हैं तो उन्हें रीडायरेक्ट का पालन करने की अनुमति दें।
-
+Starting in Chrome 64, these type of navigations will be blocked, and Chrome will show some native UI to the user - allowing them to follow the redirect if they want.
 
 ## `import.meta` {: #import-meta }
 
-जावास्क्रिप्ट मॉड्यूल लिखते समय, आप अक्सर मौजूदा मॉड्यूल के बारे में होस्ट-विशिष्ट मेटाडेटा तक पहुंच चाहते हैं। क्रोम 64 अब मॉड्यूल के भीतर `import.meta` प्रॉपर्टी का समर्थन करता है और मॉड्यूल के लिए URL को `import.meta.url` रूप में उजागर करता है।
+When writing JavaScript modules, you often want access to host-specific metadata about the current module. Chrome 64 now supports the `import.meta` property within modules and exposes the URL for the module as `import.meta.url`.
 
-यह वास्तव में सहायक है जब आप मौजूदा HTML दस्तावेज़ के विपरीत मॉड्यूल फ़ाइल से संबंधित संसाधनों को हल करना चाहते हैं।
+This is really helpful when you want to resolve resources relative to the module file as opposed to the current HTML document.
 
+## And more! {: #more }
 
-## और अधिक! {: #more }
+These are just a few of the changes in Chrome 64 for developers, of course, there’s plenty more.
 
-डेवलपर्स के लिए क्रोम 64 में ये कुछ बदलाव हैं, बेशक, बहुत कुछ है।
-
-* क्रोम अब नियमित अभिव्यक्तियों में [named captures](/web/updates/2017/07/upcoming-regexp-features#named_captures) और [Unicode property  escapes](/web/updates/2017/07/upcoming-regexp-features#unicode_property_escapes) का समर्थन करता है।
-* `<audio>` और `<video>` तत्वों के लिए डिफ़ॉल्ट `preload` मान अब `metadata` । यह क्रोम को अन्य ब्राउज़रों के साथ लाता है और केवल मेटाडेटा लोड करके बैंडविड्थ और संसाधन उपयोग को कम करने में मदद करता है, न कि मीडिया स्वयं।
-* अब आप उपयोग कर सकते हैं `Request.prototype.cache` एक का कैश मोड देखने पर `Request` और निर्धारित करेंगे कि एक अनुरोध एक रीलोड अनुरोध है।
-* फोकस प्रबंधन API का उपयोग करके, अब आप `preventScroll` विशेषता के साथ स्क्रॉल किए बिना तत्व को फ़ोकस कर सकते हैं।
+* Chrome now supports [named captures](/web/updates/2017/07/upcoming-regexp-features#named_captures) and [Unicode property escapes](/web/updates/2017/07/upcoming-regexp-features#unicode_property_escapes) in regular expressions.
+* The default `preload` value for `<audio>` and `<video>` elements is now `metadata`. This brings Chrome in line with other browsers and helps to reduce bandwidth and resource usage by only loading the metadata and not the media itself.
+* You can now use `Request.prototype.cache` to view the cache mode of a `Request` and determine whether a request is a reload request.
+* Using the Focus Management API, you can now focus an element without scrolling to it with the `preventScroll` attribute.
 
 ## `window.alert()` {: #window-alert }
 
-ओह, और एक और! हालांकि यह वास्तव में &#39;डेवलपर सुविधा&#39; नहीं है, यह मुझे खुश बनाता है। `window.alert()` अब अग्रभूमि में पृष्ठभूमि टैब नहीं लाता है! इसके बजाए, जब उपयोगकर्ता उस टैब पर वापस स्विच करता है तो अलर्ट दिखाया जाएगा।
+Oh, and one more! While this isn’t really a ‘developer feature’, it makes me happy. `window.alert()` no longer brings a background tab to the foreground! Instead, the alert will be shown when the user switches to back to that tab.
 
-कोई और यादृच्छिक टैब स्विचिंग नहीं है क्योंकि कुछ ने मुझे `window.alert` निकाल दिया है। मैं आपको पुराना Google कैलेंडर देख रहा हूं।
+No more random tab switching because something fired a `window.alert` on me. I’m looking at you old Google Calendar.
 
+Be sure to [subscribe](https://goo.gl/6FP1a5) to our [YouTube channel](https://www.youtube.com/user/ChromeDevelopers/), and you’ll get an email notification whenever we launch a new video, or add our [RSS feed](/web/shows/rss.xml) to your feed reader.
 
-हमारे [YouTube channel](https://www.youtube.com/user/ChromeDevelopers/) पर [subscribe](https://goo.gl/6FP1a5) सुनिश्चित करें, और जब भी हम कोई नया वीडियो लॉन्च करते हैं, या हमारे फ़ीड रीडर में हमारे [RSS feed](/web/shows/rss.xml) को जोड़ते हैं तो आपको एक ईमेल अधिसूचना मिल जाएगी।
-
-
-मैं पीट लीपेज हूं, और जैसे ही क्रोम 65 जारी किया गया है, मैं आपको बताने के लिए यहां सही हूं - क्रोम में नया क्या है!
+I’m Pete LePage, and as soon as Chrome 65 is released, I’ll be right here to tell you -- what’s new in Chrome!
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}

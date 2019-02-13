@@ -1,12 +1,8 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:关于 Chrome DevTools Network 面板功能的综合参考。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: A comprehensive reference of Chrome DevTools Network panel features.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-08-23 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-{% include "web/tools/chrome-devtools/_shared/styles.html" %}
+{% include "web/tools/chrome-devtools/_shared/styles.html" %} 
 
 <style>
 figcaption {
@@ -14,839 +10,708 @@ figcaption {
 }
 </style>
 
-[ui]: #ui-overview
-[requests]: #requests
-[overview]: #overview
+ 
 
-# 网络分析参考 {: .page-title }
+# Network Analysis Reference {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-在此关于 Chrome DevTools 网络分析功能的综合参考中，探索分析页面加载方式的新方法。
+Discover new ways to analyze how your page loads in this comprehensive reference of Chrome DevTools network analysis features.
 
+Note: This reference is based on Chrome 58. If you use another version of Chrome, the UI and features of DevTools may be different. Check `chrome://help` to see what version of Chrome you're running.
 
-注：本参考是以 Chrome 58 为基础。如果您使用其他版本的 Chrome，DevTools 的界面和功能可能有所不同。
- 请访问
-`chrome://help` 以了解您运行的 Chrome 版本。
+## Record network requests {: #record }
 
-## 记录网络请求 {: #record }
-
-默认情况下，只要 DevTools 处于打开状态，DevTools 就会在 Networ 面板中记录所有网络请求。
-
+By default, DevTools records all network requests in the Network panel, so long as DevTools is open.
 
 <figure>
-  <img src="imgs/network.png" alt="Network 面板。">
+  <img src="imgs/network.png" alt="The Network panel.">
   <figcaption>
-    <b>图 1</b>. Network 面板
-</figcaption>
+    <b>Figure 1</b>. The Network panel
+  </figcaption>
 </figure>
 
-### 停止记录网络请求 {: #stop-recording }
+### Stop recording network requests {: #stop-recording }
 
-若要停止记录请求：
+To stop recording requests:
 
-* 在 Network 面板上点击 **Stop recording network log** ![停止记录网络日志](imgs/record-on.png)
-{: .devtools-inline } 。 随后此图标变为灰色，表示 DevTools 不再记录请求。
-* 在 Network 面板处于焦点状态时，按 <kbd>Command</kbd>+<kbd>E</kbd> (Mac) 或
-  <kbd>Control</kbd>+<kbd>E</kbd>（Windows、Linux）。
+* Click **Stop recording network log** ![Stop recording network
+log](imgs/record-on.png){: .devtools-inline } on the Network panel. It turns grey to indicate that DevTools is no longer recording requests.
+* Press <kbd>Command</kbd>+<kbd>E</kbd> (Mac) or <kbd>Control</kbd>+<kbd>E</kbd> (Windows, Linux) while the Network panel is in focus.
 
+### Clear requests {: #clear }
 
-### 清除请求 {: #clear }
-
-在 Network 面板上点击 **Clear** ![清除][clear]，{:.devtools-inline} 以清除 Requests 表格中的所有请求。
-
+Click **Clear** ![Clear](imgs/clear-requests.png){:.devtools-inline} on the Network panel to clear all requests from the Requests table.
 
 <figure>
-  <img src="imgs/clear.svg" alt="Clear 按钮。">
+  <img src="imgs/clear.svg" alt="The Clear button.">
   <figcaption>
-    <b>图 2</b>. 添加蓝色边框的 Clear 按钮
-</figcaption>
+    <b>Figure 2</b>. Clear, outlined in blue
+  </figcaption>
 </figure>
 
-[clear]: imgs/clear-requests.png
+### Save requests across page loads {: #preserve-log }
 
-### 跨页面加载保存请求 {: #preserve-log }
-
-要跨页面加载保存请求，请勾选 Network 面板上的 **Preserve log** 复选框。
- 在您停用
-**Preserve log** 之前，DevTools 会保存所有请求。
+To save requests across page loads, check the **Preserve log** checkbox on the Network panel. DevTools saves all requests until you disable **Preserve log**.
 
 <figure>
-  <img src="imgs/preserve-log.svg" alt="Preserve Log 复选框。">
+  <img src="imgs/preserve-log.svg" alt="The Preserve Log checkbox.">
   <figcaption>
-    <b>图 3</b>. 添加蓝色边框的 Preserve Log 复选框
-</figcaption>
+    <b>Figure 3</b>. The Preserve Log checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-### 在页面加载期间捕获屏幕截图 {: #screenshots }
+### Capture screenshots during page load {: #screenshots }
 
-捕获屏幕截图以分析用户在等待页面加载时看到的内容。
+Capture screenshots to analyze what users see as they wait for your page to load.
 
+To enable screenshots, click **Capture screenshots** ![Capture
+screenshots](imgs/capture-screenshots.png){: .devtools-inline } on the Network panel. It turns blue when enabled.
 
-要启用屏幕截图，请点击 Network 面板上的 **Capture screenshots** ![捕获屏幕截图][capture]
-{: .devtools-inline } 。 此图标启用后即变为蓝色。
+Reload the page while the Network panel is in focus to capture screenshots.
 
+Once captured, you can interact with screenshots in the following ways:
 
-在 Network 面板处于焦点状态时重新加载页面以捕获屏幕截图。
-
-捕获后，您可以通过以下方式与屏幕截图进行交互：
-
-* 将鼠标指针悬停在屏幕截图上以查看捕获屏幕截图的时间点。
- Overview 窗格中将显示一条黄线。
-* 点击屏幕截图的缩略图以过滤捕获屏幕截图后出现的任何请求。
-* 双击缩略图进行放大。
+* Hover over a screenshot to view the point at which that screenshot was captured. A yellow line appears on the Overview pane.
+* Click a screenshot's thumbnail to filter out any requests that occurred after the screenshot was captured.
+* Double-click a thumbnail to zoom in on it.
 
 <figure>
   <img src="imgs/screenshot-hover.png"
-       alt="将鼠标指针悬停在屏幕截图上。">
+       alt="Hovering over a screenshot.">
   <figcaption>
-    <b>图 4</b>. 将鼠标指针悬停在屏幕截图上。 Overview 窗格和 Waterfall 中的黄色垂直线表示捕获屏幕截图的时间。
-
-
+    <b>Figure 4</b>. Hovering over a screenshot. The yellow, vertical line
+    in the Overview pane and the Waterfall represent the time at which the
+    screenshot was captured.
   </figcaption>
 </figure>
 
-[capture]: imgs/capture-screenshots.png
+### Replay XHR request {: #replay-xhr }
 
-### 重播 XHR 请求 {: #replay-xhr }
-
-若要重播 XHR 请求，请右键点击 Requests 表格中的请求，然后选择 **Replay XHR**。
-
+To replay an XHR request, right-click the request in the Requests table and select **Replay XHR**.
 
 <figure>
-  <img src="imgs/replay-xhr.png" alt="选择 Replay XHR。">
+  <img src="imgs/replay-xhr.png" alt="Selecting Replay XHR.">
   <figcaption>
-    <b>图 5</b>. 选择 Replay XHR
-</figcaption>
+    <b>Figure 5</b>. Selecting Replay XHR
+  </figcaption>
 </figure>
 
-## 更改加载行为
+## Change loading behavior
 
-### 通过停用浏览器缓存来模拟首次访问者 {: #disable-cache}
+### Emulate a first-time visitor by disabling the browser cache {: #disable-cache}
 
-若要模拟新用户访问您网站的体验，请勾选 **Disable
-cache** 复选框。 DevTools 会停用浏览器缓存。 这样可以更准确地模拟新用户的体验，因为之前在重复访问时请求是通过浏览器缓存提供。
-
-
+To emulate how a first-time user experiences your site, check the **Disable cache** checkbox. DevTools disables the browser cache. This more accurately emulates a first-time user's experience, because requests are served from the browser cache on repeat visits.
 
 <figure>
-  <img src="imgs/disable-cache.svg" alt="Disable Cache 复选框。">
+  <img src="imgs/disable-cache.svg" alt="The Disable Cache checkbox.">
   <figcaption>
-    <b>图 6</b>. 添加蓝色边框的 Disable Cache 复选框
-</figcaption>
+    <b>Figure 6</b>. The Disable Cache checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-#### 在 Network Conditions 抽屉式导航栏中停用浏览器缓存 {: #disable-cache-network-conditions }
+#### Disable the browser cache from the Network Conditions drawer {: #disable-cache-network-conditions }
 
-如果在使用其他 DevTools 面板时想要停用缓存，请使用 Network Conditions 抽屉式导航栏。
+If you want to disable the cache while working in other DevTools panels, use the Network Conditions drawer.
 
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Check or uncheck the **Disable cache** checkbox.
 
-1. 打开 [Network Conditions 抽屉式导航栏](#network-conditions)。
-1. 勾选或取消选中 **Disable cache** 复选框。
+### Manually clear the browser cache {: #clear-cache}
 
-### 手动清除浏览器缓存 {: #clear-cache}
-
-若要随时手动清除浏览器缓存，请右键点击 Requests 表格中的任意位置，然后选择 **Clear Browser Cache**。
-
+To manually clear the browser cache at any time, right-click anywhere in the Requests table and select **Clear Browser Cache**.
 
 <figure>
   <img src="imgs/clear-browser-cache.png"
-       alt="选择 Clear Browser Cache。">
+       alt="Selecting Clear Browser Cache.">
   <figcaption>
-    <b>图 7</b>. 选择 Clear Browser Cache
-</figcaption>
+    <b>Figure 7</b>. Selecting Clear Browser Cache
+  </figcaption>
 </figure>
 
-### 离线模拟 {: #offline }
+### Emulate offline {: #offline }
 
-有一类名为[渐进式网页应用][pwa]的新网页应用可以借助 [Service Worker][sw] 离线运行。
- 构建此类应用后，它能够快速模拟无数据连接的设备，非常有用。
+There's a new class of web apps, called [Progressive Web Apps](/web/progressive-web-apps/), which can function offline with the help of [service workers](/web/fundamentals/getting-started/primers/service-workers). When you're building this type of app, it's useful to be able to quickly simulate a device that has no data connection.
 
-
-
-勾选 **Offline** 复选框以模拟完全离线的网络体验。
-
+Check the **Offline** checkbox to simulate a completely offline network experience.
 
 <figure>
   <img src="imgs/offline.svg"
-       alt="Offline 复选框">
+       alt="The Offline checkbox">
   <figcaption>
-    <b>图 8</b>. 添加蓝色边框的 Offline 复选框
-</figcaption>
+    <b>Figure 8</b>. The Offline checkbox, outlined in blue
+  </figcaption>
 </figure>
 
-[pwa]: /web/progressive-web-apps/
-[sw]: /web/fundamentals/getting-started/primers/service-workers
+### Emulate slow network connections {: #throttling }
 
-### 模拟慢速网络连接 {: #throttling }
-
-在 **Network Throttling** 菜单中模拟 2G、3G 和其他连接速度。
-
+Emulate 2G, 3G, and other connection speeds from the **Network Throttling** menu.
 
 <figure>
   <img src="imgs/network-panel-throttling-menu.svg"
-       alt="Network Throttling 菜单。">
+       alt="The Network Throttling menu.">
   <figcaption>
-    <b>图 9</b>. 添加蓝色边框的 Network Throttling 菜单
-</figcaption>
+    <b>Figure 9</b>. The Network Throttling menu, outlined in blue
+  </figcaption>
 </figure>
 
-您可以从各种预设中进行选择，例如 Regular 2G 或 Good 2G。 您还可以通过打开 Network Throttling 菜单并选择 **Custom** > **Add** 来添加自己的自定义预设。
+You can select from a variety of presets, such as Regular or Good 2G. You can also add your own custom presets by opening the Network Throttling menu and selecting **Custom** > **Add**.
 
+DevTools displays a warning icon next to the **Network** tab to remind you that throttling is enabled.
 
+#### Emulate slow network connections from the Network Conditions drawer {: #throttling-network-conditions }
 
-DevTools 会在 **Network** 标签旁显示一个警告图标，以提醒您已启用限制。
+If you want to throttle the network connection while working in other DevTools panels, use the Network Conditions drawer.
 
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Select your desired connection speed from the **Network Throttling** menu.
 
-#### 在 Network Conditions 抽屉式导航栏中模拟慢速网络连接 {: #throttling-network-conditions }
+### Manually clear browser cookies {: #clear-cookies }
 
-如果在使用其他 DevTools
-面板时想要限制网络连接速度，请使用 Network Conditions 抽屉式导航栏。
-
-1. 打开 [Network Conditions 抽屉式导航栏](#network-conditions)。
-1. 在 **Network Throttling** 菜单中选择所需连接速度。
-
-### 手动清除浏览器 Cookie {: #clear-cookies }
-
-若要随时手动清除浏览器 Cookie，请右键点击
-Requests 表格中的任意位置，然后选择 **Clear Browser Cookies**。
+To manually clear browser cookies at any time, right-click anywhere in the Requests table and select **Clear Browser Cookies**.
 
 <figure>
   <img src="imgs/clear-browser-cookies.png"
-       alt="选择 Clear Browser Cookies。">
+       alt="Selecting Clear Browser Cookies.">
   <figcaption>
-    <b>图 10</b>. 选择 Clear Browser Cookies
-</figcaption>
+    <b>Figure 10</b>. Selecting Clear Browser Cookies
+  </figcaption>
 </figure>
 
-### 替换用户代理 {: #user-agent }
+### Override the user agent {: #user-agent }
 
-若要手动替换用户代理：
+To manually override the user agent:
 
-1. 打开 [Network Conditions 抽屉式导航栏](#network-conditions)。
-1. 取消选中 **Select automatically**。
-1. 从菜单中选择用户代理选项，或在文本框中输入自定义选项。
+1. Open the [Network Conditions drawer](#network-conditions).
+2. Uncheck **Select automatically**.
+3. Choose a user agent option from the menu, or enter a custom one in the text box.
 
+## Filter requests {: #filter }
 
-## 过滤请求 {: #filter }
+### Filter requests by properties {: #filter-by-property }
 
-### 按属性过滤请求 {: #filter-by-property }
+Use the **Filter** text box to filter requests by properties, such as the domain or size of the request.
 
-使用 **Filter** 文本框，以按请求的域或大小等属性过滤请求。
-
-
-如果看不到文本框，则表明 Filters 窗格可能已隐藏。
-请参阅[隐藏 Filters 窗格](#hide-filters)。
+If you can't see the text box, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
 <figure>
-  <img src="imgs/filter-text-box.svg" alt="Filters 文本框。">
+  <img src="imgs/filter-text-box.svg" alt="The Filters text box.">
   <figcaption>
-    <b>图 11</b>. 添加蓝色边框的 Filters 文本框
-</figcaption>
+    <b>Figure 11</b>. The Filters text box, outlined in blue
+  </figcaption>
 </figure>
 
-您可以通过空格分隔每个属性，以同时使用多个属性。
- 例如，`mime-type:image/gif larger-than:1K` 显示大于一千字节的所有 GIF。
- 这些多属性过滤器等同于 AND 操作。
- 目前不支持 OR 操作。
+You can use multiple properties simultaneously by separating each property with a space. For example, `mime-type:image/gif larger-than:1K` displays all GIFs that are larger than one kilobyte. These multi-property filters are equivalent to AND operations. OR operations are currently not supported.
 
+Below is a complete list of supported properties.
 
-下面是支持的属性的完整列表。
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
-* `domain`。 仅显示来自指定域的资源。 您可以使用通配符字符 (`*`) 纳入多个域。
- 例如，`*.com`
-将显示来自以 `.com` 结尾的所有域名的资源。 DevTools
-会使用其遇到的所有域填充自动填充下拉菜单。
-* `has-response-header`。 显示包含指定
-HTTP 响应标头的资源。 DevTools 会使用其遇到的所有响应标头填充自动填充下拉菜单。
-* `is`。 使用 `is:running` 可以查找 `WebSocket` 资源。
-* `larger-than`。 显示大于指定大小的资源（以字节为单位）。
- 将值设为 `1000` 等同于设置为 `1k`。
-* `method`。 显示通过指定 HTTP 方法类型检索的资源。
- DevTools 会使用其遇到的所有 HTTP 方法填充下拉菜单。
-* `mime-type`。 显示指定 MIME 类型的资源。 DevTools 会使用其遇到的所有 MIME 类型填充下拉菜单。
-* `mixed-content`。 显示所有混合内容资源 (`mixed-content:all`)，或者仅显示当前显示的资源 (`mixed-content:displayed`)。
-* `scheme`。 显示通过未保护 HTTP (`scheme:http`) 或受保护 HTTPS (`scheme:https`) 检索的资源。
-* `set-cookie-domain`。 显示具有 `Set-Cookie` 标头并且 `Domain` 属性与指定值匹配的资源。
- DevTools 会使用其遇到的所有 Cookie 域填充自动填充下拉菜单。
-* `set-cookie-name`。 显示具有 `Set-Cookie` 标头并且名称与指定值匹配的资源。
- DevTools 会使用其遇到的所有 Cookie 名称填充自动填充下拉菜单。
-* `set-cookie-value`。 显示具有 `Set-Cookie` 标头并且值与指定值匹配的资源。
- DevTools 会使用其遇到的所有 Cookie 值填充自动填充下拉菜单。
-* `status-code`。 仅显示 HTTP 状态代码与指定代码匹配的资源。
- DevTools 会使用其遇到的所有状态代码填充自动填充下拉菜单。
+### Filter requests by type {: #filter-by-type }
 
+To filter requests by request type, click the **XHR**, **JS**, **CSS**, **Img**, **Media**, **Font**, **Doc**, **WS** (WebSocket), **Manifest**, or **Other** (any other type not listed here) buttons on the Network panel.
 
-### 按类型过滤请求 {: #filter-by-type }
+If you can't see these buttons, the Filters pane is probably hidden. See [Hide the Filters pane](#hide-filters).
 
-若要按请求类型过滤请求，请在 Network 面板上点击 **XHR**、**JS**、**CSS**、**Img**、**Media**、**Font**、**Doc**、**WS** (WebSocket)、**Manifest** 或 **Other**（此处未列出的任何其他类型）按钮。
-
-
-
-如果您看不到这些按钮，则表明 Filters 窗格可能已隐藏。
-请参阅[隐藏 Filters 窗格](#hide-filters)。
-
-若要同时启用多个类型的过滤器，请按住 <kbd>Command</kbd>
-(Mac) 或 <kbd>Control</kbd>（Windows、Linux），然后点击相应的过滤器。
+To enable multiple type filters simultaneously, hold <kbd>Command</kbd> (Mac) or <kbd>Control</kbd> (Windows, Linux) and then click.
 
 <figure>
   <img src="imgs/multi-type-filter.png"
-       alt="使用 Type 过滤器显示 JS、CSS 和 Doc[ument] 资源。">
-
+       alt="Using the Type filters to display JS, CSS, and Doc[ument]
+            resources.">
   <figcaption>
-    <b>图 12</b>. 使用 Type 过滤器显示 JS、CSS 和 Doc[ument] 资源。
-
+    <b>Figure 12</b>. Using the Type filters to display JS, CSS, and Doc[ument]
+    resources.
   </figcaption>
 </figure>
 
-### 按时间过滤请求 {: #filter-by-time }
+### Filter requests by time {: #filter-by-time }
 
-在 Overview 窗格中点击并向左或向右拖动，可以仅显示在指定时间范围内处于活动状态的请求。
- 过滤器是包含在其中。 在突出显示的时间内处于活动状态的任何请求都将显示。
-
+Click and drag left or right on the Overview pane to only display requests that were active during that time frame. The filter is inclusive. Any request that was active during the highlighted time is shown.
 
 <figure>
   <img src="imgs/overview-filter.png"
-       alt="过滤掉在 2500 毫秒左右处于非活动状态的所有请求。">
+       alt="Filtering out any requests that weren't active around 2500ms.">
   <figcaption>
-    <b>图 13</b>. 过滤掉在 2500 毫秒左右处于非活动状态的所有请求
-</figcaption>
-
+    <b>Figure 13</b>. Filtering out any requests that weren't active around
+    2500ms
+  </figcaption>
 </figure>
 
-### 隐藏数据网址
+### Hide data URLs
 
-[数据网址][data-uris]是嵌入到其他文档中的小文件。 您在 Requests 表格中看到的以
-`data:` 开头的所有请求都是数据网址。
+[Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) are small files embedded into other documents. Any request that you see in the Requests table that starts with `data:` is a data URL.
 
-
-勾选 **Hide data URLs** 复选框可以隐藏这些请求。
+Check the **Hide data URLs** checkbox to hide these requests.
 
 <figure>
-  <img src="imgs/hide-data-urls.svg" alt="Hide Data URLs 复选框。">
+  <img src="imgs/hide-data-urls.svg" alt="The Hide Data URLs checkbox.">
   <figcaption>
-    <b>图 14</b>. Hide Data URLs 复选框
-</figcaption>
+    <b>Figure 14</b>. The Hide Data URLs checkbox
+  </figcaption>
 </figure>
 
-[data-uris]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+## Sort requests
 
-## 对请求排序
+By default, the requests in the Requests table are sorted by initiation time, but you can sort the table using other criteria.
 
-默认情况下，Requests 表格中的请求按开始时间进行排序，但您可以使用其他标准对此表格排序。
+### Sort by column {: #sort-by-column }
 
+Click the header of any column in the Requests to sort requests by that column.
 
-### 按列排序 {: #sort-by-column }
+### Sort by activity phase {: #sort-by-activity }
 
-点击 Requests 表格中任何列的标题，可以按该列对请求排序。
+To change how the Waterfall sorts requests, right-click the header of the Requests table, hover over **Waterfall**, and select one of the following options:
 
+* **Start Time**. The first request that was initiated is at the top.
+* **Response Time**. The first request that started downloading is at the top.
+* **End Time**. The first request that finished is at the top.
+* **Total Duration**. The request with the shortest connection setup and request / response is at the top.
+* **Latency**. The request that waited the shortest time for a response is at the top.
 
-### 按活动阶段排序 {: #sort-by-activity }
-
-若要更改按瀑布图对请求排序的方式，请右键点击
-Requests 表格的表头，将鼠标指针悬停在 **Waterfall** 上，然后选择以下选项之一：
-
-
-* **Start Time**。 发出的第一个请求位于顶部。
-* **Response Time**。 开始下载的第一个请求位于顶部。
-* **End Time**。 完成的第一个请求位于顶部。
-* **Total Duration**。 连接设置时间和请求/响应时间最短的请求位于顶部。
-* **Latency**。 等待最短响应时间的请求位于顶部。
-
-
-上述描述假设各自选项是按照从最短时间到最长时间的顺序排列。
- 点击 **Waterfall** 列标题会反转次序。
+These descriptions assume that each respective option is ranked from shortest to longest. Clicking on the **Waterfall** column's header reverses the order.
 
 <figure>
   <img src="imgs/waterfall-total-duration.png"
-       alt="按总持续时间对瀑布图排序。">
+       alt="Sorting the Waterfall by total duration.">
   <figcaption>
-    <b>图 15</b>. 按总持续时间对瀑布图排序。 各条形图的浅色部分表示等待的时间。
- 深色部分表示下载以字节为单位的内容所花费的时间。
-
+    <b>Figure 15</b>. Sorting the Waterfall by total duration. The lighter
+    portion of each bar is time spent waiting. The darker portion is time
+    spent downloading bytes.
   </figcaption>
 </figure>
 
-## 分析请求 {: #analyze }
+## Analyze requests {: #analyze }
 
-只要 DevTools 处于打开状态，便会在 Network 面板中记录所有请求。
-使用 Network 面板分析请求。
+So long as DevTools is open, it logs all requests in the Network panel. Use the Network panel to analyze requests.
 
-### 查看请求日志 {: #requests }
+### View a log of requests {: #requests }
 
-使用 Requests 表格可以查看 DevTools 打开时发出的所有请求的日志。
- 点击请求或将鼠标指针悬停在请求上将显示这些请求的更多信息。
-
+Use the Requests table to view a log of all requests made while DevTools has been open. Clicking or hovering over requests reveals more information about them.
 
 <figure>
   <img src="imgs/requests-table.svg"
-       alt="Requests 表格。">
+       alt="The Requests table.">
   <figcaption>
-    <b>图 16</b>. 添加蓝色边框的 Requests 表格
-</figcaption>
+    <b>Figure 16</b>. The Requests table, outlined in blue
+  </figcaption>
 </figure>
 
-默认情况下，Requests 表格会显示以下列：
+The Requests table displays the following columns by default:
 
-* **Name**。 资源的文件名或标识符。
-* **Status**。 HTTP 状态代码。
-* **Type**。 已请求资源的 MIME 类型。
-* **Initiator**。 以下对象或进程可以发起请求：
-    * **Parser**。 Chrome 的 HTML 解析器。
-    * **Redirect**。 HTTP 重定向。
-    * **Script**。 JavaScript 函数。
-    * **Other**。 某些其他进程或操作，比如通过链接或者在地址栏中输入网址导航到某页面。
-* **Size**。 响应标头及响应正文（由服务器提供）的组合大小。
-* **Time**。 从请求开始至在响应中接收到最终字节的总持续时间。
-* [**Waterfall**](#waterfall)。 各请求相关活动的直观分析图。
+* **Name**. The filename of, or an identifier for, the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The following objects or processes can initiate requests: 
+    * **Parser**. Chrome's HTML parser.
+    * **Redirect**. An HTTP redirect.
+    * **Script**. A JavaScript function.
+    * **Other**. Some other process or action, such as navigating to a page via a link or entering a URL in the address bar.
+* **Size**. The combined size of the response headers plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* [**Waterfall**](#waterfall). A visual breakdown of each request's activity.
 
-#### 添加或移除列 {: #columns }
+#### Add or remove columns {: #columns }
 
-右键点击 Requests 表格的表头，然后选择一个选项以便隐藏或显示此选项。
- 当前显示的选项旁有复选标记。
+Right-click the header of the Requests table and select an option to hide or show it. Currently displayed options have checkmarks next to them.
 
 <figure>
   <img src="imgs/add-column.png"
-       alt="在 Requests 表格中添加列。">
+       alt="Adding a column to the Requests table.">
   <figcaption>
-    <b>图 17</b>. 在 Requests 表格中添加列。
+    <b>Figure 17</b>. Adding a column to the Requests table.
   </figcaption>
 </figure>
 
-#### 添加自定义列 {: #custom-columns }
+#### Add custom columns {: #custom-columns }
 
-若要在 Requests 表格中添加自定义列，请右键点击 Requests 表格的表头，然后选择 **Response Headers** > **Manage Header Columns**。
-
+To add a custom column to the Requests table, right-click the header of the Requests table and select **Response Headers** > **Manage Header Columns**.
 
 <figure>
   <img src="imgs/custom-column.png"
-       alt="在 Requests 表格中添加自定义列。">
+       alt="Adding a custom column to the Requests table.">
   <figcaption>
-    <b>图 18</b>. 在 Requests 表格中添加自定义列。
+    <b>Figure 18</b>. Adding a custom column to the Requests table.
   </figcaption>
 </figure>
 
-### 查看彼此相关的请求时间 {: #waterfall }
+### View the timing of requests in relation to one another {: #waterfall }
 
-使用瀑布图可以查看彼此相关的请求时间。
-默认情况下，瀑布图按请求的开始时间进行排列。
-因此，左侧请求的开始时间比右侧请求早。
+Use the Waterfall to view the timing of requests in relation to one another. By default, the Waterfall is organized by the start time of the requests. So, requests that are farther to the left started earlier than those that are farther to the right.
 
-
-如需了解对瀑布图排序的不同方式，请参阅[按活动阶段排序](#sort-by-activity)。
-
+See [Sort by activity phase](#sort-by-activity) to see the different ways that you can sort the Waterfall.
 
 <figure>
   <img src="imgs/waterfall.png"
-       alt="Requests 窗格的 Waterfal 列。">
+       alt="The Waterfall column of the Requests pane.">
   <figcaption>
-    <b>图 19</b>. Requests 窗格的 Waterfal 列。
+    <b>Figure 19</b>. The Waterfall column of the Requests pane.
   </figcaption>
 </figure>
 
-### 分析 WebSocket 连接的帧 {: #frames }
+### Analyze the frames of a WebSocket Connection {: #frames }
 
-若要查看 WebSocket 连接的帧：
+To view the frames of a WebSocket connection:
 
-1. 在 Requests 表格的 **Name** 列下，点击 WebSocket 连接的网址。
-1. 点击 **Frames** 标签。 表格中将显示最后 100 帧。
+1. Click the URL of the WebSocket connection, under the **Name** column of the Requests table.
+2. Click the **Frames** tab. The table shows the last 100 frames.
 
-若要刷新表格，请在 Requests 表格的 **Name** 列下重新点击 WebSocket 连接名称。
-
+To refresh the table, re-click the name of the WebSocket connection under the **Name** column of the Requests table.
 
 <figure>
   <img src="imgs/frames.svg"
-       alt="Frames 标签。">
+       alt="The Frames tab.">
   <figcaption>
-    <b>图 20</b>. 添加蓝色边框的 Frames 标签
-</figcaption>
+    <b>Figure 20</b>. The Frames tab, outlined in blue
+  </figcaption>
 </figure>
 
-表格中包含以下三列：
+The table contains three columns:
 
-* **Data**。 消息负载。 如果消息为纯文本，则在此处显示。
- 对于二进制操作码，此列将显示操作码的名称和代码。
- 支持以下操作码：Continuation Frame、Binary Frame、Connection Close Frame、Ping Frame 和 Pong Frame。
-* **Length**。 消息负载的长度（以字节为单位）。
-* **Time**。 收到或发送消息的时间。
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this column displays the opcode's name and code. The following opcodes are supported: Continuation Frame, Binary Frame, Connection Close Frame, Ping Frame, and Pong Frame.
+* **Length**. The length of the message payload, in bytes.
+* **Time**. The time when the message was received or sent.
 
-消息根据其类型进行彩色编码：
+Messages are color-coded according to their type:
 
-* 传出的文本消息为浅绿色。
-* 传入的文本消息为白色。
-* WebSocket 操作码为浅黄色。
-* 错误为浅红色。
+* Outgoing text messages are light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-### 预览响应正文 {: #preview }
+### View a preview of a response body {: #preview }
 
-若要预览响应正文：
+To view a preview of a response body:
 
-1. 在 Requests 表格的 **Name** 列下，点击请求的网址。
-1. 点击 **Preview** 标签。
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Preview** tab.
 
-此标签主要用于查看图像。
+This tab is mostly useful for viewing images.
 
 <figure>
   <img src="imgs/preview.svg"
-       alt="Preview 标签。">
+       alt="The Preview tab.">
   <figcaption>
-    <b>图 21</b>. 添加蓝色边框的 Preview 标签
-</figcaption>
+    <b>Figure 21</b>. The Preview tab, outlined in blue
+  </figcaption>
 </figure>
 
-### 查看响应正文 {: #response }
+### View a response body {: #response }
 
-若要查看请求的响应正文：
+To view the response body to a request:
 
-1. 在 Requests 表格的 **Name** 列下，点击请求的网址。
-1. 点击 **Response** 标签。
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Response** tab.
 
 <figure>
   <img src="imgs/response.svg"
-       alt="Response 标签。">
+       alt="The Response tab.">
   <figcaption>
-    <b>图 22</b>. 添加蓝色边框的 Response 标签
-</figcaption>
+    <b>Figure 22</b>. The Response tab, outlined in blue
+  </figcaption>
 </figure>
 
-### 查看 HTTP 标头 {: #headers }
+### View HTTP headers {: #headers }
 
-若要查看有关请求的 HTTP 标头数据：
+To view HTTP header data about a request:
 
-1. 在 Requests 表格的 **Name** 列下，点击请求的网址。
-1. 点击 **Headers** 标签。
+1. Click on the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Headers** tab.
 
 <figure>
   <img src="/web/tools/chrome-devtools/images/headers.svg"
-       alt="Headers 标签。">
+       alt="The Headers tab.">
   <figcaption>
-    <b>图 23</b>. 添加蓝色边框的 Headers 标签
-</figcaption>
-</figure>
-
-#### 查看 HTTP 标头源 {: #header-source }
-
-默认情况下，Headers 标签按字母顺序显示标头名称。 按收到的顺序查看 HTTP 标头名称：
-
-
-1. 打开您感兴趣的请求的 **Headers** 标签。 请参阅[查看 HTTP 标头](#headers)。
-1. 点击 **Request Header** 或 **Response Header** 部分旁的 **view source**。
-
-
-### 查看查询字符串参数 {: #query-string }
-
-若要以用户可读的格式查看网址的查询字符串参数：
-
-1. 打开您感兴趣的请求的 **Headers** 标签。 请参阅[查看 HTTP 标头](#headers)。
-1. 转至 **Query String Parameters** 部分。
-
-<figure>
-  <img src="imgs/query-string.svg" alt="Query String Parameters 部分。">
-  <figcaption>
-    <b>图 24</b>. 添加蓝色边框的 Query String Parameters 部分
+    <b>Figure 23</b>. The Headers tab, outlined in blue
   </figcaption>
 </figure>
 
-#### 查看查询字符串参数源 {: #query-string-source }
+#### View HTTP header source {: #header-source }
 
-若要查看请求的查询字符串参数源：
+By default, the Headers tab shows header names alphabetically. To view the HTTP header names in the order they were received:
 
-1. 转至 Query String Parameters 部分。 请参阅[查看查询字符串参数](#query-string)。
-1. 点击 **view source**。
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Click **view source**, next to the **Request Header** or **Response Header** section.
 
-#### 查看网址编码的查询字符串参数 {: #query-string-encodings }
+### View query string parameters {: #query-string }
 
-若要以用户可读的格式查看保留编码的查询字符串参数：
+To view the query string parameters of a URL in a human-readable format:
 
+1. Open the **Headers** tab for the request you're interested in. See [View HTTP headers](#headers).
+2. Go to the **Query String Parameters** section.
 
-1. 转至 Query String Parameters 部分。 请参阅[查看查询字符串参数](#query-string)。
-1. 点击 **view URL encoded**。
+<figure>
+  <img src="imgs/query-string.svg" alt="The Query String Parameters section.">
+  <figcaption>
+    <b>Figure 24</b>. The Query String Parameters section, outlined in blue
+  </figcaption>
+</figure>
 
-### 查看 Cookie {: #cookies }
+#### View query string parameters source {: #query-string-source }
 
-若要查看在请求的 HTTP 标头中发送的 Cookie：
+To view the query string parameter source of a request:
 
-1. 在 Requests 表格的 **Name** 列下，点击请求的网址。
-1. 点击 **Cookies** 标签。
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view source**.
 
-查看[字段](/web/tools/chrome-devtools/manage-data/cookies#fields)，了解各列的说明。
+#### View URL-encoded query string parameters {: #query-string-encodings }
 
+To view query string parameters in a human-readable format, but with encodings preserved:
+
+1. Go to the Query String Parameters section. See [View query string parameters](#query-string).
+2. Click **view URL encoded**.
+
+### View cookies {: #cookies }
+
+To view the cookies sent in a request's HTTP header:
+
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Cookies** tab.
+
+See [Fields](/web/tools/chrome-devtools/manage-data/cookies#fields) for a description of each of the columns.
 
 <figure>
   <img src="imgs/cookies.svg"
-       alt="Cookies 标签。">
+       alt="The Cookies tab.">
   <figcaption>
-    <b>图 25</b>. 添加蓝色边框的 Cookies 标签
-</figcaption>
+    <b>Figure 25</b>. The Cookies tab, outlined in blue
+  </figcaption>
 </figure>
 
-### 查看请求的时间细分数据 {: #timing }
+### View the timing breakdown of a request {: #timing }
 
-若要查看请求的时间细分数据：
+To view the timing breakdown of a request:
 
-1. 在 Requests 表格的 **Name** 列下，点击请求的网址。
-1. 点击 **Timing** 标签。
+1. Click the URL of the request, under the **Name** column of the Requests table.
+2. Click the **Timing** tab.
 
-如需了解快速访问此数据的方法，请参阅[预览时间细分数据](#timing-preview)。
+See [Preview a timing breakdown](#timing-preview) for a faster way to access this data.
 
-
-如需了解在 Timing 标签中可能看到的各阶段的更多信息，请参阅[时间细分阶段说明](#timing-explanation)。
-
+See [Timing breakdown phases explained](#timing-explanation) for more information about each of the phases that you may see in the Timing tab.
 
 <figure>
-  <img src="imgs/timing.svg" alt="Timing 标签。">
+  <img src="imgs/timing.svg" alt="The Timing tab.">
   <figcaption>
-    <b>图 26</b>. 添加蓝色边框的 Timing 标签
-</figcaption>
+    <b>Figure 26</b>. The Timing tab, outlined in blue
+  </figcaption>
 </figure>
 
-下面是有关每个阶段的更多信息。
+Here's more information about each of the phases.
 
-如需了解访问此视图的其他方法，请参阅[查看时间细分数据](#timing-breakdown)。
+See [View timing breakdown](#timing-breakdown) for another way to access this view.
 
+#### Preview a timing breakdown {: #timing-preview }
 
-#### 预览时间细分数据 {: #timing-preview }
+To view a preview of the timing breakdown of a request, hover over the request's entry in the **Waterfall** column of the Requests table.
 
-若要预览请求的时间细分数据，请将鼠标指针悬停在 Requests 表格 **Waterfall** 列中的请求条目上。
-
-
-如需了解不需要通过悬停访问此数据的方法，请参阅[查看请求的时间细分数据](#timing)。
-
+See [View the timing breakdown of a request](#timing) for a way to access this data that does not require hovering.
 
 <figure>
   <img src="imgs/waterfall-hover.png"
-       alt="预览请求的时间细分数据。">
+       alt="Previewing the timing breakdown of a request.">
   <figcaption>
-    <b>图 27</b>. 预览请求的时间细分数据
-</figcaption>
+    <b>Figure 27</b>. Previewing the timing breakdown of a request
+  </figcaption>
 </figure>
 
-#### 时间细分阶段说明 {: #timing-explanation }
+#### Timing breakdown phases explained {: #timing-explanation }
 
-以下是有关在 Timing
-标签中可能看到的各阶段的更多信息：
+Here's more information about each of the phases you may see in the Timing tab:
 
-* **Queueing**。 浏览器在以下情况下对请求排队：
-    * 存在更高优先级的请求。
-    * 此源已打开六个 TCP 连接，达到限值。
- 仅适用于 HTTP/1.0 和 HTTP/1.1。
-    * 浏览器正在短暂分配磁盘缓存中的空间
-* **Stalled**。 请求可能会因 **Queueing** 中描述的任何原因而停止。
-* **DNS Lookup**。 浏览器正在解析请求的 IP 地址。
-* **Proxy negotiation**。 浏览器正在与[代理服务器](https://en.wikipedia.org/wiki/Proxy_server)协商请求。
-* **Request sent**。 正在发送请求。
-* **ServiceWorker Preparation**。 浏览器正在启动 Service Worker。
-* **Request to ServiceWorker**。 正在将请求发送到 Service
-Worker。
-* **Waiting (TTFB)**。 浏览器正在等待响应的第一个字节。
-  TTFB 表示 Time To First Byte（至第一字节的时间）。 此时间包括 1 次往返延迟时间及服务器准备响应所用的时间。
-* **Content Download**。 浏览器正在接收响应。
-* **Receiving Push**。 浏览器正在通过 HTTP/2
-服务器推送接收此响应的数据。
-* **Reading Push**。 浏览器正在读取之前收到的本地数据。
+* **Queueing**. The browser queues requests when: 
+    * There are higher priority requests.
+    * There are already six TCP connections open for this origin, which is the limit. Applies to HTTP/1.0 and HTTP/1.1 only.
+    * The browser is briefly allocating space in the disk cache
+* **Stalled**. The request could be stalled for any of the reasons described in **Queueing**.
+* **DNS Lookup**. The browser is resolving the request's IP address.
+* **Proxy negotiation**. The browser is negotiating the request with a [proxy server](https://en.wikipedia.org/wiki/Proxy_server).
+* **Request sent**. The request is being sent.
+* **ServiceWorker Preparation**. The browser is starting up the service worker.
+* **Request to ServiceWorker**. The request is being sent to the service worker.
+* **Waiting (TTFB)**. The browser is waiting for the first byte of a response. TTFB stands for Time To First Byte. This timing includes 1 round trip of latency and the time the server took to prepare the response.
+* **Content Download**. The browser is receiving the response.
+* **Receiving Push**. The browser is receiving data for this response via HTTP/2 Server Push.
+* **Reading Push**. The browser is reading the local data previously received.
 
-### 查看发起者和依赖项 {: #initiators-dependencies }
+### View initiators and dependencies {: #initiators-dependencies }
 
-若要查看请求的发起者和依赖项，请按住 <kbd>Shift</kbd> 键
-并将鼠标指针悬停在 Requests 表格中的请求上。 DevTools
-将发起者的颜色设置为绿色，将依赖项设置为红色。
+To view the initiators and dependencies of a request, hold <kbd>Shift</kbd> and hover over the request in the Requests table. DevTools colors initiators green, and dependencies red.
 
 <figure>
   <img src="imgs/initiators-dependencies.png"
-       alt="查看请求的发起者和依赖项。">
+       alt="Viewing the initiators and dependencies of a request.">
   <figcaption>
-    <b>图 28</b>. 查看请求的发起者和依赖项
-</figcaption>
+    <b>Figure 28</b>. Viewing the initiators and dependencies of a request
+  </figcaption>
 </figure>
 
-当 Requests 表格按时间顺序排序时，鼠标指针悬停位置请求上方的第一个绿色请求是依赖项的发起者。
- 如果该请求上方还有另一个绿色请求，则更高的请求是发起者的发起者。
- 依此类推。
+When the Requests table is ordered chronologically, the first green request above the request that you're hovering over is the initiator of the dependency. If there's another green request above that, that higher request is the initiator of the initiator. And so on.
 
-### 查看加载事件 {: #load }
+### View load events {: #load }
 
-DevTools 将在 Network 面板的多个位置显示 `DOMContentLoaded` 和 `load` 事件的时间。
- `DOMContentLoaded` 事件的颜色设置为蓝色，而 `load` 事件设置为红色。
-
+DevTools displays the timing of the `DOMContentLoaded` and `load` events in multiple places on the Network panel. The `DOMContentLoaded` event is colored blue, and the `load` event is red.
 
 <figure>
   <img src="imgs/load-events.svg"
-       alt="Network 面板上 DOMContentLoaded 和 load 事件的位置。">
+       alt="The locations of the DOMContentLoaded and load events on the Network panel.">
   <figcaption>
-    <b>图 29</b>. “Network”面板上 <code>DOMContentLoaded</code> 和 <code>load</code> 事件的位置
-</figcaption>
-
+    <b>Figure 29</b>. The locations of the <code>DOMContentLoaded</code> and
+    <code>load</code> events in the Network panel
+  </figcaption>
 </figure>
 
-### 查看请求总数 {: #total-number }
+### View the total number of requests {: #total-number }
 
-Network 面板底部的 Summary 窗格中列出请求总数。
+The total number of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-
-Note: 此数字仅跟踪自 DevTools 打开后记录的请求。
- 如果在 DevTools 打开之前出现其他请求，则这些请求不计算在内。
-
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-requests.svg"
-       alt="自 DevTools 打开后的请求总数">
+       alt="The total number of requests since DevTools was opened">
   <figcaption>
-    <b>图 30</b>. 自 DevTools 打开后的请求总数
-</figcaption>
+    <b>Figure 30</b>. The total number of requests since DevTools was opened
+  </figcaption>
 </figure>
 
-### 查看总下载大小 {: #total-size }
+### View the total download size {: #total-size }
 
-Network 面板底部的 Summary 窗格中列出请求的总下载大小。
+The total download size of requests is listed in the Summary pane, at the bottom of the Network panel.
 
-
-Note: 此数字仅跟踪自 DevTools 打开后记录的请求。
- 如果在 DevTools 打开之前出现其他请求，则这些请求不计算在内。
-
+Caution: This number only tracks requests that have been logged since DevTools was opened. If other requests occurred before DevTools was opened, those requests aren't counted.
 
 <figure>
   <img src="imgs/total-size.svg"
-       alt="请求的总下载大小">
+       alt="The total download size of requests">
   <figcaption>
-    <b>图 31</b>. 请求的总下载大小
-</figcaption>
+    <b>Figure 31</b>. The total download size of requests
+  </figcaption>
 </figure>
 
-如需了解浏览器解压缩后的资源大小，请参阅[查看未压缩的资源大小](#uncompressed)。
+See [View the uncompressed size of a resource](#uncompressed) to see how large resources are after the browser uncompresses them.
 
+### View the stack trace that caused a request {: #initiator-stack-trace }
 
-### 查看导致请求的堆栈轨迹 {: #initiator-stack-trace }
-
-当 JavaScript 语句导致资源请求时，将鼠标指针悬停在 **Initiator** 列上，以查看导致请求的堆栈轨迹。
-
+When a JavaScript statement causes a resource to be requested, hover over the **Initiator** column to view the stack trace leading up to the request.
 
 <figure>
   <img src="imgs/initiator-stack.png"
-       alt="导致资源请求的堆栈轨迹">
+       alt="The stack trace leading up to a resource request">
   <figcaption>
-    <b>图 32</b>. 导致资源请求的堆栈轨迹
-</figcaption>
-</figure>
-
-### 查看未压缩的资源大小 {: #uncompressed }
-
-点击 **Use Large Request Rows** ![使用大请求行](imgs/large-resource-rows-button.png)，
-{:.inline-icon} 然后查看 **Size** 列底部的值。
-
-
-<figure>
-  <img src="imgs/large-request-rows.png"
-       alt="未压缩资源示例。">
-  <figcaption>
-    <b>图 33</b>. 通过网络发送的 <code>jquery-bundle.js</code> 文件的压缩大小是 <code>30.9 KB</code>，而未压缩大小是 <code>86.3 KB</code>
-
-
+    <b>Figure 32</b>. The stack trace leading up to a resource request
   </figcaption>
 </figure>
 
-## 导出请求数据 {: #export }
+### View the uncompressed size of a resource {: #uncompressed }
 
-### 将所有网络请求保存到 HAR 文件中 {: #save-as-har }
+Click **Use Large Request Rows** ![Use Large Request
+Rows](imgs/large-resource-rows-button.png){:.inline-icon} and then look at the bottom value of the **Size** column.
 
-若要将所有网络请求保存到 HAR 文件中：
+<figure>
+  <img src="imgs/large-request-rows.png"
+       alt="An example of uncompressed resources.">
+  <figcaption>
+    <b>Figure 33</b>. The compressed size of the <code>jquery-bundle.js</code> file
+    that was sent over the network was <code>30.9 KB</code>, whereas the uncompressed size was
+    <code>86.3 KB</code>
+  </figcaption>
+</figure>
 
-1. 右键点击 Requests 表格中的任意请求。
-1. 选择 **Save as HAR with Content**。 DevTools
-会将自打开 DevTools 后出现的所有请求保存到 HAR 文件中。 无法过滤请求或仅保存单个请求。
+## Export requests data {: #export }
 
+### Save all network requests to a HAR file {: #save-as-har }
 
-获得 HAR 文件后，可以将其导回 DevTools 进行分析。 只需将 HAR 文件拖放到 Requests 表格即可。
- 另请参阅 [HAR Analyzer][HAR
-Analyzer]{: .external }。
+To save all network requests to a HAR file:
 
-[HAR Analyzer]: https://toolbox.googleapps.com/apps/har_analyzer/
+1. Right-click any request in the Requests table.
+2. Select **Save as HAR with Content**. DevTools saves all requests that have occurred since you opened DevTools to the HAR file. There is no way to filter requests, or to save just a single request.
+
+Once you've got a HAR file, you can import it back into DevTools for analysis. Just drag-and-drop the HAR file into the Requests table. See also [HAR Analyzer](https://toolbox.googleapps.com/apps/har_analyzer/){: .external }.
 
 <figure>
   <img src="imgs/save-as-har.png"
-       alt="选择 Save as HAR with Content。">
+       alt="Selecting Save as HAR with Content.">
   <figcaption>
-    <b>图 34</b>. 选择 <b>Save as HAR with Content</b>
+    <b>Figure 34</b>. Selecting <b>Save as HAR with Content</b>
   </figcaption>
 </figure>
 
-### 将一个或多个请求复制到剪贴板 {: #copy }
+### Copy one or more requests to the clipboard {: #copy }
 
-在 Requests 表格的 **Name** 列下，右键点击某请求，将鼠标指针悬停在 **Copy** 上，然后选择以下选项之一：
+Under the **Name** column of the Requests table, right-click a request, hover over **Copy**, and select one of the following options:
 
-
-* **Copy Link Address**。 将请求的网址复制到剪贴板。
-* **Copy Response**。 将响应正文复制到剪贴板。
-* **Copy as cURL**。 以 cURL 命令形式复制请求。
-* **Copy All as cURL**。 以一系列 cURL 命令形式复制所有请求。
-* **Copy All as HAR**。 以 HAR 数据形式复制所有请求。
-
-<figure>
-  <img src="imgs/copy.png" alt="选择 Copy Response。">
-  <figcaption>
-    <b>图 35</b>. 选择 Copy Response
-</figcaption>
-</figure>
-
-## 更改 Network 面板的布局
-
-展开或折叠 Network 面板界面的各个部分以关注您注重的内容。
-
-
-### 隐藏 Filters 窗格 {: #hide-filters }
-
-默认情况下，DevTools 会显示 [Filters 窗格](#filters)。
-点击 **Filter** ![过滤][filter]{: .devtools-inline } 可以隐藏此窗格。
+* **Copy Link Address**. Copy the request's URL to the clipboard.
+* **Copy Response**. Copy the response body to the clipboard.
+* **Copy as cURL**. Copy the request as a cURL command.
+* **Copy All as cURL**. Copy all requests as a chain of cURL commands.
+* **Copy All as HAR**. Copy all requests as HAR data.
 
 <figure>
-  <img src="imgs/hide-filters.svg" alt="Hide Filters 按钮">
+  <img src="imgs/copy.png" alt="Selecting Copy Response.">
   <figcaption>
-    <b>图 36</b>. 添加蓝色边框的 Hide Filters
-</figcaption>
+    <b>Figure 35</b>. Selecting Copy Response
+  </figcaption>
 </figure>
 
-[filter]: imgs/filters.png
+## Change the layout of the Network panel
 
-### 使用大请求行 {: #request-rows }
+Expand or collapse sections of the Network panel UI to focus on what's important to you.
 
-想要在网络请求表格中添加更多空格时，可以使用大行。
- 使用大行时，某些列还会提供更多信息。
- 例如，**Size**
-列底部的值是未压缩的请求大小。
+### Hide the Filters pane {: #hide-filters }
+
+By default, DevTools shows the [Filters pane](#filters). Click **Filter** ![Filter](imgs/filters.png){: .devtools-inline } to hide it.
+
+<figure>
+  <img src="imgs/hide-filters.svg" alt="The Hide Filters button">
+  <figcaption>
+    <b>Figure 36</b>. Hide Filters, outlined in blue
+  </figcaption>
+</figure>
+
+### Use large request rows {: #request-rows }
+
+Use large rows when you want more whitespace in your network requests table. Some columns also provide a little more information when using large rows. For example, the bottom value of the **Size** column is the uncompressed size of a request.
 
 <figure>
   <img src="imgs/large-request-rows.png"
-       alt="Requests 窗格的大请求行示例。">
+       alt="An example of large request rows in the Requests pane.">
   <figcaption>
-    <b>图 37</b>. Requests 窗格的大请求行示例
-</figcaption>
+    <b>Figure 37</b>. An example of large request rows in the Requests pane
+  </figcaption>
 </figure>
 
-点击 **Use large request rows** ![使用大请求行][large]
-{:.devtools-inline} 可以启用大行。
-
-[large]: imgs/large-resource-rows-button.png
+Click **Use large request rows** ![Use large request
+rows](imgs/large-resource-rows-button.png){:.devtools-inline} to enable large rows.
 
 <figure>
-  <img src="imgs/large-request-rows.svg" alt="Large Request Rows 按钮">
+  <img src="imgs/large-request-rows.svg" alt="The Large Request Rows button">
   <figcaption>
-    <b>图 38</b>. 添加蓝色边框的 Large Request Rows
-</figcaption>
+    <b>Figure 38</b>. Large Request Rows, outlined in blue
+  </figcaption>
 </figure>
 
-### 隐藏 Overview 窗格 {: #hide-overview }
+### Hide the Overview pane {: #hide-overview }
 
-默认情况下，DevTools 会显示 [Overview 窗格](#overview)。
-点击 **Hide overview** ![隐藏概览][hide]{:.devtools-inline} 可以隐藏此窗格。
+By default, DevTools shows the [Overview pane](#overview). Click **Hide overview** ![Hide overview](imgs/hide-overview.png){:.devtools-inline} to hide it.
 
 <figure>
-  <img src="imgs/hide-overview.svg" alt="Hide Overview 按钮">
+  <img src="imgs/hide-overview.svg" alt="The Hide Overview button">
   <figcaption>
-    <b>图 39</b>. 添加蓝色边框的 Hide Overview
-</figcaption>
+    <b>Figure 39</b>. Hide Overview, outlined in blue
+  </figcaption>
 </figure>
 
-[hide]: imgs/hide-overview.png
-
-## 反馈 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

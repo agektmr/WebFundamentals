@@ -1,37 +1,28 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Panduan ini mempelajari aturan PageSpeed Insights dalam konteks: apa yang harus diperhatikan saat mengoptimalkan jalur rendering penting, dan alasannya.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>JavaScript,Blink>CSS #}
 
-# Aturan dan Rekomendasi PageSpeed {: .page-title }
+# PageSpeed Rules and Recommendations {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Panduan ini mempelajari aturan PageSpeed Insights dalam konteks: apa yang harus diperhatikan saat mengoptimalkan jalur rendering penting, dan alasannya.
+This guide examines PageSpeed Insights rules in context: what to pay attention to when optimizing the critical rendering path, and why.
 
+## Eliminate render-blocking JavaScript and CSS
 
-## Menghilangkan JavaScript dan CSS yang memblokir rendering
+To deliver the fastest time to first render, minimize and (where possible) eliminate the number of critical resources on the page, minimize the number of downloaded critical bytes, and optimize the critical path length.
 
-Untuk mencapai waktu tercepat hingga rendering pertama, meminimalkan dan (jika memungkinkan) meniadakan sejumlah sumber daya penting pada laman, meminimalkan jumlah byte penting yang diunduh, dan mengoptimalkan panjang jalur penting.
+## Optimize JavaScript use
 
-## Mengoptimalkan Penggunaan JavaScript
+JavaScript resources are parser blocking by default unless marked as `async` or added via a special JavaScript snippet. Parser blocking JavaScript forces the browser to wait for the CSSOM and pauses construction of the DOM, which in turn can significantly delay the time to first render.
 
-Sumber daya JavaScript merupakan parser pemblokir secara default kecuali ditandai sebagai `async` atau ditambahkan melalui cuplikan JavaScript khusus. Parser yang memblokir JavaScript memaksa browser menunggu CSSOM dan menjeda konstruksi DOM, yang selanjutnya bisa secara signifikan menunda waktu hingga rendering pertama.
+### Prefer asynchronous JavaScript resources
 
-### Lebih menyukai sumber daya JavaScript asinkron
+Asynchronous resources unblock the document parser and allow the browser to avoid blocking on CSSOM prior to executing the script. Often, if the script can use the `async` attribute, it also means it is not essential for the first render. Consider loading scripts asynchronously after the initial render.
 
-Sumber daya asinkron membuka halangan parser dokumen dan memungkinkan browser menghindari pemblokiran CSSOM sebelum skrip dieksekusi. Sering kali, jika skrip bisa menggunakan atribut `async`, itu berarti tidak penting untuk render pertama. Pertimbangkan memuat skrip secara asinkron setelah render pertama.
+### Avoid synchronous server calls
 
-### Hindari panggilan server sinkron
-
-Gunakan metode `navigator.sendBeacon()` untuk membatasi data yang dikirim oleh XMLHttpRequests dalam penangan
-`unload`. Karena banyak browser mengharuskan permintaan seperti itu sebagai
-sinkron, permintaan itu bisa memperlambat transisi laman, terkadang secara kentara. Kode
-berikut menunjukkan cara menggunakan `navigator.sendBeacon()` untuk mengirim data ke server dalam penangan
-`pagehide` dan bukan pada penangan `unload`.
-
+Use the `navigator.sendBeacon()` method to limit data sent by XMLHttpRequests in `unload` handlers. Because many browsers require such requests to be synchronous, they can slow page transitions, sometimes noticeably. The following code shows how to use `navigator.sendBeacon()` to send data to the server in the `pagehide` handler instead of in the `unload` handler.
 
     <script>
       function() {
@@ -45,8 +36,7 @@ berikut menunjukkan cara menggunakan `navigator.sendBeacon()` untuk mengirim dat
     </script>
     
 
-Metode `fetch()` baru menyediakan cara mudah untuk meminta data secara asinkron. Karena belum tersedia secara luas, Anda harus menggunakan deteksi fitur untuk menguji keberadaannya sebelum digunakan. Metode ini memproses respons dengan Promise dan bukan dengan penangan beberapa penangan kejadian. Tidak seperti respons terhadap XMLHttpRequest, respons fetch adalah sebuah objek aliran yang dimulai dalam Chrome 43. Ini juga berarti bahwa panggilan ke `json()` juga mengembalikan Promise. 
-
+The new `fetch()` method provides an easy way to asynchronously request data. Because it is not available everywhere yet, you should use feature detection to test for its presence before use. This method processes responses with Promises rather than multiple event handlers. Unlike the response to an XMLHttpRequest, a fetch response is a stream object starting in Chrome 43. This means that a call to `json()` also returns a Promise.
 
     <script>
     fetch('./api/some.json')  
@@ -68,8 +58,7 @@ Metode `fetch()` baru menyediakan cara mudah untuk meminta data secara asinkron.
     </script>
     
 
-Metode `fetch()` juga dapat menangani permintaan POST.
-
+The `fetch()` method can also handle POST requests.
 
     <script>
     fetch(url, {
@@ -78,34 +67,34 @@ Metode `fetch()` juga dapat menangani permintaan POST.
         "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"  
       },  
       body: 'foo=bar&lorem=ipsum'  
-    }).then(function() { // Aditional code });
+    }).then(function() { // Additional code });
     </script>
     
 
-### Menunda penguraian JavaScript
+### Defer parsing JavaScript
 
-Untuk meminimalkan kerja browser yang harus dilakukan untuk merender laman, setiap skrip yang tak penting serta tidak mendesak untuk mengonstruksikan materi yang terlihat bagi render awal harus ditunda.
+To minimize the amount of work the browser has to perform to render the page, defer any non-essential scripts that are not critical to constructing the visible content for the initial render.
 
-### Menghindari berjalannya JavaScript berkepanjangan
+### Avoid long running JavaScript
 
-Berjalannya JavaScript yang berkepanjangan memblokir browser dari mengonstruksikan DOM, CSSOM, dan merender laman, jadi setiap logika inisialisasi dan fungsionalisasi yang tidak penting untuk render awal perlu ditunda. Apabila urutan panjang inisialisasi harus berjalan, pertimbangkan untuk memecahnya ke dalam beberapa tahapan agar browser bisa memroses kejadian lain di antara proses.
+Long running JavaScript blocks the browser from constructing the DOM, CSSOM, and rendering the page, so defer until later any initialization logic and functionality that is non-essential for the first render. If a long initialization sequence needs to run, consider splitting it into several stages to allow the browser to process other events in between.
 
-## Mengoptimalkan Penggunaan CSS
+## Optimize CSS Use
 
-CSS diperlukan untuk mengonstruksikan pohon render dan JavaScript akan sering kali memblokir CSS selama konstruksi awal laman. Pastikan bahwa CSS yang tidak penting harus ditandai sebagai tidak penting (mis. cetak dan kueri media lainnya), dan bahwa jumlah CSS penting serta waktu penyerahannya sekecil mungkin.
+CSS is required to construct the render tree and JavaScript often blocks on CSS during initial construction of the page. Ensure that any non-essential CSS is marked as non-critical (for example, print and other media queries), and that the amount of critical CSS and the time to deliver it is as small as possible.
 
-### Menempatkan CSS di bagian awal dokumen
+### Put CSS in the document head
 
-Sebutkan semua sumber daya CSS harus ditetapkan seawal mungkin dalam dokumen HTML sedemikian hingga browser bisa menemukan tag `<link>` dan sesegera mungkin mengajukan permintaan CSS.
+Specify all CSS resources as early as possible within the HTML document so that the browser can discover the `<link>` tags and dispatch the request for the CSS as soon as possible.
 
-### Menghindari pengimporan CSS
+### Avoid CSS imports
 
-Direktif pengimporan CSS (`@import`) mengaktifkan satu stylsheet untuk mengimpor aturan dari file stylesheet lain. Akan tetapi, direktif ini harus dihindari karena menyertakan perjalanan bolak-balik tambahan ke dalam jalur penting: sumber daya CSS yang diimpor hanya ditemukan setelah stylesheet CSS dengan aturan `@import` itu sendiri telah diterima dan di-parse.
+The CSS import (`@import`) directive enables one stylesheet to import rules from another stylesheet file. However, avoid these directives because they introduce additional roundtrips into the critical path: the imported CSS resources are discovered only after the CSS stylesheet with the `@import` rule itself is received and parsed.
 
-### CSS pemblokir-render inline
+### Inline render-blocking CSS
 
-Untuk memperoleh kinerja terbaik, Anda bisa mempertimbangkan penyisipan CSS penting secara langsung ke dalam dokumen HTML. Ini meniadakan perjalanan bolak-balik tambahan dalam jalur penting dan jika dilakukan dengan benar bisa digunakan untuk mengirimkan satu panjang jalur penting dalam "satu kali bolak-balik" yang mana hanya HTML-lah yang menjadi sumber daya pemblokir.
+For best performance, you may want to consider inlining the critical CSS directly into the HTML document. This eliminates additional roundtrips in the critical path and if done correctly can deliver a "one roundtrip" critical path length where only the HTML is a blocking resource.
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

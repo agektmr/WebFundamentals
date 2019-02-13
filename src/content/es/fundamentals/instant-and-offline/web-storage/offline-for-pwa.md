@@ -1,303 +1,191 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Aprende a almacenar datos de forma local para mejorar los tiempos de respuesta y la compatibilidad sin conexión.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to store data locally for improved response time and offline support.
 
-{# wf_updated_on: 2016-09-29 #}
-{# wf_published_on: 2016-09-29 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-09-29 #} {# wf_blink_components: Blink>Storage #}
 
-# Almacenamiento sin conexión para Progressive Web Apps {: .page-title }
+# Offline Storage for Progressive Web Apps {: .page-title }
 
-{% include "web/_shared/contributors/addyosmani.html" %}
-{% include "web/_shared/contributors/mco.html" %}
+{% include "web/_shared/contributors/addyosmani.html" %} {% include "web/_shared/contributors/mco.html" %}
 
 <figure class="attempt-right">
-  <img src="images/pwa-in-devtools.jpg" alt="PWA en DevTools">
+  <img src="images/pwa-in-devtools.jpg" alt="PWA in DevTools">
   <figcaption>
-    La Progressive Web App de <a href="https://pokedex.org" class="external">Pokedex</a>
-    utiliza IndexedDB para el estado de la app y el conjunto de datos de los
-    pokemon, mientras que la Cache API se usa para recursos localizables mediante URL.
+    The <a href="https://pokedex.org" class="external">Pokedex</a>
+    Progressive Web App uses IndexedDB for application state and the Pokemon
+    data set while the Cache API is used for URL addressable resources.
   </figcaption>
 </figure>
 
-Cuando te trasladas de un lugar a otro, las conexiones de Internet pueden ser débiles o inexistentes. Por eso, ofrecer
-compatibilidad y un rendimiento confiable sin conexión es una característica común de las [apps web
-progresivas](/web/progressive-web-apps/). Incluso en entornos
-con perfectas conexiones inalámbricas, el uso sensato de almacenamiento en caché y de otras técnicas
-de almacenamiento puede mejorar considerablemente la experiencia del usuario. En esta publicación, resumiremos
-algunas ideas sobre el almacenamiento de datos sin conexión de las PWA (piensa en las cargas
-JSON, las imágenes y los datos estáticos generales necesarios para brindar una *valiosa*
-experiencia sin conexión).
+Internet connections can be flakey or non-existent on the go, which is why offline support and reliable performance are common features in [progressive web apps](/web/progressive-web-apps/). Even in perfect wireless environments, judicious use of caching and other storage techniques can substantially improve the user experience. In this post, we’ll summarize some ideas around offline data storage for PWAs — think JSON payloads, images and general static data required to provide a *meaningful* experience offline.
 
 <div class="clearfix"></div>
 
-## Recomendación
+## Recommendation
 
-Vayamos directamente al grano con una recomendación global para almacenar datos
-sin conexión:
+Let’s get right to the point with a general recommendation for storing data offline:
 
-* Para los recursos localizables mediante URL, usa la [**Cache API**](https://davidwalsh.name/cache)
-  (parte de [los Service Workers](/web/fundamentals/primers/service-worker/)).
-* Para el resto de los datos, usa [**IndexedDB**](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
-  (con un contenedor de [promesas](/web/fundamentals/getting-started/primers/promises)).
+* For the network resources necessary to load your app while offline, use the [**Cache API**](cache-api) (part of [service workers](/web/fundamentals/primers/service-worker/)).
+* For all other data, use [**IndexedDB**](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (with a [promises wrapper](https://www.npmjs.com/package/idb)).
 
-Este es el fundamento:
+Here’s the rationale:
 
-Ambas API son asíncronas (IndexedDB está basada en eventos y Cache API, en
-promesas). También funcionan con [Web Workers, y Window y Service
-Workers](https://nolanlawson.github.io/html5workertest/). IndexedDB se encuentra disponible
-en [todos lados](http://caniuse.com/#feat=indexeddb). Los Service
-Workers (y la Cache API) [ahora
-se encuentran disponibles](https://jakearchibald.github.io/isserviceworkerready/) en Chrome,
-Firefox y Opera, y están en desarrollo para Edge. Los contenedores de promesas de
-IndexedDB ocultan algunos de los mecanismos potentes, pero complejos
-(p. ej., transacciones y versiones de esquemas), que se incluyen en la biblioteca de
-IndexedDB. IndexedDB admitirá
-[observadores](https://github.com/WICG/indexed-db-observers), que posibilitan una sincronización simple
-entre pestañas.
+Both APIs are asynchronous (IndexedDB is event based and the Cache API is Promise based). They also work with [web workers, window and service workers](https://nolanlawson.github.io/html5workertest/). IndexedDB is available [everywhere](http://caniuse.com/#feat=indexeddb). Service Workers (and the Cache API) are [now available](https://jakearchibald.github.io/isserviceworkerready/) in Chrome, Firefox, Opera and are in development for Edge. Promise wrappers for IndexedDB hide some of the powerful but also complex machinery (e.g. transactions, schema versioning) that comes with the IndexedDB library. IndexedDB will support [observers](https://github.com/WICG/indexed-db-observers), which allow easy synchronization between tabs.
 
-Safari 10
-[corrigió varios errores antiguos de IndexedDB](https://gist.github.com/nolanlawson/08eb857c6b17a30c1b26)
-en sus últimas Technology Preview. NOTA:  Algunas personas tuvieron problemas
-de estabilidad con IndexedDB y PouchDB en Safari 10, y lo consideran un
-poco lento. Hasta que se investigue más sobre el tema, tu recorrido puede variar.
-Prueba los errores del navegador y repórtalos para que la gente de @webkit y otros autores de bibliotecas de
-OSS puedan examinarlos. De forma predeterminada, LocalForage, PouchDB, YDN y Lovefield
-usan WebSQL en Safari (debido a que no hay una forma eficaz de
-probar características defectuosas en IndexedDB). Esto significa que estas bibliotecas funcionarán en
-Safari 10 sin esfuerzo adicional (solo que sin usar IndexedDB directamente).
+Safari 10 has [fixed many long-standing IndexedDB bugs](https://gist.github.com/nolanlawson/08eb857c6b17a30c1b26) in their latest Tech Previews. NOTE: Some folks have run into stability issues with Safari 10’s IndexedDB and PouchDB and have found it to be a little slow. Until more research has been done here, your mileage may vary. Please do test and file browser bugs so the folks @webkit and related OSS library authors can take a look. LocalForage, PouchDB, YDN and Lovefield use WebSQL in Safari by default (due to lack of an efficient way to feature-test for broken IndexedDB). This means these libraries will work in Safari 10 without extra effort (just not using IndexedDB directly).
 
-Para las PWA, puedes almacenar en caché los recursos estáticos, usando Cache API para componer la shell de tu app
-(archivos JS/CSS/HTML), y completar los datos de la página sin conexión desde
-IndexedDB. Ahora se puede depurar IndexedDB en
-[Chrome](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
-(pestaña Application),
-Opera, [Firefox](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector)
-(Storage Inspector) y Safari (consulta la pestaña Storage).
+For PWAs, you can cache static resources, composing your application shell (JS/CSS/HTML files) using the Cache API and fill in the offline page data from IndexedDB. Debugging support for IndexedDB is now available in [Chrome](/web/tools/chrome-devtools/iterate/manage-data/local-storage) (Application tab), Opera, [Firefox](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) (Storage Inspector) and Safari (see the Storage tab).
 
-## ¿Qué ocurre con otros mecanismos de almacenamiento?
+## What about other storage mechanisms?
 
-El almacenamiento web (p. ej., LocalStorage y SessionStorage) es sincrónico, no admite Web
-Workers, y tiene límites de tamaño y tipo (solo strings). Las cookies [son útiles para algunas
-cosas](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies), pero son
-sincrónicas, no admiten Web Workers y también tienen límites de tamaño.
-WebSQL no es compatible con varios navegadores y no se recomienda usarlo.
-La File System API no es compatible con ningún navegador, excepto Chrome. La
-[File API](https://developer.mozilla.org/en-US/docs/Web/API/File) se
-está mejorando en la
-[File and Directory Entries API](https://wicg.github.io/entries-api/)
-y en las especificaciones de [File API](https://w3c.github.io/FileAPI/), pero ninguna es lo
-suficientemente madura o está estandarizada para incentivar una adopción a gran escala.
+Web Storage (e.g LocalStorage and SessionStorage) is synchronous, has no Web Worker support and is size and type (strings only) limited. Cookies [have their uses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies) but are synchronous, lack web worker support and are also size-limited. WebSQL does not have broad browser support and its use is not recommended. The File System API is not supported on any browser besides Chrome. The [File API](https://developer.mozilla.org/en-US/docs/Web/API/File) is being improved in the [File and Directory Entries API](https://wicg.github.io/entries-api/) and [File API](https://w3c.github.io/FileAPI/) specs but neither is sufficiently mature or standardized to encourage widespread adoption yet.
 
-## ¿Cuánto puedo almacenar?
+## How much can I store?
 
 <table>
   <thead>
-    <th>Navegador</th>
-    <th>Límite</th>
+    <th>Browser</th>
+    <th>Limit</th>
   </thead>
   <tbody>
     <tr>
       <td>Chrome</td>
-      <td>&lt;6% del espacio libre</td>
+      <td>&lt;6% of free space</td>
     </tr>
     <tr>
       <td>Firefox</td>
-      <td>&lt;10% del espacio libre</td>
+      <td>&lt;10% of free space</td>
     </tr>
     <tr>
       <td>Safari</td>
-      <td>&lt;50 MB</td>
+      <td>&lt;50MB</td>
     </tr>
     <tr>
       <td>IE10</td>
-      <td>&lt;250 MB</td>
+      <td>&lt;250MB</td>
+    </tr>
+    <tr>
+      <td>Edge</td>
+      <td>
+        <a href="https://developer.microsoft.com/en-us/microsoft-edge/platform/documentation/dev-guide/storage/IndexedDB/">
+          Dependent on volume size
+        </a>
+      </td>
     </tr>
   <tbody>
 </table>
 
-En Chrome y Opera, el almacenamiento es por origen (y no por API). Ambos
-mecanismos de almacenamiento permitirán almacenar datos hasta alcanzar la
-[cuota](http://www.html5rocks.com/en/tutorials/offline/quota-research/) del
-navegador. Las apps pueden controlar la cuota que utilizan con la [Quota Management
-API](https://developer.mozilla.org/en-US/docs/Web/API/StorageQuota). En Chrome,
-las apps pueden usar hasta un 6% del espacio
-libre en el disco. En Firefox, las apps pueden usar hasta un 10% del espacio libre en el disco, pero le
-avisará al usuario cuando se solicite almacenamiento después de haber almacenado 50 MB de datos. En Safari
-para dispositivos móviles, las apps pueden usar un máximo de 50 MB, mientras que en la versión de escritorio, el almacenamiento es
-ilimitado (con advertencias después de los 5 MB). El máximo de IE10 es 250 MB y le advierte al usuario después de
-10 MB. PouchDB [realiza un seguimiento](https://pouchdb.com/faq.html#data_limits) del comportamiento
-del almacenamiento de IDB.
+In Chrome and Opera, your storage is per origin (rather than per API). Both storage mechanisms will store data until the browser [quota](http://www.html5rocks.com/en/tutorials/offline/quota-research/) is reached. Apps can check how much quota they’re using with the [Quota Management API](https://developer.mozilla.org/en-US/docs/Web/API/StorageQuota). In Chrome, apps can use up to 6% of free disk space. In Firefox, apps can use up to 10% of free disk space, but will prompt the user for further storage requests after 50MB data stored. In mobile Safari, apps can use up to 50MB max, whereas desktop Safari allows unlimited storage (and prompts after 5MB). IE10+ maxes out at 250MB and prompts the user at 10MB. PouchDB [tracks](https://pouchdb.com/faq.html#data_limits) IDB storage behavior.
 
-## ¿Cómo puedo averiguar la cantidad de espacio de almacenamiento que utiliza mi app?
+## How can I tell how much storage space my app is using?
 
-En Chrome, la [Quota Management API](https://www.w3.org/TR/quota-api/) te permite
-consultar la cantidad de espacio de almacenamiento actualmente en uso y cuánto
-tiene disponible la app. Una [Storage Quota Estimate
-API](https://www.chromestatus.com/features/5630353511284736) más nueva usa promesas para que sea aún más
-fácil averiguar la cuota que utiliza
-el origen.
+In Chrome, the [Quota Management API](https://www.w3.org/TR/quota-api/) lets you query for the size of storage space currently used and how much is available to the application. A newer [Storage Quota Estimate API](https://www.chromestatus.com/features/5630353511284736) tries to make it even easier to discover how much quota an origin is using with support for Promises.
 
-## ¿Cómo funciona el descarte de caché?
+## How does cache eviction work?
 
 <table>
   <thead>
-    <th>Navegador</th>
-    <th>Política de descarte</th>
+    <th>Browser</th>
+    <th>Eviction Policy</th>
   </thead>
   <tbody>
     <tr>
       <td>Chrome</td>
-      <td>LRU cuando Chrome se queda sin espacio</td>
+      <td>LRU once Chrome runs out of space</td>
     </tr>
     <tr>
       <td>Firefox</td>
-      <td>LRU cuando el disco está lleno</td>
+      <td>LRU if the whole disk gets full</td>
     </tr>
     <tr>
       <td>Safari</td>
-      <td>Sin descarte</td>
+      <td>No eviction</td>
     </tr>
     <tr>
       <td>Edge</td>
-      <td>Sin descarte</td>
+      <td>No eviction</td>
     </tr>
   <tbody>
 </table>
 
-A los orígenes, se les atribuye una cantidad de espacio para que utilicen como deseen. Todos los mecanismos de
-almacenamiento de origen (IndexedDB, Cache API,
-localStorage, etc.) comparten este espacio libre. No se especifica la cantidad asignada, y variará según condiciones
-del dispositivo y condiciones de almacenamiento.
+An origin is given an amount of space to do with as it pleases. This free space is shared across all forms of origin storage (IndexedDB, Cache API, localStorage etc). The amount given isn’t specified and will vary depending on device and storage conditions.
 
-Cuando queda poco almacenamiento web, un usuario-agente libera espacio de almacenamiento. Esto
-puede tener un impacto en las respuestas sin conexión. En consecuencia, la recientemente actualizada especificación de
-[Storage](https://storage.spec.whatwg.org/) define estrategias “persistentes” y
-de “mejor esfuerzo” (esta última es la estrategia predeterminada). “Mejor esfuerzo”
-significa que el almacenamiento se puede liberar sin interrumpir al usuario, pero es menos
-duradera para datos a largo plazo o críticos. Actualmente, tanto IndexedDB como la Cache API
-se encuentran en la categoría de “mejor esfuerzo”.
+When web storage is low, a UA will clear storage to make space available. This can harm offline responsiveness so the recently updated [Storage](https://storage.spec.whatwg.org/) spec defines "persistent", and “best effort” strategies, with “best effort” being the default. “Best effort” means the storage can be cleared without interrupting the user, but is less durable for long-term and/or critical data. IndexedDB and the Cache API both fall into the “best effort” category today.
 
-El almacenamiento “persistente” no se libera automáticamente cuando hay poco espacio. El
-usuario debe liberar manualmente este almacenamiento (a través de configuraciones del navegador). Chrome ha
-estado experimentando con la compatibilidad con [almacenamiento
-persistente](/web/updates/2016/06/persistent-storage)
-en una prueba de origen y las últimas novedades sugieren que se incluirá en
-[Chrome
-55](https://groups.google.com/a/chromium.org/d/msg/blink-dev/5Sihi1iAXYc/wnvNDFIPAQAJ).
+"Persistent" storage is not automatically cleared when storage is low. The user needs to manually clear this storage (via browser settings). Chrome has been experimenting with support for [Persistent Storage](/web/updates/2016/06/persistent-storage) under an origin trial, and the latest news suggests it will be shipping in [Chrome 55](https://groups.google.com/a/chromium.org/d/msg/blink-dev/5Sihi1iAXYc/wnvNDFIPAQAJ).
 
-## Recursos actuales y futuros del almacenamiento sin conexión
+## Current and future offline storage work
 
-Si te interesa el almacenamiento sin conexión, te recomendamos los siguientes
-recursos.
+If offline storage interests you, the efforts below are worth keeping an eye on.
 
-* [Almacenamiento duradero](https://storage.spec.whatwg.org/): protege el almacenamiento de las
-políticas de eliminación de datos del usuario-agente.
+* [Durable Storage](https://storage.spec.whatwg.org/): protect storage from the user agent’s clearing policies.
 
-* [Indexed Database API 2.0](https://w3c.github.io/IndexedDB/): gestión
-avanzada de datos clave-valor.
+* [Indexed Database API 2.0](https://w3c.github.io/IndexedDB/): advanced key-value data management.
 
-* [IndexedDB
-con promesas](https://github.com/inexorabletash/indexeddb-promises): compatibilidad
-nativa con una versión de IndexedDB apta para promesas.
+* [Promisified IndexedDB](https://github.com/inexorabletash/indexeddb-promises): native support for a Promise-friendly version of IndexedDB.
 
-* [Observadores de IndexedDB](https://github.com/WICG/indexed-db-observers): observación de
-IndexedDB nativa sin necesidad de contenedores en la base de datos.
+* [IndexedDB Observers](https://github.com/WICG/indexed-db-observers): native IndexedDB observation without needing wrapper around the database.
 
-* [Async Cookies API](https://github.com/bsittler/async-cookies-api): API de cookies de JavaScript
-asíncrona para documentos y workers.
+* [Async Cookies API](https://github.com/bsittler/async-cookies-api): async JavaScript cookies API for documents and workers.
 
-* [Quota Management API](https://www.w3.org/TR/quota-api/): permite conocer la cantidad
-de cuota que una app o un origen está utilizando.
+* [Quota Management API](https://www.w3.org/TR/quota-api/): check how much quota an app/origin is using.
 
-* [writable-files](https://github.com/WICG/writable-files): permite que los sitios
-interactúen con los archivos locales de forma más dinámica.
+* [writable-files](https://github.com/WICG/writable-files): allow sites to interact with local files more seamlessly.
 
-* [Descargas de directorios](https://github.com/drufball/directory-download): permite que los sitios
-descarguen directorios sin archivos .zip.
+* [Directory downloads](https://github.com/drufball/directory-download): allow sites to download directories without .zip files.
 
-* [File and Directory Entries API](https://wicg.github.io/entries-api/):
-permite cargar archivos y directorios mediante la función de arrastrar y colocar.
+* [File and Directory Entries API](https://wicg.github.io/entries-api/): support for file and directory upload by drag-and-drop.
 
-* Se está esbozando una [Async Cookies
-API](https://github.com/WICG/async-cookies-api) con
-polyfill en desarrollo.
+* Support for an [Async Cookies API](https://github.com/WICG/async-cookies-api) is being sketched out right now with a polyfill in the works.
 
-* Actualmente, Edge no admite la depuración de IndexedDB (sin embargo, es posible
-depurar el JetDB subyacente). Puedes votar
-[aquí](https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6517763-indexeddb-explorer-in-dev-tools)
-para solicitar que se incorpore la compatibilidad.
+* Debugging IndexedDB is not currently supported in Edge (however, it is possible to debug the underlying JetDB) — vote [here](https://wpdev.uservoice.com/forums/257854-microsoft-edge-developer/suggestions/6517763-indexeddb-explorer-in-dev-tools) for built in support.
 
-* Aunque ya se han debatido [ideas](https://github.com/slightlyoff/async-local-storage) sobre
-LocalStorage asíncrono, la atención se centra, actualmente, en mejorar el estado de
-[IndexedDB 2.0](https://w3c.github.io/IndexedDB/).
+* Although [ideas](https://github.com/slightlyoff/async-local-storage) for async LocalStorage have been kicked around in the past, current focus is on getting [IndexedDB 2.0](https://w3c.github.io/IndexedDB/) in a good state.
 
-* Es posible que, en un futuro, la propuesta de [writable-files](https://github.com/WICG/writable-files) nos
-brinde una solución en vía de estandarización que nos permita interactuar
-con archivos locales sin problema.
+* The [writable-files](https://github.com/WICG/writable-files) proposal may eventually give us a better standards-track solution for seamless local file interaction.
 
-* Para las apps que requieran almacenamiento más persistente, consulta el desarrollo actual del
-[almacenamiento duradero](https://storage.spec.whatwg.org/).
+* For apps requiring more persistent storage, see the on-going work on [Durable Storage](https://storage.spec.whatwg.org/).
 
-El almacenamiento sin conexión no es algo mágico; si conoces las API subyacentes, te será
-más fácil aprovechar al máximo los recursos disponibles actualmente.
-Tanto si prefieres usar directamente estas API o trabajar con una biblioteca
-de abstracción, es conveniente que te tomes un tiempo para familiarizarte con las opciones.
+Offline storage isn’t quite magical and an understanding of the underlying APIs will go far in helping you make the most out of what we now have available. Whether you prefer to directly use these APIs or work with an abstraction library, take some time to get familiar with your options.
 
-¡Esperamos que esta guía te ayude a desarrollar una experiencia sin conexión que haga brillar a tu
-PWA! ✨
+Hopefully this guidance will help you craft an offline experience that makes your PWA shine! ✨
 
-### Lectura adicional
+### Background reading
 
-* [El estado de las API
-de almacenamiento sin conexión](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit)
-de Joshua Bell
+* [State of Offline Storage APIs](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit) by Joshua Bell
 
-* [Comparación de
-las bases de datos de los navegadores](http://nolanlawson.github.io/database-comparison/) de Nolan Lawson
+* [Browser Database Comparison](http://nolanlawson.github.io/database-comparison/) by Nolan Lawson
 
-* [IndexedDB, WebSQL y LocalStorage : ¿qué bloquea al
-DOM?](https://nolanlawson.com/2015/09/29/indexeddb-websql-localstorage-what-blocks-the-dom/)
+* [IndexedDB, WebSQL, LocalStorage — What Blocks the DOM?](https://nolanlawson.com/2015/09/29/indexeddb-websql-localstorage-what-blocks-the-dom/)
 
-* [Cómo pensar en las bases de datos (búsqueda en
-Pokedex)](https://nolanlawson.com/2016/02/08/how-to-think-about-databases/)
+* [How to Think about Databases (Pokedex research)](https://nolanlawson.com/2016/02/08/how-to-think-about-databases/)
 
-* [¿Cuáles son las API compatibles en Web Workers y Service
-Workers?](https://nolanlawson.github.io/html5workertest/)
+* [Which APIs are Supported in Web Workers and Service Workers?](https://nolanlawson.github.io/html5workertest/)
 
-### Recursos útiles
+### Helpful resources
 
-* [sw-toolbox](https://github.com/GoogleChrome/sw-toolbox) (almacenamiento en caché sin conexión
-para solicitudes dinámicas/en tiempo de ejecución)
+* [Workbox](/web/tools/workbox/) (set of service worker libraries that make building progressive web apps easy)
 
-* [sw-precache](https://github.com/GoogleChrome/sw-precache) (almacenamiento previo en caché
-sin conexión para shells de recursos estáticos/aplicaciones)
+* Webpack users can directly use the above or [offline-plugin](https://github.com/NekR/offline-plugin)
 
-* Posibilidad de los usuarios de webpack de usar los elementos anteriores u
-[offline-plugin](https://github.com/NekR/offline-plugin)
+### IndexedDB libraries worth checking out
 
-### Bibliotecas de IndexedDB que vale la pena investigar
+* [localForage](https://github.com/localForage/localForage) (~8KB, promises, good legacy browser support)
 
-* [localForage](https://github.com/localForage/localForage)(~8 KB, promesas y buena
-compatibilidad con navegadores heredados)
+* [IDB-keyval](https://www.npmjs.com/package/idb-keyval) (500 byte alternative to localForage, for modern browsers)
 
-* [Dexie](http://dexie.org/) (~16 KB, promesas, consultas complejas e índices
-secundarios)
+* [IDB-promised](https://www.npmjs.com/package/idb) (~2k, same IndexedDB API, but with promises)
 
-* [PouchDB](https://pouchdb.com/) (~45 KB, admite [compilaciones
-personalizadas](https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html)) y
-sincronización)
+* [Dexie](http://dexie.org/) (~16KB, promises, complex queries, secondary indices)
 
-* [Lovefield](https://github.com/google/lovefield) (relacional)
+* [PouchDB](https://pouchdb.com/) (~45KB (supports [custom builds](https://pouchdb.com/2016/06/06/introducing-pouchdb-custom-builds.html)), synchronization)
 
-* [LokiJS](http://lokijs.org/#/) (en memoria)
+* [Lovefield](https://github.com/google/lovefield) (relational)
 
-* [ydn-db](https://github.com/yathit/ydn-db) (similar a Dexie y funciona con WebSQL)
+* [LokiJS](http://lokijs.org/#/) (in-memory)
 
-**Gracias a Nolan Lawson, Joshua Bell (su trabajo sobre almacenamiento libre en la web y su
-[presentación en BlinkOn](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit)
-inspiraron mucho este artículo), Jake Archibald, Dru Knox y otros por su
-labor anterior sobre espacio de almacenamiento en la web.**
+* [ydn-db](https://github.com/yathit/ydn-db) (dexie-like, works with WebSQL)
 
+**Thanks to Nolan Lawson, Joshua Bell (whose work on Open Web Storage and [BlinkOn talk](https://docs.google.com/presentation/d/11CJnf77N45qPFAhASwnfRNeEMJfR-E_x05v1Z6Rh5HA/edit) heavily inspired this article), Jake Archibald, Dru Knox and others for their previous work in the web storage space.**
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

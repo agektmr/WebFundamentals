@@ -1,9 +1,6 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2017-11-28 #}
-{# wf_published_on: 2017-11-01 #}
-{# wf_blink_components: Blink>Network,Blink>Loader #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2017-11-01 #} {# wf_blink_components: Blink>Network,Blink>Loader #}
 
 <!--
   Aspect ratio CSS, Copyright 2017 Google Inc
@@ -11,7 +8,8 @@ book_path: /web/fundamentals/_book.yaml
   move around as media loads.
 
   Adapted from https://github.com/sgomes/css-aspect-ratio
--->
+--> 
+
 <style>
 .aspect-ratio {
   /* aspect-ratio custom properties */
@@ -49,271 +47,139 @@ book_path: /web/fundamentals/_book.yaml
 }
 </style>
 
-# Priorizzare le risorse: fare in modo che il browser ti sia d'aiuto {: .page-title }
+ 
+
+# Resource Prioritization – Getting the Browser to Help You {: .page-title }
 
 {% include "web/_shared/contributors/sgomes.html" %}
 
-Non tutti i byte inviati dal cavo al browser hanno lo stesso livello di
-importanza ed il browser lo sa. I browser hanno delle euristiche che tentano di
-individuare le risorse più importanti da caricare prima - come ad esempio
-CSS prima di script ed immagini.
+Not every byte that is sent down the wire to the browser has the same degree of importance, and the browser knows this. Browsers have heuristics that attempt to make a best-guess at the most important resources to load first — such as CSS before scripts and images.
 
-Detto questo, come in ogni euristica, non sempre funziona; il browser potrebbe
-prendere la decisione sbagliata, di solito perché non dispone di informazioni
-sufficienti in quel momento. Questo articolo spiega come influenzare la priorità
-del contenuto adeguatamente nei moderni browser facendo loro sapere di cosa
-avrai bisogno più avanti.
+That said, as with any heuristic, it doesn’t always work out; the browser might make the wrong decision, usually because it doesn’t have enough information at that time. This article explains how to influence the priority of content adequately in modern browsers by letting them know what you’ll be needing later.
 
-## Priorità predefinite nel browser
+## Default Priorities in the Browser
 
-Come accennato in precedenza, il browser assegna diverse priorità relative
-a diversi tipi di risorse in base a quanto possano essere critici. Così,
-ad esempio, un tag `<script>` in `<head>` della pagina verrà caricato in Chrome
-a priorità **Alta** (dopo i CSS ad **Altissima**), ma quella priorità
-cambierebbe in **Bassa** se ha l'attributo async (significa che può essere caricato
-ed eseguito in modo asincrono).
+As mentioned before, the browser assigns different relative priorities to different types of resources based on how critical they might be. So, for example, a `<script>` tag in your page’s `<head>` would be loaded in Chrome at a **High** priority (below CSS, at **Highest**), but that priority would change to **Low** if it has the async attribute (meaning it can be loaded and run asynchronously).
 
-Le priorità diventano importanti quando esaminano le prestazioni di caricamento
-del tuo sito.
-Al di là delle solite tecniche di
-[misura](/web/fundamentals/performance/critical-rendering-path/measure-crp)
-e
-[analisi del percorso di rendering critico](/web/fundamentals/performance/critical-rendering-path/analyzing-crp),
-è utile conoscere le priorità di Chrome per ogni risorsa. Puoi trovarle
-all'interno del pannello di rete in Chrome Developer Tools. Ecco come si
-presenta:
-
+Priorities become important when investigating loading performance in your site. Beyond the usual techniques of [measuring](/web/fundamentals/performance/critical-rendering-path/measure-crp) and [analyzing the critical rendering path](/web/fundamentals/performance/critical-rendering-path/analyzing-crp), it’s useful to know Chrome’s priority for each resource. You can find that in the Network panel in Chrome Developer Tools. Here’s what it looks like:
 
 <figure>
   <div class="aspect-ratio"
        style="width: 1810px; --aspect-ratio-w: 1810; --aspect-ratio-h: 564">
     <img src="images/res-prio-priorities.png"
-    alt="Un esempio di come vengono visualizzate le priorità in Chrome Developer Tools">
+    alt="An example of how priorities are displayed in Chrome Developer Tools">
   </div>
-  <figcaption><b>Figura 1</b>: Priorità in Chrome Developer Tools. Potrebbe
-  essere necessario attivare la colonna Priorità facendo clic con il pulsante
-  destro del mouse sulle intestazioni di colonna.
+  <figcaption><b>Figure 1</b>: Priorities in Chrome Developer Tools. You may
+  need to enable the Priority column by right-clicking on the column headers.
   </figcaption>
 </figure>
 
+These priorities give you an idea of how much relative importance the browser attributes to each resource. And remember that subtle differences are enough for the browser to assign a different priority; for example, an image that is part of the initial render is prioritized higher than an image that starts offscreen. If you’re curious about priorities, [this article by Addy Osmani](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf){: .external} digs a lot deeper into the current state of priorities in Chrome.
 
-Queste priorità ti danno un'idea dell'importanza relativa ad ogni attributo del
-browser per ciascuna risorsa. Ricorda che le differenze sottili sono
-sufficienti perché il browser assegni una priorità diversa; ad esempio,
-un'immagine che fa parte del rendering iniziale è maggiormente prioritaria
-rispetto ad un'immagine che inizia fuori dallo schermo. Se vuoi approfondire le
-priorità,
-[questo articolo di Addy Osmani](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf){: .external}
-approfondisce l'argomento dello stato attuale delle priorità in Chrome.
+So what can you do if you find any resources that are marked with a different priority than the one you’d want?
 
-Allora, cosa puoi fare se trovi delle risorse contrassegnate da una priorità
-diversa da quella che desideri?
+This article dives into three different declarative solutions, which are all relatively new `<link>` types. If your resources are crucial to the user experience but are being loaded at too low a priority, you can try fixing that in one of two ways: preload or preconnect. On the other hand, if you’d like the browser to fetch some resources only when it’s done dealing with everything else, try prefetch.
 
-Questo articolo esamina tre diverse soluzioni dichiarative, tutte
-relative ai nuovi tipi `<link>`. Se le risorse sono fondamentali per
-l'esperienza utente, ma vengono caricate a una priorità troppo bassa, puoi
-provare a risolvere questo problema in uno dei due modi: *preload* o *preconnect*.
-Se invece preferisci che sia il browser a recuperare le risorse solo quando ha
-terminato di gestire il resto prova *prefetch*.
-
-Esaminiamo tutte e tre!
+Let’s look at all three!
 
 ## Preload
 
-`<link rel="preload">` informa il browser che una risorsa è necessaria come
-parte della navigazione corrente, e che dovrebbe iniziare ad essere recuperata
-il prima possibile. Ecco come usarla:
+`<link rel="preload">` informs the browser that a resource is needed as part of the current navigation, and that it should start getting fetched as soon as possible. Here’s how you use it:
 
     <link rel="preload" as="script" href="super-important.js">
     <link rel="preload" as="style" href="critical.css">
+    
 
-La maggior parte di questo codice è probabilmente quello che ti aspetteresti,
-tranne forse per l'attributo "as". Ciò consente di informare il browser del tipo
-di risorsa che si sta caricando, in modo che possa essere gestita correttamente.
-Il browser non utilizza la risorsa precaricata se non viene impostato il tipo
-corretto. La risorsa è caricata con la stessa priorità, ma ora il browser lo sa
-in anticipo, permettendo al download di iniziare prima.
+Most of this is probably what you’d expect, except perhaps for the “as” attribute. This allows you to tell the browser the type of the resource you’re loading, so that it can be handled correctly. The browser doesn't use the preloaded resource unless the correct type is set. The resource is loaded with the same priority as it would otherwise, but now the browser knows about it ahead of time, allowing for the download to start earlier.
 
-Si può notare che `<link rel="preload">` è un'istruzione obbligatoria per il
-browser; a differenza degli altri suggerimenti sulle risorse di cui parleremo,
-è qualcosa che il browser deve fare, piuttosto che un semplice suggerimento
-opzionale. È particolarmente importante testare con attenzione questo aspetto,
-per assicurarsi di non recuperare accidentalmente due volte lo stesso oggetto o
-di recuperare qualcosa che non è necessario.
+Note that `<link rel="preload">` is a compulsory instruction to the browser; unlike the other resource hints we’ll be talking about, it’s something the browser must do, rather than merely an optional hint. This makes it particularly important to test carefully, to insure that you’re not accidentally causing anything to fetch twice by using it, or fetching something that’s not needed.
 
-Le risorse che vengono scaricate usando `<link rel="preload">`, ma non
-vengono utilizzate dalla pagina corrente entro 3 secondi attiveranno un
-avviso nella Console di Chrome Developer Tools, quindi
-assicurati di tenerle sott'occhio!
+Resources that are fetched using `<link rel="preload">`, but not used by the current page within 3 seconds will trigger a warning in the Console in Chrome Developer Tools, so be sure to keep an eye out for these!
 
 <figure>
   <div class="aspect-ratio"
        style="width: 1050px; --aspect-ratio-w: 1050; --aspect-ratio-h: 244">
     <img src="images/res-prio-timeout.png"
-    alt="Un esempio di errore di timeout del preload in Chrome Developer Tools">
+    alt="An example of a preload timeout error in Chrome Developer Tools">
   </div>
 </figure>
 
-### Caso d'uso: Fonts
+### Use-case: Fonts
 
-I font sono un ottimo esempio di risorse scoperte in ritardo che devono
-essere recuperate, spesso al termine di uno dei numerosi file CSS caricati da
-una pagina.
+Fonts are a great example of late-discovered resources that must be fetched, often sitting at the bottom of one of several CSS files loaded by a page.
 
-Per ridurre la quantità di tempo che l'utente deve attendere per il contenuto
-testuale del tuo sito e per evitare fastidiosi flash tra i font di sistema e
-quelli preferiti puoi usare `<link rel="preload">` nel tuo HTML per far sapere
-immediatamente al browser che è necessario un font.
+In order to reduce the amount of time the user has to wait for the text content of your site, as well as avoid jarring flashes between system fonts and your preferred ones, you can use `<link rel="preload">` in your HTML to let the browser know immediately that a font is needed.
 
     <link rel="preload" as="font" crossorigin="crossorigin" type="font/woff2" href="myfont.woff2">
+    
 
-Si noti che l'uso di `crossorigin` qui è importante; senza questo attributo,
-il font precaricato viene ignorato dal browser e viene eseguito un nuovo
-recupero. Questo perché i caratteri dovrebbero essere recuperati in modo
-anonimo dal browser, e la richiesta di preload è resa anonima solo usando
-l'attributo `crossorigin`.
+Note that the use of `crossorigin` here is important; without this attribute, the preloaded font is ignored by the browser, and a new fetch takes place. This is because fonts are expected to be fetched anonymously by the browser, and the preload request is only made anonymous by using the `crossorigin` attribute.
 
-Caution: se stai utilizzando un CDN, come Google Fonts, assicurati che i file
-dei font che stai pre-caricando corrispondano a quelli del CSS, il che può
-essere complicato a causa di intervalli di unicode, pesi e varianti di
-carattere. I font possono anche essere aggiornati regolarmente, e se stai
-precaricando una vecchia versione mentre nel CSS usi la più recente, potresti
-finire per scaricare due versioni dello stesso font e sprecare la larghezza di
-banda degli utenti. Potresti usare `<link rel="preconnect">` invece per una
-manutenzione più semplice.
+Caution: If you’re using a CDN, such as Google Fonts, be sure that the font files you’re preloading match the ones in the CSS, which can be tricky due to unicode ranges, weights, and font variants. Fonts can also be regularly updated, and if you’re preloading an old version while using the CSS for a newer one, you may end up downloading two versions of the same font and wasting your users’ bandwidth. Consider using `<link rel="preconnect">` instead for easier maintenance.
 
-### Caso d'uso: Percorso critico CSS e JavaScript
+### Use-case: Critical Path CSS and JavaScript
 
-Quando si parla di performance della pagina, un concetto utile è il "percorso
-critico". Il percorso critico si riferisce alle risorse che devono essere
-scaricate prima del rendering iniziale. Queste risorse, come i CSS, sono
-fondamentali per ottenere i primi pixel sullo schermo dell'utente.
+When talking about page performance, one useful concept is the “critical path”. The critical path refers to the resources that must be loaded before your initial render. These resources, like CSS, are critical to getting the first pixels on the user’s screen.
 
-In precedenza, la raccomandazione consisteva nell'integrare questo contenuto
-all'interno del codice HTML. Tuttavia, in uno scenario di rendering
-multi-pagina o lato server questo porta al rapido spreco di molti byte.
-Rende anche più difficile il controllo delle versioni, poiché qualsiasi modifica
-nel codice critico invalida qualsiasi pagina in cui è stata inserita.
+Previously, the recommendation was to inline this content into your HTML. However, in a multi-page, server-side rendered scenario, this quickly grows into a lot of wasted bytes. It also makes versioning harder, as any change in the critical code invalidates any page that has it inlined.
 
-`<link rel="preload">` consente di mantenere i vantaggi del controllo delle
-versioni dei singoli file e della cache, fornendo allo stesso tempo il
-meccanismo per richiedere la risorsa il prima possibile.
+`<link rel="preload">` allows you to keep the benefits of individual file versioning and caching, while giving you mechanism to request the resource as soon as possible.
 
     <link rel="preload" as="script" href="super-important.js">
     <link rel="preload" as="style" href="critical.css">
+    
 
-Con preload c'è uno svantaggio: sei ancora soggetto ad un ulteriore roundtrip.
-Questo roundtrip extra deriva dal fatto che il browser deve prima recuperare il file
-HTML, e solo allora scopre le risorse successive.
+With preload, there is one downside: you’re still subject to an extra roundtrip. This extra roundtrip comes from the fact that the browser first has to fetch the HTML, and only then does it find out about the next resources.
 
-Un modo per aggirare il roundtrip extra è quello di utilizzare
-[HTTP/2](/web/fundamentals/performance/http2/#server_push)
-push, per trasportare preventivamente le risorse critiche all'interno della
-stessa connessione con cui si invia l'HTML. Ciò garantisce che non vi siano
-tempi di inattività tra il browser dell'utente che recupera l'HTML e l'avvio
-del download delle risorse critiche. Stai attento però quando utilizzi
-HTTP/2 push però, dato che è un modo molto forzato per controllare l'utilizzo
-della larghezza di banda dell'utente ("server knows best") perché lascia al
-browser poco spazio per prendere le proprie decisioni come non recuperare uno
-stesso file già nella sua cache!
+One way around the extra roundtrip is to use [HTTP/2](/web/fundamentals/performance/http2/#server_push) push instead, where you preemptively attach the critical assets to the same connection through which you’re sending the HTML. This guarantees that there’s no downtime between the user’s browser retrieving the HTML and starting the download of the critical assets. Be mindful when using HTTP/2 push, though, as it’s a very forceful way of controlling the user’s bandwidth usage (“server knows best”), and leaves the browser very little room for making its own decisions, such as not retrieving a file that is already in its cache!
 
 ## Preconnect
 
-`<link rel="preconnect">` informa il browser che la tua pagina intende stabilire
-una connessione con un'altra origine e che vorresti che il processo iniziasse il
-prima possibile.
+`<link rel="preconnect">` informs the browser that your page intends to establish a connection to another origin, and that you’d like the process to start as soon as possible.
 
-Stabilire connessioni spesso richiede tempo con reti lente, in
-particolare quando si tratta di connessioni sicure, poiché potrebbe comportare
-ricerche DNS, reindirizzamenti e diversi roundtrip sul server finale che
-gestisce la richiesta dell'utente. Prendersi cura di tutto ciò in anticipo può
-rendere la tua applicazione molto più accattivante per l'utente senza influire
-negativamente sull'utilizzo della larghezza di banda. La maggior parte del tempo
-per stabilire una connessione è speso in attesa, piuttosto che per scambiare
-dati.
+Establishing connections often involves significant time in slow networks, particularly when it comes to secure connections, as it may involve DNS lookups, redirects, and several round trips to the final server that handles the user’s request. Taking care of all this ahead of time can make your application feel much snappier to the user without negatively affecting the use of bandwidth. Most of the time in establishing a connection is spent waiting, rather than exchanging data.
 
-Per informare il browser della tua intenzione basta aggiungere un tag link
-alla tua pagina:
+Informing the browser of your intention is as simple as adding a link tag to your page:
 
     <link rel="preconnect" href="https://example.com">
+    
 
-In questo caso, stiamo facendo sapere al browser che intendiamo connetterci a
-`example.com` e recuperare i contenuti da lì.
+In this case, we’re letting the browser know that we intend to connect to `example.com` and retrieve content from there.
 
-Ricorda che mentre `<link rel="preconnect">` è piuttosto economico, può comunque
-richiedere tempo prezioso per la CPU, in particolare su connessioni sicure. Ciò
-è particolarmente grave se la connessione non viene utilizzata entro 10 secondi,
-poiché il browser la chiude, sprecando tutto il lavoro di connessione iniziale.
+Bear in mind that while `<link rel="preconnect">` is pretty cheap, it can still take up valuable CPU time, particularly on secure connections. This is especially bad if the connection isn’t used within 10 seconds, as the browser closes it, wasting all of that early connection work.
 
-In generale, prova ad usare `<link rel="preload">` ovunque sia possibile, in
-quanto è una modifica più completa delle prestazioni, ma tieni
-`<link rel="preconnect">` nella tua cassetta degli strumenti per i casi limite.
-Diamo un'occhiata ad un paio di questi.
+In general, try to use `<link rel="preload">` wherever you can, as it’s a more comprehensive performance tweak, but do keep `<link rel="preconnect">` in your toolbelt for the edge cases. Let’s look at a couple of them.
 
-Note: esiste un altro tipo di `<link>` relativo alle connessioni:
-`<link rel="dns-prefetch">`. Questo gestisce solo la ricerca DNS, quindi è un
-piccolo sottoinsieme di `<link rel="preconnect">`, ma ha un supporto browser più
-ampio, quindi può essere un bel fallback. Lo usi nello stesso modo:
-`<link rel="dns-prefetch" href="https://example.com">`
+Note: There’s actually another `<link>` type related to connections: `<link rel="dns-prefetch">`. This handles the DNS lookup only, so it’s a small subset of `<link rel="preconnect">`, but it’s got wider browser support, so it may serve as a nice fallback. You use it the exact same way: `<link rel="dns-prefetch" href="https://example.com">`
 
-### Caso d'uso: Conoscere *Da Dove*, ma non *Cosa* recuperi
+### Use-case: Knowing *Where From*, but not *What* You're Fetching
 
-A causa delle dipendenze con versioni, a volte finisci in una situazione in cui
-sai che recupererai una risorsa da un dato CDN, ma non il percorso esatto. In
-altri casi, è possibile recuperare una delle numerose risorse, in base alle
-media query o ai controlli delle funzionalità di runtime sul browser
-dell'utente.
+Due to versioned dependencies, you sometimes end up in a situation where you know you’ll be retrieving a resource from a given CDN, but not the exact path for it. In other cases, one of several resources may be retrieved, depending on media queries or runtime feature checks on the user’s browser.
 
-In queste situazioni, se la risorsa che stai recuperando è importante, potresti
-voler risparmiare il maggior tempo possibile pre-connettendoti al server. Il
-browser non inizierà il recupero del file prima che ne abbia bisogno (ovvero,
-una volta che la richiesta viene effettuata dalla tua pagina in qualche modo),
-ma almeno sei in grado di gestire gli aspetti della connessione in anticipo,
-salvando l'utente dall'attesa di diversi roundtrip.
+In these situations, and if the resource you’ll be fetching is important, you may want to save as much time as possible by pre-connecting to the server. The browser won’t begin fetching the file before it needs it (that is, once the request is made from your page somehow), but at least it can handle the connection aspects ahead of time, saving the user from waiting for several roundtrips.
 
-### Caso d'uso: Streaming Media
+### Use-case: Streaming Media
 
-Un altro esempio in cui si potrebbe desiderare di risparmiare un po' di tempo
-nella fase di connessione, ma non necessariamente iniziare immediatamente a
-recuperare il contenuto, è lo streaming multimediale da un'origine diversa.
+Another example where you may want to save some time in the connection phase, but not necessarily start retrieving content right away, is when streaming media from a different origin.
 
-A seconda di come la tua pagina gestisce il contenuto in streaming, potresti
-voler aspettare che gli script siano caricati e pronti per elaborare il flusso.
-Preconnect ti aiuta a ridurre i tempi di attesa per un singolo roundtrip una
-volta che sei pronto per iniziare il recupero.
+Depending on how your page handles the streamed content, you may want to wait until your scripts have loaded and are ready to process the stream. Preconnect helps you cut the waiting time to a single roundtrip once you’re ready to start fetching.
 
 ## Prefetch
 
-`<link rel="prefetch">` è piuttosto diverso da `<link rel="preload">` e
-`<link rel="preconnect">`, nel senso che non tenta di far succedere qualcosa di
-critico più velocemente; invece, cerca di far succedere qualcosa di non critico
-prima, se possibile.
+`<link rel="prefetch">` is somewhat different from `<link rel="preload">` and `<link rel="preconnect">`, in that it doesn’t try to make something critical happen faster; instead, it tries to make something non-critical happen earlier, if there’s a chance.
 
-Lo fa informando il browser di una risorsa che dovrebbe essere necessaria come
-parte di una futura navigazione o interazione dell'utente, ad esempio,
-qualcosa che *potrebbe* essere necessario in seguito, se l'utente intraprende
-l'azione ci aspettiamo. Queste risorse vengono recuperate con la priorità
-**più bassa** in Chrome, quando viene caricata la pagina corrente e c'è
-larghezza di banda disponibile.
+It does this by informing the browser of a resource that is expected to be needed as part of a future navigation or user interaction, for example, something that *might* be needed later, if the user takes the action we’re expecting. These resources are fetched at the **Lowest** priority in Chrome, when the current page is done loading and there’s bandwidth available.
 
-Ciò significa che `prefetch` è più adatto a prevedere ciò che l'utente potrebbe
-fare in seguito e prepararsi, come recuperare la prima pagina dei dettagli del
-prodotto in un elenco di risultati o recuperare la pagina successiva in
-un contenuto impaginato.
+This means that `prefetch` is most suitable to preempt what the user might be doing next, and prepare for it, such as retrieving the first product details page in a list of results, or retrieving the next page in paginated content.
 
     <link rel="prefetch" href="page-2.html">
+    
 
-Tieni comunque presente che prefetch non funziona in modo ricorsivo.
-Nell'esempio precedente recupereresti l'HTML ma qualsiasi risorsa di cui 
-abbia bisogno `page-2.html` non viene scaricata prima del tempo a meno che tu
-non espliciti prefetch anche su di essa.
+Bear in mind that prefetch doesn’t work recursively, though. In the example above you’d only be retrieving the HTML; any resources that `page-2.html` needs would not be downloaded ahead of time unless you explicitly prefetch them as well.
 
-### Prefetch non funziona come Override
+### Prefetch Doesn't Work as an Override
 
-È importante notare che non è possibile utilizzare `<link rel="prefetch">` come
-metodo per ridurre la priorità di una risorsa esistente. Nel seguente HTML, si
-potrebbe pensare che dichiarare `optional.css` in un prefetch riduca la sua
-priorità del successivo `<link rel="stylesheet">`:
+It’s important to note that you can’t use `<link rel="prefetch">` as a way of lowering the priority of an existing resource. In the following HTML, you might think that declaring `optional.css` in a prefetch would lower its priority for the subsequent `<link rel="stylesheet">`:
 
     <html>
       <head>
@@ -324,46 +190,27 @@ priorità del successivo `<link rel="stylesheet">`:
         Hello!
       </body>
     </html>
+    
 
-Tuttavia, questo farà sì che il tuo foglio di stile venga recuperato due volte
-(anche con un potenziale cache hit la seconda volta), una volta con priorità
-predefinita **Massima** e una volta con priorità **Più bassa**, come prefetch
-per un recupero successivo:
+However, this will actually cause your stylesheet to be fetched twice (albeit with a potential cache hit on the second one), once at the default **Highest** priority, and once at the **Lowest** priority, as prefetch kicks off a separate fetch:
 
 <figure>
   <div class="aspect-ratio"
        style="width: 1374px; --aspect-ratio-w: 1374; --aspect-ratio-h: 190">
     <img src="images/res-prio-prefetch.png"
-         alt="Uno screenshot di Chrome Developer Tools che mostra optional.css che
-              viene recuperato due volte">
+         alt="A screenshot of Chrome Developer Tools showing optional.css being
+              fetched twice">
   </div>
 </figure>
 
-Il doppio recupero può essere negativo per gli utenti. In questo caso, non solo
-avrebbero dovuto attendere il CSS che bloccava il rendering, ma avrebbero anche
-potenzialmente perso larghezza di banda scaricando il file due volte. Ricorda
-che la loro larghezza di banda potrebbe essere in base al consumo. Assicurati di
-analizzare a fondo le richieste della tua rete e fai attenzione a quelle doppie!
+Double-fetching can be bad for users. In this case, not only would they have to wait for the render-blocking CSS, but they would also potentially have their bandwidth wasted by downloading the file twice. Remember their bandwidth may be metered. Be sure to analyze your network requests thoroughly, and watch out for any double-fetching!
 
-## Altre tecniche e strumenti
+## Other Techniques and Tools
 
-`<link rel="preload">`, `<link rel="preconnect">` e `<link rel="prefetch">`
-(ed il bonus `<link rel="dns-prefetch">`) sono ottimi strumenti per informare
-in anticipo il browser in modo dichiarativo riguardo a risorse e connessioni ed
-ottimizzare l'ordine delle attività in relazione alle reali necessità.
+`<link rel="preload">`, `<link rel="preconnect">`, and `<link rel="prefetch">` (as well as the bonus `<link rel="dns-prefetch">`) offer a great way of declaratively letting the browser know about resources and connections ahead of time, and tweaking when things happen, according to when they’re needed.
 
-Esistono numerosi altri strumenti e tecniche che è possibile utilizzare per
-modificare la priorità ed i tempi di caricamento delle risorse. Assicurati di
-leggere
-[HTTP/2 server push](/web/fundamentals/performance/http2/#server_push);
-[utilizzare `IntersectionObserver` per il caricamento lazy di immagini ed altri media](/web/updates/2016/04/intersectionobserver);
-[evitare CSS che bloccano il render](/web/fundamentals/performance/critical-rendering-path/render-blocking-css)
-con media query e librerie come
-[loadCSS](https://github.com/filamentgroup/loadCSS){: .external};
-e ritardare il recupero, la compilazione e l'esecuzione di JavaScript con
-[async](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-async){: .external}
-e
-[defer](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-defer){: .external}.
+There’s a number of other tools and techniques you can use to tweak the priority and timing at which your resources get loaded. Be sure to read up on [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push); [using `IntersectionObserver` to lazily load images and other media](/web/updates/2016/04/intersectionobserver); [avoiding render-blocking CSS](/web/fundamentals/performance/critical-rendering-path/render-blocking-css) with media queries and libraries like [loadCSS](https://github.com/filamentgroup/loadCSS){: .external}; and delaying JavaScript fetch, compile and execute with [async](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-async){: .external} and [defer](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#attr-defer){: .external}.
 
-Translated by
-{% include "web/_shared/contributors/lucaberton.html" %}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

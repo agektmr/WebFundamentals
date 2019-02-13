@@ -1,112 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on:2016-11-08 #}
-{# wf_published_on:2016-11-08 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-08 #} {# wf_blink_components: Blink>SecurityFeature>CredentialManagement #}
 
-#  Credential Management API {: .page-title }
+# The Credential Management API {: .page-title }
 
-{% include "web/_shared/contributors/agektmr.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/agektmr.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
+The [Credential Management API](https://www.w3.org/TR/credential-management/) is a standards-based browser API that provides a programmatic interface between the site and the browser for seamless sign-in across devices.
 
-{% include "web/_shared/translation-out-of-date.html" %}
+The Credential Management API:
 
+* **Removes friction from sign-in flows** - Users can be automatically signed back into a site even if their session has expired or they saved credentials on another device.
+* **Allows one tap sign in with account chooser** - Users can choose an account in a native account chooser.
+* **Stores credentials** - Your application can store either a username and password combination or even federated account details. These credentials can be synced across devices by the browser.
 
-[Credential Management API](https://www.w3.org/TR/credential-management/) は標準ベースのブラウザ API であり、複数の端末でのシームレスなログインを実現するためにサイトとブラウザ間にプログラム インターフェースを提供し、ログインフローを簡潔にします。
+Key Point: Using the Credential Management API requires the page be served from a secure origin.
 
-
-
-
-<div class="attempt-right">
-  <figure>
-    <video src="animations/credential-management-smaller.mov" style="max-height: 400px;" autoplay muted loop controls></video>
-    <figcaption>ユーザーのログインフロー</figcaption>
-  </figure>
-</div>
-
-Credential Management API:
-
-* **ログインフローをシンプルにします** - ユーザーは、セッションの期限が切れている場合でも、サイトに自動的に再度ログインできます。
-* **Account Chooser を使用してワンタップでログインできます** - ネイティブの Account Chooser が表示されるため、ログイン フォームは不要です。
-* **認証情報を保存します** - ユーザー名とパスワードの組み合わせ、またはフェデレーション アカウントの詳細を保存できます。
-
-
-実例を見るには、[Credential Management API のデモ](https://credential-management-sample.appspot.com)を試して、[コード](https://github.com/GoogleChrome/credential-management-sample)を確認してください。
-
-
-
+Want to see it in action? Try the [Credential Management API Demo](https://credential-management-sample.appspot.com) and take a look at the [code](https://github.com/GoogleChrome/credential-management-sample).
 
 <div class="clearfix"></div>
 
+### Check Credential Management API browser support
 
-##  Credential Management を実装する手順
+Before using the Credential Management API, first check if `PasswordCredential` or `FederatedCredential` is supported.
 
-Credential Management API を適切に統合する方法は多数あり、統合の詳細はサイトの構造とユーザー エクスペリエンスによって異なりますが、このフローをサイトに使用することで、ユーザー エクスペリエンスに次のメリットがあります。
+    if (window.PasswordCredential || window.FederatedCredential) {
+      // Call navigator.credentials.get() to retrieve stored
+      // PasswordCredentials or FederatedCredentials.
+    }
+    
 
+Warning: Feature detection by checking `navigator.credentials` may break your website on browsers supporting [WebAuthn](https://www.w3.org/TR/webauthn/)(PublicKeyCredential) but not all credential types (`PasswordCredential` and `FederatedCredential`) defined by the Credential Management API. [Learn more](/web/updates/2018/03/webauthn-credential-management).
 
+### Sign in user
 
+To sign in the user, retrieve the credentials from the browser's password manager and use them to log in the user.
 
-* サービスの既存のユーザーがブラウザに単一の認証情報を保存している場合は、即座にログインでき、認証が完了するとすぐにログイン済みのページにリダイレクトされます。
-* 複数の認証情報を保存しているユーザーまたは自動ログインを無効にしているユーザーは、ウェブサイトのログインページに進む前に、1 つのダイアログに応答する必要があります。
-* ユーザーがログアウトすると、ウェブサイトに自動的に再ログインできなくなります。
+For example:
 
+1. When a user lands on your site and they are not signed in, call [`navigator.credentials.get()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get).
+2. Use the retrieved credentials to sign in the user.
+3. Update the UI to indicate the user has been signed in.
 
-重要なポイント: Credential Management API を使用する場合は、安全なオリジンからページを提供する必要があります。
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#auto-sign-in).
 
+### Save or update user credentials
 
-###  ユーザーの認証情報を取得してログインする
+If the user signed in with a federated identity provider such as Google Sign-In, Facebook, GitHub:
 
-ユーザーのログインを実行するには、ブラウザのパスワード マネージャーから認証情報を取得し、その情報を使用してログイン処理を行う必要があります。
+1. After the user successfully signs in or creates an account, create the [`FederatedCredential`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential) with the user's email address as the ID and specify the identity provider with `FederatedCredentials.provider`.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#federated-login).
 
-次に例を示します。
+If the user signed in with a username and password:
 
-1. ユーザーがサイトにアクセスして、まだログインしていない場合は、`navigator.credential.get()` を呼び出します。
-2. 取得した認証情報を使用して、ユーザーのログインを実行します。
-3. UI をアップデートして、ユーザーがログインしたことを示します。
+1. After the user successfully signs in or creates an account, create the [`PasswordCredential`](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential) with the user ID and the password.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
+Learn more in [Save Credentials from Forms](/web/fundamentals/security/credential-management/save-forms).
 
-詳細については、[認証情報を取得する](/web/fundamentals/security/credential-management/retrieve-credentials)をご覧ください。
+### Sign out
 
+When the user signs out, call [`navigator.credentials.preventSilentAccess()`](/web/fundamentals/security/credential-management/retrieve-credentials#turn_off_auto_sign-in_for_future_visits) to prevent the user from being automatically signed back in.
 
-###  ユーザーの認証情報を保存またはアップデートする
+Disabling auto-sign-in also enables users to switch between accounts easily, for example, between work and personal accounts, or between accounts on shared devices, without having to re-enter their sign-in information.
 
-ユーザーがユーザー名とパスワードを使用してログインした場合、次の手順を実行します。
+Learn more in [Sign out](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out).
 
-1. ユーザーが正常にログインして、アカウントの作成またはパスワードの変更を行ったあとに、ユーザー ID とパスワードを使用して `PasswordCredential` を作成します。
-2. `navigator.credentials.store()` を使用して認証オブジェクトを保存します。
+## Feedback {: #feedback }
 
-
-
-
-ユーザーが Google Sign-In、Facebook、GitHub などのフェデレーション ID プロバイダを通じてログインした場合は、次の手順を実行します。
-
-
-1. ユーザーが正常にログインして、アカウントの作成またはパスワードの変更を行ったあとに、ユーザーのメールアドレスを ID として使用して `FederatedCredential` を作成し、`.provider` で ID プロバイダを指定します。
-2. `navigator.credentials.store()` を使用して認証オブジェクトを保存します。
-
-
-
-詳細については、[認証情報を保存する](/web/fundamentals/security/credential-management/store-credentials)をご覧ください。
-
-
-###  ログアウト
-
-ユーザーがログアウトしたら、`navigator.credentials.requireUserMediation()` を呼び出し、ユーザーが自動的に再ログインしないようにします。
-
-
-自動ログインを無効すると、ユーザーは簡単にアカウントを切り替えることができます。たとえば、ログイン情報を再入力することなく、仕事用のアカウントと個人用のアカウント、または共有端末上のアカウントを切り替えることができます。
-
-
-
-詳細については、[ログアウト](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out)をご覧ください。
-
-
-
-##  追加リファレンス
-
-[MDN の Credential Management API](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

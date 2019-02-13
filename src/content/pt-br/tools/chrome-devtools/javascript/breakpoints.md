@@ -1,286 +1,240 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Saiba mais sobre todas as maneiras de pausar o código no Chrome DevTools.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn about all the ways you can pause your code in Chrome DevTools.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-02-03 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-19 #} {# wf_published_on: 2017-02-03 #} {# wf_blink_components: Platform>DevTools #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Pausar o código com pontos de interrupção {: .page-title }
+# How To Pause Your Code With Breakpoints In Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Use pontos de interrupção para pausar o código JavaScript. Este guia explica cada tipo de
-ponto de interrupção disponível no DevTools, bem como quando usar e como
-definir cada um deles. Para um tutorial prático sobre o processo de depuração, veja [Primeiros
-passos com a depuração do JavaScript no Chrome
-DevTools](/web/tools/chrome-devtools/javascript/).
+Use breakpoints to pause your JavaScript code. This guide explains each type of breakpoint that's available in DevTools, as well as when to use and how to set each type. For a hands-on tutorial of the debugging process, see [Get Started with Debugging JavaScript in Chrome DevTools](/web/tools/chrome-devtools/javascript/).
 
-## Visão geral de quando usar cada tipo de ponto de interrupção {: #overview }
+## Overview of when to use each breakpoint type {: #overview }
 
-O tipo de ponto de interrupção mais conhecido é a linha de código. Mas os pontos de interrupção de
-linha de código podem ser ineficientes, especialmente se você não souber exatamente
-o que observar ou se estiver trabalhando com uma grande base de códigos. É possível economizar
-tempo durante a depuração sabendo como e quando usar os outros tipos
-de pontos de interrupção.
+The most well-known type of breakpoint is line-of-code. But line-of-code breakpoints can be inefficient to set, especially if you don't know exactly where to look, or if you are working with a large codebase. You can save yourself time when debugging by knowing how and when to use the other types of breakpoints.
 
 <table>
-  <tr><th>Tipo de ponto de interrupção</th><th>Use este quando quiser pausar...</th></tr>
+  <tr><th>Breakpoint Type</th><th>Use This When You Want To Pause...</th></tr>
   <tr>
-    <td><a href="#loc">Linha de código</a></td>
+    <td><a href="#loc">Line-of-code</a></td>
     <td>
-      em uma região exata do código.
+      On an exact region of code.
     </td>
   </tr>
   <tr>
-    <td><a href="#conditional-loc">Linha de código condicional</a></td>
+    <td><a href="#conditional-loc">Conditional line-of-code</a></td>
     <td>
-      em uma região exata do código, mas apenas quando outra condição for verdadeira.
+      On an exact region of code, but only when some other condition is true.
     </td>
   </tr>
   <tr>
     <td><a href="#dom">DOM</a></td>
     <td>
-      no código que altera ou remove um nó DOM
-      específico ou seus filhos.
+      On the code that changes or removes a specific DOM
+      node, or its children.
     </td>
   </tr>
   <tr>
     <td><a href="#xhr">XHR</a></td>
     <td>
-      quando um URL XHR contém um padrão de string.
+      When an XHR URL contains a string pattern.
     </td>
   </tr>
   <tr>
-    <td><a href="#event-listeners">Listener de eventos</a></td>
+    <td><a href="#event-listeners">Event listener</a></td>
     <td>
-      no código executado depois que um evento, como
-      <code>click</code>, é acionado.
+      On the code that runs after an event, such as
+      <code>click</code>, is fired.
     </td>
   </tr>
   <tr>
-    <td><a href="#exceptions">Exceção</a></td>
+    <td><a href="#exceptions">Exception</a></td>
     <td>
-      na linha de código que está lançando uma exceção capturada
-    ou não capturada.
+      On the line of code that is throwing a caught or
+      uncaught exception.
     </td>
   </tr>
   <tr>
-    <td><a href="#function">Função</a></td>
+    <td><a href="#function">Function</a></td>
     <td>
-      sempre que uma função específica é chamada.
+      Whenever a specific function is called.
     </td>
   </tr>
 </table>
 
-## Pontos de interrupção da linha de código {: #loc }
+## Line-of-code breakpoints {: #loc }
 
-Use um ponto de interrupção da linha de código quando souber a região exata do código que você
-precisa investigar. O DevTools *sempre* faz uma pausa antes que essa linha de código seja
-executada.
+Use a line-of-code breakpoint when you know the exact region of code that you need to investigate. DevTools *always* pauses before this line of code is executed.
 
-Para definir um ponto de interrupção da linha de código no DevTools:
+To set a line-of-code breakpoint in DevTools:
 
-1. Clique na guia **Sources**.
-1. Abra o arquivo que contém a linha de código que você deseja interromper.
-1. Vá até a linha de código.
-1. À esquerda da linha de código, está a coluna do número da linha. Clique nele. O
-   ícone do número da linha ficará azul.
+1. Click the **Sources** tab.
+2. Open the file containing the line of code you want to break on.
+3. Go the line of code.
+4. To the left of the line of code is the line number column. Click on it. A blue icon appears on top of the line number column.
 
 <figure>
   <img src="imgs/loc-breakpoint.png"
-       alt="Um ponto de interrupção da linha de código."
+       alt="A line-of-code breakpoint."
   <figcaption>
-    <b>Imagem 1</b>: um ponto de interrupção da linha de código definido on-line <b>29</b>
+    <b>Figure 1</b>: A line-of-code breakpoint set on line <b>29</b>
   </figcaption>
 </figure>
 
-### Pontos de interrupção da linha de código no código {: #debugger }
+### Line-of-code breakpoints in your code {: #debugger }
 
-Chame o `debugger` do código para pausar nessa linha. Isso é equivalente a
-um [ponto de interrupção de linha de código](#loc), exceto que o ponto de interrupção é definido no
-código, não na IU do DevTools.
+Call `debugger` from your code to pause on that line. This is equivalent to a [line-of-code breakpoint](#loc), except that the breakpoint is set in your code, not in the DevTools UI.
 
     console.log('a');
     console.log('b');
     debugger;
     console.log('c');
+    
 
-### Pontos de interrupção de linha de código condicional {: #conditional-loc }
+### Conditional line-of-code breakpoints {: #conditional-loc }
 
-Use um ponto de interrupção de linha de código condicional quando souber a região exata do
-código que você precisa investigar. No entanto, pause apenas quando
-outra condição for verdadeira.
+Use a conditional line-of-code breakpoint when you know the exact region of code that you need to investigate, but you want to pause only when some other condition is true.
 
-Para definir um ponto de interrupção de linha de código condicional:
+To set a conditional line-of-code breakpoint:
 
-1. Clique na guia **Sources**.
-1. Abra o arquivo que contém a linha de código que você deseja interromper.
-1. Vá até a linha de código.
-1. À esquerda da linha de código, está a coluna do número da linha. Clique no número com o botão direito.
-1. Selecione **Add conditional breakpoint**. Uma caixa de diálogo é exibida abaixo da
-   linha de código.
-1. Insira sua condição na caixa de diálogo.
-1. Pressione <kbd>Enter</kbd> para ativar o ponto de interrupção. O ícone do número fica
-   da cor laranja.
+1. Click the **Sources** tab.
+2. Open the file containing the line of code you want to break on.
+3. Go the line of code.
+4. To the left of the line of code is the line number column. Right-click it.
+5. Select **Add conditional breakpoint**. A dialog displays underneath the line of code.
+6. Enter your condition in the dialog.
+7. Press <kbd>Enter</kbd> to activate the breakpoint. An orange icon appears on top of the line number column.
 
 <figure>
   <img src="imgs/conditional-loc-breakpoint.png"
-       alt="Um ponto de interrupção de linha de código condicional."
+       alt="A conditional line-of-code breakpoint."
   <figcaption>
-    <b>Imagem 2</b>: um ponto de interrupção de linha de código condicional definido na linha
+    <b>Figure 2</b>: A conditional line-of-code breakpoint set on line
     <b>32</b>
   </figcaption>
 </figure>
 
-### Gerenciar pontos de interrupção de linha de código {: #manage-loc }
+### Manage line-of-code breakpoints {: #manage-loc }
 
-Use o painel **Breakpoints** para desativar ou remover pontos de interrupção de linha de código de
-um único local.
+Use the **Breakpoints** pane to disable or remove line-of-code breakpoints from a single location.
 
 <figure>
   <img src="imgs/breakpoints-pane.png"
-       alt="O painel Breakpoints."
+       alt="The Breakpoints pane."
   <figcaption>
-    <b>Imagem 3</b>: o painel <b>Breakpoints</b> mostrando dois pontos de interrupção de
-    linha de código, um na linha 15 de <code>get-started.js</code> e outro na
-    linha 32
+    <b>Figure 3</b>: The <b>Breakpoints</b> pane showing two line-of-code
+    breakpoints: one on line 15 of <code>get-started.js</code>, another on
+    line 32
   </figcaption>
 </figure>
 
-* Marque a caixa de seleção ao lado de uma entrada para desativar esse ponto de interrupção.
-* Clique com o botão direito do mouse em uma entrada para remover esse ponto de interrupção.
-* Clique com o botão direito do mouse em qualquer lugar no painel **Breakpoints** para desativar,
-  desabilitar ou remover todos os pontos de interrupção. Desabilitar
-  todos os pontos de interrupção é equivalente a desmarcar cada um deles. A desativação de todos
-  os pontos de interrupção instrui o DevTools a ignorar todos os pontos de interrupção da linha de código, mas
-  também mantém o estado ativado deles para que estejam no mesmo
-  estado de antes de você reativá-los.
+* Check the checkbox next to an entry to disable that breakpoint.
+* Right-click an entry to remove that breakpoint.
+* Right-click anywhere in the **Breakpoints** pane to deactivate all breakpoints, disable all breakpoints, or remove all breakpoints. Disabling all breakpoints is equivalent to unchecking each one. Deactivating all breakpoints instructs DevTools to ignore all line-of-code breakpoints, but to also maintain preserve their enabled state so that they are in the same state as before when you reactivate them.
 
 <figure>
   <img src="imgs/deactivated-breakpoints.png"
-       alt="Pontos de interrupção desativados no painel Breakpoints."
+       alt="Deactivated breakpoints in the Breakpoints pane."
   <figcaption>
-    <b>Imagem 4</b>: os pontos de interrupção desativados no painel <b>Breakpoints</b>
-    estão desativados e transparentes
+    <b>Figure 4</b>: Deactivated breakpoints in the <b>Breakpoints</b> pane
+    are disabled and transparent
   </figcaption>
 </figure>
 
-## Pontos de interrupção de mudança DOM {: #dom }
+## DOM change breakpoints {: #dom }
 
-Use um ponto de interrupção de mudança DOM quando quiser pausar o código que altera
-um nó DOM ou os respectivos filhos.
+Use a DOM change breakpoint when you want to pause on the code that changes a DOM node or its children.
 
-Para definir um ponto de interrupção de mudança DOM:
+To set a DOM change breakpoint:
 
-1. Clique na guia **Elements**.
-1. Vá até o elemento no qual você deseja definir o ponto de interrupção.
-1. Clique com o botão direito no elemento.
-1. Passe o cursor sobre **Break on** e, em seguida, selecione **Subtree modifications**, **Attribute
- modifications** ou **Node removal**.
+1. Click the **Elements** tab.
+2. Go the element that you want to set the breakpoint on.
+3. Right-click the element.
+4. Hover over **Break on** then select **Subtree modifications**, **Attribute modifications**, or **Node removal**.
 
 <figure>
   <img src="imgs/dom-change-breakpoint.png"
-       alt="O menu de contexto para criar um ponto de interrupção de mudança DOM."
+       alt="The context menu for creating a DOM change breakpoint."
   <figcaption>
-    <b>Imagem 5</b>: o menu de contexto para criar um ponto de interrupção de mudança DOM
+    <b>Figure 5</b>: The context menu for creating a DOM change breakpoint
   </figcaption>
 </figure>
 
-### Tipos de pontos de interrupção de mudança DOM {: #dom-types }
+### Types of DOM change breakpoints {: #dom-types }
 
-* **Subtree modifications**. Acionado quando um filho do nó
-  atualmente selecionado é removido ou adicionado ou o conteúdo de um filho é alterado. Não
-  acionadas em mudanças de atributo do nó filho nem em mudanças do
-  nó atualmente selecionado.
+* **Subtree modifications**. Triggered when a child of the currently-selected node is removed or added, or the contents of a child are changed. Not triggered on child node attribute changes, or on any changes to the currently-selected node.
 
-* **Attributes modifications**: Acionado quando um atributo é adicionado ou removido
-  no nó atualmente selecionado ou quando o valor de um atributo muda.
+* **Attributes modifications**: Triggered when an attribute is added or removed on the currently-selected node, or when an attribute value changes.
 
-* **Node Removal**: Acionado quando o nó atualmente selecionado é removido.
+* **Node Removal**: Triggered when the currently-selected node is removed.
 
-## Pontos de interrupção XHR/Fetch {: #xhr }
+## XHR/Fetch breakpoints {: #xhr }
 
-Use um ponto de interrupção XHR quando quiser adicionar uma interrupção quando o URL de solicitação de um XHR
-tiver uma string especificada. O DevTools faz uma pausa na linha de código onde o
-XHR chama `send()`.
+Use an XHR breakpoint when you want to break when the request URL of an XHR contains a specified string. DevTools pauses on the line of code where the XHR calls `send()`.
 
-Note: esse recurso também funciona com solicitações [Fetch][Fetch].
+Note: This feature also works with [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) requests.
 
-Isso é útil, por exemplo, quando você vê que sua
-página está solicitando um URL incorreto e deseja localizar rapidamente o código-fonte AJAX ou
-Fetch que está causando a solicitação incorreta.
+One example of when this is helpful is when you see that your page is requesting an incorrect URL, and you want to quickly find the AJAX or Fetch source code that is causing the incorrect request.
 
-Para definir um ponto de interrupção XHR:
+To set an XHR breakpoint:
 
-1. Clique na guia **Sources**.
-1. Expanda o painel **XHR Breakpoints**.
-1. Clique em **Add breakpoint**.
-1. Insira a string que deseja interromper. O DevTools pausa quando esta
-   string está presente em algum lugar no URL da solicitação XHR.
-1. Pressione <kbd>Enter</kbd> para confirmar.
+1. Click the **Sources** tab.
+2. Expand the **XHR Breakpoints** pane.
+3. Click **Add breakpoint**.
+4. Enter the string which you want to break on. DevTools pauses when this string is present anywhere in an XHR's request URL.
+5. Press <kbd>Enter</kbd> to confirm.
 
 <figure>
   <img src="imgs/xhr-breakpoint.png"
-       alt="Criação de um ponto de interrupção XHR."
+       alt="Creating an XHR breakpoint."
   <figcaption>
-    <b>Imagem 6</b>: criação de um ponto de interrupção XHR nos <b>Pontos de interrupção XHR</b>
-    para qualquer solicitação que contenha <code>org</code> no URL
+    <b>Figure 6</b>: Creating an XHR breakpoint in the <b>XHR Breakpoints</b>
+    for any request that contains <code>org</code> in the URL
   </figcaption>
 </figure>
 
-[Fetch]: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+## Event listener breakpoints {: #event-listeners }
 
-## Pontos de interrupção de listener de eventos {: #event-listeners }
+Use event listener breakpoints when you want to pause on the event listener code that runs after an event is fired. You can select specific events, such as `click`, or categories of events, such as all mouse events.
 
-Use pontos de interrupção de listener de eventos quando quiser pausar no código do listener de
-eventos que é executado após um evento ser acionado. Você pode selecionar eventos específicos, como
-`click` ou categorias de evento, como todos os eventos de mouse.
-
-1. Clique na guia **Sources**.
-1. Expanda o painel **Event Listener Breakpoints**. O DevTools mostra uma lista
-   de categorias de eventos, como **Animation**.
-1. Marque uma dessas categorias para pausar sempre que um evento da categoria
-   for acionado ou expandir a categoria e verificar um evento específico.
+1. Click the **Sources** tab.
+2. Expand the **Event Listener Breakpoints** pane. DevTools shows a list of event categories, such as **Animation**.
+3. Check one of these categories to pause whenever any event from that category is fired, or expand the category and check a specific event.
 
 <figure>
   <img src="imgs/event-listener-breakpoint.png"
-       alt="Criação de um ponto de interrupção de listener de eventos."
+       alt="Creating an event listener breakpoint."
   <figcaption>
-    <b>Imagem 7</b>: criação de um ponto de interrupção de listener de eventos para
+    <b>Figure 7</b>: Creating an event listener breakpoint for
     <code>deviceorientation</code>
   </figcaption>
 </figure>
 
-## Pontos de interrupção de exceção {: #exceptions }
+## Exception breakpoints {: #exceptions }
 
-Use pontos de interrupção de exceção quando quiser pausar na linha de código que
-está gerando uma exceção capturada ou não capturada.
+Use exception breakpoints when you want to pause on the line of code that's throwing a caught or uncaught exception.
 
-1. Clique na guia **Sources**.
-1. Clique em **Pause on exceptions** ![Pausar nas
-   exceções](imgs/pause-on-exceptions.png){:.devtools-inline}. Ele fica azul
-   quando ativado.
-1. (Opcional) Marque a caixa de seleção **Pause On Caught Exceptions** se você também
- deseja pausar as exceções capturadas, além das não capturadas.
+1. Click the **Sources** tab.
+2. Click **Pause on exceptions** ![Pause on
+exceptions](imgs/pause-on-exceptions.png){:.devtools-inline}. It turns blue when enabled.
+    
+    <figure> <img src="imgs/pause-on-exceptions-highlight.png" alt="The 'Pause on exceptions' button." <figcaption> 
+    
+    **Figure 8**: The **Pause on exceptions** button </figcaption> </figure>
+3. (Optional) Check the **Pause On Caught Exceptions** checkbox if you also want to pause on caught exceptions, in addition to uncaught ones.
 
 <figure>
   <img src="imgs/uncaught-exception.png"
-       alt="Pausado em uma exceção não capturada."
+       alt="Paused on an uncaught exception."
   <figcaption>
-    <b>Imagem 7</b>: pausado em uma exceção não capturada
+    <b>Figure 9</b>: Paused on an uncaught exception
   </figcaption>
 </figure>
 
-## Pontos de interrupção de função {: #function }
+## Function breakpoints {: #function }
 
-Chame `debug(functionName)`, onde `functionName` é a função que você deseja
-depurar, quando quiser pausar sempre que uma função específica é chamada. Você pode
-inserir `debug()` no código (como uma declaração de `console.log()`) ou chamá-la no
-Console do DevTools. `debug()` é equivalente a definir um
-[ponto de interrupção de linha de código](#loc) na primeira linha da função.
+Call `debug(functionName)`, where `functionName` is the function you want to debug, when you want to pause whenever a specific function is called. You can insert `debug()` into your code (like a `console.log()` statement) or call it from the DevTools Console. `debug()` is equivalent to setting a [line-of-code breakpoint](#loc) on the first line of the function.
 
     function sum(a, b) {
       let result = a + b; // DevTools pauses on this line.
@@ -288,12 +242,11 @@ Console do DevTools. `debug()` é equivalente a definir um
     }
     debug(sum); // Pass the function object, not a string.
     sum();
+    
 
+### Make sure the target function is in scope {: #scope }
 
-### Verificar se a função de destino está no escopo {: #scope }
-
-O DevTools lança um `ReferenceError` se a função que você deseja depurar não estiver
-no escopo.
+DevTools throws a `ReferenceError` if the function you want to debug is not in scope.
 
     (function () {
       function hey() {
@@ -306,15 +259,13 @@ no escopo.
       yo();
     })();
     debug(hey); // This doesn't work. hey() is out of scope.
+    
 
-Garantir que a função de destino esteja no escopo pode ser complicado se você estiver
-chamando `debug()` do Console do DevTools. Veja esta estratégia:
+Ensuring the target function is in scope can be tricky if you're calling `debug()` from the DevTools Console. Here's one strategy:
 
-1. Defina um [ponto de interrupção de linha de código](#loc) em algum lugar onde a função esteja no
-   escopo.
-1. Acione o ponto de interrupção.
-1. Chame `debug()` no Console do DevTools enquanto o código ainda estiver pausado
-   no seu ponto de interrupção de linha de código.
+1. Set a [line-of-code breakpoint](#loc) somewhere where the function is scope.
+2. Trigger the breakpoint.
+3. Call `debug()` in the DevTools Console while the code is still paused on your line-of-code breakpoint.
 
 ## Feedback {: #feedback }
 

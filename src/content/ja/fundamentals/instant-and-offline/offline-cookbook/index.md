@@ -1,55 +1,32 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-12-09 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-12-09 #} {# wf_blink_components: N/A #}
 
-# オフライン クックブック {: .page-title }
+# The Offline Cookbook {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-AppCache が登場したとき、コンテンツをオフラインで動作させるためのパターンがいくつか提供されました。
- それらのパターンがあなたの求めていたものだったとしたらラッキーです。AppCache の宝くじに当たったも同然です（当選者はまだ名乗り出ていませんが）。しかし、ほとんどの人は [AppCache という問題児](http://alistapart.com/article/application-cache-is-a-douchebag)に悩まされていました。
+When AppCache arrived on the scene it gave us a couple of patterns to make content work offline. If those were the patterns you needed, congratulations, you won the AppCache lottery (the jackpot remains unclaimed), but the rest of us were left huddled in a corner [rocking back & forth](http://alistapart.com/article/application-cache-is-a-douchebag).
 
+With [ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) we gave up trying to solve offline, and gave developers the moving parts to go solve it themselves. It gives you control over caching and how requests are handled. That means you get to create your own patterns. Let's take a look at a few possible patterns in isolation, but in practice you'll likely use many of them in tandem depending on URL & context.
 
+All code examples work today in Chrome & Firefox, unless otherwise noted. For full details on service worker support, see ["Is Service Worker Ready?"](https://jakearchibald.github.io/isserviceworkerready/).
 
+For a working demo of some of these patterns, see [Trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/), and [this video](https://www.youtube.com/watch?v=px-J9Ghvcx4) showing the performance impact.
 
-Google はオフラインでの解決の試みを断念し、[Service Worker][sw_primer] によって、デベロッパー自身が解決できるようにするための実用的なツールを提供しました。
- Service Worker では、キャッシュやリクエストの処理方法を制御できます。
- つまり、独自のパターンを作成できるようになったのです。
- 考えられるいくつかのパターンを個別に見ていきましょう。ただし、実際には URL やコンテキストに応じて、複数のパターンを組み合わせて使用することになります。
+## The cache machine - when to store resources
 
+[ServiceWorker](/web/fundamentals/getting-started/primers/service-workers) lets you handle requests independently from caching, so we'll look at them separately. First up, caching, when should it be done?
 
+### On install - as a dependency {: #on-install-as-dependency }
 
-特に断りのない限り、現時点ではすべてのコードサンプルは Chrome と Firefox で動作します。
-Service Worker のサポートの詳細については、["Is Service Worker Ready?"][is_sw_ready] をご覧ください。
+<img src="images/cm-on-install-dep.png" />
 
-これらのいくつかのパターンの実際のデモについては、[Trained-to-thrill][ttt] をご覧ください。そのパフォーマンスの効果は[この動画](https://www.youtube.com/watch?v=px-J9Ghvcx4)を見ればわかります。
+ServiceWorker gives you an `install` event. You can use this to get stuff ready, stuff that must be ready before you handle other events. While this happens any previous version of your ServiceWorker is still running & serving pages, so the things you do here mustn't disrupt that.
 
+**Ideal for:** CSS, images, fonts, JS, templates… basically anything you'd consider static to that "version" of your site.
 
-
-## キャッシュ マシン - リソースを格納するタイミング
-
-[Service Worker][sw_primer] では、リクエストとキャッシュは別々に処理されるため、これらの説明も別々に行います。
- まず、キャッシュはいつ実行する必要があるでしょうか？
-
-
-### インストール時 - 依存関係として {: #on-install-as-dependency }
-
-<img src="images/cm-on-install-dep.png">
-
-Service Worker は `install` イベントを提供します。 このイベントを使用して、他のイベントを処理する前にやっておくべき準備を行うことができます。
- この時点では前のバージョンの Service Worker がまだ実行中で、ページを処理しているので、準備作業によってそれを中断してはなりません。
-
-
-
-**最適なケース:** CSS、画像、フォント、JS、テンプレートなど、基本的にサイトの特定の「バージョン」に対して静的と見なしうるすべてのもの。
-
-
-それらのフェッチに失敗した場合、サイト全体が機能不全に陥る原因になります。それらはネイティブ アプリの初回ダウンロードに含まれるものと同じです。
-
-
+These are things that would make your site entirely non-functional if they failed to fetch, things an equivalent native-app would make part of the initial download.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -64,26 +41,19 @@ Service Worker は `install` イベントを提供します。 このイベン�
         })
       );
     });
+    
 
-`event.waitUntil` は Promise を受け取り、インストールの長さと成功を定義します。
- Promise が棄却された場合、インストールは失敗したと見なされ、この Service Worker は破棄されます（古いバージョンが実行中の場合、古いバージョンは影響を受けません）。
- `caches.open` と `cache.addAll` は Promise を返します。
- いずれかのリソースのフェッチに失敗すると、`cache.addAll` 呼び出しは棄却されます。
+`event.waitUntil` takes a promise to define the length & success of the install. If the promise rejects, the installation is considered a failure and this ServiceWorker will be abandoned (if an older version is running, it'll be left intact). `caches.open` and `cache.addAll` return promises. If any of the resources fail to fetch, the `cache.addAll` call rejects.
 
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache static assets](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3).
 
-[trained-to-thrill][ttt] では、これを使用して[静的アセットをキャッシュ](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L3)しています。
+### On install - not as a dependency {: #on-install-not }
 
+<img src="images/cm-on-install-not.png" />
 
+Similar to above, but won't delay install completing and won't cause installation to fail if caching fails.
 
-### インストール時 - 依存関係としてではなく {: #on-install-not }
-
-<img src="images/cm-on-install-not.png">
-
-上記と似ていますが、インストールの完了を遅延させず、キャッシュに失敗してもインストールの失敗にはつながりません。
-
-
-**最適なケース:** サイズが大きく、すぐには必要とされないリソース（ゲームの後の方のレベルで使用されるアセットなど）。
-
+**Ideal for:** Bigger resources that aren't needed straight away, such as assets for later levels of a game.
 
     self.addEventListener('install', function(event) {
       event.waitUntil(
@@ -97,26 +67,19 @@ Service Worker は `install` イベントを提供します。 このイベン�
         })
       );
     });
+    
 
-レベル 11～20 の `cache.addAll` Promise を `event.waitUntil` に渡していないので、これが失敗してもゲームはオフラインで続行できます。
- 当然ながら、これらのレベルが存在しない可能性を考慮し、存在しない場合はそれらのキャッシュを再試行する必要があります。
+We're not passing the `cache.addAll` promise for levels 11-20 back to `event.waitUntil`, so even if it fails, the game will still be available offline. Of course, you'll have to cater for the possible absence of those levels & reattempt caching them if they're missing.
 
+The ServiceWorker may be killed while levels 11-20 download since it's finished handling events, meaning they won't be cached. In future we plan to add a background downloading API to handle cases like this, and larger downloads such as movies.
 
-レベル 11～20 のダウンロード中に Service Worker が強制終了されることもあります。これはイベント処理が完了し、イベントをキャッシュする必要がなくなるためです。
- 今後、このようなケースや映画などの大容量ダウンロードに対応するために、バックグラウンドでダウンロードする API を追加する予定です。
+### On activate {: #on-activate }
 
+<img src="images/cm-on-activate.png" />
 
+**Ideal for:** Clean-up & migration.
 
-### アクティベート時 {: #on-activate }
-
-<img src="images/cm-on-activate.png">
-
-**最適なケース:** クリーンアップと移行。
-
-新しい Service Worker がインストールされて前のバージョンが使用されなくなると、新しい Service Worker がアクティベートされ、`activate` イベントが発生します。
- 古いバージョンはもう気にしなくてよいので、このタイミングで IndexedDB のスキーマ移行処理や使用しないキャッシュの削除を行うとよいでしょう。
-
-
+Once a new ServiceWorker has installed & a previous version isn't being used, the new one activates, and you get an `activate` event. Because the old version is out of the way, it's a good time to handle schema migrations in IndexedDB and also delete unused caches.
 
     self.addEventListener('activate', function(event) {
       event.waitUntil(
@@ -133,29 +96,23 @@ Service Worker は `install` イベントを提供します。 このイベン�
         })
       );
     });
+    
 
-アクティベート中、`fetch` などの他のイベントはキューに入れられるため、アクティベートに時間がかかるとページの読み込みがブロックされてしまう可能性があります。
- アクティベーションはできるだけ簡素なものにしておき、古いバージョンがアクティブだったときに実行できなかった処理のみにアクティベーションを使用するようにしてください。
+During activation, other events such as `fetch` are put into a queue, so a long activation could potentially block page loads. Keep your activation as lean as possible, only use it for things you *couldn't* do while the old version was active.
 
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [remove old caches](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17).
 
+### On user interaction {: #on-user-interaction }
 
-[trained-to-thrill][ttt] では、これを使用して[古いキャッシュを削除](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L17)しています。
+<img src="images/cm-on-user-interaction.png" />
 
+**Ideal for:** If the whole site can't be taken offline, you may allow the user to select the content they want available offline. E.g. a video on something like YouTube, an article on Wikipedia, a particular gallery on Flickr.
 
-### ユーザー操作時 {: #on-user-interaction }
-
-<img src="images/cm-on-user-interaction.png">
-
-**最適なケース:** サイト全体をオフラインにできない場合に、ユーザーがオフラインで利用したいコンテンツを選択できるようにします。
- たとえば、 YouTube などの動画、Wikipedia の記事、Flickr の特定のギャラリーなどです。
-
-
-ユーザーに「後で読む」ボタンや「オフライン用に保存」ボタンを提供します。 ユーザーがボタンをクリックすると、必要なリソースがネットワークからフェッチされ、キャッシュに格納されます。
-
+Give the user a "Read later" or "Save for offline" button. When it's clicked, fetch what you need from the network & pop it in the cache.
 
     document.querySelector('.cache-article').addEventListener('click', function(event) {
       event.preventDefault();
-
+    
       var id = this.dataset.articleId;
       caches.open('mysite-article-' + id).then(function(cache) {
         fetch('/get-article-urls?id=' + id).then(function(response) {
@@ -167,26 +124,19 @@ Service Worker は `install` イベントを提供します。 このイベン�
         });
       });
     });
+    
 
-[Cache API][caches_api] は、Service Worker だけでなくページからも利用できます。つまり、キャッシュにリソースを追加するために Service Worker を使用する必要がありません。
+The [caches API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) is available from pages as well as service workers, meaning you don't need to involve the service worker to add things to the cache.
 
+### On network response {: #on-network-response }
 
+<img src="images/cm-on-network-response.png" />
 
+**Ideal for:** Frequently updating resources such as a user's inbox, or article contents. Also useful for non-essential content such as avatars, but care is needed.
 
-### ネットワークの応答時 {: #on-network-response }
+If a request doesn't match anything in the cache, get it from the network, send it to the page & add it to the cache at the same time.
 
-<img src="images/cm-on-network-response.png">
-
-**最適なケース:** ユーザーの受信トレイや記事コンテンツなど、頻繁に更新されるリソース。
- また、アバターなどの必須でないコンテンツにも役立ちます（ただし、注意が必要です）。
-
-
-リクエストに一致するものがキャッシュ内になければ、ネットワークから取得してページに送信し、同時にキャッシュにも追加します。
-
-
-アバターなど広範囲の URL に対してこれを実行する場合は、オリジンのストレージを肥大化させないよう注意が必要です。ユーザーがディスク領域を再要求する必要が生じたときに、自分が第一候補になりたくはありません。
- 不要になったキャッシュ内のアイテムは必ず削除するようにしてください。
-
+If you do this for a range of URLs, such as avatars, you'll need to be careful you don't bloat the storage of your origin — if the user needs to reclaim disk space you don't want to be the prime candidate. Make sure you get rid of items in the cache you don't need any more.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -200,24 +150,19 @@ Service Worker は `install` イベントを提供します。 このイベン�
         })
       );
     });
+    
 
-メモリを効率的に使用するために、レスポンスとリクエストの本文の読み取りを 1 回に限定することができます。
- 上記のコードでは、[`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) を使用して、別個に読み取ることができる追加のコピーを作成しています。
+To allow for efficient memory usage, you can only read a response/request's body once. In the code above, [`.clone()`](https://fetch.spec.whatwg.org/#dom-request-clone) is used to create additional copies that can be read separately.
 
+On [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I use this to [cache Flickr images](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109).
 
+### Stale-while-revalidate {: #stale-while-revalidate }
 
-[trained-to-thrill][ttt] では、これを使用して [Flickr 画像をキャッシュ](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L109)しています。
+<img src="images/cm-stale-while-revalidate.png" />
 
+**Ideal for:** Frequently updating resources where having the very latest version is non-essential. Avatars can fall into this category.
 
-### stale-while-revalidate {: #stale-while-revalidate }
-
-<img src="images/cm-stale-while-revalidate.png">
-
-**最適なケース:** 頻繁に更新されるが、必ずしも最新のバージョンでなくてもよいリソース。
- アバターはこのカテゴリに該当します。
-
-キャッシュされたバージョンが利用可能であればそれを使用しますが、次回に備えて最新版をフェッチします。
-
+If there's a cached version available, use it, but fetch an update for next time.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -232,24 +177,17 @@ Service Worker は `install` イベントを提供します。 このイベン�
         })
       );
     });
+    
 
-これは、HTTP の [stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale) にとてもよく似ています。
+This is very similar to HTTP's [stale-while-revalidate](https://www.mnot.net/blog/2007/12/12/stale).
 
+### On push message {: #on-push-message }
 
-### プッシュ メッセージ時 {: #on-push-message }
+<img src="images/cm-on-push.png" />
 
-<img src="images/cm-on-push.png">
+The [Push API](/web/fundamentals/push-notifications) is another feature built on top of ServiceWorker. This allows the ServiceWorker to be awoken in response to a message from the OS's messaging service. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-[Push API](/web/fundamentals/push-notifications) は、Service Worker をベースに構築された別の機能です。
- この API により、OS のメッセージング サービスからのメッセージに応じて Service Worker を起動できます。
- このとき、ユーザーがサイトのタブを開いていなくても、Service Worker のみが起動されます。
- ページからタブを開くためのパーミッションをリクエストして、ユーザーにプロンプトを表示します。
-
-
-**最適なケース:** チャット メッセージ、ニュース速報、メールなど、通知に関連するコンテンツ。
- また、頻繁には変更されないが即座に同期することに意味があるコンテンツ（TODO リストの更新やカレンダーの予定変更など）。
-
-
+**Ideal for:** Content relating to a notification, such as a chat message, a breaking news story, or an email. Also infrequently changing content that benefits from immediate sync, such as a todo list update or a calendar alteration.
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="0i7YdSEQI1w"
@@ -257,19 +195,13 @@ Service Worker は `install` イベントを提供します。 このイベン�
   </iframe>
 </div>
 
-通常、通知をタップすると、その最終結果として関連ページが開いたりフォーカスされたりしますが、それが起こる前にキャッシュを更新しておくことが非常に重要です。
- ユーザーがプッシュ メッセージを受信するときは当然オンラインですが、その通知を最終的に操作するときはオンラインであるとは限りません。そのため、このコンテンツをオフラインで利用できるようにすることが重要です。
- Twitter のネイティブ アプリは、その大部分がオフラインファーストの代表的な例ですが、そうとはいえない点もあります。
+The common final outcome is a notification which, when tapped, opens/focuses a relevant page, but updating caches before this happens is *extremely* important. The user is obviously online at the time of receiving the push message, but they may not be when they finally interact with the notification, so making this content available offline is important. The Twitter native app, which is for the most part an excellent example of offline-first, gets this a bit wrong.
 
-
-
-ネットワーク接続がなければ、Twitter はプッシュ メッセージに関連するコンテンツを提供できません。
- また、メッセージをタップすると通知が削除されるので、ユーザーが得られる情報はタップする前より減ってしまいます。
- そのような事態は避けてください。
+Without a connection, Twitter fails to provide the content relating to the push message. Tapping it does remove the notification however, leaving the user with less information than before they tapped. Don't do this!
 
 <div style="clear:both;"></div>
 
-以下のコードは、キャッシュを更新してから通知を表示します。
+This code updates caches before showing a notification:
 
     self.addEventListener('push', function(event) {
       if (event.data.text() == 'new-email') {
@@ -281,14 +213,14 @@ Service Worker は `install` イベントを提供します。 このイベン�
             });
           }).then(function(emails) {
             registration.showNotification("New email", {
-              body:"From " + emails[0].from.name
+              body: "From " + emails[0].from.name
               tag: "new-email"
             });
           })
         );
       }
     });
-
+    
     self.addEventListener('notificationclick', function(event) {
       if (event.notification.tag == 'new-email') {
         // Assume that all of the resources needed to render
@@ -297,21 +229,15 @@ Service Worker は `install` イベントを提供します。 このイベン�
         new WindowClient('/inbox/');
       }
     });
+    
 
+### On background-sync {: #on-background-sync }
 
-### バックグラウンド同期時 {: #on-background-sync }
+<img src="images/cm-on-bg-sync.png" />
 
-<img src="images/cm-on-bg-sync.png">
+[Background sync](/web/updates/2015/12/background-sync) is another feature built on top of ServiceWorker. It allows you to request background data synchronization as a one-off, or on an (extremely heuristic) interval. This happens even when the user doesn't have a tab open to your site, only the ServiceWorker is woken up. You request permission to do this from a page & the user will be prompted.
 
-[バックグラウンド同期](/web/updates/2015/12/background-sync)は、Service Worker をベースに構築された別の機能です。
- これにより、バックグラウンド データの同期を 1 回限り、または（非常にヒューリスティックな）間隔をおいてリクエストできます。
- このとき、ユーザーがサイトのタブを開いていなくても、Service Worker のみが起動されます。
- ページからタブを開くためのパーミッションをリクエストして、ユーザーにプロンプトを表示します。
-
-
-**最適なケース:** 急を要さない更新。特に、ソーシャル メディアのタイムラインやニュース記事などで定期的に発生する更新（更新のたびにプッシュ メッセージが発生すると発生頻度があまりにも高くなってしまいます）。
-
-
+**Ideal for:** Non-urgent updates, especially those that happen so regularly that a push message per update would be too frequent, such as social timelines or news articles.
 
     self.addEventListener('sync', function(event) {
       if (event.id == 'update-leaderboard') {
@@ -322,16 +248,13 @@ Service Worker は `install` イベントを提供します。 このイベン�
         );
       }
     });
+    
 
+## Cache persistence {: #cache-persistence }
 
-## キャッシュの永続性 {: #cache-persistence }
+Your origin is given a certain amount of free space to do what it wants with. That free space is shared between all origin storage: LocalStorage, IndexedDB, Filesystem, and of course Caches.
 
-オリジンには、処理を実行するための一定の空き領域が与えられます。
-この空き領域はすべてのオリジン ストレージ間で共有されます。たとえば、LocalStorage、IndexedDB、ファイルシステム、（当然ながら）キャッシュなどです。
-
-
-与えられる領域は決まっておらず、端末やストレージの状況によって異なります。
- 与えられている領域を確認するには、次のコードを使用します。
+The amount you get isn't spec'd, it will differ depending on device and storage conditions. You can find out how much you've got via:
 
     navigator.storageQuota.queryInfo("temporary").then(function(info) {
       console.log(info.quota);
@@ -339,14 +262,11 @@ Service Worker は `install` イベントを提供します。 このイベン�
       console.log(info.usage);
       // Result: <used data in bytes>
     });
+    
 
-ただし、すべてのブラウザ ストレージと同様に、端末のストレージが残り少なくなると、ブラウザはこの領域を自由に放棄することができます。
- 残念ながら、これらの映画は残したい、このゲームは削除されてもかまわないといった違いをブラウザは判断できません。
+However, like all browser storage, the browser is free to throw it away if the device becomes under storage pressure. Unfortunately the browser can't tell the different between those movies you want to keep at all costs, and the game you don't really care about.
 
-
-
-この問題の回避策として、API
-[`requestPersistent`](https://storage.spec.whatwg.org/){: .external } が用意されています。
+To work around this, there's a proposed API, [`requestPersistent`](https://storage.spec.whatwg.org/){: .external }:
 
     // From a page:
     navigator.storage.requestPersistent().then(function(granted) {
@@ -354,63 +274,51 @@ Service Worker は `install` イベントを提供します。 このイベン�
         // Hurrah, your data is here to stay!
       }
     });
+    
 
-もちろん、ユーザーはパーミッションを付与する必要があります。 重要なのは、ユーザーをこのフローに組み込むことです。それにより、削除の可否の判断をユーザーに委ねることができます。
-端末の容量が残り少なくなったとき、不要なデータを削除しても容量不足が解決しない場合は、どのアイテムを残すかまたは削除するかをユーザーが決定します。
+Of course, the user has to grant permission. Making the user part of this flow is important, as we can now expect them to be in control of deletion. If their device comes under storage pressure, and clearing non-essential data doesn't solve it, the user gets to make a judgment call on which items to keep and remove.
 
+For this to work, it requires operating systems to treat "durable" origins as equivalent to native apps in their breakdowns of storage usage, rather than reporting the browser as a single item.
 
+## Serving Suggestions - responding to requests {: #serving-suggestions }
 
-これがうまくいくためにオペレーティング システム側で必要となるのは、ブラウザを 1 つのアイテムとして報告するのではなく、ストレージ使用状況の分析において、「永続性のある」オリジンをネイティブ アプリと同等に扱うことです。
+It doesn't matter how much caching you do, the ServiceWorker won't use the cache unless you tell it when & how. Here are a few patterns for handling requests:
 
+### Cache only {: #cache-only }
 
+<img src="images/ss-cache-only.png" />
 
-
-## 提案の提供 - リクエストへの応答 {: #serving-suggestions }
-
-どれだけキャッシュを行っても、それらのキャッシュをいつどのように使用するかを Service Worker に指示しないと、キャッシュは使用されません。
- ここでは、リクエスト処理に関するパターンをいくつか示します。
-
-
-### キャッシュのみ {: #cache-only }
-
-<img src="images/ss-cache-only.png">
-
-**最適なケース:** サイトの特定の「バージョン」に対して静的と見なしうるすべてのもの。
-これらは install イベントでキャッシュされているはずなので、既にあるものとして当てにできます。
-
+**Ideal for:** Anything you'd consider static to that "version" of your site. You should have cached these in the install event, so you can depend on them being there.
 
     self.addEventListener('fetch', function(event) {
       // If a match isn't found in the cache, the response
       // will look like a connection error
       event.respondWith(caches.match(event.request));
     });
+    
 
-このケースの処理が特に必要になることはほとんどありませんが、[キャッシュになければネットワークから取得](#cache-falling-back-to-network)で説明しています。
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
+### Network only {: #network-only }
 
-### ネットワークのみ {: #network-only }
+<img src="images/ss-network-only.png" />
 
-<img src="images/ss-network-only.png">
-
-**最適なケース:** アナリティクス ping、GET 以外のリクエストなど、オフラインに相当するものがないもの。
-
+**Ideal for:** Things that have no offline equivalent, such as analytics pings, non-GET requests.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(fetch(event.request));
       // or simply don't call event.respondWith, which
       // will result in default browser behaviour
     });
+    
 
-このケースの処理が特に必要になることはほとんどありませんが、[キャッシュになければネットワークから取得](#cache-falling-back-to-network)で説明しています。
+…although you don't often need to handle this case specifically, [Cache, falling back to network](#cache-falling-back-to-network) covers it.
 
+### Cache, falling back to network {: #cache-falling-back-to-network }
 
-### キャッシュになければネットワークから取得 {: #cache-falling-back-to-network }
+<img src="images/ss-falling-back-to-network.png" />
 
-<img src="images/ss-falling-back-to-network.png">
-
-**最適なケース:** オフライン ファーストのアプリを作成する場合、ほとんどのリクエストの処理にこのパターンが適用されます。
- 受信リクエストによっては、例外的に他のパターンが適用されます。
-
+**Ideal for:** If you're building offline-first, this is how you'll handle the majority of requests. Other patterns will be exceptions based on the incoming request.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -419,21 +327,17 @@ Service Worker は `install` イベントを提供します。 このイベン�
         })
       );
     });
+    
 
-これは、キャッシュ内にあるものには「キャッシュのみ」の動作を適用し、キャッシュ内にないものには「ネットワークのみ」の動作を適用します（GET 以外のすべてのリクエストはキャッシュできないため、後者が適用されます）。
+This gives you the "Cache only" behaviour for things in the cache and the "Network only" behaviour for anything not-cached (which includes all non-GET requests, as they cannot be cached).
 
+### Cache & network race {: #cache-and-network-race }
 
+<img src="images/ss-cache-and-network-race.png" />
 
-### キャッシュとネットワークの優劣 {: #cache-and-network-race }
+**Ideal for:** Small assets where you're chasing performance on devices with slow disk access.
 
-<img src="images/ss-cache-and-network-race.png">
-
-**最適なケース:** ディスク アクセスが低速な端末でパフォーマンスを追及する場合の小さなアセット。
-
-
-古いハードドライブ、ウィルス スキャンソフト、高速インターネット接続を一緒に使用している場合、ネットワークからリソースを取得する方がディスクから取得するより速い場合があります。
- ただし、端末にコンテンツが存在するのにネットワークから取得すると、データの浪費につながるので注意してください。
-
+With some combinations of older hard drives, virus scanners, and faster internet connections, getting resources from the network can be quicker than going to disk. However, going to the network when the user has the content on their device can be a waste of data, so bear that in mind.
 
     // Promise.race is no good to us because it rejects if
     // a promise rejects before fulfilling. Let's make a proper
@@ -449,7 +353,7 @@ Service Worker は `install` イベントを提供します。 このイベン�
           .catch(() => reject(Error("All failed")));
       });
     };
-
+    
     self.addEventListener('fetch', function(event) {
       event.respondWith(
         promiseAny([
@@ -458,24 +362,17 @@ Service Worker は `install` イベントを提供します。 このイベン�
         ])
       );
     });
+    
 
+### Network falling back to cache {: #network-falling-back-to-cache }
 
-### ネットワークから取得できなければキャッシュから取得 {: #network-falling-back-to-cache }
+<img src="images/ss-network-falling-back-to-cache.png" />
 
-<img src="images/ss-network-falling-back-to-cache.png">
+**Ideal for:** A quick-fix for resources that update frequently, outside of the "version" of the site. E.g. articles, avatars, social media timelines, game leader boards.
 
-**最適なケース:** サイトの「バージョン」外で頻繁に更新されるリソースが取得できなかった場合の応急策。
- たとえば、 記事、アバター、ソーシャル メディアのタイムライン、ゲームの得点ランキングなどです。
+This means you give online users the most up-to-date content, but offline users get an older cached version. If the network request succeeds you'll most-likely want to [update the cache entry](#on-network-response).
 
-
-このパターンでは、オンラインのユーザーには最新のコンテンツを提供し、オフラインのユーザーにはキャッシュされた古いバージョンを提供することになります。
- ネットワーク リクエストが成功したら、ほとんどの場合は[キャッシュ エントリを更新](#on-network-response)します。
-
-
-しかし、この方法には短所があります。 ユーザーのネットワーク接続が途切れがちだったり低速だったりする場合、ユーザーは、既に端末に存在する完全に利用可能なコンテンツを取得できるにもかかわらず、ネットワークからの取得が失敗するのを待たねばなりません。
- そのため、コンテンツの取得に非常に時間がかかり、ユーザーをイライラさせるおそれがあります。
- もっとよい解決策として、次に紹介する[先にキャッシュ、次にネットワーク](#cache-then-network)をご覧ください。
-
+However, this method has flaws. If the user has an intermittent or slow connection they'll have to wait for the network to fail before they get the perfectly acceptable content already on their device. This can take an extremely long time and is a frustrating user experience. See the next pattern, [Cache then network](#cache-then-network), for a better solution.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -484,35 +381,26 @@ Service Worker は `install` イベントを提供します。 このイベン�
         })
       );
     });
+    
 
-### 先にキャッシュ、次にネットワーク {: #cache-then-network }
+### Cache then network {: #cache-then-network }
 
-<img src="images/ss-cache-then-network.png">
+<img src="images/ss-cache-then-network.png" />
 
-**最適なケース:** 頻繁に更新されるコンテンツ。 たとえば、 記事、ソーシャル メディアのタイムライン、ゲームの得点ランキングなどです。
+**Ideal for:** Content that updates frequently. E.g. articles, social media timelines, game leaderboards.
 
+This requires the page to make two requests, one to the cache, one to the network. The idea is to show the cached data first, then update the page when/if the network data arrives.
 
-このパターンでは、ページで 2 つのリクエスト（キャッシュとネットワークに対してそれぞれ 1 つずつ）を生成する必要があります。
- つまり、まずはキャッシュされたデータを表示し、その後ネットワークから取得できたらページを更新します。
+Sometimes you can just replace the current data when new data arrives (e.g. game leaderboard), but that can be disruptive with larger pieces of content. Basically, don't "disappear" something the user may be reading or interacting with.
 
+Twitter adds the new content above the old content & adjusts the scroll position so the user is uninterrupted. This is possible because Twitter mostly retains a mostly-linear order to content. I copied this pattern for [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) to get content on screen as fast as possible, but still display up-to-date content once it arrives.
 
-新しいデータを取得したときに現在のデータを置き換えるだけで済む場合もありますが（たとえば
- ゲームの得点ランキング）、コンテンツの大部分を置き換えると混乱を招くことがあります。
- 基本的に、ユーザーが視聴中または操作中のデータが「消失」してしまわないようにしてください。
-
-
-Twitter は古いコンテンツの上に新しいコンテンツを追加してスクロール位置を調整するので、ユーザーの邪魔をすることがありません。
- これが可能なのは、Twitter のコンテンツでは、ほぼリニアな順序が維持されているためです。
- [trained-to-thrill][ttt] では、このパターンをコピーして、コンテンツが画面に表示されるまでの時間をできる限り短縮する一方で、最新のコンテンツを取得できたらすぐに表示するようにしています。
-
-
-
-**ページのコード:**
+**Code in the page:**
 
     var networkDataReceived = false;
-
+    
     startSpinner();
-
+    
     // fetch fresh data
     var networkUpdate = fetch('/data.json').then(function(response) {
       return response.json();
@@ -520,7 +408,7 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
       networkDataReceived = true;
       updatePage(data);
     });
-
+    
     // fetch cached data
     caches.match('/data.json').then(function(response) {
       if (!response) throw Error("No data");
@@ -534,11 +422,11 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
       // we didn't get cached data, the network is our last hope:
       return networkUpdate;
     }).catch(showErrorMessage).then(stopSpinner);
+    
 
+**Code in the ServiceWorker:**
 
-**Service Worker のコード:**
-
-常にネットワークにアクセスし、そのたびにキャッシュを更新します。
+We always go to the network & update a cache as we go.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -550,23 +438,17 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
         })
       );
     });
+    
 
+In [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) I worked around this by using [XHR instead of fetch](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3), and abusing the Accept header to tell the ServiceWorker where to get the result from ([page code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70), [ServiceWorker code](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)).
 
-[trained-to-thrill][ttt] では、この問題の回避策として、[fetch の代わりに XHR](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/utils.js#L3) を使用するとともに、Service Worker に結果の取得元を知らせるため Accept ヘッダーを変則的に使用しました（[ページのコード](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/index.js#L70)、[Service Worker のコード](https://github.com/jakearchibald/trained-to-thrill/blob/3291dd40923346e3cc9c83ae527004d502e0464f/www/static/js-unmin/sw/index.js#L61)）。
+### Generic fallback {: #generic-fallback }
 
+<img src="images/ss-generic-fallback.png" />
 
+If you fail to serve something from the cache and/or network you may want to provide a generic fallback.
 
-
-
-### 汎用的なフォールバック {: #generic-fallback }
-
-<img src="images/ss-generic-fallback.png">
-
-キャッシュやネットワークからリソースを提供できない場合、通常は汎用的なフォールバックを提供します。
-
-
-**最適なケース:** アバターなどのセカンダリ画像、失敗した POST リクエスト、「このページはオフラインでは利用できません」というページ。
-
+**Ideal for:** Secondary imagery such as avatars, failed POST requests, "Unavailable while offline" page.
 
     self.addEventListener('fetch', function(event) {
       event.respondWith(
@@ -583,29 +465,25 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
         })
       );
     });
+    
 
-フォールバックに使用するアイテムは、通常は[依存関係としてインストール](#on-install-as-dependency)されます。
+The item you fallback to is likely to be an [install dependency](#on-install-as-dependency).
 
-ページでメールを送信している場合、Service Worker がフォールバックを行う際は IDB の送信トレイにメールを保存し、ページに応答して送信は失敗したがデータの保存には成功したことを知らせます。
+If your page is posting an email, your ServiceWorker may fall back to storing the email in an IDB 'outbox' & respond letting the page know that the send failed but the data was successfully retained.
 
+### ServiceWorker-side templating {: #serviceworker-side-templating }
 
+<img src="images/ss-sw-side-templating.png" />
 
-### Service Worker 側のテンプレート {: #serviceworker-side-templating }
+**Ideal for:** Pages that cannot have their server response cached.
 
-<img src="images/ss-sw-side-templating.png">
-
-**最適なケース:** サーバー レスポンスをキャッシュできなかったページ。
-
-[サーバーでページをレンダリングすると高速になる](https://jakearchibald.com/2013/progressive-enhancement-is-faster/)とはいえ、これは、意味のない状態データがキャッシュに保存されることを意味します（例:
- 「…としてログイン」）。 Service Worker でページが制御されている場合は、代わりに JSON データとテンプレートをリクエストしてレンダリングすることができます。
-
-
+[Rendering pages on the server makes things fast](https://jakearchibald.com/2013/progressive-enhancement-is-faster/), but that can mean including state data that may not make sense in a cache, e.g. "Logged in as…". If your page is controlled by a ServiceWorker, you may instead choose to request JSON data along with a template, and render that instead.
 
     importScripts('templating-engine.js');
-
+    
     self.addEventListener('fetch', function(event) {
       var requestURL = new URL(event.request.url);
-
+    
       event.respondWith(
         Promise.all([
           caches.match('/article-template.html').then(function(response) {
@@ -617,7 +495,7 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
         ]).then(function(responses) {
           var template = responses[0];
           var data = responses[1];
-
+    
           return new Response(renderTemplate(template, data), {
             headers: {
               'Content-Type': 'text/html'
@@ -626,25 +504,23 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
         })
       );
     });
+    
 
+## Putting it together
 
-## 複数の方法を組み合わせる
+You don't have to pick one of these methods, you'll likely use many of them depending on request URL. For example, [trained-to-thrill](https://jakearchibald.github.io/trained-to-thrill/) uses:
 
-これまで紹介した方法のどれか 1 つを選択しなければならないということはありません。通常は、リクエスト URL に応じて複数の方法を使用することになります。
- たとえば、[trained-to-thrill][ttt] では以下を使用しています。
+* [Cache on install](#on-install-as-dependency), for the static UI and behaviour
+* [Cache on network response](#on-network-response), for the Flickr images and data
+* [Fetch from cache, falling back to network](#cache-falling-back-to-network), for most requests
+* [Fetch from cache, then network](#cache-then-network), for the Flickr search results
 
-
-* [インストール時にキャッシュ](#on-install-as-dependency): 静的 UI と静的動作
-* [ネットワークの応答時にキャッシュ](#on-network-response): Flickr の画像とデータ
-* [キャッシュになければネットワークから取得](#cache-falling-back-to-network): ほとんどのリクエスト
-* [先にキャッシュ、次にネットワーク](#cache-then-network): Flickr の検索結果
-
-次のコードは、リクエストを確認して処理方法を決定します。
+Just look at the request and decide what to do:
 
     self.addEventListener('fetch', function(event) {
       // Parse the URL:
       var requestURL = new URL(event.request.url);
-
+    
       // Handle requests to a particular host specifically
       if (requestURL.hostname == 'api.example.com') {
         event.respondWith(/* some combination of patterns */);
@@ -674,7 +550,7 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
           return;
         }
       }
-
+    
       // A sensible default pattern
       event.respondWith(
         caches.match(event.request).then(function(response) {
@@ -682,42 +558,38 @@ Twitter は古いコンテンツの上に新しいコンテンツを追加して
         })
       );
     });
+    
 
-以上で、処理パターンの全容をおわかりいただけたと思います。
+…you get the picture.
 
-## フィードバック {: .hide-from-toc }
+## Feedback {: .hide-from-toc }
 
 {% include "web/_shared/helpful.html" %}
 
 <div class="clearfix"></div>
 
-### 謝辞 {: hide-from-toc }
-素敵なアイコンをありがとうございました。
+### Credits {: hide-from-toc }
 
-* [コード](http://thenounproject.com/term/code/17547/){: .external } : buzzyrobot
-* [カレンダー](http://thenounproject.com/term/calendar/4672/){: .external } : Scott Lewis
-* [ネットワーク](http://thenounproject.com/term/network/12676/){: .external } : Ben Rizzo
-* [SD](http://thenounproject.com/term/sd-card/6185/): Thomas Le Bas
-* [CPU](http://thenounproject.com/term/cpu/72043/){: .external } : iconsmind.com
-* [ごみ箱](http://thenounproject.com/term/trash/20538/){: .external } : trasnik
-* [通知](http://thenounproject.com/term/notification/32514/){: .external } : @daosme
-* [レイアウト](http://thenounproject.com/term/layout/36872/){: .external } : Mister Pixel
-* [クラウド](http://thenounproject.com/term/cloud/2788/){: .external } : P.J. Onori
+…for the lovely icons:
 
-公開前にたくさんの間違いを見つけてくれた [Jeff Posnick](https://twitter.com/jeffposnick) にも感謝します。
+* [Code](http://thenounproject.com/term/code/17547/){: .external } by buzzyrobot
+* [Calendar](http://thenounproject.com/term/calendar/4672/){: .external } by Scott Lewis
+* [Network by](http://thenounproject.com/term/network/12676/){: .external } Ben Rizzo
+* [SD](http://thenounproject.com/term/sd-card/6185/) by Thomas Le Bas
+* [CPU](http://thenounproject.com/term/cpu/72043/){: .external } by iconsmind.com
+* [Trash](http://thenounproject.com/term/trash/20538/){: .external } by trasnik
+* [Notification](http://thenounproject.com/term/notification/32514/){: .external } by @daosme
+* [Layout](http://thenounproject.com/term/layout/36872/){: .external } by Mister Pixel
+* [Cloud](http://thenounproject.com/term/cloud/2788/){: .external } by P.J. Onori
 
+And thanks to [Jeff Posnick](https://twitter.com/jeffposnick) for catching many howling errors before I hit "publish".
 
-### 参考資料
-* [Service Worker の紹介][sw_primer]
-* [Is ServiceWorker ready?][is_sw_ready]: 主要なブラウザでの実装ステータスの追跡
-* [JavaScript の Promise: 概要](/web/fundamentals/getting-started/primers/promises): Promise のガイド
+### Further reading
 
+* [ServiceWorkers - an Introduction](/web/fundamentals/getting-started/primers/service-workers)
+* [Is ServiceWorker ready?](https://jakearchibald.github.io/isserviceworkerready/) - track the implementation status across the main browsers
+* [JavaScript Promises - an Introduction](/web/fundamentals/getting-started/primers/promises) - guide to promises
 
-[ttt]: https://jakearchibald.github.io/trained-to-thrill/
-[is_sw_ready]: https://jakearchibald.github.io/isserviceworkerready/
-[sw_primer]: /web/fundamentals/getting-started/primers/service-workers
-[caches_api]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

@@ -1,147 +1,123 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Chrome 58 中添加到 DevTools 的新功能和變更。
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: New features and changes coming to DevTools in Chrome 58.
 
-{# wf_updated_on: 2018-10-23 #}
-{# wf_published_on: 2017-03-06 #}
-{# wf_tags: chrome58,devtools #}
-{# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #}
-{# wf_featured_snippet: Chrome 58 中添加到 DevTools 的新功能和變更。 #}
+{# wf_updated_on: 2018-10-23 #} {# wf_published_on: 2017-03-06 #} {# wf_tags: chrome58,devtools #} {# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #} {# wf_featured_snippet: New features and changes coming to DevTools in Chrome 58. #} {# wf_blink_components: Platform>DevTools #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# DevTools 更新點 (Chrome 58) {: .page-title }
+# What's New In DevTools (Chrome 58) {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-歡迎來到首期的 DevTools 發版日誌！從這一版本開始，首次打開新版 Chrome 你會看到 DevTools 
-有一個 **What's New** 標籤，裏面含有當前版本發版日誌的鏈接。
+Welcome to the first installment of the DevTools release notes! From here on out, the first time you open a new version of Chrome, DevTools opens the **What's New** drawer with a link to the release notes for that version.
 
-## 亮點
+## Highlights
 
-* Timeline 面板更名爲 Performance 面板。
-* Profiles 面板更名爲 Memory 面板。
-* 可直接編輯 Cookie 值。
-* 在內存溢出前 DevTool 會自動暫停。
+* The Timeline panel has been renamed to the Performance panel.
+* The Profiles panel has been renamed to the Memory panel.
+* Cookie values are now editable.
+* DevTools now automatically pauses before out-of-memory errors.
 
-## 新功能
+## New features
 
-### 可編輯的 Cookie {: #cookies }
+### Editable cookies {: #cookies }
 
-雙擊 **Cookies** 標籤裏的表格項可直接編輯。
+Double-click on a cell in the **Cookies** tab to edit that value.
 
 <figure>
   <img src="/web/updates/images/2017/03/editable-cookies.png"/>
   <figcaption>
-    <b>圖 1</b>. 編輯 Cookie
+    <b>Figure 1</b>. Editing a cookie
   </figcaption>
 </figure>
 
-感謝 [kdzwinel](https://twitter.com/kdzwinel) 的貢獻!
+Thanks to [kdzwinel](https://twitter.com/kdzwinel) for the contribution!
 
-### CSS 變量可以在 Styles 面板中進行審查和編輯 {: #css-variables }
+### Inspectable and editable CSS variables in the Styles pane {: #css-variables }
 
-現在，Styles 面板中可審查和編輯 CSS 變量了。查看[此示例][css vars]親自體驗一把吧。
+You can now inspect and edit CSS variables in the Styles pane. See [CSS Variables Demo](https://googlechrome.github.io/devtools-samples/author/css-vars) to try it out yourself.
 
-[css vars]: https://googlechrome.github.io/devtools-samples/author/css-vars
+### Out-of-memory breakpoints {: #out-of-memory-breakpoints }
 
-### 內存溢出斷點 {: #out-of-memory-breakpoints }
-
-當程序在短時間內分配佔用了大量內存時，DevTools 會自動暫停並且加大堆棧的上限。
-這樣你就可以審查堆棧，在控制檯執行命令來釋放內存，然後繼續進行調試。想了解更多，
-請移步 [Chrome的一小步，V8堆棧的一大步][heap]。
+When an app allocates a lot of memory in a short amount of time, DevTools now automatically pauses and increases the heap limit. This enables you to inspect the heap, execute commands on the Console to free up memory, and continue debugging the issue. See [One Small Step For Chrome, One Giant Heap For V8](https://v8.dev/blog/heap-size-limit) for more information.
 
 <figure>
   <img src="/web/updates/images/2017/03/out-of-memory-breakpoint.png"/>
   <figcaption>
-    <b>圖 2</b>. 在內存溢出點的暫停
+    <b>Figure 2</b>. Paused on an out-of-memory breakpoint
   </figcaption>
 </figure>
 
-[heap]: https://v8.dev/blog/heap-size-limit
+### Breakpoints on canvas creation {: #canvas-creation-breakpoints }
 
-### Canvas 被創建的斷點 {: #canvas-creation-breakpoints }
-
-你可以創建一個基於 canvas 上下文被創建時所觸發的[事件斷點][event-listener-breakpoint]。
+You can now create [event listener breakpoints](/web/tools/chrome-devtools/javascript/breakpoints#event-listeners) that are triggered whenever a new canvas context is created.
 
 <figure>
   <img src="/web/updates/images/2017/03/canvas-breakpoint.png"/>
   <figcaption>
-    <b>圖 3</b>. 從<b>事件斷點面板</b>的<b> canvas 上下文被創建</b>複選框生成的斷點
+    <b>Figure 3</b>. Canvas creation breakpoints via the <b>Create canvas
+    context</b> checkbox in the <b>Event Listener Breakpoints</b> pane
   </figcaption>
 </figure>
 
-[event-listener-breakpoint]: /web/tools/chrome-devtools/javascript/breakpoints#event-listeners
+### Start time stats in the Timing tab {: #start-stats }
 
-### 瀑布流時間線中新增開始時間 {: #start-stats }
-
-在瀑布流時間線頂部，可以看到一條請求是何時加入隊列以及何時開始的。
+At the top of the Timing tab, you can now see when a request was queued and started.
 
 <figure>
   <img src="/web/updates/images/2017/03/request-start-times.svg"/>
   <figcaption>
-    <b>圖 4</b>. 瀑布流時間線中新增開始時間
+    <b>Figure 4</b>. Start time stats in the Timing tab
   </figcaption>
 </figure>
 
-### 用時統計標籤中的服務器信息 {: #server-stats }
+### Server stats in the Timing tab {: #server-stats }
 
-現在可以向網絡面板的用時統計標籤中插入自定義的服務器用時統計了。查看[服務器用時統計示例][server]。
-
-[server]: https://gist.github.com/paulirish/a76ac17fc211b019e538c09d8d827691
+You can now insert custom server statistics into the Timing tab. See [Demo of server timing values](https://gist.github.com/paulirish/a76ac17fc211b019e538c09d8d827691) for an example.
 
 <figure>
   <img src="/web/updates/images/2017/03/server-stats.svg"/>
   <figcaption>
-    <b>圖 5</b>. <b>用時統計標籤</b>中的服務器時間統計
+    <b>Figure 5</b>. Server stats in the <b>Timing</b> tab
   </figcaption>
 </figure>
 
-## 變更
+Thanks to [sroussey](https://twitter.com/sroussey) for the contribution!
 
-### Timeline 面板變更爲了現在的 Performance 面板 {: #performance-panel }
+## Changes
 
-Timeline 面板更名爲了 Performance 面板，以更好地反映它的功能。
+### The Timeline panel is now the Performance panel {: #performance-panel }
 
-### Profiles 面板變成了現在的 Memory 面板 {: #memory-panel }
+The Timeline panel has been renamed to the Performance panel, to better reflect its purpose.
 
-Profiles 面板更名爲了 Memory 面板，以更好地反映它的功能。
+### The Profiles panel is now the Memory panel {: #memory-panel }
 
-### CPU 分析器位置變更 {: #cpu-profiler }
+The Profiles panel has been renamed to the Memory panel, to better reflect its purpose.
 
-既然 Profiles 面板已經更名爲了 Memory 面板，再把 CPU 分析器放這裏面就不合適了。此外，從長遠來看後續
-會把所有分析相關的放入性能面板。目前，你仍然可以通過
-[**設置**][settings] > **更多工具** > **JavaScript Profiler** 來訪問老版的 CPU 分析器。
+### The CPU Profiler is behind a hidden panel {: #cpu-profiler }
 
-查看 [Chrome DevTools: 在 Chrome 58 中進行 JavaScript CPU 分析][migration]以瞭解如何在 Performance 面板中
-分析 CPU。
+Now that the Profiles panel is called the Memory panel, it doesn't really make sense to have the CPU profiler on that panel anymore. Furthermore, the long-term goal is to get all users profiling from the Performance panel. In the meantime, you can still access the old CPU profiler from [**Settings**](/web/tools/chrome-devtools/ui#settings) > **More Tools** > **JavaScript Profiler**.
 
-[settings]: /web/tools/chrome-devtools/ui#settings
-[migration]: /web/updates/2016/12/devtools-javascript-cpu-profile-migration
+See [Chrome DevTools: JavaScript CPU Profiling in Chrome 58](/web/updates/2016/12/devtools-javascript-cpu-profile-migration) to learn how to profile CPU in the Performance panel.
 
-### 全新的控制檯界面 {: #console }
+### New Console UI {: #console }
 
-控制檯及相關的標籤進行了界面的更新。一些不太常用的功能進行了隱藏，露出了更加常用的功能。
+The Console panel and drawer have undergone some UI changes. Some unpopular features have been moved to more hidden locations, and popular features are now more easily accessible.
 
-* 點擊 **控制檯設置圖標** ![控制檯設置圖標][console settings]{:.devtools-inline} 來進行控制檯相關的設置。
-* **Preserve log** 被挪到了 **控制檯的設置界面**.
-* 去掉了 **Filters** 按鈕及相應的面板。換成了現在的下拉菜單樣式。
-* 過濾控制檯信息的文本輸入框從之前不可見的二級面板中挪了出來，始終顯示。
-* 過濾控制檯信息的文本輸入自動接收正則作爲輸入，所以不需要之前的**正則開關**了。
-* 去掉了 **Hide violations** 複選框，取而代之的是日誌等級下拉框中的 **Verbose**。
-* 新版控制檯中，勾選 **控制檯設置** 中的 **Selected context only** 的效果和之前老界面裏
-  去掉 **Show all messages** 的效果是一樣的。
+* Click **Console Settings** ![Console Settings](/web/updates/images/2017/03/console-settings.png){:.devtools-inline} to access settings for customizing the Console's behavior.
+* **Preserve log** is now hidden in **Console Settings**.
+* The **Filters** button and pane is gone. Use the dropdown menu instead.
+* The text box for filtering logs is now always shown. It was previously hidden in the Filters pane.
+* The filtering text box automatically accepts RegEx, so the **Regex** checkbox is gone.
+* The **Hide violations** checkbox is gone. Set the logging level dropdown to **Verbose** to see violations.
+* Unchecking the **Show all messages** checkbox in the old UI is equivalent to checking the **Selected context only** checkbox in **Console Settings** in the new UI.
 
 <figure>
   <img src="/web/updates/images/2017/03/console.png"/>
   <figcaption>
-    <b>圖 6</b>. 全新的控制檯界面
+    <b>Figure 6</b>. The new Console UI
   </figcaption>
 </figure>
 
-[console settings]: /web/updates/images/2017/03/console-settings.png
+### WebGL event listener breakpoints have moved {: #webgl }
 
-### WebGL 事件監聽器斷點位置有所變更 {: #webgl }
-
-WebGL [事件監聽器斷點][event-listener-breakpoint] 從原來的 **WebGL** 分類中移動到了 **Canvas** 分類中。
-去掉了**WebGL** 這個分類。
+The WebGL [event listener breakpoints](/web/tools/chrome-devtools/javascript/breakpoints#event-listeners) have moved from the **WebGL** category to the **Canvas** category. The **WebGL** category has been removed.

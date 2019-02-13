@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:您应始终使用 HTTPS 保护您的所有网站，即使这些网站并不处理敏感的通信。HTTPS 为您的网站以及信任您的网站可保管其个人信息的用户提供至关重要的安全性和数据完整性。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should always protect all of your websites with HTTPS, even if they don’t handle sensitive communications. HTTPS provides critical security and data integrity both for your websites and for the people that entrust your websites with their personal information.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2015-11-23 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-11-23 #} {# wf_blink_components: Internals>Network>SSL #}
 
-# 为什么说 HTTPS 很重要 {: .page-title }
+# Why HTTPS Matters {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
@@ -15,54 +12,32 @@ description:您应始终使用 HTTPS 保护您的所有网站，即使这些网�
   </iframe>
 </div>
 
-您应始终使用 HTTPS 保护您的所有网站，即使这些网站并不处理敏感的通信。
-除了为网站和用户的个人信息提供关键的安全性和数据完整性外，许多新的浏览器功能，特别是 [Progressive Web App](/web/progressive-web-apps/) 所需的那些功能也要求使用 HTTPS。
-
-
-
+You should always protect all of your websites with HTTPS, even if they don’t handle sensitive communications. Aside from providing critical security and data integrity for both your websites and your users' personal information, HTTPS is a requirement for many new browser features, particularly those required for [progressive web apps](/web/progressive-web-apps/).
 
 ### TL;DR {: .hide-from-toc }
 
-* 善意的或恶意的入侵者会利用您的网站和用户之间传输的每个未受保护的资源。
-* 许多入侵者都会查看汇总的行为以识别您的用户。 
-* HTTPS 不仅可阻止您的网站被滥用，也是许多先进功能不可或缺的一部分，可作为类似应用功能（如服务工作线程）的实现技术。 
+* Intruders both malignant and benign exploit every unprotected resource between your websites and users.
+* Many intruders look at aggregate behaviors to identify your users.
+* HTTPS doesn't just block misuse of your website. It's also a requirement for many cutting-edge features and an enabling technology for app-like capabilities such as service workers.
 
-## HTTPS 可保护您的网站的完整性。 
+## HTTPS protects the integrity of your website
 
-HTTPS 有助于防止入侵者篡改您的网站和用户浏览器之间的通信。
-入侵者包括故意进行恶意攻击的攻击者，以及合法但具有侵犯性的公司，如将广告注入网页的 ISP 或酒店。
+HTTPS helps prevent intruders from tampering with the communications between your websites and your users’ browsers. Intruders include intentionally malicious attackers, and legitimate but intrusive companies, such as ISPs or hotels that inject ads into pages.
 
+Intruders exploit unprotected communications to trick your users into giving up sensitive information or installing malware, or to insert their own advertisements into your resources. For example, some third parties inject advertisements into websites that potentially break user experiences and create security vulnerabilities.
 
+Intruders exploit every unprotected resource that travels between your websites and your users. Images, cookies, scripts, HTML … they’re all exploitable. Intrusions can occur at any point in the network, including a user’s machine, a Wi-Fi hotspot, or a compromised ISP, just to name a few.
 
-入侵者会利用未受保护的通信欺骗您的用户提供敏感信息或安装恶意软件，或将他们自己的广告插入您的资源中。例如，有些第三方向网站注入可能会损害用户体验和产生安全漏洞的广告。
+## HTTPS protects the privacy and security of your users
 
+HTTPS prevents intruders from being able to passively listen to communications between your websites and your users.
 
+One common misconception about HTTPS is that the only websites that need HTTPS are those that handle sensitive communications. Every unprotected HTTP request can potentially reveal information about the behaviors and identities of your users. Although a single visit to one of your unprotected websites may seem benign, some intruders look at the aggregate browsing activities of your users to make inferences about their behaviors and intentions, and to [de-anonymize](https://en.wikipedia.org/wiki/De-anonymization){: .external} their identities. For example, employees might inadvertently disclose sensitive health conditions to their employers just by reading unprotected medical articles.
 
-入侵者会利用您的网站和用户之间传输的每个未受保护的资源。
-图像、Cookie、脚本、HTML 等都会被利用。
-入侵在网络中随时都会发生，包括入侵用户的电脑、Wi-Fi 热点或已泄露的 ISP 等。
- 
+## HTTPS is the future of the web
 
-## HTTPS 可保护您的用户的隐私和安全
+Powerful, new web platform features, such as taking pictures or recording audio with `getUserMedia()`, enabling offline app experiences with service workers, or building progressive web apps, require explicit permission from the user before executing. Many older APIs are also being updated to require permission to execute, such as the [geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation){: .external} API. HTTPS is a key component to the permission workflows for both these new features and updated APIs.
 
-HTTPS 可防止入侵者能够被动地侦听您的网站和您的用户之间的通信。
+## Feedback {: #feedback }
 
-
-人们对 HTTPS 有一个普遍的错误认识，认为只有处理敏感通信的网站才需要 HTTPS。
-每个未受保护的 HTTP 请求都可能暴露与您的用户行为和身份有关的信息。尽管访问一次未受保护的网站可能看上去无害，但一些入侵者会查看汇总的用户浏览活动，以推断他们的行为和意图，从而进行[去匿名化](https://en.wikipedia.org/wiki/De-anonymization){: .external}攻击，查出匿名用户的身份。例如，员工可能在阅读未受保护的医疗文章时不经意地向其雇主泄露敏感的健康信息。
-
-
-
-## HTTPS 是网络的未来发展方向
-
-强大的全新网络平台功能，如拍照或使用 `getUserMedia()` 录制音频，或通过服务工作线程启用离线应用体验，或构建 Progressive Web App，在执行前均需要用户的明确许可。还将更新许多较旧的 API，以要求执行权限，如 [geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation){: .external} API。HTTPS 是这些新功能和更新的 API 的权限工作流的一个关键组件。
-
-
-
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

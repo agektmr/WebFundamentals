@@ -1,40 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“清单是否存在”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Exists" Lighthouse audit.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on:2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# 清单是否存在 {: .page-title }
+# Manifest Exists {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-网络应用清单是一项网络技术，允许您将网络应用添加到用户的主屏幕。
-此功能通常称为“添加到主屏幕 (A2HS)”。
+The Web App Manifest is the web technology that enables you to add your web app to a user's homescreen. This feature is commonly referred to as "Add to Homescreen (A2HS)".
 
+## Recommendations {: #recommendations }
 
-## 如何通过此审查{: #how }
+For a hands-on, step-by-step guide on adding A2HS support in an existing application, check out the following codelab: [Add Your Web App to a User's Home Screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
-有关在现有应用中添加 A2HS 支持的实用分步指南，请查看以下代码实验室：[将网络应用添加到用户的主屏幕](https://codelabs.developers.google.com/codelabs/add-to-home-screen)。
+For a more loosely-structured guide that goes into more depth about Web App Manifests, see [Improve User Experiences with a Web App Manifest](/web/fundamentals/web-app-manifest).
 
+Use what you learn in these guides to add A2HS support in your own web app.
 
+You can emulate and test A2HS events in Chrome DevTools. See the following section for more help: [Web App Manifest](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest).
 
-如需结构较为松散、深入探讨网络应用清单的指南，请参阅[通过网络应用清单改进用户体验](/web/fundamentals/web-app-manifest)。
+## More information {: #more-info }
 
+Lighthouse fetches the manifest and verifies that it has data. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-运用您在这些指南中学到的知识，在您自己的网络应用中添加 A2HS 支持。
-
-
-您可以在 Chrome DevTools 中模拟和测试 A2HS 事件。有关更多帮助，请参阅下文：[网络应用清单](/web/tools/chrome-devtools/debug/progressive-web-apps/#manifest)。
-
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 提取清单并验证它是否具有数据。Lighthouse 提取的清单独立于 Chrome 当前在页面上使用的清单，这可能会产生不准确的结果。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

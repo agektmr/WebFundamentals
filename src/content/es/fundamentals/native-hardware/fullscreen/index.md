@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pantalla completa disponible.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Going fullscreen.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on: 2016-10-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-01 #} {# wf_blink_components: Blink>Fullscreen #}
 
-# Desarrollar experiencias en pantalla completa {: .page-title }
+# Making Fullscreen Experiences {: .page-title }
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="ZRqr5x73-ng"
@@ -13,47 +10,29 @@ description: Pantalla completa disponible.
   </iframe>
 </div>
 
-Tenemos la capacidad de realizar fácilmente sitios web y apps con modo pantalla completa de inmersiva
-, pero como cualquier otra cosa en la web, hay algunas maneras de hacerlo.
-Esto es especialmente importante ahora que más navegadores admiten una experiencia "app web
-instalada" que inicia la pantalla completa.
+We have the ability to easily make immersive fullscreen websites and applications, but like anything on the web there are a couple of ways to do it. This is especially important now that more browsers are supporting an "installed web app" experience which launch fullscreen.
 
 <div class="clearfix"></div>
 
-## Obtener pantalla completa para tu app o tu sitio
+## Getting your app or site fullscreen
 
-Hay varios modos de que un usuario o desarrollador pueda obtener pantalla completa para una app web.
+There are several ways that a user or developer can get a web app fullscreen.
 
-* Solicítale al navegador el modo de pantalla completa en respuesta al gesto de un usuario.
-* Instala la app en la página principal.
-* Simulación: esconder automáticamente la barra de direcciones.
+* Request the browser go fullscreen in response to a user gesture.
+* Install the app to the home screen.
+* Fake it: auto-hide the address bar.
 
-### Solicítale al navegador el modo de pantalla completa en respuesta al gesto de un usuario
+### Request the browser go fullscreen in response to a user gesture
 
-<a href="http://caniuse.com/#feat=fullscreen">No todas las plataformas son iguales</a>.
-Safari de iOS no tiene una API con el modo de pantalla completa, pero Chrome en Android,
-Firefox y en IE 11+ sí la tienen. La mayoría de las apps que creas usan una combinación de la
-API JS y de los selectores CSS a cargo de la especificación del modo de pantalla completo. Las principales
-API JS por las que te tienes que preocupar cuando desarrollas una experiencia en pantalla completa son:
+<a href="http://caniuse.com/#feat=fullscreen">Not all platforms are equal</a>. iOS Safari doesn't have a fullscreen API, but we do on Chrome on Android, Firefox, and IE 11+. Most applications you build will use a combination of the JS API and the CSS selectors provided by the fullscreen specification. The main JS API's that you need to care about when building a fullscreen experience are:
 
-* `element.requestFullscreen()` (actualmente con prefijo en Chrome, Firefox y en IE)
-  muestra el elemento en el modo de pantalla completa.
-* `document.exitFullscreen()` (actualmente con prefijo en Chrome, Firefox y en IE.
-  En cambio, Firefox usa `cancelFullScreen()`) cancela el modo de pantalla completa.
-* `document.fullscreenElement` (actualmente con prefijo en Chrome, Firefox y en IE)
-  muestra true si alguno de los elementos está en modo de pantalla completa.
+* `element.requestFullscreen()` (currently prefixed in Chrome, Firefox, and IE) displays the element in fullscreen mode.
+* `document.exitFullscreen()` (currently prefixed in Chrome, Firefox and IE. Firefox uses `cancelFullScreen()` instead) cancels fullscreen mode.
+* `document.fullscreenElement` (currently prefixed in Chrome, Firefox, and IE) returns true if any of the elements are in fullscreen mode.
 
-Note: Ten en cuenta que en las versiones con prefijo hay mucha
-      inconsistencia en el uso de mayúsculas y minúsculas para la “S”. Esto es raro, pero
-      este es el problema con las especificaciones que están en vuelo.
+Note: You will notice that in the prefixed versions there is a lot of inconsistency between the casing of the 'S' in screen. This is awkward, but this is the problem with specs that are in flight.
 
-Cuando tu app tiene el modo de pantalla completa, ya no tienes disponibles los controles de IU del
-navegador. Esto cambia el modo en que los usuarios interactúan con tu
-experiencia. No tienen los controles de navegación estándar como Forwards
-y Backwards; no tienen su ruta de escape que es el botón Refresh.  Es
-importante cubrir este escenario.  Puedes usar algunos selectores CSS que te ayuden a
-cambiar el estilo y la presentación de tu sitio cuando el navegador acceda
-al modo de pantalla completa.
+When your app is fullscreen you no longer have the browser's UI controls available to you. This changes the way that users interact with your experience. They don't have the standard navigation controls such as Forwards and Backwards; they don't have their escape hatch that is the Refresh button. It's important to cater for this scenario. You can use some CSS selectors to help you change the style and presentation of your site when the browser enters fullscreen mode.
 
     <button id="goFS">Go fullscreen</button>
     <script>
@@ -62,26 +41,21 @@ al modo de pantalla completa.
           document.body.requestFullscreen();
       }, false);
     </script>
+    
 
-El ejemplo anterior es un poco forzado; he ocultado toda la complejidad alrededor del
-uso de los prefijos de proveedores.
+The above example is a little contrived; I've hidden all the complexity around the use of vendor prefixes.
 
-Note: ¡Benditos prefijos de proveedores!
+Note: Damn you, vendor prefixes!
 
-El código actual es mucho más complejo. <a
-href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode">Mozilla
-ha creado</a> una secuencia de comandos muy útil que puedes usar para activar o desactivar la pantalla completa.  Como puedes
-ver, la situación del prefijo de proveedores es compleja y
-engorrosa en comparación con la API especificada. Incluso con el siguiente código que es un poco más simple
-, es complejo.
+The actual code is a lot more complex. [Mozilla has created](https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode) a very useful script that you can use to toggle fullscreen. As you can see, the vendor prefix situation it is complex and cumbersome compared to the specified API. Even with the slightly simplified code below, it is still complex.
 
     function toggleFullScreen() {
       var doc = window.document;
       var docEl = doc.documentElement;
-
+    
       var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
       var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
+    
       if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
         requestFullScreen.call(docEl);
       }
@@ -89,49 +63,39 @@ engorrosa en comparación con la API especificada. Incluso con el siguiente cód
         cancelFullScreen.call(doc);
       }
     }
+    
 
-Nosotros, los desarrolladores web odiamos la complejidad.  Una buena API de alto nivel y abstracta que puedes usar
-es <a href="http://sindresorhus.com/screenfull.js"/>Sindre Sorhus'</a> <a
-href="https://github.com/sindresorhus/screenfull.js">Screenfull.js</a> módulo
-que unifica las dos API JS con pequeñas diferencias en una
-API consistente.
+We web developers hate complexity. A nice high-level abstract API you can use is Sindre Sorhus'</a> [Screenfull.js](https://github.com/sindresorhus/screenfull.js) module which unifies the two slightly different JS API's and vendor prefixes into one consistent API.
 
-#### Sugerencias para Fullscreen API
+#### Fullscreen API Tips
 
-##### Activar el modo de pantalla completa del documento
+##### Making the document fullscreen
 
 <figure class="attempt-right" style="max-width: 320px;">
   <img src="images/body.png">
-  <figcaption>Figura 1: pantalla completa en el elemento de cuerpo.</figcaption>
+  <figcaption>Figure 1: Fullscreen on the body element.</figcaption>
 </figure>
 
-
-Es natural pensar que tomas el modo de pantalla completa del elemento de cuerpo, pero si estás
-en un motor renderizado Webkit o Blink, verás que tiene un efecto raro de
-reducción del ancho del cuerpo hasta el tamaño más pequeño posible que contendrá todo el
-contenido. (Mozilla Gecko está bien).
+It is natural to think that you take the body element fullscreen, but if you are on a WebKit or Blink based rendering engine you will see it has an odd effect of shrinking the body width to the smallest possible size that will contain all the content. (Mozilla Gecko is fine.)
 
 <div class="clearfix"></div>
 
-<figure class="attempt-right" style="max-width: 320px;">
-<img src="images/document.png" >
-<figcaption>Figura 2: pantalla completa en el elemento del documento.</figcaption>
-</figure>
+<figure class="attempt-right" style="max-width: 320px;"> 
 
-Para solucionar esto, usa el elemento de documento en lugar del elemento de cuerpo:
+<img src="images/document.png" />
+<figcaption>Figure 2: Fullscreen on the document element.</figcaption>
+</figure> 
+
+To fix this, use the document element instead of the body element:
 
     document.documentElement.requestFullscreen();
-
-
+    
 
 <div class="clearfix"></div>
 
+##### Making a video element fullscreen
 
-##### Activar el modo de pantalla completa de un elemento de video
-
-La activación del modo de pantalla completa de un elemento de video es exactamente igual a la activación de cualquier otro
-elemento. Llamas al método `requestFullscreen` en el elemento de
-video.
+To make a video element fullscreen is exactly the same as making any other element fullscreen. You call the `requestFullscreen` method on the video element.
 
     <video id=videoElement></video>
     <button id="goFS">Go Fullscreen</button>
@@ -142,11 +106,9 @@ video.
           videoElement.requestFullscreen();
       }, false);
     </script>
+    
 
-Si tu elemento `<video>` no tiene el atributo de controles definido,
-no hay modo de que el usuario controle el video una vez que estén en pantalla completa. El modo
-recomendado de hacer esto es tener un contenedor básico que encapsule el video y
-los controles que quieres que vea el usuario.
+If your `<video>` element doesn't have the controls attribute defined, there's no way for the user to control the video once they are fullscreen. The recommended way to do this is to have a basic container that wraps the video and the controls that you want the user to see.
 
     <div id="container">
       <video></video>
@@ -163,9 +125,9 @@ los controles que quieres que vea el usuario.
           container.requestFullscreen();
       }, false);
     </script>
+    
 
-Esto te otorga más flexibilidad porque puedes combinar el objeto
-contenedor con el pseudo selector CSS (por ejemplo para ocultar el botón "goFS").
+This gives you a lot more flexibility because you can combine the container object with the CSS pseudo selector (for example to hide the "goFS" button.)
 
     <style>
       #goFS:-webkit-full-screen #goFS {
@@ -181,80 +143,54 @@ contenedor con el pseudo selector CSS (por ejemplo para ocultar el botón "goFS"
         display: none;
       }
     </style>
+    
 
-Con el uso de estos patrones, puedes detectar cuando se ejecuta la pantalla completa y puedes adaptar tu
-interfaz de usuario de un modo apropiado, por ejemplo:
+Using these patterns, you can detect when fullscreen is running and adapt your user interface appropriately, for example:
 
-* Al proporcionar un vínculo de regreso a la página de inicio
-* Al proporcionar un mecanismo para cerrar diálogos o ir hacia atrás
+* By providing a link back to the start page
+* By Providing a mechanism to close dialogs or travel backwards
 
+### Launching a page fullscreen from home screen
 
-### Iniciar el modo de pantalla completa de una página desde la pantalla de inicio
+Launching a fullscreen web page when the user navigates to it is not possible. Browser vendors are very aware that a fullscreen experience on every page load is a huge annoyance, therefore a user gesture is required to enter fullscreen. Vendors do allow users to "install" apps though, and the act of installing is a signal to the operating system that the user wants to launch as an app on the platform.
 
-No es posible el inicio de una página web de pantalla completa cuando el usuario navega hacia esta.
-Los proveedores del navegador son muy conscientes de que desarrollar una experiencia de pantalla completa cada vez que se carga
-la página es una gran molestia, por lo tanto se solicita un gesto del usuario para acceder a una pantalla completa.
-Los proveedores permiten que los usuarios "instalen" las apps y el acto de instalación es una
-señal al sistema operativo de que el usuario la quiere lanzar como una app en la
-plataforma.
-
-En las principales plataformas móviles es bastante sencillo implementar el uso de
-metaetiquetas o archivos manifiesto de la siguiente manera.
+Across the major mobile platforms it is pretty easy to implement using either meta tags, or manifest files as follows.
 
 #### iOS
 
-Desde el lanzamiento del iPhone, los usuarios han podido instalar las apps web en
-la pantalla de inicio y las han lanzado como apps web de pantalla principal.
+Since the launch of the iPhone, users have been able to install Web Apps to the home screen and have them launch as full-screen web apps.
 
     <meta name="apple-mobile-web-app-capable" content="yes">
+    
 
-> Si el contenido está configurado en sí, la app web se ejecuta en el modo de pantalla completa;
-> de lo contrario, no lo hace. El comportamiento predeterminado es usar Safari para mostrar contenido
-> web. Puedes determinar si una página web se muestra en el modo de pantalla completa
-> usando la propiedad booleana de solo lectura de JavaScript window.navigator.standalone.
-> <a href="https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html">Apple</a>
+> If content is set to yes, the web application runs in full-screen mode; otherwise, it does not. The default behavior is to use Safari to display web content. You can determine whether a webpage is displayed in full-screen mode using the window.navigator.standalone read-only Boolean JavaScript property. [Apple](https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html)
 
-#### Chrome para Android
+#### Chrome for Android
 
-El equipo Chrome ha implementado recientemente una función que le indica al navegador que
-inicie la pantalla completa de la página cuando el usuario la ha agregado a la pantalla de inicio.  Es
-similar al modelo Safari de iOS.
+The Chrome team has recently implemented a feature that tells the browser to launch the page fullscreen when the user has added it to the home screen. It is similar to the iOS Safari model.
 
     <meta name="mobile-web-app-capable" content="yes">
+    
 
-> Puedes configurar tu app web para que agregue un ícono de acceso directo a una app en la
-> pantalla de inicio de un dispositivo y para que inicie la app en el "modo app" en pantalla completa usando
-> Chrome para el elemento del menú de Android "Agregar en la pantalla principal".
->  <a href="https://developers.chrome.com/multidevice/android/installtohomescreen">Google Chrome</a>
+> You can set up your web app to have an application shortcut icon added to a device's home screen, and have the app launch in full-screen "app mode" using Chrome for Android's "Add to Home screen" menu item. [Google Chrome](https://developers.chrome.com/multidevice/android/installtohomescreen)
 
-Una mejor opción es usar el manifiesto de apps web.
+A better option is to use the Web App Manifest.
 
-#### El manifiesto de apps web (Chrome, Opera, Firefox, Samsung)
+#### Web App Manifest (Chrome, Opera, Firefox, Samsung)
 
-El [manifiesto para las apps web](/web/fundamentals/web-app-manifest)
-es un archivo JSON simple que le proporciona a usted, el
-desarrollador, la capacidad de controlar cómo se le muestra su app al usuario en las áreas
-en las que espera ver apps (por ejemplo, la pantalla de inicio de los celulares), dirigir
-lo que el usuario puede iniciar y, lo que es más importante, cómo puede hacerlo. En el
-futuro, el manifiesto le permitirá tener incluso más control sobre su app, pero ahora
-solo nos centramos en cómo se puede iniciar su app. Específicamente:
+The [Manifest for Web applications](/web/fundamentals/web-app-manifest) is a simple JSON file that gives you, the developer, the ability to control how your app appears to the user in the areas that they would expect to see apps (for example the mobile home screen), direct what the user can launch and, more importantly, how they can launch it. In the future the manifest will give you even more control over your app, but right now we are just focusing on how your app can be launched. Specifically:
 
-1. Informa al navegador acerca de tu manifiesto
-2. Describir cómo iniciar
+1. Telling the browser about your manifest
+2. Describing how to launch
 
-Una vez que hayas creado el manifiesto y que esté alojado en tu sitio, deberás
-agregar una etiqueta de vínculo en todas las páginas en las que se muestra tu app, tal como se explica a continuación.
+Once you have the manifest created and it is hosted on your site, all you need to do is add a link tag from all your pages that encompass your app, as follows:
 
     <link rel="manifest" href="/manifest.json">
+    
 
-Chrome ha admitido manifiestos desde la versión 38 para Android (Octubre de 2014)
-y te da el control sobre cómo aparece la app web cuando se instala
-en la pantalla de inicio (a través de las propiedades `short_name`, `name` y `icons`) y cómo se tiene que
-iniciar cuando el usuario hace clic en el ícono de ejecución (a través de `start_url`,
-`display` y `orientation`).
+Chrome has supported Manifests since version 38 for Android (October 2014) and it gives you the control over how your web app appears when it is installed to the home screen (via the `short_name`, `name` and `icons` properties) and how it should be launched when the user clicks on the launch icon (via `start_url`, `display` and `orientation`).
 
-A continuación, se muestra un ejemplo de manifiesto. No muestra todo lo que puede haber en un
-manifiesto.
+An example manifest is shown below. It doesn't show everything that can be in a manifest.
 
     {
       "short_name": "Kinlan's Amaze App",
@@ -270,238 +206,192 @@ manifiesto.
       "display": "standalone",
       "orientation": "landscape"
     }
+    
 
-Esta función es completamente progresiva y te permite generar mejores experiencias y más integradas
-para usuarios de un navegador que admite la función.
+This feature is entirely progressive and allows you create better, more integrated experiences for users of a browser that supports the feature.
 
-Cuando un usuario agrega tu sitio o app a la pantalla de inicio, hay una intención por parte del
-usuario de tratarlo como una app. Esto significa que tienes que dirigir al usuario a
-la funcionalidad de tu app en lugar de a una página de destino del producto. Por ejemplo,
-si le solicitan al usuario que acceda a la app, entonces esa es una buena página para
-lanzar.
+When a user adds your site or app to the home screen, there is an intent by the user to treat it like an app. This means you should aim to direct the user to the functionality of your app rather than a product landing page. For example, if the user is required to sign-in to your app, then that is a good page to launch.
 
-##### Apps de utilidad
+##### Utility apps
 
-La mayoría de las apps de utilidad aprovecharán esto de inmediato. Para esas
-app, querrás que se inicien de modo independiente como el resto de las apps
-en una plataforma móvil. Para indicarle a una app que se inicie de modo independiente, agrega esto al manifiesto
-de las apps web:
+The majority of utility apps will benefit from this immediately. For those apps you'll likely want them launched standalone just alike every other app on a mobile platform. To tell an app to launch standalone, add this the Web App Manifest:
 
     "display": "standalone"
+    
 
-##### Juegos
+##### Games
 
-La mayoría de los juegos aprovecharán un manifiesto de inmediato. Se querrá iniciar la vasta
-mayoría de los juegos en pantalla completa y se fuerza una orientación
-específica.
+The majority of games will benefit from a manifest immediately. The vast majority of games will want to launch full-screen and forced a specific orientation.
 
-Si estás desarrollando un juego con desplazamiento vertical o como Flappy Birds entonces
-seguramente querrás que esté siempre en modo de retrato.
+If you are developing a vertical scroller or a game like Flappy Birds then you will most likely want your game to always be in portrait mode.
 
     "display": "fullscreen",
     "orientation": "portrait"
+    
 
-Si, por otro lado, estás creando juegos de rompecabezas o un juego como X-Com, entonces
-probablemente querrás que el juego siempre use la orientación horizontal.
+If on the other hand you are building a puzzler or a game like X-Com, then you will probably want the game to always use the landscape orientation.
 
     "display": "fullscreen",
     "orientation": "landscape"
+    
 
-##### Sitios de noticias
+##### News sites
 
-En la mayoría de los casos, los sitios de noticias son experiencias basadas en contenido puro. Naturalmente
-la mayoría de los desarrolladores no piensan en agregar un manifiesto a un sitio de noticias.  El manifiesto
-te permitirá definir qué iniciar (la portada de tu sitio de noticias) y
-cómo iniciarlo (pantalla completa o como una pestaña de navegador normal).
+News sites in most cases are pure content-based experiences. Most developers naturally wouldn't think of adding a manifest to a news site. The manifest will let you define what to launch (the front page of your news site) and how to launch it (fullscreen or as a normal browser tab).
 
-La elección depende de ti y de cómo crees que les gustaría a tus usuarios acceder a tu
-experiencia. Si quieres que tu sitio tenga todas las posibilidades del navegador chrome que
-pretendes para un sitio, puedes configurar la pantalla en `browser`.
+The choice is up to you and how you think your users will like to access your experience. If you want your site to have all the browser chrome that you would expect a site to have, you can set the display to `browser`.
 
     "display": "browser"
+    
 
-Si quieres que tu sitio de noticias se parezca a cómo la mayoría de las apps centradas en noticias tratan
-sus experiencias como app y quite todos los navegadores chrome similares a la web desde la IU, puedes hacer
-esto configurando la pantalla en `standalone`.
+If you want your news site to feel like the majority of news-centric apps treat their experiences as apps and remove all web-like chrome from the UI, you can do this by setting display to `standalone`.
 
     "display": "standalone"
+    
 
-### Simulación: esconder automáticamente la barra de direcciones.
+### Fake it: auto-hide the address bar
 
-Puedes "simular la pantalla completa" ocultando automáticamente la barra de direcciones de la siguiente manera:
+You can "fake fullscreen" by auto-hiding the address bar as follows:
 
     window.scrollTo(0,1);
+    
 
-Warning: Te lo digo como amigo. Existe. Es una cosa, pero
-         es una modificación. Por favor no lo uses. &mdash; Paul
+Caution: I am telling you this as a friend. It exists. It is a thing, but it is a hack. Please don't use it. &mdash; Paul
 
-Este es un método bastante simple, la página se carga y se le indica a la barra del navegador que
-se quite del camino. Desafortunadamente no es estandarizado y no es muy
-compatible. También tienes que trabajar en varias interpretaciones.
+This is a pretty simple method, the page loads and the browser bar is told to get out of the way. Unfortunately it is not standardized and not well supported. You also have to work around a bunch of quirks.
 
-Por ejemplo los navegadores a menudo restauran la posición en la página cuando el usuario
-retrocede en su navegación hasta esta. Usar `window.scrollTo` anula esto, que le resulta fastidioso
-al usuario. Para solucionar esto, tienes que almacenar la última posición en
-localStorage y abordar los casos extremos (por ejemplo, si el usuario tiene la
-página abierta en varias ventanas).
+For example browsers often restore the position on the page when the user navigates back to it. Using `window.scrollTo` overrides this, which annoys the user. To work around this you have to store the last position in localStorage, and deal with the edge cases (for example, if the user has the page open in multiple windows).
 
-## Pautas de la experiencia de usuario
+## UX guidelines
 
-Cuando estás creando un sitio que saca provecho de la pantalla completa, hay un
-número de cambios de experiencia de usuarios potenciales que tienes que tener en cuenta para
-crear un servicio que tus usuarios amarán.
+When you are building a site that takes advantage of full screen there are a number of potential user experience changes that you need to be aware of to be able to build a service your users will love.
 
-### No debes basarte en los controles de navegación
+### Don't rely on navigation controls
 
-No hay disponible un botón atrás de hardware o un gesto de actualización para iOS. Por lo tanto te tienes que
-asegurar de que los usuarios puedan navegar en toda la app sin bloquearse.
+iOS does not have a hardware back button or refresh gesture. Therefore you must ensure that users can navigate throughout the app without getting locked in.
 
-Puedes detectar fácilmente si estás ejecutando en un modo de pantalla completa o en un modo instalado
-en todas las principales plataformas.
+You can detect if you are running in a fullscreen mode or an installed mode easily on all the major platforms.
 
 #### iOS
 
-En iOS, puedes usar el valor booleano `navigator.standalone` para ver si el usuario ha
-iniciado o no desde la pantalla de inicio.
+On iOS you can use the `navigator.standalone` boolean to see if the user has launched from the home screen or not.
 
     if(navigator.standalone == true) {
       // My app is installed and therefore fullscreen
     }
+    
 
-#### El manifiesto de apps web (Chrome, Opera, Samsung)
+#### Web App Manifest (Chrome, Opera, Samsung)
 
-Cuando se inicia como una app instalada, Chrome no se ejecuta en una experiencia verdadera de pantalla completa
-de modo que el resultado de `document.fullscreenElement` es nulo y los selectores CSS
-no funcionan.
+When launching as an installed app, Chrome is not running in true fullscreen experience so `document.fullscreenElement` returns null and the CSS selectors don't work.
 
-Cuando el usuario solicita pantalla completa a través de un gesto en tu sitio, las API estándar de pantalla completa
-están disponibles incluso el pseudo selector CSS que te permite
-adaptar tu IU para reaccionar ante el estado de pantalla completa de la siguiente manera
+When the user requests fullscreen via a gesture on your site, the standard fullscreen API's are available including the CSS pseudo selector that lets you adapt your UI to react to the fullscreen state like the following
 
     selector:-webkit-full-screen {
       display: block; // displays the element only when in fullscreen
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-Si los usuarios inician su sitio desde la pantalla de inicio la consulta de medios `display-mode` se
-fijará en lo que se definió en el manifiesto de la app web. En el caso de
-pantalla completa pura será:
+If the users launches your site from the home screen the `display-mode` media query will be set to what was defined in the Web App Manifest. In the case of pure fullscreen it will be:
 
     @media (display-mode: fullscreen) {
-
+    
     }
+    
 
-Si el usuario inicia la app de modo independiente, la consulta de medios `display-mode`
-será `standalone`:
+If the user launches the application in standalone mode, the `display-mode` media query will be `standalone`:
 
     @media (display-mode: standalone) {
-
+    
     }
-
+    
 
 #### Firefox
 
-Cuando el usuario solicita pantalla completa a través de tu sitio o el usuario inicia la app en
-el modo de pantalla completa, todas las API estándar de pantalla completa están disponibles incluso el
-pseudo selector CSS que te permite adaptar tu IU para reaccionar ante el estado de pantalla completa
-de la siguiente manera:
+When the user requests fullscreen via your site or the user launches the app in fullscreen mode all the standard fullscreen API's are available, including the CSS pseudo selector, which lets you adapt your UI to react to the fullscreen state like the following:
 
     selector:-moz-full-screen {
       display: block; // hides the element when not in fullscreen mode
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
 #### Internet Explorer
 
-En IE, la pseudo clase CSS carece de un guión. Sin embargo, por otra parte, funciona de modo similar en
-Chrome y Firefox.
+In IE the CSS pseudo class lacks a hyphen, but otherwise works similarly to Chrome and Firefox.
 
     selector:-ms-fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-#### Especificación
+#### Specification
 
-La ortografía en la especificación coincide con la sintaxis que usa IE.
+The spelling in the specification matches the syntax used by IE.
 
     selector:fullscreen {
       display: block;
     }
-
+    
     selector {
       display: none; // hides the element when not in fullscreen mode
     }
+    
 
-### Mantén al usuario en la experiencia de pantalla completa
+### Keep the user in the fullscreen experience
 
-A veces la API de pantalla completa puede ser un poco exhaustiva. Los proveedores del navegador no quieren
-confinar a los usuarios en una página de pantalla completa de modo que han desarrollado mecanismos para salir
-de la pantalla completa tan pronto como puedan.  Esto significa que no puedes crear un
-sitio web de pantalla completa que abarque varias páginas porque:
+The fullscreen API can be a little finicky sometimes. Browser vendors don't want to lock users in a fullscreen page so they have developed mechanisms to break out of fullscreen as soon as they possibly can. This means you can't build a fullscreen website that spans multiple pages because:
 
-* Con el cambio de la URL programáticamente usando `window.location =
-  "http://example.com"` se sale de la pantalla completa.
-* Un usuario que hace clic en un vínculo externo dentro de tu página saldrá de la pantalla completa.
-* Con el cambio de la URL a través de la API `navigator.pushState` también se sale de la experiencia de
-  pantalla completa.
+* Changing the URL programmatically by using `window.location =
+"http://example.com"` breaks out of fullscreen.
+* A user clicking on an external link inside your page will exit fullscreen.
+* Changing the URL via the `navigator.pushState` API will also break out of the fullscreen experience.
 
-Si quieres mantener al usuario en una experiencia de pantalla completa, tienes dos opciones:
+You have two options if you want to keep the user in a fullscreen experience:
 
-1. Usar los mecanismos de la app web instalable para que activen la pantalla completa.
-2. Administrar tu IU y el estado de la app usando el # fragmento.
+1. Use the installable web app mechanisms to go fullscreen.
+2. Manage your UI and app state using the # fragment.
 
-Usando la #syntax para actualizar la url (window.location = "#somestate") y
-escuchando al evento `window.onhashchange` puedes usar la pila de historial
-propia del navegador para administrar cambios en el estado de la app, puedes permitir que el usuario use
-sus botones atrás de hardware u ofrezca una experiencia simple y programática de botón atrás
-usando la API de historial de la siguiente manera:
+By using the #syntax to update the url (window.location = "#somestate"), and listening to the `window.onhashchange` event you can use the browser's own history stack to manage changes in the application state, allow the user to use their hardware back buttons, or offer a simple programmatic back button experience by using the history API as follows:
 
     window.history.go(-1);
+    
 
-### Permitir que el usuario elija cuando activar la pantalla completa
+### Let the user choose when to go fullscreen
 
-No hay nada más molesto para el usuario que un sitio web que hace algo
-inesperado. Cuando un usuario navega hacia tu sitio, no intentes engañarlos para que accedan a la
-pantalla completa.
+There is nothing more annoying to the user than a website doing something unexpected. When a user navigates to your site don't try and trick them into fullscreen.
 
-No interceptes el primer evento táctil y llama a `requestFullscreen()`.
+Don't intercept the first touch event and call `requestFullscreen()`.
 
-1. Es molesto.
-2. Es posible que los navegadores le soliciten al usuario en algún momento el
-   permiso para que en la app se active la pantalla completa.
+1. It is annoying.
+2. Browsers may decided to prompt the user at some point in the future about allowing the app to take up the fullscreen.
 
-Si quieres iniciar la pantalla completa de las apps, piensa en el uso de las experiencias de instalación
-para cada plataforma.
+If you want to launch apps fullscreen think about using the install experiences for each platform.
 
-### No le envíes correo no deseado al usuario para que instale tu app en una pantalla de inicio
+### Don't spam the user to install your app to a home screen
 
-Si planeas ofrecer una experiencia de pantalla completa a través de los mecanismos de la app instalada
-se considerado con el usuario.
+If you plan on offering a fullscreen experience via the installed app mechanisms be considerate to the user.
 
-* Se discreto. Usa un banner o un pie de página para hacerles saber que puedes instalar la
-  app.
-* Si descartan la solicitud, no la muestres nuevamente.
-* En una primera visita de los usuarios, es poco probable que instalen la app a menos que
-  estén felices con tu servicio. Considera sugerirles la instalación después
-  de una interacción positiva en tu sitio.
-* Si un usuario visita tu sitio de modo regular y no instala la app, es muy poco probable que
-  instale tu app en el futuro. No les sigas enviando correo no deseado.
+* Be discreet. Use a banner or footer to let them know they can install the app.
+* If they dismiss the prompt, don't show it again.
+* On a users first visit they are unlikely to want to install the app unless they are happy with your service. Consider prompting them to install after a positive interaction on your site.
+* If a user visits your site regularly and they don't install the app, they are unlikely to install your app in the future. Don't keep spamming them.
 
-## Conclusión
+## Conclusion
 
-Mientras que no tengamos una API completamente estandarizada e implementada, con el uso de cierta
-información que se presenta en este artículo puedes compilar de modo sencillo experiencias que saquen provecho
-de la pantalla completa del usuario, independientemente del cliente.
+While we don't have a fully standardized and implemented API, using some of the guidance presented in this article you can easily build experiences that take advantage of the user's entire screen, irrespective of the client.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,99 +1,120 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 繪製是填入最終會合成到使用者螢幕上的像素之過程。 這往往是管道中所有任務耗時最長的一項，也是該儘可能避免的一項。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-{# wf_updated_on: 2015-03-19 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# 簡化繪製複雜性並降低繪製區域 {: .page-title }
+# Simplify Paint Complexity and Reduce Paint Areas {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-繪製是填入最終會合成到使用者螢幕上的像素之過程。 這往往是管道中所有任務耗時最長的一項，也是該儘可能避免的一項。
+Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
 ### TL;DR {: .hide-from-toc }
-- 變更變形或透明度之外的任何屬性，一定會觸發繪製。
-- 繪製往往是像素管道中最高成本的一部分；儘可能避免這個動作。
-- 透過層升階和動畫的協調流程，以減少繪製區域。
-- 使用 Chrome DevTools 繪製分析工具以評估繪製複雜性和成本；儘可能減少這個動作。
 
+* Changing any property apart from transforms or opacity always triggers paint.
+* Paint is often the most expensive part of the pixel pipeline; avoid it where you can.
+* Reduce paint areas through layer promotion and orchestration of animations.
+* Use the Chrome DevTools paint profiler to assess paint complexity and cost; reduce where you can.
 
-如果您觸發版面配置，就 _一定會觸發器繪製_，因為變更任何元素的幾何形狀代表其像素需要修正！
+## Triggering Layout And Paint
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="完整的像素管道。">
+If you trigger layout, you will *always trigger paint*, since changing the geometry of any element means its pixels need fixing!
 
-如果您變更非幾何形狀的屬性，如背景、文字顏色或陰影，也可能會觸發繪製。 在這些情況下不需要版面配置，而管道看起來會像這樣：
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="The full pixel pipeline." />
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="無版面配置的像素管道。">
+You can also trigger paint if you change non-geometric properties, like backgrounds, text color, or shadows. In those cases layout won’t be needed and the pipeline will look like this:
 
-## 使用 Chrome DevTools，以迅速識別出繪製瓶頸
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="The pixel pipeline without layout." />
 
-您可以使用 Chrome DevTools 以快速識別正在被繪製的區域。 前往 DevTools 並按您鍵盤上的 Esc 鍵。 前往出現的面板中的轉譯標籤，並選擇「顯示繪製長方形」：
+## Use Chrome DevTools to quickly identify paint bottlenecks
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg"  alt="這會在 DevTools 中顯示繪製長方形選項。">
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="The show paint rectangles option in DevTools.">
+  </figure>
+</div>
 
-在此選項開啟的情況下，每當發生繪製時，Chrome 都會閃綠色螢幕。 如果您看到整個螢幕閃綠色，或是看到您認為不應繪製的螢幕區域，那麼您應該再深入探究問題。
+You can use Chrome DevTools to quickly identify areas that are being painted. Go to DevTools and hit the escape key on your keyboard. Go to the rendering tab in the panel that appears and choose “Show paint rectangles”.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="每當繪製時，網頁就會閃綠色。">
+<div style="clear:both;"></div>
 
-Chrome DevTools 的時間軸中有一個選項會提供您更多資訊：繪製分析工具。 若要啟用它，前往「時間軸」，並核取頂部的「繪製」方塊。 _只有試圖分析繪製問題時，才開啟此功能_，因為這麼做會帶來額外負荷，並扭曲您的效能分析，這點很重要。 當您想進一步瞭解正在繪製的內容時，最適合使用它。
+With this option switched on Chrome will flash the screen green whenever painting happens. If you’re seeing the whole screen flash green, or areas of the screen that you didn’t think should be painted, then you should dig in a little further.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg"  alt="啟用 Chrome DevTools 中繪製分析的切換。">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="The page flashing green whenever painting occurs." />
 
-從這裡，您現在可以執行「時間軸」錄製，而繪製記錄將提供多出許多的詳細資料。 點擊在一個畫面中的繪製記錄，現在您可以存取得該畫面的繪製分析工具：
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="The toggle to enable paint profiling in Chrome DevTools.">
+  </figure>
+</div>
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg"  alt="叫出繪製分析工具的按鈕。">
+There’s an option in the Chrome DevTools timeline which will give you more information: a paint profiler. To enable it, go to the Timeline and check the “Paint” box at the top. It’s important to *only have this switched on when trying to profile paint issues*, as it carries an overhead and will skew your performance profiling. It’s best used when you want more insight into what exactly is being painted.
 
-按一下繪製分析工具會叫出檢視，讓您看到正在繪製什麼、其所費時間，以及所需的個別繪製呼叫：
+<div style="clear:both;"></div>
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler。">
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="The button to bring up the paint profiler." class="screenshot">
+  </figure>
+</div>
 
-此分析工具會讓您瞭解區域和複雜性 (事實上是繪製的所費時間) ，要是無法避免繪製，這兩個都是您可以試圖修正的地方。
+From here you can now run a Timeline recording, and paint records will carry significantly more detail. By clicking on a paint record in a frame you will now get access to the Paint Profiler for that frame:
 
-## 將移動或淡化的元素升階
+<div style="clear:both;"></div>
 
-繪製不一定是儲存至記憶體中的單一影像中。 事實上，有必要的話，有可能瀏覽器會繪製進多個影像中 -- 或稱合成器層。
+Clicking on the paint profiler brings up a view where you can see what got painted, how long it took, and the individual paint calls that were required:
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="合成器層的代表。">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler." />
 
-這種方法的好處在於，元素會定期重新繪製，或帶變形在螢幕上移動的元素，可以在不影響其他元素的情況下進行處理。 這是跟美術套裝程式一樣，如 Sketch、GIMP 或 Photoshop ，個別層可在其他層之上處理和合成，以建立最終的影像。
+This profiler lets you know both the area and the complexity (which is really the time it takes to paint), and both of these are areas you can look to fix if avoiding paint is not an option.
 
-建立一個新層的最好方法是使用 `will-change` CSS 屬性。 這方法在 Chrome、Opera、Firefox 瀏覽器中可行，而以 `transform` 的值，它會建立新的合成器層：
+## Promote elements that move or fade
 
+Painting is not always done into a single image in memory. In fact, it’s possible for the browser to paint into multiple images, or compositor layers, if necessary.
+
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="A representation of compositor layers." />
+
+The benefit of this approach is that elements that are regularly repainted, or are moving on screen with transforms, can be handled without affecting other elements. This is the same as with art packages like Sketch, GIMP, or Photoshop, where individual layers can be handled and composited on top of each other to create the final image.
+
+The best way to create a new layer is to use the `will-change` CSS property. This will work in Chrome, Opera and Firefox, and, with a value of `transform`, will create a new compositor layer:
 
     .moving-element {
       will-change: transform;
     }
     
 
-針對不支援 `will-change` 但得益於層建立的瀏覽器，例如 Safari 和 Mobile Safari，您需要(誤)用 3D 變形，以強制一個新層：
-
+For browsers that don’t support `will-change`, but benefit from layer creation, such as Safari and Mobile Safari, you need to (mis)use a 3D transform to force a new layer:
 
     .moving-element {
       transform: translateZ(0);
     }
     
 
-然而必須小心避免建立過多的層，因為每一個層都需要記憶體與管理。 在 [堅守純合成器屬性和管理層數目](stick-to-compositor-only-properties-and-manage-layer-count) 一節中裡，有更多的相關資訊。
+Care must be taken not to create too many layers, however, as each layer requires both memory and management. There is more information on this in the [Stick to compositor-only properties and manage layer count](stick-to-compositor-only-properties-and-manage-layer-count) section.
 
-如果您已經將一個元素升階到新層，請使用 DevTools 以確認如此做會帶給您效能好處。 **未先分析，請勿將元素升階。**
+If you have promoted an element to a new layer, use DevTools to confirm that doing so has given you a performance benefit. **Don't promote elements without profiling.**
 
-## 減少繪製區域
+## Reduce paint areas
 
-然而有時候元素已升階，但繪製工作仍有必要進行。 繪製問題的一個重大挑戰在於，瀏覽器會聯合需要繪製的兩個區域，而這可能會導致整個螢幕重新繪製。 因此比方說，如果您在網頁頂部有一個固定標頭，而在畫面底部繪製某樣項目，則整個螢幕最終可能會被重新繪製。
+Sometimes, however, despite promoting elements, paint work is still necessary. A large challenge of paint issues is that browsers union together two areas that need painting, and that can result in the entire screen being repainted. So, for example, if you have a fixed header at the top of the page, and something being painted at the bottom the screen, the entire screen may end up being repainted.
 
-Note: 「在固定的高 DPI 螢幕元素上，位置會自動升階至本身的合成器層。 但低 DPI 裝置則非如此，因為升階會將文字轉譯從次像素變更為灰階，而且層升階必須以手動完成。」
+Note: On High DPI screens elements that are fixed position are automatically promoted to their own compositor layer. This is not the case on low DPI devices because the promotion changes text rendering from subpixel to grayscale, and layer promotion needs to be done manually.
 
-減少繪製區域往往是協調您的動畫和轉換不要經常重疊，或設法避免對網頁的某些部分進行動畫處理的流程。
+Reducing paint areas is often a case of orchestrating your animations and transitions to not overlap as much, or finding ways to avoid animating certain parts of the page.
 
-## 簡化繪製複雜性 
- 提到繪製的過程，有些項目比其他項目來得高成本。 例如，任何涉及模糊 (像陰影) 的項目會花更長時間才能繪製 -- 例如 -- 繪製一個紅色方塊。 就 CSS 而言，這個現象不一定顯而易見：`background: red;` 和 `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` 看起來不一定有相當大的效能特性，但實際上卻是。
+## Simplify paint complexity
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg"  alt="繪製螢幕一部分所需的時間。">
+<div class="attempt-right">
+  <figure>
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="The time taken to paint part of the screen.">
+  </figure>
+</div>
 
-以上的繪製分析工具可讓您判斷，是否需要尋找其他方式來達到您的最終效果。 問問您自己，是否可以使用更低成本的一組樣式或替代方式，實現您的最終結果。
+When it comes to painting, some things are more expensive than others. For example, anything that involves a blur (like a shadow, for example) is going to take longer to paint than -- say -- drawing a red box. In terms of CSS, however, this isn’t always obvious: `background: red;` and `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` don’t necessarily look like they have vastly different performance characteristics, but they do.
 
-儘可能在過程中避免繪製動作，尤其是動畫的過程，因為每個畫面所需的 **10ms** 通常不足以讓繪製工作完成，尤其是在行動裝置上。
+The paint profiler above will allow you to determine if you need to look at other ways to achieve effects. Ask yourself if it’s possible to use a cheaper set of styles or alternative means to get to your end result.
 
+Where you can you always want to avoid paint during animations in particular, as the **10ms** you have per frame is normally not long enough to get paint work done, especially on mobile devices.
 
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

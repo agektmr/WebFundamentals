@@ -1,147 +1,93 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: La composizione è il momento in cui vengono raggruppate le parti della pagina disegnate per la visualizzazione sullo schermo.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Compositing is where the painted parts of the page are put together for displaying on screen.
 
-{# wf_updated_on: 2017-11-29 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Compositing #}
 
-# Utilizza proprietà del componente di composizione e gestisci il conteggio dei livelli {: .page-title}
+# Stick to Compositor-Only Properties and Manage Layer Count {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-La composizione è il momento in cui vengono raggruppate le parti della pagina
-disegnate per la visualizzazione sullo schermo.
+Compositing is where the painted parts of the page are put together for displaying on screen.
 
-Esistono due fattori chiave in quest'area che influiscono sulle prestazioni
-della pagina: il numero di livelli di composizione che devono essere gestiti e
-le proprietà che si utilizzano per le animazioni.
+There are two key factors in this area that affect page performance: the number of compositor layers that need to be managed, and the properties that you use for animations.
 
 ### TL;DR {: .hide-from-toc }
 
-- Preferisci cambiamenti di trasformazione e opacità per le tue animazioni.
-- Promuovi elementi in movimento con `will-change` o `translateZ` .
-- Evitare l'uso eccessivo delle regole di promozione: i livelli richiedono
-memoria e gestione.
+* Stick to transform and opacity changes for your animations.
+* Promote moving elements with `will-change` or `translateZ`.
+* Avoid overusing promotion rules; layers require memory and management.
 
-## Utilizza le modifiche di trasformazione e opacità per le animazioni
+## Use transform and opacity changes for animations
 
-La versione più performante della pixel  pipeline evita sia il layout che il
-paint e richiede solo modifiche di composizione:
+The best-performing version of the pixel pipeline avoids both layout and paint, and only requires compositing changes:
 
-<img
-src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"
-alt="The pixel pipeline with no layout or paint.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-no-layout-paint.jpg"  alt="The pixel pipeline with no layout or paint." />
 
-Per raggiungere questo obiettivo è necessario attenersi alle proprietà
-modificabili che il compositore può gestire da solo. Oggi ci sono solo due
-proprietà per le quali è vero: `transform` e `opacity` :
+In order to achieve this you will need to stick to changing properties that can be handled by the compositor alone. Today there are only two properties for which that is true - `transform`s and `opacity`:
 
-<img
-src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"
-alt="The properties you can animate without triggering layout or paint.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/safe-properties.jpg"  alt="The properties you can animate without triggering layout or paint." />
 
-Il limite d'uso di `transform` e `opacity` è che l'elemento su cui si modificano
-queste proprietà deve trovarsi sul *proprio livello di composizione* . Per
-creare un livello devi promuovere l'elemento, che tratteremo in seguito.
+The caveat for the use of `transform`s and `opacity` is that the element on which you change these properties should be on *its own compositor layer*. In order to make a layer you must promote the element, which we will cover next.
 
-Note: se sei preoccupato che potresti non essere in grado di limitare le tue
-animazioni solo a queste proprietà, dai un'occhiata al [principio
-FLIP](https://aerotwist.com/blog/flip-your-animations) , che può aiutarti a
-rimappare le animazioni in cambiamenti di trasformazioni e opacità da proprietà
-più onerose.
+Note: If you’re concerned that you may not be able to limit your animations to just those properties, take a look at the [FLIP principle](https://aerotwist.com/blog/flip-your-animations), which may help you remap animations to changes in transforms and opacity from more expensive properties.
 
-## Promuovi elementi che pensi di animare
+## Promote elements that you plan to animate
 
-Come accennato nella sezione " [Semplifica la complessità di paint e riduci le 
-aree soggette a paint](simplify-paint-complexity-and-reduce-paint-areas) ",
-dovresti promuovere elementi che hai intenzione di animare (entro limiti
-ragionevoli, non esagerare!) Sul loro stesso livello:
+As we mentioned in the “[Simplify paint complexity and reduce paint areas](simplify-paint-complexity-and-reduce-paint-areas)” section, you should promote elements that you plan to animate (within reason, don’t overdo it!) to their own layer:
 
-```
-.moving-element {
-  will-change: transform;
-}
-```
+    .moving-element {
+      will-change: transform;
+    }
+    
 
-Oppure, per i browser meno recenti o per quelli che non supportano la modifica:
+Or, for older browsers, or those that don’t support will-change:
 
-```
-.moving-element {
-  transform: translateZ(0);
-}
-```
+    .moving-element {
+      transform: translateZ(0);
+    }
+    
 
-Questo segnala al browser l'avviso che i cambiamenti sono in arrivo e, a seconda
-di ciò che si prevede di cambiare, il browser può potenzialmente fare
-predisposizioni, come creare livelli di composizione.
+This gives the browser the forewarning that changes are incoming and, depending on what you plan to change, the browser can potentially make provisions, such as creating compositor layers.
 
-## Gestisci i livelli ed evita troppi livelli
+## Manage layers and avoid layer explosions
 
-È molto allettante sapere che i livelli spesso aiutano le prestazioni per
-promuovere tutti gli elementi della pagina con qualcosa di simile al seguente:
+It’s perhaps tempting, then, knowing that layers often help performance, to promote all the elements on your page with something like the following:
 
-```
-* {
-  will-change: transform;
-  transform: translateZ(0);
-}
-```
+    * {
+      will-change: transform;
+      transform: translateZ(0);
+    }
+    
 
-Il che è un modo indiretto per dire che vorresti promuovere ogni singolo
-elemento della pagina. Il problema qui è che ogni livello creato richiede
-memoria e risorse per la gestione che non sono gratuite. In effetti, su
-dispositivi con memoria limitata l'impatto sulle prestazioni può superare di
-gran lunga qualsiasi vantaggio derivante dalla creazione di un livello. Le
-texture di ogni livello devono essere caricate nella GPU quindi ci sono
-ulteriori limiti in termini di larghezza di banda tra CPU e GPU e memoria
-disponibile per le texture nella GPU.
+Which is a roundabout way of saying that you’d like to promote every single element on the page. The problem here is that every layer you create requires memory and management, and that’s not free. In fact, on devices with limited memory the impact on performance can far outweigh any benefit of creating a layer. Every layer’s textures needs to be uploaded to the GPU, so there are further constraints in terms of bandwidth between CPU and GPU, and memory available for textures on the GPU.
 
-Warning: non promuovere elementi non necessari.
+Warning: Do not promote elements unnecessarily.
 
-## Utilizza Chrome DevTools per comprendere i livelli nella tua app
+## Use Chrome DevTools to understand the layers in your app
 
 <div class="attempt-right">
   <figure>
-<img
-src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg"
-alt="The toggle for the paint profiler in Chrome DevTools.">
+    <img src="images/stick-to-compositor-only-properties-and-manage-layer-count/paint-profiler.jpg" alt="The toggle for the paint profiler in Chrome DevTools.">
   </figure>
 </div>
 
-Per avere una comprensione dei livelli nell'applicazione e perché un elemento ha
-un determinato livello devi abilitare il Paint profiler nella timeline degli
-Strumenti per Sviluppatori di Chrome:
+To get an understanding of the layers in your application, and why an element has a layer you must enable the Paint profiler in Chrome DevTools’ Timeline:
 
 <div style="clear:both;"></div>
 
-Con questo abilitato dovresti fare una registrazione. Al termine della
-registrazione potrai fare clic sui singoli frame che si trovano tra le barre dei
-frame per secondo ed i dettagli:
+With this switched on you should take a recording. When the recording has finished you will be able to click individual frames, which is found between the frames-per-second bars and the details:
 
-<img
-src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"
-alt="A frame the developer is interested in profiling.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/frame-of-interest.jpg"  alt="A frame the developer is interested in profiling." />
 
-Cliccando su questo ti verrà fornita una nuova opzione nei dettagli: il layer
-tab.
+Clicking on this will provide you with a new option in the details: a layer tab.
 
-<img
-src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"
-alt="The layer tab button in Chrome DevTools.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-tab.jpg"  alt="The layer tab button in Chrome DevTools." />
 
-Questa opzione mostrerà una nuova vista che ti consente di eseguire una
-panoramica, una scansione e uno zoom su tutti i livelli durante quel fotogramma,
-insieme ai motivi per cui ogni livello è stato creato.
+This option will bring up a new view that allows you to pan, scan and zoom in on all the layers during that frame, along with reasons that each layer was created.
 
-<img
-src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"
-alt="The layer view in Chrome DevTools.">
+<img src="images/stick-to-compositor-only-properties-and-manage-layer-count/layer-view.jpg"  alt="The layer view in Chrome DevTools." />
 
-Usando questa vista puoi tenere traccia del numero di livelli che hai. Se stai
-spendendo molto tempo nel compositing durante azioni critiche per le prestazioni
-come lo scorrimento o le transizioni (dovresti mirare a circa **4-5 ms** ). Puoi
-usare queste informazioni per vedere quanti livelli sono in uso e perché sono
-stati creati e da lì gestire il conteggio dei livelli della tua app.
+Using this view you can track the number of layers you have. If you’re spending a lot time in compositing during performance-critical actions like scrolling or transitions (you should aim for around **4-5ms**), you can use the information here to see how many layers you have, why they were created, and from there manage layer counts in your app.
 
-Translated by
-{% include "web/_shared/contributors/lucaberton.html" %}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

@@ -1,24 +1,18 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Configure seu espaço de trabalho para incluir um bom editor e ferramentas de compilação e depuração para a web de vários dispositivos.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up your workspace to include a good editor, debugging, and build tools for the multi-device web.
 
-{# wf_updated_on: 2015-04-13 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2015-04-13 #}
 
-# Fundamentos {: .page-title }
+# Getting Started {: .page-title }
 
-Configure seu espaço de trabalho para incluir um bom editor e ferramentas de compilação e depuração para a web de vários dispositivos.
+Set up your workspace to include a good editor, debugging, and build tools for the multi-device web.
 
-Tempo é um fator importantíssimo para manter boa produtividade. Seu ambiente de desenvolvimento é onde você gasta a maior parte do seu tempo. Prepare-se para o sucesso incluindo um editor extensível e sólido e ferramentas de desenvolvimento e depuração poderosas.
+Time is a huge factor in staying productive. Your development environment is where you spend most of yours. Set yourself up for success by including a strong, extensible editor and powerful debugging & development tools.
 
-* [Configurar o editor](setup-editor)
-* [Configurar persistência com os Espaços de trabalho do DevTools](setup-workflow)
-* [Configurar pré-processadores de CSS e JS](setup-preprocessors)
-* [Configurar atalhos de linha de comando](setup-shortcuts)
-* [Configurar extensões de navegador](setup-extensions)
-* [Configurar ferramentas de compilação](setup-buildtools)
+* [Setup Your Editor](setup-editor)
+* [Setup Persistence with DevTools Workspaces](setup-workflow)
+* [Setup CSS and JS Preprocessors](setup-preprocessors)
+* [Setup Command Line Shortcuts](setup-shortcuts)
+* [Setup Browser Extensions](setup-extensions)
+* [Setup Your Build Tools](setup-buildtools)
 
-Quando acabar, continue aprendendo mais sobre o [Chrome Developer Tools (DevTools)](/web/tools/chrome-devtools), a ferramenta embutida no Chrome que ajuda a desenvolver, testar e depurar suas páginas.
-
-
-{# wf_devsite_translation #}
+When you're done, continue to learn more about the [Chrome Developer Tools (DevTools)](/web/tools/chrome-devtools), Chrome's built-in tool that helps you develop, test, and debug your pages.

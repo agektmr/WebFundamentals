@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Obtén más información sobre las animaciones y su uso en apps y sitios modernos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Animaciones {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Las animaciones ocupan un lugar muy importante a la hora de lograr que las aplicaciones y los sitios web resulten atractivos. Los usuarios desean usar interfaces de usuario altamente receptivas e interactivas. Sin embargo, animar tu interfaz no es necesariamente una tarea simple. ¿Qué se debe animar? ¿En qué momento? ¿Qué tipo de apariencia debe tener la animación?
-
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-* Usa las animaciones como una forma de dar vida a tus proyectos.
-* Las animaciones deben ser coherentes con la interacción del usuario.
-* Ten cuidado con las propiedades que animas: algunas consumen más recursos que otras.
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-## Elección de los objetos adecuados que se animarán
+## Choose the right things to animate
 
-Las buenas animaciones agregan un toque de diversión y atractivo a los proyectos que presentes a tus usuarios. Puedes animar prácticamente todo lo que desees, ya sean anchos, alturas, posiciones, colores o fondos; pero deberás tener en cuenta los posibles cuellos de botella en el rendimiento y la forma en que las animaciones afectarán la personalidad de tu app. Las animaciones entrecortadas o mal elegidas pueden afectar negativamente la experiencia del usuario, por eso deben tener un buen rendimiento y deben ser adecuadas.
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-## Uso de animaciones para respaldar las interacciones
+## Use animations to support interactions
 
-No realices animaciones solamente porque puedes hacerlo; esto resulta fastidioso para los usuarios y se puede percibir como algo entorpecedor. En su lugar, usa animaciones colocadas estratégicamente para _reforzar_ las interacciones del usuario. Si pulsan el ícono del menú, deslizan para que aparezca un panel lateral de navegación, o si pulsan un botón, tal vez puedas usar un brillo o rebote sutiles para mostrar la interacción. Evita las animaciones que interrumpan o entorpezcan la actividad del usuario sin necesidad.
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-## Evita animar propiedades que consuman muchos recursos
+## Avoid animating expensive properties
 
-Si hay algo peor que las animaciones mal colocadas, esas son las animaciones con las cuales la página se entrecorta. Este tipo de animación hace que los usuarios se sientan frustrados y molestos, y probablemente preferirían que no incluyeras animaciones.
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-Es más difícil cambiar algunas propiedades que otras, y es por eso que algunas pueden verse entrecortadas. Entonces, por ejemplo, cambiar la propiedad `box-shadow` de un elemento requiere una operación de pintura que consume mucho más recursos que cambiar, por ejemplo, el color de su texto. Del mismo modo, es probable que cambiar la propiedad `width` de un elemento implique más recursos que cambiar su propiedad `transform`.
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-Puedes obtener más información sobre las consideraciones de rendimiento de las animaciones en la guía [Animaciones y rendimiento](animations-and-performance), pero si quieres el TL;DR, solo modifica transforms y opacity, y usa `will-change`. Si deseas saber exactamente el trabajo que se desencadena al animar una propiedad determinada, consulta [Desencadenadores de CSS](http://csstriggers.com).
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

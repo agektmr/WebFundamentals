@@ -1,32 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“網站不使用 Web SQL”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Web SQL" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# 網站不使用 Web SQL {: .page-title }
+# Avoids Web SQL {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+<aside class="warning">
+  This audit is deprecated. See <a href="https://github.com/googlechrome/lighthouse/pull/6293"
+  class="external" rel="noopener">PR #6293</a>.
+</aside>
 
-Web SQL 已棄用。請參閱 [Web SQL 數據庫][spec]瞭解更多信息。
+## Overview {: #overview }
 
-[spec]: https://www.w3.org/TR/webdatabase/
+The W3C stopped actively maintaining the Web SQL spec in 2010 and has no plans to maintain it any further. See [Web SQL Database](https://www.w3.org/TR/webdatabase/){: .external rel="noopener" target="_blank" }.
 
-## 如何通過此審查 {: #how }
+## Recommendations {: #recommendations }
 
-請考慮將您的 Web SQL 數據庫替換爲一個可替代它的現代數據庫（如 [IndexedDB][indexeddb]）。
+Consider replacing your Web SQL database with a modern alternative, such as [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
 
+See [Web Storage Overview](/web/fundamentals/instant-and-offline/web-storage/) for a discussion of other available storage options.
 
-有關其他可用存儲選擇的討論，請參閱[網絡存儲概覽][overview]。
+## More information {: #more-info }
 
+Lighthouse checks if the page has a Web SQL database instance.
 
-[indexeddb]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-[overview]: /web/fundamentals/instant-and-offline/web-storage/
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 檢查此頁面是否具有一個 Web SQL 數據庫實例。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

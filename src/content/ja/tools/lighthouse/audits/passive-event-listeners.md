@@ -1,62 +1,41 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「Passive Event Listener を使用してサイトでのスクロール パフォーマンスを向上させる」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses Passive Event Listeners to Improve Scrolling Performance" Lighthouse audit.
 
-{# wf_updated_on:2016-11-30 #}
-{# wf_published_on:2016-11-30 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-#  Passive Event Listener を使用してサイトでのスクロール パフォーマンスを向上させる {: .page-title }
+# Uses Passive Event Listeners to Improve Scrolling Performance {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-タップやホイールのイベントリスナに `passive` オプションを指定すると、スクロールのパフォーマンスを向上させることができます。
+Setting the `passive` option on your touch and wheel event listeners can improve scrolling performance.
 
+See [Improving Scrolling Performance with Passive Event Listeners](/web/updates/2016/06/passive-event-listeners) for an overview.
 
-概要については、[Passive Event Listener を使用してスクロールのパフォーマンスを改善する][blog]をご覧ください。
+See the [Explainer](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md) in the passive event listener specification for a technical deep-dive.
 
+## Recommendations {: #recommendations }
 
-技術的な詳細については、Passive Event Listener の仕様の [Explainer][explainer] をご確認ください。
+Add the `passive` flag to all of the event listeners that Lighthouse has identified. In general, add the `passive` flag to every `wheel`, `mousewheel`, `touchstart`, and `touchmove` event listener that does not call `preventDefault()`.
 
-
-[blog]: /web/updates/2016/06/passive-event-listeners
-[explainer]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
-
-##  監査に合格する方法 {: #how }
-
-Lighthouse で特定されたすべてのイベントリスナに `passive` フラグを追加します。
-一般的に、`preventDefault()`
-を呼び出さない `wheel`、`mousewheel`、`touchstart`、`touchmove` のイベントリスナには、すべて `passive` フラグを追加してください。
-
-
-Passive Event Listener に対応したブラウザでは、フラグを設定するように、簡単にリスナを `passive` として指定できます。
-
+In browsers that support passive event listeners, marking a listener as `passive` is as easy as setting a flag:
 
     document.addEventListener('touchstart', onTouchStart, {passive: true});
+    
 
-ただし、Passive Event Listener に対応していないブラウザの場合は、3 つ目のパラメータはイベントを伝搬または捕捉するかを示すブール値になります。
-上記の構文を使用すると、意図しない結果が生じる場合があります。
+However, in browsers that do not support passive event listeners, the third parameter is a boolean to indicate whether the event should bubble or capture. So, using the syntax above may cause unintended consequences.
 
-Passive Event Listener を適切に実装する方法については、[Feature Detection][polyfill] でポリフィルをご確認ください。
+See the polyfill in [Feature Detection](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection) to learn how to safely implement passive event listeners.
 
+## More information {: #more-info }
 
-[polyfill]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection
+Lighthouse uses the following algorithm to flag potential passive event listener candidates:
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+1. Collect all event listeners on the page.
+2. Filter out non-touch and non-wheel listeners.
+3. Filter out listeners that call `preventDefault()`.
+4. Filter out listeners that are from a different host than the page.
 
-Lighthouse では以下のアルゴリズムに基づいて、Passive Event Listener を使用すべきリスナを報告します。
+Lighthouse filters out listeners from different hosts because you probably don't have control over these scripts. Because of this, note that Lighthouse's audit does not represent the full scroll performance of your page. There may be third-party scripts that are harming your page's scroll performance, but these aren't listed in your Lighthouse report.
 
+## Feedback {: #feedback }
 
-1. ページ上のイベントリスナをすべて検出する。
-1. タップまたはホイール以外のリスナを除外する。
-1. `preventDefault()` を呼び出すリスナを除外する。
-1. ページとホストが異なるリスナを除外する。
-
-
-Lighthouse では、別のホスト上のスクリプトは制御不可能とみなされるため、ホストが異なるリスナは除外されます。
-そのため、Lighthouse の監査では、全体的なページ スクロールのパフォーマンスを評価しているわけではない点に注意してください。
-サードパーティーのスクリプトがページ スクロールのパフォーマンスに悪影響を及ぼしていたとしても、それらのスクリプトは Lighthouse
-のレポートには表示されません。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

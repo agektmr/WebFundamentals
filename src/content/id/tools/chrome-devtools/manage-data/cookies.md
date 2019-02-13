@@ -1,102 +1,86 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Periksa dan hapus cookie dari panel Application.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and delete cookies from the Application panel.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Memeriksa dan Menghapus Cookie {: .page-title }
+# Inspect and Delete Cookies {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Periksa dan hapus cookie dari panel
-<strong>Application</strong>.
+Inspect and delete cookies from the
+<strong>Application</strong> panel.
 
-![panel cookies](imgs/cookies.png)
-
+![cookies pane](imgs/cookies.png)
 
 ### TL;DR {: .hide-from-toc }
-- Tampilkan informasi detail tentang cookie, seperti nama, nilai, domain, ukuran, dan sebagainya.
-- Hapus satu cookie, beberapa cookie dari domain yang dipilih, atau semua cookie dari semua domain.
 
+* View detailed information about a cookie, such as its name, value, domain, size, and more.
+* Delete a single cookie, cookies from a selected domain, or all cookies from all domains.
 
-## Ringkasan {:#cookies}
+## Overview {:#cookies}
 
-Gunakan panel **Cookies** untuk menampilkan dan menghapus cookie. Anda tidak bisa modifikasi nilai-nilai
-cookie.
+Use the **Cookies** pane to view and delete cookies. You cannot modify cookie values.
 
-![panel cookies][cookies]
+![cookies pane](/web/tools/chrome-devtools/manage-data/imgs/cookies.png)
 
-Cookie dicantumkan menurut domain. Ini termasuk dokumen utama serta bingkai
-yang bersarang. Memilih salah satu "kelompok bingkai" ini akan menampilkan semua cookie, untuk
-semua sumber daya, untuk semua bingkai di kelompok tersebut. Ada dua akibat
-pengelompokan ini yang harus diperhatikan:
+Cookies are listed by domain. This includes the main document as well as all nested frames. Selecting one of these “frame groups” displays all cookies, for all resources, for all frames in that group. There are two consequences of this grouping to be aware of:
 
-* Cookie dari domain yang berbeda bisa muncul di kelompok bingkai yang sama.
-* Cookie yang sama mungkin muncul dalam sejumlah grup bingkai.
+* Cookies from different domains may appear in the same frame group.
+* The same cookie may appear in several frame groups.
 
-[cookies]: /web/tools/chrome-devtools/manage-data/imgs/cookies.png
+## Fields {:#fields}
 
-## Bidang-bidang {:#fields}
-
-Bidang-bidang berikut disediakan untuk setiap cookie:
+The following fields are provided for each cookie:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Bidang Cookie &amp; Keterangan</th>
+      <th colspan="2">Cookie Field &amp; Description</th>
     </tr>
   </thead>
   <tbody>
         <tr>
       <td data-th="Cookie Field">Name</td>
-      <td data-th="Description">Nama cookie.</td>
+      <td data-th="Description">The cookie's name.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Value</td>
-      <td data-th="Description">Nilai cookie.</td>
+      <td data-th="Description">The cookie's value.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Domain</td>
-      <td data-th="Description">Domain cookie.</td>
+      <td data-th="Description">The cookie's domain.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Path</td>
-      <td data-th="Description">Jalur cookie.</td>
+      <td data-th="Description">The cookie's path.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Expires / Maximum Age</td>
-      <td data-th="Description">Waktu kedaluwarsa atau usia maksimum cookie. Untuk cookie sesi, bidang ini selalu ditampilkan sebagai "Session".</td>
+      <td data-th="Description">The cookie's expiration time, or maximum age. For session cookies, this field is always "Session".</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">Size</td>
-      <td data-th="Description">Ukuran cookie dalam byte.</td>
+      <td data-th="Description">The cookie's size in bytes.</td>
     </tr>
     <tr>
       <td data-th="Cookie Field">HTTP</td>
-      <td data-th="Description">Jika ada, menunjukkan bahwa cookie harus digunakan melalui HTTP saja dan perubahan JavaScript tidak diizinkan.</td>
+      <td data-th="Description">If present, indicates that cookies should be used only over HTTP, and JavaScript modification is not allowed.</td>
     </tr>
     <tr>
-      <td data-th="Cookie Field">Aman</td>
-      <td data-th="Description">Jika ada, menunjukkan bahwa komunikasi untuk cookie ini harus melalui transmisi yang dienkripsi.</td>
+      <td data-th="Cookie Field">Secure</td>
+      <td data-th="Description">If present, indicates that communication for this cookie must be over an encrypted transmission.</td>
     </tr>
   </tbody>
 </table>
 
-## Menghapus cookie {:#delete}
+## Delete cookies {:#delete}
 
-Ada beberapa cara untuk menghapus cookie:
+There are a few ways you can delete cookies:
 
-* Pilih cookie dan tekan tombol **delete**
-  (![tombol delete][delete]{:.inline}) untuk menghapus cookie ini saja.
-* Tekan tombol **clear** (![tombol clear][cos]{:.inline}) untuk menghapus semua
-  cookie untuk kelompok bingkai yang ditetapkan.
-* Klik kanan nilai **Domain** cookie dan pilih **Clear all
- dari "..."** (**"..."** adalah nama domain) untuk menghapus semua cookie
- dari domain tersebut.
+* Select a cookie and press the **delete** button (![delete button](imgs/delete.png){:.inline}) to delete just that cookie.
+* Press the **clear** button (![clear button](imgs/clear-object-store.png){:.inline}) to delete all cookies for the specified frame group.
+* Right-click on the **Domain** value of a cookie and select **Clear all from "..."** (where **"..."** is the name of the domain) to delete all cookies from that domain.
 
-[delete]: imgs/delete.png
-[cos]: imgs/clear-object-store.png
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

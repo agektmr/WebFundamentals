@@ -1,132 +1,89 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:请遵循此互动指南，了解如何使用 DevTools 诊断强制同步布局。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Follow along with this interactive guide to learn how to use DevTools to diagnose forced synchronous layouts.
 
-{# wf_updated_on: 2016-03-31 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 诊断强制同步布局 {: .page-title }
+# Diagnose Forced Synchronous Layouts {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-了解如何使用 DevTools 诊断强制同步布局。
+Warning: This page is deprecated. See [Get Started With Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance) for an up-to-date tutorial on forced synchronous layouts.
 
+Learn how to use DevTools to diagnose forced synchronous layouts.
 
-在本指南中，您将学习如何通过确定和解决实时演示中的问题调试[强制同步布局][fsl]。
-演示使用 [`requestAnimationFrame()`][raf] 对图像进行动画处理，这是处理基于帧的动画的推荐方法。不过，动画中会有大量的卡顿。
-您的目标是确定卡顿的原因并解决问题，以便演示以流畅的 60 FPS 运行。
+In this guide you learn how to debug [forced synchronous layouts](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) by identifying and fixing issues in a live demo. The demo animates images using [`requestAnimationFrame()`](/web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes), which is the recommended approach for frame-based animation. However, there's a considerable amount of jank in the animation. Your goal is to identify the cause of the jank and fix the issue so that the demo runs at a silky-smooth 60 FPS.
 
+## Gather data
 
-[fsl]: /web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts
+First, you need to capture data so that you can understand exactly what happens as your page runs.
 
-[raf]: /web/fundamentals/performance/rendering/optimize-javascript-execution#use-requestanimationframe-for-visual-changes
+1. Open the [demo](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html).
+2. Open the **Timeline** panel of DevTools.
+3. Enable the **JS Profile** option. When analyzing the flame chart later, this option will let you see exactly which functions were called. 
+4. Click **Start** on the page to start the animation.
+5. Click the **Record** button on the Timeline panel to start the Timeline recording. 
+6. Wait two seconds.
+7. Click the **Record** button again to stop the recording. 
 
+When you are finished recording you should see something like the following on the Timeline panel.
 
-## 收集数据
+![timeline recording of janky demo](imgs/demo-recording.png)
 
-首先，您需要捕获数据，以便准确了解页面运行时会发生什么。
+## Identify problem
 
+Now that you have your data, it's time to start making sense of it.
 
-1. 打开[演示](https://googlesamples.github.io/web-fundamentals/tools/chrome-devtools/rendering-tools/forcedsync.html)。
-1. 打开 DevTools 的 **Timeline** 面板。
-1. 启用 **JS Profile** 选项。稍后分析火焰图时，您可以通过此选项准确地查看调用了哪些函数。
+At a glance, you can see in the **Summary** pane of your Timeline recording that the browser spent most of its time rendering. Generally speaking, if you can [optimize your page's layout operations](/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout), you may be able to reduce time spent rendering.
 
-1. 点击页面上的 **Start** 启动动画。
-1. 点击 Timeline 面板上的 **Record** 按钮启动 Timeline 记录。
+![Timeline summary](imgs/summary.png)
 
-1. 等待两秒。
-1. 再次点击 **Record** 按钮停止记录。
+Now move your attention to the pink bars just below the **Overview** pane. These represent frames. Hover over them to see more information about the frame.
 
-完成记录后，您在 Timeline 面板上应看到如下所示的内容。
+![long frame](imgs/long-frame.png)
 
+The frames are taking a long time to complete. For smooth animations you want to target 60 FPS.
 
-![卡顿演示的 Timeline 记录](imgs/demo-recording.png)
+Now it's time to diagnose exactly what is wrong. Using your mouse, [zoom in](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom) on a call stack.
 
-## 确定问题
+![zoomed timeline recording](imgs/zoom.png)
 
-现在，您已获取数据，可以着手弄清楚它们了。
+The top of the stack is an `Animation Frame Fired` event. The function that you passed to `requestAnimationFrame()` is called whenever this event is fired. Below `Animation Frame Fired` you see `Function Call`, and below that you see `update`. You can infer that a method called `update()` is the callback for `requestAnimationFrame()`.
 
-您可以在 Timeline 记录的 **Summary** 窗格中一眼看出浏览器在渲染上花费的时间最多。
-一般来说，如果您可以[优化页面布局操作][layout]，就可以减少花费在渲染上的时间。
+Note: This is where the **JS Profile** option that you enabled earlier is useful. If it was disabled, you would just see `Function Call`, followed by all the small purple events (discussed next), without details on exactly which functions were called.
 
+Now, focus your attention on all of the small purple events below the `update` event. The top part of many of these events are red. That's a warning sign. Hover over these events and you see that DevTools is warning you that your page may be a victim of forced reflow. Forced reflow is just another name for forced synchronous layouts.
 
+![hovering over layout event](imgs/layout-hover.png)
 
-![Timeline 摘要](imgs/summary.png)
+Now it's time to take a look at the function which is causing all of the forced synchronous layouts. Click on one of the layout events to select it. In the Summary pane you should now see details about this event. Click on the link under **Layout Forced** (`update @ forcedsync.html:457`) to jump to the function definition.
 
-现在，请将注意力转移到 **Overview** 窗格下方的粉色条形上。
-这些表示帧。将鼠标悬停在上面可以查看与帧相关的更多信息。
+![jump to function definition](imgs/jump.png)
 
+You should now see the function definition in the **Sources** panel.
 
-![长时间帧](imgs/long-frame.png)
+![function definition in sources panel](imgs/definition.png)
 
-完成这些帧需要较长的时间。要使动画流畅，您需要达到 60 FPS。
+The `update()` function is the callback handler for `requestAnimationCallback()`. The handler computes each image's `left` property based off of the image's `offsetTop` value. This forces the browser to perform a new layout immediately to make sure that it provides the correct value. Forcing a layout during every animation frame is the cause of the janky animations on the page.
 
+So now that you've identified the problem, you can try to fix it directly in DevTools.
 
-现在，可以准确地诊断哪里出错了。使用您的鼠标，在调用堆栈上[放大][zoom]。
+## Apply fix within DevTools
 
+This script is embedded in HTML, so you can't edit it via the **Sources** panel (scripts in `*.js` can be edited in the Sources panel, however).
 
-![缩放的 Timeline 记录](imgs/zoom.png)
+However, to test your changes, you can redefine the function in the Console. Copy and paste the function definition from the HTML file into the DevTools Console. Delete the statement that uses `offsetTop` and uncomment the one below it. Press `Enter` when you're done.
 
-堆栈的顶端是 `Animation Frame Fired` 事件。只要触发此事件，就会调用传递至 `requestAnimationFrame()` 的函数。在 `Animation Frame Fired` 下方，您会看到 `Function Call`，在它的下方，您会看到 `update`。您可以推断名为 `update()` 的方法是 `requestAnimationFrame()` 的回调。
+![redefining the problematic function](imgs/redefinition.png)
 
+Restart the animation. You can verify visually that it's much smoother now.
 
-Note: 这是您之前启用 **JS Profile** 选项的作用。
-如果停用，您就会看到 `Function Call`，后面是所有紫色小事件（稍后介绍），不包含具体调用了哪些函数的详情。
+## Verify with another recording
 
+It's always good practice to take another recording and verify that the animation truly is faster and more performant than before.
 
+![timeline recording after optimization](imgs/after.png)
 
-现在，请将注意力转移到 `update` 事件下方的所有紫色小事件上。
-许多这些事件的顶部为红色。那是警告标志。
-将鼠标悬停在这些事件上方，您会看到 DevTools 在警告您页面可能会被强制自动重排。
-强制自动重排是强制同步布局的另一种说法。
+Much better.
 
+## Feedback {: #feedback }
 
-![鼠标指针悬停在 layout 事件上](imgs/layout-hover.png)
-
-现在，可以看一下导致全部强制同步布局的函数。
-点击其中一个布局事件可以选择它。现在，在 Summary 窗格中，您会看到与此事件有关的详细信息。
-点击 **Layout Forced** (`update @ forcedsync.html:457`) 下面的链接跳转到函数定义。
-
-
-
-![跳转到函数定义](imgs/jump.png)
-
-现在，您在 **Sources** 面板中应看到函数定义。
-
-![Sources 面板中的函数定义](imgs/definition.png)
-
-`update()` 函数是 `requestAnimationCallback()` 的回调处理程序。
-处理程序会根据每个图像的 `offsetTop` 值计算其 `left` 属性。
-这将强制浏览器立即执行新布局，以便确保其提供正确的值。在每个动画帧期间强制布局是导致页面上出现动画卡顿的原因。
-
-
-现在，您已经确定了问题，可以尝试在 DevTools 中直接解决问题。
-
-
-[layout]: /web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#layout
-[zoom]: /web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool#zoom
-
-## 在 DevTools 中应用修复
-
-此脚本内已嵌入 HTML，因此，您无法通过 **Sources** 面板对其进行编辑（不过，可以在 Sources 面板中编辑格式为 `*.js` 的脚本）。
-
-
-不过，要测试您的更改，可以在 Console 中重新定义函数。从 HTML 文件复制函数定义，并将其粘贴到 DevTools 的 Console 中。删除使用 `offsetTop` 的语句并取消注释其下面的语句。
-完成后，按 `Enter`。
-
-![重新定义有问题的函数](imgs/redefinition.png)
-
-重启动画。您可以直观地验证现在顺畅多了。
-
-## 使用另一个记录验证
-
-最好使用另一个记录来验证动画确实比之前更快且性能更好。
-
-
-![优化后的 Timeline 记录](imgs/after.png)
-
-效果好多了。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

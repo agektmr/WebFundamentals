@@ -1,123 +1,93 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Editor kode Anda adalah alat development utama; Anda akan memakainya untuk menulis dan menyimpan baris kode. Tulis kode yang lebih baik dengan mempelajari pintasan editor Anda dan memasang plugin utama.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-05-28 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-05-28 #}
 
-# Menyiapkan Editor Anda {: .page-title }
+# Set Up Your Editor {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-Editor kode Anda adalah alat development utama; Anda akan memakainya untuk menulis dan menyimpan baris kode. Tulis kode yang lebih baik dengan mempelajari pintasan editor Anda dan memasang plugin utama.
-
+Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
 ### TL;DR {: .hide-from-toc }
-- Pilih editor yang memungkinkan Anda menyesuaikan pintasan dan memiliki banyak plugin yang membantu Anda menulis kode yang lebih baik.
-- Manfaatkan pengelola paket untuk mempermudah penemuan, pemasangan, dan pembaruan plugin.
-- Pasang plugin yang membantu Anda tetap produktif selama proses development; mulai dengan yang disarankan dalam panduan ini.
 
+- Choose an editor that lets you customize shortcuts and has lots of plugins to help you write better code.
+- Make use of the package manager to make it easier to discover, install, and update plugins.
+- Install plugins that help keep you productive during development; start with the recommendations in this guide.
 
-## Memasang editor teks Sublime
+## Install Sublime text editor
 
-[Sublime](http://www.sublimetext.com/){: .external } adalah editor yang sangat bagus dengan tingkat
-fungsionalitas dasar yang kuat sehingga membuat penulisan kode lebih mudah. Anda bisa memasang pengelola
-paket yang memudahkan Anda memasang plugin dan menambahkan fungsionalitas baru.
+[Sublime](http://www.sublimetext.com/){: .external } is a great editor with a solid base level of functionality which makes writing code a pleasure. You can install a package manager that makes it easy to install plugins and add new functionality.
 
-Ada dua opsi unduhan untuk Sublime Text, yaitu [versi 2](http://www.sublimetext.com/2) atau [versi 3](http://www.sublimetext.com/3). Versi 3 cukup stabil dan akan memberi Anda akses ke paket yang tidak tersedia di Sublime Text 2, tetapi mungkin versi 2 terasa lebih andal.
+There are currently two download options for Sublime Text, either [version 2](http://www.sublimetext.com/2) or [version 3](http://www.sublimetext.com/3). Version 3 is pretty stable and will give you access to packages not available in Sublime Text 2, however you may find version 2 more reliable.
 
-Note: <a href='http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/'>Entri blog</a> Rob Dodson tentang cara mengenali dan menyukai Sublime adalah referensi yang sangat baik untuk mendapatkan manfaat maksimal dari editor Anda. Konsepnya relevan untuk semua editor teks, bukan hanya Sublime.
+Note: Rob Dodson's [blog post](http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/) on how to get to know and love Sublime is a great reference for getting the most out of your editor. The concepts are relevant to any text editor, not just Sublime.
 
-## Mengapa sebaiknya menggunakan pengelola paket?
+## Why use a package manager?
 
-Pengelola paket memudahkan menemukan, memasang, dan menjaga paket dan plugin
-tetap terbaru.
+Package managers make it easy to find, install, and keep packages & plugins up-to-date.
 
-<img src="imgs/package_control.png" class="center" alt="Tangkapan Layar Sublime Text Editors Package Control"/>
+<img src="imgs/package_control.png" class="center" alt="Screenshot of Sublime Text Editors Package Control" />
 
-Anda bisa memasang Pengelola Paket untuk Sublime dengan mengikuti petunjuk ini
-[https://packagecontrol.io/installation](https://packagecontrol.io/installation).
+You can install a Package Manager for Sublime by following these instructions <https://packagecontrol.io/installation>.
 
-Anda hanya perlu melakukannya sekali, setelahnya lihat daftar plugin
-yang kami sarankan di bawah.
+You only need to do this once, after which see below for our recommended list of plugins.
 
-## Memasang plugin
+## Install plugins
 
-Plugin membantu Anda tetap lebih produktif. Apa saja yang membuat Anda harus kembali
-memakai alat lain untuk melakukan suatu hal?
+Plugins help you stay more productive. What are the things you keep having to go back out to other tools to do?
 
-Linting - ada plugin untuk itu. Menampilkan perubahan apa saja yang telah diterapkan
-- ada juga plugin untuk itu. Integrasi dengan alat lain, seperti GitHub,
-ada plugin untuk itu.
+Linting - there's a plugin for that. Showing what changes haven't been committed
 
-Pengelola paket memudahkan menemukan, memasang, dan memperbarui plugin:
+- there are plugins for that. Integration with other tools, such as GitHub, there are plugins for that.
 
-1. Di editor Sublime Text, buka pengelola paket Anda (ctrl+shift+p).
-2. Masuk ke 'Install Package'.
-3. Masukkan nama plugin yang Anda cari (atau jelajahi semua
-   plugin).
+Package managers make it very easy to find, install, and update plugins:
 
-Lihat [daftar plugin Sublime Text
-yang populer](https://packagecontrol.io/browse). Berikut ini plugin yang kami sukai dan
-sarankan agar Anda memasangnya karena membantu mempercepat proses development:
+1. In the Sublime Text editor, open your package manager (ctrl+shift+p).
+2. Enter 'Install Package'.
+3. Enter the name of the plugin you are looking for (or else browse all plugins).
+
+Check out these [trending lists of Sublime Text plugins](https://packagecontrol.io/browse). Here are the plugins we love and recommend you install because they help you speed up your development:
 
 ### Autoprefixer
 
-Jika Anda menginginkan cara yang cepat untuk menambahkan awalan vendor ke CSS Anda, Anda bisa melakukannya dengan
-plugin yang berguna ini.
+If you want a quick way to add vendor prefixes to your CSS, you can do so with this handy plugin.
 
-Tulis CSS, abaikan awalan vendor dan bila Anda ingin menambahkannya, tekan
-`ctrl+shift+p` dan ketikkan `Autoprefix CSS`.
+Write CSS, ignoring vendor prefixes and when you want to add them, hit `ctrl+shift+p` and type `Autoprefix CSS`.
 
-[Kami membahas bagaimana Anda bisa mengotomatiskan ini di proses
-pembangunan Anda](/web/tools/setup/setup-buildtools),
-dengan demikian CSS Anda tetap ringan dan Anda tidak perlu mengingat harus menekan
-`ctrl+shift+p`.
+[We cover how you can automate this in your build process](/web/tools/setup/setup-buildtools), that way your CSS stays lean and you don't need to remember to hit `ctrl+shift+p`.
 
-<img src="imgs/sublime-autoprefixer.gif" alt="Contoh Plugin Autoprefixer Sublime" />
+![Sublime Autoprefixer Plugin Example](imgs/sublime-autoprefixer.gif)
 
 ### ColorPicker
 
-Pilih warna apa pun dari palet dan tambahkan ke CSS Anda dengan `ctrl+shift+c`.
+Pick any color from the palette and add it to your CSS with `ctrl+shift+c`.
 
-<img src="imgs/sublime-color-picker.png" alt="Plugin Color Picker Sublime" />
+![Sublime Color Picker Plugin](imgs/sublime-color-picker.png)
 
 ### Emmet
 
-Tambahkan beberapa pintasan keyboard dan cuplikan yang berguna ke editor teks. Lihat
-video di [Emmet.io](http://emmet.io/){: .external } untuk pengenalan tentang apa saja yang bisa Anda lakukan (
-favorit pribadi adalah perintah 'Toggle Comment').
+Add some useful keyboard shortcuts and snippets to your text editor. Check out the video on [Emmet.io](http://emmet.io/){: .external } for an intro into what it can do (a personal favorite is the 'Toggle Comment' command).
 
-<img src="imgs/emmet-io-example.gif" alt="Demo Plugin Emmet.io" />
+![Demo of the Emmet.io Plugin](imgs/emmet-io-example.gif)
 
 ### HTML-CSS-JS prettify
 
-Ekstensi ini memberikan Anda perintah untuk memformat HTML, CSS, dan JS Anda. Anda bahkan bisa
-merapikan file Anda setiap kali menyimpan file.
+This extension gives you a command to format your HTML, CSS and JS. You can even prettify your files whenever your save a file.
 
-<img src="imgs/sublime-prettify.gif" alt="Gif Plugin Prettify Sublime" />
+![Gif of the Sublime Prettify Plugin](imgs/sublime-prettify.gif)
 
 ### Git Gutter
 
-Tambahkan penanda di gutter setiap kali ada perubahan yang dibuat pada file.
+Add a marker in the gutter wherever there is a change made to a file.
 
-<img src="imgs/sublime-git-gutter.png" alt="Tangkapan layar Plugin Git Gutter Sublime" />
+![Screenshot of the Sublime Git Gutter Plugin](imgs/sublime-git-gutter.png)
 
 ### Gutter Color
 
-Note: Ini hanya tersedia di Sublime Text 3
+Note: This is only available in Sublime Text 3
 
-Gutter Color menampilkan sampel warna kecil di sebelah CSS Anda.
+Gutter Color shows you a small color sample next to your CSS.
 
-<img src="imgs/sublime-gutter-color.png" alt="Tangkapan Layar Gutter Color Sublime" />
+![Sublime Gutter Color Screenshot](imgs/sublime-gutter-color.png)
 
-Plugin ini memerlukan ImageMagick. Jika Anda memakai Mac OS X, kami menyarankan Anda agar mencoba
-pemasang dari [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (Anda mungkin perlu
-menghidupkan ulang komputer Anda agar bisa membuatnya berfungsi).
-
-
-
-
-
-{# wf_devsite_translation #}
+The plugin requires ImageMagick. If you are on Mac OS X, we recommend trying the installer from [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (you may need to restart your machine to get it working).

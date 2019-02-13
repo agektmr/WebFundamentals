@@ -1,36 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Aprovecha la API de la consola para medir tiempos de ejecución y contar ejecuciones de instrucciones.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Take advantage of the Console API to measure execution times and count statement executions.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Medir y contar ejecuciones {: .page-title }
+# Measure and count executions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-Aprovecha la API de la consola para medir tiempos de ejecución y contar ejecuciones de instrucciones.
-
+Take advantage of the Console API to measure execution times and count statement executions.
 
 ### TL;DR {: .hide-from-toc }
-- Usa <code>console.time()</code> y <code>console.timeEnd()</code> para realizar el seguimiento del tiempo transcurrido entre los puntos de ejecución.
-- Usa <code>console.count()</code> para realizar el recuento de las veces en que la misma cadena se pasa a una función.
 
+- Use `console.time()` and `console.timeEnd()` to track time elapsed between code execution points.
+- Use `console.count()` to count how many times the same string is passed to a function.
 
-## Medir los tiempos de ejecución
+## Measure execution times
 
-El método [`time()`](./console-reference#consoletimelabel) inicia un temporizador nuevo y es muy útil para medir cuánto tiempo demora una acción. Pasa una cadena al método para asignarle un nombre al marcador.
+The [`time()`](./console-reference#consoletimelabel) method starts a new timer and is very useful to measure how long something took. Pass a string to the method to give the marker a name.
 
-Cuando desees detener el temporizador, llama a [`timeEnd()`](./console-reference#consoletimeendlabel) y pásale la misma cadena que se le pasó al inicializador.
+When you want to stop the timer, call [`timeEnd()`](./console-reference#consoletimeendlabel) and pass it the same string passed to the initializer.
 
-La consola registra la etiqueta y el tiempo transcurrido cuando el método `timeEnd()` se activa.
+The console then logs the label and time elapsed when the `timeEnd()` method fires.
 
-### Ejemplo básico
+### Basic example
 
-Aquí, medimos el inicio de un millón de matrices nuevas:
-
+Here, we measure the initialization of a million new Arrays:
 
     console.time("Array initialize");
     var array= new Array(1000000);
@@ -40,31 +33,28 @@ Aquí, medimos el inicio de un millón de matrices nuevas:
     console.timeEnd("Array initialize");
     
 
-Esto genera lo siguiente en la consola:
-![Tiempo transcurrido](images/track-executions-time-duration.png)
+Which outputs the following in the Console: ![Time elapsed](images/track-executions-time-duration.png)
 
-### Temporizadores en la herramienta Timeline
+### Timers on the Timeline
 
-Cuando se produce una grabación de [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) durante una operación de `time()`, esta también realiza anotaciones en la línea del tiempo. Se usa cuando deseas realizar el seguimiento de lo que hace tu app y de dónde viene.
+When a [Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) recording is taking place during a `time()` operation, it annotates the timeline as well. Use it when you want to trace what your application does and where it comes from.
 
-Cómo se ve una anotación de `time()` en la línea del tiempo:
+How an annotation on the timeline looks from `time()`:
 
-![Anotación de time() en la línea del tiempo](images/track-executions-time-annotation-on-timeline.png)
+![Time annotation on timeline](images/track-executions-time-annotation-on-timeline.png)
 
-### Marcar la línea del tiempo
+### Marking the Timeline
 
-*Note: El método `timeStamp()` solo funciona cuando hay una grabación de Timeline en curso.
+*Note: The `timeStamp()` method only functions while a Timeline recording is in progress.*
 
-El [panel Timeline](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) proporciona una vista general completa de dónde invierte el tiempo el motor.
-Puedes agregar una marca a la línea del tiempo desde la consola con [`timeStamp()`](./console-reference#consoletimestamplabel). Esta es una manera simple de relacionar eventos en tu app con otros eventos.
+The [Timeline panel](/web/tools/chrome-devtools/profile/evaluate-performance/timeline-tool) provides a complete overview of where the engine spends time. You can add a mark to the timeline from the console with the [`timeStamp()`](./console-reference#consoletimestamplabel). This is a simple way to correlate events in your application with other events.
 
-`timeStamp()` anota la línea del tiempo en las siguientes ubicaciones:
+The `timeStamp()` annotates the Timeline in the following places:
 
-- Coloca una línea vertical amarilla en la vista de resumen e información de Timeline.
-- Agrega un registro a la lista de eventos.
+- A yellow vertical line in the Timeline's summary and details view.
+- It adds a record to the list of events.
 
-Este código de ejemplo:
-
+The following example code:
 
     function AddResult(name, result) {
         console.timeStamp("Adding result");
@@ -74,16 +64,15 @@ Este código de ejemplo:
     }
     
 
-genera las siguientes marcas de tiempo en la línea del tiempo:
+Results in the following Timeline timestamps:
 
-![Marcas de tiempo en la línea del tiempo](images/track-executions-timestamp2.png)
+![Timestamps in the timeline](images/track-executions-timestamp2.png)
 
-## Contar ejecuciones de instrucciones
+## Counting statement executions
 
-Usa el método `count()` para registrar una cadena indicada junto con la cantidad de veces que se proporciona la misma cadena. Cuando se da la instrucción exacta a `count()` en la misma línea, el número se incrementa.
+Use the `count()` method to log a provided string along with the number of times the same string has been provided. When the exact statement is given to `count()` on the same line, the number is incremented.
 
-Ejemplo de código con `count()` en contenido dinámico:
-
+Example code of using `count()` with some dynamic content:
 
     function login(user) {
         console.count("Login called for user " + user);
@@ -102,11 +91,10 @@ Ejemplo de código con `count()` en contenido dinámico:
     login(users[0]);
     
 
-Resultado del ejemplo de código:
+Output of the code sample:
 
-![resultado del ejemplo de console.count()](images/track-executions-console-count.png)
+![console.count() example output](images/track-executions-console-count.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

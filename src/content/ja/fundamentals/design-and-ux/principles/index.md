@@ -1,448 +1,395 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Google と AnswerLab は、多様なモバイルサイトにおけるユーザーのインタラクションについて、調査を実施しました。この調査の目的は、「優れたモバイルサイトの条件とは何か」という疑問に答えることです。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Google and AnswerLab undertook a study examining how users interact with a diverse set of mobile sites. The goal was to answer the question, 'What makes a good mobile site?'
 
-{# wf_published_on: 2014-08-08 #}
-{# wf_updated_on: 2018-02-05 #}
+{# wf_published_on: 2014-08-08 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: N/A #}
 
-# 優れたモバイル サイトの条件とは {: .page-title }
+# What Makes a Good Mobile Site? {: .page-title }
 
 {% include "web/_shared/contributors/jennygove.html" %}
 
-Google と AnswerLab は、この疑問の答えを出すために[調査](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals)を実施しました。
+Google and AnswerLab conducted a [research study](https://www.google.com/think/multiscreen/whitepaper-sitedesign.html?utm_source=web-fundamentals&utm_term=chrome&utm_content=ux-landing&utm_campaign=web-fundamentals) to answer this question.
 
-> モバイル ユーザーは目的指向が非常に高く、自分独自の条件に合わせて、必要なものをすぐに入手できることを期待しています。
+> Mobile users are very goal-oriented. They expect to be able to get what they need, immediately, and on their own terms.
 
+The study was held through 119 hour-long, in-person usability sessions with participants in the US. Participants were asked to perform key tasks across a diverse set of mobile sites. iOS and Android users were included, and users tested the sites on their own phones. For each site, participants were asked to voice their thoughts aloud as they completed conversion-focused tasks like making a purchase or booking a reservation.
 
-この調査は、参加者との対面のユーザビリティ セッションという形で、119 時間にわたって米国で実施されました。参加者は、さまざまなモバイルサイトで主なタスクを実行することを求められました。iOS と Android のユーザーが含まれており、参加者自身のスマートフォンでサイトをテストしました。参加者はサイトごとに購入や予約などコンバージョンに特化したタスクを実行し、そのときの感想を求められました。
+The study uncovered 25 mobile site design principles, grouped into five categories.
 
+## Home page and site navigation
 
+Success: Focus your mobile homepage on connecting users to the content they’re looking for.
 
-この調査では、モバイルサイトのデザインに関する 25 の原則を明らかにして、5 つのカテゴリに分類しました。
+### Keep calls to action front and center
 
-
-##  ホームページとサイトのナビゲーション
-
-ポイント:モバイル版のホームページはユーザーの求めるコンテンツとユーザーをつなぐことに重点を置く必要があります。
-
-###  CTA（コールトゥアクション）を前面および中央に配置する
-
-二次的なタスクは、[メニュー](/web/fundamentals/design-and-ux/responsive/)またはスクロールしなければ見えない位置に配置します。
-
+Make secondary tasks available through [menus](/web/fundamentals/design-and-ux/responsive/) or “below the fold” (the part of the webpage that can’t be seen without scrolling down).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-cta-good.png">
     <figcaption class="success">
-      <b>推奨</b>:ユーザーが最もよく実行するすべてのタスクをすぐに利用できるようにする。
+      <b>DO</b>: Make all of your users’ most common tasks easily available.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-cta-bad.png">
     <figcaption class="warning">
-      <b>非推奨</b>:スクロールせずに見える貴重なスペースを、「詳細」などのあいまいな CTA（コールトゥアクション）で浪費している。
+      <b>DON'T</b>: Waste precious above-the-fold space with vague
+      calls-to-action like “learn more”.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-###  メニューは短くわかりやすく
+### Keep menus short and sweet
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-menus-good.png">
     <figcaption class="success">
-      <b>推奨</b>:メニューは短くわかりやすくする。
+      <b>DO</b>: Keep menus short and sweet.
      </figcaption>
   </figure>
 </div>
 
-モバイル ユーザーは、目的のものが見つかるまで長いオプション リストをスクロールするほど忍耐強くはありません。
-メニューの項目はできるだけ絞り込み、ユーザービリティを損なわないようにしてください。
-
+Mobile users don’t have the patience to scroll through a long list of options to find what they want. Reorganize your menu to use as few items as possible, without sacrificing usability.
 
 <div style="clear:both;"></div>
 
-###  ホームページに簡単に戻れるようにする
+### Make it easy to get back to the home page
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-hp-good.png">
     <figcaption class="success">
-      <b>推奨</b>:ホームページに簡単に戻れるようにする。
+      <b>DO</b>: Make it easy to get back to the home page.
      </figcaption>
   </figure>
 </div>
 
-ユーザーはモバイルページの左上にあるロゴをタップするとホームページに戻ることを期待しており、それが利用できない、または機能しないときはストレスを感じます。
-
+Users expect to go back to the homepage when they tap the logo in the top-left of a mobile page, and they become frustrated when it isn’t available or doesn’t work.
 
 <div style="clear:both;"></div>
 
-###  一番目立つ場所に広告を表示しない
+### Don't let promotions steal the show
 
-アプリのインストールを促す大きなインタースティシャル（例: コンテンツを覆い隠すようにページの全面に表示される、アプリのインストールを促す広告）はユーザーにとって邪魔になり、タスクの実行を妨げます。アプリのインストールのインタースティシャルを使用しているサイトは、ユーザーに不快感を与えるだけでなく、[Google のモバイル フレンドリー テスト](https://search.google.com/test/mobile-friendly)で不合格になり、検索ランキングが下がる可能性があります。
-
-
-
+Large app install interstitials (e.g., full-page promotions that hide content and prompt users to install an app) annoy users and make it difficult to perform tasks. In addition to annoying users, [sites that use interstitials may see a negative impact to their search rankings](https://webmasters.googleblog.com/2016/08/helping-users-easily-access-content-on.html).
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/hpnav-promo-good.png">
     <figcaption class="success">
-      <b>推奨</b>:広告は簡単に消すことができ、エクスペリエンスを損なわないようにする必要がある。
+      <b>DO</b>: Promotions should be easily dismissable and not distract from
+      the experience.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/hpnav-promo-bad.png">
     <figcaption class="warning">
-      <b>非推奨</b>:インタースティシャル（別名ドアスラム）は、しばしばユーザーに不快感を与え、サイトが使いづらくなる原因になる。
+      <b>DON'T</b>: Interstitials (sometimes called door slams) often annoy
+      users and make using the site a pain.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-##  サイト内検索
+## Site search
 
-ポイント:モバイル ユーザーが探している情報を迅速に見つけられるようサポートする必要があります。
+Success: Help mobile users find what they’re looking for in a hurry.
 
-###  サイト内検索ボックスを表示する
+### Make site search visible
 
-通常、情報を求めるユーザーは検索しようとするため、ページ上ですぐに検索フィールドが目に入るようにしておく必要があります。
-メニューの中に検索ボックスを隠すことはおすすめしません。
-
+Users looking for information usually turn to search, so the search field should be one of the first things they see on your pages. Don’t hide the search box in a menu.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-search-good.jpg">
     <figcaption class="success">
-      <b>推奨</b>:検索ボックスが目立つ位置にある。
+      <b>DO</b>: Make search visible
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-search-bad.jpg">
     <figcaption class="warning">
-      <b>非推奨</b>:検索ボックスがオーバーフローメニュー内に隠れている。
+      <b>DON'T</b>: Hide search in overflow menus
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-###  サイト内検索で有用な情報を提供する
+### Ensure site search results are relevant
 
-情報を探しているユーザーは、複数ページにわたる検索結果をすべて調べるようなことはしません。
-クエリのオートコンプリート、打ち間違いの修正、クエリに関連する候補の表示によって、ユーザーの負担を軽減してください。
-一から自身で開発せずに、[Google カスタム検索](https://cse.google.com/cse/){: .external }などの堅牢なサービスの利用を検討してください。
-
+Users don’t scan through multiple pages of results to find what they’re looking for. Make life easier on users by auto-completing queries, correcting misspellings, and suggesting related queries. Rather than reinventing the wheel, consider robust products like [Google Custom Search](https://cse.google.com/cse/){: .external }.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-relevant-good.png">
     <figcaption class="success">
-      <b>推奨</b>:Macy's ではキッズ関連項目のみが表示される。
+      <b>DO</b>: Macy's only returns kids items.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-relevant-bad.png">
     <figcaption class="warning">
-      <b>非推奨</b>:「kid」が含まれる単語をすべて表示している。
+      <b>DON'T</b>: Return results for anything with the word kid in it.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+### Implement filters to narrow results
 
-###  結果を絞り込むフィルタを実装する
-
-調査の参加者は、目的の情報を見つける際に[フィルタ](/custom-search/docs/structured_search)に依存しており、効果的なフィルタがないサイトからは離脱してしまいます。検索結果の上にフィルタを用意して、特定のフィルタを適用した場合の結果の件数を表示すると使いやすくなります。
-
+Study participants rely on [filters](/custom-search/docs/structured_search) to find what they’re looking for, and abandon sites that do not have effective filters. Place filters above search results, and help users by displaying how many results will be returned when a specific filter is applied.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/ss-filters-good.jpg">
     <figcaption class="success">
-      <b>推奨</b>:フィルタを簡単に適用できるようにする。
+      <b>DO</b>: Make it easy to filter.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/ss-filters-bad.jpg">
     <figcaption class="warning">
-      <b>非推奨</b>:フィルタ機能が隠れている。
+      <b>DON'T</b>: Hide filter functionality.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-###  より適切なサイト内検索の結果を表示する
+### Guide users to better site search results
 
 <div class="attempt-right">
   <figure id="fig1">
-    <img src="images/ss-guide-good.png" alt="Zappos では目的の商品をたずねてユーザーを誘導しています。">
+    <img src="images/ss-guide-good.png"
+         alt="Zappos guides users by asking them what they're looking for.">
     <figcaption class="success">
-      <b>推奨</b>:ユーザーを適切な方向に導いて目的のものが見つかるようにサポートする。
+      <b>DO</b>: Help users to find what they're looking for by guiding them
+      in the right direction.
      </figcaption>
   </figure>
 </div>
 
-サイトの顧客セグメントが多岐にわたる場合、検索ボックスを表示する前にユーザーにいくつか質問をして、その回答を検索クエリのフィルタとして活用すると、ユーザーにとって最も有用なセグメントから結果を返すことができます。
-
-
+For sites with diverse customer segments, ask a few questions before presenting the search box, and use the customer’s responses as search query filters to ensure that users get results from the most relevant segment.
 
 <div style="clear:both;"></div>
 
-##  コマースとコンバージョン
+## Commerce and conversion
 
-ポイント: カスタマー ジャーニーについて理解し、ユーザーの好みに応じたコンバージョンを実現してください。
+Success: Understand your customer journeys and let users convert on their own terms.
 
-###  登録しなくても閲覧できるようにする
+### Let users explore before they commit
 
-調査の参加者は、サイトを利用しようとしたときに事前に登録を求められるとストレスを感じ、特に、あまり知らないブランドでその傾向が見られました。
-ビジネスで顧客情報が不要であるにもかかわらず、あまりにも早い段階で登録を要求すると登録してもらえない可能性が高まります。
-
-
+Study participants were frustrated by sites that require upfront registrations to view the site, especially when the brand was unfamiliar. Although customer information may be integral to your business, asking for it too early may result in fewer registrations.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/cc-gates-good.png">
     <figcaption class="success">
-      <b>推奨</b>:ユーザーがサインインしなくてもサイトを閲覧できるようにする。
+      <b>DO</b>: Allow users to browse the site without requiring sign in.
      </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-gates-bad.png">
     <figcaption class="warning">
-      <b>非推奨</b>:かなり早い段階でサイトのログインまたは登録を要求する。
+      <b>DON'T</b>: Place login or registration too early in a site.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-
-###  ゲストとして購入できるようにする
+### Let users purchase as guests
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-purchase-guest-good.png">
     <figcaption class="success">
-      <b>推奨</b>:ゲスト アカウントを使って購入できるようにする。
+      <b>DO</b>: Allow users to purchase with a guest account.
      </figcaption>
   </figure>
 </div>
 
-ある調査では、ゲストとして精算できると「便利」「シンプル」「簡単」「迅速」と評価されました。
-ユーザーは、購入にあたってアカウントの登録を強制するサイトに対してストレスに感じており、アカウントのメリットが不明な場合は特にその傾向が見られます。
-
-
+Study participants viewed guest checkouts as “convenient”, “simple”, “easy”, and “quick”. Users are annoyed by sites that force them to register for an account when making a purchase, especially when the benefit of an account is unclear.
 
 <div style="clear:both;"></div>
 
-###  既存の情報を使って利便性を最大限に高める
+### Use existing information to maximize convenience
 
-登録ユーザーの情報を呼び出し、[プリファレンスをあらかじめ入力](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly)します。新規のユーザーには、使い慣れたサードパーティの購入手続きサービスを提供します。
+Remember and [pre-fill preferences](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly) for registered users. Offer familiar, third-party checkout services for new users.
 
-###  複雑なタスクには Click-to-Call ボタンを使用する
+### Use click-to-call buttons for complex tasks
 
-電話機能を搭載した端末では [Click-to-Call リンク](/web/fundamentals/native-hardware/click-to-call/)を使用して、ユーザーがリンクをクリックするだけで電話をかけられるようにすることができます。ほとんどのモバイル端末では、電話番号に発信する前に確認を求められるか、電話番号をどう処理するかをたずねるメニューが表示されます。
+On devices with calling capabilities, [click-to-call links](/web/fundamentals/native-hardware/click-to-call/) enable users to make a phone call by simply tapping a link. On most mobile devices the user receives a confirmation before the number is dialed, or a menu is presented asking the user how the number should be handled.
 
-
-
-###  別の端末でも容易に処理を完了できるようにする
+### Make it easy to finish on another device
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/cc-other-device-good.png">
     <figcaption class="success">
-      <b>推奨</b>:ユーザーが別の端末で簡単に閲覧や購入を継続できる方法を提供する。
+      <b>DO</b>: Provide easy ways for users to continue browsing or shopping on another device.
      </figcaption>
   </figure>
 </div>
 
-別の端末でタスクを完了したいことがよくあります。たとえば、大画面で商品を見たい場合や、
-時間がないので後回しにしたい場合があります。
-このようなカスタマー ジャーニーに対応するには、[ソーシャル ネットワークでアイテムを共有](/web/fundamentals/discovery-and-monetization/social-discovery/)できるようにしたり、サイト内から直接、自分宛てにメールでリンクを送信できるようにします。
-
-
+Users frequently want to finish tasks on other devices. For instance, they might wish to view an item on a larger screen. Or they might get busy and need to finish later. Support these customer journeys by enabling users to [share items on social networks](/web/fundamentals/discovery-and-monetization/social-discovery/), or by letting users email themselves links from directly within the site.
 
 <div style="clear:both;"></div>
 
-##  フォームの入力
+## Form entry
 
-ポイント: 使いやすいフォームによってシームレスでスムーズなコンバージョン エクスペリエンスを実現できます。
+Success: Provide a seamless, frictionless conversion experience with usable forms.
 
+### Streamline information entry
 
-###  情報の入力を簡素化する
+Automatically advance to the next field when a user presses Return. In general, the fewer taps the user must perform, the better.
 
-ユーザーが Enter を押すと自動的に次のフィールドに進むようにします。一般的に、必要なタップ数は少ないに越したことはありません。
+### Choose the simplest input
 
+Use the most [appropriate input type](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type) for each scenario. Use elements like [`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist) to provide suggested values for a field.
 
-###  最もシンプルな入力タイプを選ぶ
-
-状況に応じて、[最適な入力タイプ](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type)を選びます。
-[`datalist`](/web/fundamentals/design-and-ux/input/forms/choose-the-best-input-type#offer-suggestions-during-input-with-datalist) などの要素を使用して、フィールドの入力候補を表示します。
-
-
-
-###  日付を選択するときは視覚的なカレンダーを提供する
+### Provide visual calendar for date selection
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-calendar-good.png">
     <figcaption class="success">
-      <b>推奨</b>: できるだけカレンダーのウィジェットを使用する。
+      <b>DO</b>: Use calendar widgets when possible.
      </figcaption>
   </figure>
 </div>
 
-開始日と終了日が明確になるようにラベルを付けます。ユーザーが予定を入れるためだけにサイトから離れてカレンダー アプリを確認しなくてもよいようにしてください。
-
+Clearly label start and end dates. Users should not need to leave a site and check a calendar app just to schedule a date.
 
 <div style="clear:both;"></div>
 
-###  ラベルとリアルタイム検証によってフォームのエラーを最小限に留める
+### Minimize form errors with labeling and real-time validation
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/forms-multipart-good.png">
     <figcaption class="success">
-      <b>推奨</b>:可能な項目は事前に入力しておく。
+      <b>DO</b>: Label inputs clearly.
      </figcaption>
   </figure>
 </div>
 
-入力箇所に適切なラベルを付けて、リアルタイムで入力内容を検証します。
+Label inputs properly and validate input in real-time.
 
 <div style="clear:both;"></div>
 
-###  効率的なフォームを設計する
+### Design efficient forms
 
-[自動入力](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete)を活用し、事前に入力されたデータによって簡単にフォームに入力できるようにします。
-また、既に把握している情報をあらかじめフィールドに入力します。
-たとえば、出荷先および請求先住所を取得するときは、[`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete)
-の使用を試みるか、出荷先住所と請求先住所を相互にコピーできるようにします。
+Take advantage of [autofill](/web/fundamentals/design-and-ux/input/forms/#label-and-name-inputs-properly#use-metadata-to-enable-auto-complete) so that users can easily complete forms with pre-populated data. Pre-fill fields with information you already know. For example, when retrieving shipping and billing addresses, try to use [`requestAutocomplete`](/web/fundamentals/design-and-ux/input/forms/use-request-auto-complete) or enable users to copy their shipping address to their billing address (or vice versa).
 
+## Usability and form factor
 
+Success: Delight your mobile users with small things that enhance their experiences.
 
-##  ユーザビリティとフォーム ファクタ
+### Optimize your entire site for mobile
 
-ポイント: 操作感を改善するわずかな変更によって、モバイル ユーザーを喜ばせることができます。
+Use a [responsive layout](/web/fundamentals/design-and-ux/responsive/) that changes based on the size and capabilities of the user’s device. Study participants found sites with a mix of desktop and mobile-optimized pages even harder to use than desktop-only sites.
 
-###  サイト全体をモバイル向けに最適化する
+### Don't make users pinch-to-zoom
 
-ユーザーの端末のサイズと機能に応じて変化する[レスポンシブ レイアウト](/web/fundamentals/design-and-ux/responsive/)を使用します。
-調査の参加者によると、PC 版およびモバイル版として最適化されたページが混在しているサイトは、PC 版のみのサイトよりも使いづらいことがわかりました。
+Users are comfortable with scrolling sites vertically, but not horizontally. Avoid large, fixed-width elements. Use [CSS media queries](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness) to apply different stylings for different screens. Don’t create content that only displays well at a particular [viewport width](/web/fundamentals/design-and-ux/responsive/#set-the-viewport). Sites that force users to horizontally scroll fail the [Google Mobile-Friendly Test](https://search.google.com/test/mobile-friendly), which may negatively impact their search rankings.
 
-
-
-###  ピンチ操作を不要にする
-
-ユーザーは垂直方向のスクロールには慣れていますが、水平方向のスクロールには慣れていません。
-幅を固定した大きな要素は使用しないでください。[CSS メディアクエリ](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness)を使用して、さまざまな画面ごとに異なるスタイルを適用します。特定の[ビューポートの幅](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)のみで適切に表示されるようなコンテンツは、作成しないでください。ユーザーに水平方向のスクロールを強制するサイトは [Google モバイル フレンドリー テスト](https://search.google.com/test/mobile-friendly)で不合格となり、検索ランキングが下がる可能性があります。
-
-
-
-
-
-
-###  商品の画像を拡大できるようにする
+### Make product images expandable
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-make-images-expandable-good.png">
     <figcaption class="success">
-      <b>推奨</b>:商品の画像を拡大して詳細を容易に確認できるようにする。
+      <b>DO</b>: Make product images expandable and easy to see in detail.
      </figcaption>
   </figure>
 </div>
 
-小売店の顧客は商品を[高解像度の拡大画像で見る](/web/fundamentals/design-and-ux/media/images#make-product-images-expandable)ことをサイトに期待します。調査の参加者は、購入したい商品を見ることができない場合にストレスを感じました。
-
+Retail customers expect sites to let them [view high resolution closeups](/web/fundamentals/design-and-ux/responsive/images#make-product-images-expandable) of products. Study participants got frustrated when they weren’t able to see what they were buying.
 
 <div style="clear:both;"></div>
 
-###  最適な向きをユーザーに知らせる
+### Tell users which orientation works best
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/us-orientation.jpg">
     <figcaption class="success">
-      <b>推奨</b>:最適な向きをユーザーに知らせる。
+      <b>DO</b>: Tell the user which orientation works best.
      </figcaption>
   </figure>
 </div>
 
-調査の参加者は、画面の向きを変えるよう促されるまで同じ向きで見続ける傾向がありました。
-横向きと縦向きの両方をデザインするか、最適な向きに切り替えるようユーザーに促してください。
-ユーザーが向きの切り替えの提案を無視しても、重要な CTA（コールトゥアクション）を完了できるようにする必要があります。
-
-
+Study participants tended to stay in the same screen orientation until something prompted them to switch. Design for both landscape and portrait, or encourage users to switch to the optimal orientation. Make sure that your important calls-to-action can be completed even if the users ignore the suggestion to switch orientations.
 
 <div style="clear:both;"></div>
 
-###  1 つのブラウザ ウィンドウに留まらせる
+### Keep your user in a single browser window
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-single-browser-good.png">
     <figcaption class="success">
-      <b>推奨</b>:Macy's はサイトでクーポンを提供しているため、ユーザーをサイトに留まらせることができる。
+      <b>DO</b>: Macy's keeps their users on their site by providing coupons on site.
      </figcaption>
   </figure>
 </div>
 
-複数のウィンドウを切り替えることが難しく、サイトに戻る方法がわからなくなる場合があります。CTA（コールトゥアクション）によって新しいウィンドウを起動することは避けてください。ユーザーがサイトから離れる操作を特定し、サイトに留まる機能を提供してください。たとえばクーポンを受け付ける場合は、利用したいユーザーがその他のサイトを探さなくても済むように、サイトで直接クーポンを提供します。
-
-
+Users may have trouble switching between windows and might not be able to find their way back to the site. Avoid calls-to-action that launch new windows. Identify any journeys that might cause a user to look outside your site and provide features to keep them on your site. For example, if you accept coupons, offer them directly on the site, rather than forcing users to search other sites for deals.
 
 <div style="clear:both;"></div>
 
-###  「フルサイト」というラベルは使わない
+### Avoid "full site" labeling
 
-調査の参加者は「フルサイト」（例: PC 版サイト）と「モバイル版サイト」というオプションを目にすると、モバイル版サイトはコンテンツが不足していると判断し、「フルサイト」を選択して PC 版サイトに移動しました。
+When study participants saw an option for a "full site" (i.e., desktop site) versus a "mobile site", they thought the mobile site lacked content and chose the "full" one instead, directing them to the desktop site.
 
+### Be clear why you need a user's location
 
-
-
-###  ユーザーの位置情報が必要である理由を明確にする
-
-ユーザーは常に、[位置情報](/web/fundamentals/native-hardware/user-location/)を求められる理由を知る必要があります。調査の参加者が市外にあるホテルを予約しようとしたところ、旅行サイトが位置を検出し、現在地の都市のホテルを提案したため混乱を招きました。デフォルトでは位置情報のフィールドは空白にして、「現在地の近くで検索」などの CTA を通してユーザーが入力を選択できるようにします。
-
+Users should always understand why you’re asking for their [location](/web/fundamentals/native-hardware/user-location/). Study participants trying to book a hotel in another city became confused when a travel site detected their location and offered hotels in their current city instead. Leave location fields blank by default, and let users choose to populate them through a clear call-to-action like “Find Near Me”.
 
 <div class="attempt-left">
   <figure id="fig1">
     <img src="images/sw-navigation-good.png">
     <figcaption class="success">
-      <b>推奨</b>:ユーザーの操作時に限って位置情報へのアクセスをリクエストします。</figcaption>
-
+      <b>DO</b>: Always request access to location on a user gesture.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-navigation-bad.png">
     <figcaption class="warning">
-      <b>非推奨</b>:サイトが読み込まれた直後にホームページで位置情報を求めると、ユーザーにあまり良くない印象を与えてしまいます。
+      <b>DON'T</b>: Request immediately access to location on the
+      homepage, as this results in a poor user experience.
      </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

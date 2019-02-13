@@ -1,32 +1,21 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Announcing the release of a new country dimension in the Chrome User Experience Report.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Announcing the release of a new country dimension in the Chrome User Experience Report.
 
-{# wf_updated_on: 2018-10-30 #}
-{# wf_published_on: 2018-01-24 #}
-{# wf_tags: ux #}
-{# wf_blink_components: Blink #}
-{# wf_featured_image: /web/updates/images/generic/timeline.png #}
-{# wf_featured_snippet: Announcing the release of a new country dimension in the Chrome User Experience Report. #}
+{# wf_updated_on: 2018-03-05 #} {# wf_published_on: 2018-01-24 #} {# wf_tags: ux #} {# wf_blink_components: Blink #} {# wf_featured_image: /web/updates/images/generic/timeline.png #} {# wf_featured_snippet: Announcing the release of a new country dimension in the Chrome User Experience Report. #}
 
-# Informe de experiencia de usuario de # Chrome: nueva dimensión de país {: .page-title }
+# Chrome User Experience Report: New country dimension {: .page-title }
 
 {% include "web/_shared/contributors/rviscomi.html" %}
 
 <div class="clearfix"></div>
 
-[Chrome User Experience Report](/web/tools/chrome-user-experience-report/) (CrUX) es un conjunto de datos públicos de datos de rendimiento de usuarios reales. Desde que [announced](https://blog.chromium.org/2017/10/introducing-chrome-user-experience-report.html) el informe, una de las adiciones más solicitadas ha sido la capacidad de comprender mejor las diferencias en la experiencia del usuario en todas las ubicaciones. Basándonos en estos comentarios, estamos ampliando el conjunto de datos CrUX existente, que proporciona una visión global de todas las regiones geográficas, ¡para incluir también una colección de conjuntos de datos separados específicos de cada país!
+The [Chrome User Experience Report](/web/tools/chrome-user-experience-report/) (CrUX) is a public dataset of real user performance data. Since we [announced](https://blog.chromium.org/2017/10/introducing-chrome-user-experience-report.html) the report, one of the most requested additions has been the ability to better understand differences in user experience across locations. Based on this feedback, we are expanding the existing CrUX dataset––which provides a global view across all geographic regions––to also include a collection of separate country-specific datasets!
 
-<img src="/web/updates/images/2018/01/crux-countries.png"
-    alt="Map of countries included in the CrUX dataset"/>
+![Map of countries included in the CrUX dataset](/web/updates/images/2018/01/crux-countries.png)
 
-Por ejemplo, en la captura de pantalla anterior vemos una consulta que compara las densidades agregadas para los tipos de conexión efectiva 4G y 3G en unos pocos países. Lo interesante es ver cómo prevalecen las velocidades de 4G en Japón, mientras que las velocidades de 3G son todavía muy comunes en la India. Ideas como estas son posibles gracias a la nueva dimensión del país.
+For example, in the screenshot above we see a query that compares the aggregate densities for 4G and 3G effective connection types across a few countries. What’s interesting is to see how prevalent 4G speeds are in Japan, while 3G speeds are still very common in India. Insights like these are made possible thanks to the new country dimension.
 
-Para comenzar, diríjase a [CrUX project](https://bigquery.cloud.google.com/dataset/chrome-ux-report:all) en BigQuery y verá una lista de conjuntos de datos organizados por [country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) desde `country_ae` (Emiratos Árabes Unidos) a `country_za` (Sudáfrica). El conjunto de datos familiar de `all` todavía está allí para capturar los datos globales de rendimiento agregado. Dentro de cada conjunto de datos, hay tablas mensuales que comienzan con el informe más reciente, `201712` . Para obtener una guía detallada sobre cómo comenzar, consulte nuestras [CrUX documentation](/web/tools/chrome-user-experience-report/) actualizadas.
+To get started, head over to the [CrUX project](https://bigquery.cloud.google.com/dataset/chrome-ux-report:all) on BigQuery and you’ll see a list of datasets organized by [country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) from `country_ae` (United Arab Emirates) to `country_za` (South Africa). The familiar `all` dataset is still there to capture the global aggregate performance data. Within each dataset there are monthly tables starting with the most recent report, `201712`. For a detailed walkthrough on how to get started, please refer to our updated [CrUX documentation](/web/tools/chrome-user-experience-report/).
 
-Estamos muy contentos de compartir esta nueva información con usted y esperamos ver que la use para mejorar la experiencia del usuario en la web. Para obtener ayuda, hacer preguntas, ofrecer comentarios o compartir los resultados de su propio análisis, únase a la discusión en [CrUX forum](https://groups.google.com/a/chromium.org/forum/#!forum/chrome-ux-report) . Y si el nivel gratuito en BigQuery no es suficiente para contener su entusiasmo por las consultas, todavía tenemos una promoción para ofrecerle [extra 10 TB free](https://docs.google.com/forms/d/e/1FAIpQLSeMYnz93JQuO7rPewVrKpLfxO7JREOysti0CQyRo31bc7cXHA/viewform) , ¡así que obtenga sus créditos hasta [extra 10 TB free](https://docs.google.com/forms/d/e/1FAIpQLSeMYnz93JQuO7rPewVrKpLfxO7JREOysti0CQyRo31bc7cXHA/viewform) !
+We’re excited to share this new data with you and hope to see you use it in ways to improve the user experience on the web. To get help, ask questions, offer feedback, or share findings from your own analysis, join the discussion on the [CrUX forum](https://groups.google.com/a/chromium.org/forum/#!forum/chrome-ux-report). And if the free tier on BigQuery isn’t enough to contain your querying enthusiasm, we’re still running a promotion to give you an [extra 10 TB free](https://docs.google.com/forms/d/e/1FAIpQLSeMYnz93JQuO7rPewVrKpLfxO7JREOysti0CQyRo31bc7cXHA/viewform), so go get your credits while supplies last!
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}

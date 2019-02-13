@@ -1,33 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Menyembunyikan materi dari teknologi pendukung
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Hiding content from assistive technology
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Hiding and Updating Content {: .page-title }
 
-# Menyembunyikan dan Memperbarui Materi {: .page-title }
-
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
 ## aria-hidden
 
-Teknik penting lainnya dalam penyempurnaan pengalaman untuk pengguna
-teknologi pendukung antara lain memastikan bahwa hanya bagian laman yang relevan yang
-diekspos ke teknologi pendukung. Ada sejumlah cara untuk memastikan bagian
-DOM tidak diekspos ke API aksesibilitas.
+Another important technique in fine-tuning the experience for assistive technology users involves ensuring that only relevant parts of the page are exposed to assistive technology. There are several ways to ensure that a section of the DOM does not get exposed to accessibility APIs.
 
-Pertama, apa saja yang secara eksplisit disembunyikan dari DOM juga tidak akan disertakan
-di pohon aksesibilitas. Sehingga apa saja yang memiliki gaya CSS dengan atribut `visibility:hidden` atau `display: none` atau menggunakan `hidden` HTML5 juga akan disembunyikan dari pengguna teknologi pendukung.
+First, anything that is explicitly hidden from the DOM will also not be included in the accessibility tree. So anything that has a CSS style of `visibility:
+hidden` or `display: none` or uses the HTML5 `hidden` attribute will also be hidden from assistive technology users.
 
-
-
-Akan tetapi, elemen yang secara visual tidak dirender namun tidak secara eksplisit disembunyikan
-akan tetap disertakan dalam pohon aksesibilitas. Salah satu teknik umum adalah menyertakan
-"teks khusus pembaca layar" dalam elemen yang diposisikan di luar layar secara mutlak.
-
+However, an element that is not visually rendered but not explicitly hidden is still included in the accessibility tree. One common technique is to include "screen reader only text" in an element that is absolute positioned offscreen.
 
     .sr-only {
       position: absolute;
@@ -38,19 +24,11 @@ akan tetap disertakan dalam pohon aksesibilitas. Salah satu teknik umum adalah m
     }
     
 
-Selain itu, seperti yang telah kita lihat, bisa saja menyediakan teks khusus pembaca layar lewat atribut
-`aria-label`, `aria-labelledby`, atau `aria-describedby` yang mereferensikan
-elemen yang dalam keadaan lain disembunyikan.
+Also, as we have seen, it's possible to provide screen reader only text via an `aria-label`, `aria-labelledby`, or `aria-describedby` attribute referencing an element that is otherwise hidden.
 
-Lihat artikel WebAIM ini di [Teknik untuk menyembunyikan
-teks](http://webaim.org/techniques/css/invisiblecontent/#techniques){: .external }
-untuk informasi selengkapnya mengenai pembuatan teks "khusus pembaca layar".
+See this WebAIM article on [Techniques for hiding text](http://webaim.org/techniques/css/invisiblecontent/#techniques){: .external } for more information on creating "screen reader only" text.
 
-Terakhir, ARIA menyediakan mekanisme untuk mengecualikan materi dari
-teknologi pendukung tidak secara visual disembunyikan, dengan menggunakan atribut `aria-hidden`.
-Menerapkan atribut ini ke elemen secara efektif akan membuangnya *dan semua
-turunannya* dari pohon aksesibilitas. Pengecualian satu-satunya adalah elemen
-yang dirujuk melalui atribut `aria-labelledby` atau `aria-describedby`.
+Finally, ARIA provides a mechanism for excluding content from assistive technology that is not visually hidden, using the `aria-hidden` attribute. Applying this attribute to an element effectively removes it *and all of its descendants* from the accessibility tree. The only exceptions are elements referred to by an `aria-labelledby` or `aria-describedby` attribute.
 
     <div class="deck">
       <div class="slide" aria-hidden="true">
@@ -63,103 +41,53 @@ yang dirujuk melalui atribut `aria-labelledby` atau `aria-describedby`.
         Action Items
       </div>
     </div>
+    
 
-Misalnya, Anda dapat menggunakan `aria-hidden` jika membuat beberapa UI modal yang
-memblokir akses ke laman utama. Dalam hal ini, pengguna yang berpenglihatan normal
-mungkin akan melihat semacam overlay semi-transparan yang menunjukkan
-bahwa sebagian besar laman saat ini tidak bisa digunakan, namun pengguna
-pembaca layar mungkin tetap bisa menjelajahi bagian lain di laman tersebut. Dalam hal ini, seperti halnya membuat jebakan keyboard [telah dijelaskan
-sebelumnya](/web/fundamentals/accessibility/focus/using-tabindex#modals-and-keyboard-traps),
-Anda perlu memastikan bahwa bagian-bagian laman yang saat ini berada di luar cakupan
-berupa `aria-hidden` juga.
+For example, you might use `aria-hidden` if you're creating some modal UI that blocks access to the main page. In this case, a sighted user might see some kind of semi-transparent overlay indicating that most of the page can't currently be used, but a screen reader user may still be able to explore to the other parts of the page. In this case, as well as creating the keyboard trap [explained earlier](/web/fundamentals/accessibility/focus/using-tabindex#modals-and-keyboard-traps), you need to make sure that the parts of the page that are currently out of scope are `aria-hidden` as well.
 
-Karena kini Anda telah memahami dasar-dasar ARIA, cara memainkannya dengan
-semantik HTML asli, dan cara menggunakannya untuk melakukan pembedahan yang
-cukup besar pada pohon aksesibilitas serta pengubahan semantik elemen tunggal, mari kita
-amati cara menggunakannya untuk menyampaikan informasi yang sensitif terhadap waktu.
+Now that you understand the basics of ARIA, how it plays with native HTML semantics, and how it can be used to perform fairly major surgery on the accessibility tree as well as changing the semantics of a single element, let's look at how we can use it to convey time-sensitive information.
 
 ## aria-live
 
-`aria-live` memungkinkan developer menandai bagian laman sebagai "live" dalam artian bahwa
-pembaruan harus segera dikomunikasikan dengan pengguna, tanpa memperhatikan
-posisi laman, daripada cuma terjadi saat menjelajahi bagian laman tersebut. Bila
-elemen memiliki atribut `aria-live`, bagian laman yang berisi elemen tersebut dan
-turunannya disebut *live region*.
+`aria-live` lets developers mark a part of the page as "live" in the sense that updates should be communicated to users immediately regardless of the page position, rather than if they just happen to explore that part of the page. When an element has an `aria-live` attribute, the part of the page containing it and its descendants is called a *live region*.
 
-![Pembaruan ARIA menetapkan region yang selalu diperbarui](imgs/aria-live.jpg)
+![ARIA live establishes a live region](imgs/aria-live.jpg)
 
-Misalnya, live region dapat berupa pesan status yang muncul sebagai hasil
-aksi pengguna. Jika pesan tersebut cukup penting untuk menarik perhatian pengguna
-yang berpenglihatan normal, berarti cukup penting untuk mengarahkan perhatian pengguna
-teknologi pendukung ke pesan tersebut dengan menyetel atribut `aria-live`-nya. Bandingkan `div` biasa ini
-
+For example, a live region might be a status message that appears as a result of a user action. If the message is important enough to grab a sighted user's attention, it is important enough to direct an assistive technology user's attention to it by setting its `aria-live` attribute. Compare this plain `div`
 
     <div class="status">Your message has been sent.</div>
     
 
-dengan pasangan "live"-nya.
-
+with its "live" counterpart.
 
     <div class="status" aria-live="polite">Your message has been sent.</div>
     
 
-`aria-live` memiliki tiga nilai yang diperbolehkan: `polite`, `assertive`, dan `off`.
+`aria-live` has three allowable values: `polite`, `assertive`, and `off`.
 
- - `aria-live="polite"` memberi tahu teknologi pendukung untuk memperingatkan pengguna pada
-   perubahan ini bila telah menyelesaikan pekerjaan apa pun yang saat ini dilakukannya. Cocok sekali menggunakannya
-   jika ada sesuatu yang penting namun tidak mendesak, dan inilah alasan untuk mayoritas penggunaan
-   `aria-live`.
- - `aria-live="assertive"` memberi tahu teknologi pendukung untuk menginterupsi
-   apa pun yang sedang dilakukannya dan segera memperingatkan pengguna mengenai perubahan ini. Ini hanya untuk
-   pemberitahuan penting dan mendesak, misalnya pesan status seperti "Ada kesalahan
-   server dan perubahan Anda tidak disimpan; segarkan laman", atau
-   pemberitahuan untuk bidang masukan sebagai akibat langsung dari aksi pengguna, misalnya
-   tombol-tombol di stepper-widget.
- - `aria-live="off"` memberi tahu teknologi pendukung untuk menangguhkan sementara interupsi
-   `aria-live`.
+- `aria-live="polite"` tells assistive technology to alert the user to this change when it has finished whatever it is currently doing. It's great to use if something is important but not urgent, and accounts for the majority of `aria-live` use.
+- `aria-live="assertive"` tells assistive technology to interrupt whatever it's doing and alert the user to this change immediately. This is only for important and urgent updates, such as a status message like "There has been a server error and your changes are not saved; please refresh the page", or updates to an input field as a direct result of a user action, such as buttons on a stepper widget.
+- `aria-live="off"` tells assistive technology to temporarly suspend `aria-live` interruptions.
 
-Ada beberapa trik untuk memastikan live-region Anda bekerja dengan benar.
+There are some tricks to making sure your live regions work correctly.
 
-Pertama, region `aria-live` Anda harus telah disetel dalam pemuatan laman pertama.
-Ini bukan aturan mutlak, melainkan jika Anda mengalami kesulitan dengan region
-`aria-live`, maka hal ini bisa menjadi masalah.
+First, your `aria-live` region should probably be set in the initial page load. This is not a hard-and-fast rule, but if you're having difficulty with an `aria-live` region, this might be the issue.
 
-Kedua, pembaca layar yang berbeda akan bereaksi berbeda terhadap tipe
-perubahan yang berbeda. Misalnya, bisa saja memicu peringatan pada beberapa pembaca layar
-dengan mengubah gaya `hidden` elemen turunan dari true ke false.
+Second, different screen readers react differently to different types of changes. For example, it's possible to trigger an alert on some screen readers by toggling a descendant element's `hidden` style from true to false.
 
-Atribut lain yang bisa digunakan bersama `aria-live` akan membantu Anda menyempurnakan apa
-yang dikomunikasikan kepada pengguna bila live-region berubah.
+Other attributes that work with `aria-live` help you fine-tune what is communicated to the user when the live region changes.
 
-`aria-atomic` menunjukkan apakah keseluruhan region harus dianggap sebagai
-satu kesatuan saat mengomunikasikan pembaruan. Misalnya, jika widget tanggal yang terdiri dari
-hari, bulan, dan tahun memiliki `aria-live=true` dan `aria-atomic=true`, dan pengguna
-menggunakan kontrol stepper untuk mengubah nilai bulan saja, maka isi lengkap
-dari widget tanggal akan dibaca lagi. Nilai `aria-atomic` mungkin menjadi `true`
-atau `false` (default-nya).
+`aria-atomic` indicates whether the entire region should be considered as a whole when communicating updates. For example, if a date widget consisting of a day, month, and year has `aria-live=true` and `aria-atomic=true`, and the user uses a stepper control to change the value of just the month, the full contents of the date widget would be read out again. `aria-atomic`'s value may be `true` or `false` (the default).
 
-`aria-relevant` menunjukkan tipe perubahan yang harus disajikan kepada pengguna.
-Ada beberapa opsi yang dapat digunakan secara terpisah atau sebagai daftar token.
+`aria-relevant` indicates what types of changes should be presented to the user. There are some options that may be used separately or as a token list.
 
- - *additions*, berarti elemen yang telah ditambahkan ke live-region adalah
-   signifikan. Misalnya, penambahan bentang atau span ke log pesan status
-   yang ada menunjukkan bahwa bentang itu akan diumumkan kepada pengguna (dengan anggapan
-   `aria-atomic` adalah `false`).
- - *text*, berarti isi teks yang akan ditambahkan ke simpul turunan
-   adalah relevan. Misalnya, memodifikasi properti `textContent` bidang teks khusus
-   akan membacakan teks yang dimodifikasi kepada pengguna.
- - *removals*, berarti pembuangan suatu teks atau simpul turunan
-   akan disampaikan kepada pengguna.
- - *all*, berarti semua perubahan adalah relevan. Akan tetapi, nilai default
-   `aria-relevant` adalah `additions text`, yang berarti jika Anda tidak menetapkan
-   `aria-relevant`, ia akan memberi tahu pengguna mengenai penambahan ke elemen,
-   yang kemungkinan besar merupakan hal yang memang Anda inginkan.
+- *additions*, meaning that any element being added to the live region is significant. For example, appending a span to an existing log of status messages would mean that the span would be announced to the user (assuming that `aria-atomic` was `false`).
+- *text*, meaning that text content being added to any descendant node is relevant. For example, modifying a custom text field's `textContent` property would read the modified text to the user.
+- *removals*, meaning that the removal of any text or descendant nodes should be conveyed to the user.
+- *all*, meaning that all changes are relevant. However, the default value for `aria-relevant` is `additions text`, meaning that if you don't specify `aria-relevant` it will update the user for any addition to the element, which is what you are most likely to want.
 
-Terakhir, `aria-busy` memungkinkan Anda memberi tahu teknologi pendukung agar
-untuk sementara mengabaikan perubahan pada elemen, misalnya bila ada sesuatu yang sedang dimuat. Setelah
-semua berada pada tempatnya, `aria-busy` harus disetel ke false untuk menormalkan
-operasi pembaca.
- 
+Finally, `aria-busy` lets you notify assistive technology that it should temporarily ignore changes to an element, such as when things are loading. Once everything is in place, `aria-busy` should be set to false to normalize the reader's operation.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,33 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 각각의 리소스가 더 나은 사용자 환경을 제공하는 데 도움이 되는지 확인하기 위해 리소스를 주기적으로 감사해야 합니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should audit your resources periodically to ensure that each resource is helping deliver a better user experience.
 
-{# wf_updated_on: 2016-08-29 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# 불필요한 다운로드 제거 {: .page-title }
+# Eliminating Unnecessary Downloads {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
 ### TL;DR {: .hide-from-toc }
-* 페이지에 포함된 자체 자산과 타사 자산의 인벤토리를 작성합니다.
-* 각 자산의 성능, 즉 그 가치와 기술적인 성능을 측정합니다.
-* 리소스가 충분한 가치를 제공하는지 확인합니다.
 
-가장 빠르고 최상으로 최적화된 리소스는 전송되지 않는 리소스입니다. 불필요한 리소스를 애플리케이션에서 제거해야 합니다. 명시적 및 묵시적 가정 사항에 대해 의문을 갖고 팀원들과 정기적으로 다시 논의하는 것이 좋습니다. 몇 가지 예시가 여기에 나와 있습니다.
+* Inventory your own assets and third-party assets on your pages.
+* Measure the performance of each asset: its value and its technical performance.
+* Determine if the resources are providing sufficient value.
 
-* 여러분은 항상 리소스 X를 페이지에 포함해 왔습니다. 하지만, 이 리소스를 다운로드하고 표시하는 비용만큼 이 리소스가 사용자에게 가치를 제공합니까? 그 가치를 측정하고 증명할 수 있습니까?
-* 이 리소스(특히 타사 리소스인 경우)가 일관된 성능을 제공합니까? 이 리소스가 주요 경로에 있습니까? 아니면 있어야 합니까? 리소스가 주요 경로에 있다면 이것이 사이트의 단일 장애 지점이 될 수 있을까요? 즉, 리소스를 사용할 수 없을 경우 이 리소스가 페이지의 성능 및 사용자 환경에 영향을 미칠까요?
-* 이 리소스에 SLA가 필요합니까? 아니면 SLA가 있습니까? 이 리소스가 압축, 캐싱 등의 성능 모범 사례를 따릅니까?
+The fastest and best-optimized resource is a resource not sent. You should eliminate unnecessary resources from your application. It’s a good practice to question, and periodically revisit, the implicit and explicit assumptions with your team. Here are a few examples:
 
-방문자나 그들을 호스팅하는 사이트에 많은 가치를 제공하지 않으면서, 불필요하거나 페이지 성능을 방해하는 리소스가 포함된 페이지가 너무 많습니다. 이러한 사실은 자체 리소스 및 위젯은 물론, 타사 리소스 및 위젯에도 동일하게 적용됩니다.
+* You've always included resource X on your pages, but does the cost of downloading and displaying it offset the value it delivers to the user? Can you measure and prove its value?
+* Does the resource (especially if it's a third-party resource) deliver consistent performance? Is this resource in the critical path, or need to be? If the resource is in the critical path, could it be a single point of failure for the site? That is, if the resource is unavailable, does it affect performance and the user experience of your pages?
+* Does this resource need or have an SLA? Does this resource follow performance best practices: compression, caching, and so on?
 
-* 사이트 A에서 방문자가 여러 사진을 빠르게 클릭하여 미리 볼 수 있도록 홈페이지에 사진 회전 기능을 표시하기로 결정했습니다. 모든 사진들은 페이지가 로드될 때 로드되고 사용자가 사진을 검색합니다.
-    * **질문:**얼마나 많은 사용자가 사진 회전 기능을 통해 사진들을 보는지 측정한 적이 있습니까? 대부분의 방문자가 보지 않는 리소스를 다운로드함으로써 높은 오버헤드를 유발할 수 있습니다.
-* 사이트 B에서 관련 콘텐츠를 표시하거나 소셜 참여를 향상시키거나 기타 일부 서비스를 제공하기 위해 타사 위젯을 설치하기로 결정했습니다.
-    * **질문:**얼마나 많은 방문자가 이 위젯을 사용하거나 이 위젯이 제공하는 콘텐츠를 클릭하는지 추적해 본 적이 있습니까? 이 위젯이 생성하는 효과가 이러한 오버헤드를 감당할 만큼 충분합니까?
+Too often, pages contain resources that are unnecessary, or worse, that hinder page performance without delivering much value to the visitor or to the site they're hosted on. This applies equally to first-party and third-party resources and widgets:
 
-불필요한 다운로드를 제거할지 여부를 판별하려면 신중하게 많이 생각해보고 측정해야 합니다. 최상의 결과를 위해서는 페이지의 모든 자산에 대해 주기적으로 인벤토리를 작성하고 이러한 질문을 재논의하세요.
+* Site A has decided to display a photo carousel on its homepage to allow the visitor to preview multiple photos with a quick click. All of the photos are loaded when the page is loaded, and the user advances through the photos. 
+    * **Question:** Have you measured how many users view multiple photos in the carousel? You might be incurring high overhead by downloading resources that most visitors never view.
+* Site B has decided to install a third-party widget to display related content, improve social engagement, or provide some other service. 
+    * **Question:** Have you tracked how many visitors use the widget or click-through on the content that the widget provides? Is the engagement that this widget generates enough to justify its overhead?
 
+Determining whether to eliminate unnecessary downloads often requires a lot of careful thinking and measurement. For best results, periodically inventory and revisit these questions for every asset on your pages.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

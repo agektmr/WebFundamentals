@@ -1,36 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Compara objetos que tienen datos similares con el método table().
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Compare similar data objects using the table() method.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Comparar objetos que tienen datos similares {: .page-title }
+# Compare Similar Data Objects {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
-Visualiza datos estructurados y compara objetos de datos con el método table().
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %} View structured data and compare data objects using the table() method.
 
-El método `table()` proporciona una manera simple de ver objetos y matrices que incluyen datos similares. Cuando recibe una llamada, toma las propiedades de un objeto y crea un encabezado. Los datos sin procesar provienen del valor de las propiedades de cada índice.
+The `table()` method provides an easy way to view objects and arrays that include similar data. When called, it will take the properties of an object and create a header. The row data then comes from each index's properties value.
 
+## Basic example: Logging an array of objects
 
-## Ejemplo básico: Carga de una matriz de objetos
-
-En su forma más básica, todo lo que necesitas es una matriz con un grupo de objetos que tengan las mismas propiedades y el comando `table()` hará el resto:
-
+In it's most basic form, all you need is an array with a bunch of objects that have the same properties, and the `table()` command will do the rest:
 
     console.table([{a:1, b:2, c:3}, {a:"foo", b:false, c:undefined}]);
     console.table([[1,2,3], [2,3,4]]);
     
-  
-Esto mostrará lo siguiente:
 
-![Visualización de la tabla de la consola](images/table-arrays.png)
+This will output:
 
-## Ejemplo avanzado: Registro de propiedades específicas
+![console table display](images/table-arrays.png)
 
-El segundo parámetro de `table()` se puede usar para registrar objetos más avanzados. Define una matriz que contenga las strings de propiedades que desees mostrar, como se describe a continuación:
+## Advanced example: Logging specific properties
 
+The second parameter to `table()` can be used to log more advanced objects. Define an array containing the property strings you wish to display, like so:
 
     function Person(firstName, lastName, age) {
       this.firstName = firstName;
@@ -47,11 +39,10 @@ El segundo parámetro de `table()` se puede usar para registrar objetos más ava
     console.table(family, ["firstName", "lastName", "age"]);
     
 
-Esto mostrará lo siguiente:
+This will output the following:
 
-![Resultado de la consola con objetos de la tabla](images/table-people-objects.png)
+![console output with table objects](images/table-people-objects.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,144 +1,127 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Pelajari cara merekam cuplikan heap dengan profiler heap Chrome DevTools dan menemukan kebocoran memori.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to record heap snapshots with the Chrome DevTools heap profiler and find memory leaks.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-06-08 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-06-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# Cara Merekam Cuplikan Heap {: .page-title }
+# How to Record Heap Snapshots {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-Pelajari cara merekam cuplikan heap dengan profiler heap Chrome DevTools dan menemukan kebocoran memori.
+Learn how to record heap snapshots with the Chrome DevTools heap profiler and find memory leaks.
 
-Profiler heap Chrome DevTools menampilkan distribusi memori
-berdasarkan objek JavaScript laman dan simpul DOM yang terkait
-(lihat juga [Pohon penahan objek](/web/tools/chrome-devtools/profile/memory-problems/memory-101#objects-retaining-tree)).
-Gunakan ini untuk mengambil cuplikan heap JS, menganalisis grafik memori,
-membandingkan cuplikan, dan menemukan kebocoran memori.
+The Chrome DevTools heap profiler shows memory distribution by your page's JavaScript objects and related DOM nodes (see also [Objects retaining tree](/web/tools/chrome-devtools/profile/memory-problems/memory-101#objects-retaining-tree)). Use it to take JS heap snapshots, analyze memory graphs, compare snapshots, and find memory leaks.
 
+## Take a snapshot
 
-## Mengambil cuplikan
+On the Profiles panel, choose **Take Heap Snapshot**, then click **Start** or press <span class="kbd">Cmd</span> + <span class="kbd">E</span> or <span class="kbd">Ctrl</span> + <span class="kbd">E</span>:
 
-Pada panel Profiles, pilih **Take Heap Snapshots**, lalu klik **Start** atau tekan <span class="kbd">Cmd</span> + <span class="kbd">E</span> atau <span class="kbd">Ctrl</span> + <span class="kbd">E</span>:
+![Select profiling type](imgs/profiling-type.png)
 
-![Pilih tipe pembuatan profil](imgs/profiling-type.png)
+**Snapshots** are initially stored in the renderer process memory. They are transferred to the DevTools on demand, when you click on the snapshot icon to view it.
 
-**Cuplikan** awalnya disimpan di memori proses renderer.
-Cuplikan lalu ditransfer ke DevTools sesuai permintaan, saat Anda mengeklik ikon cuplikan untuk menampilkannya.
+After the snapshot has been loaded into DevTools and has been parsed, the number below the snapshot title appears and shows the total size of the [reachable JavaScript objects](/web/tools/chrome-devtools/profile/memory-problems/memory-101#object-sizes):
 
-Setelah cuplikan dimuat ke DevTools dan telah di-parse,
-di bawah judul cuplikan akan muncul angka, yang menunjukkan ukuran total
-[objek JavaScript yang dapat dijangkau](/web/tools/chrome-devtools/profile/memory-problems/memory-101#object-sizes):
+![Total size of reachable objects](imgs/total-size.png)
 
-![Total objek yang dapat dijangkau](imgs/total-size.png)
+Note: Only reachable objects are included in snapshots. Also, taking a snapshot always starts with a garbage collection.
 
-Note: Hanya objek yang bisa dijangkau yang disertakan di cuplikan. Selain itu, mengambil cuplikan selalu dimulai dengan pengumpulan sampah.
+## Clear snapshots
 
-## Menghapus cuplikan
+Remove snapshots (both from DevTools and renderers memory) by pressing the Clear all profiles icon:
 
-Hapus cuplikan (dari DevTools dan memori renderer) dengan menekan ikon Clear all profiles:
+![Remove snapshots](imgs/remove-snapshots.png)
 
-![Buang cuplikan](imgs/remove-snapshots.png)
+Closing the DevTools window will not delete profiles from the renderers memory. When reopening DevTools, all previously taken snapshots will reappear in the list of snapshots.
 
-Menutup jendela DevTools tidak akan menghapus profil dari memori renderer. Saat membuka ulang DevTools, semua cuplikan yang sebelumnya diambil akan kembali muncul dalam daftar cuplikan.
+<p class="note"><strong>Example:</strong> Try out this example of <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example3.html">scattered objects</a> and profile it using the Heap Profiler. You should see a number of (object) item allocations.</p>
 
-<p class="note"><strong>Contoh:</strong> Coba contoh <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example3.html">objek tersebar</a> berikut dan buat profilnya menggunakan Heap Profiler. Sejumlah alokasi item (objek) akan ditampilkan.</p>
+## View snapshots
 
-## Menampilkan cuplikan
+View snapshots from different perspectives for different tasks.
 
-Tampilkan cuplikan dari sudut pandang yang berbeda untuk tugas yang berbeda.
+**Summary view** shows objects grouped by the constructor name. Use it to hunt down objects (and their memory use) based on type grouped by constructor name. It's particularly helpful for [tracking down DOM leaks](/web/tools/chrome-devtools/profile/memory-problems/memory-diagnosis#narrow-down-causes-of-memory-leaks).
 
-**Tampilan Summary** menampilkan objek yang dikelompokkan berdasarkan nama konstruktor. Gunakan ini untuk mencari objek (dan penggunaan memorinya) berdasarkan tipe yang dikelompokkan berdasarkan nama konstruktor. Ini khususnya bermanfaat untuk
-[melacak kebocoran DOM](/web/tools/chrome-devtools/profile/memory-problems/memory-diagnosis#narrow-down-causes-of-memory-leaks).
+**Comparison view** displays difference between two snapshots. Use it to compare two (or more) memory snapshots of before and after an operation. Inspecting the delta in freed memory and reference count lets you confirm the presence and cause of a memory leak.
 
-**Tampilan Comparison** menampilkan perbedaan antara dua cuplikan. Gunakan ini untuk membandingkan dua cuplikan memori (atau lebih) sebelum dan setelah operasi. Dengan memeriksa delta di memori yang dibebaskan dan jumlah referensi, Anda dapat mengonfirmasi keberadaan dan penyebab kebocoran memori.
+**Containment view** allows exploration of heap contents. It provides a better view of object structure, helping analyze objects referenced in the global namespace (window) to find out what is keeping them around. Use it to analyze closures and dive into your objects at a low level.
 
-**Tampilan Containment** bisa digunakan untuk menjelajahi materi heap. Tampilan ini memberikan tampilan struktur objek yang lebih baik, yang membantu menganalisis objek yang direferensikan di namespace (jendela) global untuk mencari tahu penyebab kehadirannya. Gunakan ini untuk menganalisis closure dan mengamati objek secara mendalam di tingkat rendah.
+**Dominators view** shows the [dominators tree](/web/tools/chrome-devtools/profile/memory-problems/memory-101#dominators) and can be useful to find accumulation points. This view helps confirm that no unexpected references to objects are still hanging around and that deletion/garbage collection is actually working.
 
-**Tampilan Dominators** menampilkan
-[pohon dominator](/web/tools/chrome-devtools/profile/memory-problems/memory-101#dominators)
-dan bisa berguna untuk menemukan titik akumulasi.
-Tampilan ini membantu mengonfirmasi bahwa sudah tidak ada lagi referensi ke objek yang tidak diharapkan dan bahwa penghapusan/pengumpulan sampah benar-benar berfungsi.
+To switch between views, use the selector at the bottom of the view:
 
-Untuk beralih antar tampilan, gunakan pemilih di bagian bawah tampilan:
+![Switch views selector](imgs/switch-views.png)
 
-![Pemilih Switch views](imgs/switch-views.png)
+Note: Not all properties are stored on the JavaScript heap. Properties implemented using getters that execute native code aren't captured. Also, non-string values such as numbers are not captured.
 
-Note: Tidak semua properti disimpan di heap JavaScript. Properti yang diimplementasikan menggunakan getter yang mengeksekusi kode bawaan tidak direkam cuplikannya. Selain itu, nilai non-string seperti angka tidak direkam cuplikannya.
+### Summary view
 
-### Tampilan Summary
+Initially, a snapshot opens in the Summary view, displaying object totals, which can be expanded to show instances:
 
-Cuplikan mula-mula dibuka dalam tampilan Summary, yang menampilkan total objek, yang bisa diluaskan untuk menampilkan instance.
+![Summary view](imgs/summary-view.png)
 
-![Tampilan Summary](imgs/summary-view.png)
+Top-level entries are "total" lines. They display:
 
-Entri tingkat atas adalah baris "total". Baris ini menampilkan:
+* **Constructor** represents all objects created using this constructor.
+* **Number of object instances** is displayed in the # column.
+* **Shallow size** column displays the sum of shallow sizes of all objects created by a certain constructor function. The shallow size is the size of memory held by an object itself (generally, arrays and strings have larger shallow sizes). See also [Object sizes](/web/tools/chrome-devtools/profile/memory-problems/memory-101#object-sizes).
+* **Retained size** column displays the maximum retained size among the same set of objects. The size of memory that can be freed once an object is deleted (and this its dependents made no longer reachable) is called the retained size. See also [Object sizes](/web/tools/chrome-devtools/profile/memory-problems/memory-101#object-sizes).
+* **Distance** displays the distance to the root using the shortest simple path of nodes.
 
-* **Constructor** mewakili semua objek yang dibuat menggunakan konstruktor ini.
-* **Number of object instances** ditampilkan di kolom # .
-* Kolom **Shallow size** menampilkan jumlah ukuran dangkal semua objek yang dibuat oleh fungsi konstruktor tertentu. Ukuran dangkal adalah ukuran memori yang dipertahankan oleh objek itu sendiri (umumnya, larik dan string memiliki ukuran dangkal yang lebih besar). Lihat juga [Ukuran objek](/web/tools/chrome-devtools/profile/memory-problems/memory-101#object-sizes).
-* Kolom **Retained size** menampilkan ukuran yang dipertahankan maksimum di antara rangkaian objek yang sama. Ukuran memori yang bisa dibebaskan setelah objek dihapus (dan membuat objek yang bergantung padanya tidak lagi bisa dijangkau) disebut sebagai ukuran yang dipertahankan. Lihat juga [Ukuran objek](/web/tools/chrome-devtools/profile/memory-problems/memory-101#object-sizes).
-* **Distance** menampilkan jarak ke akar menggunakan jalur simpul sederhana yang paling pendek.
+After expanding a total line in the upper view, all of its instances are displayed. For each instance, its shallow and retained sizes are displayed in the corresponding columns. The number after the @ character is the objects’ unique ID, allowing you to compare heap snapshots on per-object basis.
 
-Luaskan baris total di tampilan atas untuk menampilkan semua instance-nya. Untuk setiap instance, ukuran dangkal dan yang dipertahankan ditampilkan di kolom yang sesuai. Angka setelah karakter @ adalah ID unik objek, yang bisa digunakan untuk membandingkan cuplikan heap per objek.
+Remember that yellow objects have JavaScript references on them and red objects are detached nodes which are referenced from one with a yellow background.
 
-Ingat bahwa objek kuning memiliki referensi JavaScript padanya dan objek merah adalah simpul terlepas yang direferensikan dari simpul dengan latar belakang kuning.
+**What do the various constructor (group) entries in the Heap profiler correspond to?**
 
-**Apa yang terkait dengan setiap entri (grup) konstruktor di profiler Heap?**
+![Constructor groups](imgs/constructor-groups.jpg)
 
-![Grup konstruktor](imgs/constructor-groups.jpg)
+* **(global property)** – intermediate objects between a global object (like 'window') and an object referenced by it. If an object is created using a constructor Person and is held by a global object, the retaining path would look like [global] > (global property) > Person. This contrasts with the norm, where objects directly reference each other. We have intermediate objects for performance reasons. Globals are modified regularly and property access optimizations do a good job for non-global objects aren't applicable for globals.
 
-* **(global property)** – objek penengah antara objek global (seperti 'window') dengan objek yang direferensikan olehnya. Jika objek dibuat menggunakan konstruktor Person dan ditahan oleh objek global, jalur yang mempertahankan akan terlihat seperti ini [global] > (global property) > Person. Ini bertentangan dengan aturan umum, yaitu objek langsung saling merujuk satu sama lain. Kami memiliki objek penengah dengan alasan kinerja. Objek global diubah secara rutin dan pengoptimalan akses properti yang berfungsi baik untuk objek non-global tidak berlaku untuk objek global.
+* **(roots)** – The root entries in the retaining tree view are the entities that have references to the selected object. These can also be references created by the engine for its own purposes. The engine has caches which reference objects, but all such references are weak and won't prevent an object from being collected given that there are no truly strong references.
 
-* **(roots)** – Entri akar di tampilan pohon yang dipertahankan adalah entitas yang memiliki referensi ke objek yang dipilih. Ini bisa jadi referensi yang dibuat oleh mesin untuk tujuannya sendiri. Mesin memilih cache yang mereferensi objek, tetapi semua referensi ini lemah dan tidak akan menghentikan objek agar tidak dikumpulkan karena tidak ada referensi yang benar-benar kuat.
+* **(closure)** – a count of references to a group of objects through function closures
 
-* **(closure)** – jumlah referensi ke sekelompok objek melalui closure fungsi
+* **(array, string, number, regexp)** – a list of object types with properties which reference an Array, String, Number or regular expression.
 
-* **(array, string, number, regexp)** – sebuah tipe daftar dengan properti yang merujuk Larik, String, Angka atau ekspresi reguler.
+* **(compiled code)** – simply, everything related to compiled code. Script is similar to a function but corresponds to a &lt;script&gt; body. SharedFunctionInfos (SFI) are objects standing between functions and compiled code. Functions are usually have a context, while SFIs do not.
 
-* **(compiled code)** – adalah semuanya yang terkait dengan kode yang dikompilasi. Skrip mirip dengan fungsi, tetapi terkait dengan isi &lt;skrip&gt;. SharedFunctionInfos (SFI) adalah objek yang berada di antara fungsi dan kode yang dikompilasi. Fungsi biasanya memiliki konteks, sedangkan SFI tidak.
+* **HTMLDivElement**, **HTMLAnchorElement**, **DocumentFragment** etc – references to elements or document objects of a particular type referenced by your code.
 
-* **HTMLDivElement**, **HTMLAnchorElement**, **DocumentFragment**, dsb – mengacu ke elemen atau objek dokumen dari tipe tertentu yang dirujuk oleh kode Anda.
+<p class="note"><strong>Example:</strong> Try this <a href="https://developer.chrome.com/devtools/docs/heap-profiling-summary">demo page</a> to understand how the Summary view can be used.</p>
 
+### Comparison view
 
-<p class="note"><strong>Contoh:</strong> Coba <a href="https://developer.chrome.com/devtools/docs/heap-profiling-summary">laman demo</a> ini untuk memahami cara menggunakan tampilan Summary.</p>
+Find leaked objects by comparing multiple snapshots to each other. To verify that a certain application operation doesn't create leaks (for example, usually a pair of direct and reverse operations, like opening a document, and then closing it, should not leave any garbage), you may follow the scenario below:
 
-### Tampilan Comparison
+1. Take a heap snapshot before performing an operation.
+2. Perform an operation (interact with a page in some way that you believe to be causing a leak).
+3. Perform a reverse operation (do the opposite interaction and repeat it a few times).
+4. Take a second heap snapshot and change the view of this one to Comparison, comparing it to snapshot 1.
 
-Temukan objek yang bocor dengan membandingkan beberapa cuplikan. Untuk memverifikasi bahwa operasi aplikasi tertentu tidak membuat kebocoran (misalnya, biasanya sepasang operasi langsung dan balik, seperti membuka dokumen, lalu menutupnya, seharusnya tidak meninggalkan sampah), Anda bisa mengikuti skenario berikut:
+In the Comparison view, the difference between two snapshots is displayed. When expanding a total entry, added and deleted object instances are shown:
 
-1. Ambil cuplikan heap sebelum melakukan operasi.
-2. Lakukan operasi (berinteraksi dengan laman dalam cara yang Anda yakini menyebabkan kebocoran).
-3. Lakukan operasi balik (lakukan interaksi kebalikannya dan ulangi beberapa kali).
-4. Ambil cuplikan heap kedua dan ubah tampilan cuplikan ini ke Comparison, yang akan membandingkannya dengan cuplikan 1.
+![Comparison view](imgs/comparison-view.png)
 
-Di tampilan Comparison, perbedaan antara dua cuplikan ditampilkan. Saat meluaskan entri total, instance objek yang ditambahkan dan dihapus ditampilkan.
+<p class="note"><strong>Example:</strong> Try this <a href="https://developer.chrome.com/devtools/docs/heap-profiling-comparison">demo page</a> to get an idea how to use snapshot comparison for detecting leaks.</p>
 
-![Tampilan Comparison](imgs/comparison-view.png)
+### Containment view
 
-<p class="note"><strong>Contoh:</strong> Coba <a href="https://developer.chrome.com/devtools/docs/heap-profiling-comparison">laman demo ini</a> untuk mendapatkan gambaran tentang cara menggunakan perbandingan cuplikan untuk mendeteksi kebocoran.</p>
+The Containment view is essentially a "bird's eye view" of your application's objects structure. It allows you to peek inside function closures, to observe VM internal objects that together make up your JavaScript objects, and to understand how much memory your application uses at a very low level.
 
-### Tampilan Containment
+The view provides several entry points:
 
-Tampilan Containment intinya adalah "tampilan menyeluruh" dari struktur objek aplikasi. Dengan tampilan ini, Anda bisa melihat ke dalam closure fungsi, mengamati objek internal VM yang bersama-sama membentuk objek JavaScript, dan memahami berapa banyak memori yang digunakan aplikasi pada tingkat yang sangat rendah.
+* **DOMWindow objects** are objects considered as "global" objects for JavaScript code.
+* **GC roots** are the actual GC roots used by VM's garbage. GC roots can be comprised of built-in object maps, symbol tables, VM thread stacks, compilation caches, handle scopes, global handles.
+* **Native objects** are browser objects "pushed" inside the JavaScript virtual machine to allow automation, for example, DOM nodes, CSS rules.
 
-Tampilan ini menyediakan beberapa titik masuk:
-
-* **DOMWindows objects** adalah objek yang dianggap sebagai objek "global" untuk kode JavaScript.
-* **GC roots** adalah akar GC sebenarnya yang digunakan oleh sampah VM. Akar GC bisa terdiri dari peta objek, tabel simbol, tumpukan alur VM, cache kompilasi, cakupan handle, dan handle global internal.
-* **Native objects** adalah objek browser yang "didorong" ke dalam mesin virtual JavaScript untuk memungkinkan otomatisasi, misalnya, simpul DOM, aturan CSS.
-
-![Tampilan Containment](imgs/containment-view.png)
+![Containment view](imgs/containment-view.png)
 
 <p class="note">
-  <strong>Contoh:</strong> Coba <a href="https://developer.chrome.com/devtools/docs/heap-profiling-containment">laman demo ini</a> untuk mengetahui cara menjelajah closure dan penangan kejadian menggunakan tampilan.
+  <strong>Example:</strong> Try this <a href="https://developer.chrome.com/devtools/docs/heap-profiling-containment">demo page</a> for finding out how to explore closures and event handlers using the view.
 </p>
 
-<strong>Tip tentang closure</strong>
+<strong>A tip about closures</strong>
 
-Sebaiknya fungsi diberi nama, untuk memudahkan membedakan closure di cuplikan. Misalnya, contoh berikut ini tidak menggunakan fungsi yang bernama:
-
+It helps a lot to name the functions so you can easily distinguish between closures in the snapshot. For example, this example does not use named functions:
 
     function createLargeClosure() {
       var largeStr = new Array(1000000).join('x');
@@ -151,8 +134,7 @@ Sebaiknya fungsi diberi nama, untuk memudahkan membedakan closure di cuplikan. M
     }
     
 
-Meskipun contoh ini menjalankan:
-
+Whilst this example does:
 
     function createLargeClosure() {
       var largeStr = new Array(1000000).join('x');
@@ -165,57 +147,46 @@ Meskipun contoh ini menjalankan:
     }
     
 
-![Beri nama fungsi untuk mengenali closure yang berbeda](imgs/domleaks.png)
+![Name functions to distinguish between closures](imgs/domleaks.png)
 
 <p class="note">
-    <strong>Contoh:</strong>
-    Coba contoh <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example7.html">why eval is evil</a> ini untuk menganalisis dampak closure pada memori. Lalu, sebaiknya coba juga contoh ini yang akan membimbing Anda merekam <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example8.html">alokasi heap</a>.
+    <strong>Examples:</strong>
+    Try out this example of <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example7.html">why eval is evil</a> to analyze the impact of closures on memory. You may also be interested in following it up with this example that takes you through recording <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example8.html">heap allocations</a>.
 </p>
 
-### Tampilan Dominator
+### Dominators view
 
-Tampilan [Dominator](/web/tools/chrome-devtools/profile/memory-problems/memory-101#dominators) menampilkan pohon dominator untuk grafik heap.
-Tampilan ini mirip dengan tampilan Containment, tetapi tanpa nama properti.
-Sebabnya, dominator sebuah objek mungkin tidak memiliki referensi langsung padanya;
-pohon dominator bukan pohon grafik yang membentang.
-Akan tetapi, akibatnya baik
-karena membantu kita mengidentifikasi titik akumulasi memori secara cepat.
+The [Dominators](/web/tools/chrome-devtools/profile/memory-problems/memory-101#dominators) view shows the dominators tree for the heap graph. It looks similar to the Containment view, but lacks property names. This is because a dominator of an object may lack direct references to it; the dominators tree is not a spanning tree of the graph. But this only serves for good, as helps us to identify memory accumulation points quickly.
 
-<p class="note"><strong>Catatan:</strong> Di Chrome Canary, tampilan Dominator dapat diaktifkan dengan masuk ke Settings > Show heap snapshot properties, dan memulai ulang DevTools.</p>
+<p class="note"><strong>Note:</strong> In Chrome Canary, Dominators view can be enabled by going to Settings > Show advanced heap snapshot properties and restarting the DevTools.</p>
 
-![Tampilan Dominators](imgs/dominators-view.png)
+![Dominators view](imgs/dominators-view.png)
 
 <p class="note">
-    <strong>Contoh:</strong>
-    Coba <a href="https://developer.chrome.com/devtools/docs/heap-profiling-dominators">demo</a> ini untuk berlatih menemukan titik akumulasi. Lanjutkan dengan contoh berikut tentang menemukan <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example10.html">jalur penahan dan dominator</a>.
+    <strong>Examples:</strong>
+    Try this <a href="https://developer.chrome.com/devtools/docs/heap-profiling-dominators">demo</a> to train yourself in finding accumulation points. Follow it up with this example of running into <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example10.html">retaining paths and dominators</a>.
 </p>
 
-## Mencari kode warna
+## Look up color coding
 
-Properti dan nilai properti objek memiliki tipe berbeda-beda dan
-diberi warna berdasarkan tipenya. Setiap properti memilih satu dari empat tipe berikut:
+Properties and property values of objects have different types and are colored accordingly. Each property has one of four types:
 
-* **properti a:** — properti biasa dengan nama, diakses melalui operator . (titik), atau melalui notasi [ ] (tanda kurung), mis.: ["foo bar"];
-* **elemen 0:** — properti biasa dengan indeks angka, diakses melalui notasi [ ] (tanda kurung);
-* **variabel konteks a:** — variabel di dalam konteks fungsi, bisa diakses melalui namanya dari dalam closure fungsi;
-* **properti sistem a:** — properti yang ditambahkan oleh VM JavaScript, tidak bisa diakses dari kode JavaScript.
+* **a: property** — regular property with a name, accessed via the . (dot) operator, or via \[ \] (brackets) notation, e.g. ["foo bar"];
+* **0: element** — regular property with a numeric index, accessed via \[ \] (brackets) notation;
+* **a: context var** - variable in a function context, accessible by its name from inside a function closure;
+* **a: system prop** - property added by the JavaScript VM, not accessible from JavaScript code.
 
-Objek yang ditetapkan sebagai `System `tidak memiliki tipe JavaScript yang sesuai. Semuanya adalah bagian implementasi sistem objek VM JavaScript. V8 mengalokasikan sebagian besar objek internalnya di heap yang sama dengan objek JS pengguna. Jadi, ini hanyalah bagian internal v8.
+Objects designated as `System`do not have a corresponding JavaScript type. They are part of JavaScript VM's object system implementation. V8 allocates most of its internal objects in the same heap as the user's JS objects. So these are just v8 internals.
 
-## Menemukan objek tertentu
+## Find a specific object
 
-Untuk menemukan objek di heap yang dikumpulkan, Anda bisa menelusuri menggunakan <kbd><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></kbd> dan memasukkan ID objek.
+To find an object in the collected heap you can search using <kbd><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></kbd> and give the object ID.
 
-## Mengungkap kebocoran DOM
+## Uncover DOM leaks
 
-Profiler heap mampu memperlihatkan dependensi dua arah
-antara objek bawaan browser (simpul DOM, aturan CSS) dan objek JavaScript.
-Ini membantu mengungkapkan kebocoran tersembunyi yang terjadi
-karena keberadaan subpohon DOM yang terlepas dan terlupakan.
+The heap profiler has the ability to reflect bidirectional dependencies between browser native objects (DOM nodes, CSS rules) and JavaScript objects. This helps to discover otherwise invisible leaks happening due to forgotten detached DOM subtrees floating around.
 
-Kebocoran DOM bisa lebih besar dari yang Anda kira.
-Perhatikan contoh berikut — kapan #tree GC terjadi?
-
+DOM leaks can be bigger than you think. Consider the following sample - when is the #tree GC?
 
       var select = document.querySelector;
       var treeRef = select("#tree");
@@ -234,26 +205,22 @@ Perhatikan contoh berikut — kapan #tree GC terjadi?
       //#NOW can be #tree GC
     
 
-`#leaf` mempertahankan referensi ke induknya (parentNode) dan secara terbalik
-hingga `#tree`, sehingga hanya saat leafRef dinolkan, pohon keseluruhan di bawah
-`#tree` menjadi kandidat untuk GC.
+`#leaf` maintains a reference to it's parent (parentNode) and recursively up to `#tree`, so only when leafRef is nullified is the WHOLE tree under `#tree` a candidate for GC.
 
-![Subpohon DOM](imgs/treegc.png)
+![DOM subtrees](imgs/treegc.png)
 
 <p class="note">
-    <strong>Contoh:</strong>
-    Coba contoh berikut tentang <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example6.html">kebocoran simpul DOM</a> untuk memahami di mana simpul DOM bisa bocor dan cara mendeteksinya. Anda bisa melanjutkan dengan melihat contoh berikut tentang <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example9.html">kebocoran DOM yang lebih besar dari yang dikira</a>.
+    <strong>Examples:</strong>
+    Try out this example of <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example6.html">leaking DOM nodes</a> to understand where DOM nodes can leak and how to detect them. You can follow it up by also looking at this example of <a href="https://github.com/GoogleChrome/devtools-docs/blob/master/docs/demos/memory/example9.html">DOM leaks being bigger than expected</a>.
 </p>
 
-Untuk membaca selengkapnya tentang kebocoran DOM dan dasar-dasar analisis memori, pelajari
-[Finding and debugging memory leaks with the Chrome DevTools](http://slid.es/gruizdevilla/memory) oleh Gonzalo Ruiz de Villa.
+To read more about DOM leaks and memory analysis fundamentals checkout [Finding and debugging memory leaks with the Chrome DevTools](http://slid.es/gruizdevilla/memory) by Gonzalo Ruiz de Villa.
 
 <p class="note">
-    <strong>Contoh:</strong>
-    Coba <a href="https://developer.chrome.com/devtools/docs/heap-profiling-dom-leaks">demo</a> ini untuk menguji coba pohon DOM yang terlepas.
+    <strong>Example:</strong>
+    Try this <a href="https://developer.chrome.com/devtools/docs/heap-profiling-dom-leaks">demo</a> to play with detached DOM trees.
 </p>
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

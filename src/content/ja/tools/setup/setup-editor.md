@@ -1,123 +1,93 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: コードエディタが主要開発ツールです。コードエディタを使って、コード行を記述し、保存します。優れたコードを短時間で記述できるよう、エディタのショートカットを習得し、主要プラグインをインストールします。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2014-05-28 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-05-28 #}
 
-# エディタの設定 {: .page-title }
+# Set Up Your Editor {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-コードエディタが主要開発ツールです。コードエディタを使って、コード行を記述し、保存します。優れたコードを短時間で記述できるよう、エディタのショートカットを習得し、主要プラグインをインストールします。
-
+Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
 ### TL;DR {: .hide-from-toc }
-- 優れたコードを記述できるように、ショートカットをカスタマイズでき、多くのプラグインが用意されているエディタを選択します。
-- プラグインの検出、インストール、アップデートが簡単に行えるように、Package Manager を使用します。
-- 開発中に生産性を確保できるプラグインをインストールします。まず、このガイドの推奨プラグインをインストールします。
 
+- Choose an editor that lets you customize shortcuts and has lots of plugins to help you write better code.
+- Make use of the package manager to make it easier to discover, install, and update plugins.
+- Install plugins that help keep you productive during development; start with the recommendations in this guide.
 
-## Sublime テキストエディタのインストール
+## Install Sublime text editor
 
-[Sublime](http://www.sublimetext.com/){: .external } は、コードを簡単に記述できるようにする、信頼できる基礎レベルの機能を備えた優れたエディタです。
-プラグインのインストールと新しい機能の追加を簡単に行うことができる Package Manager をインストールできます。
+[Sublime](http://www.sublimetext.com/){: .external } is a great editor with a solid base level of functionality which makes writing code a pleasure. You can install a package manager that makes it easy to install plugins and add new functionality.
 
+There are currently two download options for Sublime Text, either [version 2](http://www.sublimetext.com/2) or [version 3](http://www.sublimetext.com/3). Version 3 is pretty stable and will give you access to packages not available in Sublime Text 2, however you may find version 2 more reliable.
 
-現状、Sublime Text のダウンロード オプションには[バージョン 2](http://www.sublimetext.com/2) と[バージョン 3](http://www.sublimetext.com/3) の 2 つがあります。バージョン 3 は非常に安定していて、Sublime Text 2 では利用できないパッケージにアクセスできますが、信頼性はバージョン 2 の方が高く感じられます。
+Note: Rob Dodson's [blog post](http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/) on how to get to know and love Sublime is a great reference for getting the most out of your editor. The concepts are relevant to any text editor, not just Sublime.
 
-注: エディタを最大限に活用するには、Sublime の理解を深める方法を紹介する Rob Dodson 氏の<a href='http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/'>ブログ投稿</a>が参考になります。ブログで示されているコンセプトは、Sublime だけでなく、すべてのテキスト エディタに関係します。
+## Why use a package manager?
 
-## Package Manager を使う理由
+Package managers make it easy to find, install, and keep packages & plugins up-to-date.
 
-Package Manager によって、パッケージやプラグインの検索、インストール、アップデートが簡単になります。
+<img src="imgs/package_control.png" class="center" alt="Screenshot of Sublime Text Editors Package Control" />
 
+You can install a Package Manager for Sublime by following these instructions <https://packagecontrol.io/installation>.
 
-<img src="imgs/package_control.png" class="center" alt="Sublime テキスト エディタの Package Control のスクリーンショット"/>
+You only need to do this once, after which see below for our recommended list of plugins.
 
-[https://packagecontrol.io/installation](https://packagecontrol.io/installation) で示される手順に従って、Sublime 用 Package Manager をインストールします。
+## Install plugins
 
+Plugins help you stay more productive. What are the things you keep having to go back out to other tools to do?
 
-インストールは 1 回だけで、インストール後には推奨プラグインの一覧が表示されます。
+Linting - there's a plugin for that. Showing what changes haven't been committed
 
+- there are plugins for that. Integration with other tools, such as GitHub, there are plugins for that.
 
-## プラグインのインストール
+Package managers make it very easy to find, install, and update plugins:
 
-プラグインは生産性を確保するのに役立ちます。状況によっては他のツールも必要になります。
+1. In the Sublime Text editor, open your package manager (ctrl+shift+p).
+2. Enter 'Install Package'.
+3. Enter the name of the plugin you are looking for (or else browse all plugins).
 
-
-たとえば、Linting のプラグインがあります。コミットされていない変更を表示する
-- プラグインもあります。GitHub などは、さまざまなプラグインを統合するツールです。
-
-
-Package Manager を使って、プラグインの検出、インストール、アップデートを簡単に行うことができます。
-
-1. Sublime Text エディタで、Package Manager を開きます（Ctrl+Shift+P）。
-2. 「Install Package」と入力します。
-3. 検索するプラグインの名前を入力します（または、すべてのプラグインをブラウジングします）。
-
-
-[人気の Sublime Text プラグインの一覧](https://packagecontrol.io/browse)をご覧ください。
-ここからは、開発速度が上がるため、インストールをお勧めするプラグインを紹介します。
-
+Check out these [trending lists of Sublime Text plugins](https://packagecontrol.io/browse). Here are the plugins we love and recommend you install because they help you speed up your development:
 
 ### Autoprefixer
 
-ベンダー プレフィックスを CSS にすばやく追加するには、このプラグインが便利です。
+If you want a quick way to add vendor prefixes to your CSS, you can do so with this handy plugin.
 
+Write CSS, ignoring vendor prefixes and when you want to add them, hit `ctrl+shift+p` and type `Autoprefix CSS`.
 
-CSS の作成時にはベンダー プレフィックスのことを考えず、追加が必要になったら `ctrl+shift+p` を押して、「`Autoprefix CSS`」と入力します。
+[We cover how you can automate this in your build process](/web/tools/setup/setup-buildtools), that way your CSS stays lean and you don't need to remember to hit `ctrl+shift+p`.
 
-
-[ビルドプロセスでこれを自動的に処理する方法については、こちらをご覧ください](/web/tools/setup/setup-buildtools)。自動化すれば、効率良く CSS を作成できるだけでなく、`ctrl+shift+p` を押し忘れることもありません。
-
-
-
-
-<img src="imgs/sublime-autoprefixer.gif" alt="Sublime Autoprefixer プラグインの例" />
+![Sublime Autoprefixer Plugin Example](imgs/sublime-autoprefixer.gif)
 
 ### ColorPicker
 
-パレットから色を選択し、`ctrl+shift+c` を押して CSS にその色を追加します。
+Pick any color from the palette and add it to your CSS with `ctrl+shift+c`.
 
-<img src="imgs/sublime-color-picker.png" alt="Sublime ColorPicker プラグイン" />
+![Sublime Color Picker Plugin](imgs/sublime-color-picker.png)
 
 ### Emmet
 
-便利なキーボード ショートカットとスニペットをテキストエディタに追加します。[Emmet.io](http://emmet.io/){: .external } で、Emmet を使ってできることを紹介する動画をご覧ください（個人的なお気に入りは Toggle Comment コマンドです）。
+Add some useful keyboard shortcuts and snippets to your text editor. Check out the video on [Emmet.io](http://emmet.io/){: .external } for an intro into what it can do (a personal favorite is the 'Toggle Comment' command).
 
+![Demo of the Emmet.io Plugin](imgs/emmet-io-example.gif)
 
+### HTML-CSS-JS prettify
 
-<img src="imgs/emmet-io-example.gif" alt="Emmet.io プラグインのデモ" />
+This extension gives you a command to format your HTML, CSS and JS. You can even prettify your files whenever your save a file.
 
-### HTML-CSS-JS Prettify
-
-この拡張機能では、HTML、CSS、JS の書式を整えるコマンドが提供されます。ファイルを保存するたびにファイル内容を調整することもできます。
-
-
-<img src="imgs/sublime-prettify.gif" alt="Sublime Prettify プラグインの gif" />
+![Gif of the Sublime Prettify Plugin](imgs/sublime-prettify.gif)
 
 ### Git Gutter
 
-ファイルの変更箇所の余白にマーカーを追加します。
+Add a marker in the gutter wherever there is a change made to a file.
 
-<img src="imgs/sublime-git-gutter.png" alt="Sublime Git Gutter プラグインのスクリーンショット" />
+![Screenshot of the Sublime Git Gutter Plugin](imgs/sublime-git-gutter.png)
 
 ### Gutter Color
 
-注: このプラグインは Sublime Text 3 でのみ使用可能です。
+Note: This is only available in Sublime Text 3
 
-Gutter Color により、CSS の横の余白に小さいカラーサンプルが表示されます。
+Gutter Color shows you a small color sample next to your CSS.
 
-<img src="imgs/sublime-gutter-color.png" alt="Sublime Gutter Color のスクリーンショット" />
+![Sublime Gutter Color Screenshot](imgs/sublime-gutter-color.png)
 
-このプラグインを使用するには ImageMagick が必要です。Mac OS X の場合は、[CactusLabs](http://cactuslab.com/imagemagick/){: .external } からインストーラを入手することをお勧めします（ImageMagick を使用する場合、PC の再起動が必要になる場合があります）。
-
-
-
-
-
-
-
-{# wf_devsite_translation #}
+The plugin requires ImageMagick. If you are on Mac OS X, we recommend trying the installer from [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (you may need to restart your machine to get it working).

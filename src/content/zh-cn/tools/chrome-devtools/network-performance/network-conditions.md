@@ -1,78 +1,81 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:很容易忽视您的用户在使用移动设备时遇到的网络条件。使用 DevTools 可以模拟不同的网络条件。解决全部的加载时间问题，您的用户会感谢您。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: It’s easy to overlook the network conditions your users will face on mobile. Use DevTools to emulate different network conditions. Fix any load time issues and your users will thank you.
 
-{# wf_updated_on:2015-07-20 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 在不断变化的网络条件下优化性能 {: .page-title }
+# Optimize Performance Under Varying Network Conditions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/jonathangarbee.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-很容易忽视您的用户在使用移动设备时遇到的网络条件。使用 DevTools 可以模拟不同的网络条件。解决全部的加载时间问题，您的用户会感谢您。
+<aside class="note">
+  <b>Note:</b> This page is deprecated. At the top of each section, there's a
+  link to an up-to-date page where you can find similar information.
+</aside>
 
+It’s easy to overlook the network conditions your users will face on mobile. Use DevTools to emulate different network conditions. Fix any load time issues and your users will thank you.
 
 ### TL;DR {: .hide-from-toc }
-- 使用 Chrome DevTools 网络模拟器，在不影响其他标签流量的情况下模拟您网站的性能。
-- 使用特定于您的受众网络条件的自定义配置文件。
 
+- Without affecting traffic to other tabs, evaluate your site''s performance using the Chrome DevTools network emulator.
+- Use custom profiles that are specific to your audiences network conditions.
 
-## 模拟网络连接
+## Emulate network connectivity
 
-利用网络调节，您可以在不同的网络连接（包括 Edge、3G，甚至离线）下测试网站。这样可以限制出现最大的下载和上传吞吐量（数据传输速率）。延迟时间操控会强制连接往返时间 (RTT) 出现最小延迟。
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See <a href="reference#throttling">
+  Simulate network throttling</a> for up-to-date information.
+</aside>
 
+Network conditioning allows you to test your site on a variety of network connections, including Edge, 3G, and even offline. It throttles the maximum download and upload throughput (rate of data transfer). Latency manipulation enforces a minimum delay in connection round-trip time (RTT).
 
+Network Conditioning is turned on through the Network panel. Select a connection from the dropdown to apply network throttling and latency manipulation.
 
-可以通过 Network 面板开启网络调节。从下拉菜单中选择要应用网络节流和延迟时间操控的连接。
+![Select Network Throttle](imgs/throttle-selection.png)
 
+**Tip**: You can also set network throttles via the [Network conditions](#network-conditions) drawer.
 
-![选择网络节流](imgs/throttle-selection.png)
+When a Throttle is enabled the panel indicator will show a warning icon. This is to remind you that throttling is enabled when you are in other panels.
 
-**提示**：您还可以通过 [Network conditions](#network-conditions) 抽屉式导航栏设置网络节流。
+![Network Panel Selector With Warning Indicator](imgs/throttling-enabled.png)
 
+## Custom throttles
 
-启用节流后，面板指示器会显示一个警告图标，在您位于其他面板时提醒您已启用节流。
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See <a href="reference#throttling">
+  Simulate network throttling</a> for up-to-date information.
+</aside>
 
+DevTools provides a solid foundation of default conditions. You may need to add custom conditions to cover your audiences primary conditions.
 
-![Network 面板选择器，带警告指示器](imgs/throttling-enabled.png)
+To add a condition open the dropdown to apply a condition. Under the **custom** header find and select the **Add...** option. This will open the DevTools settings dialog with the "Throttling" tab open.
 
-## 自定义节流
+![Throttle Settings Index](imgs/throttle-index.png)
 
-DevTools 提供了许多默认条件。您可能需要添加自定义条件，以便覆盖受众的主要条件。
+First, click the **Add custom profile** button. This opens an inline form to supply the profiles conditions. Accurately fill the form out then press the **Add** button when it meets your needs.
 
+![Throttle Settings Add Custom Throttle](imgs/add-custom-throttle.png)
 
-要添加条件，请打开下拉菜单应用条件。在 **custom** 标题下，找到并选择 **Add...** 选项。这将打开 DevTools 的 Settings 对话框，“Throttling”标签也会处于打开状态。
+You may modify an existing custom profile by hovering the entry. On hover the **Edit** and **Delete** icons are shown to the right of the entry.
 
+![Throttle Settings Modify Custom Entry](imgs/hover-to-modify-custom-throttle.png)
 
+Now you may close the settings dialog. Your new custom profiles will be shown under the **custom** header to select a condition.
 
-![节流设置索引](imgs/throttle-index.png)
+## Open the network conditions drawer {:#network-conditions}
 
-首先，请点击 **Add custom profile** 按钮。这将打开一个内联表单，用于提供配置文件条件。准确地填写表单，满足您的需求后按 **Add** 按钮。
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See
+  <a href="reference#network-conditions">Network Conditions drawer</a> for
+  up-to-date information.
+</aside>
 
+You can access network functions while other DevTools panels are open with the **Network conditions** drawer.
 
+![the network conditions drawer](imgs/network-drawer.png)
 
-![节流设置，添加自定义节流](imgs/add-custom-throttle.png)
+Access the drawer from the DevTools main menu (**Main Menu** > **More Tools** > **Network Conditions**).
 
-您可以将鼠标悬停在条目上修改现有的自定义配置文件。悬停时，**Edit** 和 **Delete** 图标会显示在条目的右侧。
+![opening the network conditions drawer](imgs/open-network-drawer.png)
 
+## Feedback {: #feedback }
 
-![节流设置，修改自定义条目](imgs/hover-to-modify-custom-throttle.png)
-
-现在您可以关闭 Settings 对话框。您的新自定义配置文件会显示在 **custom** 标题下，用于条件选择。
-
-
-## 打开 Network conditions 抽屉式导航栏{:#network-conditions}
-
-其他 DevTools 面板会随 **Network conditions** 抽屉式导航栏一起打开，您可以借此访问诸多网络功能。
- 
-
-![Network conditions 抽屉式导航栏](imgs/network-drawer.png)
-
-从 DevTools 主菜单访问抽屉式导航栏（**Main Menu** > **More Tools** >
-**Network Conditions**）。
-
-![打开 Network conditions 抽屉式导航栏](imgs/open-network-drawer.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

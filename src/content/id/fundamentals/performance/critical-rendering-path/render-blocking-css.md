@@ -1,62 +1,55 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Secara default, CSS diperlakukan sebagai sumber daya pemblokiran render. Pelajari cara mencegahnya agar tidak memblokir rendering.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: By default CSS is treated as a render blocking resource. Learn how to prevent it from blocking rendering.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>CSS #}
 
-# CSS Pemblokiran Render {: .page-title }
+# Render Blocking CSS {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Secara default, CSS diperlakukan sebagai sumber daya pemblokiran render,
-artinya browser tidak akan merender materi yang telah diproses hingga CSSOM
-dibuat. Pastikan CSS Anda tetap rapi, kirim secepatnya
-dan gunakan tipe dan kueri media untuk membuka blokir rendering.
+By default, CSS is treated as a render blocking resource, which means that the browser won't render any processed content until the CSSOM is constructed. Make sure to keep your CSS lean, deliver it as quickly as possible, and use media types and queries to unblock rendering.
 
-Dalam [konstruksi pohon render](render-tree-construction) kita melihat bahwa jalur rendering penting membutuhkan baik DOM maupun CSSOM untuk membuat pohon render. Ini menimbulkan implikasi kinerja penting: **baik HTML maupun CSS merupakan sumber daya pemblokiran render.** Untuk HTML, sudah kentara karena tanpa DOM kita tidak memiliki apa pun untuk di-render, namun persyaratan CSS mungkin tidak begitu kentara. Apa yang terjadi jika kita mencoba merender laman biasa tanpa pemblokir rendering pada CSS?
+In the [render tree construction](render-tree-construction) we saw that the critical rendering path requires both the DOM and the CSSOM to construct the render tree. This creates an important performance implication: **both HTML and CSS are render blocking resources.** The HTML is obvious, since without the DOM we would not have anything to render, but the CSS requirement may be less obvious. What would happen if we try to render a typical page without blocking rendering on CSS?
 
 ### TL;DR {: .hide-from-toc }
-- Secara default, CSS diperlakukan sebagai sumber daya pemblokiran render.
-- Tipe media dan kueri media memungkinkan kita menandai sebagian sumber daya CSS sebagai bukan pemblokiran render.
-- Browser mengunduh semua sumber daya CSS, terlepas dari perilaku pemblokiran atau bukan pemblokiran.
 
+* By default, CSS is treated as a render blocking resource.
+* Media types and media queries allow us to mark some CSS resources as non-render blocking.
+* The browser downloads all CSS resources, regardless of blocking or non-blocking behavior.
 
 <div class="attempt-left">
   <figure>
-    <img src="images/nytimes-css-device.png" alt="NYTimes dengan CSS">
-    <figcaption>The New York Times dengan CSS</figcaption>
+    <img src="images/nytimes-css-device.png" alt="NYTimes with CSS">
+    <figcaption>The New York Times with CSS</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/nytimes-nocss-device.png" alt="NYTimes tanpa CSS">
-    <figcaption>The New York Times tanpa CSS (FOUC)</figcaption>
+    <img src="images/nytimes-nocss-device.png" alt="NYTimes without CSS">
+    <figcaption>The New York Times without CSS (FOUC)</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-Contoh di atas, yang menampilkan situs web NYTimes dengan dan tanpa CSS, memperagakan mengapa rendering diblokir hingga CSS tersedia---tanpa CSS, laman relatif tidak bisa digunakan. Pengalaman di sebelah kanan sering kali disebut sebagai "Flash of Unstyled Content" (FOUC). Browser memblokir rendering hingga browser memiliki baik DOM maupun CSSOM.
+The above example, showing the NYTimes website with and without CSS, demonstrates why rendering is blocked until CSS is available\---without CSS the page is relatively unusable. The experience on the right is often referred to as a "Flash of Unstyled Content" (FOUC). The browser blocks rendering until it has both the DOM and the CSSOM.
 
-> **_CSS adalah sumber daya pemblokiran render. Hubungkan ke klien secepatnya untuk mengoptimalkan waktu render pertama._**
+> ***CSS is a render blocking resource. Get it to the client as soon and as quickly as possible to optimize the time to first render.***
 
-Akan tetapi, bagaimana jika kita memiliki sebagian gaya CSS yang hanya digunakan pada kondisi tertentu, misalnya, bila laman dicetak, atau diproyeksikan ke monitor besar? Lebih baik kita tidak memblokir rendering pada sumber daya ini.
+However, what if we have some CSS styles that are only used under certain conditions, for example, when the page is being printed or being projected onto a large monitor? It would be nice if we didn’t have to block rendering on these resources.
 
-"Tipe media" dan "kueri media" CSS memungkinkan kita menangani kasus penggunaan ini:
-
+CSS "media types" and "media queries" allow us to address these use cases:
 
     <link href="style.css" rel="stylesheet">
     <link href="print.css" rel="stylesheet" media="print">
     <link href="other.css" rel="stylesheet" media="(min-width: 40em)">
     
 
-[Kueri media](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) terdiri dari tipe media dan nol atau lebih banyak ekspresi yang memeriksa kondisi fitur media tertentu. Misalnya, deklarasi stylesheet pertama kita tidak menyediakan tipe atau kueri media, sehingga hal itu berlaku dalam semua kasus; berarti selalu memblokir render. Di lain pihak, deklarasi stylesheet kedua hanya berlaku bila materi sedang dicetak---mungkin Anda ingin menata ulang layout, mengubah font dan seterusnya, sehingga deklarasi stylesheet ini tidak perlu memblokir rendering laman saat dimuat pertama kali. Pada akhirnya, deklarasi stylesheet terakhir menyediakan "kueri media", yang dieksekusi oleh browser: jika ketentuannya cocok, browser akan memblokir rendering hingga stylesheet diunduh dan diproses.
+A [media query](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) consists of a media type and zero or more expressions that check for the conditions of particular media features. For example, our first stylesheet declaration doesn't provide a media type or query, so it applies in all cases; that is to say, it is always render blocking. On the other hand, the second stylesheet declaration applies only when the content is being printed\---perhaps you want to rearrange the layout, change the fonts, and so on, and hence this stylesheet declaration doesn't need to block the rendering of the page when it is first loaded. Finally, the last stylesheet declaration provides a "media query," which is executed by the browser: if the conditions match, the browser blocks rendering until the style sheet is downloaded and processed.
 
-Dengan menggunakan kueri media, kita bisa menyesuaikan presentasi dengan kasus penggunaan tertentu seperti tampilan versus cetak, juga dengan kondisi dinamis seperti perubahan orientasi layar, kejadian pengubahan ukuran, dan lainnya. **Saat mendeklarasikan aset stylesheet Anda, perhatikan baik-baik tipe dan kueri media; keduanya sangat memengaruhi kinerja jalur rendering penting.**
+By using media queries, we can tailor our presentation to specific use cases, such as display versus print, and also to dynamic conditions such as changes in screen orientation, resize events, and more. **When declaring your style sheet assets, pay close attention to the media type and queries; they greatly impact critical rendering path performance.**
 
-Marilah kita mempertimbangkan beberapa contoh langsung:
-
+Let's consider some hands-on examples:
 
     <link href="style.css"    rel="stylesheet">
     <link href="style.css"    rel="stylesheet" media="all">
@@ -64,17 +57,13 @@ Marilah kita mempertimbangkan beberapa contoh langsung:
     <link href="print.css"    rel="stylesheet" media="print">
     
 
-* Deklarasi pertama adalah pemblokir render dan cocok di semua kondisi.
-* Deklarasi kedua juga merupakan pemblokiran render: "all" merupakan tipe default sehingga jika Anda tidak menetapkan tipe apa pun, maka secara implisit akan disetel ke "all". Karena itu, deklarasi pertama dan kedua sebenarnya sama.
-* Deklarasi ketiga memiliki kueri media dinamis yang dievaluasi bila laman telah dimuat. Bergantung pada orientasi perangkat saat laman dimuat, portrait.css mungkin atau mungkin bukan pemblokiran render.
-* Deklarasi terakhir hanya berlaku bila laman sedang dicetak, sehingga bukan pemblokiran render saat laman dimuat pertama kali dimuat di browser.
+* The first declaration is render blocking and matches in all conditions.
+* The second declaration is also render blocking: "all" is the default type so if you don’t specify any type, it’s implicitly set to "all". Hence, the first and second declarations are actually equivalent.
+* The third declaration has a dynamic media query, which is evaluated when the page is loaded. Depending on the orientation of the device while the page is loading, portrait.css may or may not be render blocking.
+* The last declaration is only applied when the page is being printed so it is not render blocking when the page is first loaded in the browser.
 
-Terakhir, perhatikan bahwa "pemblokiran render" hanya merujuk pada apakah browser harus menahan rendering awal untuk laman pada sumber daya itu. Dalam kasus mana pun, browser tetap mengunduh aset CSS, meski dengan prioritas lebih rendah untuk sumber daya yang bukan pemblokiran.
+Finally, note that "render blocking" only refers to whether the browser has to hold the initial rendering of the page on that resource. In either case, the browser still downloads the CSS asset, albeit with a lower priority for non-blocking resources.
 
-<a href="adding-interactivity-with-javascript" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Adding Interactivity with JS">
-  <button>Berikutnya: Menambahkan Interaktivitas dengan JavaScript</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

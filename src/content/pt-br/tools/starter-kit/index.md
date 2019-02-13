@@ -1,88 +1,79 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: O Kit do iniciante na Web é modelo e um conjunto de ferramentas para desenvolver aplicativos para vários dispositivos.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Web Starter Kit is boilerplate and tooling for multi-device development
 
-{# wf_published_on: 2015-01-01 #}
-{# wf_updated_on: 2016-09-12 #}
+{# wf_published_on: 2015-01-01 #} {# wf_updated_on: 2017-07-24 #}
 
-# Kit do iniciante na Web {: .page-title }
+# Web Starter Kit {: .page-title }
 
-[Baixar o Kit do iniciante na Web (beta)](https://github.com/google/web-starter-kit/releases/latest){: .button .button-primary }
+Warning: Web Starter Kit is no longer supported.
 
-## O que é o Kit do iniciante na Web?
+[Download Web Starter Kit (beta)](https://github.com/google/web-starter-kit/releases/latest){: .button .button-primary }
 
-O [Kit do iniciante na Web](https://github.com/google/web-starter-kit) é um modelo dogmático para o desenvolvimento Web. Ferramentas para criar uma ótima experiência em diversos dispositivos, [orientadas a desempenho](#web-performance). Ajuda para manter a produtividade, seguindo as práticas recomendadas descritas no [Web Fundamentals](/web/fundamentals/) do Google. Um ótimo ponto de partida para profissionais e novatos no setor.
+## What is Web Starter Kit?
 
-### Recursos
+[Web Starter Kit](https://github.com/google/web-starter-kit) is an opinionated boilerplate for web development. Tools for building a great experience across many devices and [performance oriented](#web-performance). Helping you to stay productive following the best practices outlined in Google's [Web Fundamentals](/web/fundamentals/). A solid starting point for both professionals and newcomers to the industry.
 
-| Recurso                                | Resumo                                                                                                                                                                                                                                                     |
-|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Modelo responsivo | Um modelo responsivo otimizado para a Web multitelas. Baseado no [Material Design Lite](http://getmdl.io).  Fique à vontade para usar este kit ou um completamente zerado em [basic.html](https://github.com/google/web-starter-kit/blob/master/app/basic.html).                          |
-| Compatível com Sass                           | Compile [Sass](http://sass-lang.com/) no CSS com facilidade, adicionando compatibilidade com variáveis e mixins, entre outros recursos. (Execute `gulp serve` ou `gulp` para produção)                                                                                                      |
-| Otimização de desempenho               | Minimize e concatene JavaScript, CSS, HTML e imagens para ajudar a manter as páginas leves. (Execute `gulp` para criar uma versão otimizada do projeto para `/dist`)                                                                                                |
-| Inspeção de código               | A inspeção de código JavaScript é realizada pelo [ESLint](http://eslint.org) - uma ferramenta de inspeção plugável para identificar e relatar padrões no JavaScript. O Kit do iniciante na Web usa ESLint com [eslint-config-google](https://github.com/google/eslint-config-google), que tenta seguir o guia de estilo JavaScript do Google.                                                                                                |
-| ES2015 via Babel 6.0                   | Optional ES2015 support using [Babel](https://babeljs.io/){: .external }. Para ativar a compatibilidade com ES2015, remova a linha `"only": "gulpfile.babel.js",` no arquivo [.babelrc](https://github.com/google/web-starter-kit/blob/master/.babelrc). O código-fonte do ES2015 será transcompilado automaticamente para ES5 a fim de oferecer ampla compatibilidade com navegadores.  |
-| Servidor HTTP incorporado                   | Um servidor incorporado para visualizar o site localmente durante o desenvolvimento e a iteração                                                                                                                                                                            |
-| Recarregamento de navegador em tempo real                 | Recarregue o navegador em tempo real sempre que uma edição for feita, sem precisar de extensão. (Execute `gulp serve` e edite seus arquivos)                                                                                                                           |
-| Sincronização entre dispositivos           | Sincronize cliques, rolagens, formulários e recarregamentos em tempo real entre diversos dispositivos durante a edição do projeto. Baseado no [BrowserSync](http://browsersync.io). (Execute `gulp serve` e abra o endereço IP fornecido em outros dispositivos da rede)                       |
-| Compatibilidade com modo off-line                     | Graças ao nosso [armazenamento prévio em cache](https://github.com/google/web-starter-kit/blob/master/gulpfile.babel.js#L226) de [service workers](/web/fundamentals/getting-started/primers/service-workers), os sites que implementarem `dist` em um domínio HTTPS serão compatíveis com o modo off-line. Isso é possibilitado pelo [sw-precache](https://github.com/GoogleChrome/sw-precache/).                                                                                                                                              |
-| Insights do PageSpeed                     | Métricas de desempenho de Web mostrando o desempenho do site em dispositivos móveis e desktops (Execute `gulp pagespeed`)                                                                                                                                                    |
+### Features
 
-## Início rápido
+| Feature                      | Summary                                                                                                                                                                                                                                                                                                                                                    |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Responsive boilerplate       | A responsive boilerplate optimized for the multi-screen web. Powered by [Material Design Lite](http://getmdl.io). You're free to use either this or a completely clean-slate via [basic.html](https://github.com/google/web-starter-kit/blob/master/app/basic.html).                                                                                       |
+| Sass support                 | Compile [Sass](http://sass-lang.com/) into CSS with ease, bringing support for variables, mixins and more. (Run `gulp serve` or `gulp` for production)                                                                                                                                                                                                     |
+| Performance optimization     | Minify and concatenate JavaScript, CSS, HTML and images to help keep your pages lean. (Run `gulp` to create an optimized version of your project to `/dist`)                                                                                                                                                                                               |
+| Code Linting                 | JavaScript code linting is done using [ESLint](http://eslint.org) - a pluggable linter tool for identifying and reporting on patterns in JavaScript. Web Starter Kit uses ESLint with [eslint-config-google](https://github.com/google/eslint-config-google), which tries to follow the Google JavaScript style guide.                                     |
+| ES2015 via Babel 6.0         | Optional ES2015 support using [Babel](https://babeljs.io/){: .external }. To enable ES2015 support remove the line `"only": "gulpfile.babel.js",` in the [.babelrc](https://github.com/google/web-starter-kit/blob/master/.babelrc) file. ES2015 source code will be automatically transpiled to ES5 for wide browser support.                             |
+| Built-in HTTP Server         | A built-in server for previewing your site locally while you develop and iterate                                                                                                                                                                                                                                                                           |
+| Live Browser Reloading       | Reload the browser in real-time anytime an edit is made without the need for an extension. (Run `gulp serve` and edit your files)                                                                                                                                                                                                                          |
+| Cross-device Synchronization | Synchronize clicks, scrolls, forms and live-reload across multiple devices as you edit your project. Powered by [BrowserSync](http://browsersync.io). (Run `gulp serve` and open up the IP provided on other devices on your network)                                                                                                                      |
+| Offline support              | Thanks to our baked in [Service Worker](/web/fundamentals/getting-started/primers/service-workers) [pre-caching](https://github.com/google/web-starter-kit/blob/master/gulpfile.babel.js#L226), sites deploying `dist` to a HTTPS domain will enjoy offline support. This is made possible by [sw-precache](https://github.com/GoogleChrome/sw-precache/). |
+| PageSpeed Insights           | Web performance metrics showing how well your site performs on mobile and desktop (Run `gulp pagespeed`)                                                                                                                                                                                                                                                   |
 
-[Baixe](https://github.com/google/web-starter-kit/releases/latest) o kit
-ou clone [o](https://github.com/google/web-starter-kit) repositório e use
-o conteúdo do diretório `app` como base.
+## Quickstart
 
-Há dois pontos de partida em HTML à sua escolha:
+[Download](https://github.com/google/web-starter-kit/releases/latest) the kit or clone [the](https://github.com/google/web-starter-kit) repository and build on what is included in the `app` directory.
 
-- `index.html` - o ponto de partida padrão com o layout do Material Design.
-- `basic.html` - sem layout, mas inclui nossas práticas recomendadas mínimas para dispositivos móveis
+There are two HTML starting points, from which you can choose:
 
-Não deixe de consultar os [documentos de instalação](https://github.com/google/web-starter-kit/blob/master/docs/install.md) para verificar se o ambiente está preparado para executar o WSK.
-Após essa verificação, confira os [comandos](https://github.com/google/web-starter-kit/blob/master/docs/commands.md) disponíveis para começar.
+* `index.html` - the default starting point, containing Material Design layout.
+* `basic.html` - no layout, but still includes our minimal mobile best-practices
 
-## Desempenho de Web
+Be sure to look over the [installation docs](https://github.com/google/web-starter-kit/blob/master/docs/install.md) to verify your environment is prepared to run WSK. Once you have verified that your system can run WSK, check out the [commands](https://github.com/google/web-starter-kit/blob/master/docs/commands.md) available to get started.
 
-O Kit do iniciante na Web se esforça para oferecer um ponto de partida de alto desempenho pronto para uso. As nossas [pontuações](http://www.webpagetest.org/result/151201_VW_XYC/){: .external } médias no teste de página da Web para o modelo padrão têm um [índice de velocidade](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index) de cerca de 1100 (o ideal é 1000) e um índice de velocidade de visita repetida de cerca de 550 graças ao armazenamento prévio em cache dos service workers. 
+## Web Performance
 
-## Compatibilidade de navegadores
+Web Starter Kit strives to give you a high performance starting point out of the box. Our median Web Page Test [scores](http://www.webpagetest.org/result/151201_VW_XYC/){: .external } for the default template have a [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index) of ~1100 (1000 is ideal) and a repeat-visit Speed Index of ~550 thanks to Service Worker precaching.
 
-No momento, nossa posição oficial é oferecer compatibilidade com as duas últimas versões destes navegadores:
+## Browser Support
+
+At present, we officially aim to support the last two versions of the following browsers:
 
 * Chrome
 * Edge
 * Firefox
 * Safari
 * Opera
-* Internet Explorer 9 ou posterior
+* Internet Explorer 9+
 
-Isso não significa que o Kit do iniciante na Web não pode ser usado em versões de navegadores anteriores às citadas acima. No entanto, o nosso foco será garantir o funcionamento ideal dos layouts nas versões acima.
+This is not to say that Web Starter Kit cannot be used in browsers older than those reflected, but merely that our focus will be on ensuring our layouts work great in the above.
 
-## Solução de problemas
+## Troubleshooting
 
-Se ocorrerem problemas durante a instalação ou a execução das ferramentas, consulte nosso guia de [solução de problemas](https://github.com/google/web-starter-kit/wiki/Troubleshooting) e abra um [problema](https://github.com/google/web-starter-kit/issues). Teremos prazer em discutir uma solução para esse problema.
+If you find yourself running into issues during installation or running the tools, please check our [Troubleshooting](https://github.com/google/web-starter-kit/wiki/Troubleshooting) guide and then open an [issue](https://github.com/google/web-starter-kit/issues). We would be happy to discuss how they can be solved.
 
-## Uma opção somente para modelo
+## A Boilerplate-only Option
 
-Se você preferir não usar nenhuma das nossas ferramentas, exclua os seguintes arquivos do projeto: `package.json`, `gulpfile.babel.js`, `.jshintrc` e `.travis.yml`. Se quiser, agora você pode usar o modelo de forma segura com um sistema de compilação alternativo (ou sem sistema de compilação).
+If you would prefer not to use any of our tooling, delete the following files from the project: `package.json`, `gulpfile.babel.js`, `.jshintrc` and `.travis.yml`. You can now safely use the boilerplate with an alternative build-system or no build-system at all if you choose.
 
-## Documentos e receitas
+## Docs and Recipes
 
-* [Apêndice de arquivos](https://github.com/google/web-starter-kit/blob/master/docs/file-appendix.md) - O que fazem estes diversos arquivos?
-* [Usar o Saas do Material Design Lite](https://github.com/google/web-starter-kit/blob/master/docs/mdl-sass.md) - como fazer o Saas do MDL funcionar com o WSK
-* [Guias de implantação](https://github.com/google/web-starter-kit/blob/master/docs/deploy.md) - disponíveis para Firebase, Google App Engine e outros serviços.
-* [Receitas do Gulp](https://github.com/gulpjs/gulp/tree/master/docs/recipes) - o diretório de receitas oficiais do Gulp inclui uma lista abrangente de guias para diversos fluxos de trabalho que podem ser adicionados ao seu projeto.
+* [File Appendix](https://github.com/google/web-starter-kit/blob/master/docs/file-appendix.md) - What do the different files here do?
+* [Using Material Design Lite's Sass](https://github.com/google/web-starter-kit/blob/master/docs/mdl-sass.md) - how to get MDL's Sass working with WSK
+* [Deployment guides](https://github.com/google/web-starter-kit/blob/master/docs/deploy.md) - available for Firebase, Google App Engine and other services.
+* [Gulp recipes](https://github.com/gulpjs/gulp/tree/master/docs/recipes) - the official Gulp recipes directory includes a comprehensive list of guides for different workflows you can add to your project.
 
-## Inspiração
+## Inspiration
 
-O Kit do iniciante na Web é inspirado pelo [Mobile HTML5 Boilerplate](https://html5boilerplate.com/mobile/){: .external } e pelo [generator-gulp-webapp](https://github.com/yeoman/generator-webapp) do Yeoman. Os colaboradores dos dois projetos foram consultados durante o desenvolvimento. Nossas [perguntas frequentes](https://github.com/google/web-starter-kit/wiki/FAQ) tentam responder as perguntas frequentes sobre o projeto.
+Web Starter Kit is inspired by [Mobile HTML5 Boilerplate](https://html5boilerplate.com/mobile/){: .external } and Yeoman's [generator-gulp-webapp](https://github.com/yeoman/generator-webapp), having taken input from contributors to both projects during development. Our [FAQs](https://github.com/google/web-starter-kit/wiki/FAQ) attempt to answer commonly asked questions about the project.
 
+## Learn More
 
-## Saiba mais
-
-Para saber mais, consultar o código, enviar um problema ou participar, confira
-nosso repositório Git em [https://github.com/google/web-starter-kit](https://github.com/google/web-starter-kit)
-
-
-{# wf_devsite_translation #}
+To learn more, see the code, submit an issue, or to get involved, check out our Git repo at <https://github.com/google/web-starter-kit>

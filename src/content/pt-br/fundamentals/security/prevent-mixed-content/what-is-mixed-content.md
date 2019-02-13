@@ -1,286 +1,202 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: O conteúdo misto aparece quando o HTML inicial é carregado por uma conexão HTTPS protegida, mas outros recursos são carregados por uma conexão HTTP desprotegida.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Mixed occurs when initial HTML is loaded over a secure HTTPS connection, but other resources are loaded over an insecure HTTP connection.
 
-{# wf_updated_on: 2018-02-12 #}
-{# wf_published_on: 2015-09-25 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-09-25 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# O que é conteúdo misto? {: .page-title }
+# What Is Mixed Content? {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-**Conteúdo misto** surge quando o HTML inicial é carregado por uma conexão
-HTTPS protegida, mas outros recursos (como imagens, vídeos, folhas de estilo, scripts e outros)
-são carregados por uma conexão HTTP desprotegida. O nome desse fenômeno é conteúdo misto
-porque são carregados conteúdos em HTTP e HTTPS para exibir a mesma página,
-e a solicitação inicial estava protegida por HTTPS. Os navegadores modernos exibem advertências
-sobre esse tipo de conteúdo para indicar ao usuário que essa página contém
-recursos que apresentam risco.
+**Mixed content** occurs when initial HTML is loaded over a secure HTTPS connection, but other resources (such as images, videos, stylesheets, scripts) are loaded over an insecure HTTP connection. This is called mixed content because both HTTP and HTTPS content are being loaded to display the same page, and the initial request was secure over HTTPS. Modern browsers display warnings about this type of content to indicate to the user that this page contains insecure resources.
 
 ### TL;DR {: .hide-from-toc }
 
-* O HTTPS é importante para proteger o seu site e os usuários de ataques e invasões.
-* O conteúdo misto reduz o nível de segurança e a experiência do usuário oferecidos pelo seu site HTTPS.
+* HTTPS is important to protect both your site and your users from attack.
+* Mixed content degrades the security and user experience of your HTTPS site.
 
-## Solicitações de recurso e navegadores web
+## Resource requests and web browsers
 
-Quando um navegador _acessa_ uma página de um site, ele está solicitando um recurso HTML. Por isso, o servidor web retorna o conteúdo HTML, que o navegador analisa e exibe aos usuários. Muitas vezes, um único arquivo HTML não é suficiente para exibir a página inteira. Para compensar isso, o arquivo HTML inclui referências a outros recursos que o navegador precisa solicitar. Estes sub-recursos podem ser imagens, vídeos, HTML extra, CSS ou JavaScript, e são obtidos por meio de solicitações individuais.
+When a browser *visits* a website page, it is requesting for an HTML resource. The web server then returns the HTML content, which the browser parses and displays to users. Often a single HTML file isn't enough to display a complete page, so the HTML file includes references to other resources that the browser needs to request. These subresources can be things like images, videos, extra HTML, CSS, or JavaScript, which are each fetched using separate requests.
 
-## Benefícios do HTTPS
+## HTTPS benefits
 
-Quando um navegador solicita recursos por HTTPS &mdash; que significa HTTP seguro &mdash;, ele
-usa uma conexão criptografada para se comunicar com o servidor web.
+When a browser requests resources over HTTPS&mdash;which stands for HTTP Secure&mdash;it uses an encrypted connection to communicate with the web server.
 
-Usar HTTPS tem três principais benefícios:
+Using HTTPS has three main benefits:
 
 * Authentication
-* Integridade de dados
-* Confidencialidade
+* Data integrity
+* Secrecy
 
-### Autenticação
+### Authentication
 
-_O site com quem estou me comunicando é quem afirma ser?_
+*Is the website I'm talking to who they claim to be?*
 
-O HTTPS permite que o navegador verifique se abriu o site correto e não
-foi redirecionado a um site malicioso. Ao navegar para o site do seu banco,
-seu navegador _autentica_ o site, evitando, assim, que um invasor
- atue como o seu banco e roube suas credenciais de acesso.
+HTTPS lets the browser check that it has opened the correct website and hasn't been redirected to a malicious site. When navigating to your bank's website, your browser *authenticates* the website, thus preventing an attacker from impersonating your bank and stealing your login credentials.
 
-### Integridade de dados
+### Data integrity
 
-_Alguém adulterou o conteúdo que estou enviando ou recebendo?_
+*Has anyone tampered with the content that I'm sending or receiving?*
 
-O HTTPS permite que o navegador detecte se um invasor alterou algum dado que o navegador
-recebeu. Ao transferir dinheiro usando o site do seu banco, isto evita que um
-invasor altere o número da conta de destino enquanto a solicitação está
-sendo processada.
+HTTPS lets the browser detect if an attacker has changed any data the browser receives. When transferring money using your bank's website, this prevents an attacker from changing the destination account number while your request is in transit.
 
-### Confidencialidade
+### Secrecy
 
-_Alguém consegue acessar o conteúdo que estou enviando ou recebendo?_
+*Can anyone see the content I am sending or receiving?*
 
-O HTTPS impede que um invasor espione as solicitações do navegador,
-controle os sites acessados ou roube informações enviadas ou recebidas.
+HTTPS prevents an attacker from eavesdropping on the browser's requests, tracking the websites visited, or stealing information sent or received.
 
-### HTTPS, TLS e SSL
+### HTTPS, TLS, and SSL
 
-HTTPS significa HTTP seguro, protocolo de transferência de hipertexto seguro. A
-parte **segura** aqui vem da criptografia adicionada às solicitações enviadas
-e recebidas pelo navegador. Atualmente, a maioria dos navegadores usa o protocolo TLS para
-fornecer criptografia. O **TLS** também é chamado de SSL.
+HTTPS stands for HTTP Secure, Hyper(t)ext Transfer Protocol Secure. The **secure** portion here comes from the encryption added to the requests sent and received by the browser. Currently, most browsers use the TLS protocol to provide encryption; **TLS** is sometimes referred to as SSL.
 
-Os detalhes de HTTPS, TLS e SSL estão além do objetivo deste artigo, mas, se
-quiser saber mais, ler os materiais a seguir é um bom começo:
+Details of HTTPS, TLS, and SSL are beyond the scope of this article, but if you want to learn more, the following resources are a good place to start:
 
-* [Wikipédia HTTPS](https://en.wikipedia.org/wiki/HTTPS){: .external}
-* [Wikipédia TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security){: .external}
-* [Curso de criptografia da Khan Academy](https://www.khanacademy.org/computing/computer-science/cryptography){: .external}
-* [Capítulo sobre TLS](https://hpbn.co/transport-layer-security-tls/){: .external} de [High Performance Browser Networking](https://hpbn.co/){: .external}, de Ilya Grigorik
+* [Wikipedia HTTPS](https://en.wikipedia.org/wiki/HTTPS){: .external}
+* [Wikipedia TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security){: .external}
+* [Khan Academy Cryptography course](https://www.khanacademy.org/computing/computer-science/cryptography){: .external}
+* [TLS chapter](https://hpbn.co/transport-layer-security-tls/){: .external} in [High Performance Browser Networking](https://hpbn.co/){: .external} by Ilya Grigorik
 
-## Conteúdo misto enfraquece HTTPS
+## Mixed content weakens HTTPS
 
-Solicitar sub-recursos usando o protocolo HTTP desprotegido enfraquece a segurança de
-toda a página, já que essas solicitações são vulneráveis a **ataques
-indiretos**, em que um invasor espiona uma conexão de rede e visualiza ou
-modifica a comunicação entre duas partes. Usando estes recursos, um
-invasor pode, muitas vezes, controlar completamente a página, e não apenas o recurso
-comprometido.
+Requesting subresources using the insecure HTTP protocol weakens the security of the entire page, as these requests are vulnerable to **man-in-the-middle attacks**, where an attacker eavesdrops on a network connection and views or modifies the communication between two parties. Using these resources, an attacker can often take complete control over the page, not just the compromised resource.
 
-Embora muitos navegadores comuniquem advertências de conteúdo misto ao usuário, quando isso
-acontece, é tarde demais: as solicitações desprotegidas já foram realizadas
-e a segurança da página está comprometida. Infelizmente, esse cenário é
-muito comum na web, por isso os navegadores não conseguem simplesmente bloquear todas as solicitações
-mistas sem restringir o funcionamento de muitos sites.
+Although many browsers report mixed content warnings to the user, by the time this happens, it is too late: the insecure requests have already been performed and the security of the page is compromised. This scenario is, unfortunately, quite common on the web, which is why browsers can't just block all mixed requests without restricting the functionality of many sites.
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="Conteúdo misto: A página foi carregada por HTTPS, mas solicitou uma imagem não confiável. Este conteúdo também deve ser fornecido por HTTPS.">
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
   <figcaption>
-    Cabe a você, desenvolvedor, consertar problemas de conteúdo misto do seu aplicativo.
+    It's up to you, the developer, to fix mixed content issues in your application.
   </figcaption>
 </figure>
 
-### Um exemplo simples
+### A simple example
 
-Carregar um script não confiável de uma página HTTPS.
+Loading an insecure script from an HTTPS page.
 
-A exibição desta página de exemplo por **HTTPS**&mdash; [**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external}&mdash; contém uma tag de script **HTTP** que tenta carregar conteúdo misto.
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external}&mdash;includes an **HTTP** script tag which attempts to load mixed content.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/simple-example.html" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
 
-Neste exemplo, o script `simple-example.js` é carregado com um URL **HTTP**. Este é o caso mais simples de conteúdo misto. Quando o navegador solicita o arquivo `simple-example.js`, um invasor pode injetar código no conteúdo retornado
-e assumir o controle de toda a página.
+In this example, the script `simple-example.js` is loaded with an **HTTP** URL. This is the simplest case of mixed content. When the browser requests the `simple-example.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-Felizmente, os navegadores mais modernos bloqueiam este tipo de conteúdo perigoso por
-padrão. Acesse [como o navegador lida com conteúdo misto](#browser-behavior-with-mixed-content){: .external}.
+Thankfully, most modern browsers block this type of dangerous content by default. See [browser behavior with mixed content](#browser-behavior-with-mixed-content){: .external}.
 
 <figure>
-  <img src="imgs/simple-mixed-content-error.png" alt="Conteúdo misto: A página foi carregada por HTTPS, mas solicitou um script não confiável. Esta solicitação foi bloqueada. O conteúdo deve ser fornecido por HTTPS.">
-  <figcaption>O Chrome bloqueia script não confiável.</figcaption>
+  <img src="imgs/simple-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure script. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Chrome blocks the insecure script.</figcaption>
 </figure>
 
-### Um exemplo de XMLHttpRequest
+### An XMLHttpRequest example
 
-Carregar dados não confiáveis com XMLHttpRequest.
+Loading insecure data with XMLHttpRequest.
 
-A exibição desta página de exemplo por **HTTPS**&mdash; [**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}&mdash; contém uma `XMLHttpRequest` por **HTTP** para recuperar dados `JSON` do conteúdo misto.
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}&mdash;includes an `XMLHttpRequest` over **HTTP** to fetch mixed content `JSON` data.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/xmlhttprequest-example.html" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
 
-Aqui, o URL **HTTP** é construído dinamicamente em JavaScript e, eventualmente,
-é usado por `XMLHttpRequest` para carregar um recurso desprotegido. Como no exemplo simples
-acima, quando o navegador solicita o arquivo `xmlhttprequest-data.js`, um
-invasor pode injetar código no conteúdo retornado e assumir o controle de
-toda a página.
+Here the **HTTP** URL is constructed dynamically in JavaScript, and is eventually used by `XMLHttpRequest` to load an insecure resource. Like the simple example above, when the browser requests the `xmlhttprequest-data.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-A maioria dos navegadores modernos bloqueia essas solicitações perigosas.
+Most modern browsers block these dangerous requests as well.
 
 <figure>
-  <img src="imgs/xmlhttprequest-mixed-content-error.png" alt="Conteúdo misto: A página foi carregada por HTTPS, mas solicitou um ponto de extremidade XMLHttpRequest não confiável. Esta solicitação foi bloqueada. O conteúdo deve ser fornecido por HTTPS.">
-  <figcaption>O Chrome bloqueia XMLHttpRequest não confiável.</figcaption>
+  <img src="imgs/xmlhttprequest-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Chrome blocks the insecure XMLHttpRequest.</figcaption>
 </figure>
 
-### Um exemplo de galeria de imagens
+### An image gallery example
 
-Carregar imagens não confiáveis com lightbox jQuery.
+Loading insecure images with jQuery lightbox.
 
-A exibição desta página de exemplo por **HTTPS**&mdash; [**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external} &mdash; inicialmente não tem problemas com conteúdo misto, mas, quando a imagem em miniatura recebe um clique, uma imagem de conteúdo misto de tela cheia é carregada por **HTTP**.
+When viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external}&mdash;initially it does not have any mixed content problems; however, when the thumbnail image is clicked, a full size mixed content image is loaded over **HTTP**.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-As galerias de imagens com frequência dependem do atributo `src` da tag `<img>` para exibir
-imagens em miniatura na página, o atributo `href` da tag de âncora (`<a>`), em seguida, é
-usado para carregar a imagem de tela cheia para a sobreposição da galeria. Normalmente,
-as tags `<a>` não geram conteúdo misto, mas, neste caso, o código jQuery
-neutraliza o comportamento padrão do link &mdash; navegar para uma nova página &mdash; e
-carrega a imagem **HTTP** nesta página.
+Image galleries often rely on the `<img>` tag `src` attribute to display thumbnail images on the page, the anchor (`<a>`) tag `href` attribute is then used to load the full sized image for the gallery overlay. Normally `<a>` tags do not cause mixed content, but in this case, the jQuery code overrides the default link behavior&mdash;to navigate to a new page&mdash;and instead loads the **HTTP** image on this page.
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="Conteúdo misto: A página foi carregada por HTTPS, mas solicitou uma imagem não confiável. Este conteúdo também deve ser fornecido por HTTPS.">
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
 </figure>
 
-Imagens não confiáveis prejudicam a segurança do seu site, mas não são tão perigosas
-quanto outros tipos de conteúdo misto. Os navegadores modernos ainda carregam imagens
-de conteúdo misto, mas também exibem advertências ao usuário.
+Insecure images degrade the security of your site, but they are not as dangerous as other types of mixed content. Modern browsers still load mixed content images, but display warnings to the user as well.
 
-## Tipos de conteúdo misto e riscos à segurança associados
+## Mixed content types & security threats associated
 
-Os dois tipos de conteúdo misto são: o ativo e o passivo.
+The two types of mixed content are: active and passive.
 
-O **conteúdo misto passivo** refere-se ao conteúdo que não interage com o resto
-da página e, portanto, um ataque indireto é restringido em relação a o que podem
-fazer se interceptarem ou alterarem o conteúdo. O conteúdo misto passivo inclui
-imagens, vídeos e áudios, junto com outros recursos que não interagem
-com o resto da página.
+**Passive mixed content** refers to content that doesn't interact with the rest of the page, and thus a man-in-the-middle attack is restricted to what they can do if they intercept or change that content. Passive mixed content includes images, video, and audio content, along with other resources that cannot interact with the rest of the page.
 
-O **conteúdo misto ativo** interage com a página como um todo e permite que
-um invasor faça praticamente o que quiser com ela. Conteúdo misto ativo inclui
-scripts, folhas de estilo, iframes, recursos em flash e outros códigos que o navegador pode
-baixar e executar.
+**Active mixed content** interacts with the page as a whole and allows an attacker to do almost anything with the page. Active mixed content includes scripts, stylesheets, iframes, flash resources, and other code that the browser can download and execute.
 
-### Conteúdo misto passivo
+### Passive mixed content
 
-O conteúdo misto passivo também representa uma ameaça à segurança do site e dos usuários.
-Por exemplo, um invasor pode interceptar solicitações HTTP de imagens do site e
-trocar ou substituí-las, pode inverter a imagem dos botões de _salvar_
- e _apagar_, fazendo com que os usuários excluam conteúdo equivocadamente,
-substitui os diagramas do seu produto por conteúdo pornográfico ou lascivo, distorcendo o seu
-site, ou até substitui as imagens do seu produto por anúncios de um site ou produto diferente.
+Passive mixed content still poses a security threat to your site and your users. For example, an attacker can intercept HTTP requests for images on your site and swap or replace these images; the attacker can swap the *save* and *delete* button images, causing your users to delete content without intending to; replace your product diagrams with lewd or pornographic content, defacing your site; or replace your product pictures with ads for a different site or product.
 
-Mesmo que o invasor não altere o conteúdo do site, você ainda terá um
-grande problema de privacidade, já que o invasor pode rastrear usuários usando solicitações
-de conteúdo misto. O invasor consegue determinar que páginas os usuários acessam e que produtos
-visualizam com base em imagens ou outros recursos que o navegador carrega.
+Even if the attacker doesn't alter the content of your site, you still have a large privacy issue where an attacker can track users using mixed content requests. The attacker can tell which pages a user visits and which products they view based on images or other resources that the browser loads.
 
-Veja a seguir um exemplo de conteúdo misto passivo:
+The following is an example of passive mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/passive-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-A maioria dos navegadores ainda renderiza este tipo de conteúdo misto ao usuário, no entanto, uma
-advertência também é exibida, uma vez que representa um risco à privacidade e à segurança do site e
-dos usuários.
+Most browsers still render this type of mixed content to the user, however a warning is also displayed as this poses a security and privacy risk to your site and users.
 
 <figure>
-  <img src="imgs/passive-mixed-content-warnings.png" alt="Conteúdo misto: A página foi carregada por HTTPS, mas solicitou um vídeo não confiável. Este conteúdo também deve ser fornecido por HTTPS.">
-  <figcaption>Advertências de conteúdo misto do console do JavaScript no Chrome.</figcaption>
+  <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
+  <figcaption>Mixed content warnings from the Chrome JavaScript console.</figcaption>
 </figure>
 
-### Conteúdo misto ativo
+### Active mixed content
 
-O conteúdo misto ativo representa um maior risco em relação ao passivo. Um invasor pode
-interceptar e modificar o conteúdo ativo e, com isso, assumir controle total sobre a página ou
-até mesmo sobre todo o site. Isso permite que o invasor altere qualquer coisa na
-página, incluindo a exibição de conteúdo totalmente diferente, roubo de senhas do usuário
-ou outras credenciais de acesso, roubo de cookies da sessão do usuário ou redirecionamento do
-usuário para um site totalmente diferente.
+Active mixed content poses a greater threat than passive. An attacker can intercept and rewrite active content, thereby taking full control of your page or even your entire website. This allows the attacker to change anything about the page, including displaying entirely different content, stealing user passwords or other login credentials, stealing user session cookies, or redirecting the user to a different site entirely.
 
-Devido à gravidade dessa ameaça, muitos navegadores bloqueiam esse tipo de conteúdo por
-padrão para proteger os usuários, mas o funcionamento varia entre provedores e versões
-de navegador.
+Due to the severity of this threat, many browsers block this type of content by default to protect users, but functionality varies between browser vendors and versions.
 
-Veja a seguir alguns exemplos de conteúdo misto ativo:
+The following contains examples of active mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/active-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
 
 <figure>
-  <img src="imgs/active-mixed-content-errors.png" alt="Conteúdo misto: A página foi carregada por HTTPS, mas solicitou um recurso não confiável. Esta solicitação foi bloqueada. O conteúdo deve ser fornecido por HTTPS.">
-  <figcaption>Erros de conteúdo misto do console do JavaScript no Chrome.</figcaption>
+  <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Mixed content errors from the Chrome JavaScript console.</figcaption>
 </figure>
 
-## Comportamento do navegador com conteúdo misto
+## Browser behavior with mixed content
 
-Devido às ameaças descritas acima, o ideal seria os navegadores bloquearem todo
-o conteúdo misto. No entanto, isto prejudicaria diversos sites que milhões
-de usuários usam e confiam todos os dias. O compromisso, no momento, é bloquear os tipos
-mais perigosos de conteúdo misto e permitir que tipos menos perigosos ainda possam ser
-solicitados.
+Due to the threats described above, it would be ideal for browsers to block all mixed content. However, this would break a large number of websites that millions of users rely on every day. The current compromise is to block the most dangerous types of mixed content and allow the less dangerous types to still be requested.
 
-Os navegadores modernos seguem as [especificações de conteúdo misto](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }, que definem as categorias de [**conteúdo opcionalmente bloqueável**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external} e [**conteúdo bloqueável**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external}.
+Modern browsers follow [mixed content specification](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }, which defines [**optionally blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external} and [**blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external} categories.
 
-De acordo com as especificações, os recursos se qualificam como conteúdo opcionalmente bloqueável "quando o risco
-de permitir seu uso como conteúdo misto é menor que o risco de prejudicar
-partes importantes da web". Este é um subconjunto da categoria [conteúdo
-misto passivo](#passive-mixed-content) descrita acima. No momento desta gravação, recursos de imagem,
-vídeo e áudio, assim como links pré-fornecidos são os únicos
-tipos de recurso incluídos em conteúdo opcionalmente bloqueável. Esta categoria provavelmente
-ficará menor com o tempo.
+From the spec, a resource qualifies as optionally blockable content "when the risk of allowing its usage as mixed content is outweighed by the risk of breaking significant portions of the web"; this is a subset of the [passive mixed content](#passive-mixed-content) category described above. At the time of this writing, images, video, and audio resources, as well as prefetched links, are the only resource types included in optionally blockable content. This category is likely to get smaller as time goes on.
 
-Todo conteúdo que não é **opcionalmente bloqueável** é considerado **bloqueável**
-e é bloqueado pelo navegador.
+All content that is not **optionally blockable** is considered **blockable**, and is blocked by the browser.
 
-### Versões do navegador
+### Browser versions
 
-É importante lembrar que nem todo visitante do seu site usa
-os navegadores com a atualização mais recente. Cada versão de cada provedor de navegador
-se comporta de forma diferente com conteúdo misto. Na pior das hipóteses, alguns navegadores e versões
-não bloqueiam nenhum conteúdo misto, o que é muito prejudicial ao usuário.
+It is important to remember that not every visitor to your website use the most up-to-date browsers. Different versions from different browser vendors each behave differently with mixed content. At worst, some browsers and versions don't block any mixed content at all, which is very unsafe for the user.
 
-O exato comportamento de cada navegador muda constantemente, por isso não incluiremos
-especificidades aqui. Se tiver interesse em saber como um navegador específico se comporta, busque
-informações publicadas diretamente pelo provedor.
+The exact behavior of each browser is constantly changing, so we won't include specifics here. If you're interested in how a specific browser behaves, look for information published by the vendors directly.
 
-Observação: seus usuários contam com você para mantê-los protegidos enquanto acessam seu site. É importante consertar os problemas de conteúdo misto para proteger <b>todos</b> os visitantes, incluindo os que usam navegadores antigos ou desatualizados.
+Note: Your users are counting on you to protect them when they visit your website. It is important to fix your mixed content issues to protect **all** your visitors, including those on older browsers.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

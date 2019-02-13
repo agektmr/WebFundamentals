@@ -1,236 +1,150 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2016-09-28 #}
-{# wf_published_on: 2016-09-28 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2016-09-28 #} {# wf_blink_components: Blink>Network,Blink>Loader #}
 
-# PRPL パターン {: .page-title }
+# The PRPL Pattern {: .page-title }
 
 {% include "web/_shared/contributors/addyosmani.html" %}
 
-試験運用: PRPL は、大きな可能性を秘めた新しいパターンです。現時点で、Google はこのパターンに関するアイデアを反復しながら実験を行い、最高のメリットをもたらす条件についてさらにデータを収集しています。
+Dogfood: PRPL is a new pattern we feel has great potential. At this stage, we welcome experimentation with it while we iterate on the ideas in the pattern and collect more data on where it offers the greatest benefits.
 
+The mobile web is too slow. Over the years the web has evolved from a document-centric platform to a first-class application platform. Thanks to advancements in the platform itself (such as [Service Workers](/web/fundamentals/getting-started/primers/service-workers)) and in the tools and techniques we use to build apps, users can do virtually anything on the web they can do in a native app.
 
+At the same time, the bulk of our computing has moved from powerful desktop machines with fast, reliable network connections to relatively underpowered mobile devices with connections that are often slow, flaky or both. This is especially true in parts of the world where the next billion users are coming online.
 
-モバイルウェブは非常に低速です。何年もかけて、ウェブはドキュメント中心のプラットフォームから最高クラスのアプリケーション プラットフォームへと進化を遂げました。
-アプリを作成する際に使用できるプラットフォーム自体（[Service Worker](/web/fundamentals/getting-started/primers/service-workers) など）、ツール、テクニックが進化したおかげで、実際に、ネイティブ アプリと同様の機能がウェブでもほぼすべて実現できるようになりました。
+Unfortunately, the patterns we devised for building and deploying powerful, feature-rich web apps in the desktop era generally yield apps that take far too long to load on mobile devices – so long that many users simply give up.
 
+This presents an opportunity to craft new patterns that take advantage of modern web platform features to granularly deliver mobile web experiences more quickly. PRPL is one such pattern.
 
+## The PRPL pattern
 
+PRPL is a pattern for structuring and serving Progressive Web Apps (PWAs), with an emphasis on the performance of app delivery and launch. It stands for:
 
+* **Push** critical resources for the initial URL route.
+* **Render** initial route.
+* **Pre-cache** remaining routes.
+* **Lazy-load** and create remaining routes on demand.
 
-それと同時に、コンピューティングの大部分は、高速で信頼性の高いネットワークに接続された高性能のデスクトップ パソコンから、低速または不安定（またはその両方）であることが多い接続を使用する比較的性能の低いモバイル端末に移りました。
-これは特に、新たにオンラインに参入する 10 億人のユーザーがいる地域にあてはまります。
+Beyond targeting the fundamental goals and standards of PWAs, PRPL strives to optimize for:
 
+* Minimum time-to-interactive 
+    * Especially on first use (regardless of entry point)
+    * Especially on real-world mobile devices
+* Maximum caching efficiency, especially over time as updates are released
+* Simplicity of development and deployment
 
+PRPL is inspired by a suite of modern web platform features, but it’s possible to apply the pattern without hitting every letter in the acronym or using every feature.
 
-デスクトップの時代には、多機能で強力なウェブアプリを構築するためのパターンが考案されましたが、残念ながらそれらのパターンを使用して作成されたアプリは、モバイル端末で読み込むには時間がかかり過ぎてしまいます。あまりにも時間かかるため、多くのユーザーは諦めています。
+In fact, PRPL is more about a mindset and a long-term vision for improving the performance of the mobile web than it is about specific technologies or techniques. The ideas behind PRPL are not new, but the approach was framed and named by the Polymer team and unveiled at [Google I/O 2016](https://www.youtube.com/watch?v=J4i0xJnQUzU).
 
+Polymer's [Shop](https://shop.polymer-project.org) e-commerce demo is a first-class example of an application using PRPL to granularly serve resources. It achieves interactivity for each route incredibly quickly on real-world mobile devices:
 
+![The Polymer Shop demo is interactive in 1.75s](images/app-build-prpl-shop.jpg)
 
-これは、最新のウェブ プラットフォームの機能を活用して、きめ細かく、より高速にモバイルでのウェブ エクスペリエンスを提供する新しいパターンを生み出す機会だとも言えます。PRPL は、まさにそのようなパターンの 1 つです。
+For most real-world projects, it’s frankly too early to realize the PRPL vision in its purest, most complete form – but it’s definitely not too early to adopt the mindset, or to start chasing the vision from various angles. There are many practical steps that app developers, tool developers and browser vendors can take in pursuit of PRPL today.
 
+## App structure
 
+PRPL can work well if you have a single-page app (SPA) with the following structure:
 
-##  PRPL パターン
+* The main *entrypoint* of the application which is served from every valid route. This file should be very small, since it will be served from different URLs and therefore be cached multiple times. All resource URLs in the entrypoint need to be absolute, since it may be served from non-top-level URLs.
 
-PRPL は、Progressive Web App（PWA）を構築および配信するためのパターンで、アプリの配信と起動時のパフォーマンスに重点を置いています。
-PRPL は次の言葉を表しています。
+* The *shell* or app-shell, which includes the top-level app logic, router, and so on.
 
-*  **Push**: 最初の URL ルートに不可欠なリソースを Push（プッシュ）する。
-*  **Render**: 最初のルートを Render（レンダリング）する。
-*  **Pre-cache**: 残りのルートを Pre-cache（事前キャッシュ）する。
-*  **Lazy-load**: オンデマンドで残りのルートを Lazy-load（遅延読み込み）する。
+* Lazily loaded *fragments* of the app. A fragment can represent the code for a particular view, or other code that can be loaded lazily (for example, parts of the main app not required for first paint, like menus that aren't displayed until a user interacts with the app). The shell is responsible for dynamically importing the fragments as needed.
 
-PWA の基本的な目標や標準を目指すだけでなく、PRPL は次のことを達成するための最適化に取り組んでいます。
+The server and service worker together work to precache the resources for the inactive routes.
 
+When the user switches routes, the app lazy-loads any required resources that haven't been cached yet, and creates the required views. Repeat visits to routes should be immediately interactive. Service Worker helps a lot here.
 
-* TTI（Time To Interactive、インタラクティブ準備時間）の最小化
-    * 特に初回の使用時（エントリ ポイントにかかわらず）
-    * 特に実際のモバイル端末上
-* キャッシュ効率の最大化（特にアップデートがリリースされるのに伴って）
-* 簡素化された開発とデプロイメント
+The diagram below shows the components of a simple app that might be structured using [Web Components](http://webcomponents.org/):
 
-PRPL は、最新のウェブ プラットフォーム機能から着想を得ています。しかし、この頭字語のすべての文字があてはまらなくても、またすべての機能を使用しなくても、パターンを適用できます。
+![diagram of an app that has two views, which have both individual and shared
+dependencies](images/app-build-components.png)
 
+Note: although HTML Imports are Polymer's preferred bundling strategy, you can use code-splitting and route-based chunking to achieve a similar setup with modern JavaScript module bundlers.
 
+In this diagram, the solid lines represent *static dependencies*: external resources identified in the files using `<link>` and `<script>` tags. Dotted lines represent *dynamic* or *demand-loaded dependencies*: files loaded as needed by the shell.
 
-PRPL は実際のところ、特定のテクノロジーやテクニックではなく、むしろモバイルウェブのパフォーマンスを向上するための考え方や長期的なビジョンを表しています。PRPL の背景にある考え方は新しいものではありませんが、そのアプローチは Polymer チームによって枠組みと名前が決められ、[Google I/O
-2016](https://www.youtube.com/watch?v=J4i0xJnQUzU) で発表されました。
+The build process builds a graph of all of these dependencies, and the server uses this information to serve the files efficiently. It also builds a set of vulcanized bundles, for browsers that don't support HTTP/2.
 
+### App entrypoint
 
-Polymer の [Shop](https://shop.polymer-project.org) e コマース デモは、PRPL を使用して、精巧にリソースを配信するアプリケーションの最高の例です。実際のモバイル端末上で、驚くほど高速に各ルートでインタラクティブな機能が実現されます。
+The entrypoint must import and instantiate the shell, as well as conditionally load any required polyfills.
 
+The main considerations for the entrypoint are:
 
+* Has minimal static dependencies, in other words, not much beyond the app-shell itself.
+* Conditionally loads required polyfills.
+* Uses absolute paths for all dependencies.
 
+### App shell
 
-![Polymer Shop デモは 1.75 秒でインタラクティブになります](images/app-build-prpl-shop.png)
+The shell is responsible for routing and usually includes the main navigation UI for the app.
 
-率直にいうと、実際のプロジェクトの多くは、PRPL のビジョンを最も純粋かつ完全な形で実感できる段階には至っていないでしょう。しかし、その考え方を取り入れ、あらゆる角度でそのビジョンの追求に着手するのに早すぎることはありません。
-現在では、アプリのデベロッパー、ツールのデベロッパー、ブラウザのベンダーが PRPL を追求するために採用できる実用的なステップが数多くあります。
+The app should lazy-load fragments as they're required. For example, when the user changes to a new route, it imports the fragment(s) associated with that route. This may initiate a new request to the server, or simply load the resource from the cache.
 
+The shell (including its static dependencies) should contain everything needed for first paint.
 
+## Build output
 
-##  アプリの構造
+Although it isn't a hard requirement for using PRPL, your build process could produce two builds:
 
-PRPL は、次の構造を持つシングルページ アプリ（SPA）でうまく機能します。
+* An unbundled build designed for server/browser combinations that support HTTP/2 to deliver the resources the browser needs for a fast first paint while optimizing caching. The delivery of these resources can be triggered efficiently using [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) or [HTTP/2 Push](/web/fundamentals/performance/http2/#server-push).
 
+* A bundled build designed to minimize the number of round-trips required to get the application running on server/browser combinations that don't support server push.
 
--   アプリケーションのメインとなる _entrypoint_。有効なすべてのルートから配信されます。
-このファイルは別の URL から配信され、何度もキャッシュされるため、サイズを非常に小さくする必要があります。
-エントリポイントのリソース URL はすべて、絶対 URL で指定する必要があります。最上位以外の URL から配信される可能性があるためです。
+Your server logic should deliver the appropriate build for each browser.
 
+### Bundled build
 
+For browsers that don't handle HTTP/2, the build process could produce a set of different bundles: one bundle for the shell, and one bundle for each fragment. The diagram below shows how a simple app would be bundled, again using Web Components:
 
--   _shell_ または app-shell。これには最上位のアプリのロジック、ルーターなどがあります。
+![diagram of the same app as before, where there are three bundled
+dependencies](images/app-build-bundles.png)
 
+Any dependency shared by two or more fragments is bundled with the shell and its static dependencies.
 
--   遅延読み込みされたアプリの _fragment_。フラグメントは、特定のビューのコード、または遅延読み込み可能なその他のコードを表すことができます（たとえば、ユーザーがアプリを操作するまで表示されないメニューなど、最初の描画には不要なメインアプリのパーツ）。shell は、必要に応じて動的にフラグメントをインポートする機能を担います。
+Each fragment and its *unshared* static dependencies are bundled into a single bundle. The server should return the appropriate version of the fragment (bundled or unbundled), depending on the browser. This means that the shell code can lazy-load `detail-view.html` *without having to know whether it is bundled or unbundled*. It relies on the server and browser to load the dependencies in the most efficient way.
 
+## Background: HTTP/2 and HTTP/2 server push
 
-サーバーと Service Worker は連動して、非アクティブなルートのリソースを事前にキャッシュします。
+[HTTP/2](/web/fundamentals/performance/http2/) allows *multiplexed* downloads over a single connection, so that multiple small files can be downloaded more efficiently.
 
+[HTTP/2 server push](/web/fundamentals/performance/http2/#server-push) allows the server to preemptively send resources to the browser.
 
-ユーザーがルートを切り替えると、アプリはまだキャッシュしていなかった必要なリソースを遅延読み込みして、必要なビューを作成します。
-ルートへのアクセスを繰り返すと、即座にインタラクティブになるはずです。
-Service Worker はここで大いに役立ちます。
+For an example of how HTTP/2 server push speeds up downloads, consider how the browser retrieves an HTML file with a linked stylesheet.
 
-以下の図は、[ウェブ コンポーネント](http://webcomponents.org/)を使用して構造化可能なシンプルなアプリのコンポーネントを示しています。
+In HTTP/1:
 
+* The browser requests the HTML file.
+* The server returns the HTML file and the browser starts parsing it.
+* The browser encounters the `<link rel="stylesheet">` tag, and starts a new request for the stylesheet.
+* The browser receives the stylesheet.
 
-![個別と共有の依存関係を持つ 2 つのビューがあるアプリの図](images/app-build-components.png)
+With HTTP/2 push:
 
+* The browser requests the HTML file.
+* The server returns the HTML file, and pushes the stylesheet at the same time.
+* The browser starts parsing the HTML. By the time it encounters the `<link
+rel="stylesheet">`, the stylesheet is already in the cache.
 
-注: HTML Imports は Polymer の優先バンドル戦略ですが、コード分割やルートベースのチャンクを使用して、最新の JavaScript モジュール バンドラで同様のセットアップが可能です。
+In the simplest case, HTTP/2 server push eliminates a single HTTP request-response.
 
+With HTTP/1, developers bundle resources to reduce the number of HTTP requests required to render a page. However, bundling can reduce the efficiency of the browser's cache. if resources for each page are combined into a single bundle, each page gets its own bundle, and the browser can't identify shared resources.
 
+The combination of HTTP/2 and HTTP/2 server push provides the *benefits* of bundling (reduced latency) without actual bundling. Keeping resources separate means they can be cached efficiently and be shared between pages.
 
-この図で、実線は _static dependencies_ を表します。`<link>` タグと `<script>` タグを使用してファイルで指定した外部リソースです。
-破線は _dynamic_ または _demand-loaded dependencies_ を表します。必要に応じてシェルで読み込まれるファイルです。
+HTTP/2 Push needs to be utilized with care, as it forces data to the browser, even if the file is already in the browser’s local cache or bandwidth is already saturated. If done wrong, performance can suffer. [`<link rel="preload">`](/web/updates/2016/03/link-rel-preload) might be a good alternative to allow the browser to make smart decisions about the prioritization of these requests.
 
+## Conclusion
 
+Loading the code for routes more granularly and allowing browsers to schedule work better has the potential to greatly aid reaching interactivity in our applications sooner. We need **better architectures that enable interactivity quickly** and the PRPL pattern is an interesting example of how to accomplish this goal on real mobile devices.
 
-ビルドプロセスではこれらの依存関係をすべてビルドし、サーバーはこの情報を使用して、ファイルを効率良く配信します。
-また、HTTP/2 をサポートしていないブラウザ向けに vulcanize を実行したバンドルのセットをビルドします。
+It’s all about headroom and giving yourself enough once you’re done loading your abstractions. If tapping on a link is delayed by seconds of script that prevents input events from dispatching, that’s a strong indication there is work to be done on performance. This is a common problem with applications built using larger JavaScript libraries today, where UI is rendered that looks like it should work but does not.
 
+PRPL can help deliver the minimal functional code needed to make the route your users land on interactive, addressing this challenge.
 
-###  アプリのエントリポイント
+## Feedback {: #feedback }
 
-エントリポイントでは、シェルをインポートおよびインスタンス化し、条件に応じて必要な polyfill を読み込みます。
-
-
-エントリポイントに関する主な考慮事項は次のとおりです。
-
--   静的な依存関係を最小限にする。つまり、app-shell 自体より大きくなりすぎないようにする。
--   条件に応じて必要な polyfill を読み込む。
--   すべての依存関係で絶対パスを使用する。
-
-###  App shell
-
-このシェルはルーティングを行い、通常はアプリのメイン ナビゲーション UI が含まれます。
-
-
-アプリでは、必要に応じてフラグメントを遅延読み込みする必要があります。たとえば、ユーザーが新しいルートに変更すると、そのルートに関連するフラグメントをインポートします。これにより、サーバーに対する新しいリクエストが開始されるか、または単にキャッシュからリソースが読み込みまれます。
-
-
-シェル（シェルの静的な依存関係も含む）には、最初の描画に必要なものがすべて含まれている必要があります。
-
-
-##  ビルドの出力
-
-これは PRPL を使用するうえで難しい要件ではありませんが、ビルド プロセスでは 2 つのビルドが生成される場合があります。
-
-
--   バンドルされていないビルド。HTTP/2 をサポートするサーバー / ブラウザの組み合わせのために設計されています。キャッシュを最適化しながら、ブラウザが最初に描画するために必要なリソースを配信します。これらのリソースの配信は、[`<link rel="preload">`][Resource hints]または [HTTP/2 Push] を使用して効率的にトリガーできます。
-
-
--   バンドルされたビルド。サーバー プッシュをサポートしていないサーバー / ブラウザの組み合わせでアプリケーションを実行するために必要なラウンドトリップを最小限に抑えるよう設計されています。
-
-
-
-サーバー ロジックで、各ブラウザに適切なビルドを配信する必要があります。
-
-###  バンドルされたビルド
-
-HTTP/2 に対応していないブラウザの場合、ビルドプロセスでは、シェル用、各フラグメント用など、一連の異なるバンドルが生成されます。
-以下の図は再び、ウェブ コンポーネントを使用して、シンプルなアプリがバンドルされる状況を示しています。
-
-
-![3 つのバンドルされた依存関係が存在する、先ほどと同じアプリの図](images/app-build-bundles.png)
-
-
-2 つ以上のフラグメントで共有される依存関係は、シェルおよび静的な依存関係とバンドルされます。
-
-
-各フラグメントと共有されていない静的な依存関係は、1 つのバンドルに統合されます。
-サーバーはブラウザに応じて、適切なバージョン（バンドルあり / なし）のフラグメントを返す必要があります。
-これは、バンドルされているかどうかを把握しなくても、シェルコードが `detail-view.html` を遅延読み込みできることを意味します。
-最も効率的に依存関係を読み込めるかどうかは、サーバーとブラウザ次第です。
-
-
-
-##  バックグラウンド:HTTP/2 および HTTP/2 サーバー プッシュ
-
-[HTTP/2] は 1 つの接続で多重接続によるダウンロードが可能であるため、複数の小さなファイルを効率的にダウンロードできます。
-
-
-[HTTP/2 サーバー プッシュ][HTTP/2 Push]を使用すると、サーバーはリソースをあらかじめブラウザに送信できます。
-
-
-HTTP/2 サーバー プッシュでダウンロードを高速化できる例として、リンクされたスタイルシートを使用して、ブラウザで HTML ファイルを取得する方法について検討してみましょう。
-
-
-HTTP/1:
-
-*   ブラウザが HTML ファイルを要求します。
-*   サーバーが HTML ファイルを返し、ブラウザは解析を開始します。
-*   ブラウザが `<link rel="stylesheet">` タグを見つけて、スタイルシートの新しいリクエストを開始します。
-*   ブラウザがスタイルシートを受信します。
-
-HTTP/2 プッシュ:
-
-*   ブラウザが HTML ファイルを要求します。
-*   サーバーが HTML ファイルを返し、同時にスタイルシートをプッシュします。
-*   ブラウザが HTML の解析を開始します。ブラウザが `<link
-    rel="stylesheet"> を見つけるまでに、スタイルシートはすでにキャッシュに読み込まれています。
-
-この最も単純なケースで、HTTP/2 サーバー プッシュによって、1 回の HTTP リクエスト / レスポンスが削減されています。
-
-
-HTTP/1 では、デベロッパーはリソースをバンドルして、ページのレンダリングに必要な HTTP リクエストの数を削減します。
-ただし、バンドルによってブラウザのキャッシュの効率が落ちます。各ページのリソースが 1 つのバンドルに統合されていると、ページがそれぞれ固有のバンドルを取得し、ブラウザは共有リソースを特定できません。
-
-
-
-
-HTTP/2 と HTTP/2 サーバー プッシュの組み合わせでは、実際にバンドルしなくてもバンドルのメリット（レイテンシの短縮）が得られます。
-リソースを分けておくことで、効率的なキャッシュが可能になり、ページ間で共有できます。
-
-
-HTTP/2 プッシュの使用には注意が必要です。ファイルがすでにブラウザのローカル キャッシュに存在したり、帯域幅がいっぱいになっていても、データがブラウザに強制的に送信されます。
-使い方を誤ると、パフォーマンスが損なわれる可能性があります。ブラウザがこれらのリクエストの優先順位について適切に判断するための代替手段として、[`<link rel="preload">`][Resource hints] を使用できる場合があります。
-
-  
-
-## まとめ
-
-アプリケーションが高速でインタラクティブ状態に到達するようにするには、ルートのコードをより細かく読み込み、ブラウザで処理を適切にスケジューリングできるようにすると非常に効果的です。
-**迅速にインタラクティブな状態に移行できる優れたアーキテクチャ**が求められていますが、PRPL パターンは、実際のモバイル端末でこの目標を達成する方法として興味深い例です。
-
-
-
-これはゆとりの問題で、抽出したものの読み込みを完了したら、あとは自分を信頼することです。
-入力イベントの送信を阻害する数秒間のスクリプトによってリンクのタップが遅延した場合、それはパフォーマンスについてなんらかの手を打つ必要があるという明確なサインです。
-これは現在、大きな JavaScript ライブラリを使用して構築したアプリケーションでよく見られる問題ですが、レンダリングされた UI が機能しているように見えても、実際はそうではないことがあります。
-
-
-
-PRPL では、ユーザーが選択したルートをインタラクティブにするために必要最小限の関数のコードを配信できるようにサポートすることで、この課題に対処しています。
-
-
-[HTTP/2]: /web/fundamentals/performance/http2/
-[Resource hints]: /web/updates/2016/03/link-rel-preload
-[HTTP/2 Push]: /web/fundamentals/performance/http2/#server-push
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

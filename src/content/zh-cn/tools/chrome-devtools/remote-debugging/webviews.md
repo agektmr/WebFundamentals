@@ -1,40 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Chrome 开发者工具在您的原生 Android 应用中调试 WebView。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-{# wf_updated_on:2015-07-29 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 远程调试 WebView {: .page-title }
+# Remote Debugging WebViews {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-使用 Chrome 开发者工具在您的原生 Android 应用中调试 WebView。
+Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-在 Android 4.4 (KitKat) 或更高版本中，使用 DevTools 可以在原生 Android 应用中调试 WebView 内容。
-
-
+On Android 4.4 (KitKat) or later, use DevTools to debug WebView content in native Android applications.
 
 ### TL;DR {: .hide-from-toc }
-- 在您的原生 Android 应用中启用 WebView 调试；在 Chrome DevTools 中调试 WebView。
-- 通过 <strong>chrome://inspect</strong> 访问已启用调试的 WebView 列表。
-- 调试 WebView 与通过<a href='/web/tools/chrome-devtools/debug/remote-debugging'>远程调试</a>调试网页相同。
 
+* Enable WebView debugging in your native Android app; debug WebViews in Chrome DevTools.
+* Access list of debug-enabled WebViews via **chrome://inspect**.
+* Debugging WebViews is the same as debugging a web page through [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging).
 
-## 配置 WebViews 进行调试
+## Configure WebViews for debugging
 
-必须从您的应用中启用 WebView 调试。要启用 WebView 调试，请在 WebView 类上调用静态方法 [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean))。
-
+WebView debugging must be enabled from within your application. To enable WebView debugging, call the static method [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean)) on the WebView class.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         WebView.setWebContentsDebuggingEnabled(true);
     }
     
 
-此设置适用于应用的所有 WebView。
+This setting applies to all of the application's WebViews.
 
-**提示**：WebView 调试**不会**受应用清单中 `debuggable` 标志的状态的影响。如果您希望仅在 `debuggable` 为 `true` 时启用 WebView 调试，请在运行时测试标志。
-
+**Tip**: WebView debugging is **not** affected by the state of the `debuggable` flag in the application's manifest. If you want to enable WebView debugging only when `debuggable` is `true`, test the flag at runtime.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
@@ -42,22 +35,23 @@ description:使用 Chrome 开发者工具在您的原生 Android 应用中调试
     }
     
 
-## 在 DevTools 中打开 WebView
+## Open a WebView in DevTools
 
-**chrome://inspect** 页面将显示您的设备上已启用调试的 WebView 列表。
+The **chrome://inspect** page displays a list of debug-enabled WebViews on your device.
 
-要开始调试，请点击您想要调试的 WebView 下方的 **inspect**。像使用远程浏览器标签一样使用 DevTools。
+To start debugging, click **inspect** below the WebView you want to debug. Use DevTools as you would for a remote browser tab.
 
-![在 WebView 中检查元素](imgs/webview-debugging.png)
+![Inspecting elements in a WebView](imgs/webview-debugging.png)
 
-与 WebView 一起列示的灰色图形表示 WebView 的大小和相对于设备屏幕的位置。如果您的 WebView 已设置标题，标题也会一起显示。
+The gray graphics listed with the WebView represent its size and position relative to the device's screen. If your WebViews have titles set, the titles are listed as well.
 
-## 故障排除
+## Troubleshooting
 
-在 **chrome://inspect page** 上无法看到您的 WebView？
+Can't see your WebViews on the **chrome://inspect page**?
 
-* 验证已为您的应用启用 WebView 调试。
-* 在设备上，打开应用以及您想要调试的 WebView。然后，刷新 **chrome://inspect** 页面。
+* Verify that WebView debugging is enabled for your app.
+* On your device, open the app with the WebView you want to debug. Then, refresh the **chrome://inspect** page.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

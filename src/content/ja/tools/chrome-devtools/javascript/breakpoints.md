@@ -1,279 +1,240 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools でコードを一時停止するために使用できるすべての方法を説明します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn about all the ways you can pause your code in Chrome DevTools.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-02-03 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-19 #} {# wf_published_on: 2017-02-03 #} {# wf_blink_components: Platform>DevTools #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# ブレークポイントでコードを一時停止する {: .page-title }
+# How To Pause Your Code With Breakpoints In Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-JavaScript コードを一時停止するにはブレークポイントを使用します。 このガイドでは、DevTools で使用可能なブレークポイントの種類と、それらを使用するタイミングおよび設定する方法について説明します。
- デバッグ プロセスのハンズオン チュートリアルは、[Chrome DevTools で JavaScript をデバッグする](/web/tools/chrome-devtools/javascript/)をご覧ください。
+Use breakpoints to pause your JavaScript code. This guide explains each type of breakpoint that's available in DevTools, as well as when to use and how to set each type. For a hands-on tutorial of the debugging process, see [Get Started with Debugging JavaScript in Chrome DevTools](/web/tools/chrome-devtools/javascript/).
 
+## Overview of when to use each breakpoint type {: #overview }
 
-
-## 各種ブレークポイントを使用するタイミングの概要 {: #overview }
-
-最もよく知られているブレークポイントはコード行（line-of-code）のブレークポイントです。 しかし、バグの場所が厳密にはわからない場合や作業するコードベースが非常に大きい場合は特に、コード行ブレークポイントを効率的に設定できないこともあります。
- そのような場合、他の種類のブレークポイントをいつどのように使えばよいかを知っていれば、自分が行うデバッグ作業の時間を節約できます。
-
-
+The most well-known type of breakpoint is line-of-code. But line-of-code breakpoints can be inefficient to set, especially if you don't know exactly where to look, or if you are working with a large codebase. You can save yourself time when debugging by knowing how and when to use the other types of breakpoints.
 
 <table>
-  <tr><th>ブレークポイントの種類</th><th>使用に適した一時停止の対象...</th></tr>
+  <tr><th>Breakpoint Type</th><th>Use This When You Want To Pause...</th></tr>
   <tr>
-    <td><a href="#loc">コード行</a></td>
+    <td><a href="#loc">Line-of-code</a></td>
     <td>
-      厳密なコード部分。
+      On an exact region of code.
     </td>
   </tr>
   <tr>
-    <td><a href="#conditional-loc">条件付きコード行</a></td>
+    <td><a href="#conditional-loc">Conditional line-of-code</a></td>
     <td>
-      厳密なコード部分、ただし他の何らかの条件が真であるときに限る。
+      On an exact region of code, but only when some other condition is true.
     </td>
   </tr>
   <tr>
     <td><a href="#dom">DOM</a></td>
     <td>
-      特定の DOM ノードまたはその子を変更または削除するコード。
-
+      On the code that changes or removes a specific DOM
+      node, or its children.
     </td>
   </tr>
   <tr>
     <td><a href="#xhr">XHR</a></td>
     <td>
-      指定する文字列パターンが XHR URL に含まれる場合。
+      When an XHR URL contains a string pattern.
     </td>
   </tr>
   <tr>
-    <td><a href="#event-listeners">イベント リスナー</a></td>
+    <td><a href="#event-listeners">Event listener</a></td>
     <td>
-      <code>click</code> などのイベントが発生した後に実行されるコード。
-
+      On the code that runs after an event, such as
+      <code>click</code>, is fired.
     </td>
   </tr>
   <tr>
-    <td><a href="#exceptions">例外</a></td>
+    <td><a href="#exceptions">Exception</a></td>
     <td>
-      捕捉された例外または捕捉されていない例外をスローするコード行。
-
+      On the line of code that is throwing a caught or
+      uncaught exception.
     </td>
   </tr>
   <tr>
-    <td><a href="#function">関数</a></td>
+    <td><a href="#function">Function</a></td>
     <td>
-      特定の関数が呼び出されるあらゆる場合。
+      Whenever a specific function is called.
     </td>
   </tr>
 </table>
 
-## コード行ブレークポイント {: #loc }
+## Line-of-code breakpoints {: #loc }
 
-コード行ブレークポイントは、調査が必要な厳密なコード部分がわかっている場合に使用します。
- DevTools はこのコード行が実行される前に*必ず*一時停止します。
+Use a line-of-code breakpoint when you know the exact region of code that you need to investigate. DevTools *always* pauses before this line of code is executed.
 
+To set a line-of-code breakpoint in DevTools:
 
-DevTools でコード行ブレークポイントを設定する手順は、次のとおりです。
-
-1. **[Sources]** タブをクリックします。
-1. ブレークポイントを配置する対象のコード行を含むファイルを開きます。
-1. 対象のコード行に移動します。
-1. コード行の左側に行番号列があります。 その列をクリックします。 行番号列の上に青いアイコンが表示されます。
-
+1. Click the **Sources** tab.
+2. Open the file containing the line of code you want to break on.
+3. Go the line of code.
+4. To the left of the line of code is the line number column. Click on it. A blue icon appears on top of the line number column.
 
 <figure>
   <img src="imgs/loc-breakpoint.png"
-       alt="コード行ブレークポイント。"
+       alt="A line-of-code breakpoint."
   <figcaption>
-    <b>図 1</b>: 行 <b>29</b> に設定したコード行ブレークポイント
+    <b>Figure 1</b>: A line-of-code breakpoint set on line <b>29</b>
   </figcaption>
 </figure>
 
-### コード内のコード行ブレークポイント {: #debugger }
+### Line-of-code breakpoints in your code {: #debugger }
 
-コードから `debugger` が呼び出されて、ブレークポイントが配置された行で一時停止します。 これは[コード行ブレークポイント](#loc)と同等ですが、ブレークポイントが DevTools UI 内ではなくコード内に設定されている点が異なります。
-
-
+Call `debugger` from your code to pause on that line. This is equivalent to a [line-of-code breakpoint](#loc), except that the breakpoint is set in your code, not in the DevTools UI.
 
     console.log('a');
     console.log('b');
     debugger;
     console.log('c');
+    
 
-### 条件付きコード行ブレークポイント {: #conditional-loc }
+### Conditional line-of-code breakpoints {: #conditional-loc }
 
-条件付きコード行ブレークポイントは、調査が必要な厳密なコード部分はわかっているが、他の一定の条件が真である場合にのみ一時停止するという場合に使用します。
+Use a conditional line-of-code breakpoint when you know the exact region of code that you need to investigate, but you want to pause only when some other condition is true.
 
+To set a conditional line-of-code breakpoint:
 
-
-条件付きコード行ブレークポイントを設定する手順は、次のとおりです。
-
-1. **[Sources]** タブをクリックします。
-1. ブレークポイントを配置する対象のコード行を含むファイルを開きます。
-1. 対象のコード行に移動します。
-1. コード行の左側に行番号列があります。 その列を右クリックします。
-1. **[Add conditional breakpoint]** を選択します。 コード行の下にダイアログが表示されます。
-1. ダイアログに条件を入力します。
-1. <kbd>Enter</kbd> を押してブレークポイントをアクティベートします。 行番号列の上にオレンジ色のアイコンが表示されます。
-
+1. Click the **Sources** tab.
+2. Open the file containing the line of code you want to break on.
+3. Go the line of code.
+4. To the left of the line of code is the line number column. Right-click it.
+5. Select **Add conditional breakpoint**. A dialog displays underneath the line of code.
+6. Enter your condition in the dialog.
+7. Press <kbd>Enter</kbd> to activate the breakpoint. An orange icon appears on top of the line number column.
 
 <figure>
   <img src="imgs/conditional-loc-breakpoint.png"
-       alt=" 条件付きコード行ブレークポイント。"
+       alt="A conditional line-of-code breakpoint."
   <figcaption>
-    <b>図 2</b>: 行 
-<b>32</b> に設定した条件付きコード行ブレークポイント
+    <b>Figure 2</b>: A conditional line-of-code breakpoint set on line
+    <b>32</b>
   </figcaption>
 </figure>
 
-### コード行ブレークポイントの管理 {: #manage-loc }
+### Manage line-of-code breakpoints {: #manage-loc }
 
-1 つの場所のコード行ブレークポイントを無効化または削除する場合は、**[Breakpoints]** ペインを使用します。
-
+Use the **Breakpoints** pane to disable or remove line-of-code breakpoints from a single location.
 
 <figure>
   <img src="imgs/breakpoints-pane.png"
-       alt="[Breakpoints] ペイン。"
+       alt="The Breakpoints pane."
   <figcaption>
-    <b>図 3</b>: 2 つのコード行ブレークポイントが表示された <b>[Breakpoints]</b> ペイン。<code>get-started.js</code> の 15 行目と 32 行目にブレークポイントが配置されている
+    <b>Figure 3</b>: The <b>Breakpoints</b> pane showing two line-of-code
+    breakpoints: one on line 15 of <code>get-started.js</code>, another on
+    line 32
   </figcaption>
-
-
 </figure>
 
-* 無効にするブレークポイントのエントリーの横にあるチェックボックスにチェックを入れます。
-* そのブレークポイントを削除する場合は、エントリー上で右クリックします。
-* すべてのブレークポイントを非アクティベートする、すべてのブレークポイントを無効にする、またはすべてのブレークポイントを削除する場合は、**[Breakpoints]** ペインの任意の場所で右クリックします。
- すべてのブレークポイントを無効にすることは、ブレークポイントのチェックを一つ一つすべて解除することに相当します。
- すべてのブレークポイントを非アクティベートすると、すべてのコード行ブレークポイントを無視し、それらのブレークポイントが有効である状態は維持するよう DevTools に指示するため、再アクティベートしたときには以前と同じ状態が復元されます。
-
-
-
+* Check the checkbox next to an entry to disable that breakpoint.
+* Right-click an entry to remove that breakpoint.
+* Right-click anywhere in the **Breakpoints** pane to deactivate all breakpoints, disable all breakpoints, or remove all breakpoints. Disabling all breakpoints is equivalent to unchecking each one. Deactivating all breakpoints instructs DevTools to ignore all line-of-code breakpoints, but to also maintain preserve their enabled state so that they are in the same state as before when you reactivate them.
 
 <figure>
   <img src="imgs/deactivated-breakpoints.png"
-       alt="[Breakpoints] ペインで非アクティベートされたブレークポイント。"
+       alt="Deactivated breakpoints in the Breakpoints pane."
   <figcaption>
-    <b>図 4</b>: <b>[Breakpoints]</b> ペインで非アクティベートされたブレークポイントは無効になっており、半透明で表示されている
-</figcaption>
-
-</figure>
-
-## DOM 変更ブレークポイント {: #dom }
-
-DOM ノードまたはその子を変更するコードで一時停止するときは、DOM 変更ブレークポイントを使用します。
-
-
-DOM 変更ブレークポイントを設定する手順は、次のとおりです。
-
-1. **[Elements]** タブをクリックします。
-1. ブレークポイントを設定する要素に移動します。
-1. その要素を右クリックします。
-1. **[Break on]** の上にマウスポインターを移動し、**[Subtree modifications]**、**[Attribute   modifications]**、または **[Node removal]** を選択します。
-
-
-<figure>
-  <img src="imgs/dom-change-breakpoint.png"
-       alt="DOM 変更ブレークポイントの作成時に表示されるコンテキスト メニュー。"
-  <figcaption>
-    <b>図 5</b>: DOM 変更ブレークポイントの作成時に表示されるコンテキスト メニュー
-</figcaption>
-</figure>
-
-### DOM 変更ブレークポイントの種類 {: #dom-types }
-
-* **[Subtree modifications]**: 現在選択されているノードの子が削除、追加、または子の内容が変更されたときにトリガーされます。
- 子ノードの属性が変更された場合、または現在選択されているノードが変更された場合はトリガーされません。
-
-
-
-* **[Attributes modifications]**:現在選択されているノードに対して属性が追加または削除された場合、あるいは属性値が変更された場合にトリガーされます。
-
-
-* **[Node Removal]**:現在選択されているノードが削除された場合にトリガーされます。
-
-## XHR/Fetch ブレークポイント {: #xhr }
-
-XHR ブレークポイントは、指定された文字列が XHR のリクエスト URL に含まれているときに一時停止する場合に使用します。
- DevTools は、XHR が `send()` を呼び出す箇所でコード行を一時停止します。
-
-
-注: この機能は [Fetch][Fetch] リクエストとも連携します。
-
-この連携が便利な例は、ページがリクエストしている URL が間違っていて、間違ったリクエストの原因となっている AJAX または Fetch ソースコードをその場で確認したいという場合です。
-
-
-
-XHR ブレークポイントを設定する手順は、次のとおりです。
-
-1. **[Sources]** タブをクリックします。
-1. **[XHR Breakpoints]** ペインを展開します。
-1. **[Add breakpoint]** をクリックします。
-1. 出現時に一時停止する文字列を入力します。 DevTools は、この文字列が XHR のリクエスト URL に出現するすべての箇所で一時停止します。
-1. <kbd>Enter</kbd> を押して確認します。
-
-<figure>
-  <img src="imgs/xhr-breakpoint.png"
-       alt="XHR ブレークポイントの作成。"
-  <figcaption>
-    <b>図 6</b>: <b>[XHR Breakpoints]</b> での
-    URL に <code>org</code> を含むすべてのリクエストに対する XHR ブレークポイントの作成
-</figcaption>
-</figure>
-
-[Fetch]: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-
-## イベント リスナー ブレークポイント {: #event-listeners }
-
-イベント リスナー ブレークポイントは、イベントが発生した後で実行されるイベント リスナーコードで一時停止する場合に使用します。
- 特定のイベント（`click` など）またイベントのカテゴリ（すべてのマウスイベントなど）を選択することができます。
-
-
-1. **[Sources]** タブをクリックします。
-1. **[Event Listener Breakpoints]** ペインを展開します。 DevTools に **[Animation]** といったイベント カテゴリのリストが表示されます。
-1. 発生したら一時停止するイベントのカテゴリにチェックを入れるか、またはカテゴリを展開して特定のイベントにチェックを入れるかします。
-
-
-<figure>
-  <img src="imgs/event-listener-breakpoint.png"
-       alt="イベント リスナー ブレークポイントの作成。"
-  <figcaption>
-    <b>図 7</b>: <code>deviceorientation</code> のイベント リスナー ブレークポイントの作成
-
+    <b>Figure 4</b>: Deactivated breakpoints in the <b>Breakpoints</b> pane
+    are disabled and transparent
   </figcaption>
 </figure>
 
-## 例外ブレークポイント {: #exceptions }
+## DOM change breakpoints {: #dom }
 
-例外ブレークポイントは、捕捉された例外または捕捉されていない例外をスローしているコード行で一時停止する場合に使用します。
+Use a DOM change breakpoint when you want to pause on the code that changes a DOM node or its children.
 
+To set a DOM change breakpoint:
 
-1. **[Sources]** タブをクリックします。
-1. **[Pause on exceptions]** ![Pause on
-   exceptions](imgs/pause-on-exceptions.png) をクリックします{:.devtools-inline}。 有効になると青色に変わります。
-1. (オプション) 捕捉されていないで例外に加えて捕捉された例外でも一時停止する場合は、**[Pause On Caught Exceptions]** チェックボックスにチェックを入れます。
+1. Click the **Elements** tab.
+2. Go the element that you want to set the breakpoint on.
+3. Right-click the element.
+4. Hover over **Break on** then select **Subtree modifications**, **Attribute modifications**, or **Node removal**.
 
+<figure>
+  <img src="imgs/dom-change-breakpoint.png"
+       alt="The context menu for creating a DOM change breakpoint."
+  <figcaption>
+    <b>Figure 5</b>: The context menu for creating a DOM change breakpoint
+  </figcaption>
+</figure>
+
+### Types of DOM change breakpoints {: #dom-types }
+
+* **Subtree modifications**. Triggered when a child of the currently-selected node is removed or added, or the contents of a child are changed. Not triggered on child node attribute changes, or on any changes to the currently-selected node.
+
+* **Attributes modifications**: Triggered when an attribute is added or removed on the currently-selected node, or when an attribute value changes.
+
+* **Node Removal**: Triggered when the currently-selected node is removed.
+
+## XHR/Fetch breakpoints {: #xhr }
+
+Use an XHR breakpoint when you want to break when the request URL of an XHR contains a specified string. DevTools pauses on the line of code where the XHR calls `send()`.
+
+Note: This feature also works with [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) requests.
+
+One example of when this is helpful is when you see that your page is requesting an incorrect URL, and you want to quickly find the AJAX or Fetch source code that is causing the incorrect request.
+
+To set an XHR breakpoint:
+
+1. Click the **Sources** tab.
+2. Expand the **XHR Breakpoints** pane.
+3. Click **Add breakpoint**.
+4. Enter the string which you want to break on. DevTools pauses when this string is present anywhere in an XHR's request URL.
+5. Press <kbd>Enter</kbd> to confirm.
+
+<figure>
+  <img src="imgs/xhr-breakpoint.png"
+       alt="Creating an XHR breakpoint."
+  <figcaption>
+    <b>Figure 6</b>: Creating an XHR breakpoint in the <b>XHR Breakpoints</b>
+    for any request that contains <code>org</code> in the URL
+  </figcaption>
+</figure>
+
+## Event listener breakpoints {: #event-listeners }
+
+Use event listener breakpoints when you want to pause on the event listener code that runs after an event is fired. You can select specific events, such as `click`, or categories of events, such as all mouse events.
+
+1. Click the **Sources** tab.
+2. Expand the **Event Listener Breakpoints** pane. DevTools shows a list of event categories, such as **Animation**.
+3. Check one of these categories to pause whenever any event from that category is fired, or expand the category and check a specific event.
+
+<figure>
+  <img src="imgs/event-listener-breakpoint.png"
+       alt="Creating an event listener breakpoint."
+  <figcaption>
+    <b>Figure 7</b>: Creating an event listener breakpoint for
+    <code>deviceorientation</code>
+  </figcaption>
+</figure>
+
+## Exception breakpoints {: #exceptions }
+
+Use exception breakpoints when you want to pause on the line of code that's throwing a caught or uncaught exception.
+
+1. Click the **Sources** tab.
+2. Click **Pause on exceptions** ![Pause on
+exceptions](imgs/pause-on-exceptions.png){:.devtools-inline}. It turns blue when enabled.
+    
+    <figure> <img src="imgs/pause-on-exceptions-highlight.png" alt="The 'Pause on exceptions' button." <figcaption> 
+    
+    **Figure 8**: The **Pause on exceptions** button </figcaption> </figure>
+3. (Optional) Check the **Pause On Caught Exceptions** checkbox if you also want to pause on caught exceptions, in addition to uncaught ones.
 
 <figure>
   <img src="imgs/uncaught-exception.png"
-       alt="捕捉されていない例外で一時停止した状態。"
+       alt="Paused on an uncaught exception."
   <figcaption>
-    <b>図 7</b>: 捕捉されていない例外で一時停止した状態
-</figcaption>
+    <b>Figure 9</b>: Paused on an uncaught exception
+  </figcaption>
 </figure>
 
-## 関数ブレークポイント {: #function }
+## Function breakpoints {: #function }
 
-特定の関数が呼び出されたあらゆる場合に一時停止するときに、`debug(functionName)` を呼び出します（`functionName` はデバッグする関数）。
- `debug()` をコード内に挿入するか（`console.log()` ステートメントのように）または DevTools コンソールから呼び出すことができます。
- `debug()` は、関数の最初の行に
-[コード行ブレークポイント](#loc)を設定した場合に相当します。
+Call `debug(functionName)`, where `functionName` is the function you want to debug, when you want to pause whenever a specific function is called. You can insert `debug()` into your code (like a `console.log()` statement) or call it from the DevTools Console. `debug()` is equivalent to setting a [line-of-code breakpoint](#loc) on the first line of the function.
 
     function sum(a, b) {
       let result = a + b; // DevTools pauses on this line.
@@ -281,12 +242,11 @@ XHR ブレークポイントを設定する手順は、次のとおりです。
     }
     debug(sum); // Pass the function object, not a string.
     sum();
+    
 
+### Make sure the target function is in scope {: #scope }
 
-### 対象の関数がスコープ内にあるようにする {: #scope }
-
-DevTools は、デバッグする関数がスコープ内にないと `ReferenceError` をスローします。
-
+DevTools throws a `ReferenceError` if the function you want to debug is not in scope.
 
     (function () {
       function hey() {
@@ -299,15 +259,14 @@ DevTools は、デバッグする関数がスコープ内にないと `Reference
       yo();
     })();
     debug(hey); // This doesn't work. hey() is out of scope.
+    
 
-`debug()` を DevTools コンソールから呼び出している場合、対象の関数がスコープ内にあるようにするには少しの手間が必要となります。
- 次のような方法をとることもできます。
+Ensuring the target function is in scope can be tricky if you're calling `debug()` from the DevTools Console. Here's one strategy:
 
-1. その関数がスコープ内にある場所に[コード行ブレークポイント](#loc)を設定します。
-1. ブレークポイントをトリガーします。
-1. コートがコード行ブレークポイントで一時停止している間に、DevTools コンソールで `debug()` を呼び出します。
+1. Set a [line-of-code breakpoint](#loc) somewhere where the function is scope.
+2. Trigger the breakpoint.
+3. Call `debug()` in the DevTools Console while the code is still paused on your line-of-code breakpoint.
 
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

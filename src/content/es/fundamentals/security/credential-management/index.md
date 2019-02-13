@@ -1,114 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-11-08 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-08 #} {# wf_blink_components: Blink>SecurityFeature>CredentialManagement #}
 
-# Credential Management API {: .page-title }
+# The Credential Management API {: .page-title }
 
-{% include "web/_shared/contributors/agektmr.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/agektmr.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-La [Credential Management API](https://www.w3.org/TR/credential-management/)
-es una API para navegadores basada en estándares que ofrece una interfaz programática
-entre el sitio y el navegador para un acceso fluido, en diferentes dispositivos, y
-elimina las trabas en tus flujos de acceso.
+The [Credential Management API](https://www.w3.org/TR/credential-management/) is a standards-based browser API that provides a programmatic interface between the site and the browser for seamless sign-in across devices.
 
-<div class="attempt-right">
-  <figure>
-    <video src="animations/credential-management-smaller.mov" style="max-height: 400px;" autoplay muted loop controls></video>
-    <figcaption>Flujo de acceso del usuario</figcaption>
-  </figure>
-</div>
+The Credential Management API:
 
-La Credential Management API:
+* **Removes friction from sign-in flows** - Users can be automatically signed back into a site even if their session has expired or they saved credentials on another device.
+* **Allows one tap sign in with account chooser** - Users can choose an account in a native account chooser.
+* **Stores credentials** - Your application can store either a username and password combination or even federated account details. These credentials can be synced across devices by the browser.
 
-* **Simplifica el flujo de acceso**. Los usuarios pueden volver a acceder automáticamente en un
-sitio, incluso si su sesión caducó.
-* **Permite el acceso en un toque con selector de cuentas**. Se muestra un selector de cuentas nativo
-que elimina al formulario de acceso.
-* **Almacena credenciales**. Puede almacenar una combinación de nombre de usuario y contraseña
- o incluso detalles de cuentas federadas.
+Key Point: Using the Credential Management API requires the page be served from a secure origin.
 
-¿Quieres verlo en acción? Prueba la
-[demostración de la Credential Management API](https://credential-management-sample.appspot.com)
-y observa el
-[código](https://github.com/GoogleChrome/credential-management-sample).
+Want to see it in action? Try the [Credential Management API Demo](https://credential-management-sample.appspot.com) and take a look at the [code](https://github.com/GoogleChrome/credential-management-sample).
 
 <div class="clearfix"></div>
 
+### Check Credential Management API browser support
 
-## Pasos para la implementación de Credential Management
+Before using the Credential Management API, first check if `PasswordCredential` or `FederatedCredential` is supported.
 
-Mientras que existen muchas formas de integrar la Credential Management
-API con éxito, y las características específicas de una integración dependen de la estructura y la experiencia
-de usuario del sitio, los sitios que usan este flujo tienen las siguientes
-ventajas para la experiencia de usuario:
+    if (window.PasswordCredential || window.FederatedCredential) {
+      // Call navigator.credentials.get() to retrieve stored
+      // PasswordCredentials or FederatedCredentials.
+    }
+    
 
-* Los usuarios existentes de tu servicio que tienen una sola credencial guardada en el
-navegador acceden de inmediato, y se los redirecciona a la
-página de sesión iniciada apenas termina la autenticación.
-* Los usuarios que tienen varias credenciales guardadas en el navegador o que han inhabilitado el acceso
-automático necesitan responder a un diálogo antes de acceder a la página de sesión iniciada
-del sitio.
-* Cuando los usuarios cierran sesión, el sitio web se asegura de que no vuelvan a acceder
-automáticamente.
+Warning: Feature detection by checking `navigator.credentials` may break your website on browsers supporting [WebAuthn](https://www.w3.org/TR/webauthn/)(PublicKeyCredential) but not all credential types (`PasswordCredential` and `FederatedCredential`) defined by the Credential Management API. [Learn more](/web/updates/2018/03/webauthn-credential-management).
 
-Key Point: El uso de la Credential Management API requiere que la página se encuentre en un servidor
-de origen seguro.
+### Sign in user
 
-### Recupera las credenciales del usuario y haz que el usuario acceda
+To sign in the user, retrieve the credentials from the browser's password manager and use them to log in the user.
 
-Para hacer que el usuario acceda, recupera las credenciales del gestor de contraseñas
-del navegador y úsalas para iniciar su sesión.
+For example:
 
-Por ejemplo:
+1. When a user lands on your site and they are not signed in, call [`navigator.credentials.get()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get).
+2. Use the retrieved credentials to sign in the user.
+3. Update the UI to indicate the user has been signed in.
 
-1. Cuando un usuario llega a tu sitio y no accede,
- llama a `navigator.credential.get()`
-2. Usa las credenciales recuperadas para hacer que el usuario acceda.
-3. Actualiza la IU para indicar que el usuario accedió.
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#auto-sign-in).
 
-Obtén más información en
-[Recuperar credenciales](/web/fundamentals/security/credential-management/retrieve-credentials).
+### Save or update user credentials
 
-### Guarda o actualiza las credenciales de usuario
+If the user signed in with a federated identity provider such as Google Sign-In, Facebook, GitHub:
 
-Si el usuario accedió con un nombre de usuario y contraseña:
+1. After the user successfully signs in or creates an account, create the [`FederatedCredential`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential) with the user's email address as the ID and specify the identity provider with `FederatedCredentials.provider`.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
-1. Luego de que el usuario acceda correctamente, cree una cuenta o cambie una
-contraseña, crea `PasswordCredential` con el ID de usuario y
-la contraseña.
-2. Guarda el objeto de las credenciales usando `navigator.credentials.store()`.
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#federated-login).
 
+If the user signed in with a username and password:
 
-Si el usuario accedió con un proveedor de identidad federada, como Google
-Sign-In, Facebook, GitHub, etc.:
+1. After the user successfully signs in or creates an account, create the [`PasswordCredential`](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential) with the user ID and the password.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
-1. Luego de que el usuario acceda correctamente, cree una cuenta o cambie una
-contraseña, crea `FederatedCredential` con la dirección de correo electrónico del usuario como
- la ID y especifica un proveedor de identidad con `.provider`
-2. Guarda el objeto de las credenciales usando `navigator.credentials.store()`.
+Learn more in [Save Credentials from Forms](/web/fundamentals/security/credential-management/save-forms).
 
-Obtén más información en
-[Almacenar credenciales](/web/fundamentals/security/credential-management/store-credentials).
+### Sign out
 
-### Cierra sesión
+When the user signs out, call [`navigator.credentials.preventSilentAccess()`](/web/fundamentals/security/credential-management/retrieve-credentials#turn_off_auto_sign-in_for_future_visits) to prevent the user from being automatically signed back in.
 
-Cuando el usuario cierre sesión, llama a `navigator.credentials.requireUserMediation()`
-para evitar que el usuario vuelva a acceder automáticamente.
+Disabling auto-sign-in also enables users to switch between accounts easily, for example, between work and personal accounts, or between accounts on shared devices, without having to re-enter their sign-in information.
 
-Inhabilitar el acceso automático también permite a los usuarios cambiar fácilmente entre cuentas;
-por ejemplo, entre cuentas de trabajo y personales, o entre distintas cuentas en
-dispositivos compartidos, sin la necesidad de ingresar nuevamente su información de acceso.
+Learn more in [Sign out](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out).
 
-Obtén más información en
-[Cerrar sesión](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out).
+## Feedback {: #feedback }
 
-
-## Referencias adicionales
-
-[Credential Management API en MDN](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

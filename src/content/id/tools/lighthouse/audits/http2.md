@@ -1,41 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs Menggunakan HTTP/2 Untuk Sumber Dayanya Sendiri".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTP/2 For Its Own Resources" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# Situs Menggunakan HTTP/2 Untuk Sumber Dayanya Sendiri  {: .page-title }
+# Uses HTTP/2 For Its Own Resources {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-HTTP/2 bisa menyediakan sumber daya laman Anda lebih cepat, dan dengan perpindahan data yang lebih sedikit
-melalui kabel.
+HTTP/2 can serve your page's resources faster, and with less data moving over the wire.
 
-Lihat [Pertanyaan yang Sering Diajukan mengenai HTTP/2][faq] untuk daftar manfaat yang disediakan HTTP/2
-melalui HTTP/1.1.
+See [HTTP/2 Frequently Asked Question](https://http2.github.io/faq/) for a list of benefits that HTTP/2 provides over HTTP/1.1.
 
-Lihat [Pengantar HTTP/2][intro] untuk ringkasan teknis yang mendalam.
+See [Introduction to HTTP/2](/web/fundamentals/performance/http2/) for an in-depth technical overview.
 
-[faq]: https://http2.github.io/faq/
-[intro]: /web/fundamentals/performance/http2/
+## Recommendations {: #recommendations }
 
-## Cara untuk lulus audit {: #how }
+Under **URLs**, Lighthouse lists every resource that was not served over HTTP/2. To pass this audit, serve each of those resources over HTTP/2.
 
-Pada **URL**, Lighthouse mencantumkan setiap sumber daya yang tidak disajikan melalui HTTP/2.
-Untuk lulus audit ini, sediakan setiap sumber daya itu melalui HTTP/2.
+To learn how to enable HTTP/2 on your servers, see [Setting Up HTTP/2](https://dassur.ma/things/h2setup/).
 
-Untuk mempelajari cara mengaktifkan HTTP/2 di server Anda, lihat [Menyiapkan HTTP/2][setup].
+## More information {: #more-info }
 
-[setup]: https://dassur.ma/things/h2setup/
+Lighthouse gathers all of the resources that are from the same host as the page, and then checks the HTTP protocol version of each resource.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse excludes resources from other hosts from this audit, because it assumes that you have no control over how these resources are served.
 
-Lighthouse mengumpulkan semua sumber daya dari host yang sama seperti
-laman, kemudian memeriksa versi protokol HTTP setiap sumber daya.
+## Feedback {: #feedback }
 
-Lighthouse mengecualikan sumber daya dari host lain dari audit ini, karena beranggapan
-Anda tidak memiliki kontrol atas cara menyediakan sumber daya ini.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

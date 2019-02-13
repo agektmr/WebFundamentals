@@ -1,54 +1,51 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 動畫效能必須良好，否則會負面影響使用者體驗。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Animations must perform well, otherwise they will negatively impact the user experience.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 動畫和效能 {: .page-title }
+# Animations and Performance {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-
-製作動畫時，必須注意保持 60 fps，因為任何斷斷續續或停頓對使用者都很明顯，並負面影響他們的使用體驗。
+Maintain 60fps whenever you are animating, because any less results in stutters or stalls that will be noticeable to your users and negatively impact their experiences.
 
 ### TL;DR {: .hide-from-toc }
-- 注意不要讓您的動畫引起效能問題；確保您知道動畫處理特定 CSS 屬性的影響。
-- 動畫處理會變更頁面幾何形狀 (版面配置) 或引起繪製的屬性，成本尤其高。
-- 儘可能堅守可變的變形和透明度。
-- 使用 <code>will-change</code> 以確保瀏覽器知道您計畫要動畫處理的目標。
 
+* Take care that your animations don’t cause performance issues; ensure that you know the impact of animating a given CSS property.
+* Animating properties that change the geometry of the page (layout) or cause painting are particularly expensive.
+* Where you can, stick to changing transforms and opacity.
+* Use `will-change` to ensure that the browser knows what you plan to animate.
 
-動畫處理屬性並非免費，某些屬性的動畫處理成本比其他屬性來得低。 例如，動畫處理一項元素的 `width` 與 `height`，可能會造成其幾何形狀改變以及頁面上的其他元素移動或或變更大小。 此過程稱為版面配置 (或在例如 Firefox 等 Gecko 架構瀏覽器中稱為自動重排)，而且在頁面具有大量的元素時，成本高昂。 每當觸發版面配置時，頁面或其一部分通常會需要繪製，通常這甚至比版面配置操作本身更昂貴。
+Animating properties is not free, and some properties are cheaper to animate than others. For example, animating the `width` and `height` of an element changes its geometry and may cause other elements on the page to move or change size. This process is called *layout* (or *reflow* in Gecko-based browsers like Firefox), and can be expensive if your page has a lot of elements. Whenever layout is triggered, the page or part of it will normally need to be painted, which is typically even more expensive than the layout operation itself.
 
-您應該儘可能避免動畫處理會觸發版面配置或繪製的屬性。 對於大多數最新瀏覽器，這代表要限制動畫處理為 `opacity` 或 `transform`，而這兩個都可以透過瀏覽器高度最佳化；動畫由 JavaScript 或 CSS 處理都不要緊。
+Where you can, you should avoid animating properties that trigger layout or paint. For most modern browsers, this means limiting animations to `opacity` or `transform`, both of which the browser can highly optimize; it doesn’t matter if the animation is handled by JavaScript or CSS.
 
-至於可由個別 CSS 屬性觸發的行為之完整清單，可查閱 [CSS 觸發器](http://csstriggers.com)，而且在 [HTML5 高效能動畫萬歲] (High Performance Animations on HTML5 Rocks)(http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/)上，您可以找到完整指南。
+For a full list of the work triggered by individual CSS properties, see [CSS Triggers](http://csstriggers.com). You can find a full guide on creating [High Performance Animations on HTML5 Rocks](http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/).
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.blocking-css #}
+### Using the will-change property
 
-### 使用 will-change 屬性
+Use the [`will-change`](https://dev.w3.org/csswg/css-will-change/) to ensure the browser knows that you intend to change an element’s property. This allows the browser to put the most appropriate optimizations in place ahead of when you make the change. Don't overuse `will-change`, however, because doing so can cause the browser to waste resources, which in turn causes even more performance issues.
 
-使用 [`will-change`](http://dev.w3.org/csswg/css-will-change/) 以確保瀏覽器知道您打算變更元素的屬性，這絕對值得您費時間為之。 在您變更之前，這可讓瀏覽器建置最適當的最佳化。 必須注意不要過度使用 `will-change`，因為這可能會導致瀏覽器浪費資源，反過來會導致更多效能問題。
-
-一般的經驗法則是，如果動畫可以在接下來的 200ms 觸發 -- 透過使用者互動或由於您應用程式的狀態 -- 那麼在動畫處理元素時納入 will-change 則是個好主意。 針對大多數情況，您打算動畫處理的應用程式之目前檢視內的任何元素，應該針對您計畫變更的任何屬性啟用 `will-change`。 就之前指南一直使用的方塊範例而言，為變形和透明度新增 `will-change`，看起來就像這樣：
-
+The general rule of thumb is that if the animation might be triggered in the next 200ms, either by a user’s interaction or because of your application’s state, then having `will-change` on animating elements is a good idea. For most cases, then, any element in your app’s current view that you intend to animate should have `will-change` enabled for whichever properties you plan to change. In the case of the box sample we’ve been using throughout the previous guides, adding `will-change` for transforms and opacity looks like this:
 
     .box {
       will-change: transform, opacity;
     }
     
 
-現在支援它的瀏覽器，如 Chrome、Firefox 和 Opera，會在檯面下執行適當的最佳化，以支援這些屬性的變更或動畫處理。
+Now the browsers that support it, [currently Chrome, Firefox, and Opera](http://caniuse.com/#feat=will-change), will make the appropriate optimizations under the hood to support changing or animating those properties.
 
-## CSS vs JavaScript 效能
+## CSS vs JavaScript performance
 
-網路上有許多網頁與評論討論串，都關於以效能角度而言討論 CSS 和 JavaScript 動畫的相對優點。 以下有幾點需要牢記：
+There are many pages and comments threads around the web that discuss the relative merits of CSS and JavaScript animations from a performance perspective. Here are a few points to keep in mind:
 
-* CSS 架構的動畫通常是由瀏覽器「主執行緒」的另一獨立執行緒處理；而樣式、版面配置、繪製與 JavaScript 都是在主執行緒上處理。 這代表如果瀏覽器在主執行緒上執行某一些高成本任務，CSS 架構的動畫可能會一直運作，而不被中斷。 在許多情況下，變形和透明度的變更，可以由和與 CSS 架構動畫 (稱為合成執行緒) 相同的執行緒來處理，所以您最好應該針對您的動畫，堅持使用這些項目。
-* 如果任何動畫觸發了繪製、版面配置或兩者，「主執行緒」將必須工作。 此情況適用於 CSS 架構 和 JavaScript 架構動畫，而版面配置或繪製的負擔可能會抵銷 CSS 或 JavaScript 執行相關的任何努力，使問題倍受爭議。
+* CSS-based animations, and Web Animations where supported natively, are typically handled on a thread known as the "compositor thread". This is different from the browser's "main thread", where styling, layout, painting, and JavaScript are executed. This means that if the browser is running some expensive tasks on the main thread, these animations can keep going without being interrupted.
 
-如果您想知道，動畫處理特定屬性會觸發哪些工作，請參閱 [CSS 觸發器](http://csstriggers.com)，以取得更多詳細資料。
+* Other changes to transforms and opacity can, in many cases, also be handled by the compositor thread.
 
+* If any animation triggers paint, layout, or both, the "main thread" will be required to do work. This is true for both CSS- and JavaScript-based animations, and the overhead of layout or paint will likely dwarf any work associated with CSS or JavaScript execution, rendering the question moot.
 
+For more information about which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

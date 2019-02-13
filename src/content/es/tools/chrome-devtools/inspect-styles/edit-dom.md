@@ -1,182 +1,156 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: En la vista de árbol del DOM del panel Elements de Chrome DevTools se muestra la estructura del DOM de la página web actual. Edita en tiempo real el contenido y la estructura de tu página mediante actualizaciones del DOM.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# Editar el DOM {: .page-title }
+# Edit the DOM {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-En la vista de árbol del DOM del panel Elements de Chrome DevTools se muestra la estructura del DOM de la página web actual. Edita en tiempo real el contenido y la estructura de tu página mediante actualizaciones del DOM.
-
+The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
 ### TL;DR {: .hide-from-toc }
-- El DOM define la estructura de tu página. Cada nodo del DOM es un elemento de la página, por ejemplo, un nodo encabezado, nodo párrafo.
-- Edita en vivo el contenido y la estructura de tus páginas a través del DOM representado.
-- Pero recuerda que no puedes modificar archivos de origen a través de cambios del DOM en el panel Elements. Volver a cargar la página borra las modificaciones del árbol del DOM.
-- Observa si hay cambios en el DOM usando los puntos de interrupción del DOM.
 
+* The DOM defines your page structure. Each DOM node is a page element, for example, a header node, paragraph node.
+* Live-edit the content and structure of your pages through the rendered DOM.
+* But remember, you can't modify source files through DOM changes in the Elements panel. Reloading the page erases any DOM tree modifications.
+* Watch for changes to the DOM using DOM breakpoints.
 
-## Inspeccionar un elemento {:#inspect-an-element}
+## Inspect an element {:#inspect-an-element}
 
-Usa el **panel Elements** para inspeccionar todos los elementos en tu página en un
-árbol del DOM. Selecciona cualquier elemento e inspecciona los estilos que se les aplicó.
+Use the **Elements panel** to inspect all elements in your page in one DOM tree. Select any element and inspect the styles applied to it.<video autoplay muted src="animations/inspect-element.mp4"> </video> 
 
-<video autoplay muted src="animations/inspect-element.mp4">
-</video>
+There are several ways to inspect an element:
 
-Existen varias formas de inspeccionar un elemento:
+Right-click any element on the page and select **Inspect**.
 
-Haz clic con el botón secundario en cualquier elemento de la página y selecciona **Inspect**.
+![Inspect an element via right-click](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
 
-![Inspeccionar un elemento a través del clic del botón secundario](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
+Press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
 
-Presiona <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
-+ <kbd class="kbd">C</kbd> (Windows) o <kbd class="kbd">Cmd</kbd>
-+ <kbd class="kbd">Mayús</kbd> + <kbd class="kbd">C</kbd> (Mac) para abrir
-DevTools en el modo Inspect Element y, a continuación, desplázate sobre un elemento. DevTools
-destaca automáticamente el elemento sobre el que te desplazas en el panel
-**Elements**. Haz clic en el elemento para salir del modo de inspección. El elemento se mantiene
-destacado en el panel **Elements**. 
+* <kbd class="kbd">C</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>
+* <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd> (Mac) to open DevTools in Inspect Element mode, then hover over an element. DevTools automatically highlights the element that you are hovering over in the **Elements** panel. Click on the element to exit inspect mode while keeping the element highlighted within the **Elements** panel. 
 
-Haz clic en el botón **Inspect Element** 
-![Ícono de inspeccionar](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline}
-para ir a Inspect Element Mode y luego haz clic en un elemento.
+Click the **Inspect Element** button ![Inspect icon](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline} to go into Inspect Element Mode, then click on an element.
 
-Usa el método [`inspect`][inspect] en la consola, como
-`inspect(document.body)`.
+Use the [`inspect`](/web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect) method in the console, such as `inspect(document.body)`.
 
-## Navegar por el DOM
+### View the rendered and natural sizes of an image {: #image-sizes }
 
-Navega a través de la estructura del DOM usando tu mouse o teclado.
+Hover over an `img` tag in the **DOM Tree** to view the rendered and natural sizes of that image.
 
-Un nodo colapsado tiene una flecha a su lado que apunta hacia la derecha:
-![nodo colapsado](imgs/collapsed-node.png){:.inline}
+![Rendered and natural image sizes](imgs/image-sizes.png)
 
-Un nodo expandido tiene una flecha a su lado que apunta hacia abajo:
-![nodo expandido](imgs/expanded-node.png){:.inline}
+### View which image in a source set (srcset) is being used {: #srcset }
 
-Con tu mouse:
+To view which version of an image in a `srcset` was loaded, select the `img` element, then evaluate `$0.currentSrc` in the **Console**.
 
-* Haz clic una vez para destacar un nodo.
-* Para expandir un nodo, haz doble clic en cualquier parte de este o en la flecha que  
-  está junto a él.
-* Para colapsar a un nodo, haz clic en la flecha a su lado.
+Note: See [Enhance `img`s with `srcset` for high DPI devices](/web/fundamentals/design-and-ux/responsive/images#enhance_imgs_with_srcset_for_high_dpi_devices) to learn more about image optimization using `srcset`.
 
-Con tu teclado:
+![currentSrc in the Console](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-console.png)
 
-* Presiona la tecla de **dirección hacia arriba** para seleccionar el nodo que se halla antes del nodo actual.
-* Presiona la tecla de **dirección hacia abajo** para seleccionar el nodo que se halla después del nodo actual.
-* Presiona la tecla de **dirección hacia derecha** para expandir un nodo contraído. Vuelve a
-  presionarla para mover el primer elemento secundario del nodo (ahora expandido). Puedes 
-  usar esta técnica para navegar con rapidez por los nodos profundamente anidados.
+Note: `$0` is a shortcut in the DevTools **Console**. It provides a reference to the currently-selected element in the **DOM Tree**.
 
-### Navegar por el recorrido de la ruta de navegación
+You can also view `currentSrc` via the **Properties** tab. The **Properties** tab only displays properties for the currently-selected element, so make sure that you've selected the correct element before viewing.
 
-En la parte inferior del panel Elements aparece un recorrido de la ruta de navegación. 
+![currentSrc in the Properties tab](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-properties.png)
 
-![Recorrido de la ruta de navegación](imgs/breadcrumb-body.png)
+## Navigate the DOM
 
-El nodo seleccionado actualmente se destaca con color azul. El nodo que se halla la izquierda es
-el elemento primario del nodo actual. Y a su izquierda se encuentra el elemento primario del nodo primario
-y así sucesivamente durante todo el trayecto hacia arriba del árbol.
+Navigate through the DOM structure using your mouse or keyboard.
 
-![Extender recorrido de ruta de navegación](imgs/breadcrumb-footer.png)
+A collapsed node has an arrow next to it pointing right: ![collapsed node](imgs/collapsed-node.png){:.inline}
 
-Volver a navegar hacia arriba de la estructura mueve lo destacado:
+An expanded node has an arrow next to it pointing down: ![expanded node](imgs/expanded-node.png){:.inline}
 
-![Navegar hacia arriba del recorrido de ruta de navegación](imgs/breadcrumb-trail.png)
+Using your mouse:
 
-DevTools muestra la mayor cantidad posible de elementos en el recorrido.
-Si todo el recorrido no cabe en la barra de estado, se muestra una elipsis (...) 
-donde se ha truncado el recorrido. Haz clic en la elipsis pare mostrar los 
-elementos ocultos:
+* Click once to highlight a node.
+* To expand a node, double-click anywhere on it or click on the arrow next  
+    to it.
+* To collapse a node, click on the arrow next to it.
 
-![Elipsis de ruta de navegación](imgs/breadcrumb-ellipsis.png)
+Using your keyboard:
 
-## Editar nodos y atributos del DOM
+* Press the **Up Arrow** key to select the node above the current one.
+* Press the **Down Arrow** to select the node below the current one.
+* Press the **Right Arrow** key to expand a collapsed node. Press it again to move to the first child of the (now-expanded) node. You can use this technique to quickly navigate deeply-nested nodes.
 
-Para editar el nombre o atributo de un nodo del DOM:
+### Navigate the breadcrumb trail
 
-* Haz doble clic directamente en el nombre o el atributo del nodo.
-* Destaca el nodo, presiona <kbd>Enter</kbd> y luego presiona <kbd>Tab</kbd>
-  hasta que se seleccione el nombre o atributo.
-* Abre el [menú de más acciones](#more-actions) y selecciona **Add Attribute** 
-  o **Edit Attribute**. **Edit Attribute** depende del contexto; la parte donde haces clic determina lo que se edita.
+At the bottom of the Elements panel is a breadcrumb trail.
 
+![Breadcrumb trail](imgs/breadcrumb-body.png)
 
-La etiqueta de cierre se actualiza automáticamente cuando terminas.
+The currently selected node is highlighted in blue. The node to the left is the current node's parent. And to the left of that is the parent's parent. And so on, all the way up the tree.
 
-<video autoplay muted src="animations/edit-element-name.mp4">
-</video>
+![Extend breadcrumb trail](imgs/breadcrumb-footer.png)
 
-### Editar el nodo del DOM y sus elementos secundarios como HTML
+Navigating back up the structure moves the highlight:
 
-Para editar un nodo del DOM y sus elementos secundarios como HTML:
+![Navigate up breadcrumb trail](imgs/breadcrumb-trail.png)
 
-* Abre el [menú de más acciones](#more-actions) y selecciona **Edit as HTML**. 
-* Presiona <kbd>F2</kbd> (Windows/Linux) o <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
-* Presiona <kbd>Ctrl</kbd>+<kbd>Intro</kbd> (Windows/Linux) o 
-  <kbd>Cmd</kbd>+<kbd>Intro</kbd> (Mac) para guardar los cambios. 
-* Presiona <kbd>Esc</kbd> para salir del editor sin guardar.
+DevTools displays as many items as possible in the trail. If the entire trail doesn't fit in the status bar, an ellipsis (...) shows where the trail has been truncated. Click the ellipsis to show the hidden elements:
 
-![editar como HTML](imgs/edit-as-html.png)
+![Breadcrumb ellipsis](imgs/breadcrumb-ellipsis.png)
 
-## Mover el nodo del DOM
+## Edit DOM nodes and attributes
 
-Haz clic en un nodo, mantenlo presionado y muévelo.
+To edit a DOM node name or attribute:
 
-<video autoplay muted src="animations/move-node.mp4">
-</video>
+* Double-click directly on the node name or attribute.
+* Highlight the node, press <kbd>Enter</kbd>, and then press <kbd>Tab</kbd> until the name or attribute is selected.
+* Open the [more actions menu](#more-actions) and select **Add Attribute** or **Edit Attribute**. **Edit Attribute** is context-sensitive; the portion you click on determines what gets edited.
 
-## Borrar nodo del DOM
+The closing tag is automatically updated when you're finished.<video autoplay muted src="animations/edit-element-name.mp4"> </video> 
 
-Para borrar un nodo del DOM:
+### Edit DOM node and its children as HTML
 
-* Abre el [menú de más acciones](#more-actions) y selecciona **Delete Node**.
-* Selecciona el nodo y presiona la tecla <kbd>Delete</kbd>.
+To edit a DOM node and its children as HTML:
 
-Note: Si borras un nodo por accidente, presiona <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (o <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> en Mac) para deshacer tu última acción.
+* Open the [more actions menu](#more-actions) and select **Edit as HTML**. 
+* Press <kbd>F2</kbd> (Windows / Linux) or <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
+* Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Enter</kbd> (Mac) to save your changes. 
+* Press <kbd>Esc</kbd> to exit the editor without saving.
 
-## Mostrar el menú more actions {:#more-actions}
+![edit as HTML](imgs/edit-as-html.png)
 
-El menú **more actions** te permite interactuar con un nodo del DOM de diversas
-maneras. Para ver el menú, haz clic con el botón secundario en un nodo o selecciona un nodo
-y luego presiona el botón de **más acciones** (![botón 
-more actions](imgs/more-actions-button.png){:.inline}). El botón solo 
-se muestra en el elemento actualmente seleccionado.
+## Move DOM node
 
-![menú more actions] (imgs/more-actions-menu.png)
+Click, hold, and drag a node to move it.<video autoplay muted src="animations/move-node.mp4"> </video> 
 
-## Desplazar en la vista
+## Delete DOM node
 
-Cuando te desplazas por un nodo del DOM o lo seleccionas, el nodo representado se destaca 
-en la ventana de visualización. En caso de que el nodo se desplace fuera de la pantalla, verás
-información sobre la herramienta en la parte superior de la ventana de visualización si el nodo está encima de
-esta; en cambio, la información aparecerá en la parte inferior si el nodo se encuentra debajo de la ventana de visualización
-actual. Por ejemplo, en la siguiente captura de pantalla DevTools indica que el
-elemento seleccionado actualmente en el panel **Elements** está debajo de la ventana de visualización.
+To delete a DOM node:
 
-![elemento debajo de la ventana de visualización](imgs/below-viewport.png)
+* Open the [more actions menu](#more-actions) and select **Delete Node**.
+* Select the node and press the <kbd>Delete</kbd> key.
 
-Para desplazar la página para que el nodo aparezca en la ventana de visualización,
-**haz clic con el botón secundario** en el nodo y selecciona **Scroll into View**.
+Note: If you delete a node by accident, <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (or <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> on Mac) to undo your last action.
 
-## Establecer puntos de interrupción del DOM
+## Show more actions menu {:#more-actions}
 
-Establece puntos de interrupción del DOM para depurar apps JavaScript complejas.
-Por ejemplo, si tu JavaScript cambia el estilo de un elemento del DOM,
-establece un punto de interrupción del DOM para que se desencadene cuando los atributos del elemento se cambian. Desencadena un punto de interrupción en uno de los siguientes cambios del DOM: cambio del subárbol, cambio de atributo, eliminación de nodo.
+The **more actions** menu lets you interact with a DOM node in a variety of ways. To view the menu, right-click on a node, or select a node and then press the **more actions** button (![more action 
+button](imgs/more-actions-button.png){:.inline})). The button is only displayed on the currently selected element.
+
+![more actions menu](imgs/more-actions-menu.png)
+
+## Scroll into view
+
+When you hover over or select a DOM node, the rendered node is highlighted in the viewport. If the node is scrolled offscreen, you'll see a tooltip at the top of the viewport if the node is above the current viewport, and a tooltip at the bottom if the node is below the current viewport. For example, in the screenshot below DevTools is indicating that the currently selected element in the **Elements** panel is below the viewport.
+
+![element below viewport](imgs/below-viewport.png)
+
+To scroll the page so the node appears in the viewport, **Right-click** the node and select **Scroll into View**.
+
+## Set DOM breakpoints
+
+Set DOM breakpoints to debug complex JavaScript applications. For example, if your JavaScript is changing the styling of a DOM element, set a DOM breakpoint to fire when the element's attributes are modified. Trigger a breakpoint on one of the following DOM changes: subtree change, attribute change, node removal.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.breakpoints #}
 
-### Modificaciones del subárbol
+### Subtree Modifications
 
-El punto de interrupción de modificación de un subárbol se desencadena cuando se agrega un elemento secundario, se lo elimina o se lo mueve. Por ejemplo, si estableces un punto de interrupción de modificación de un subárbol en el elemento `main-content`, el siguiente código activa el punto de interrupción:
-
+A subtree modification breakpoint is triggered when a child element is added, removed, or moved. For example, if you set a subtree modification breakpoint on the `main-content` element, the following code triggers the breakpoint:
 
     var element = document.getElementById('main-content');
     //modify the element's subtree.
@@ -184,154 +158,141 @@ El punto de interrupción de modificación de un subárbol se desencadena cuando
     element.appendChild( mySpan );
     
 
-### Modificaciones de atributo
+### Attribute Modifications
 
-Una modificación de atributo se produce cuando el atributo de un elemento (`class, id, name`) se cambia dinámicamente:
-
+An attribute modification occurs when the attribute of an element (`class, id, name`) is changed dynamically:
 
     var element = document.getElementById('main-content');
     // class attribute of element has been modified.
     element.className = 'active';
     
 
-### Eliminación de nodo
+### Node Removal
 
-La modificación de eliminación de un nodo se desencadena cuando el nodo
-en cuestión es eliminado del DOM:
-
+A node removal modification is triggered when the node in question is removed from the DOM:
 
     document.getElementById('main-content').remove();
     
 
-## Interactuar con puntos de interrupción del DOM
+## Interact with DOM breakpoints
 
-Los paneles Elements y Sources incluyen un panel para gestionar los puntos de interrupción
-de tu DOM.
+The Elements and Sources panels both include a pane for managing your DOM breakpoints.
 
-Cada punto de interrupción está enumerado con un identificador de elemento y el tipo de punto de interrupción.
+Each breakpoint is listed with an element identifier and the breakpoint type.
 
-![Panel de puntos de interrupción del DOM](imgs/dom-breakpoints-pane.png)
+![DOM breakpoints pane](imgs/dom-breakpoints-pane.png)
 
-Interactúa con cada punto de interrupción enumerado en cualquiera de las siguientes maneras:
+Interact with each listed breakpoint in any of the following ways:
 
-* **Desplázate** sobre el identificador del elemento para ver la posición correspondiente 
-  del elemento en la página (esto es similar a desplazarte sobre los nodos en el panel Elements).
-* **Haz clic** en un elemento en el panel Elements.
-* **Activa o desactiva** la casilla de verificación para habilitar o inhabilitar el punto de interrupción.
+* **Hover** over the element identifier to show the element's corresponding position on the page (similar to hovering over nodes in the Elements panel).
+* **Click** an element to select it in the Elements panel.
+* **Toggle** the checkbox to enable or disable the breakpoint.
 
-Cuando desencadenas un punto de interrupción del DOM, este se destaca en el panel Breakpoints 
-del DOM. El panel **Call Stack** muestra la **razón** por la que se produce una 
-pausa en el depurador:
+When you trigger a DOM breakpoint, the breakpoint is highlighted in the DOM Breakpoints pane. The **Call Stack** pane displays the **reason** for a debugger pause:
 
-![Razón del punto de interrupción](imgs/breakpoint-reason.png)
+![Breakpoint reason](imgs/breakpoint-reason.png)
 
-## Ver receptores de eventos de elementos
+## View element event listeners
 
-Ve los receptores de eventos de JavaScript asociados con un nodo del DOM en el panel 
-**Event Listeners**. 
+View JavaScript event listeners associated with a DOM node in the **Event Listeners** pane.
 
-![panel event listeners](imgs/event-listeners-pane.png)
+![event listeners pane](imgs/event-listeners-pane.png)
 
-Los elementos de nivel superior en el panel Event Listeners muestran los tipos de eventos que 
-tienen receptores registrados.
+The top-level items in the Event Listeners pane show the event types that have registered listeners.
 
-Haz clic en la flecha al lado del tipo de evento (por ejemplo `click`) para ver 
-una lista de los controladores de eventos registrados. Cada controlador está identificado por un 
-identificador de elementos de tipo selector de CSS, como `document` o 
-`button#call-to-action`. Si se registra más de un controlador para el 
-mismo elemento, este se enumera de manera repetida.
+Click the arrow next to the event type (for example `click`) to see a list of registered event handlers. Each handler is identified by a CSS selector-like element identifier, such as `document` or `button#call-to-action`. If more than one handler is registered for the same element, the element is listed repeatedly.
 
-Haz clic en la flecha del expansor que está al lado del identificador de un elemento para ver las propiedades del controlador de eventos. El subpanel Event Listeners enumera las siguientes propiedades para cada controlador:
+Click the expander arrow next to an element identifier to see the properties of the event handler. The Event Listeners pane lists the following properties for each listener:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Propiedades del receptor de eventos y descripción</th>
+      <th colspan="2">Event Listener Properties &amp; Description</th>
     </tr>
   </thead>
   <tbody>
-  	<tr>
-      <td data-th="Value"><code>controlador</code></td>
-      <td data-th="Description">Contiene una función callback. Haz clic con el botón secundario en la función y selecciona <strong>Show Function Definition</strong> para ver dónde se define la función (en caso de que el código fuente esté disponible).</td>
+    <tr>
+      <td data-th="Value"><code>handler</code></td>
+      <td data-th="Description">Contains a callback function. Right-click on the function and select <strong>Show Function Definition</strong> to view where the function is defined (if source code is available).</td>
     </tr>
     <tr>
       <td data-th="Value"><code>useCapture</code></td>
-      <td data-th="Description">Un valor booleano que indica si se estableció el marcador <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a>  <code>addEventListener</code>.</td>
+      <td data-th="Description">A boolean value stating whether the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> flag on <code>addEventListener</code> was set.</td>
     </tr>
   </tbody>
 </table>
 
-Note: Muchas extensiones de Chrome agregan sus propios receptores de eventos en el DOM. Si ves una serie de receptores de eventos que no son establecidos por tu código, puede que desees reabrir tu página en una [Ventana de incógnito](https://support.google.com/chrome/answer/95464). Las ventanas de incógnito evitan que las extensiones se ejecuten de manera predeterminada.
+Note: Many Chrome extensions add their own event listeners onto the DOM. If you see a number of event listeners that aren't set by your code, you may want to reopen your page in an [Incognito window](https://support.google.com/chrome/answer/95464). Incognito windows prevent extensions from running by default.
 
-### Ver receptores de eventos antecesores
+### View ancestor event listeners
 
 {% comment %}
 
-código para captura de pantalla
+code for screenshot
 
 <!doctype html>
 <html>
-<body onload="console.log('onload');">
-  <div onfocus="console.log('focus');">
-    <button id="button" onclick="console.log('onclick');">haz clic aquí</button>
+<body onload="console.log('onload');"></p>
+
+<div onfocus="console.log('focus');">
+    <button id="button" onclick="console.log('onclick');">click me</button>
   </div>
-</body>
+
+<p></body>
 </html>
 
 {% endcomment %}
 
-Cuando se habilita la casilla de verificación **Ancestors** , se muestran los receptores de eventos para los  
-antecesores del nodo seleccionado actualmente, además de los receptores de eventos de
-dicho nodo.
+When the **Ancestors** checkbox is enabled, the event listeners for the ancestors of the currently selected node are displayed, in addition to the currently selected node's event listeners.
 
-![antecesores habilitados](imgs/ancestors-enabled.png)
+![ancestors enabled](imgs/ancestors-enabled.png)
 
-Cuando se inhabilita la casilla de verificación, solo se muestran los receptores de eventos para el 
-nodo seleccionado actualmente.
+When the checkbox is disabled, only the event listeners for the currently selected node are displayed.
 
-![antecesores inhabilitados](imgs/ancestors-disabled.png)
+![ancestors disabled](imgs/ancestors-disabled.png)
 
-### Ver receptores de marcos
+### View framework listeners
 
 {% comment %}
 
-código para captura de pantalla
+code for screenshot
 
-<!doctype html>
-<html>
+<!doctype html> 
 <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
-<body>
-  <button id="button">haz clic aquí</button>
-  <script>
+<button id="button">click me, please</button></p> 
+
+<script>
     $('#button').click(function() {
       $('#button').text('hehe, that tickled, thanks');
     });
   </script>
-</body>
-</html>
+
+ 
+
+</body> </html>
 
 {% endcomment %}
 
-Algunos frameworks y algunas bibliotecas de JavaScript incluyen los eventos nativos del DOM 
-en sus API de eventos personalizadas. En el pasado, debido a esto era difícil inspeccionar los receptores de eventos
-con DevTools, porque la definición de la función solo hacía referencia al 
-código del marco o la biblioteca. La función **Framework listeners** resuelve 
-este problema.
+Some JavaScript frameworks and libraries wrap native DOM events into their custom event APIs. In the past this made it hard to inspect the event listeners with DevTools, because the function definition would just reference back to the framework or library code. The **Framework listeners** feature solves this problem.
 
-Cuando se habilita la casilla de verificación **Framework listeners** , DevTools de manera automática
-resuelve el marco o la parte que abarca la biblioteca del código del evento y
-luego te indica dónde delimitaste realmente el evento en tu propio código.
+When the **Framework listeners** checkbox is enabled, DevTools automatically resolves the framework or library wrapping portion of the event code, and then tells you where you actually bound the event in your own code.
 
-![receptores de marcos habilitados](imgs/framework-listeners-enabled.png)
+![framework listeners enabled](imgs/framework-listeners-enabled.png)
 
-Cuando la casilla de verificación **Framework listeners** está inhabilitada, el código de receptor de eventos
-probablemente resolverá en alguna parte del código del marco o la biblioteca. 
+When the **Framework listeners** checkbox is disabled, the event listener code will probably resolve somewhere in the framework or library code.
 
-![receptores de marcos inhabilitados](imgs/framework-listeners-disabled.png)
+![framework listeners disabled](imgs/framework-listeners-disabled.png)
 
+## Show HTML comments {: #show-html-comments }
 
+To show or hide HTML comments in the Elements panel:
 
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
+1. Open [Settings](/web/tools/chrome-devtools/ui#settings).
+2. Click the **Preferences** tab.
+3. Under the **Elements** section, check the **Show HTML comments** checkbox.
 
+To show or hide HTML comments in the **Elements** panel, [open **Settings**](#settings), go to the **Preferences** panel, find the **Elements** section, and then toggle the **Show HTML comments** checkbox.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

@@ -1,86 +1,62 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 電話機能を備えた端末では、電話番号をタップするだけで、ユーザーが簡単にあなたに発信できるようになります。これは一般的に Click to Call 機能と呼ばれます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2014-06-17 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Input #}
 
-#  Click to Call {: .page-title }
+# Click to Call {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-電話機能を備えた端末では、ユーザーは広告に表示された電話番号をタップするだけで、簡単に広告主に電話をかけることができます。この機能は一般に Click to Call 呼ばれます。
-
+On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
 ### TL;DR {: .hide-from-toc }
 
-*  <code>tel:</code> スキームを使用して、すべての電話番号にハイパーリンクを設定します。
-* 必ず国際電話番号の形式を使用します。
+* Wrap all phone numbers in hyperlinks with the `tel:` schema.
+* Always use the international dialing format.
 
+## Link telephone numbers for click to call
 
-##  電話番号にリンクを設定して Click to Call 機能を有効にする
+While many modern mobile browsers automatically detect phone numbers and convert them to links, it’s a good idea to do this directly in your code. By manually tagging each phone number, you can ensure that phone numbers are always enabled for click to call and that they will be styled to match your site.
 
-最新のモバイル ブラウザの多くは、電話番号を自動的に検出してリンクに変換しますが、この処理を直接コードで行うことをお勧めします。手動で各電話番号にタグを付けると、確実に電話番号に対して Click to Call 機能を有効にすることができ、サイトに合ったスタイル設定が可能になります。
-
-
-
-
-電話番号をリンクとして指定するには、`tel:` スキームを使用します。構文は単純です。
-
-
+To mark a phone number as a link, use the `tel:` scheme. The syntax is simple:
 
     NIST Telephone Time-of-Day Service 
     <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+    
 
-この構文はブラウザ上で次のように表示されます。
+Your browser displays this syntax as follows:
 
-NIST Telephone Time-of-Day Service <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+NIST Telephone Time-of-Day Service [+1 (303) 499-7111](tel:+1-303-499-7111)
 
 <div class="attempt-right">
   <figure>
     <img src="images/click-to-call_framed.jpg" >
-    <figcaption>Click to Call の例</figcaption>
+    <figcaption>Click to call example</figcaption>
   </figure>
 </div>
 
-通常、電話機能を備えた端末では、実際に発信する前に確認画面が表示されます。この仕組みにより、ユーザーが誤って高額な長距離通話やプレミアム電話番号に発信をすることを防いでいます。端末が電話機能をサポートしていない場合、メニューが表示されて、ブラウザが数字をどのように処理するかをユーザーが選択できるようになっています。
+On most devices with telephone capabilities, the user receives a confirmation before the number is dialed, to ensure that the user isn't being tricked into calling an expensive long distance or premium phone number. When the device doesn’t support phone calls, users may be presented with a menu allowing them to choose how the browser should handle the number.
 
+Desktop browsers that don’t support voice calls open the default telephony app on the computer; for example Google Voice or Microsoft Communicator.
 
-音声通話に対応していないデスクトップ ブラウザでは、Google Voice や Microsoft Communicator など、コンピュータのデフォルトの電話アプリを起動します。
+## Use the international dialing format
 
+Always supply the phone number using the international dialing format: the plus sign (`+`), country code, area code, and number. While not absolutely necessary, it’s a good idea to separate each segment of the number with a hyphen (`-`) for easier reading and better auto-detection.
 
+Using a hyphenated international dialing format ensures that no matter where the user is calling from, whether a few hundred meters away or thousands of kilometers, their call will be connected.
 
-##  国際電話の形式を使用する
+## Disable auto-detection when necessary
 
-電話番号は、必ず国際電話番号の形式に従って、プラス記号（`+`）、国コード、エリアコード、番号の順に記載してください。
-必須ではありませんが、番号の各セグメントをハイフン（`-`）で区切り、読みやすく、自動検出を容易にすることをお勧めします。
+Modern mobile browsers automatically detect phone numbers and enable click to call. Mobile Safari automatically converts phone numbers to links with the associated hyperlink styles. Chrome for Android automatically detects phone numbers and allows users to click to call, but does not wrap the phone numbers in hyperlinks or apply any special styles.
 
-
-
-ハイフンで区切られた国際電話の形式を使用すると、ユーザーが数百メートル離れているときでも数千キロメートル離れているときでも、発信場所にかかわらず電話がつながります。
-
-
-
-##  必要に応じて自動検出を無効にする
-
-最新のモバイル ブラウザは、電話番号を自動的に検出して Click to Call 機能を有効にします。
-Mobile Safari は電話番号をリンクに自動的に変換し、関連付けられているハイパーリンクのスタイルにします。
-Chrome for Android では、自動的に電話番号を検出して Click to Call 機能を有効にしますが、電話番号へのハイパーリンク設定や、特別なスタイル設定を行うことはありません。
-
-
-
-Mobile Safari で自動的に電話番号を検出しないようにするには、ページの先頭に次のメタタグを追加します。
-
-
+To prevent Mobile Safari from automatically detecting phone numbers, add the following meta tag to the top of the page:
 
     <meta name="format-detection" content="telephone=no">
+    
 
+## Other click to call features
 
-##  その他の Click to Call 機能
+In addition to the `tel:` schema, some modern browsers also support the `sms:` and `mms:` schemas, though support is not as consistent, and some features like setting the message body don't always work.
 
-`tel:` スキーマに加えて、最近のモバイル ブラウザの一部は、`sms:` や `mms:` スキーマもサポートしています。ただし、サポートに一貫性はなく、メッセージ本文の設定などの一部の機能が動作しない場合があります。
+## Feedback {: #feedback }
 
- 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

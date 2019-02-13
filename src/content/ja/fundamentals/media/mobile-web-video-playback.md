@@ -1,36 +1,33 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: モバイル Web における動画再生フロントエンドのベストプラクティスを紹介します
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Create the best mobile media experience on the Web by following these best practises.
 
-{# wf_published_on: 2017-04-07 #}
-{# wf_updated_on: 2017-06-01 #}
+{# wf_published_on: 2017-04-07 #} {# wf_updated_on: 2018-09-20 #} {# wf_blink_components: Blink>Media #}
 
-# モバイル Web における動画再生 {: .page-title }
+# Mobile Web Video Playback {: .page-title }
 
 {% include "web/_shared/contributors/beaufortfrancois.html" %}
 
-モバイル Web で最高の視聴体験を提供するにはどうすればよいでしょう。答えは簡単で、それはひとえに、ユーザの没入感を損なわないこと、そして開発者がどれだけ動画に重きを置くかにかかっています。とくに動画を売りにしている Web サイトは、没入感を高めることで、ユーザの再訪を促すことに注力すべきです。
+How do you create the best mobile media experience on the Web? Easy! It all depends on user engagement and the importance you give to the media on a web page. I think we all agree that if video is THE reason for a user's visit, the user's experience has to be immersive and re-engaging.
 
 <figure>
   <img src="/web/fundamentals/media/images/mobile-web-video-playback-hero.png">
 </figure>
 
-ここでのゴールは、プログレッシブなアプローチで動画の視聴体験を改善する方法、および様々な Web API を使ってユーザの没入感を向上させる方法を紹介することです。そのために、ここでは簡単なプレイヤーを実装します。このプレイヤーは、カスタムコントロール、フルスクリーン再生、バックグラウンド再生等の機能を備えます。先に実際に動く[サンプル]{: .external}と[コード]{: .external}を提示しておきます。
+In this article I show you how to enhance in a progressive way your media experience and make it more immersive thanks to a plethora of Web APIs. That's why we're going to build a simple mobile player experience with custom controls, fullscreen, and background playback. You can try the [sample](https://googlesamples.github.io/web-fundamentals/fundamentals/media/mobile-web-video-playback.html){: .external} now and find [the code](https://github.com/googlesamples/web-fundamentals/tree/gh-pages/fundamentals/media/mobile-web-video-playback.html){: .external} in our GitHub repository.
 
-## カスタムコントロール
+## Custom controls
 
 <div class="attempt-right">
   <figure>
     <img src="/web/fundamentals/media/images/html-layout.jpg">
     <figcaption>
-      <b>Figure 1.</b>HTML レイアウト
+      <b>Figure 1.</b>HTML Layout
     </figcaption>
   </figure>
 </div>
 
-以下はプレイヤーのマークアップです。ご覧の通り、ルートの`<div>`が`<video>`およびコントロールの`<div>`を含むという、ごくシンプルな作りになっています。
+As you can see, the HTML layout we're going to use for our media player is pretty simple: a `<div>` root element contains a `<video>` media element and a `<div>` child element dedicated to video controls.
 
-ここでコントロールと言っているのは、再生／一時停止ボタン、フルスクリーンボタン、早戻し／早送りボタン、現在再生時間、尺長時間、などの UI パーツ群を指します。
+Video controls we will cover later, include: a play/pause button, a fullscreen button, seek backward and forward buttons, and some elements for current time, duration and time tracking.
 
 <div class="clearfix"></div>
 
@@ -38,13 +35,13 @@ description: モバイル Web における動画再生フロントエンドの�
       <video id="video" src="file.mp4"></video>
       <div id="videoControls"></div>
     </div>
+    
 
-### メタデータの読み込み
+### Read video metadata
 
-まず最初に、動画の尺長や、現在再生時刻などのメタデータがロードされるのを待ってから、プログレスバーを初期化します。`secondsToTimeCode()` は、秒を表す数値を "hh:mm:ss" の形式の文字列に変換するための自作のユーティリティ関数です。
+First, let's wait for the video metadata to be loaded to set the video duration, the current time, and initialize the progress bar. Note that the `secondsToTimeCode()` function is a custom utility function I've written that converts a number of seconds to a string in "hh:mm:ss" format which is better suited in our case.
 
-<pre class="prettyprint lang-html">
-&lt;div id="videoContainer">
+<pre class="prettyprint lang-html">&lt;div id="videoContainer">
   &lt;video id="video" src="file.mp4">&lt;/video&gt;
   &lt;div id="videoControls">
     <strong>&lt;div id="videoCurrentTime">&lt;/div>
@@ -59,20 +56,20 @@ description: モバイル Web における動画再生フロントエンドの�
       videoCurrentTime.textContent = secondsToTimeCode(video.currentTime);
       videoProgressBar.style.transform = `scaleX(${video.currentTime / video.duration})`;
     });
+    
 
 <figure>
   <img src="/web/fundamentals/media/images/video-metadata-only.png">
   <figcaption>
-    <b>Figure 2.</b> 再生時間などのメタデータの表示
+    <b>Figure 2.</b> Media Player showing video metadata
   </figcaption>
 </figure>
 
-### 再生と一時停止
+### Play/pause video
 
-さて、動画のメタデータがロードされたので、最初のボタン、つまり再生／一時停止の操作をおこなうためのボタンを追加してみましょう。このボタンを押下することで、再生状態によって、`video.play()` もしくは `video.pause()` が呼び出されます。
+Now that video metadata are loaded, let's add our first button that lets user play and pause video with `video.play()` and `video.pause()` depending on its playback state.
 
-<pre class="prettyprint lang-html">
-&lt;div id="videoContainer">
+<pre class="prettyprint lang-html">&lt;div id="videoContainer">
   &lt;video id="video" src="file.mp4">&lt;/video&gt;
   &lt;div id="videoControls">
     <strong>&lt;button id="playPauseButton">&lt;/button></strong>
@@ -91,20 +88,22 @@ description: モバイル Web における動画再生フロントエンドの�
         video.pause();
       }
     });
+    
 
-Note: イベントリスナー内で `event.stopPropagation()` を呼び出すことで、親要素のリスナーに `click` イベントが伝播するのを抑止しています。
+Note: I call `event.stopPropagation()` to prevent parent handlers (e.g. video controls) from being notified of the click event.
 
-ボタンの外観を操作するのは、`click` イベントリスナーではなく、`play` および `pause` イベントリスナーでおこないます。そうすることで、たとえブラウザが再生に介入しても、それに追随することができるため、設計が柔軟になります。再生が開始された場合、ボタンの状態を "paused" に変更し、再生が一時停止された場合、ボタンの状態を元に戻しています。
+Rather than adjusting our video controls in the `click` event listener, we use the `play` and `pause` video events. Making our controls events based helps with flexibility (as we'll see later with the Media Session API) and will allow us to keep our controls in sync if the browser intervenes in the playback. When video starts playing, we change the button state to "pause" and hide the video controls. When the video pauses, we simply change button state to "play" and show the video controls.
 
     video.addEventListener('play', function() {
-      playPauseButton.classList.add('paused');
+      playPauseButton.classList.add('playing');
     });
-
+    
     video.addEventListener('pause', function() {
-      playPauseButton.classList.remove('paused');
+      playPauseButton.classList.remove('playing');
     });
+    
 
-つぎに、`video` 要素の `currentTime` 属性が変更された場合、`timeupdate` イベントが発生するので、そこでカスタムコントロールの現在時刻表示を更新します。
+When time indicated by video `currentTime` attribute changed via the `timeupdate` video event, we also update our custom controls if they're visible.
 
     video.addEventListener('timeupdate', function() {
       if (videoControls.classList.contains('visible')) {
@@ -112,20 +111,21 @@ Note: イベントリスナー内で `event.stopPropagation()` を呼び出す�
         videoProgressBar.style.transform = `scaleX(${video.currentTime / video.duration})`;
       }
     }
+    
 
-最後に、動画が末尾まで再生された場合、ボタンの状態をリセットし、`currentTime`を 0 に戻しています。ここでは別の実装、たとえばユーザがオートプレイ機能を有効にしていれば、自動的に次の動画をロードする、といった実装をおこなうことも可能です。
+When the video ends, we simply change button state to "play", set video `currentTime` back to 0 and show video controls for now. Note that we could also choose to load automatically another video if the user has enabled some kind of "AutoPlay" feature.
 
     video.addEventListener('ended', function() {
-      playPauseButton.classList.remove('paused');
+      playPauseButton.classList.remove('playing');
       video.currentTime = 0;
     });
+    
 
-### 早戻しと早送り
+### Seek backward and forward
 
-つぎに、早戻しと早送りのボタンを追加しましょう。このボタンにより、ユーザは 10 秒前もしくは 10 秒後に再生位置をスキップさせることができます。
+Let's continue and add "seek backward" and "seek forward" buttons so that user can easily skip some content.
 
-<pre class="prettyprint lang-html">
-&lt;div id="videoContainer">
+<pre class="prettyprint lang-html">&lt;div id="videoContainer">
   &lt;video id="video" src="file.mp4">&lt;/video&gt;
   &lt;div id="videoControls">
     &lt;button id="playPauseButton">&lt;/button>
@@ -138,71 +138,72 @@ Note: イベントリスナー内で `event.stopPropagation()` を呼び出す�
 &lt;/div>
 </pre>
 
-    var skipTime = 10; // 再生をスキップさせる間隔（秒）
-
+    var skipTime = 10; // Time to skip in seconds
+    
     seekForwardButton.addEventListener('click', function(event) {
       event.stopPropagation();
       video.currentTime = Math.min(video.currentTime + skipTime, video.duration);
     });
-
+    
     seekBackwardButton.addEventListener('click', function(event) {
       event.stopPropagation();
       video.currentTime = Math.max(video.currentTime - skipTime, 0);
     });
+    
 
-さきほどと同様に、外観を操作するのは、`click` イベントリスナーではなく、`seeking` および `seeked` イベントリスナーでおこないます。ここでは `video` 要素に対して　`seeking`　というクラスをセットしていますが、これは独自に定義された CSS クラスであり、単純に `filter: brightness(0);` を設定することで要素の明度を変更しています。
+As before, rather than adjusting video styling in the `click` event listeners of these buttons, we'll use the fired `seeking` and `seeked` video events to adjust video brightness. My custom `seeking` CSS class is as simple as `filter:
+brightness(0);`.
 
     video.addEventListener('seeking', function() {
       video.classList.add('seeking');
     });
-
+    
     video.addEventListener('seeked', function() {
       video.classList.remove('seeking');
     });
+    
 
-ここまでで、以下のようなカスタムコントロールが出来上がりました。つぎに、フルスクリーンボタンを実装しましょう。
+Here's below what we have created so far. In the next section, we'll implement the fullscreen button.
 
-<video controls controlsList="nodownload" muted playsinline>
-  <source src="/web/fundamentals/media/videos/video-play-pause-seek.webm"
+<video controls controlslist="nodownload" muted playsinline>
+  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/video-play-pause-seek.webm"
           type="video/webm">
-  <source src="/web/fundamentals/media/videos/video-play-pause-seek.mp4"
+  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/video-play-pause-seek.mp4"
           type="video/mp4">
 </video>
 
-## フルスクリーン再生
+## Fullscreen
 
-ここでは、たくさんの Web API を使用して、完璧にシームレスなフルスクリーンの操作体験を実装します。まずは実際に動く[サンプル]{: .external }を見てください。
+Here we are going to take advantage of several Web APIs to create a perfect and seamless fullscreen experience. To see it in action, check out the [sample](https://googlesamples.github.io/web-fundamentals/fundamentals/media/mobile-web-video-playback.html){: .external }.
 
-もちろん、ここで紹介するすべての機能を実装する必要はありません。ご自身のニーズに合わせて適宜取捨選択してください。
+Obviously, you don't have to use all of them. Just pick the ones that make sense to you and combine them to create your custom flow.
 
-<video controls controlsList="nodownload" muted playsinline>
+<video controls controlslist="nodownload" muted playsinline>
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/perfect-fullscreen.webm"
           type="video/webm">
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/perfect-fullscreen.mp4"
           type="video/mp4">
 </video>
 
-### 自動フルスクリーンの抑止
+### Prevent automatic fullscreen
 
-iOS では動画の再生開始時に、`video` 要素は自動的にフルスクリーンで表示されます。しかしながら、すべてのモバイルブラウザにおいて、なるべく均一なカスタマイズされた動画再生体験を提供するために、この機能を無効化することをおすすめします。iPhone で `video` 要素に `playsinline` 属性を付加することで、自動的にフルスクリーンモードに遷移せず、インライン再生されるようになります。なお、他のブラウザにおいてはこの記述は無視されるため、悪影響を及ぼす心配はありません。
+On iOS, `video` elements automagically enter fullscreen mode when media playback begins. As we're trying to tailor and control as much as possible our media experience across mobile browsers, I recommend you set the `playsinline` attribute of the `video` element to force it to play inline on iPhone and not enter fullscreen mode when playback begins. Note that this has no side effects on other browsers.
 
-<pre class="prettyprint lang-html">
-&lt;div id="videoContainer"&gt;
+<pre class="prettyprint lang-html">&lt;div id="videoContainer"&gt;
   &lt;video id="video" src="file.mp4" <strong>playsinline</strong>&gt;&lt;/video&gt;
   &lt;div id="videoControls"&gt;...&lt;/div&gt;
 &lt;/div&gt;
 </pre>
 
-Note: `playsinline` 属性を付加する場合は、かならずカスタムコントロールを実装するか、デフォルトコントロール（`<video controls>`）を有効にしてください。さもなければ、ユーザーは再生操作をおこなえません。
+Caution: Set `playsinline` only if you provide your own media controls or show native controls with `<video controls>`.
 
-### フルスクリーンボタンによるトグル操作
+### Toggle fullscreen on button click
 
-さて、iPhoneで自動的にフルスクリーンモードになる機能を抑止したので、つぎは [Fullscreen API]{: .external} を使って、フルスクリーンボタンを実装する番です。このボタンを押すことにより、すでにフルスクリーンで再生している場合は、`document.exitFullscreen()` が呼び出され、通常再生モードに戻ります。一方、通常再生時にこのボタンが押された場合は、フルスクリーンモードに遷移します。ここでは、親要素において `requestFullscreen()` メソッドがサポートされているかチェックして、サポートされている場合はそのメソッドを呼び出し、そうでない場合は `video` 要素の `webkitEnterFullscreen()` メソッド（iOSでのみ実装されている）を呼び出しています。
+Now that we prevent automatic fullscreen, we need to handle ourselves the fullscreen mode for the video with the [Fullscreen API](https://fullscreen.spec.whatwg.org/){: .external}. When user clicks the "fullscreen button", let's exit fullscreen mode with `document.exitFullscreen()` if fullscreen mode is currently in use by the document. Otherwise, request fullscreen on the video container with the method `requestFullscreen()` if available or fallback to `webkitEnterFullscreen()` on the video element only on iOS.
 
-Note: Fullscreen API は、まだブラウザベンダーによって実装にムラがあるため、ここでは簡単な[ポリフィル]を実装して使用していますが、[screenfull.js]のようなライブラリを使用することも可能です。
+Note: I'm going to use a [tiny shim](https://github.com/googlesamples/web-fundamentals/tree/gh-pages/fundamentals/media/tiny-fullscreen-shim.js) for the Fullscreen API in code snippets below that will take care of prefixes as the API is not unprefixed yet at that time. You may want to use [screenfull.js](https://github.com/sindresorhus/screenfull.js) wrapper as well.
 
-<pre class="prettyprint lang-html">
-&lt;div id="videoContainer">
+<pre class="prettyprint lang-html">&lt;div id="videoContainer">
   &lt;video id="video" src="file.mp4">&lt;/video&gt;
   &lt;div id="videoControls">
     &lt;button id="playPauseButton">&lt;/button>
@@ -224,7 +225,7 @@ Note: Fullscreen API は、まだブラウザベンダーによって実装に�
         requestFullscreenVideo();
       }
     });
-
+    
     function requestFullscreenVideo() {
       if (videoContainer.requestFullscreen) {
         videoContainer.requestFullscreen();
@@ -232,27 +233,28 @@ Note: Fullscreen API は、まだブラウザベンダーによって実装に�
         video.webkitEnterFullscreen();
       }
     }
-
+    
     document.addEventListener('fullscreenchange', function() {
       fullscreenButton.classList.toggle('active', document.fullscreenElement);
     });
+    
 
-<video controls controlsList="nodownload" muted playsinline>
-  <source src="/web/fundamentals/media/videos/toggle-fullscreen-on-button-click.webm"
+<video controls controlslist="nodownload" muted playsinline>
+  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/toggle-fullscreen-on-button-click.webm"
           type="video/webm">
-  <source src="/web/fundamentals/media/videos/toggle-fullscreen-on-button-click.mp4"
+  <source src="https://storage.googleapis.com/webfundamentals-assets/videos/toggle-fullscreen-on-button-click.mp4"
           type="video/mp4">
 </video>
 
-### スクリーンの向きによるトグル操作
+### Toggle fullscreen on screen orientation change
 
-ユーザがデバイスを横方向に傾けた際には、気を利かせて自動的に動画をフルスクリーンで表示してあげましょう。それによって、没入体験を作り出すことができます。[Screen Orientation API]{: .external} を使うことでこれが実現できます。この API はまだすべてのブラウザでサポートされておらず、いくつかのブラウザでは今でもプリフィックスが付いた状態です。こういうときは、プログレッシブエンハンスメントの出番です。
+As user rotates device in landscape mode, let's be smart about this and automatically request fullscreen to create an immersive experience. For this, we'll need the [Screen Orientation API](https://w3c.github.io/screen-orientation/){: .external} which is not yet supported everywhere and still prefixed in some browsers at that time. Thus, this will be our first progressive enhancement.
 
-具体的には、スクリーンの方向が変化するとともに、フルスクリーンのモードを変更します。処理としては簡単で、スクリーンがランドスケープ（横表示）に遷移する際にフルスクリーンモードに遷移し、ポートレート（縦表示）に遷移する際に通常表示に戻します。
+How does this work? As soon as we detect the screen orientation changes, let's request fullscreen if the browser window is in landscape mode (that is, its width is greater than its height). If not, let's exit fullscreen. That's all.
 
     if ('orientation' in screen) {
       screen.orientation.addEventListener('change', function() {
-        // ユーザがデバイスを横方向に持ち直したときにフルスクリーンモードへ遷移
+        // Let's request fullscreen if user switches device in landscape mode.
         if (screen.orientation.type.startsWith('landscape')) {
           requestFullscreenVideo();
         } else if (document.fullscreenElement) {
@@ -260,17 +262,17 @@ Note: Fullscreen API は、まだブラウザベンダーによって実装に�
         }
       });
     }
+    
 
-Note: [`orientation change` イベントでフルスクリーンモードへ遷移することを許可](https://github.com/whatwg/fullscreen/commit/e5e96a9)していないブラウザにおいては、上記のコードは動作しませんが、エラーが生じることもなく無視されます。
+Note: This may silently fail in browsers that don't [allow requesting fullscreen from the orientation change event](https://github.com/whatwg/fullscreen/commit/e5e96a9).
 
-### スクリーンの向きを固定する
+### Lock screen in landscape on button click
 
-デバイスを横方向に傾けて、フルスクリーンで動画を視聴することが、よりよい視聴体験なのであれば、ユーザがフルスクリーンボタンを押したときに、スクリーンをランドスケープ（横表示）の状態に固定してやるのはどうでしょうか。これを実現するには、さきほどの [Screen Orientation API]{: .external } と [メディアクエリ]{: .external } を併用します。
+As video may be better viewed in landscape mode, we may want to lock screen in landscape when user clicks the "fullscreen button". We're going to combine the previously used [Screen Orientation API](https://w3c.github.io/screen-orientation/){: .external } and some [media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries){: .external } to make sure this experience is the best.
 
-スクリーンの向きを固定すること自体は、`screen.orientation.lock('landscape')` を呼び出すことで簡単に実現できますが、これをタブレットのような片手で持てないようなデバイスでやっても、あまり良い体験は生み出せません。片手で持てて、かつスクリーンがポートレート（縦表示）のデバイスかどうか、検出するにはどうすればよいでしょうか。ここではそれぞれ、`matchMedia('(orientation: portrait)')` および `matchMedia('(orientation: portrait)')` といったメディアクエリを発行することで実現しています。
+Locking screen in landscape is as easy as calling `screen.orientation.lock('landscape')`. However, we should do this only when device is in portrait mode with `matchMedia('(orientation: portrait)')` and can be held in one hand with `matchMedia('(max-device-width: 768px)')` as this wouldn't be a great experience for users on tablet.
 
-<pre class="prettyprint">
-fullscreenButton.addEventListener('click', function(event) {
+<pre class="prettyprint">fullscreenButton.addEventListener('click', function(event) {
   event.stopPropagation();
   if (document.fullscreenElement) {
     document.exitFullscreen();
@@ -285,31 +287,31 @@ fullscreenButton.addEventListener('click', function(event) {
       if (!('orientation' in screen)) {
         return;
       }
-      // スクリーンがポートレート（縦表示）で、かつ片手で持てるデバイスの場合のみ、スクリーンの向きを横方向に固定する
+      // Let's force landscape mode only if device is in portrait mode and can be held in one hand.
       if (matchMedia('(orientation: portrait) and (max-device-width: 768px)').matches) {
         screen.orientation.lock('landscape');
       }
     }
+    
 
-<video controls controlsList="nodownload" muted playsinline>
+<video controls controlslist="nodownload" muted playsinline>
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/lock-screen-in-landscape-on-button-click.webm"
           type="video/webm">
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/lock-screen-in-landscape-on-button-click.mp4"
           type="video/mp4">
 </video>
 
-### デバイスの傾きによりスクリーンの固定を解除する
+### Unlock screen on device orientation change
 
-これでスクリーンを固定できるようになりましたが、この状態では `orientation change` イベントも配信されなくなります。スクリーンの固定状態をふたたび解除するなんらかの手段が必要です。
+You may have noticed the lock screen experience we've just created isn't perfect though as we don't receive screen orientation changes when screen is locked.
 
-これを実現するには、[Device Orientation API]{: .external } を使います。この API は、もしデバイスがサポートしていれば、ジャイロスコープと地磁気センサーおよび加速度センサーからの情報をもとに、デバイスの位置および移動速度を計測して提供します。ここでは、ユーザがデバイスを横から縦に持ち替えた場合にスクリーンの固定を解除しています。
+In order to fix this, let's use the [Device Orientation API](https://w3c.github.io/deviceorientation/spec-source-orientation.html){: .external } if available. This API provides information from the hardware measuring a device's position and motion in space: gyroscope and digital compass for its orientation, and accelerometer for its velocity. When we detect a device orientation change, let's unlock screen with `screen.orientation.unlock()` if user holds device in portrait mode and screen is locked in landscape mode.
 
-<pre class="prettyprint">
-function lockScreenInLandscape() {
+<pre class="prettyprint">function lockScreenInLandscape() {
   if (!('orientation' in screen)) {
     return;
   }
-  // スクリーンがポートレート（縦表示）で、かつ片手で持てるデバイスの場合のみ、スクリーンの向きを横方向に固定する
+  // Let's force landscape mode only if device is in portrait mode and can be held in one hand.
   if (matchMedia('(orientation: portrait) and (max-device-width: 768px)').matches) {
     screen.orientation.lock('landscape')
     <strong>.then(function() {
@@ -325,8 +327,8 @@ function lockScreenInLandscape() {
       }
       var previousDeviceOrientation, currentDeviceOrientation;
       window.addEventListener('deviceorientation', function onDeviceOrientationChange(event) {
-        // event.beta はデバイスの表面から背面の方向への移動を表す
-        // event.gamma はデバイスの左側から右側の方向への移動を表す
+        // event.beta represents a front to back motion of the device and
+        // event.gamma a left to right motion.
         if (Math.abs(event.gamma) > 10 || Math.abs(event.beta) < 10) {
           previousDeviceOrientation = currentDeviceOrientation;
           currentDeviceOrientation = 'landscape';
@@ -334,7 +336,7 @@ function lockScreenInLandscape() {
         }
         if (Math.abs(event.gamma) < 10 || Math.abs(event.beta) > 10) {
           previousDeviceOrientation = currentDeviceOrientation;
-          // ユーザがデバイスを横方向から縦方向へ持ち直した場合、スクリーンのロックを解除する
+          // When device is rotated back to portrait, let's unlock screen orientation.
           if (previousDeviceOrientation == 'landscape') {
             screen.orientation.unlock();
             window.removeEventListener('deviceorientation', onDeviceOrientationChange);
@@ -342,49 +344,52 @@ function lockScreenInLandscape() {
         }
       });
     }
+    
 
-これで、求めていたシームレスなフルスクリーンの視聴体験が実装できました。改めて[サンプル]{: .external }を実際に試してみてください。
+As you can see, this is the seamless fullscreen experience we were looking for. To see this in action, check out the [sample](https://googlesamples.github.io/web-fundamentals/fundamentals/media/mobile-web-video-playback.html){: .external }.
 
-<video controls controlsList="nodownload" muted playsinline>
+<video controls controlslist="nodownload" muted playsinline>
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/perfect-fullscreen.webm"
           type="video/webm; codecs=vp8">
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/perfect-fullscreen.mp4"
           type="video/webm; codecs=mp4">
 </video>
 
-## バックグラウンド再生
+## Background playback
 
-たとえば動画のインプレッションを計測する場合、Web ページもしくはそのページに含まれる `video` 要素が非表示になったタイミングで、アナリティクスにそれを反映させるでしょう。UI に関しても同様の配慮が求められます。たとえば、動画が非表示になった場合に、再生を一時停止したり、他のトラックを選択可能にしたり、カスタムボタンを表示したりといった、UI上の気配りが必要です。
+When you detect a web page or a video in the web page is not visible anymore, you may want to update your analytics to reflect this. This could also affect the current playback as in picking a different track, pause it, or even show custom buttons to the user for instance.
 
-### ページ非表示時に再生を一時停止する
+### Pause video on page visibility change
 
-[Page Visibility API] を使うことで、現在のページが表示されているかどうか知ることが可能です。以下のコードでは、ページが非表示になったタイミングで再生を一時停止しています。`visibilitychange` イベントは、ユーザが他のタブを選択したり、スクリーンをロックした場合に発生します。
+With the [Page Visibility API](https://www.w3.org/TR/page-visibility/), we can determine the current visibility of a page and be notified of visibility changes. Code below pauses video when page is hidden. This happens when screen lock is active or when you switch tabs for instance.
 
-ほとんどのモバイルデバイスでは、ブラウザ以外のUIでも動画を一時停止したり再開したりできるので、ユーザはページをふたたび表示しなくても再生を再開できます。ユーザがそのようなバックグラウンド再生を許可されている場合にのみ、以下の機能を実装することをおすすめします。
+As most mobile browsers now offer controls outside of the browser that allow resuming a paused video, I recommend you set this behaviour only if user is allowed to play in the background.
 
     document.addEventListener('visibilitychange', function() {
-      // ページが非表示の場合は再生を一時停止する
+      // Pause video when page is hidden.
       if (document.hidden) {
         video.pause();
       }
     });
+    
 
-Note: Chrome for Android はページが非表示になると自動的に再生を一時停止します。
+Note: Chrome for Android already pauses videos when page is hidden.
 
-### スクロールアウト時にミュートボタンを表示する
+### Show/hide mute button on video visibility change
 
-さらに [Intersection Observer API] を使うことで、より細かい制御をおこなうことが可能です。この API を使えば、ある要素が画面の領域外に（スクロール等の操作により）押し出されたことを検出することが可能です。
+If you use the new [Intersection Observer API](/web/updates/2016/04/intersectionobserver), you can be even more granular at no cost. This API lets you know when an observed element enters or exits the browser's viewport.
 
-では、`video` 要素が画面の領域から外に出た場合に、ミュートボタンを表示してみましょう。ここでは、`IntersectionObserver` のハンドラ内で、動画再生中かつ要素が領域外の場合に、画面右下にミュートボタンを表示しています。これにより、ユーザーはスクロールアウトした動画の音声を止めることが可能になります。ミュートボタンの外観の更新は、`video` 要素の `volumechange` イベントリスナーでおこなっています。
+Let's show/hide a mute button based on the video visibility in the page. If video is playing but not currently visible, a mini mute button will be shown in the bottom right corner of the page to give user control over video sound. The `volumechange` video event is used to update the mute button styling.
 
-Note: ページ内にたくさんの `video` 要素が存在する場合、ミュートボタンを表示するよりも、単純に `video.src = null` でリセットした方がよいかもしれません。とくに無限スクロールの場合、この手法によりリソースを大幅に節約できます。
+Note: If there are a lot of videos on a page, and it is using the Intersection Observer API to pause / mute offscreen video, you may want to reset video source with `video.src = null` instead since it will release significant resources in an infinite scroll case.
 
     <button id="muteButton"></button>
+    
 
 <div class="clearfix"></div>
 
     if ('IntersectionObserver' in window) {
-      // video 要素が画面の領域外に出た場合、ミュートボタンを表示する
+      // Show/hide mute button based on video visibility in the page.
       function onIntersection(entries) {
         entries.forEach(function(entry) {
           muteButton.hidden = video.paused || entry.isIntersecting;
@@ -393,33 +398,53 @@ Note: ページ内にたくさんの `video` 要素が存在する場合、ミ�
       var observer = new IntersectionObserver(onIntersection);
       observer.observe(video);
     }
-
+    
     muteButton.addEventListener('click', function() {
-      // ミュートボタンが押されたときの処理
+      // Mute/unmute video on button click.
       video.muted = !video.muted;
     });
-
+    
     video.addEventListener('volumechange', function() {
       muteButton.classList.toggle('active', video.muted);
     });
+    
 
-<video controls controlsList="nodownload" muted playsinline>
+<video controls controlslist="nodownload" muted playsinline>
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/video-visibility.webm"
           type="video/webm">
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/video-visibility.mp4"
           type="video/mp4">
 </video>
 
-### メディア通知のカスタマイズ
+### Play only one video at a time
 
-[Media Session API]{: .external} を使えば、モバイルデバイスのメディア通知トレイの振る舞いをカスタマイズできます。また、通知やハードウェアキー経由で、早送りや曲送り等の操作を行った場合の、イベントハンドラを定義することが可能です。じっさいに[サンプル]{: .external }をモバイルブラウザで実行して試してみてください。
+If there are more than one video on a page, I would suggest you only play one and pause the other ones automatically so that user doesn't have to hear multiple audio tracks playing simultaneously.
 
-Web ページで音声や動画を再生している場合、通知トレイにメディア通知が表示されると思います。Android の Chrome は、Web ページのタイトルや一番大きなアイコンを用いて、なるべく現在再生中のメディアと関連性のある情報をここに表示しようとします。
+    // Note: This array should be initialized once all videos have been added.
+    var videos = Array.from(document.querySelectorAll('video'));
+    
+    videos.forEach(function(video) {
+      video.addEventListener('play', pauseOtherVideosPlaying);
+    });
+    
+    function pauseOtherVideosPlaying(event) {
+      var videosToPause = videos.filter(function(video) {
+        return !video.paused && video != event.target;
+      });
+      // Pause all other videos currently playing.
+      videosToPause.forEach(function(video) { video.pause(); });
+    }
+    
 
-[Media Session API]{: .external } を使えば、メディア通知をカスタマイズすることが可能です。タイトルやアーティスト名、アルバム名、アートワーク等のメタデータを、メディア通知上に表示させることができます。
+### Customize Media Notifications
 
-<pre class="prettyprint">
-playPauseButton.addEventListener('click', function() {
+With the [Media Session API](/web/updates/2017/02/media-session){: .external}, you can also customize media notifications by providing metadata for the currently playing video. It also allows you to handle media related events such as seeking or track changing which may come from notifications or media keys. To see this in action, check out the [sample](https://googlesamples.github.io/web-fundamentals/fundamentals/media/mobile-web-video-playback.html){: .external }.
+
+When your web app is playing audio or video, you can already see a media notification sitting in the notification tray. On Android, Chrome does its best to show appropriate information by using the document's title and the largest icon image it can find.
+
+Let's see how to customize this media notification by setting some media session metadata such as the title, artist, album name, and artwork with the [Media Session API](/web/updates/2017/02/media-session){: .external }.
+
+<pre class="prettyprint">playPauseButton.addEventListener('click', function(event) {
   event.stopPropagation();
   if (video.paused) {
     video.play()
@@ -450,61 +475,55 @@ playPauseButton.addEventListener('click', function() {
         ]
       });
     }
+    
 
-ひとたび再生が完了すれば、メディア通知は自動的に非表示となるため、セッションを明示的に解放する必要はありません。ただし、つぎに再生が開始されると、ふたたび `navigator.mediaSession.metadata` が参照されるため、再生が始まるたびに正しいメタデータでこのオブジェクトを更新しなければいけません。
+Once playback is done, you don't have to "release" the media session as the notification will automatically disappear. Keep in mind that current `navigator.mediaSession.metadata` will be used when any playback starts. This is why you need to update it to make sure you're always showing relevant information in the media notification.
 
-もしプレイリストを実装するのであれば、メディア通知からも曲送りができるようにしてあげるべきです。以下のコードでは、Media Session API を使って、`previoustrack` と `nexttrack` のアクションハンドラを設定しています。
+If your web app provides a playlist, you may want to allow the user to navigate through your playlist directly from the media notification with some "Previous Track" and "Next Track" icons.
 
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('previoustrack', function() {
-        // ユーザがメディア通知のUI経由で一曲前にスキップした
+        // User clicked "Previous Track" media notification icon.
         playPreviousVideo(); // load and play previous video
       });
       navigator.mediaSession.setActionHandler('nexttrack', function() {
-        // ユーザがメディア通知のUI経由でつぎの曲にスキップした
+        // User clicked "Next Track" media notification icon.
         playNextVideo(); // load and play next video
       });
     }
+    
 
-ここで、設定されたアクションハンドラは曲送り後も残ることに注意してください。これは、`addEventListener` と同じ振る舞いですが、一点違いを挙げるとすれば、アクションハンドラはブラウザのデフォルトの動作を無効化することです。アクションハンドラがひとつでも設定されることで、ブラウザは Web アプリがメディア操作に責任を持つとみなし、すべてのデフォルトの動作を止めてしまいます。したがって、アクションハンドラを設定しないかぎり、メディア通知上に該当するコントロールが表示されません。
+Note that media action handlers will persist. This is very similar to the event listener pattern except that handling an event means that the browser stops doing any default behaviour and uses this as a signal that your web app supports the media action. Hence, media action controls won't be shown unless you set the proper action handler.
 
-ちなみに、いったん設定したアクションハンドラを無効化して、ふたたびブラウザのデフォルト動作に戻したい場合は、単純に `null` を設定してください。
+By the way, unsetting a media action handler is as easy as assigning it to `null`.
 
-さらに、Media Session API を使うことで、メディア通知の早戻し／早送りの振る舞いをカスタマイズすることができます。以下のコードでは、10秒間隔で再生をスキップしています。
+The Media Session API allows you to show "Seek Backward" and "Seek Forward" media notification icons if you want to control the amount of time skipped.
 
     if ('mediaSession' in navigator) {
       let skipTime = 10; // Time to skip in seconds
-
+    
       navigator.mediaSession.setActionHandler('seekbackward', function() {
-        // ユーザがメディア通知のUIで早戻し操作をおこなった
+        // User clicked "Seek Backward" media notification icon.
         video.currentTime = Math.max(video.currentTime - skipTime, 0);
       });
       navigator.mediaSession.setActionHandler('seekforward', function() {
-        // ユーザがメディア通知のUIで早送り操作をおこなった
+        // User clicked "Seek Forward" media notification icon.
         video.currentTime = Math.min(video.currentTime + skipTime, video.duration);
       });
     }
+    
 
-再生／一時停止のアイコンは常にメディア通知上に表示され、操作イベントはブラウザのデフォルトハンドラにて処理されます。もちろん、独自のハンドラを定義して、[メディア通知の再生／一時停止イベントを処理する]ことも可能です。
+The "Play/Pause" icon is always shown in the media notification and the related events are handled automatically by the browser. If for some reason the default behaviour doesn't work out, you can still [handle "Play" and "Pause" media events](/web/updates/2017/02/media-session#play_pause).
 
-Media Session API の素晴らしいところは、通知トレイだけではなく、ロックされたスクリーン上にメタデータとコントロールを表示させたり、また、ウェアラブルデバイスと自動的に同期される点です。
+The cool thing about the Media Session API is that the notification tray is not the only place where media metadata and controls are visible. The media notification is synced automagically to any paired wearable device. And it also shows up on lock screens.
 
-<video controls controlsList="nodownload" muted playsinline>
+<video controls controlslist="nodownload" muted playsinline>
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/media-session.webm"
           type="video/webm">
   <source src="https://storage.googleapis.com/webfundamentals-assets/videos/media-session.mp4"
           type="video/mp4">
 </video>
 
-[サンプル]: https://googlesamples.github.io/web-fundamentals/fundamentals/media/mobile-web-video-playback.html
-[コード]: https://github.com/googlesamples/web-fundamentals/tree/gh-pages/fundamentals/media/mobile-web-video-playback.html
-[ポリフィル]: https://github.com/googlesamples/web-fundamentals/tree/gh-pages/fundamentals/media/tiny-fullscreen-shim.js
-[screenfull.js]: https://github.com/sindresorhus/screenfull.js
-[メディア通知の再生／一時停止イベントを処理する]: /web/updates/2017/02/media-session?hl=ja#play_pause
-[Fullscreen API]: https://fullscreen.spec.whatwg.org/
-[Screen Orientation API]: https://w3c.github.io/screen-orientation/
-[メディアクエリ]: https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries
-[Device Orientation API]: https://w3c.github.io/deviceorientation/spec-source-orientation.html
-[Page Visibility API]: https://www.w3.org/TR/page-visibility/
-[Intersection Observer API]: /web/updates/2016/04/intersectionobserver?hl=ja
-[Media Session API]: /web/updates/2017/02/media-session?hl=ja
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

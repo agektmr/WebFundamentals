@@ -1,52 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs berada di HTTPS".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-19 #}
-{# wf_published_on: 2016-09-19 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-19 #} {# wf_blink_components: N/A #}
 
-# Situs berada di HTTPS  {: .page-title }
+# Uses HTTPS {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Semua situs web harus dilindungi dengan HTTPS, bahkan situs web yang tidak menangani
-data sensitif. HTTPS mencegah penyusup mengganggu atau mendengarkan
-secara pasif komunikasi antara situs Anda dan penggunanya.
+All websites should be protected with HTTPS, even ones that don't handle sensitive data. HTTPS prevents intruders from tampering with or passively listening in on the communications between your site and your users.
 
-HTTPS juga merupakan prasyarat bagi banyak fitur platform web baru yang andal,
-misalnya pengambilan gambar atau perekaman audio.
+HTTPS is also a prerequisite for many new, powerful web platform features, such as taking pictures or recording audio.
 
-Menurut definisinya, aplikasi tidak memenuhi syarat sebagai aplikasi web progresif jika tidak jalankan
-di HTTPS. Hal ini karena banyak teknologi aplikasi web inti, misalnya
-service worker, memerlukan HTTPS.
+By definition, an app cannot qualify as a progressive web app if it does not run on HTTPS. This is because many core progressive web app technologies, such as service workers, require HTTPS.
 
-Untuk informasi selengkapnya mengenai mengapa semua situs harus dilindungi dengan HTTPS, lihat
-[Mengapa Harus Selalu Menggunakan HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https).
+For more information on why all sites should be protected with HTTPS, see [Why You Should Always Use HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https).
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Migrasikan situs Anda ke HTTPS.
+Migrate your site to HTTPS.
 
-Banyak platform hosting, misalnya
-[Firebase](https://firebase.google.com/docs/hosting/){: .external } atau [GitHub
-Pages](https://pages.github.com/){: .external }, telah aman secara default.
+Many hosting platforms, such as [Firebase](https://firebase.google.com/docs/hosting/){: .external } or [GitHub Pages](https://pages.github.com/){: .external }, are secure by default.
 
-Jika Anda menjalankan server sendiri dan membutuhkan cara murah dan mudah untuk menghasilkan
-sertifikat, lihat [Let's Encrypt](https://letsencrypt.org/){: .external }. Untuk bantuan selengkapnya
-tentang mengaktifkan HTTPS di server Anda, lihat rangkaian dokumen berikut: [Mengenkripsi
-data dalam pengiriman](/web/fundamentals/security/encrypt-in-transit/enable-https).
+If you're running your own servers and need a cheap and easy way to generate certificates, check out [Let's Encrypt](https://letsencrypt.org/){: .external }. For more help on enabling HTTPS on your servers, see the following set of docs: [Encrypting data in transit](/web/fundamentals/security/encrypt-in-transit/enable-https).
 
-Jika laman Anda sudah berjalan di HTTPS namun Anda tidak lulus audit, berarti
-Anda mungkin memiliki masalah dengan materi campuran. Materi campuran terjadi bila sebuah situs aman
-meminta sumber daya (HTTP) yang tidak aman. Lihat dokumen berikut di
-panel Security pada Chrome DevTools untuk mempelajari cara men-debug situasi ini:
-[Pahami masalah keamanan](/web/tools/chrome-devtools/debug/security).
+If your page is already running on HTTPS but you're failing this audit, then you may have problems with mixed content. Mixed content is when a secure site requests an unprotected (HTTP) resource. Check out the following doc on the Chrome DevTools Security panel to learn how to debug these situations: [Understand security issues](/web/tools/chrome-devtools/debug/security).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse menunggu kejadian dari Chrome Debugger Protocol yang menunjukkan apakah
-laman berjalan pada koneksi aman. Jika kejadian tidak terdengar dalam 10
-detik, berarti tidak lulus audit.
+Lighthouse waits for an event from the Chrome Debugger Protocol indicating that the page is running on a secure connection. If the event is not heard within 10 seconds, the audit fails.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,66 +1,61 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:输入处理程序可能是应用出现性能问题的原因，因为它们可能阻止帧完成，并且可能导致额外（且不必要）的布局工作。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
-{# wf_updated_on: 2015-10-06 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>JavaScript #}
 
-# 使输入处理程序去除抖动 {: .page-title }
+# Debounce Your Input Handlers {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-输入处理程序可能是应用出现性能问题的原因，因为它们可能阻止帧完成，并且可能导致额外（且不必要）的布局工作。
-
-
+Input handlers are a potential cause of performance problems in your apps, as they can block frames from completing, and can cause additional and unnecessary layout work.
 
 ### TL;DR {: .hide-from-toc }
 
-* 避免长时间运行输入处理程序；它们可能阻止滚动。
-* 不要在输入处理程序中进行样式更改。
-* 使处理程序去除抖动；存储事件值并在下一个 requestAnimationFrame 回调中处理样式更改。
+* Avoid long-running input handlers; they can block scrolling.
+* Do not make style changes in input handlers.
+* Debounce your handlers; store event values and deal with style changes in the next requestAnimationFrame callback.
 
-##  避免长时间运行输入处理程序
+## Avoid long-running input handlers
 
-在最快的情况下，当用户与页面交互时，页面的合成器线程可以获取用户的触摸输入并直接使内容移动。这不需要主线程执行任务，主线程执行的是 JavaScript、布局、样式或绘制。
+In the fastest possible case, when a user interacts with the page, the page’s compositor thread can take the user’s touch input and simply move the content around. This requires no work by the main thread, where JavaScript, layout, styles, or paint are done.
 
-<img src="images/debounce-your-input-handlers/compositor-scroll.jpg" alt="轻量级滚动；仅合成器。">
+<img src="images/debounce-your-input-handlers/compositor-scroll.jpg" alt="Lightweight scrolling; compositor only." />
 
-但是，如果您附加一个输入处理程序，例如 `touchstart`、`touchmove` 或 `touchend`，则合成器线程必须等待此处理程序执行完成，因为您可能选择调用 `preventDefault()` 并且会阻止触摸滚动发生。即使没有调用 `preventDefault()`，合成器也必须等待，这样用户滚动会被阻止，这就可能导致卡顿和漏掉帧。
+If, however, you attach an input handler, like `touchstart`, `touchmove`, or `touchend`, the compositor thread must wait for this handler to finish executing because you may choose to call `preventDefault()` and stop the touch scroll from taking place. Even if you don’t call `preventDefault()` the compositor must wait, and as such the user’s scroll is blocked, which can result in stuttering and missed frames.
 
-<img src="images/debounce-your-input-handlers/ontouchmove.jpg" alt="大量滚动；合成器在 JavaScript 上被阻止。">
+<img src="images/debounce-your-input-handlers/ontouchmove.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-总之，要确保您运行的任何输入处理程序应快速执行，并且允许合成器执行其工作。
+In short, you should make sure that any input handlers you run should execute quickly and allow the compositor to do its job.
 
-##  避免在输入处理程序中更改样式
+## Avoid style changes in input handlers
 
-与滚动和触摸的处理程序相似，输入处理程序被安排在紧接任何 `requestAnimationFrame` 回调之前运行。
+Input handlers, like those for scroll and touch, are scheduled to run just before any `requestAnimationFrame` callbacks.
 
-如果在这些处理程序之一内进行视觉更改，则在 `requestAnimationFrame` 开始时，将有样式更改等待处理。如果按照“[避免大型、复杂的布局和布局抖动](avoid-large-complex-layouts-and-layout-thrashing)”的建议，在 requestAnimationFrame 回调开始时就读取视觉属性，您将触发强制同步布局！
+If you make a visual change inside one of those handlers, then at the start of the `requestAnimationFrame`, there will be style changes pending. If you *then* read visual properties at the start of the requestAnimationFrame callback, as the advice in “[Avoid large, complex layouts and layout thrashing](avoid-large-complex-layouts-and-layout-thrashing)” suggests, you will trigger a forced synchronous layout!
 
-<img src="images/debounce-your-input-handlers/frame-with-input.jpg" alt="大量滚动；合成器在 JavaScript 上被阻止。">
+<img src="images/debounce-your-input-handlers/frame-with-input.jpg" alt="Heavy scrolling; compositor is blocked on JavaScript." />
 
-##  使滚动处理程序去除抖动
+## Debounce your scroll handlers
 
-上面两个问题的解决方法相同：始终应使下一个 `requestAnimationFrame` 回调的视觉更改去除抖动：
-
+The solution to both of the problems above is the same: you should always debounce visual changes to the next `requestAnimationFrame` callback:
 
     function onScroll (evt) {
-
+    
       // Store the scroll value for laterz.
       lastScrollY = window.scrollY;
-
+    
       // Prevent multiple rAF callbacks.
       if (scheduledAnimationFrame)
         return;
-
+    
       scheduledAnimationFrame = true;
       requestAnimationFrame(readAndUpdatePage);
     }
-
+    
     window.addEventListener('scroll', onScroll);
+    
 
+Doing this also has the added benefit of keeping your input handlers light, which is awesome because now you’re not blocking things like scrolling or touch on computationally expensive code!
 
-这样做还有一个好处是使输入处理程序轻量化，效果非常好，因为现在您不用去阻止计算开销很大的代码的操作，例如滚动或触摸！
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,41 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse “O manifesto contém short_name”.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains short_name" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# O manifesto contém short_name  {: .page-title }
+# Manifest Contains short_name {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Depois que um usuário adiciona seu aplicativo à tela inicial, o `short_name` é o texto
-exibido na tela inicial abaixo do ícone do aplicativo. Em geral, ele é usado
-sempre que há espaço insuficiente para exibir o nome completo do aplicativo.
+After a user adds your app to the homescreen, the `short_name` is the text that is displayed on the homescreen next to your app icon. In general, it is used wherever there is insufficient space to display the full name of your app.
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Adicione uma propriedade `short_name` no manifesto do seu aplicativo da Web.
+Add a `short_name` property in your Web App Manifest.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-O [tamanho
-máximo recomendado](https://developer.chrome.com/apps/manifest/name#short_name) pelo Chrome é 12
-caracteres.
+Chrome's [maximum recommended length](https://developer.chrome.com/apps/manifest/name#short_name) is 12 characters.
 
-Confira [O manifesto existe](manifest-exists#how)
-para obter uma lista de guias que ensinam você a implementar
-e testar corretamente o suporte à adição na tela inicial em seu aplicativo.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-A auditoria será aprovada se o manifesto contiver uma propriedade `short_name` ou `name`.
-O manifesto que o Lighthouse busca é separado do que o Chrome está
-usando na página, que pode causar resultados imprecisos.
+Audit passes if the manifest contains either `short_name` or `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

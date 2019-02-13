@@ -1,33 +1,50 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“可交互时间”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Time to Interactive" Lighthouse audit.
 
-{# wf_updated_on:2016-10-05 #}
-{# wf_published_on:2016-10-05 #}
+{# wf_updated_on: 2018-10-01 #} {# wf_published_on: 2018-08-16 #} {# wf_blink_components: Platform>DevTools #}
 
-# 可交互时间 {: .page-title }
+# Time to Interactive {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-页面加载对用户如何看待对您的页面性能起着关键作用。
-如需了解详细信息，请参阅[使用 RAIL 方法测量性能](/web/fundamentals/performance/rail)。
+<blockquote>
+  <p>
+    Load is not a single moment in time — it’s an experience that no one metric can fully capture.
+    There are multiple moments during the load experience that can affect whether a user perceives
+    it as "fast" or "slow".
+  </p>
+  <p>--- <a class="external" href="https://w3c.github.io/paint-timing/">Paint Timing spec</a></p>
+</blockquote>
 
-此审查确定页面看上去已做好充分准备、用户可以与其交互的时间。
+The Time to Interactive (TTI) metric measures how long it takes a page to become interactive. "Interactive" is defined as the point where:
 
+* The page has displayed useful content, which is measured with [First Contentful Paint](/web/tools/lighthouse/audits/first-contentful-paint).
+* Event handlers are registered for most visible page elements.
+* The page responds to user interactions within 50 milliseconds.
 
-## 如何通过此审查{: #how }
+Some sites optimize content visibility at the expense of interactivity. This can create a frustrating user experience. The site appears to be ready, but when the user tries to interact with it, nothing happens.
 
-有关提升页面加载性能的更多帮助，请查看速度指标审查的[如何通过此审查](speed-index#how)部分中的资源。您的可交互时间分数越低越好。
+## Recommendations {: #recommendations }
 
+To improve your TTI score, defer or remove unnecessary JavaScript work that occurs during page load. See [Optimize JavaScript Bootup](/web/fundamentals/performance/optimizing-content-efficiency/javascript-startup-optimization/) and [Reduce JavaScript Payloads with Tree Shaking](/web/fundamentals/performance/optimizing-javascript/tree-shaking/), and [Reduce JavaScript Payloads with Code Splitting](/web/fundamentals/performance/optimizing-javascript/code-splitting/).
 
+### Tracking TTI in the real world {: #RUM }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+To measure when TTI actually occurs on your users' devices, see [Tracking TTI](/web/fundamentals/performance/user-centric-performance-metrics#tracking_tti). The code snippet describes how to programmatically access TTI data and submit it to Google Analytics.
 
-可交互时间指的是布局已趋于稳定、关键的网络字体可见且主要线程足以处理用户输入的时间点。
+TTI can be difficult to track in the wild. You may prefer to track [First Input Delay](/web/updates/2018/05/first-input-delay), instead.
 
+## More information {: #more-info }
 
+See [Definition](https://github.com/WICG/time-to-interactive#definition){: .external } for more details on how exactly TTI is calculated.
 
-请注意，此指标还处于早期阶段，可能随时发变化。
+This metric was previously called Consistently Interactive.
 
+Sources:
 
-{# wf_devsite_translation #}
+* [Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/interactive.js){:.external}
+* [Time to Interactive Explainer](https://github.com/WICG/time-to-interactive){: .external }
+* [First Interactive and Consistently Interactive](https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c){: .external }
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

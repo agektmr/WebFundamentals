@@ -1,272 +1,227 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools の [Styles] ペインを使用して、要素に関連付けられている CSS スタイルを調査して変更します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Styles pane in Chrome DevTools to inspect and modify the CSS styles associated to an element.
 
-{# wf_updated_on: 2016-02-25 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# スタイルの編集 {: .page-title }
+# Edit Styles {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-[<strong>Styles</strong>] ペインを使用して、要素に関連付けられている CSS スタイルを変更します。
+Warning: This page is deprecated. See [CSS Reference](/web/tools/chrome-devtools/css/reference).
 
+Use the **Styles** pane to modify the CSS styles associated to an element.
 
-![[Styles] ペイン](imgs/styles-pane.png)
-
+![Styles pane](imgs/styles-pane.png)
 
 ### TL;DR {: .hide-from-toc }
-- [Styles] ペインでは、既存のスタイルの編集、新しいスタイルの追加、スタイルのルールの追加など、さまざまな CSS の変更をローカルで行うことができます。
-- スタイルを保持する（再読み込み時にスタイルが解除されないようにする）場合は、スタイルを開発ワークスペースに保持する必要があります。
 
+- The styles pane lets you change your CSS in as many ways as possible, locally, including editing existing styles, adding new styles, adding rules for styles.
+- If you want styles to persist (so they don't go away on a reload), you need to persist them to your development workspace.
 
-##  要素に適用されたスタイルの調査
+## Inspect styles applied to an element
 
-[要素を選択](edit-dom#inspect-an-element)して、スタイルを調査します。
-[**Styles**] ペインに、選択された要素に適用される CSS ルールが、優先順位が高いものから低いものの順に表示されます。
+[Select an element](edit-dom#inspect-an-element) to inspect its styles. The **Styles** pane shows the CSS rules that apply to the selected element, from highest priority to lowest:
 
+- At the top is `element.style`. These are styles either applied directly to the element using the style property (for example, `<p style="color:green">`), or applied in DevTools.
 
-* 最上位には `element.style` があります。これらは、スタイル プロパティ（たとえば、`<p style="color:green">`）を使用して要素に直接適用されるか、DevTools で適用されるスタイルです。
+- Below that are any CSS rules that match the element. For example, in the screenshot below the selected element receives `line-height:24px` from a rule defined in `tools.css`.
 
+- Below that are inherited styles, which include any inheritable style rules that match the selected element's ancestors. For example, in the screenshot below the selected element inherits `display:list-item` from `user agent stylesheet`.
 
+The labels on the image below correspond with the numbered items below it.
 
-* その下には、要素に一致する任意の CSS ルールがあります。たとえば、以下のスクリーンショットでは、選択された要素が `tools.css` で定義されたルールから `line-height:24px` を受け取ります。
+![Annotated Styles pane](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
 
+1. Styles associated with a selector that matches the element.
+2. [User agent stylesheets](http://meiert.com/en/blog/20070922/user-agent-style-sheets/) are clearly labelled, and are often overridden by the CSS on your web page.
+3. Rules that have been overridden by **cascading rules** are shown with strikethrough text.
+4. **Inherited** styles are displayed as a group under the "Inherited from `<NODE>`" header. Click the DOM node in the header to navigate to its position in the DOM tree view. (The [CSS 2.1 properties table](http://www.w3.org/TR/CSS21/propidx.html) shows which properties are inheritable.)
+5. Grey colored entries are rules that are not defined but instead **computed at runtime**.
 
+Understanding how cascading and inheritance works is essential to debugging your styles. The cascade relates to how CSS declarations are given weights to determine which rules should take precedence when they overlap with another rule. Inheritance relates to how HTML elements inherit CSS properties from their containing elements (ancestors). For more, see [W3C documentation on cascading](http://www.w3.org/TR/CSS2/cascade.html).
 
-* その下には継承されたスタイルがあります。これには、選択された要素の祖先に一致する、任意の継承可能なスタイルルールが含まれます。
-たとえば、以下のスクリーンショットでは、選択された要素が `user agent stylesheet` から `display:list-item` を継承します。
+## Inspect elements affected by a selector
 
+Hover your mouse over a CSS selector in the **Styles** pane to view all elements that are affected by the selector. For example, in the screenshot below the mouse is hovering over the selector `.wf-tools-guide__section-link a`. In the live page you can see all of the `<a>` elements that are affected by the selector.
 
+![viewing elements affected by selector](imgs/selector-hover.png)
 
-以下の画像のラベルは、画像の下にある箇条書き項目に対応しています。
+**Note**: this feature only highlights elements in the viewport; it's possible that other elements outside of the viewport are also affected by the selector.
 
-![注釈付きの [Styles] ペイン](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
+## Add, enable, and disable CSS classes {:#classes}
 
-1. 要素に一致するセレクターに関連付けられているスタイルです。
-2. [ユーザー エージェント スタイルシート](http://meiert.com/en/blog/20070922/user-agent-style-sheets/)は明確にラベルで示され、多くの場合ウェブページの CSS でオーバーライドされます。
-3. **カスケード ルール**でオーバーライドされたルールは取り消し線で示されます。
-4. **継承された**スタイルは [Inherited from `<NODE>`] ヘッダーの下にグループとして表示されます。ヘッダーで DOM ノードをクリックすると、DOM ツリービュー内のノードの位置にナビゲートされます
-（[CSS 2.1 プロパティの表](http://www.w3.org/TR/CSS21/propidx.html) に、どのプロパティが継承可能かが示されています）。
-5. 灰色で表示されているエントリは、定義されておらず、**実行時に計算される**ルールです。
+Warning: This page is deprecated. See [Toggle a class](/web/tools/chrome-devtools/css/reference#toggle-class).
 
+Click on the **.cls** button to view all of the CSS classes associated to the currently selected element. From there, you can:
 
+- Enable or disable the classes currently associated to the element.
+- Add new classes to the element. 
 
+![classes pane](imgs/classes.png)
 
-スタイルをデバッグするには、カスケードと継承の動作を理解することが不可欠です。
-カスケードは、ルールが重複した場合に、どのルールが優先されるかを決定するために CSS の宣言に重み付けする方法に関するものです。
-継承は、HTML 要素がそれを含む要素（祖先）から CSS プロパティを継承する方法に関するものです。
-詳細については、[カスケードに関する W3C ドキュメント](http://www.w3.org/TR/CSS2/cascade.html)をご覧ください。
+## Edit an existing property name or value
 
+Warning: This page is deprecated. See [Change a declaration name or value](/web/tools/chrome-devtools/css/reference#change-declaration).
 
-##  セレクターの影響を受ける要素の調査
+Click on a CSS property name or value to edit it. While a name or value is highlighted, press <kbd>Tab</kbd> to move forward to the next property, name, or selector. Hold <kbd>Shift</kbd> and press <kbd>Tab</kbd> to move backwards.
 
-[**Styles**] ペインで CSS セレクターにカーソルを合わせると、セレクターの影響を受けるすべての要素が表示されます。
-たとえば、以下のスクリーンショットでは、セレクター `.wf-tools-guide__section-link a` の上にカーソルがあります。ライブページで、このセレクターの影響を受けるすべての `<a>` 要素を確認できます。
- 
+When editing a numeric CSS property value, increment and decrement with the following keyboard shortcuts:
 
-![セレクターの影響を受ける要素の表示](imgs/selector-hover.png)
+- <kbd>Up</kbd> and <kbd>Down</kbd> to increment and decrement the value by 1, or by .1 if the current value is between -1 and 1.
+- <kbd>Alt</kbd>+<kbd>Up</kbd> and <kbd>Alt</kbd>+<kbd>Down</kbd> to increment and decrement the value by 0.1.
+- <kbd>Shift</kbd>+<kbd>Up</kbd> to increment by 10 and <kbd>Shift</kbd>+<kbd>Down</kbd> to decrement by 10.
+- <kbd>Shift</kbd>+<kbd>Page Up</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Up</kbd> (Mac) to increment the value by 100. <kbd>Shift</kbd>+<kbd>Page Down</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Down</kbd> (Mac) to decrement the value by 100. 
 
-**注**: この機能では、ビューポート内にある要素のみがハイライト表示されます。ビューポートの外にある他の要素もセレクターの影響を受けている可能性があります。
- 
+## Add a new property declaration
 
-##  CSS クラスの追加、有効化、および無効化{:#classes}
+Warning: This page is deprecated. See [Add a declaration to an element](/web/tools/chrome-devtools/css/reference#add-declaration).
 
-[**.cls**] ボタンをクリックして、現在選択されている要素に関連付けられているすべての CSS クラスを表示します。
-ここから、次の操作を実行できます。
+Click an empty space within an editable CSS rule to create a new declaration. Type it out, or paste the CSS into the **Styles** pane. Properties and their values are parsed and entered into the correct fields.
 
-* 現在要素に関連付けられているクラスの有効化または無効化。
-* 要素への新しいクラスの追加。 
+Note: To enable or disable a style declaration, check or uncheck the checkbox next to it.
 
-![クラスペイン](imgs/classes.png)
+## Add a style rule
 
-##  既存のプロパティ名または値の編集
+Warning: This page is deprecated. See [Add a style rule](/web/tools/chrome-devtools/css/reference#style-rule).
 
-CSS プロパティ名または値をクリックして編集します。名前または値がハイライト表示されている状態で、<kbd>Tab</kbd> キーを押すと、次のプロパティ、名前、またはセレクターに移動します。
-<kbd>Shift</kbd> キーを押したまま <kbd>Tab</kbd> キーを押すと、逆方向に移動します。
+Click the **New Style Rule** (![new style rule button](imgs/new-style-rule.png){:.inline}) button to add a new CSS rule.
 
-数値の CSS プロパティ値を編集する場合は、以下のキーボード ショートカットを使用して、値を増加および減少させます。
+Click and hold the button to choose which stylesheet the rule is added to.
 
+## Add or remove dynamic styles (pseudo-classes) {:#pseudo-classes}
 
-* <kbd>↑</kbd>キーと<kbd>↓</kbd>キーを押すと、値が 1 ずつ（または現在の値が -1 と 1 の間の場合は 0.1 ずつ）増加および減少します。
-* <kbd>Alt</kbd>+<kbd>↑</kbd>キーと <kbd>Alt</kbd>+<kbd>↓</kbd>キーを押すと、値が 0.1 ずつ増加および減少します。
-* <kbd>Shift</kbd>+<kbd>↑</kbd>キーを押すと 10 ずつ増加し、<kbd>Shift</kbd>+<kbd>↓</kbd>キーを押すと 10 ずつ減少します。
-* <kbd>Shift</kbd>+<kbd>PageUp</kbd> キー（Windows、Linux）または <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>↑</kbd>キー（Mac）を押すと、値が 100 ずつ増加します。
-<kbd>Shift</kbd>+<kbd>PageDown</kbd> キー（Windows、Linux）または <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>↓</kbd>キー（Mac）を押すと、値が 100 ずつ減少します。
+Warning: This page is deprecated. See [Toggle a pseudo-class](/web/tools/chrome-devtools/css/reference#pseudo-class).
 
- 
+You can manually set dynamic pseudo-class selectors (such as `:active`, `:focus`, `:hover`, and `:visited`) on elements.
 
-##  新しいプロパティ宣言の追加
+There are two ways to set these dynamic states on an element:
 
-編集可能な CSS ルール内で空のスペースをクリックして、新しい宣言を作成します。
-宣言を入力するか、CSS を [**Styles**] ペインに貼り付けます。プロパティとその値が解析され、正しい項目に入力されます。
+- Right-click on an element within the **Elements** panel and then select the target pseudo-class from the menu to enable or disable it.
+    
+    ![right-click on element 
+to enable pseudoclass selector](imgs/pseudoclass-rightclick.png)
 
+- Select an element in the **Elements** panel, click the **:hov** button in the **Styles** pane, and use the checkboxes to enable or disable the selectors for the currently selected element.
+    
+    ![:hov pane](imgs/hov.png)
 
-注: スタイルの宣言を有効または無効にするには、その隣にあるチェックボックスをオンまたはオフにします。
+## Add background-color or color to a style rule
 
-##  スタイルルールの追加
+Warning: This page is deprecated. See [Add a background-color declaration](/web/tools/chrome-devtools/css/reference#background-color) and [Add a color declaration](/web/tools/chrome-devtools/css/reference#color).
 
-**新規スタイルルール**（![新規スタイルルール ボタン](imgs/new-style-rule.png){:.inline}）ボタンをクリックして、新しい CSS ルールを追加します。
+The **Styles** pane provides a shortcut for adding `color` and `background-color` declarations to a style rule.
 
- 
+In the bottom-right of the style rule, there is a three-dot icon. You need to hover over the style rule in order to see it.
 
-ボタンを押し続けて、ルールを追加するスタイルシートを選択します。 
+![three-dots icon in rule set](imgs/rule-set-three-dots-icon.png)
 
-##  動的スタイル（疑似クラス）の追加または削除{:#pseudo-classes}
+Hover over this icon to reveal buttons for adding a `color` declaration (![add color declaration](imgs/add-color.png){:.inline}) or a `background-color` declaration (![add background-color 
+declaration](imgs/add-background-color.png){:.inline}). Click on one of these buttons to add the declaration to the style rule.
 
-動的な疑似クラス セレクター（`:active`、`:focus`、`:hover`、`:visited` など）を手動で要素に設定できます。
- 
+## Modify colors with the Color Picker {:#color-picker}
 
-これらの動的な状態を要素に設定するには、次の 2 つの方法があります。
+Warning: This page is deprecated. See [Change colors with the Color Picker](/web/tools/chrome-devtools/css/reference#color-picker).
 
-* [**Elements**] パネル内で要素を右クリックし、メニューから対象の疑似クラスを選択して有効または無効にします。
-  ![要素を右クリックして疑似クラス セレクターを有効にする](imgs/pseudoclass-rightclick.png)
-  
+To open the **Color Picker**, find a CSS declaration in the **Styles** pane that defines a color (such as `color: blue`). To the left of the declaration value there is a small, colored square. The color of the square matches the declaration value. Click on this little square to open the **Color Picker**.
 
+![opening the color picker](imgs/open-color-picker.jpg)
 
+You can interact with the **Color Picker** in multiple ways:
 
-* [**Elements**] パネルで要素を選択し、[**Styles**] ペインで [**:hov**] ボタンをクリックし、チェックボックスを使用して、現在選択されている要素に対してセレクターを有効または無効にします。
+1. **Eyedropper**. See [Eyedropper](#eyedropper) for more information.
+2. **Current color**. A visual representation of the **current value**. 
+3. **Current value**. The hexadecimal, RGBA, or HSL representation of the **current color**. 
+4. **Color palette**. See [Color palettes](#color-palettes) for more information. 
+5. **Tint and shade selector**. 
+6. **Hue selector**. 
+7. **Opacity selector**.
+8. **Color value selector**. Click to toggle between RGBA, HSL, and hexadecimal. 
+9. **Color palette selector**. Click to select different templates.
 
+![annotated color picker](imgs/annotated-color-picker.jpg)
 
+### Eyedropper {:#eyedropper}
 
-  ![[:hov] ペイン](imgs/hov.png)
+Click on the **eyedropper** button so that it is enabled (![enabled eyedropper](imgs/eyedropper-enabled.png){:.inline}), hover over a color on the live page, and then click to set the currently selected declaration value to the color that you're hovering over.
 
-##  スタイルルールへの background-color または color の追加
+![the eyedropper in action](imgs/eyedropper.jpg)
 
-[**Styles**] ペインでは、`color` 宣言と `background-color` 宣言をスタイルルールに追加するためのショートカットを使用できます。
+### Color palettes {:#color-palettes}
 
-スタイルルールの右下に、スリードット アイコンがあります。これを表示するには、スタイルルールにカーソルを合わせる必要があります。
+The **Color Picker** provides the following color palettes:
 
+- **Page Colors**. A set of colors automatically generated from the page's CSS.
+- **Material Design**. A collection of colors consistent with the [Material Design spec](https://www.google.com/design/spec/style/color.html). 
+- **Custom**. A set of any colors you choose. DevTools saves your custom palette, even across pages, until you delete it. 
 
-![ルールセットのスリードット アイコン](imgs/rule-set-three-dots-icon.png)
+#### Modifying a custom color palette {:#custom-color-palette}
 
-このアイコンにカーソルを合わせると、`color` 宣言（![color 宣言の追加](imgs/add-color.png){:.inline}）または `background-color` 宣言（![background-color 宣言の追加](imgs/add-background-color.png){:.inline}）を追加するためのボタンが表示されます。
-これらのボタンのいずれかをクリックして、スタイルルールに宣言を追加します。
- 
+Press the **plus sign** button to add the current color to the palette. Click and hold on a color to drag it to a different position, or drag it to the **trash can** icon to delete it. Right-click on a color and select **Remove color** to delete it. Select **Remove all to the right** to delete all of the colors to the right of the currently selected color. Right-click anywhere within the color palette region and select **Clear template** to delete all of the template's colors.
 
-##  カラーピッカーを使用した色の変更{:#color-picker}
+## View and edit CSS custom properties (CSS variables) {:#custom-properties}
 
-**カラーピッカー**を開くには、[**Styles**] ペインで色を定義する CSS 宣言（`color: blue` など）を見つけます。
-宣言値の左側に、小さい色付きの正方形があります。
-正方形の色は、宣言値に対応しています。
-この小さい正方形をクリックすると、**カラーピッカー**が開きます。
+You can view and edit declarations that define or use [CSS custom properties](/web/updates/2016/02/css-variables-why-should-you-care) (informally known as CSS variables) just like any other declaration.
 
-![カラーピッカーを開く](imgs/open-color-picker.jpg)
+Custom properties are usually [defined](https://drafts.csswg.org/css-variables/#defining-variables) in the `:root` selector. To view a custom property defined in `:root`, inspect the `html` element.
 
-**カラーピッカー**は、複数の方法で操作できます。
+![custom property defined on :root](imgs/css-var-defined-on-root.png)
 
-1. **スポイト**。詳細については、[スポイト](#eyedropper)を参照してください。
-2. **現在の色**。**現在の値**のビジュアル表現です。
-3. **現在の値**。**現在の色**の 16 進数、RGBA、または HSL 表現です。
-4. **カラーパレット**。詳細については、[カラーパレット](#color-palettes)を参照してください。
-5. **濃淡セレクター**。
-6. **色相セレクター**。
-7. **不透明度セレクター**。
-8. **色値セレクター**。クリックすると、RGBA、HSL、16 進数が切り替わります。
-9. **カラーパレット セレクター**。クリックして異なるテンプレートを選択します。
+Custom properties do not have to be defined on the `:root` selector, however. If you defined it elsewhere, inspect the element on which it was defined to view the definition.
 
-![注釈付きのカラーピッカー](imgs/annotated-color-picker.jpg)
+You can view and edit declaration values that use custom properties just like any other declaration value.
 
-[md]: https://www.google.com/design/spec/style/color.html
+If you see a declaration value like `var(--main-color)` as in the screenshot below, it means that the declaration is using custom properties. These values can be edited like any other declaration value. Currently there is no way to jump to the custom property definition.
 
-###  スポイト{:#eyedropper}
+![using a custom property](imgs/css-var-in-use.png)
 
-**スポイト**ボタンをクリックして有効にし（![有効になったスポイト](imgs/eyedropper-enabled.png){:.inline}）、ライブページで色にカーソルを合わせてクリックすると、現在選択されている宣言値が、カーソルを合わせている色に設定されます。
+## Edit Sass, Less or Stylus
 
+If you are using Sass, Less, Stylus or any other CSS preprocessor, editing the generated CSS output files in the Styles editor won't help as they don't map to your original source.
 
+With CSS source maps, DevTools can automatically map the generated files to the original source files, which lets you live-edit these in the Sources panel and view the results without having to leave DevTools or refresh the page.
 
+### The preprocessor workflow
 
-![スポイトの動作](imgs/eyedropper.jpg)
+When you inspect an element whose styles are provided by a generated CSS file, the Elements panel displays a link to the original source file, not the generated CSS file.
 
-###  カラーパレット{:#color-palettes}
+![Elements panel showing .scss stylesheet](imgs/sass-debugging.png)
 
-**カラーピッカー**では、以下のカラーパレットを使用できます。
+To jump to the source file:
 
-* **ページカラー**。ページの CSS から自動的に生成される色のセット。
-* **マテリアル デザイン**。[マテリアル デザインの仕様][md]に準拠する色のコレクション。
-* **カスタム**。ユーザーが選択した任意の色のセット。DevTools では、ページを移動しても、ユーザーが削除するまでカスタム パレットが保存されます。
- 
+1. Click the link to open the (editable) source file in the Sources panel.
+2. <kbd class="kbd">Ctrl</kbd> + **Click** (or <kbd class="kbd">Cmd</kbd> + **click**) on any CSS property name or value to open the source file and jump to the appropriate line.
 
-####  カスタム カラーパレットの変更{:#custom-color-palette}
+![Sources panel showing .scss file](imgs/sass-sources.png)
 
-**プラス記号**ボタンを押すと、現在の色がパレットに追加されます。
-色を押し続けて別の位置にドラッグすると移動できます。**ごみ箱**アイコンにドラッグすると削除されます。
-色を右クリックして [**Remove color**] を選択すると削除されます。
-[**Remove all to the right**] を選択すると、現在選択している色の右側にある色すべてが削除されます。
-カラーパレット領域内の任意の場所を右クリックし、[**Clear template**] を選択すると、テンプレートの色がすべて削除されます。
+When you save changes to a CSS preprocessor file in DevTools, the CSS preprocessor should re-generate the CSS files. Then DevTools then reloads the newly-generated CSS file.
 
+### Enable/Disable CSS source maps & auto-reloading
 
+**CSS source maps are enabled by default**. You can choose to enable automatic reloading of generated CSS files. To enable CSS source maps and CSS reload:
 
-##  CSS カスタム プロパティ（CSS 変数）の表示と編集{:#custom-properties}
+1. Open DevTools Settings and click **General**.
+2. Turn on **Enable CSS source maps** and **Auto-reload generated CSS**.
 
-[CSS カスタム プロパティ][intro]（非公式な名称は CSS 変数）を定義または使用する宣言は、他の宣言と同様に表示および編集できます。
+### Requirements & Gotchas
 
- 
+- **Changes made in an external editor** are not detected by DevTools until the Sources tab containing the associated source file regains focus.
+- **Manual editing of a CSS file** generated by the Sass/LESS/other compiler will break the source map association until the page is reloaded.
+- **Using [Workspaces](/web/tools/setup/setup-workflow)?** Make sure the generated CSS file is also mapped into the workspace. You can verify this by looking in Sources panel right-side tree, and seeing the CSS is served from your local folder.
+- **For DevTools to automatically reload styles** when you change the source file, your preprocessor must be set up to regenerate CSS files whenever a source file changes. Otherwise, you must regenerate CSS files manually and reload the page to see your changes.
+- **You must be accessing your site or app from a web server** (not a **file://** URL), and the server must serve the CSS files as well as the source maps (.css.map) and source files (.scss, etc.).
+- If you are *not* using the Workspaces feature, the web server must also supply the `Last-Modified` header.
 
-カスタム プロパティは通常、`:root` セレクターで[定義][def]されます。
-`:root` で定義されたカスタム プロパティを表示するには、`html` 要素を調べます。
+Learn how to setup source maps in [Setup CSS & JS Preprocessors](/web/tools/setup/setup-preprocessors).
 
+## Emulate print media {:#emulate-print-media}
 
-![:root で定義されたカスタム プロパティ](imgs/css-var-defined-on-root.png)
+Warning: This page is deprecated. See [View a page in print mode](/web/tools/chrome-devtools/css/reference#print-mode).
 
-ただし、必ずしも `:root` セレクターでカスタム プロパティを定義する必要はありません。他の要素で定義した場合、定義を表示するには、カスタム プロパティを定義した要素を調べます。
+To view a page in print mode:
 
+1. Open the **Main Menu**.
+2. Select **More Tools** > **Rendering Settings**. The Rendering Settings tab opens at the bottom of your DevTools window.
+3. Set **Emulate media** to **Print**.
 
+## Feedback {: #feedback }
 
-カスタム プロパティを使用する宣言値は、他の宣言値と同様に表示および編集できます。
- 
-
-以下のスクリーンショットのように `var(--main-color)` などの宣言値が示されている場合は、宣言がカスタム プロパティを使用していることを意味します。
-これらの値はその他の宣言値と同様に編集できます。
-現時点で、カスタム プロパティの定義を直接表示する方法はありません。
-
-
-![カスタム プロパティの使用](imgs/css-var-in-use.png)
-
-[intro]: /web/updates/2016/02/css-variables-why-should-you-care
-[def]: https://drafts.csswg.org/css-variables/#defining-variables
-
-##  Sass、Less、または Stylus の編集
-
-Sass、Less、Stylus、またはその他の CSS プリプロセッサを使用している場合は、生成された CSS 出力ファイルを Styles エディタで編集しても、元のソースにマップされないため、役に立ちません。
-
-CSS ソースマップを使用すると、生成されたファイルが DevTools によって自動的に元のソースファイルにマップされるため、[Sources] パネルでファイルをライブ編集して、DevTools を終了したり、ページを更新したりせずに結果を表示できます。 
-
-###  プリプロセッサのワークフロー
-
-生成された CSS ファイルによってスタイルが提供される要素を調べる場合、[Elements] パネルには生成された CSS ファイルではなく、元のソースファイルへのリンクが表示されます。
-
-![.scss スタイルシートが表示されている [Elements] パネル](imgs/sass-debugging.png)
-
-ソースファイルにジャンプするには、次のようにします。
-
-1. リンクをクリックして、[Sources] パネルで（編集可能な）ソースファイルを開きます。
-2. 任意の CSS プロパティ名または値を <kbd class="kbd">Ctrl</kbd> キーを押しながら**クリック**（または <kbd class="kbd">Cmd</kbd> キーを押しながら**クリック**）してソースファイルを開き、該当する行にジャンプします。
-
-![.scss ファイルが表示されている [Sources] パネル](imgs/sass-sources.png)
-
-DevTools で CSS プリプロセッサ ファイルへの変更を保存すると、CSS プリプロセッサによって CSS ファイルが再生成されます。続けて DevTools が新しく生成された CSS ファイルを再読み込みします。
-
-###  CSS ソースマップと自動再読み込みの有効化と無効化
-
-**CSS ソースマップは既定で有効になっています**。生成された CSS ファイルの自動再読み込みを有効にすることができます。CSS ソースマップと CSS 再読み込みを有効にするには、次のようにします。
-
-1. DevTools の [Settings] を開き、[**General**] をクリックします。
-2. [**Enable CSS source maps**] と [**Auto-reload generated CSS**] をオンにします。
-
-###  要件と問題点
-
-- **外部エディタで行われた変更**は、関連付けられているソースファイルを含む [Sources] タブにフォーカスが戻るまで DevTools で検出されません。
-- Sass、LESS、およびその他のコンパイラで生成された **CSS ファイルを手動で編集**すると、ページが再読み込みされるまで、ソースマップの関連付けが失われます。
-- **<a href="/web/tools/setup/setup-workflow">ワークスペース</a>を使用している場合は、**生成された CSS ファイルがワークスペースにもマップされていることを確認してください。これを確認するには、[Sources] パネルの右側のツリーで、CSS がローカル フォルダから提供されていることを確認します。
-- ソースファイルを変更したときに **DevTools で自動的にスタイルが再読み込みされるようにする**には、ソースファイルが変更されるたびに CSS ファイルを再生成するようにプリプロセッサを設定する必要があります。そうしない場合、CSS ファイルを手動で再生成し、ページを再読み込みして変更を確認する必要があります。
-- **サイトまたはアプリには、ウェブサーバーからアクセスする**（**file://** URL からではなく）必要があり、サーバーは CSS ファイルとともに、ソースマップ（.css.map）とソースファイル（.scss など）を提供する必要があります。
-- ワークスペース機能を使用していない場合は、ウェブサーバーで `Last-Modified` ヘッダーも提供する必要があります。
-
-ソースマップのセットアップ方法については、[CSS と JS プリプロセッサのセットアップ](/web/tools/setup/setup-preprocessors)を参照してください。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,56 +1,44 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Log konsol adalah cara andal untuk memeriksa apa yang dilakukan laman atau aplikasi Anda. Mari kita mulai dengan console.log() dan mendalami penggunaan tingkat lanjut lainnya.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Console logging is a powerful way to inspect what your page or application does. Let's start with console.log() and explore other advanced usage.
 
-{# wf_updated_on: 2018-04-06 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Diagnosis dan Penulisan Log ke Konsol {: .page-title }
+# Diagnose and Log to Console {: .page-title }
 
-{% include "web/_shared/contributors/pbakaus.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/flaviocopes.html" %}
-Log konsol adalah cara andal untuk memeriksa apa yang dilakukan laman atau aplikasi Anda. Mari kita mulai dengan console.log() dan mendalami penggunaan tingkat lanjut lainnya.
-
+{% include "web/_shared/contributors/pbakaus.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/flaviocopes.html" %} Console logging is a powerful way to inspect what your page or application does. Let's start with console.log() and explore other advanced usage.
 
 ### TL;DR {: .hide-from-toc }
-- Gunakan <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-''>console.log()</a> untuk menyimpan log biasa
-- Gunakan <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-''>console.error()</a> dan <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-''>console.warn()</a> untuk hal-hal yang perlu diperhatikan
-- Gunakan <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolegroupobject-object-''>console.group()</a> dan <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consolegroupend''>console.groupEnd()</a> untuk mengelompokkan pesan terkait dan agar rapi
-- Gunakan <a href=''/web/tools/chrome-devtools/debug/console/console-reference#consoleassertexpression-object''>console.assert()</a> untuk menampilkan pesan kesalahan bersyarat
 
+- Use [console.log()](/web/tools/chrome-devtools/console/console-reference#log) for basic logging
+- Use [console.error()](/web/tools/chrome-devtools/debug/console/console-reference#error) and [console.warn()](/web/tools/chrome-devtools/debug/console/console-reference#warn) for eye-catching stuff
+- Use [console.group()](/web/tools/chrome-devtools/debug/console/console-reference#group) and [console.groupEnd()](/web/tools/chrome-devtools/debug/console/console-reference#groupend) to group related messages and avoid clutter
+- Use [console.assert()](/web/tools/chrome-devtools/debug/console/console-reference#assert) to show conditional error messages
 
-## Menulis ke konsol
+## Writing to the console
 
-Gunakan metode <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a> untuk menyimpan log biasa ke konsol. Perlu satu atau beberapa ekspresi sebagai parameter dan menulis nilainya saat ini ke konsol, menyatukan beberapa parameter menjadi baris yang dipisah spasi.
+Use the [console.log()](/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-) method for any basic logging to the console. It takes one or more expressions as parameters and writes their current values to the console, concatenating multiple parameters into a space-delimited line.
 
-Mengeksekusi baris kode ini di JavaScript Anda:
-
+Executing this line of code in your JavaScript:
 
     console.log("Node count:", a.childNodes.length, "and the current time is:", Date.now());
     
 
-Akan menghasilkan ini di Console:
-![Log Sekaligus](images/console-write-log-multiple.png)
+Will output this in the Console: ![Log Multiple](images/console-write-log-multiple.png)
 
-## Pelengkapan otomatis perintah {:#autocomplete}
+## Autocompleting commands {:#autocomplete}
 
-Bila Anda mengetik dalam Console, maka Console secara otomatis akan menampilkan 
-menu tarik-turun pelengkapan otomatis untuk metode yang relevan sesuai dengan teks yang 
-sudah Anda ketikkan. Ini berisi perintah sebelumnya yang telah Anda eksekusi.
+When you type in the Console, the Console automatically displays an autocomplete dropdown menu of relevant methods that match the text that you have already typed. This includes previous commands that you executed.
 
-![contoh pelengkapan otomatis](images/autocomplete.png)
+![example of autocomplete](images/autocomplete.png)
 
-## Mengorganisir keluaran Console {:#organizing}
+## Organizing Console output {:#organizing}
 
-### Mengelompokkan pesan
+### Group messages together
 
-Anda bisa mengelompokkan keluaran terkait dengan perintah grup. Perintah [`console.group()`](./console-reference#consolegroupobject-object-) menggunakan satu parameter string untuk menyetel nama grup. Setelah memanggilnya di JavaScript Anda, konsol akan mulai mengelompokkan semua keluaran selanjutnya.
+You can group related output together with the group commands. The [`console.group()`](./console-reference#consolegroupobject-object-) command takes a single string parameter to set the name of the group. After calling it in your JavaScript, the console will begin to group all subsequent output together.
 
-Untuk mengakhiri pengelompokan, Anda hanya perlu memanggil [`console.groupEnd()`](./console-reference#consolegroupend) bila telah selesai.
+To end the grouping you only need to call [`console.groupEnd()`](./console-reference#consolegroupend) when you're done.
 
-Contoh masukan:
-
+Example input:
 
     var user = "jsmith", authenticated = false;
     console.group("Authentication phase");
@@ -62,15 +50,13 @@ Contoh masukan:
     console.groupEnd();
     
 
-Contoh keluaran:
-![Keluaran grup konsol sederhana](images/console-write-group.png)
+Example output: ![Simple console group output](images/console-write-group.png)
 
-#### Grup tersarang
+#### Nested groups
 
-Grup log juga bisa disarangkan dalam grup lain. Ini berguna untuk melihat grup besar dalam potongan lebih kecil.
+Log groups may also nest within each other. This is useful to see a large group in smaller pieces at a time.
 
-Contoh ini menampilkan grup log untuk tahap autentikasi proses masuk:
-
+This example shows a log group for the authentication phase of a login process:
 
     var user = "jsmith", authenticated = true, authorized = true;
     // Top-level group
@@ -90,13 +76,11 @@ Contoh ini menampilkan grup log untuk tahap autentikasi proses masuk:
     console.log("A group-less log trace.");
     
 
-Dan inilah beberapa keluaran grup tersarang di konsol:
-![Keluaran grup konsol sederhana](images/console-write-nestedgroup.png)
+And here's the nested groups output in the console: ![Simple console group output](images/console-write-nestedgroup.png)
 
-#### Menciutkan grup otomatis
+#### Auto-collapsing groups
 
-Saat banyak menggunakan grup, bisa jadi akan sangat berguna bila melihatnya bukan seperti apa adanya. Untuk saat-saat seperti ini Anda bisa secara otomatis menciutkan grup dengan memanggil [`console.groupCollapsed()`](./console-reference#consolegroupcollapsedobject-object-) sebagai ganti `console.group()`:
-
+When using groups heavily, it can be very useful to not see everything as it happens. For these times you can automatically collapse groups by calling [`console.groupCollapsed()`](./console-reference#consolegroupcollapsedobject-object-) instead of `console.group()`:
 
     console.groupCollapsed("Authenticating user '%s'", user);
     if (authenticated) {
@@ -105,17 +89,15 @@ Saat banyak menggunakan grup, bisa jadi akan sangat berguna bila melihatnya buka
     console.groupEnd();
     
 
-groupCollapsed() keluaran:
-![Grup yang diciutkan pertama](images/console-write-groupcollapsed.png)
+groupCollapsed() output: ![Initially collapsed group](images/console-write-groupcollapsed.png)
 
-## Kesalahan dan peringatan
+## Errors and warnings
 
-Kesalahan dan peringatan berfungsi sama seperti proses pembuatan log normal. Perbedaan satu-satunya adalah `error()` dan `warn()` memiliki gaya untuk menarik perhatian.
+Errors and warnings act the same way as normal logging. The only difference is `error()` and `warn()` have styles to bring attention to them.
 
 ### console.error()
 
-Metode [`console.error()`](./console-reference#consoleerrorobject--object-) menampilkan ikon merah bersama teks pesan merah:
-
+The [`console.error()`](./console-reference#consoleerrorobject--object-) method displays a red icon along with red message text:
 
     function connectToServer() {
         console.error("Error: %s (%i)", "Server is  not responding",500);
@@ -123,91 +105,84 @@ Metode [`console.error()`](./console-reference#consoleerrorobject--object-) mena
     connectToServer();
     
 
-berubah menjadi
+turns into
 
-![Keluaran contoh kesalahan](images/console-write-error-server-not-resp.png)
+![Error example output](images/console-write-error-server-not-resp.png)
 
 ### console.warn()
 
-Metode [`console.warn()`](./console-reference#consolewarnobject--object-) menampilkan ikon peringatan kuning bersama teks pesan:
-
+The [`console.warn()`](./console-reference#consolewarnobject--object-) method displays a yellow warning icon with the message text:
 
     if(a.childNodes.length < 3 ) {
         console.warn('Warning! Too few nodes (%d)', a.childNodes.length);
     }
     
 
-berubah menjadi
+turns into
 
-![Contoh peringatan](images/console-write-warning-too-few-nodes.png)
+![Warn example](images/console-write-warning-too-few-nodes.png)
 
-## Pernyataan
+## Assertions
 
-Metode [`console.assert()`](./console-reference#consoleassertexpression-object) secara bersyarat menampilkan string kesalahan (parameternya kedua) hanya jika parameter pertamanya mengevaluasi ke `false`.
+The [`console.assert()`](./console-reference#consoleassertexpression-object) method conditionally displays an error string (its second parameter) only if its first parameter evaluates to `false`.
 
-### Pernyataan sederhana dan cara menampilkannya
+### A simple assertion and how it displays
 
-Kode berikut akan menyebabkan pesan kesalahan di konsol hanya jika jumlah simpul anak yang dimiliki elemen `list` lebih besar dari 500.
+The following code will cause an error message in the console only if the number of child nodes belonging to the `list` element is greater than 500.
 
-
-    console.assert(list.childNodes.length < 500, "Node count is > 500");
+    console.assert(list.childNodes.length <= 500, "Node count is > 500");
     
 
-Bagaimana suatu pernyataan gagal ditampilkan di konsol:
-![Pernyataan gagal](images/console-write-assert-failed.png)
+How an assertion failure displays in the console: ![Assertion failed](images/console-write-assert-failed.png)
 
-## Substitusi dan pemformatan string
+## String substitution and formatting
 
-Parameter pertama yang diteruskan ke suatu metode log mungkin berisi satu atau beberapa specifier format. Specifier format terdiri dari sebuah simbol `%` diikuti dengan huruf yang menunjukkan format yang diterapkan pada nilainya. Parameter setelah string berlaku pada placeholder sesuai urutan.
+The first parameter passed to any of the logging methods may contain one or more format specifiers. A format specifier consists of a `%` symbol followed by a letter that indicates the formatting that applies to the value. The parameters following the string apply to the placeholders in order.
 
-Contoh berikut menggunakan formatter string dan digit untuk memasukkan nilai ke dalam string keluaran. Anda akan melihat "Sam has 100 points" di konsol.
+The following example uses the string and digit formatters to insert values into the output string. You will see "Sam has 100 points" in the console.
 
     console.log("%s has %d points", "Sam", 100);
+    
 
-Daftar lengkap specifier format adalah:
+The full list of format specifiers is:
 
 | Specifier | Output                                                                            |
-|-----------|:----------------------------------------------------------------------------------|
-| %s        | Memformat nilai sebagai string                                                     |
-| %i or %d  | Memformat nilai sebagai integer                                                   |
-| %f        | Memformat nilai sebagai nilai floating point                                       |
-| %o        | Memformat nilai sebagai elemen DOM yang bisa diperluas. Seperti terlihat di panel Elements     |
-| %O        | Memformat nilai sebagai objek JavaScript yang bisa diperluas                              |
-| %c        | Menerapkan aturan CSS string keluaran sebagaimana ditetapkan oleh parameter kedua |
+| --------- |:--------------------------------------------------------------------------------- |
+| %s        | Formats the value as a string                                                     |
+| %i or %d  | Formats the value as an integer                                                   |
+| %f        | Formats the value as a floating point value                                       |
+| %o        | Formats the value as an expandable DOM element. As seen in the Elements panel     |
+| %O        | Formats the value as an expandable JavaScript object                              |
+| %c        | Applies CSS style rules to the output string as specified by the second parameter |
 
-Contoh ini menggunakan specifier digit untuk memformat nilai `document.childNodes.length`. Ia juga menggunakan specifier floating point untuk memformat nilai `Date.now()`.
+This example uses the digit specifier to format the value of `document.childNodes.length`. It also uses the floating point specifier to format the value of `Date.now()`.
 
-Kode:
-
+The code:
 
     console.log("Node count: %d, and the time is %f.", document.childNodes.length, Date.now());
     
 
-Keluaran dari contoh kode sebelumnya:
-![Contoh keluaran substitusi](images/console-write-log-multiple.png)
+The output of the previous code sample: ![Example substitution output](images/console-write-log-multiple.png)
 
-### Menata gaya keluaran konsol dengan CSS
+### Styling console output with CSS
 
-Specifier format CSS memungkinkan Anda menyesuaikan tampilan di konsol.
-Mulailah string dengan specifier dan berikan gaya yang ingin Anda terapkan sebagai parameter kedua.
+The CSS format specifier allows you to customize the display in the console. Start the string with the specifier and give the style you wish to apply as the second parameter.
 
-Cobalah kode ini:
-
+Try this code:
 
     console.log("%cThis will be formatted with large, blue text", "color: blue; font-size: x-large");
     
 
-..untuk membuat keluaran log Anda menjadi besar dan berwarna biru:
+..to make your log output large and blue:
 
-![String yang diformat](images/console-write-format-string.png)
+![Formatted string](images/console-write-format-string.png)
 
-### Memformat elemen DOM sebagai objek JavaScript
+### Formatting DOM elements as JavaScript objects
 
-Secara default, log elemen DOM dimasukkan ke konsol sebagai representasi dari HTML-nya, namun kadang-kadang Anda perlu mengakses elemen DOM sebagai objek JavaScript dan memeriksa propertinya. Anda bisa menggunakan specifier string `%O` untuk melakukannya (lihat di atas), atau menggunakan `console.dir` untuk mencapai hasil yang sama: 
+By default, DOM elements are logged into the console as representation of their HTML, but sometimes you want to access the DOM element as JavaScript object and inspect its properties. You can use the `%O` string specifier to do that (see above), or use `console.dir` to achieve the same:
 
-![Membuat log elemen dengan menggunakan dir()](images/dir-element.png)
+![Logging an element using dir()](images/dir-element.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,338 +1,217 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:改善网页的无障碍功能
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Improving accessibility for web pages
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-06-26 #}
 
-{# wf_updated_on:2016-06-26 #}
-{# wf_published_on:2016-06-26 #}
+# Accessibility {: .page-title }
 
-# 无障碍功能 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
-
-
-本文是 [Udacity 无障碍功能课程](https://www.udacity.com/course/web-accessibility--ud891){: .external }中所涉及部分内容的文字版本。但其并非视频课程的直接文字记录，而是旨在以课程原有内容为基础，对无障碍功能的原理和实践进行更简要的论述。
-
-
-
-
-
+This document set is a text-based version of part of the content covered in the [Udacity course on Accessibility](https://www.udacity.com/course/web-accessibility--ud891){: .external }. Rather than a direct transcription of the video course, it is meant to be a more concise treatment of accessibility principles and practices, using the course's original content as a base.
 
 ### TL;DR {: .hide-from-toc }
-- 了解无障碍功能的含义及其对网络开发的作用。
-- 了解如何让所有人都能访问和使用网站。
-- 了解如何在尽量减小开发影响的情况下加入基本无障碍功能。
-- 了解提供了哪些 HTML 功能以及如何利用它们来改善无障碍功能。
-- 了解在打造美观的无障碍体验时一些高级无障碍功能技巧的相关内容。
 
+- Learn what accessibility means and how it applies to web development.
+- Learn how to make web sites accessible and usable for everyone.
+- Learn how to include basic accessibility with minimal development impact.
+- Learn what HTML features are available and how to use them to improve accessibility.
+- Learn about advanced accessibility techniques for creating polished accessibility experiences.
 
+Understanding accessibility, its scope, and its impact can make you a better web developer. This guide is intended to help you understand how you can make your websites accessible and usable for everyone.
 
-了解无障碍功能及其范围和影响可令您成为更出色的网络开发者。
-本指南旨在帮助您了解如何才能让所有人都能访问和使用您的网站。
+"Accessibility" can be difficult to spell, but it doesn't have to be difficult to accomplish. In this guide, you will see how to get some easy wins to help improve accessibility with minimal effort, how you can use what's built in to HTML to create more accessible and robust interfaces, and how to leverage some advanced techniques for creating polished accessible experiences.
 
+You'll also find that many of these techniques will help you create interfaces that are more pleasant and easy to use for *all* users, not just for those with disabilities.
 
-尽管“Accessibility”（无障碍功能）难以拼写，却不一定难以实现。
-在本指南中，您将了解如何通过一些速效方法以最少的工作量帮助改善无障碍功能，如何才能利用 HTML 的内置功能打造更加强健并具有更佳无障碍功能的界面，以及如何充分利用一些高级技巧来打造美观的无障碍体验。
+Of course, many developers have only a hazy understanding of what accessibility means &mdash; something to do with government contracts, checklists, and screen readers, right? &mdash; and there are plenty of misconceptions floating around. For example, many developers feel that addressing accessibility will force them to choose between creating a delightful and attractive experience, and one that is clunky and ugly but accessible.
 
+That is, of course, not the case at all, so let's clear that up before we get into anything else. What do we mean by accessibility, and what are we here to learn about?
 
+## What is accessibility?
 
+Broadly speaking, when we say a site is accessible, we mean that the site's content is available, and its functionality can be operated, by literally *anyone*. As developers, it's easy to assume that all users can see and use a keyboard, mouse, or touch screen, and can interact with your page content the same way you do. This can lead to an experience that works well for some people, but creates issues that range from simple annoyances to show-stoppers for others.
 
-您还会发现，其中的许多技巧帮助您打造的界面所带来的满意度和易用性提升并非仅仅适用于残障人士，而是适用于*所有*用户。
+Accessibility, then, refers to the experience of users who might be outside the narrow range of the "typical" user, who might access or interact with things differently than you expect. Specifically, it concerns users who are experiencing some type of impairment or disability &mdash; and bear in mind that that experience might be non-physical or temporary.
 
+For example, although we tend to center our discussion of accessibility on users with physical impairments, we can all relate to the experience of using an interface that is not accessible to us for other reasons. Have you ever had a problem using a desktop site on a mobile phone, or seen the message "This content is not available in your area", or been unable to find a familiar menu on a tablet? Those are all accessibility issues.
 
+As you learn more, you'll find that addressing accessibility issues in this broader, more general sense almost always improves the user experience for everyone. Let's look at an example:
 
-当然，许多开发者对无障碍功能含义的理解还很模糊（不就是与政府合同、检查清单和屏幕阅读器有关的功能吗？），也流传着许多有关它的误解。例如，许多开发者认为，处理无障碍功能问题就是强迫他们在打造赏心悦目的体验与粗鄙丑陋但具有无障碍功能的体验之间做出选择。
+![a form with poor accessibility](imgs/pooraccess.jpg)
 
+This form has several accessibility issues.
 
+- The text is low contrast, which is hard for low-vision users to read.
+- Having labels on the left and fields on the right makes it hard for many people to associate them, and almost impossible for someone who needs to zoom in to use the page; imagine looking at this on a phone and having to pan around to figure out what goes with what.
+- The "Remember details?" label isn't associated with the checkbox, so you have to tap or click only on the tiny square rather than just clicking the label; also, someone using a screen reader would have trouble figuring out the association.
 
+Now let's wave our accessibility wand and see the form with those issues fixed. We're going to make the text darker, modify the design so that the labels are close to the things they're labeling, and fix the label to be associated with the checkbox so you can toggle it by clicking the label as well.
 
+![a form with improved accessibility](imgs/betteraccess.jpg)
 
+Which would you rather use? If you said "the accessible version", you're on your way to understanding a main premise of this guide. Often, something that's a complete blocker for a few users is also a pain point for many others, so by fixing the accessibility issue you improve the experience for everyone.
 
-当然，实际情况根本不是这样，因此让我们先澄清这个问题，然后再进入正题。
-无障碍功能有何含义？您可以通过本文了解它的哪些相关内容？
+## Web Content Accessibility Guidelines
 
+Throughout this guide we'll refer to the [Web Content Accessibility Guidelines (WCAG) 2.0](https://www.w3.org/TR/WCAG20/){: .external }, a set of guidelines and best practices put together by accessibility experts to address what "accessibility" means in a methodical way.
 
-## 什么是无障碍功能？
-一般来说，当我们说某个网站具有无障碍功能时，我们的意思是网站的内容可用，并且毫不夸张地讲，其功能可由*任何人*操作。作为开发者，您会轻易地认为所有用户都能看见和使用键盘、鼠标或触摸屏，并且与网页内容的交互方式也与您相同。这会造成一些人能够获得良好的体验，其他人则会遇到从简单烦恼到重大障碍的各种问题。
+WCAG is organized around four principles often called by the acronym *POUR*:
 
+- **Perceivable**: Can users perceive the content? This helps us keep in mind that just because something is perceivable with one sense, such as sight, that doesn't mean that all users can perceive it.
 
+- **Operable**: Can users use UI components and navigate the content? For example, something that requires a hover interaction cannot be operated by someone who can't use a mouse or touch screen.
 
-那么，无障碍功能就是指这样一类用户的体验，他们可能不在“典型”用户这一狭窄范围之内，并且与网站的访问或交互方式异于常规。具体地讲，它所涉及的用户具有某种身体缺陷或残障（切记这种体验可能具有非生理性或暂时性）。
+- **Understandable**: Can users understand the content? Can users understand the interface and is it consistent enough to avoid confusion?
 
+- **Robust**: Can the content be consumed by a wide variety of user agents (browsers)? Does it work with assistive technology?
 
+While WCAG provides a comprehensive overview of what it means for content to be accessible, it can also be a bit overwhelming. To help mitigate this, the [WebAIM](http://webaim.org/){: .external } (Web Accessibility in Mind) group has distilled the WCAG guidelines into an easy-to-follow checklist, targeted specifically for web content.
 
-例如，尽管我们在探讨无障碍功能时往往是围绕身体有缺陷的用户，但实际上都能将其与我们使用的界面由于其他原因而无法访问的经历联系起来。您是否曾在手机上使用桌面版本网站时遇到问题？是否看到过“您所在地区不提供该内容”消息？或者是否在平板电脑上找不到熟悉的菜单？这些都属于无障碍功能问题。
+The [WebAIM checklist](http://webaim.org/standards/wcag/checklist){: .external } can give you a short, high-level summary of what you need to implement, while also linking to the underlying WCAG specification if you need an expanded definition.
 
-随着了解的深入，您会发现在这种更广泛、更普遍意义上解决无障碍功能问题几乎总能让所有人的用户体验得到改善。
+With this tool in hand, you can chart a direction for your accessibility work and be confident that, as long as your project meets the outlined criteria, your users should have a positive experience accessing your content.
 
-下面我们来看一个示例：
+## Understanding users' diversity
 
-![一个无障碍功能不佳的表单](imgs/pooraccess.jpg)
-
-这个表单存在几个无障碍功能问题。
-
- - 文本对比度低，这会让弱视用户难以阅读。
- - 将标签置于左侧而将字段置于右侧会让许多人难以将它们关联起来，也会让需要进行放大的人几乎无法使用页面；想像一下，如果您在手机上看到这个画面，并且需要来回平移才能搞明白标签与字段的关联，会有多么郁闷。
- - “Remember details?”标签未关联复选框，因此您只得点按或点击那个小方框，而不能直接点击标签；此外，使用屏幕阅读器的用户会难以弄清楚关联问题。
-
-
-
-
-现在让我们挥一挥无障碍功能魔棒，看看解决上述问题后的表单。我们将要完成的工作是：将文本的颜色加深；修改设计，让标签靠近它们所标示的字段；以及修正标签，使其与复选框关联起来，以便点击标签同样可以进行状态切换。
-
-
-
-
-![一个改善了无障碍功能的表单](imgs/betteraccess.jpg)
-
-您更愿意使用哪一个？如果您说的是“无障碍版本”，就表明您正在试图了解本指南的一个主要前提。
-给少数用户构成彻底阻碍的问题往往也是许多其他用户面临的痛点，因此如果解决了无障碍功能问题，就能让所有人的体验得到改善。
-
-
-
-## 网络内容无障碍功能指南
-
-本指南通篇都会提到[网络内容无障碍功能指南 (WCAG) 2.0](https://www.w3.org/TR/WCAG20/){: .external }，这一套由无障碍功能专家编辑的指南和最佳做法旨在有系统地阐述“无障碍功能”的含义。实际上，有若干国家在其网络无障碍功能法律要求中明令，必须使用这些指南。
-
-
-WCAG 围绕四大原则进行组织，通常使用首字母缩写词 *POUR* 来称呼这些原则：
-
- - **可感知**：用户是否能感知内容？这有助于我们紧记这一点：仅凭可通过一种感官（例如视觉）感知内容并不能断定所有用户都能感知。
-
-
-
- - **可操作**：用户是否能使用 UI 组件和在内容中导航？例如，需要悬停交互的内容无法由不能使用鼠标或触摸屏的用户操作。
-
-
-
- - **可理解**：用户是否能理解内容？用户能否理解界面，以及其一致性是否足以避免产生混淆？
-
-
- - **强健**：内容是否能被多种 User Agent（浏览器）使用？
-它是否能与辅助技术协作？
-
-尽管 WCAG 提供了无障碍内容含义的全面概览，可能还会让人觉得有点不知所措。
-为帮助缓解这种压力，[WebAIM](http://webaim.org/){: .external }（网络无障碍功能思维）小组将 WCAG 指南提炼成了一份易于遵循的检查清单，专以网络内容为目标。
-
-
-
-
-[WebAIM 检查清单](http://webaim.org/standards/wcag/checklist){: .external }以高屋建瓴的方式简要介绍了您需要实现的内容，同时还在您需要扩展定义时提供了底层 WCAG 规范的链接。
-
-
-
-
-有这个工具在手，您就可以为自己的无障碍功能工作制定方向，并坚信只要项目达到规定标准，用户就能在访问您的内容时获得良好的体验。
-
-
-
-## 了解用户的多样性
-
-在了解有关无障碍功能的内容时，了解世界上用户的多样性以及影响他们的无障碍功能主题的种类会有帮助。为做进一步说明，请看一看下面这段包含丰富信息的问答对话，问答的对象是 Victor Tsaran 这位全盲的 Google 技术项目经理。
-
+When learning about accessibility, it helps to have an understanding of the diverse range of users in the world and the kinds of accessibility topics that affect them. To explain further, here's an informative question/answer session with Victor Tsaran, a Technical Program Manager at Google, who is totally blind.
 
 <figure class="attempt-right">
-  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">	
+  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">    
   <figcaption>Victor Tsaran</figcaption>
 </figure>
 
-<hr>
+<hr />
 
-> *您在 Google 从事什么工作？*
+> *What do you work on at Google?*
 
-我在 Google 的工作是帮助确保我们的产品适用于各类多样化用户，无论他们是否有身体缺陷或残障。
+Here at Google my job is to help ensure that our products work for all of our diverse users, regardless of impairment or ability.
 
+> *What kinds of impairments do users have?*
 
-> *用户存在哪些类型的身体缺陷？*
+When we think about the kinds of impairments which would make it difficult for someone to access our content, many people will immediately picture a blind user like me. And it's true, this impairment can really make it frustrating or even impossible to use a lot of web sites.
 
-当我们思考哪些类型的身体缺陷会让用户难以访问我们的内容时，许多人的头脑中立即会出现我这样盲人用户的画面。没错，这种身体缺陷的确会令用户难以甚至无法使用大量网站。
+A lot of modern web techniques have the unfortunate side effect of creating sites which don't work well with the tools used by blind users to access the web. However, there is actually more to accessibility than that. We find it useful think of impairments falling into four broad buckets: visual, motor, hearing, and cognitive.
 
+> *Let's go through those one at a time. Can you give some examples of visual impairments?*
 
-许多现代化的网络技术都有一个令人遗憾的副作用，那就是使用它们创建的网站对盲人用户访问网络时使用的工具兼容性不佳。不过，实际上无障碍功能并非只局限在这一方面。我们发现，将身体缺陷视为分成视觉、运动、听觉和认知这四大类很有帮助。
-
-
-
-> *下面我们逐一了解这四类缺陷。您能否举出一些视觉缺陷的例子？*
-
-
-视觉缺陷可以分为几个类别：像我这样的无视力用户可以使用屏幕阅读器、盲文或结合使用这两者。
-
+Visual impairments can be split into a few categories: Users with no vision, like me, might use a screen reader, braille, or combination of the two.
 
 <figure class="attempt-right">
-  <img src="imgs/braille-reader.png" alt="一台盲文阅读器">	
-  <figcaption>一台盲文阅读器</figcaption>
+  <img src="imgs/braille-reader.png" alt="A braille reader">    
+  <figcaption>A braille reader</figcaption>
 </figure>
 
-现在，完全没有任何视力实际上相当罕见，但您认识或遇到至少一位全盲者的几率还是很高的。不过，还存在着数量庞大得多的所谓弱视用户。
+Now, it's actually pretty unusual to have literally no vision, but still, there's a good chance you know or have met at least one person who can't see at all. However there are also a much larger number of what we call low-vision users.
 
+This is a broad range, from someone like my wife, who doesn't have any corneas &mdash; so while she can basically see things she has a hard time reading print and is considered legally blind &mdash; to someone who might have just poor vision and needs to wear very strong prescription glasses.
 
-这一群体的覆盖范围很广，既包括我的妻子这样没有任何角膜的人（尽管她能看到东西的大致轮廓，却难以阅读印刷文字，在法律上会被视为盲人），也包括因视力很差而需要配戴高度数处方眼镜的人。
-
-
-
-
-这是个庞大的群体，因此这一类别人群使用的视觉调节自然种类多样：一些人使用屏幕阅读器或盲文显示器（我甚至听说过有一位妇女阅读显示在屏幕上的盲文，因为这些盲文比印刷文字更容易看清），他们也可以使用不含完整屏幕阅读器功能的文字语音转换技术，使用可对屏幕进行局部放大的屏幕放大镜，或者直接使用浏览器缩放来增大字号。他们还可以使用高对比度方案，例如操作系统高对比度模式、高对比度浏览器扩展程序或网站的高对比度主题背景。
-
-
+There's a huge range, and so naturally there's a big range of accommodations that people in this category use: some do use a screen reader or a braille display (I've even heard of one woman who reads braille displayed on-screen because it's easier to see than printed text), or they might use text-to-speech technology without the full screen reader functionality, or they might use a screen magnifier which zooms in on part of the screen, or they might just use their browser zoom to make all the fonts bigger. They might also use high-contrast options like an operating system high-contrast mode, a high-contrast browser extension or a high-contrast theme for a website.
 
 <figure class="attempt-right">
-  <img src="imgs/high-contrast.png" alt="高对比度模式">	
-  <figcaption>高对比度模式</figcaption>
+  <img src="imgs/high-contrast.png" alt="High-contrast mode">   
+  <figcaption>High-contrast mode</figcaption>
 </figure>
 
-许多用户甚至组合使用上述视觉调节，比如我的朋友 Laura，她就组合使用了高对比度模式、浏览器缩放和文字语音转换技术。
+A lot of users even use a combination of these, like my friend Laura who uses a combination of high-contrast mode, browser zoom and text-to-speech.
 
+Low vision is something a lot of people can relate to. For a start, we all experience deteriorating vision as we age, so even if you haven't experienced it there's a good chance you've heard your parents complain about it. But a lot of people experience the frustration of taking their laptop out by a sunny window only to find they suddenly can't read anything! Or anyone who's had laser surgery or maybe just has to read something from across the room might have used one of those accommodations I mentioned. So I think it's pretty easy for developers to have some empathy for low-vision users.
 
-弱视会涉及到许多人。首先，随着年龄增长，我们都会经历视力减退的情况，因此即使您没有亲身经历，也很有可能听到过父母对此的抱怨。但许多人都会有这样沮丧的经历：在一扇洒满阳光的窗户旁拿出一台笔记本电脑时，却突然发现自己什么也看不清！或者任何接受了激光手术或可能就是需要看清房间对面内容的人，他们可能就使用过我提到的某种视觉调节。因此，我认为开发者体现对弱视用户的同情不难做到。
+Oh, and I shouldn't forget to mention people with poor color vision &mdash; about 9% of males have some form of color vision deficiency! Plus about 1% of females. They may have trouble distinguishing red and green, or yellow and blue. Think about that the next time you design form validation.
 
+> *What about motor impairments?*
 
-对了，我不该忘了提及颜色视觉低下的群体，要知道，约有 9% 的男性具有某种形式的颜色视觉缺陷！
-此外还有 1% 的女性也存在这种缺陷。
-他们可能难以区分红色和绿色，或黄色和蓝色。请在您下一次设计表单验证时考虑这一因素。
-
-
-> *有哪些运动缺陷的例子？*
-
-没错，运动缺陷，或者说是灵巧性缺陷。这一群体的范围既包括可能是由于受到 RSI 或类似损伤，害怕疼痛而不愿意使用鼠标的用户，也包括身体瘫痪以及某些身体部位运动范围受限的用户。
-
-
-
+Yes, motor impairments, or dexterity impairments. This group ranges all the way from those who would prefer not to use a mouse, because perhaps they've had some RSI or something and find it painful, to someone who may be physically paralyzed and have limited range of motion for certain parts of their body.
 
 <figure class="attempt-right">
-  <img src="imgs/eye-tracking.png" alt="一个使用眼球追踪设备的人">	
-  <figcaption>一台眼球追踪设备</figcaption>
+  <img src="imgs/eye-tracking.png" alt="A person using an eye tracking device"> 
+  <figcaption>An eye tracking device</figcaption>
 </figure>
 
-运动缺陷用户可以使用键盘、开关设备、语音控制甚至眼球追踪设备来与计算机进行交互。
+Motor impaired users may use a keyboard, switch device, voice control, or even an eye-tracking device to interact with their computer.
 
+Similar to vision impairments, mobility can also be a temporary or situational issue: Maybe you have a broken wrist on your mouse hand. Maybe the trackpad is broken on your laptop, or you're just riding on a shaky train. There can be a lot of situations where a user's mobility is impeded, and by making sure we cater for them we improve the experience overall, both for anyone with a permanent impairment but also for anyone who temporarily finds that they can't use a pointer-based UI.
 
-与视觉缺陷类似，运动缺陷也可能属于暂时性或情境性问题：
-可能是您使用鼠标的手腕部骨折。也可能是笔记本电脑的触控板损坏，或者您搭乘的火车运行不稳。
-用户的机动性可能在许多情况下受到妨碍，我们可以通过确保满足这些情况下的用户需求来改善总体体验，无论是具有永久性缺陷的用户，还是发现自己暂时无法使用基于指针 UI 的用户，他们的体验都能得到改善。
+> *Great, let's talk about hearing impairments.*
 
-
-
-
-
-> *很好，让我们谈一谈听力缺陷吧。*
-
-这一群体的范围可能包括深度耳聋者直至弱听者。我们的听力往往会随年龄增长而衰退，这与视力很相似。
-我们之中有许多人会使用助听器之类的常见辅助装置来帮助自己。
-
+This group can range from the profoundly deaf through to hard-of-hearing. And much like eyesight, our hearing tends to degrade with age. Many of us use common affordances like hearing aids to help us.
 
 <figure class="attempt-right">
-  <img src="imgs/screen-captions.png" alt="一台底部显示有字幕的电视">	
-  <figcaption>屏幕字幕</figcaption>
+  <img src="imgs/screen-captions.png" alt="A television with captions at the bottom">   
+  <figcaption>Screen captions</figcaption>
 </figure>
 
-对于听力受损的用户，我们需要确保不能依赖声音，因此务必要使用视频字幕和文字记录之类的东西，并在声音是界面的组成部分时提供某种替代项。
+For hearing-impaired users we need to make sure that we're not relying on sound, so making sure to use things like video captions and transcripts, and providing some kind of alternative, if sound is part of the interface.
 
+And like we saw with vision and motor impairments, it's really easy to imagine a situation where someone whose ears work fine would benefit from these accommodations as well. A lot of my friends say they love it when videos have captions and transcripts because it means that if they're in an open plan office and didn't bring their headphones, they can still watch the video!
 
+> *All right, can you tell us a bit about cognitive impairments?*
 
-正如我们在视觉和运动缺陷部分见识到的，想像出听力正常的人同样受益于这些调节的情形真的很容易。我的许多朋友都说他们很喜欢配有字幕和文字记录的视频，因为这意味着即使他们身处一个开放式办公室，又没有携带耳机，仍然可以观看视频！
+There's a range of cognitive conditions like ADD, Dyslexia, and Autism, which can mean that people want or need to access things differently. The accommodations for these groups are naturally extremely diverse, but we definitely find some overlap with other areas, like using zoom functionality to make reading or concentrating easier. Also, these users may find that really minimal design works best because it minimizes distraction and cognitive load.
 
+I think everyone can relate to the stress of cognitive overload, so it's obvious that if we create something that works well for someone with a cognitive impairment, we're going to be creating something which is going to be a pleasant experience for everyone.
 
+> *So, how would you summarize how you think about accessibility?*
 
-> *好了，您能给我们讲点有关认知缺陷的例子吗？*
+When you look at the broad range of abilities and disabilities that people might have, you can see that designing and building products only for people who have perfect vision, hearing, dexterity, and cognition seems incredibly narrow. It's almost self-defeating, because we're creating a more stressful and less usable experience for everyone, and for some users creating an experience which actually excludes them altogether.
 
-认知疾病有许多种（例如注意力缺陷障碍、失读症和孤独症），这可能意味着这些人想要或需要以不同方式获取信息。
-面向这些群体的调节自然极其多样，但我们无疑发现了这些调节与其他领域发生了重叠，例如使用缩放功能来简化阅读或注意力集中。此外，这些用户还会发现，真正的极简式设计效果最好，因为它能最大限度减少注意力分散和认知负荷。
+<hr />
 
+In this interview, Victor identified a range of impairments, and placed them into four broad categories: *visual*, *motor*, *hearing*, and *cognitive*. He also pointed out that each type of impairment might be *situational*, *temporary*, or *permanent*.
 
-我认为每一个人都能切身体会认知超载的压力，因此显而易见的是，如果我们打造的体验适合认知缺陷者，我们就会致力于打造能够令所有人满意的体验。
-
-
-
-
-> *那么，您会怎样总结自己对无障碍功能的理解？*
-
-如果您审视一下人类可能具有的各种能力和残障，就会发现让设计和构建的产品只适合视力、听力、灵巧性和认知能力健全者使用似乎思虑极欠周详。这几乎是在自取失败，因为我们打造的体验对所有人而言压力更大、合用性不足，并且对部分用户而言，打造这样的体验实际上是将他们完全排除在外。
-
-
-
-
-
-
-<hr>
-
-在这次访谈中，Victor 提到了多种缺陷，并将它们分成四大类：*视觉*、*运动*、*听觉*和*认知*。
-他还指出，每一种缺陷都可能是*情境性*、*暂时性*或*永久性*缺陷。
-
-
-
-让我们看一些访问缺陷实例，了解它们分属其中的哪些类别和类型。
-请注意，一些缺陷可能归属多个类别或类型。
-
+Let's take a look at some real-world examples of access impairments and see where they fall within those categories and types. Note that some impairments may fall into more than one category or type.
 
 <table>
   <tr>
     <th></th>
-    <th>情境性</th>
-    <th>暂时性</th>
-    <th>永久性</th>
+    <th>Situational</th>
+    <th>Temporary</th>
+    <th>Permanent</th>
   </tr>
   <tr>
-    <th>视觉</th>
+    <th>Visual</th>
     <td></td>
-    <td>脑震荡</td>
-    <td>失明</td>
+    <td>concussion</td>
+    <td>blindness</td>
   </tr>
   <tr>
-    <th>运动</th>
-    <td>怀抱一个婴儿</td>
-    <td>手臂骨折、RSI*</td>
+    <th>Motor</th>
+    <td>holding a baby</td>
+    <td>broken arm, RSI*</td>
     <td>RSI*</td>
   </tr>
   <tr>
-    <th>听觉</th>
-    <td>嘈杂的办公室</td>
+    <th>Hearing</th>
+    <td>noisy office</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
-    <th>认知</th>
+    <th>Cognitive</th>
     <td></td>
-    <td>脑震荡</td>
+    <td>concussion</td>
     <td></td>
   </tr>
 </table>
 
-*重复性劳损：例如腕管综合征、网球肘、扳机指
+*Repetitive Strain Injury: e.g., carpal tunnel syndrome, tennis elbow, trigger finger
 
+## Next steps
 
-## 后续步骤
+We've covered quite a bit of ground already! You have read about
 
-我们已经取得了不错的进展！您已阅读了以下方面的内容：
+- what accessibility is and why it matters for everyone
+- the WCAG and the WebAIM accessibility checklist
+- different types of impairments you should consider
 
- - 什么是无障碍功能以及为什么说它对所有人都很重要
- - WCAG 和 WebAIM 无障碍功能检查清单
- - 您应该考虑的不同类型缺陷
+For the rest of the guide, we'll dive into the practical aspects of creating accessible web sites. We'll organize this effort around three main subject areas:
 
-在指南的其余部分，我们将深入介绍创建无障碍网站的实用层面。
-我们的介绍将围绕以下三大主题领域进行组织：
+- [**Focus**](/web/fundamentals/accessibility/focus): We'll look at how to build things that can be operated with a keyboard instead of a mouse. This is important for users with motor impairments, of course, but it also ensures that your UI is in good shape for all users.
 
+- [**Semantics**](/web/fundamentals/accessibility/semantics-builtin): We'll make sure that we express our user interface in a robust way that works with a variety of assistive technologies.
 
- - [**焦点**](/web/fundamentals/accessibility/focus)：我们将了解如何构建可使用键盘替代鼠标进行操作的界面。
-这当然对运动缺陷用户很重要，但同时也要确保您的 UI 能给所有用户带来良好体验。
+- [**Styling**](/web/fundamentals/accessibility/accessible-styles): We'll consider visual design and look at some techniques for making the visual elements of the interface as flexible and usable as possible.
 
+Each of those subjects could fill a whole course, so we won't cover every aspect of creating accessible web sites. However, we'll give you enough information to get started, and point you to some good places where you can learn more about each topic.
 
+## Feedback {: #feedback }
 
- - [**语义**](/web/fundamentals/accessibility/semantics-builtin)：我们将确保以能够兼容各种辅助技术的强健方式表达我们的用户界面。
-
-
-
- - [**样式设置**](/web/fundamentals/accessibility/accessible-styles)：我们将以视觉设计为例，了解一些能够让界面的视觉元素尽可能灵活合用的技巧。
-
-
-
-由于上述每一个主题都能构成一个完整的课程，因此我们不会对创建无障碍网站的每一个层面进行介绍，
-而是会为您提供足够的入门信息，并为您推荐一些不错的资源，让您能够深入了解各主题的相关信息。
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

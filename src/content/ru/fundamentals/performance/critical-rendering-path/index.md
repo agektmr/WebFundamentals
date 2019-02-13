@@ -1,28 +1,23 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Научитесь выбирать оптимальный порядок отображения контента в зависимости от его важности для пользователя.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Optimizing the critical rendering path refers to prioritizing the display of content that relates to the current user action.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Процесс визуализации {: .page-title }
+# Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+*Optimizing the critical rendering path* refers to prioritizing the display of content that relates to the current user action.
 
-Оптимизация помогает ускорить загрузку страниц. Наша цель - выбрать оптимальный порядок отображения контента в зависимости от его важности для пользователя.
+Delivering a fast web experience requires a lot of work by the browser. Most of this work is hidden from us as web developers: we write the markup, and a nice looking page comes out on the screen. But how exactly does the browser go from consuming our HTML, CSS, and JavaScript to rendered pixels on the screen?
 
-При визуализации страниц браузер проделывает огромную работу, которую мы, веб-разработчики, обычно не замечаем. Мы не знаем, как разметка, стили и скрипты превращаются в страницы на экране.
+Optimizing for performance is all about understanding what happens in these intermediate steps between receiving the HTML, CSS, and JavaScript bytes and the required processing to turn them into rendered pixels - that's the **critical rendering path**.
 
-Об этом и пойдет речь в наших уроках. Вы познакомитесь со всеми этапами **визуализации** - от скачивания HTML, CSS и JavaScript до вывода пикселей - и узнаете, как оптимизировать этот процесс.
+<img src="images/progressive-rendering.png"  alt="progressive page rendering" />
 
-<img src="images/progressive-rendering.png" class="center" alt="Оптимизированная и неоптимизированная визуализация">
-
-Оптимизация помогает сократить время загрузки веб-страниц. Кроме того, изучив процесс визуализации, вы сможете создавать более эффективные интерактивные приложения, потому что они подчиняются тем же принципам (разве что обновление приложения происходит циклично и с частотой 60 кадров/сек. Однако не будем спешить. Сначала разберемся, как браузер визуализирует простую веб-страницу.
-
+By optimizing the critical rendering path we can significantly improve the time to first render of our pages. Further, understanding the critical rendering path also serves as a foundation for building well-performing interactive applications. The interactive updates process is the same, just done in a continuous loop and ideally at 60 frames per second! But first, an overview of how the browser displays a simple page.
 
 {% include "web/_shared/udacity/ud884.html" %}
 
+## Feedback {: #feedback }
 
-
-
+{% include "web/_shared/helpful.html" %}

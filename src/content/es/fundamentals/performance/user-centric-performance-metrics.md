@@ -1,28 +1,20 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Métricas de rendimiento centradas en el usuario
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: User-centric Performance Metrics
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-06-01 #}
-{# wf_tags: performance #}
-{# wf_blink_components: Blink>PerformanceAPIs #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2017-06-01 #} {# wf_tags: performance #} {# wf_blink_components: Blink>PerformanceAPIs #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Métricas de rendimiento centradas en el usuario {: .page-title }
+# User-centric Performance Metrics {: .page-title }
 
 {% include "web/_shared/contributors/philipwalton.html" %}
 
-Es sumamente común escuchar que el rendimiento importa y que es esencial
-que las aplicaciones web sean rápidas.
+You've probably heard time and time again that performance matters, and that it's critical your web apps are fast.
 
-Pero, a medida que intentes responder la pregunta *¿Qué tan rápida es mi aplicación?*,
-comprenderás que "rápido" es un término ambiguo. ¿Qué significa exactamente "rápido"? ¿En qué
-contexto? ¿Y rápido para quién?
+But as you try to answer the question: *how fast is my app?*, you'll realize that fast is a vague term. What exactly do we mean when we say fast? In what context? And fast for whom?
 
 <aside>
-  <strong>Note:</strong> si prefieres mirar un video en lugar de leer un artículo,
- hablé sobre este tema en Google I/O 2017 con mi colega
+  <strong>Note:</strong> If you'd rather watch a video than read an article,
+  I spoke on this topic at Google I/O 2017 with my colleague
   <a href="https://twitter.com/shubhie">Shubhie Panicker</a>.
 </aside>
 
@@ -32,521 +24,360 @@ contexto? ¿Y rápido para quién?
   </iframe>
 </div>
 
-Al hablar sobre rendimiento, es importante hacerlo con precisión para no generar
-conceptos erróneos o extender mitos que harían que desarrolladores
-con buenas intenciones optimicen elementos incorrectos
-y, en última instancia, perjudiquen la experiencia de usuario en lugar de mejorarla.
+When talking about performance it's important to be precise so we don't create misconceptions or spread myths that can sometimes lead to well-intentioned developers optimizing for the wrong things&mdash;ultimately harming the user experience rather than improving it.
 
-Para brindar un ejemplo específico, hoy en día es habitual escuchar comentarios como:
-__*Probé mi aplicación y se carga en X,XX segundos*__.
+To offer a specific example, it's common today to hear people say something like: ***I tested my app, and it loads in X.XX seconds***.
 
-El problema con esta declaración *no* es que sea falsa, sino que
-distorsiona la realidad. Los tiempos de carga varían considerablemente
-de un usuario a otro según las capacidades de su dispositivo y las condiciones de red. Presentar
-los tiempos de carga como un solo número omite a los usuarios que experimentaron cargas mucho más prolongadas.
+The problem with this statement is *not* that it's false, it's that it misrepresents reality. Load times vary dramatically from user to user, depending on their device capabilities and network conditions. Presenting load times as a single number ignores the users who experienced much longer loads.
 
-En la práctica, el tiempo de carga de una aplicación es una recopilación de
-los tiempos de carga de cada usuario, y la única manera de representarlo
-es con una distribución como la del histograma a continuación:
+In reality, your app's load time is the collection of all load times from every individual user, and the only way to fully represent that is with a distribution like in the histogram below:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-histogram.png"
-       alt="Un histograma de los tiempos de carga para los visitantes de un sitio web"/>
+       alt="A histogram of load times for website visitors"/>
 </figure>
 
-Los números en el eje X muestran los tiempos de carga y la altura de las barras
-en el eje Y muestra la cantidad relativa de usuarios que experimentaron un tiempo de carga
-en ese segmento de tiempo específico. Como se muestra en este gráfico, si bien el segmento más grande de usuarios
-experimentó cargas de menos de uno o dos segundos, una gran parte de ellos
-observó tiempos de carga mucho mayores.
+The numbers along the X-axis show load times, and the height of the bars on the y-axis show the relative number of users who experienced a load time in that particular time bucket. As this chart shows, while the largest segment of users experienced loads of less than one or two seconds, many of them still saw much longer load times.
 
-El otro motivo por el que "mi sitio se carga en X,XX segundos" es un mito es que la carga no
-es un solo momento en el tiempo; es una experiencia que ninguna métrica puede
-capturar por completo. Hay varios momentos durante la experiencia de carga que pueden afectar
-si un usuario la percibe como "rápida" y, si solo nos enfocamos en uno, podemos
-pasar por alto malas experiencias que se produjeron durante el resto del tiempo.
+The other reason "my site loads in X.XX seconds" is a myth is that load is not a single moment in time&mdash;it's an experience that no one metric can fully capture. There are multiple moments during the load experience that can affect whether a user perceives it as "fast", and if you just focus on one you might miss bad experiences that happen during the rest of the time.
 
-Por ejemplo, consideremos una aplicación que se optimiza para obtener una representación inicial rápida
-y que entrega contenido al usuario de forma inmediata. Si la aplicación carga un gran conjunto
-JavaScript cuyo análisis y ejecución demoran varios segundos, el contenido
-de la página no será interactivo hasta que se complete la ejecución de JavaScript. Si un usuario
-puede ver un vínculo en la página, pero no puede hacer clic en él, o si
-puede ver un cuadro de texto, pero no puede escribir en él, es probable que no preste atención a la velocidad con la que se representa la página.
+For example, consider an app that optimizes for a fast initial render, delivering content to the user right away. If that app then loads a large JavaScript bundle that takes several seconds to parse and execute, the content on the page will not be interactive until after that JavaScript runs. If a user can see a link on the page but can't click on it, or if they can see a text box but can't type in it, they probably won't care how fast the page rendered.
 
-Así que, en lugar de medir la carga con una sola métrica, debemos medir los tiempos de
-cada momento a lo largo de la experiencia que pueden afectar la *precepción* de carga de
-los usuarios.
+So rather than measuring load with just one metric, we should be measuring the times of every moment throughout the experience that can have an affect on the user's load *perception*.
 
-Un segundo ejemplo de un mito de rendimiento es que __*el rendimiento solo preocupa
-en el tiempo de carga*__.
+A second example of a performance myth is that ***performance is only a concern at load time***.
 
-Como equipo, somos culpables de haber cometido este error, que puede llegar a potenciarse por
-el hecho de que la mayoría de las herramientas de rendimiento *solo* miden el rendimiento de carga.
+We as a team have been guilty of making this mistake, and it can be magnified by the fact that most performance tools *only* measure load performance.
 
-La realidad es que el rendimiento deficiente aparece en cualquier momento,
-no solo durante la carga. Las aplicaciones que no responden rápidamente a toques o clics y las que no
-se desplazan ni se animan con facilidad pueden ser tan deficientes como las que se cargan con lentitud. Los usuarios
-consideran la experiencia completa y, nosotros, como desarrolladores, debemos hacer lo mismo.
+But the reality is poor performance can happen at any time, not just during load. Apps that don't respond quickly to taps or clicks and apps that don't scroll or animate smoothly can be just as bad as apps that load slowly. Users care about the entire experience, and we developers should too.
 
-Un tema común en todos estos conceptos erróneos de rendimiento es que se enfocan
-en aspectos que poco o nada tienen que ver con la experiencia de usuario. Del mismo modo,
-las métricas de rendimiento tradicionales, como
-tiempo [carga](https://developer.mozilla.org/en-US/docs/Web/Events/load) o tiempo
-[DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded)
-, son muy poco confiables, ya que el momento en que se produjeron puede coincidir
-o no con el momento en que el usuario cree que se cargó la aplicación.
+A common theme in all of these performance misconceptions is they focus on things that have little or nothing to do with the user experience. Likewise, traditional performance metrics like [load](https://developer.mozilla.org/en-US/docs/Web/Events/load) time or [DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) time are extremely unreliable since when they occur may or may not correspond to when the user thinks the app is loaded.
 
-Para asegurarnos de no repetir este error, debemos responder estas
-preguntas:
+So to ensure we don't repeat this mistake, we have to answer these questions:
 
-1. ¿Qué métricas miden con mayor precisión el rendimiento según la percepción de un humano?
-2. ¿Cómo medimos estas métricas en nuestros usuarios reales?
-3. ¿Cómo interpretamos nuestras mediciones para determinar si una aplicación es "rápida"?
-4. Después de comprender el rendimiento de la aplicación para un usuario real,
- ¿qué hacemos para evitar las regresiones y, en lo posible, mejorar el rendimiento en el futuro?
+1. What metrics most accurately measure performance as perceived by a human?
+2. How do we measure these metrics on our actual users?
+3. How do we interpret our measurements to determine whether an app is "fast"?
+4. Once we understand our app's real-user performance, what do we do to prevent regressions and hopefully improve performance in the future?
 
-## Métricas de rendimiento centradas en el usuario
+## User-centric performance metrics
 
-Cuando un usuario navega a una página web, generalmente busca información
-visual para reafirmar que todo funciona según lo esperado.
+When a user navigates to a web page, they're typically looking for visual feedback to reassure them that everything is going to work as expected.
 
 <table>
   <tr>
-   <td><strong>¿Está sucediendo?</strong></td>
-   <td>¿La navegación se inició correctamente? ¿El servidor respondió?</td>
+   <td><strong>Is it happening?</strong></td>
+   <td>Did the navigation start successfully? Has the server responded?</td>
   </tr>
   <tr>
-   <td><strong>¿Es útil?</strong></td>
-   <td>¿Se representó contenido suficiente como para atraer a los usuarios?</td>
+   <td><strong>Is it useful?</strong></td>
+   <td>Has enough content rendered that users can engage with it?</td>
   </tr>
   <tr>
-   <td><strong>¿Es utilizable?</strong></td>
-   <td>¿Los usuarios pueden interactuar con la página o todavía se encuentra ocupada en la carga?</td>
+   <td><strong>Is it usable?</strong></td>
+   <td>Can users interact with the page, or is it still busy loading?</td>
   </tr>
   <tr>
-   <td><strong>¿Es agradable?</strong></td>
-   <td>¿Las interacciones son fluidas y naturales, sin demoras ni bloqueos?</td>
+   <td><strong>Is it delightful?</strong></td>
+   <td>Are the interactions smooth and natural, free of lag and jank?</td>
   </tr>
 </table>
 
-Para comprender las situaciones en las que una página entrega esta información a los usuarios,
-definimos varias métricas nuevas:
+To understand when a page delivers this feedback to its users, we've defined several new metrics:
 
-### Primer procesamiento de imagen y primer procesamiento de imagen con contenido
+### First paint and first contentful paint
 
-La API [Paint Timing](https://github.com/WICG/paint-timing) define dos
-métricas: *primer procesamiento de imagen* (FP) y *primer procesamiento de imagen con contenido* (FCP). Estas métricas
-indican los puntos, inmediatamente después de la navegación, cuando el navegador representa los píxeles
-en la pantalla. Es importante para el usuario, ya que responde a la pregunta:
-*¿está sucediendo?*
+The [Paint Timing](https://github.com/WICG/paint-timing) API defines two metrics: *first paint* (FP) and *first contentful paint* (FCP). These metrics mark the points, immediately after navigation, when the browser renders pixels to the screen. This is important to the user because it answers the question: *is it happening?*
 
-La principal diferencia entre las dos métricas es que FP indica el punto cuando el navegador
-representa *cualquier elemento* visualmente diferente de lo que estaba
-en la pantalla antes de la navegación. En cambio, FCP es el punto cuando el navegador
-representa el primer bit de contenido desde el DOM, lo que puede ser texto, una imagen, SVG
-o, incluso, un elemento `<canvas>`.
+The primary difference between the two metrics is FP marks the point when the browser renders *anything* that is visually different from what was on the screen prior to navigation. By contrast, FCP is the point when the browser renders the first bit of content from the DOM, which may be text, an image, SVG, or even a `<canvas>` element.
 
-### Primer procesamiento de imagen con significado y tiempo de elemento hero
+### First meaningful paint and hero element timing
 
-El primer procesamiento de imagen con significado (FMP) es la métrica que responde a la pregunta:
-"¿es útil?". Si bien el concepto "útil" es sumamente difícil de especificar para aplicarlo
-de forma genérica a todas las páginas web (por ende, no existe una especificación todavía),
-es bastante fácil para los desarrolladores web saber las partes de sus páginas
-que serán más útiles para los usuarios.
+First meaningful paint (FMP) is the metric that answers the question: "is it useful?". While the concept of "useful" is very hard to spec in a way that applies generically to all web pages (and thus no spec exists, yet), it's quite easy for web developers themselves to know what parts of their pages are going to be most useful to their users.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-hero-elements.png"
-       alt="Ejemplos de elementos hero en diversos sitios web"/>
+       alt="Examples of hero elements on various websites"/>
 </figure>
 
-A menudo, las "partes más importantes" de una página web se conocen como *elementos
-hero*. Por ejemplo, en la página de visualización de YouTube, el elemento hero es
-el video principal. En Twitter, estos elementos probablemente son las insignias de notificación
-y el primer tweet. En una aplicación meteorológica, es el pronóstico para la ubicación especificada. Y, en un sitio
-de noticias, posiblemente son la historia principal y la imagen destacada.
+These "most important parts" of a web page are often referred to as *hero elements*. For example, on the YouTube watch page, the hero element is the primary video. On Twitter it's probably the notification badges and the first tweet. On a weather app it's the forecast for the specified location. And on a news site it's likely the primary story and featured image.
 
-Casi siempre, las páginas web tienen partes más importantes que otras. Si
-las partes más importantes de una página se cargan de forma rápida, es posible que el usuario
-ni siquiera note que el resto de la página no se carga.
+Web pages almost always have parts that are more important than others. If the most important parts of a page load quickly, the user may not even notice if the rest of the page doesn't.
 
-### Tareas largas
+### Long tasks
 
-Para responder a las entradas de los usuarios, los navegadores agregan tareas a una cola
-en el subproceso principal para ejecutarlas una por una. Aquí también es donde el navegador ejecuta
-el JavaScript de la aplicación y, en ese sentido, el navegador mantiene un solo subproceso.
+Browsers respond to user input by adding tasks to a queue on the main thread to be executed one by one. This is also where the browser executes your application's JavaScript, so in that sense the browser is single-threaded.
 
-En algunos casos, estas tareas pueden demorar más tiempo en ejecutarse y, si eso sucede,
-el subproceso principal se bloquea y el resto de las tareas en la cola deben esperar.
+In some cases, these tasks can take a long time to run, and if that happens, the main thread is blocked and all other tasks in the queue have to wait.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-long-tasks.png"
-       alt="Tareas largas como se muestran en las herramientas para desarrolladores de Chrome"/>
+       alt="Long tasks as seen in the Chrome developer tools"/>
 </figure>
 
-Esto puede parecer una demora o un bloqueo para el usuario y es una fuente
-importante de malas experiencias en la Web de hoy en día.
+To the user this appears as lag or jank, and it's a major source of bad experiences on the web today.
 
-La [API Long Tasks](https://w3c.github.io/longtasks/) identifica las tareas
-de más de 50 ms de duración como potencialmente problemáticas
-y las expone al desarrollador de aplicaciones. Se seleccionó la duración de 50 ms para que las aplicaciones
-cumplan con las [pautas de RAIL](/web/fundamentals/performance/rail) de
-responder a una entrada del usuario en 100 ms.
+The [long tasks API](https://w3c.github.io/longtasks/) identifies any task longer than 50 milliseconds as potentially problematic, and it exposes those tasks to the app developer. The 50 millisecond time was chosen so applications could meet the [RAIL guidelines](/web/fundamentals/performance/rail) of responding to user input within 100 ms.
 
-### Tiempo hasta que es interactiva
+### Time to interactive
 
-La métrica *Tiempo hasta que es interactiva* (TTI) indica el punto en el que la aplicación
-se representa visualmente y es capaz de responder de forma confiable a una entrada del usuario. Es
-posible que una aplicación no pueda responder a una entrada del usuario por diversos motivos:
+The metric *Time to interactive* (TTI) marks the point at which your application is both visually rendered and capable of reliably responding to user input. An application could be unable to respond to user input for a couple of reasons:
 
-* Todavía no se cargó el JavaScript necesario para que los componentes en la página
- funcionen.
-* Existen tareas largas que bloquean el subproceso principal (como se describe
- en la última sección).
+* The JavaScript needed to make the components on the page work hasn't yet loaded.
+* There are long tasks blocking the main thread (as described in the last section).
 
-La métrica TTI identifica el punto en el que se carga el JavaScript inicial de la página
-y se inactiva el subproceso principal (sin tareas largas).
+The TTI metric identifies the point at which the page's initial JavaScript is loaded and the main thread is idle (free of long tasks).
 
-### Asignación de métricas a la experiencia de usuario
+### Mapping metrics to user experience
 
-Volviendo a las preguntas que antes identificamos como las más importantes
-para la experiencia de usuario, en esta tabla se describe la forma en que se asigna
-cada métrica mencionada a la experiencia que se espera optimizar:
+Getting back to the questions we previously identified as being the most important to the user experience, this table outlines how each of the metrics we just listed maps to the experience we hope to optimize:
 
 <table>
   <tr>
-    <th>La experiencia</th>
-    <th>La métrica</th>
+    <th>The Experience</th>
+    <th>The Metric</th>
   </tr>
   <tr>
-    <td>¿Está sucediendo?</td>
-    <td>Primer procesamiento de imagen (FP)/Primer procesamiento de imagen con contenido (FCP)</td>
+    <td>Is it happening?</td>
+    <td>First Paint (FP) / First Contentful Paint (FCP)</td>
   </tr>
   <tr>
-    <td>¿Es útil?</td>
-    <td>Primer procesamiento de imagen con significado (FMP)/Tiempo de elemento hero</td>
+    <td>Is it useful?</td>
+    <td>First Meaningful Paint (FMP) / Hero Element Timing</td>
   </tr>
   <tr>
-    <td>¿Es utilizable?</td>
-    <td>Tiempo hasta que es interactiva (TTI)</td>
+    <td>Is it usable?</td>
+    <td>Time to Interactive (TTI)</td>
   </tr>
   <tr>
-    <td>¿Es agradable?</td>
-    <td>Tareas largas (técnicamente la ausencia de tareas largas)</td>
+    <td>Is it delightful?</td>
+    <td>Long Tasks (technically the absence of long tasks)</td>
   </tr>
 </table>
 
-Estas capturas de pantalla de un cronograma de carga te ayudarán a visualizar mejor
-la ubicación de las métricas de carga en la experiencia de carga:
+And these screenshots of a load timeline should help you better visualize where the load metrics fit in the load experience:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-load-timeline.png"
-       alt="Capturas de pantalla de las ubicaciones en la experiencia de carga donde se observan estas métricas"/>
+       alt="Screenshots of where these metrics occur in the load experience"/>
 </figure>
 
-La siguiente sección detalla la forma de medir estas métricas en dispositivos de usuarios reales.
+The next section details how to measure these metrics on real users' devices.
 
-## Medición de estas métricas en dispositivos de usuarios reales
+## Measuring these metrics on real users' devices
 
-Uno de los principales motivos por los que históricamente hemos realizado optimizaciones para métricas como
-la carga y`DOMContentLoaded` es porque se exponen como eventos en el navegador y
-es fácil medirlas en usuarios reales.
+One of the main reasons we've historically optimized for metrics like load and `DOMContentLoaded` is because they're exposed as events in the browser and easy to measure on real users.
 
-Por otro lado, muchas otras métricas siempre han sido muy difíciles de
-medir. Por ejemplo, este código es un truco que los desarrolladores suelen utilizar para detectar
-tareas largas:
+By contrast, a lot of other metrics have been historically very hard to measure. For example, this code is a hack we often see developers use to detect long tasks:
 
-```
-(function detectLongFrame() {
-  var lastFrameTime = Date.now();
-  requestAnimationFrame(function() {
-    var currentFrameTime = Date.now();
+    (function detectLongFrame() {
+      var lastFrameTime = Date.now();
+      requestAnimationFrame(function() {
+        var currentFrameTime = Date.now();
+    
+        if (currentFrameTime - lastFrameTime > 50) {
+          // Report long frame here...
+        }
+    
+        detectLongFrame(currentFrameTime);
+      });
+    }());
+    
 
-    if (currentFrameTime - lastFrameTime > 50) {
-      // Report long frame here...
-    }
+This code starts an infinite `requestAnimationFrame` loop and records the time on each iteration. If the current time is more than 50 milliseconds after the previous time, it assumes it was the result of a long task. While this code mostly works, it has a lot of downsides:
 
-    detectLongFrame(currentFrameTime);
-  });
-}());
-```
+* It adds overhead to every frame.
+* It prevents idle blocks.
+* It's terrible for battery life.
 
-Este código inicia un bucle `requestAnimationFrame` infinito y registra el tiempo
-en cada iteración. Si el tiempo actual muestra 50 ms más que el tiempo
-anterior, se asume que es el resultado de una tarea larga. Este código funciona
-en la mayoría de los casos, pero presenta muchas desventajas:
+The most important rule of performance measurement code is that it shouldn't make performance worse.
 
-* Agrega sobrecarga a cada marco.
-* Evita los bloques en estado de inactividad.
-* Es terrible para la duración de la batería.
+Services like [Lighthouse](/web/tools/lighthouse/) and [Web Page Test](https://www.webpagetest.org/) have offered some of these new metrics for a while now (and in general they're great tools for testing performance on features prior to releasing them), but these tools don't run on your user's devices, so they don't reflect the actual performance experience of your users.
 
-La regla más importante de los códigos de medición de rendimiento es que no deben
-deteriorar el rendimiento.
+Luckily, with the addition of a few new browser APIs, measuring these metrics on real devices is finally possible without a lot of hacks or workarounds that can make performance worse.
 
-Los servicios, como [Lighthouse](/web/tools/lighthouse/) y [Web Page
-Test](https://www.webpagetest.org/), llevan bastante tiempo ofreciendo algunas de estas métricas nuevas
-(por lo general, son excelentes herramientas para probar el rendimiento de
-funciones antes de publicarlas), pero estas herramientas no se ejecutan
-en los dispositivos de los usuarios, así que no reflejan la experiencia de rendimiento real de los usuarios.
+These new APIs are [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), [`PerformanceEntry`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry), and [`DOMHighResTimeStamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp). To show some code with these new APIs in action, the following code example creates a new `PerformanceObserver` instance and subscribes to be notified about paint entries (e.g. FP and FCP) as well as any long tasks that occur:
 
-Afortunadamente, con la incorporación de algunas API de navegador nuevas, es posible
-medir estas métricas en dispositivos reales sin los trucos o los métodos alternativos
-que pueden deteriorar el rendimiento.
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        // `entry` is a PerformanceEntry instance.
+        console.log(entry.entryType);
+        console.log(entry.startTime); // DOMHighResTimeStamp
+        console.log(entry.duration); // DOMHighResTimeStamp
+      }
+    });
+    
+    // Start observing the entry types you care about.
+    observer.observe({entryTypes: ['resource', 'paint']});
+    
 
-Estas nuevas API son
-[`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver),
-[`PerformanceEntry`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry)
-y
-[`DOMHighResTimeStamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp).
-Para mostrar algún código en acción con estas nuevas API, el siguiente ejemplo de código
-crea una nueva instancia de `PerformanceObserver` y se suscribe para recibir notificaciones
-de las entradas de procesamiento de imagen (por ej., FP y FCP), así como de las tareas largas que se produzcan:
+What `PerformanceObserver` gives us that we've never had before is the ability to subscribe to performance events as they happen and respond to them in an asynchronous fashion. This replaces the older [PerformanceTiming](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface) interface, which often required polling to see when the data was available.
 
-```
-const observer = new PerformanceObserver((list) => {
-  for (const entry of list.getEntries()) {
-    // `entry` is a PerformanceEntry instance.
-    console.log(entry.entryType);
-    console.log(entry.startTime); // DOMHighResTimeStamp
-    console.log(entry.duration); // DOMHighResTimeStamp
-  }
-});
+### Tracking FP/FCP
 
-// Start observing the entry types you care about.
-observer.observe({entryTypes: ['resource', 'paint']});
-```
+Once you have the data for a particular performance event, you can send it to whatever analytics service you use to capture the metric for the current user. For example, using Google Analytics you might track first paint times as follows:
 
-`PerformanceObserver` ofrece algo nunca antes posible: la capacidad de suscribirse
-a eventos de rendimiento a medida que se producen y responder a estos
-de forma asíncrona. Esto reemplaza a la interfaz
-[PerformanceTiming](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface)
-anterior, en la que se requería un sondeo para ver si los datos
-se encontraban disponibles.
+    <head>
+      <!-- Add the async Google Analytics snippet first. -->
+      <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-XXXXX-Y', 'auto');
+      ga('send', 'pageview');
+      </script>
+      <script async src='https://www.google-analytics.com/analytics.js'></script>
+    
+      <!-- Register the PerformanceObserver to track paint timing. -->
+      <script>
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          // `name` will be either 'first-paint' or 'first-contentful-paint'.
+          const metricName = entry.name;
+          const time = Math.round(entry.startTime + entry.duration);
+    
+          ga('send', 'event', {
+            eventCategory: 'Performance Metrics',
+            eventAction: metricName,
+            eventValue: time,
+            nonInteraction: true,
+          });
+        }
+      });
+      observer.observe({entryTypes: ['paint']});
+      </script>
+    
+      <!-- Include any stylesheets after creating the PerformanceObserver. -->
+      <link rel="stylesheet" href="...">
+    </head>
+    
 
-### Seguimiento de FP/FCP
+<aside>
+  <p><strong>Important:</strong> you must ensure your <code>PerformanceObserver
+  </code> is registered in the <code>&lt;head&gt;</code> of your document
+  before any stylesheets, so it runs before FP/FCP happens.<p>
+  <p>This will no longer be necessary once Level 2 of the <a
+  href="https://w3c.github.io/performance-timeline/">Performance Observer spec
+  </a> is implemented, as it introduces a <a
+  href="https://w3c.github.io/performance-timeline/#dom-performanceobserverinit-
+  buffered"><code>buffered</code></a> flag that allows you to access performance
+  entries queued prior to the <code>PerformanceObserver</code>
+  being created.</p>
+</aside>
 
-Una vez obtenidos los datos para un evento de rendimiento determinado, es posible enviarlos
-al servicio de análisis que se use para captar la métrica del usuario actual.
-Por ejemplo, si se usa Google Analytics, es posible realizar un seguimiento de
-los tiempos de procesamiento de imagen de la siguiente manera:
+### Tracking FMP using hero elements
 
-```
-<head>
-  <!-- Add the async Google Analytics snippet first. -->
-  <script>
-  window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-  ga('create', 'UA-XXXXX-Y', 'auto');
-  ga('send', 'pageview');
-  </script>
-  <script async src='https://www.google-analytics.com/analytics.js'></script>
+Once you've identified what elements on the page are the hero elements, you'll want to track the point at which they're visible to your users.
 
-  <!-- Register the PerformanceObserver to track paint timing. -->
-  <script>
-  const observer = new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) {
-      // `name` will be either 'first-paint' or 'first-contentful-paint'.
-      const metricName = entry.name;
-      const time = Math.round(entry.startTime + entry.duration);
+We don't yet have a standardized definition for FMP (and thus no performance entry type either). This is in part because of how difficult it is to determine, in a generic way, what "meaningful" means for all pages.
 
+However, in the context of a single page or a single application, it's generally best to consider FMP to be the moment when your hero elements are visible on the screen.
+
+Steve Souders has a great article called [User Timing and Custom Metrics](https://speedcurve.com/blog/user-timing-and-custom-metrics/) that details many of the techniques for using browser's performance APIs to determine in code when various types of media are visible.
+
+### Tracking TTI
+
+In the long term, we hope to have a TTI metric standardized and exposed in the browser via PerformanceObserver. In the meantime, we've developed a polyfill that can be used to detect TTI today and works in any browser that supports the [Long Tasks API](https://w3c.github.io/longtasks/).
+
+The polyfill exposes a `getFirstConsistentlyInteractive()` method, which returns a promise that resolves with the TTI value. You can track TTI using Google Analytics as follows:
+
+    import ttiPolyfill from './path/to/tti-polyfill.js';
+    
+    ttiPolyfill.getFirstConsistentlyInteractive().then((tti) => {
       ga('send', 'event', {
         eventCategory: 'Performance Metrics',
-        eventAction: metricName,
-        eventValue: time,
+        eventAction: 'TTI',
+        eventValue: tti,
         nonInteraction: true,
       });
-    }
-  });
-  observer.observe({entryTypes: ['paint']});
-  </script>
+    });
+    
 
-  <!-- Include any stylesheets after creating the PerformanceObserver. -->
-  <link rel="stylesheet" href="...">
-</head>
-```
+The `getFirstConsistentlyInteractive()` method accepts an optional `startTime` configuration option, allowing you to specify a lower bound for which you know your app cannot be interactive before. By default the polyfill uses DOMContentLoaded as the start time, but it's often more accurate to use something like the moment your hero elements are visible or the point when you know all your event listeners have been added.
+
+Refer to the [TTI polyfill documentation](https://github.com/GoogleChrome/tti-polyfill) for complete installation and usage instructions.
 
 <aside>
-  <p><strong>Importante:</strong> Es necesario comprobar que <code>PerformanceObserver
-  </code> se registre en el elemento <code>&lt;head&gt;</code> del documento
- antes de cualquier hoja de estilo, para que se ejecute antes de que se produzca FP/FCP.<p>
-  <p>Esto ya no será necesario cuando se implemente el nivel 2 de <a
-  href="https://w3c.github.io/performance-timeline/">la especificación PerformanceObserver,
- </a> la cual introduce una marca <a
-  href="https://w3c.github.io/performance-timeline/#dom-performanceobserverinit-
-  buffered"><code>buffered</code></a> que permite acceder a las entradas de rendimiento
- en cola antes de que se cree <code>PerformanceObserver</code>
-  .</p>
+  <strong>Note:</strong> As with FMP, it's quite hard to spec a TTI metric
+  definition that works perfectly for all web pages. The version we've
+  implemented in the polyfill will work for most apps, but it's possible it
+  won't work for your particular app. It's important that you test it before
+  relying on it. If you want more details on the specifics of the TTI
+  definition and implementation you can read the
+  <a href="https://goo.gl/OSmrPk">TTI metric definition doc</a>.
 </aside>
 
-### Seguimiento de FMP con elementos hero
+### Tracking long tasks
 
-Una vez identificados los elementos de la página que son hero, se recomienda realizar
-un seguimiento del punto en el que se vuelven visibles para los usuarios.
+I mentioned above that long tasks will often cause some sort of negative user experience (e.g. a sluggish event handler or a dropped frame). It's good to be aware of how often this is happening, so you can make efforts to minimize it.
 
-Todavía no existe una definición estandarizada de FMP (y, por ende, ningún tipo de entrada
-de rendimiento). En parte, esto se debe a que es muy difícil determinar,
-de forma genérica, lo que significa "con significado" para todas las páginas.
+To detect long tasks in JavaScript you create a new `PerformanceObserver` and observe entries of type `longtask`. One nice feature of long task entries is they contain an [attribution property](https://w3c.github.io/longtasks/#sec-TaskAttributionTiming), so you can more easily track down which code caused the long task:
 
-Sin embargo, en el contexto de una sola página o aplicación, lo mejor generalmente es
-considerar FMP como el momento cuando los elementos hero se vuelven visibles
-en la pantalla.
-
-Steve Souders tiene un excelente artículo con el título [User Timing and Custom
-Metrics](https://speedcurve.com/blog/user-timing-and-custom-metrics/) donde
-se detallan muchas de las técnicas para usar las API de rendimiento del navegador
-para determinar en código el momento en que diversos tipos de medios se vuelven visibles.
-
-### Seguimiento de TTI
-
-A largo plazo, esperamos disponer de una métrica de TTI estandarizada y expuesta en el navegador
-a través de PerformanceObserver. Mientras tanto, desarrollamos un polyfill que
-se puede usar para detectar TTI hoy y funciona con cualquier navegador compatible con la
-[API Long Tasks](https://w3c.github.io/longtasks/).
-
-El polyfill expone un método `getFirstConsistentlyInteractive()`, que devuelve
-una promesa que se resuelve con el valor de TTI. Es posible realizar un seguimiento de TTI
-mediante Google Analytics de la siguiente manera:
-
-```
-import ttiPolyfill from './path/to/tti-polyfill.js';
-
-ttiPolyfill.getFirstConsistentlyInteractive().then((tti) => {
-  ga('send', 'event', {
-    eventCategory: 'Performance Metrics',
-    eventAction: 'TTI',
-    eventValue: tti,
-    nonInteraction: true,
-  });
-});
-```
-
-El método `getFirstConsistentlyInteractive()` acepta una opción de configuración `startTime`
-opcional, la que permite especificar un límite inferior antes del cual se sabe
-que la aplicación no puede ser interactiva. De forma predeterminada, el polyfill utiliza
-DOMContentLoaded como la hora de inicio, pero suele ser más efectivo utilizar
-algo como el momento en el que los elementos hero se vuelven visibles o
-el punto en el que se sabe que se agregaron todos los receptores de eventos.
-
-Consulta la [documentación del
-polyfill de TTI](https://github.com/GoogleChrome/tti-polyfill) para obtener
-todas las instrucciones de instalación y uso.
-
-<aside>
-  <strong>Note:</strong> Al igual que con FMP, es bastante difícil especificar
- una definición de la métrica TTI que funcione a la perfección en todas las páginas web. La versión
- implementada en el polyfill funcionará en la mayoría de las aplicaciones,
- pero es posible que no funcione en alguna en particular. Es importante probarla antes de
- depender en esta opción. Para obtener detalles sobre las características específicas
- de implementación y definición de TTI, lee
- <a href="https://goo.gl/OSmrPk">el documento de definiciones de la métrica TTI</a>.
-</aside>
-
-### Seguimiento de tareas largas
-
-Anteriormente, mencionamos que las tareas largas a menudo generan algún tipo de
-experiencia de usuario negativa (por ej., un controlador de eventos lento o un marco descartado). Es bueno conocer
-la frecuencia con la que esto se produce a fin de poder emplear esfuerzos para minimizarlo.
-
-Para detectar tareas largas en JavaScript, es necesario un `PerformanceObserver` nuevo y
-observar las entradas de tipo `longtask`. Una buena característica de las entradas de
-tareas largas es una [propiedad de
-atribución](https://w3c.github.io/longtasks/#sec-TaskAttributionTiming) para
-poder descubrir el código que provocó la tarea larga:
-
-```
-const observer = new PerformanceObserver((list) => {
-  for (const entry of list.getEntries()) {
-    ga('send', 'event', {
-      eventCategory: 'Performance Metrics',
-      eventAction: 'longtask',
-      eventValue: Math.round(entry.startTime + entry.duration),
-      eventLabel: JSON.stringify(entry.attribution),
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        ga('send', 'event', {
+          eventCategory: 'Performance Metrics',
+          eventAction: 'longtask',
+          eventValue: Math.round(entry.startTime + entry.duration),
+          eventLabel: JSON.stringify(entry.attribution),
+        });
+      }
     });
-  }
-});
+    
+    observer.observe({entryTypes: ['longtask']});
+    
 
-observer.observe({entryTypes: ['longtask']});
-```
+The attribution property will tell you what frame context was responsible for the long task, which is helpful in determining if third party iframe scripts are causing issues. Future versions of the spec are planning to add more granularity and expose script URL, line, and column number, which will be very helpful in determining if your own scripts are causing slowness.
 
-La propiedad de atribución indicará el contexto de marco responsable de la tarea larga,
-lo que es útil para determinar si las secuencias de comandos de terceros
-provocan problemas. Las versiones futuras de la especificación planean agregar granularidad
-y exponer la línea, el número de columna y la URL de la secuencia de comandos,
-lo que es sumamente útil para determinar si las secuencias de comandos propias provocan lentitud.
+### Tracking input latency
 
-### Seguimiento de la latencia de entrada
+Long tasks that block the main thread can prevent your event listeners from executing in a timely manner. The [RAIL performance model](/web/fundamentals/performance/rail) teaches us that in order for a user interface to feel smooth, it should respond within 100 ms of user input, and if this isn't happening, it's important to know about it.
 
-Las tareas largas que bloquean el subproceso principal pueden evitar que los receptores
-de eventos se ejecuten a su debido tiempo. El [modelo de rendimiento
-RAIL](/web/fundamentals/performance/rail) nos enseña que, para que una interfaz de usuario
-se sienta fluida, debe responder a menos de 100 ms de la entrada del usuario y,
-si esto no sucede, es importante saberlo.
+To detect input latency in code you can compare the event's time stamp to the current time, and if the difference is larger than 100 ms, you can (and should) report it.
 
-Para detectar la latencia de entrada en código, es posible comparar la marca de tiempo
-del evento con la hora actual y, si la diferencia es superior a 100 ms, se puede (y se debe)
-informar.
-
-```
-const subscribeBtn = document.querySelector('#subscribe');
-
-subscribeBtn.addEventListener('click', (event) => {
-  // Event listener logic goes here...
-
-  const lag = performance.now() - event.timeStamp;
-  if (lag > 100) {
-    ga('send', 'event', {
-      eventCategory: 'Performance Metric'
-      eventAction: 'input-latency',
-      eventLabel: '#subscribe:click',
-      eventValue: Math.round(lag),
-      nonInteraction: true,
+    const subscribeBtn = document.querySelector('#subscribe');
+    
+    subscribeBtn.addEventListener('click', (event) => {
+      // Event listener logic goes here...
+    
+      const lag = performance.now() - event.timeStamp;
+      if (lag > 100) {
+        ga('send', 'event', {
+          eventCategory: 'Performance Metric'
+          eventAction: 'input-latency',
+          eventLabel: '#subscribe:click',
+          eventValue: Math.round(lag),
+          nonInteraction: true,
+        });
+      }
     });
-  }
-});
-```
+    
 
-Como la latencia de evento generalmente es el resultado de una tarea larga, es posible combinar
-la lógica de detección de latencia de evento con la lógica de tarea larga:
-si una tarea larga bloquea el subproceso principal al mismo tiempo que `event.timeStamp`,
-también se puede informar el valor de atribución de esa tarea larga. Esto permite trazar una línea
-muy clara entre las experiencias de rendimiento negativas y el código
-que las provocó.
+Since event latency is usually the result of a long task, you can combine your event latency detection logic with your long task detection logic: if a long task was blocking the main thread at the same time as `event.timeStamp` you could report that long task's attribution value as well. This would allow you to draw a very clear line between negative performance experiences and the code that caused it.
 
-Si bien esta técnica no es perfecta (no admite receptores de eventos grandes más adelante
-en la fase de propagación y no funciona con animaciones de desplazamiento o compuestas
-que no se ejecutan en el subproceso principal), es un buen primer paso
-para comprender mejor con qué frecuencia la ejecución prolongada de código JavaScript
-afecta la experiencia de usuario.
+While this technique isn't perfect (it doesn't handle long event listeners later in the propagation phase, and it doesn't work for scrolling or composited animations that don't run on the main thread), it's a good first step into better understanding how often long running JavaScript code affects user experience.
 
-## Interpretación de los datos
+## Interpreting the data
 
-Una vez iniciada la recopilación de métricas de rendimiento para usuarios reales, es necesario
-poner esos datos en acción. Los datos de rendimiento de usuarios reales
-son útiles para algunos puntos importantes:
+Once you've started collecting performance metrics for real users, you need to put that data into action. Real-user performance data is useful for a few primary reasons:
 
-* Validar que la aplicación se ejecuta de la forma esperada.
-* Identificar lugares donde el rendimiento deficiente afecta negativamente las conversiones
- (lo que sea que eso signifique para la aplicación).
-* Buscar oportunidades para mejorar la experiencia de los usuarios y deleitarlos.
+* Validating that your app performs as expected.
+* Identifying places where poor performance is negatively affecting conversions (whatever that means for your app).
+* Finding opportunities to improve the user experience and delight your users.
 
-Un aspecto que sin dudas vale la pena comparar es el rendimiento de la aplicación
-en dispositivos móviles contra equipos de escritorio. El siguiente gráfico muestra la distribución de TTI en equipos de escritorio
-(azul) y dispositivos móviles (naranja). Como el ejemplo muestra, el valor de TTI en los dispositivos móviles
-es bastante mayor que en los equipos de escritorio:
+One thing definitely worth comparing is how your app performs on mobile devices vs desktop. The following chart shows the distribution of TTI across desktop (blue) and mobile (orange). As you can see from this example, the TTI value on mobile was quite a bit longer than on desktop:
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-tti-mobile-v-desktop.png"
-       alt="Distribución de TTI en equipos de escritorio y dispositivos móviles"/>
+       alt="TTI distribution across desktop and mobile"/>
 </figure>
 
-Si bien los números aquí son específicos de una aplicación (y no se debe esperar que coincidan
-con los propios, ya que cada uno debe probarlo por sí mismo), este es un ejemplo de la forma en que se debe
-abordar la generación de informes sobre métricas de uso:
+While the numbers here are app-specific (and you shouldn't assume they'd match your numbers, you should test for yourself), this gives you an example of how you might approach reporting on your usage metrics:
 
-#### Escritorio
+#### Desktop
 
 <table>
   <tr>
-   <td><strong>Percentil</strong></td>
-   <td align="right"><strong>TTI (segundos)</strong></td>
+   <td><strong>Percentile</strong></td>
+   <td align="right"><strong>TTI (seconds)</strong></td>
    </td>
   </tr>
   <tr>
@@ -563,12 +394,12 @@ abordar la generación de informes sobre métricas de uso:
   </tr>
 </table>
 
-#### Móvil
+#### Mobile
 
 <table>
   <tr>
-   <td><strong>Percentil</strong></td>
-   <td align="right"><strong>TTI (segundos)</strong></td>
+   <td><strong>Percentile</strong></td>
+   <td align="right"><strong>TTI (seconds)</strong></td>
    </td>
   </tr>
   <tr>
@@ -585,213 +416,136 @@ abordar la generación de informes sobre métricas de uso:
   </tr>
 </table>
 
-Desglosar los resultados entre dispositivos móviles y equipos de escritorio, y analizar
-los datos de distribución son tareas que permiten obtener información valiosa rápida sobre las experiencias de los usuarios reales.
-Por ejemplo, al observar la tabla anterior, podemos ver fácilmente que,
-para esta aplicación, el **10% de los usuarios móviles demoraron más de 12 segundos en estar interactivos.**
+Breaking your results down across mobile and desktop and analyzing the data as a distribution allows you to get quick insight into the experiences of real users. For example, looking at the above table, I can easily see that, for this app, **10% of mobile users took longer than 12 seconds to become interactive!**
 
-### Forma en que el rendimiento afecta el negocio
+### How performance affects business
 
-Una enorme ventaja del seguimiento del rendimiento en las herramientas de análisis
-es la posibilidad de usar esos datos para analizar la forma en que el rendimiento afecta el negocio.
+One huge advantage of tracking performance in your analytics tools is you can then use that data to analyze how performance affects business.
 
-Si se realiza un seguimiento de los cumplimientos de objetivos o las conversiones de comercio electrónico
-en los análisis, es posible generar informes donde se exploren las correlaciones entre estas métricas
-y las de rendimiento de la aplicación. Por ejemplo:
+If you're tracking goal completions or ecommerce conversions in analytics, you could create reports that explore any correlations between these and the app's performance metrics. For example:
 
-* ¿Los usuarios con tiempos interactivos más bajos compran más?
-* ¿Los usuarios que experimentan más tareas largas durante el flujo de finalización de compra muestran índices de abandono más altos?
+* Do users with faster interactive times buy more stuff?
+* Do users who experience more long tasks during the checkout flow drop off at higher rates?
 
-Si se encuentran correlaciones, es sustancialmente más fácil argumentar a favor
-de que el rendimiento es importante y debe tener prioridad.
+If correlations are found, it'll be substantially easier to make the business case that performance is important and should be prioritized.
 
-### Abandono por carga
+### Load abandonment
 
-Se sabe que muchos usuarios abandonan una página si esta demora demasiado en cargarse.
-Lamentablemente, esto significa que todas nuestras métricas de rendimiento comparten
-el problema de [sesgo de supervivencia](https://en.wikipedia.org/wiki/Survivorship_bias), en el que
-los datos no abarcan las métricas de carga de las personas que no esperaron que la carga
-de la página se complete (lo que probablemente significa que los números son demasiado bajos).
+We know that users will often leave if a page takes too long to load. Unfortunately, this means that all of our performance metrics share the problem of [survivorship bias](https://en.wikipedia.org/wiki/Survivorship_bias), where the data doesn't include load metrics from people who didn't wait for the page to finish loading (which likely means the numbers are too low).
 
-Si bien no se puede realizar un seguimiento de los números que se habrían obtenido si
-los usuarios se hubieran quedado, se puede rastrear con qué frecuencia sucedió esto y
-cuánto tiempo se quedó cada usuario.
+While you can't track what the numbers would have been if those users had stuck around, you can track how often this happens as well as how long each user stayed for.
 
-Esto es un poco complicado en Google Analytics, ya que la biblioteca analytics.js se carga
-generalmente de forma asíncrona y puede no estar disponible
-cuando el usuario decide irse. Sin embargo, no es necesario esperar que analytics.js se cargue
-para enviar datos a Google Analytics. Se pueden enviar directamente mediante el
-[protocolo de medición](/analytics/devguides/collection/protocol/v1/).
+This is a bit tricky to do with Google Analytics since the analytics.js library is typically loaded asynchronously, and it may not be available when the user decides to leave. However, you don't need to wait for analytics.js to load before sending data to Google Analytics. You can send it directly via the [Measurement Protocol](/analytics/devguides/collection/protocol/v1/).
 
-Este código agrega un receptor al evento
-[`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/Events/visibilitychange)
-(el cual se activa durante la descarga de la página o se coloca en segundo plano)
-y envía el valor de `performance.now()` en ese punto.
+This code adds a listener to the [`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/Events/visibilitychange) event (which fires if the page is being unloaded or goes into the background) and it sends the value of `performance.now()` at that point.
 
-```
-<script>
-window.__trackAbandons = () => {
-  // Remove the listener so it only runs once.
-  document.removeEventListener('visibilitychange', window.__trackAbandons);
-  const ANALYTICS_URL = 'https://www.google-analytics.com/collect';
-  const GA_COOKIE = document.cookie.replace(
-    /(?:(?:^|.*;)\s*_ga\s*\=\s*(?:\w+\.\d\.)([^;]*).*$)|^.*$/, '$1');
-  const TRACKING_ID = 'UA-XXXXX-Y';
-  const CLIENT_ID =  GA_COOKIE || (Math.random() * Math.pow(2, 52));
+    <script>
+    window.__trackAbandons = () => {
+      // Remove the listener so it only runs once.
+      document.removeEventListener('visibilitychange', window.__trackAbandons);
+      const ANALYTICS_URL = 'https://www.google-analytics.com/collect';
+      const GA_COOKIE = document.cookie.replace(
+        /(?:(?:^|.*;)\s*_ga\s*\=\s*(?:\w+\.\d\.)([^;]*).*$)|^.*$/, '$1');
+      const TRACKING_ID = 'UA-XXXXX-Y';
+      const CLIENT_ID =  GA_COOKIE || (Math.random() * Math.pow(2, 52));
+    
+      // Send the data to Google Analytics via the Measurement Protocol.
+      navigator.sendBeacon && navigator.sendBeacon(ANALYTICS_URL, [
+        'v=1', 't=event', 'ec=Load', 'ea=abandon', 'ni=1',
+        'dl=' + encodeURIComponent(location.href),
+        'dt=' + encodeURIComponent(document.title),
+        'tid=' + TRACKING_ID,
+        'cid=' + CLIENT_ID,
+        'ev=' + Math.round(performance.now()),
+      ].join('&'));
+    };
+    document.addEventListener('visibilitychange', window.__trackAbandons);
+    </script>
+    
 
-  // Send the data to Google Analytics via the Measurement Protocol.
-  navigator.sendBeacon && navigator.sendBeacon(ANALYTICS_URL, [
-    'v=1', 't=event', 'ec=Load', 'ea=abandon', 'ni=1',
-    'dl=' + encodeURIComponent(location.href),
-    'dt=' + encodeURIComponent(document.title),
-    'tid=' + TRACKING_ID,
-    'cid=' + CLIENT_ID,
-    'ev=' + Math.round(performance.now()),
-  ].join('&'));
-};
-document.addEventListener('visibilitychange', window.__trackAbandons);
-</script>
-```
+You can use this code by copying it into `<head>` of your document and replacing the `UA-XXXXX-Y` placeholder with your [tracking ID](https://support.google.com/analytics/answer/1008080).
 
-Para usar este código, puedes copiarlo en `<head>` en el documento y reemplazar
-el marcador de posición `UA-XXXXX-Y` por el
-[ID de seguimiento](https://support.google.com/analytics/answer/1008080).
+You'll also want to make sure you remove this listener once the page becomes interactive or you'll be reporting abandonment for loads where you were also reporting TTI.
 
-También es conveniente eliminar este receptor una vez que la página se vuelve
-interactiva; de lo contrario, se informará el abandono de cargas donde también
-se informa TTI.
+    document.removeEventListener('visibilitychange', window.__trackAbandons);
+    
 
-```
-document.removeEventListener('visibilitychange', window.__trackAbandons);
-```
+## Optimizing performance and preventing regression
 
-## Optimización de rendimiento y prevención de regresión
+The great thing about defining user-centric metrics is when you optimize for them, you inevitably improve user experience as well.
 
-Lo magnífico de definir métricas centradas en el usuario es que, al optimizarlas,
-es inevitable mejorar también la experiencia de usuario.
+One of the simplest ways to improve performance is to just ship less JavaScript code to the client, but in cases where reducing code size is not an option, it's critical that you think about *how* you deliver your JavaScript.
 
-Una de la formas más simples de mejorar el rendimiento es enviar menos código JavaScript
-al cliente. Si reducir el tamaño de código no es una opción, es esencial
-pensar en *cómo* se entrega JavaScript.
+### Optimizing FP/FCP
 
-### Optimización de FP/FCP
+You can lower the time to first paint and first contentful paint by removing any render blocking scripts or stylesheets from the `<head>` of your document.
 
-Es posible reducir el tiempo de primer procesamiento de imagen y primer procesamiento de imagen con contenido
-si se eliminan las hojas de estilo o las secuencias de comandos que bloquean la representación del `<head>` del documento.
+By taking the time to identify the minimal set of styles needed to show the user that "it's happening" and inlining them in the `<head>` (or using [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push)), you can get incredibly fast first paint times.
 
-Al dedicar tiempo a identificar el conjunto mínimo de estilos necesarios para mostrar
-al usuario que "está sucediendo" y alinearlo en el `<head>` (o usar el [servidor
-push HTTP/2](/web/fundamentals/performance/http2/#server_push)), es posible obtener tiempos de
-primer procesamiento de imagen sorprendentemente rápidos.
+The [app shell pattern](/web/updates/2015/11/app-shell) is a great example of how to do this for [Progressive Web Apps](/web/progressive-web-apps/).
 
-El [patrón de shell de aplicación](/web/updates/2015/11/app-shell) es un excelente ejemplo de
-cómo hacer esto para [aplicaciones web progresivas](/web/progressive-web-apps/).
+### Optimizing FMP/TTI
 
-### Optimización de FMP/TTI
+Once you've identified the most critical UI elements on your page (the hero elements), you should ensure that your initial script load contains just the code needed to get those elements rendered and make them interactive.
 
-Una vez identificados los elementos esenciales de la interfaz de usuario en la página
-(los elementos hero), se debe comprobar que la carga de secuencia de comandos inicial
-contenga solo el código necesario para que esos elementos se representen y se vuelvan interactivos.
+Any code unrelated to your hero elements that is included in your initial JavaScript bundle will slow down your time to interactivity. There's no reason to force your user's devices to download and parse JavaScript code they don't need right away.
 
-Todo código no relacionado con los elementos hero que se incluya en el conjunto
-JavaScript aumentará el tiempo de interactividad. No existe motivo
-para forzar a los dispositivos de los usuarios a descargar y analizar código JavaScript que no necesitan
-de inmediato.
+As a general rule, you should try as hard as possible to minimize the time between FMP and TTI. In cases where it's not possible to minimize this time, it's absolutely critical that your interfaces make it clear that the page isn't yet interactive.
 
-Como regla general, se debe hacer todo lo posible por minimizar el tiempo
-entre FMP y TTI. Si no es posible minimizar este tiempo, es absolutamente
-esencial que las interfaces indiquen con claridad que la página no es
-interactiva todavía.
+One of the most frustrating experiences for a user is tapping on an element and then having nothing happen.
 
-Una de las experiencias más frustrantes para un usuario es tocar un elemento y que
-no suceda nada.
+### Preventing long tasks
 
-### Prevención de tareas largas
+By splitting up your code and prioritizing the order in which it's loaded, not only can you get your pages interactive faster, but you can reduce long tasks and then hopefully have less input latency and fewer slow frames.
 
-Al dividir el código y priorizar el orden en que se carga, no solo es posible reducir
-el tiempo en que las páginas se vuelven interactivas, sino también reducir
-las tareas largas y, con suerte, reducir la latencia de entrada y los marcos lentos.
+In addition to splitting up code into separate files, you can also split up large chunks of synchronous code into smaller chunks that can execute asynchronously or be [deferred to the next idlepoint](/web/updates/2015/08/using-requestidlecallback). By executing this logic asynchronously in smaller chunks, you leave room on the main thread for the browser to respond to user input.
 
-Además de dividir el código en archivos separados, se pueden dividir los grandes
-fragmentos de código síncrono en porciones pequeñas
-que se puedan ejecutar de forma asíncrona o ser
-[diferidas al siguiente punto inactivo](/web/updates/2015/08/using-requestidlecallback).
-La ejecución de esta lógica de forma asíncrona en fragmentos más pequeños deja espacio
-en el subproceso principal para que el navegador responda a la entrada del usuario.
+Lastly, you should make sure you're testing your third party code and holding any slow running code accountable. Third party ads or tracking scripts that cause lots of long tasks may end up hurting your business more than they're helping it.
 
-Por último, es necesario probar el código de terceros y responsabilizar a todo código
-que se ejecute con lentitud. Las secuencias de comandos de seguimiento o
-los anuncios de terceros que generan muchas tareas largas pueden dañar al negocio
-más que ayudarlo.
+## Preventing regressions
 
-## Prevención de regresiones
+This article has focused heavily on performance measurement on real users, and while it's true that RUM data is the performance data that ultimately matters, lab data is still critical in ensuring your app performs well (and doesn't regress) prior to releasing new features. Lab tests are ideal for regression detection, as they run in a controlled environment and are far less prone to the random variability of RUM tests.
 
-Este artículo se enfoca profundamente en la medición del rendimiento en usuarios reales y,
-si bien es cierto que los datos de RUM son los datos de rendimiento que al final importan,
-los datos de laboratorio todavía son esenciales para comprobar que la aplicación funcione bien (y no
-retroceda) antes del lanzamiento de nuevas funciones. Las pruebas de laboratorio son ideales
-para detectar regresiones, ya que se ejecutan en un entorno controlado
-y son mucho menos propensas a la variabilidad arbitraria de las pruebas RUM.
+Tools like [Lighthouse](/web/tools/lighthouse/) and [Web Page Test](https://www.webpagetest.org/) can be integrated into your continuous integration server, and you can write tests that fail a build if key metrics regress or drop below a certain threshold.
 
-Es posible integrar herramientas como [Lighthouse](/web/tools/lighthouse/) y [Web Page
-Test](https://www.webpagetest.org/) en el servidor de integración continua,
-y redactar pruebas que desaprueben una compilación
-si las métricas clave retroceden o descienden por debajo de cierto umbral.
+And for code already released, you can add [custom alerts](https://support.google.com/analytics/answer/1033021) to inform you if there are unexpected spikes in the occurrence of negative performance events. This could happen, for example, if a third party releases a new version of one of their services and suddenly your users start seeing significantly more long tasks.
 
-Si el código ya fue lanzado, es posible agregar [alertas
-personalizadas](https://support.google.com/analytics/answer/1033021) que notifiquen si se producen
-picos inesperados en la repetición de eventos de rendimiento negativos.
-Esto puede suceder, por ejemplo, si un tercero lanza una nueva versión de uno
-de sus servicios y los usuarios comienzan a notar un aumento significativo
-de las tareas largas.
-
-Para evitar eficazmente las regresiones, es necesario probar el rendimiento tanto
-en el laboratorio como en el mundo real con el lanzamiento de cada nueva función.
+To successfully prevent regressions you need to be testing performance in both the lab and the wild with every new feature releases.
 
 <figure>
   <img src="/web/fundamentals/performance/images/perf-metrics-test-cycle.png"
-       alt="Diagrama de flujo de RUM y pruebas de laboratorio en el proceso de lanzamiento"/>
+       alt="A flow chart RUM and lab testing in the release process"/>
 </figure>
 
-## Conclusión y perspectiva a futuro
+## Wrapping up and looking forward
 
-En el último año, hemos avanzado mucho en exponer métricas centradas en el usuario
-para los desarrolladores en el navegador, pero eso no es todo, hemos planeado
-mucho más.
+We've made significant strides in the last year in exposing user-centric metrics to developers in the browser, but we're not done yet, and we have a lot more planned.
 
-Deseamos estandarizar las métricas de tiempo hasta que es interactiva y elementos hero,
-a fin de que los desarrolladores no necesiten medirlas por cuenta propia o depender de polyfills. También
-deseamos que los desarrolladores puedan atribuir más fácilmente marcos descartados
-y latencia de entrada a tareas largas específicas y al código que las provoca.
+We'd really like to standardize time to interactive and hero element metrics, so developers won't have to measure these themselves or depend on polyfills. We'd also like to make it easier for developers to attribute dropped frames and input latency to particular long tasks and the code that caused them.
 
-Tenemos mucho trabajo por delante, pero estamos emocionados por los avances logrados. Con
-las nuevas API, como `PerformanceObserver` y Long Tasks, compatibles de forma nativa con el navegador,
-los desarrolladores finalmente tienen
-las primitivas necesarias para medir el rendimiento en usuarios reales sin deteriorar su experiencia.
+While we have more work to do, we're excited about the progress we've made. With new APIs like `PerformanceObserver` and long tasks supported natively in the browser, developers finally have the primitives they need to measure performance on real users without degrading their experience.
 
-Las métricas más relevantes son las que representan las experiencias de usuarios reales.
-Nuestro objetivo es que sea lo más fácil posible para los desarrolladores deleitar
-a sus usuarios y crear aplicaciones magníficas.
+The metrics that matter the most are the ones that represent real user experiences, and we want to make it as easy as possible for developers to delight their users and create great applications.
 
-## Seguir conectados
+## Staying connected
 
 {% include "web/_shared/helpful.html" %}
 
-Para presentar problemas de especificación:
+File spec issues:
 
-* [https://github.com/w3c/longtasks/issues](https://github.com/w3c/longtasks/issues)
-* [https://github.com/WICG/paint-timing/issues](https://github.com/WICG/paint-timing/issues)
-* [https://github.com/w3c/performance-timeline/issues](https://github.com/w3c/performance-timeline/issues)
+* <https://github.com/w3c/longtasks/issues>
+* <https://github.com/WICG/paint-timing/issues>
+* <https://github.com/w3c/performance-timeline/issues>
 
-Para presentar problemas de polyfill:
+File polyfill issues:
 
-* [https://github.com/GoogleChrome/tti-polyfill/issues](https://github.com/GoogleChrome/tti-polyfill/issues)
+* <https://github.com/GoogleChrome/tti-polyfill/issues>
 
-Para realizar preguntas:
+Ask questions:
 
-* [progressive-web-metrics@chromium.org](mailto:progressive-web-metrics@chromium.org)
-* [public-web-perf@w3.org](mailto:public-web-perf@w3.org)
+* <progressive-web-metrics@chromium.org>
+* <public-web-perf@w3.org>
 
-Para expresar respaldo a inquietudes sobre las propuestas de API nuevas:
+Voice your support on concerns on new API proposals:
 
-* [https://github.com/w3c/charter-webperf/issues](https://github.com/w3c/charter-webperf/issues)
+* <https://github.com/w3c/charter-webperf/issues>

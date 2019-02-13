@@ -1,43 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "URL merespons dengan 200 bila offline".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Responds With A 200 When Offline" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-15 #}
-{# wf_published_on: 2016-09-15 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-15 #} {# wf_blink_components: N/A #}
 
-# URL Merespons dengan 200 Bila Offline {: .page-title }
+# Responds With A 200 When Offline {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Aplikasi web progresif bekerja secara offline. Jika Lighthouse tidak menerima respons HTTP 200
-saat mengakses laman selagi offline, maka laman tidak akan bisa diakses
-secara offline.
+Progressive web apps work offline. If Lighthouse does not receive an HTTP 200 response when accessing a page while offline, then the page is not accessible offline.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-1. Tambahkan sebuah service worker ke aplikasi Anda.
-2. Gunakan service worker untuk meng-cache file secara lokal.
-3. Bila offline, gunakan service worker sebagai proxy jaringan untuk mengembalikan
-   versi file yang telah di-cache secara lokal.
+1. Add a service worker to your app.
+2. Use the service worker to cache files locally.
+3. When offline, use the service worker as a network proxy to return the locally cached version of the file.
 
-Untuk mempelajari cara menambahkan service worker ke dalam aplikasi yang ada, lihat [Menambahkan Service
-Worker dan Offline Ke Dalam
-Aplikasi Web Anda](https://codelabs.developers.google.com/codelabs/offline). Gunakan apa yang telah Anda
-pelajari dalam codelab praktik langsung, langkah demi langkah ini untuk mengetahui cara menambahkan service
-worker ke dalam aplikasi Anda sendiri. Ini membahas langkah 1 dan 3 di atas.
+To learn how to add a service worker into an existing app, see [Adding a Service Worker and Offline Into Your Web App](https://codelabs.developers.google.com/codelabs/offline). Use what you learn in this step-by-step, hands-on codelab to learn how to add a service worker into your own app. This covers steps 1 and 3 above.
 
-Codelab di atas menampilkan sebagian dasar-dasar mengenai cara men-debug service worker
-Anda dengan menggunakan Chrome DevTools. Untuk bantuan lebih detail, lihat codelab yang dikhususkan untuk
-topik ini, [Men-debug Service
-Worker](https://codelabs.developers.google.com/codelabs/debugging-service-workers).
+The codelab above shows you some basics on how to debug your service worker using Chrome DevTools. For more detailed help, see the codelab dedicated to this topic, [Debugging Service Workers](https://codelabs.developers.google.com/codelabs/debugging-service-workers).
 
-Gunakan [Buku Petunjuk Offline](https://jakearchibald.com/2014/offline-cookbook/) untuk
-menentukan strategi caching yang paling pas dengan aplikasi Anda. Ini membahas langkah 2 di atas.
+Use the [Offline Cookbook](/web/fundamentals/instant-and-offline/offline-cookbook/) to determine which caching strategy fits your app best. This covers step 2 above.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse mengemulasikan koneksi offline dengan menggunakan Chrome Debugging Protocol,
-kemudian berusaha mengambil laman dengan menggunakan `XMLHttpRequest`.
+Lighthouse emulates an offline connection using the Chrome Debugging Protocol, and then attempts to retrieve the page using `XMLHttpRequest`.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

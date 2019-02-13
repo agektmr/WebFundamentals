@@ -1,20 +1,14 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Funções assíncronas permitem escrever código baseado em promessa como se fosse síncrono
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Async functions allow you to write promise-based code as if it were synchronous
 
-{# wf_published_on: 2016-10-20 #}
-{# wf_updated_on: 2016-10-20 #}
+{# wf_published_on: 2016-10-20 #} {# wf_updated_on: 2018-10-10 #} {# wf_blink_components: Blink>JavaScript #}
 
-# Funções assíncronas - simplificando promessas {: .page-title }
+# Async functions - making promises friendly {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-Funções assíncronas são ativadas por padrão no Chrome 55 e, sinceramente, elas são
-maravilhosas. Eles permitem que escrever código baseado em promessa como se fosse síncrono,
-mas sem bloquear o segmento principal. Elas tornam o seu código assíncrono menos
-"inteligente" e mais legível.
+Async functions are enabled by default in Chrome 55 and they're quite frankly marvelous. They allow you to write promise-based code as if it were synchronous, but without blocking the main thread. They make your asynchronous code less "clever" and more readable.
 
-Funções assíncronas funcionam assim:
+Async functions work like this:
 
     async function myFirstAsyncFunction() {
       try {
@@ -24,19 +18,15 @@ Funções assíncronas funcionam assim:
         // …
       }
     }
+    
 
-Se usar a palavra-chave `async` antes de uma definição de função, você pode usar
-`await` dentro da função.  Quando você `await` uma promessa, a função está pausada
-de uma forma não-bloqueadora, até que a promessa seja concluída. Se a promessa cumprir, você
-obtém o valor de volta. Se a promessa rejeitar, o valor rejeitado é descartado.
+If you use the `async` keyword before a function definition, you can then use `await` within the function. When you `await` a promise, the function is paused in a non-blocking way until the promise settles. If the promise fulfills, you get the value back. If the promise rejects, the rejected value is thrown.
 
-Observação: Se você não estiver familiarizado com promessas, consulte [nosso
-guia de promessas](/web/fundamentals/getting-started/primers/promises).
+Note: If you're unfamiliar with promises, check out [our promises guide](/web/fundamentals/getting-started/primers/promises).
 
-## Exemplo: Registrando uma busca
+## Example: Logging a fetch
 
-Suponha que desejamos buscar um URL e registrar a resposta como texto. Eis como isso fica
-usando promessas:
+Say we wanted to fetch a URL and log the response as text. Here's how it looks using promises:
 
     function logFetch(url) {
       return fetch(url)
@@ -47,8 +37,9 @@ usando promessas:
           console.error('fetch failed', err);
         });
     }
+    
 
-E aqui está a mesma coisa usando funções assíncronas:
+And here's the same thing using async functions:
 
     async function logFetch(url) {
       try {
@@ -59,78 +50,73 @@ E aqui está a mesma coisa usando funções assíncronas:
         console.log('fetch failed', err);
       }
     }
+    
 
-É o mesmo número de linhas, mas todas as chamadas de retorno desapareceram. Isso facilita muito a
-leitura, especialmente para pessoas menos familiarizadas com promessas.
+It's the same number of lines, but all the callbacks are gone. This makes it way easier to read, especially for those less familiar with promises.
 
-Observação: Qualquer coisa que você `await` é passada por meio de `Promise.resolve()`, para que
-você possa `await` promessas não-nativas com segurança.
+Note: Anything you `await` is passed through `Promise.resolve()`, so you can safely `await` non-native promises.
 
-## Valores de retorno assíncronos
+## Async return values
 
-Funções assíncronas *sempre* retornam uma promessa, quer você use `await` ou não. Essa
-promessa é resolvida com qualquer coisa que a função assíncrona retorne, ou rejeitada com
-qualquer coisa que a função assíncrona descarte. Assim, com:
+Async functions *always* return a promise, whether you use `await` or not. That promise resolves with whatever the async function returns, or rejects with whatever the async function throws. So with:
 
     // wait ms milliseconds
     function wait(ms) {
       return new Promise(r => setTimeout(r, ms));
     }
-
+    
     async function hello() {
       await wait(500);
       return 'world';
     }
+    
 
-... chamar `hello()` retorna uma promessa que *se cumpre* com `"world"`.
+…calling `hello()` returns a promise that *fulfills* with `"world"`.
 
     async function foo() {
       await wait(500);
       throw Error('bar');
     }
+    
 
-... chamar `foo()` retorna uma promessa que *é rejeitada com `Error('bar')`.
+…calling `foo()` returns a promise that *rejects* with `Error('bar')`.
 
-## Exemplo: Transmissão de uma resposta
+## Example: Streaming a response
 
-A vantagem das funções assíncronas aumenta em exemplos mais complexos. Digamos que desejávamos
-transmitir uma resposta ao registrar os pedaços, e retornar o tamanho final.
+The benefit of async functions increases in more complex examples. Say we wanted to stream a response while logging out the chunks, and return the final size.
 
-Observação: A frase "registrar os pedaços" me deixou enjoado.
+Note: The phrase "logging out the chunks" made me sick in my mouth.
 
-Aqui está ela com promessas:
+Here it is with promises:
 
     function getResponseSize(url) {
       return fetch(url).then(response => {
         const reader = response.body.getReader();
         let total = 0;
-
+    
         return reader.read().then(function processResult(result) {
           if (result.done) return total;
-
+    
           const value = result.value;
           total += value.length;
           console.log('Received chunk', value);
-
+    
           return reader.read().then(processResult);
         })
       });
     }
+    
 
-Verifique-me, Jake "portador de promessas" Archibald. Vê como estou chamando
-`processResult` dentro de si para configurar um loop assíncrono? Escrever isso me fez
-sentir *muito inteligente*. Porém, como com a maioria dos códigos "inteligentes", você tem que analisá-lo
-por um longo tempo para descobrir o que está fazendo, como uma daquelas imagens de olho-mágico da
-década de 90.
+Check me out, Jake "wielder of promises" Archibald. See how I'm calling `processResult` inside itself to set up an asynchronous loop? Writing that made me feel *very smart*. But like most "smart" code, you have to stare at it for ages to figure out what it's doing, like one of those magic-eye pictures from the 90's.
 
-Vamos tentar novamente com funções assíncronas:
+Let's try that again with async functions:
 
     async function getResponseSize(url) {
       const response = await fetch(url);
       const reader = response.body.getReader();
       let result = await reader.read();
       let total = 0;
-
+    
       while (!result.done) {
         const value = result.value;
         total += value.length;
@@ -138,37 +124,31 @@ Vamos tentar novamente com funções assíncronas:
         // get the next result
         result = await reader.read();
       }
-
+    
       return total;
     }
+    
 
-Todo o "inteligente" desapareceu. O loop assíncrono que me fez sentir tão presunçoso é
-substituído por um while-loop confiável e enfadonho. Muito melhor. No futuro, teremos
-[iteradores assíncronos](https://github.com/tc39/proposal-async-iteration){: .external},
-que
-[substituiriam o `while` loop por um loop for-of](https://gist.github.com/jakearchibald/0b37865637daf884943cf88c2cba1376){: .external}, tornando-o ainda mais elegante.
+All the "smart" is gone. The asynchronous loop that made me feel so smug is replaced with a trusty, boring, while-loop. Much better. In future, we'll get [async iterators](https://github.com/tc39/proposal-async-iteration){: .external}, which would [replace the `while` loop with a for-of loop](https://gist.github.com/jakearchibald/0b37865637daf884943cf88c2cba1376){: .external}, making it even neater.
 
-Observação: Eu sou meio apaixonado por strings. Se você não estiver familiarizado com streaming,
-[confira o meu guia](https://jakearchibald.com/2016/streams-ftw/#streams-the-fetch-api){: .external}.
+Note: I'm sort-of in love with streams. If you're unfamiliar with streaming, [check out my guide](https://jakearchibald.com/2016/streams-ftw/#streams-the-fetch-api){: .external}.
 
-## Outras sintaxes de função assíncrona
+## Other async function syntax
 
-Já vimos `async function() {}`, mas a palavra-chave `async` pode ser usada
-com outra sintaxe de função:
+We've seen `async function() {}` already, but the `async` keyword can be used with other function syntax:
 
-### Funções de seta
+### Arrow functions
 
     // map some URLs to json-promises
     const jsonPromises = urls.map(async url => {
       const response = await fetch(url);
       return response.json();
     });
+    
 
-Observação: `array.map(func)` não se importa que eu lhe atribuí uma função assíncrona, ele
-a encara apenas como uma função que retorna uma promessa. Ele não espera a
-primeira função se completar antes de chamar a segunda.
+Note: `array.map(func)` doesn't care that I gave it an async function, it just sees it as a function that returns a promise. It won't wait for the first function to complete before calling the second.
 
-### Métodos de objeto
+### Object methods
 
     const storage = {
       async getAvatar(name) {
@@ -176,78 +156,78 @@ primeira função se completar antes de chamar a segunda.
         return cache.match(`/avatars/${name}.jpg`);
       }
     };
-
+    
     storage.getAvatar('jaffathecake').then(…);
+    
 
-### Métodos de classe
+### Class methods
 
     class Storage {
       constructor() {
         this.cachePromise = caches.open('avatars');
       }
-
+    
       async getAvatar(name) {
         const cache = await this.cachePromise;
         return cache.match(`/avatars/${name}.jpg`);
       }
     }
-
+    
     const storage = new Storage();
     storage.getAvatar('jaffathecake').then(…);
+    
 
-Observação: Construtores de classe e coletores/configurações não podem ser assíncronos.
+Note: Class constructors and getters/setters cannot be async.
 
-## Cuidado! Evite ser sequencial demais
+## Careful! Avoid going too sequential
 
-Embora esteja compilando código síncrono, certifique-se de não perder a
-oportunidade de fazer coisas em paralelo.
+Although you're writing code that looks synchronous, ensure you don't miss the opportunity to do things in parallel.
 
     async function series() {
-      await wait(500);
-      await wait(500);
+      await wait(500); // Wait 500ms…
+      await wait(500); // …then wait another 500ms.
       return "done!";
     }
+    
 
-O item acima leva 1000 ms para ser concluído, enquanto:
+The above takes 1000ms to complete, whereas:
 
     async function parallel() {
-      const wait1 = wait(500);
-      const wait2 = wait(500);
-      await wait1;
-      await wait2;
+      const wait1 = wait(500); // Start a 500ms timer asynchronously…
+      const wait2 = wait(500); // …meaning this timer happens in parallel.
+      await wait1; // Wait 500ms for the first timer…
+      await wait2; // …by which time this timer has already finished.
       return "done!";
     }
+    
 
-O item acima leva 500 ms para ser concluído, porque ambas as esperas ocorrem ao mesmo tempo.
-Vejamos um exemplo prático...
+…the above takes 500ms to complete, because both waits happen at the same time. Let's look at a practical example…
 
-### Exemplo: Emitindo buscas em ordem
+### Example: Outputting fetches in order
 
-Digamos que desejamos buscar uma série de URLs e registrá-los o mais rapidamente possível,
-na ordem correta.
+Say we wanted to fetch a series URLs and log them as soon as possible, in the correct order.
 
-*Suspiro profundo* - eis como isso fica com promessas:
+*Deep breath* - here's how that looks with promises:
 
     function logInOrder(urls) {
       // fetch all the URLs
       const textPromises = urls.map(url => {
         return fetch(url).then(response => response.text());
       });
-
+    
       // log them in order
       textPromises.reduce((chain, textPromise) => {
         return chain.then(() => textPromise)
           .then(text => console.log(text));
       }, Promise.resolve());
     }
+    
 
-Sim, isso mesmo, estou usando `reduce` para ligar de uma sequência de promessas. *Sou tão
-inteligente*. Mas isso é uma codificação um pouco *tão inteligente*, e ficamos melhor sem ela.
+Yeah, that's right, I'm using `reduce` to chain a sequence of promises. I'm *so smart*. But this is a bit of *so smart* coding we're better off without.
 
-No entanto, ao converter o item acima para uma função assíncrona, é tentador ser
-*sequencial demais*:
+However, when converting the above to an async function, it's tempting to go *too sequential*:
 
-<span class="compare-worse">Não recomendado</span> - sequencial demais
+<span class="compare-worse">Not recommended</span> - too sequential
 
     async function logInOrder(urls) {
       for (const url of urls) {
@@ -255,12 +235,11 @@ No entanto, ao converter o item acima para uma função assíncrona, é tentador
         console.log(await response.text());
       }
     }
+    
 
-Ficou muito mais elegante, mas minha segunda busca não começa até que a primeira busca
-tenha sido totalmente lida, e assim por diante. Isso é muito mais lento do que o exemplo de promessas que
-executa as buscas em paralelo. Felizmente há um meio termo ideal:
+Looks much neater, but my second fetch doesn't begin until my first fetch has been fully read, and so on. This is much slower than the promises example that performs the fetches in parallel. Thankfully there's an ideal middle-ground:
 
-<span class="compare-better">Recomendado</span> - bom e paralelo
+<span class="compare-better">Recommended</span> - nice and parallel
 
     async function logInOrder(urls) {
       // fetch all the URLs in parallel
@@ -268,79 +247,62 @@ executa as buscas em paralelo. Felizmente há um meio termo ideal:
         const response = await fetch(url);
         return response.text();
       });
-
+    
       // log them in sequence
       for (const textPromise of textPromises) {
         console.log(await textPromise);
       }
     }
+    
 
-Neste exemplo, os URLs são buscados e lidos em paralelo, mas a parte "inteligente"
-`reduce` é substituída por um loop for padrão, enfadonho e legível.
+In this example, the URLs are fetched and read in parallel, but the "smart" `reduce` bit is replaced with a standard, boring, readable for-loop.
 
-## Suporte a navegadores & soluções alternativas
+## Browser support & workarounds
 
-No momento da compilação, funções assíncronas estão ativadas por padrão no Chrome 55, mas
-elas estão sendo desenvolvidas em todos os principais navegadores:
+At time of writing, async functions are enabled by default in Chrome, Edge, Firefox, and Safari.
 
-* Edge - [Na versão 14342+ atrás de uma sinalização](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/asyncfunctions/)
-* Firefox - [desenvolvimento ativo](https://bugzilla.mozilla.org/show_bug.cgi?id=1185106)
-* Safari - [desenvolvimento ativo](https://bugs.webkit.org/show_bug.cgi?id=156147)
+### Workaround - Generators
 
-### Solução alternativa - Geradores
+If you're targeting browsers that support generators (which includes [the latest version of every major browser](http://kangax.github.io/compat-table/es6/#test-generators){:.external} ) you can sort-of polyfill async functions.
 
-Se tem como objetivo navegadores que suportam geradores (que inclui
-[a versão mais recente de todos os principais navegadores](http://kangax.github.io/compat-table/es6/#test-generators){:.external}
-) você pode usar funções assíncronas polyfill.
+[Babel](https://babeljs.io/){: .external} will do this for you, [here's an example via the Babel REPL](https://goo.gl/0Cg1Sq){: .external}
 
-[Babel](https://babeljs.io/){: .external} vai faz isso por você,
-[eis um exemplo através do Babel REPL](https://goo.gl/0Cg1Sq){: .external}
-- observe quão semelhante é o código transcompilado. Esta transformação é parte da 
-[pré-configuração do Babel es2017](http://babeljs.io/docs/plugins/preset-es2017/){: .external}.
+- note how similar the transpiled code is. This transformation is part of [Babel's es2017 preset](http://babeljs.io/docs/plugins/preset-es2017/){: .external}.
 
-Observação: É divertido dizer Babel REPL. Experimente.
+Note: Babel REPL is fun to say. Try it.
 
-Recomendo a abordagem de transcompilagem, porque você pode simplesmente desativá-la
-quando seus navegadores de destino suportarem funções assíncronas, mas se você *realmente* não quiser
-usar um transcompilador, pode utilizar o
-[polyfill do Babel](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external}
-e use-o. Em vez de:
+I recommend the transpiling approach, because you can just turn it off once your target browsers support async functions, but if you *really* don't want to use a transpiler, you can take [Babel's polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external} and use it yourself. Instead of:
 
     async function slowEcho(val) {
       await wait(1000);
       return val;
     }
+    
 
-…você incluiria [o polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external}
-e compilaria:
+…you'd include [the polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external} and write:
 
     const slowEcho = createAsyncFunction(function*(val) {
       yield wait(1000);
       return val;
     });
+    
 
-Observe que você tem que passar um gerador (`function*`) para `createAsyncFunction`,
-e usar `yield` em vez de `await`. Exceto por isso, funciona da mesma forma.
+Note that you have to pass a generator (`function*`) to `createAsyncFunction`, and use `yield` instead of `await`. Other than that it works the same.
 
-### Solução alternativa - regenerador
+### Workaround - regenerator
 
-Se seu objetivo são navegadores mais antigos, o Babel também pode transcompilar geradores,
-o que te permite usar funções assíncronas até mesmo no IE8. Para fazê-lo, você precisa da
-[pré-configuração do Babel's es2017](http://babeljs.io/docs/plugins/preset-es2017/){: .external}
-*e* da [pré-configuração es2015](http://babeljs.io/docs/plugins/preset-es2015/){: .external}.
+If you're targeting older browsers, Babel can also transpile generators, allowing you to use async functions all the way down to IE8. To do this you need [Babel's es2017 preset](http://babeljs.io/docs/plugins/preset-es2017/){: .external} *and* the [es2015 preset](http://babeljs.io/docs/plugins/preset-es2015/){: .external}.
 
-A [saída não é tão bela](https://goo.gl/jlXboV), então cuidado com
-sobrecarga de código.
+The [output is not as pretty](https://goo.gl/jlXboV), so watch out for code-bloat.
 
-## Faça tudo assíncrono!
+## Async all the things!
 
-Uma vez que funções assíncronas funcionam em todos os navegadores, use-as em todas as
-funções que retornam promessas! Elas não apenas tornam seu código mais ordenado, mas
-certificam que a função *sempre* retornará uma promessa.
+Once async functions land across all browsers, use them on every promise-returning function! Not only do they make your code tidier, but it makes sure that function will *always* return a promise.
 
-Eu fiquei realmente animado com as funções assíncronas [em
-2014](https://jakearchibald.com/2014/es7-async-functions/){: .external}, e
-é ótimo vê-las chegando, de verdade, nos navegadores. Legal!
+I got really excited about async functions [back in 2014](https://jakearchibald.com/2014/es7-async-functions/){: .external}, and it's great to see them land, for real, in browsers. Whoop!
 
+## Feedback {: .hide-from-toc }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
+
+<div class="clearfix"></div>

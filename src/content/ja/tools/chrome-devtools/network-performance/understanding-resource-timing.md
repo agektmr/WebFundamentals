@@ -1,78 +1,81 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: リソースがネットワーク経由で集められる際の複数のフェーズを理解しておくことは重要です。これを理解することが、読み込みの問題を解決する場合の基盤になります。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
-{# wf_published_on:2016-02-03 #}
-{# wf_updated_on:2016-02-03 #}
+{# wf_published_on: 2016-12-29 #} {# wf_updated_on: 2018-07-27 #} {# wf_blink_components: Platform>DevTools #}
 
-#  Resource Timing について {: .page-title }
+# Understanding Resource Timing {: .page-title }
 
 {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-リソースがネットワーク経由で集められる際の複数のフェーズを理解しておくことは重要です。これを理解することが、読み込みの問題を解決する場合の基盤になります。
+<aside class="note">
+  <b>Note:</b> This page is deprecated. At the top of each section, there's a
+  link to an up-to-date page where you can find similar information.
+</aside>
 
+It is crucial to understand the phases in which resources are gathered over the network. This is the foundation for fixing load issues.
 
 ### TL;DR {: .hide-from-toc }
-- リソース タイミングの複数のフェーズについて理解します。
-- Resource Timing API によって各フェーズに提供されるものを把握します。
-- タイムライン グラフでパフォーマンスに関する問題のさまざまな兆候を見つけます。一連の透明のバーや緑色の大きなブロックなどがその例です。
 
+* Understand the phases of resource timing.
+* Know what each phase provides to the Resource Timing API.
+* Realize different indicators of performance problems in the timeline graph, such as series of transparent bars or large green chunks.
 
-すべてのネットワーク リクエストがリソースと考えられます。こうしたリクエストはネットワーク経由で取得されるため、リソースにはリソースのタイミングという点から表される独自のライフサイクルがあります。[Network] パネルでは、[Resource Timing API](http://www.w3.org/TR/resource-timing) が使用されています。この API はアプリケーションのデベロッパーが使用するのと同じものです。
+All network requests are considered resources. As they are retrieved over the network, resources have distinct lifecycles expressed in terms of resource timing. The Network Panel uses the same [Resource Timing API](http://www.w3.org/TR/resource-timing) that is available to application developers.
 
+Note: when using the Resource Timing API with cross origin resources, make sure that all of the resources have CORS headers.
 
+The Resource Timing API provides a rich level of detail about each individual asset's time to be received. The primary phases of the request lifecycle are:
 
-注: クロスオリジン リソースで Resource Timing API を使用する場合、すべてのリソースに CORS ヘッダーが必要です。
+* Redirect 
+    * Immediately begins `startTime`.
+    * If a redirect is happening, `redirectStart` begins as well.
+    * If a redirect is occurring at the end of this phase then `redirectEnd` will be taken.
+* App Cache 
+    * If it’s application cache fulfilling the request, a `fetchStart` time will be taken.
+* DNS 
+    * `domainLookupStart` time is taken at the beginning of the DNS request.
+    * `domainLookupEnd` time is taken at the end of the DNS request.
+* TCP 
+    * `connectStart` is taken when initially connecting to the server.
+    * If TLS or SSL are in use then `secureConnectionStart` will start when the handshake begins for securing the connection.
+    * `connectEnd` is taken when the connection to the server is complete.
+* Request 
+    * `requestStart` is taken once the request for a resource has been sent to the server.
+* Response 
+    * `responseStart` is the time when the server initially responds to the request.
+    * `responseEnd` is the time when the request ends and the data is retrieved.
 
+![Resource Timing API diagram](imgs/resource-timing-api.png)
 
-Resource Timing API では、個別のアセットを受け取るタイミングについて、さまざまなレベルの詳細情報が提供されます。リクエストのライフサイクルには、以下の主要フェーズがあります。
+## Viewing in DevTools
 
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See following sections for up-to-date
+  information:
+  <ul>
+    <li><a href="reference#timing-breakdown">View timing breakdown</a></li>
+    <li><a href="reference#timing">Timing tab</a></li>
+  </ul>
+</aside>
 
-* リダイレクト（Redirect）
-  * 即座に `startTime` が始まります。
-  * リダイレクトが行われると、`redirectStart` も始まります。
-  * このフェーズの終わりにリダイレクトが発生すると、`redirectEnd` になります。
-* アプリキャッシュ（App Cache）
-  * アプリケーション キャッシュがそのリクエストを満たしている場合は、`fetchStart` 時間に入ります。
-* DNS
-  * DNS リクエストの開始時に `domainLookupStart` 時間が始まります。
-  * DNS リクエストの終了時は `domainLookupEnd` 時間になります。
-* TCP
-  * サーバーへの初期接続時に `connectStart` が始まります。
-  * TLS または SSL が使用中の場合、接続をセキュリティで保護するためのハンドシェイクが開始されたときに `secureConnectionStart` が始まります。
-  * サーバーへの接続が完了時は `connectEnd` になります。
-* リクエスト（Request）
-  * リソースのリクエストがサーバーに送信された後、`requestStart` が始まります。
-* レスポンス（Response）
-  * サーバーがそのリクエストに最初にレスポンスを返したときに `responseStart` が始まります。
-  * リクエストが終了し、データを取得したときに `responseEnd` になります。
+To view the full timing information for a given entry of the Network Panel you have three options.
 
-![Resource Timing API の図](imgs/resource-timing-api.png)
+1. Hover the timing graph under the timeline column. This will present a popup that shows the full timing data.
+2. Click on any entry and open the Timing tab of that entry.
+3. Use the Resource Timing API to retrieve the raw data from JavaScript.
 
-##  DevTools での表示
-
-[Network] パネルの特定のエントリについてのタイミング情報をすべて表示する方法は 3 つあります。
-
-1. タイムライン列の下にあるタイミング グラフにカーソルを合わせます。これにより、すべてのタイミング データを示すポップアップが表示されます。
-2. 任意のエントリをクリックして、そのエントリの [Timing] タブを開きます。
-3. Resource Timing API を使用して、JavaScript から未加工のデータを取得します。
-
-![Resource Timing の情報](imgs/resource-timing-data.png)
-
-<figure>
-<figcaption>
+![Resource Timing Information](imgs/resource-timing-data.png)<figure> <figcaption>
 <p>
-  以下のコードを DevTools コンソールで実行します。
-  このコードは、Network Timing API を使用してすべてのリソースを取得します。
-  その後、エントリにフィルタをかけ、名前に「style.css」を含むリソースを検索します。
-  目的のリソースが見つかったら、そのリソースが返されます。
+  This code can be ran in the DevTools console.
+  It will use the network timing API to retrieve all resources.
+  Then it filters the entries looking for one with a name that contains "style.css".
+  If found it will be returned.
 </p>
 <code>
   performance.getEntriesByType('resource').filter(item => item.name.includes("style.css"))
 </code>
-</figcaption>
-<img src="imgs/resource-timing-entry.png" alt="Resource Timing のエントリ">
-</figure>
+</figcaption> 
+
+<img src="imgs/resource-timing-entry.png" alt="Resource Timing Entry" /> </figure> 
 
 <style>
 dt:before {
@@ -100,122 +103,107 @@ dt.content-download:before {
 
 <dl>
 
-  <dt class="queued"><strong>キューイング（Queueing）</strong></dt>
+  <dt class="queued"><strong>Queuing</strong></dt>
   <dd>
-    リクエストがキューに登録されている場合、以下を示します。
+    A request being queued indicates that:
       <ul>
         <li>
-        リクエストは重要なリソース（スクリプトやスタイルなど）よりも優先度が低いと見なされ、レンダリング エンジンによって処理を延期されています。
-        このような状態は画像でよく起こります。
+        The request was postponed by the rendering engine because it's considered lower priority than critical resources (such as scripts/styles).
+        This often happens with images.
         </li>
         <li>
-        利用可能な TCP ソケットがなく、ソケットの解放を待機するために、リクエストが保留されています。
+        The request was put on hold to wait for an unavailable TCP socket that's about to free up.
         </li>
         <li>
-        ブラウザでは HTTP 1 のオリジン 1 つあたり <a href="https://crbug.com/12066">6 つの TCP 接続</a>しか許可されないため、リクエストが保留されています。
+        The request was put on hold because the browser only allows <a href="https://crbug.com/12066">six TCP connections</a> per origin on HTTP 1.
         </li>
         <li>
-        ディスクキャッシュのエントリ作成にかかった時間（通常はごく短時間）。
+        Time spent making disk cache entries (typically very quick.)
         </li>
       </ul>
   </dd>
 
-  <dt class="stalled"><strong> ストール / ブロッキング（Stalled）</strong></dt>
+  <dt class="stalled"><strong> Stalled/Blocking</strong></dt>
   <dd>
-    リクエストを送信できるようになるまでの待機時間。
-    「キューイング（Queueing）」で示した理由で待機している場合もあります。
-    また、この時間にはプロキシ ネゴシエーションにかかった時間も含まれます。
+    Time the request spent waiting before it could be sent.
+    It can be waiting for any of the reasons described for Queueing.
+    Additionally, this time is inclusive of any time spent in proxy negotiation.
   </dd>
 
-  <dt class="proxy-negotiation"><strong> プロキシ ネゴシエーション</strong></dt>
-  <dd>プロキシ サーバー接続とのネゴシエーションにかかった時間。</dd>
+  <dt class="proxy-negotiation"><strong> Proxy Negotiation</strong></dt>
+  <dd>Time spent negotiating with a proxy server connection.</dd>
 
-  <dt class="dns-lookup"><strong><abbr title="Domain Name System"> DNS</abbr> 参照（DNS Lookup）</strong></dt>
+  <dt class="dns-lookup"><strong><abbr title="Domain Name System"> DNS</abbr> Lookup</strong></dt>
   <dd>
-    DNS 参照の実行にかかった時間。
-    ページ上の新しいドメインはすべて、DNS 参照を行うために完全なラウンドトリップを必要とします。
+    Time spent performing the DNS lookup.
+    Every new domain on a page requires a full roundtrip to do the DNS lookup.
   </dd>
 
-  <dt class="initial-connection"><strong> 初期接続 / 接続中（Initial Connection）</strong></dt>
-  <dd><abbr title="Transmission Control Protocol">TCP</abbr> のハンドシェイク / 再試行や <abbr title="Secure Sockets Layer">SSL</abbr> のネゴシエーションなど、接続の確立にかかった時間。</dd>
+  <dt class="initial-connection"><strong> Initial Connection / Connecting</strong></dt>
+  <dd>Time it took to establish a connection, including <abbr title="Transmission Control Protocol">TCP</abbr> handshakes/retries and negotiating a <abbr title="Secure Sockets Layer">SSL</abbr>.</dd>
 
   <dt class="ssl"><strong> SSL</strong></dt>
-  <dd>SSL ハンドシェイクの完了にかかった時間。</dd>
+  <dd>Time spent completing a SSL handshake.</dd>
 
-  <dt class="request-sent"><strong> リクエストの送信 / 送信中（Request Sent）</strong></dt>
+  <dt class="request-sent"><strong> Request Sent / Sending</strong></dt>
   <dd>
-    ネットワーク リクエストの発行にかかった時間。
-    通常は、1000 分の 1 秒にも満たない時間です。
+    Time spent issuing the network request.
+    Typically a fraction of a millisecond.
   </dd>
 
-  <dt class="ttfb"><strong> 待機（Waiting（<abbr title="Time To First Byte">TTFB</abbr>））</strong></dt>
+  <dt class="ttfb"><strong> Waiting (<abbr title="Time To First Byte">TTFB</abbr>)</strong></dt>
   <dd>
-    初期レスポンスの待機にかかった時間。最初のバイトを受け取るまでの時間（TTFB: Time To First Byte）とも呼ばれます。
-    この時間には、サーバーがレスポンスの配信を待機していた時間と、サーバーとのラウンドトリップの遅延が含まれます。
+    Time spent waiting for the initial response, also known as the Time To First Byte.
+    This time captures the latency of a round trip to the server in addition to the time spent waiting for the server to deliver the response.
   </dd>
 
-  <dt class="content-download"><strong> コンテンツのダウンロード / ダウンロード中（Content Download）</strong></dt>
-  <dd>レスポンス データの受信にかかった時間。</dd>
+  <dt class="content-download"><strong> Content Download / Downloading</strong></dt>
+  <dd>Time spent receiving the response data.</dd>
 </dl>
 
+## Diagnosing Network Issues
 
-##  ネットワークの問題の診断
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See
+  <a href="issues">Network Issues Guide</a>
+  for up-to-date information.
+</aside>
 
-[Network] パネルで明らかになる潜在的な問題はたくさんあります。このような問題を検出できるようになるには、クライアントとサーバーが通信する仕組みと、プロトコルによって課せられる制限事項について十分理解しておく必要があります。
+There are numerous possible issues that can be uncovered through the Network Panel. Being able to find these requires a good understanding of how clients and servers communicate and the limitations imposed by the protocols.
 
+### Queued or Stalled series
 
-###  キューに登録されている、またはストールしている一連のアイテム
+The most common issue seen is a series of items that are queued or stalled. This indicates that too many resources are being retrieved from a single domain. On HTTP 1.0/1.1 connections, Chrome enforces a maximum of six TCP connections per host. If you are requesting twelve items at once, the first six will begin and the last half will be queued. Once one of the original half is finished, the first item in the queue will begin its request process.
 
-最も一般的な問題は、一連のアイテムがキューに登録されているか、ストールしている状態です。この状態は、１ つのドメインから取得されるリソースが多すぎることを示しています。HTTP 1.0/1.1 接続では、Chrome はホスト 1 つあたり最大 6 つの TCP 接続を許可します。一度にアイテムを 12 個リクエストすると、最初の 6 個が開始され、残り半分はキューに登録されます。最初の 6 個のうち 1 つが完了すると、キュー内の最初のアイテムがリクエストの処理を開始します。
+![Stalled series of requests](imgs/stalled-request-series.png)
 
+To fix this problem for traditional HTTP 1 traffic, you would need to implement [domain sharding](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/). That is making multiple subdomains on your application to serve resources from. Then split the resources being served evenly among the subdomains.
 
+The fix for HTTP 1 connections does **not** apply to HTTP 2 connections. In fact, it hurts them. If you have HTTP 2 deployed, don’t domain-shard your resources as it works against how HTTP 2 is engineered to operate. In HTTP 2, there is a single TCP connection to the server that acts as a multiplexed connection. This gets rid of the six connection limit of HTTP 1 and multiple resources can be transferred over the single connection simultaneously.
 
+### Slow Time to First Byte
 
+<small>AKA: lots of green</small>
 
-![ストールしている一連のリクエスト](imgs/stalled-request-series.png)
+![High TTFB Indicator](imgs/indicator-of-high-ttfb.png)
 
-従来の HTTP 1 トラフィックに関するこの問題を解決するには、[ドメイン シャーディング](https://www.maxcdn.com/one/visual-glossary/domain-sharding-2/)を実装する必要があります。ドメイン シャーディングでは、リソースの提供元アプリケーションに複数のサブドメインを作成します。その後、リソースを分割してサブドメインで均一に分配されるようにします。
+A slow time to first byte (TTFB) is recognized by a high waiting time. It is recommended that you have this [under 200ms](/speed/docs/insights/Server). A high TTFB reveals one of two primary issues. Either:
 
+1. Bad network conditions between client and server, or
+2. A slowly responding server application
 
+To address a high TTFB, first cut out as much network as possible. Ideally, host the application locally and see if there is still a big TTFB. If there is, then the application needs to be optimized for response speed. This could mean optimizing database queries, implementing a cache for certain portions of content, or modifying your web server configuration. There are many reasons a backend can be slow. You will need to do research into your software and figure out what is not meeting your performance budget.
 
-この HTTP 1 接続の解決策は、HTTP 2 接続には**あてはまりません**。それどころか、悪影響を及ぼします。
-HTTP 2 を採用している場合、HTTP 2 の動作設計に反した動きになるため、リソースのドメイン シャーディングは行わないでください。HTTP 2 では、サーバーへの TCP 接続は 1 つで、これが多重接続として機能します。これにより、HTTP 1 の 6 つの接続制限が取り除かれ、複数のリソースを 1 つの接続で同時に転送できます。
+If the TTFB is low locally then the networks between your client and the server are the problem. The network traversal could be hindered by any number of things. There are a lot of points between clients and servers and each one has its own connection limitations and could cause a problem. The simplest method to test reducing this is to put your application on another host and see if the TTFB improves.
 
+### Hitting throughput capacity
 
+<small>AKA: lots of blue</small>
 
-###  TTFB の低速化
+![Throughput capacity Indicator](imgs/indicator-of-large-content.png)
 
-<small>緑色の部分が多い</small>
+If you see lots of time spent in the Content Download phases, then improving server response or concatenating won't help. The primary solution is to send fewer bytes.
 
-![TTFB が長いことを示す兆候](imgs/indicator-of-high-ttfb.png)
+## Feedback {: #feedback }
 
-待機時間が長くなることから、最初のバイトを受け取るまでの時間（TTFB）が低速になっていることがわかります。TTFB は [200 ミリ秒未満](/speed/docs/insights/Server) が推奨されます。TTFB の低速化は、以下に示す 2 つの主な問題のいずれかにつながります。
-
-以下のいずれかの方法でプレビュー確認ができます。
-
-1. クライアントとサーバー間のネットワークが不適切な状態
-2. サーバー アプリケーションの応答が低速化
-
-TTFB の低速化に対処するには、まず、可能な限り多くのネットワークを切断します。アプリケーションをローカルにホストして、それでも TTFB の状況が変わらないかどうかを確認するのが理想です。TTFB に時間がかかっている場合は、アプリケーションを最適化してレスポンスの速度を上げる必要があります。そのためには、データベース クエリの最適化や、コンテンツの特定部分へのキャッシュの実装、ウェブサーバーの構成変更などを行います。バックエンドが低速になる理由は多数あります。お使いのソフトウェアを調べて、想定パフォーマンスを満たしていないソフトウェアを把握してください。
-
-
-
-
-
-
-ローカルでは TTFB に時間がかからない場合、クライアントとサーバー間のネットワークに問題があります。さまざまな要因によってネットワーク トラバーサルが妨げられている可能性があります。クライアントとサーバー間には多数のポイントがあり、それぞれに独自の接続制限があるため、問題が発生することもあります。こうした問題を減らすために簡単にテストするには、アプリケーションを別のホストに配置して、TTFB が改善するかどうかを確認します。
-
-
-
-
-###  スループットのキャパシティ超過
-
-<small>青色の部分が多い</small>
-
-![スループットのキャパシティ超過の兆候](imgs/indicator-of-large-content.png)
-
-コンテンツのダウンロード（Content Download）フェーズに多くの時間がかかっている場合、サーバー レスポンスの改善や連結は役に立ちません。主な解決策は、送信するバイト数を少なくすることです。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,342 +1,361 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Use dispositivos virtuais no Device Mode do Chrome para criar sites que priorizam os dispositivos móveis.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use virtual devices in Chrome's Device Mode to build mobile-first websites.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-14 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-[capture]: /web/tools/chrome-devtools/images/shared/capture-settings.png
-[customize]: /web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png
-
-# Simular dispositivos móveis com o Device Mode no Chrome DevTools {: .page-title }
+# Simulate Mobile Devices with Device Mode in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Use o Device Mode para visualizar como sua página ficará e funcionará em um dispositivo móvel.
+Use Device Mode to approximate how your page looks and performs on a mobile device.
 
-Device Mode é o nome de um conjunto de recursos avulsos no Chrome DevTools que
-ajuda você a simular dispositivos móveis. Esses recursos incluem:
+Device Mode is the name for the loose collection of features in Chrome DevTools that help you simulate mobile devices. These features include:
 
-* [Simulação de uma janela de visualização móvel](#viewport)
-* [Controle de rede](#network)
-* [Controle de CPU](#cpu)
-* [Simulação de geolocalização](#geolocation)
-* [Definição de orientação](#orientation)
+* [Simulating a mobile viewport](#viewport)
+* [Throttling the network](#network)
+* [Throttling the CPU](#cpu)
+* [Simulating geolocation](#geolocation)
+* [Setting orientation](#orientation)
 
-## Limitações {: #limitations }
+## Limitations {: #limitations }
 
-Pense no Device Mode como uma [aproximação de primeira ordem][approximation]{:.external} de como sua
-página ficará em um dispositivo móvel. Com o Device Mode você não precisa executar seu código
-em um dispositivo móvel. Você simula a experiência do usuário de dispositivos móveis no seu laptop ou computador desktop.
+Think of Device Mode as a [first-order approximation](https://en.wikipedia.org/wiki/Order_of_approximation#First-order){:.external} of how your page looks and feels on a mobile device. With Device Mode you don't actually run your code on a mobile device. You simulate the mobile user experience from your laptop or desktop.
 
-[approximation]: https://en.wikipedia.org/wiki/Order_of_approximation#First-order
+There are some aspects of mobile devices that DevTools will never be able to simulate. For example, the architecture of mobile CPUs is very different than the architecture of laptop or desktop CPUs. When in doubt, your best bet is to actually run your page on a mobile device. Use [Remote Debugging](/web/tools/chrome-devtools/remote-debugging/) to view, change, debug, and profile a page's code from your laptop or desktop while it actually runs on a mobile device.
 
-Existem alguns aspectos dos dispositivos móveis que o DevTools nunca conseguirá simular. Por
-exemplo, a arquitetura das CPUs de dispositivos móveis é muito diferente da arquitetura das CPUs de um laptop
-ou computador desktop. Se você tiver dúvidas, o melhor a fazer é executar sua página em um dispositivo móvel.
-Use a [Depuração remota](/web/tools/chrome-devtools/remote-debugging/) para visualizar, alterar, depurar
-e definir o código de uma página a partir do seu laptop ou computador desktop enquanto ele é executado em um dispositivo móvel.
+## Simulate a mobile viewport {: #viewport }
 
-## Simular uma janela de visualização de um dispositivo móvel {: #viewport }
-
-Clique em **Toggle Device Toolbar** ![Alternar barra de ferramentas do dispositivo][TDB]{: .inline-icon } para abrir a IU que
-permite a você simular uma janela de visualização de um dispositivo móvel.
-
-[TDB]: /web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png
+Click **Toggle Device Toolbar** ![Toggle Device Toolbar](/web/tools/chrome-devtools/images/shared/toggle-device-toolbar.png){: .inline-icon } to open the UI that enables you to simulate a mobile viewport.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="A barra de ferramentas do dispositivo."/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>Imagem 1</b>. A barra de ferramentas do dispositivo
+    <b>Figure 1</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-Por padrão, a barra de ferramentas do dispositivo abre em modo de janela de visualização responsiva.
+By default the Device Toolbar opens in Responsive Viewport Mode.
 
-### Modo de janela de visualização responsiva {: #responsive }
+### Responsive Viewport Mode {: #responsive }
 
-Arraste as alças para redimensionar a janela de visualização para qualquer dimensão desejada. Ou insira valores específicos
-nos campos de largura e altura. Na **Imagem 2**, a largura está definida como `628`, e a altura como
-`662`.
+Drag the handles to resize the viewport to whatever dimensions you need. Or, enter specific values in the width and height boxes. In **Figure 2**, the width is set to `628` and the height is set to `662`.
 
 <figure>
   <img src="imgs/responsive-handles.png"
-       alt="As alças para alterar as dimensões da janela de visualização quando no Modo de janela de visualização responsiva."/>
+       alt="The handles for changing the viewport's dimensions when in Responsive Viewport Mode."/>
   <figcaption>
-    <b>Imagem 2</b>. As alças para alterar as dimensões da janela de visualização no Modo de janela de visualização responsiva.
+    <b>Figure 2</b>. The handles for changing the viewport's dimensions when in Responsive Viewport Mode
   </figcaption>
 </figure>
 
-#### Mostrar consultas de mídias {: #queries }
+#### Show media queries {: #queries }
 
-Para mostrar os pontos de interrupção de consultas de mídia acima da sua janela de visualização, clique em **More options** e selecione **Show media
-queries**.
+To show media query breakpoints above your viewport, click **More options** and then select **Show media queries**.
 
 <figure>
   <img src="imgs/show-media-queries.png"
-       alt="Mostrar consultas de mídias."/>
+       alt="Show media queries."/>
   <figcaption>
-    <b>Imagem 3</b>. Mostrar consultas de mídia
+    <b>Figure 3</b>. Show media queries
   </figcaption>
 </figure>
 
-Clique em um ponto de interrupção para alterar a largura da janela de visualização de modo que o ponto de interrupção seja acionado.
+Click a breakpoint to change the viewport's width so that the breakpoint gets triggered.
 
 <figure>
   <img src="imgs/breakpoint.png"
-       alt="Clique em um ponto de interrupção para alterar a largura da janela de visualização."/>
+       alt="Click a breakpoint to change the viewport's width."/>
   <figcaption>
-    <b>Imagem 4</b>. Clique em um ponto de interrupção para alterar a largura da janela de visualização
+    <b>Figure 4</b>. Click a breakpoint to change the viewport's width
   </figcaption>
 </figure>
 
-### Modo de janela de visualização do dispositivo móvel {: #device }
+#### Set the device type {: #type }
 
-Pra simular as dimensões de um dispositivo móvel específico, selecione-o na lista **Device**.
+Use the **Device Type** list to simulate a mobile device or desktop device.
+
+<figure>
+  <img src="imgs/device-type.png"
+       alt="The Device Type list."/>
+  <figcaption>
+    <b>Figure 5</b>. The <b>Device Type</b> list
+  </figcaption>
+</figure>
+
+The table below describes the differences between the options. **Rendering method** refers to whether Chrome renders the page as a mobile or desktop viewport. **Cursor icon** refers to what type of cursor you see when you hover over the page. **Events fired** refers to whether the page fires `touch` or `click` events when you interact with the page.
+
+<table>
+  <tr>
+    <th>Option</th>
+    <th>Rendering method</th>
+    <th>Cursor icon</th>
+    <th>Events fired</th>
+  </tr>
+  <tr>
+    <td>Mobile</td>
+    <td>Mobile</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+  <tr>
+    <td>Mobile (no touch)</td>
+    <td>Mobile</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop</td>
+    <td>Desktop</td>
+    <td>Normal</td>
+    <td>click</td>
+  </tr>
+  <tr>
+    <td>Desktop (touch)</td>
+    <td>Desktop</td>
+    <td>Circle</td>
+    <td>touch</td>
+  </tr>
+</table>
+
+### Mobile Device Viewport Mode {: #device }
+
+To simulate the dimensions of a specific mobile device, select the device from the **Device** list.
 
 <figure>
   <img src="imgs/device-list.png"
-       alt="A lista de dispositivos."/>
+       alt="The Device list."/>
   <figcaption>
-    <b>Imagem 5</b>. A lista de dispositivos
+    <b>Figure 6</b>. The Device list
   </figcaption>
 </figure>
 
-#### Gire a janela de visualização para usar a orientação paisagem {: #landscape }
+#### Rotate the viewport to landscape orientation {: #landscape }
 
-Clique em **Rotate** ![Girar](imgs/rotate.png){: .inline-icon } para girar a janela de visualização e usar a orientação paisagem.
+Click **Rotate** ![Rotate](imgs/rotate.png){: .inline-icon } to rotate the viewport to landscape orientation.
 
 <figure>
   <img src="imgs/landscape.png"
-       alt="Orientação paisagem."/>
+       alt="Landscape orientation."/>
   <figcaption>
-    <b>Imagem 6</b>. Orientação paisagem
+    <b>Figure 7</b>. Landscape orientation
   </figcaption>
 </figure>
 
-O botão **Rotate** desaparece se a **barra de ferramentas do dispositivo** for estreita.
+Note that the **Rotate** button disappears if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="A barra de ferramentas do dispositivo."/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>Imagem 7</b>. A barra de ferramentas do dispositivo
+    <b>Figure 8</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-Veja também [Definir orientação](#orientation).
+See also [Set orientation](#orientation).
 
-#### Mostrar frame do dispositivo {: #frame }
+#### Show device frame {: #frame }
 
-Ao simular as dimensões de um dispositivo móvel específico, como um iPhone 6, abra **More options**
-e selecione **Show device frame** para exibir o frame do dispositivo físico ao redor da janela de visualização.
+When simulating the dimensions of a specific mobile device like an iPhone 6, open **More options** and then select **Show device frame** to show the physical device frame around the viewport.
 
-Note: Se você não visualizar um frame de dispositivo para um dispositivo em particular, isso provavelmente significa que o DevTools
-não possui uma arte para essa opção específica.
+Note: If you don't see a device frame for a particular device, it probably means that DevTools just doesn't have art for that specific option.
 
 <figure>
   <img src="imgs/show-device-frame.png"
-       alt="Mostrar frame do dispositivo."/>
+       alt="Show device frame."/>
   <figcaption>
-    <b>Imagem 8</b>. Mostrar frame do dispositivo
+    <b>Figure 9</b>. Show device frame
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/iphone-frame.png"
-       alt="O frame do dispositivo para o iPhone 6."/>
+       alt="The device frame for the iPhone 6."/>
   <figcaption>
-    <b>Imagem 9</b>. O frame do dispositivo para o iPhone 6
+    <b>Figure 10</b>. The device frame for the iPhone 6
   </figcaption>
 </figure>
 
-### Mostrar réguas {: #rulers }
+#### Add a custom mobile device {: #custom }
 
-Clique em **More options** e selecione **Show rulers** para visualizar as réguas acima e à esquerda
-da sua janela de visualização. A unidade de dimensionamento das réguas é o pixel.
+To add a custom device:
+
+1. Click the **Device** list and then select **Edit**.
+    
+    <figure> 
+    
+    ![Selecting 'Edit'.](imgs/edit.png) <figcaption> **Figure 11**. Selecting **Edit** </figcaption> </figure>
+2. Click **Add custom device**.
+
+3. Enter a name, width, and height for the device. The [device pixel ratio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio), [user agent string](https://developer.mozilla.org/en-US/docs/Glossary/User_agent), and [device type](#type) fields are optional. The device type field is the list that is set to **Mobile** by default.
+    
+    <figure> 
+    
+    ![Creating a custom device.](imgs/add-custom-device.png) <figcaption> **Figure 12**. Creating a custom device </figcaption> </figure>
+
+### Show rulers {: #rulers }
+
+Click **More options** and then select **Show rulers** to see rulers above and to the left of your viewport. The sizing unit of the rulers is pixels.
 
 <figure>
   <img src="imgs/show-rulers.png"
-       alt="Mostrar réguas."/>
+       alt="Show rulers."/>
   <figcaption>
-    <b>Imagem 10</b>. Mostrar réguas
+    <b>Figure 13</b>. Show rulers
   </figcaption>
 </figure>
 
 <figure>
   <img src="imgs/rulers.png"
-       alt="Réguas acima e à esquerda da janela de visualização."/>
+       alt="Rulers above and to the left of the viewport."/>
   <figcaption>
-    <b>Imagem 11</b>. Réguas acima e à esquerda da janela de visualização
+    <b>Figure 14</b>. Rulers above and to the left of the viewport
   </figcaption>
 </figure>
 
-### Aumente o zoom da janela de visualização {: #zoom }
+### Zoom the viewport {: #zoom }
 
-Use a lista de **Zoom** para aumentar ou diminuir o zoom.
+Use the **Zoom** list to zoom in or out.
 
 <figure>
   <img src="imgs/zoom-viewport.png"
        alt="Zoom."/>
   <figcaption>
-    <b>Imagem 11</b>. Zoom
+    <b>Figure 15</b>. Zoom
   </figcaption>
 </figure>
 
-## Limitar a rede e a CPU {: #throttle }
+## Throttle the network and CPU {: #throttle }
 
-Para limitar a rede e a CPU, selecione **Mid-tier mobile** ou **Low-end mobile**
-na lista **Throttle**.
+To throttle the network and CPU, select **Mid-tier mobile** or **Low-end mobile** from the **Throttle** list.
 
 <figure>
   <img src="imgs/throttling.png"
-       alt="A lista Throttle."/>
+       alt="The Throttle list."/>
   <figcaption>
-    <b>Imagem 12</b>. A lista Throttle
+    <b>Figure 16</b>. The Throttle list
   </figcaption>
 </figure>
 
-O **Mid-tier mobile** simula uma conexão 3G rápida e limita sua CPU de modo que ela fique quatro vezes
-mais lenta que o normal. O **Low-end mobile** simula uma conexão 3G lenta e limita sua CPU 6 de modo que ela fique seis vezes mais lenta que o normal.
-Tenha em mente que o limite é relativo à capacidade normal do seu laptop ou computador desktop.
+**Mid-tier mobile** simulates fast 3G and throttles your CPU so that it is 4 times slower than normal. **Low-end mobile** simulates slow 3G and throttles your CPU 6 times slower than normal. Keep in mind that the throttling is relative to the normal capability of your laptop or desktop.
 
-Observe que a lista **Throttle** ficará escondida se a **barra de ferramentas do dispositivo** for estreita.
+Note that the **Throttle** list will be hidden if your **Device Toolbar** is narrow.
 
 <figure>
   <img src="imgs/device-toolbar.png"
-       alt="A barra de ferramentas do dispositivo."/>
+       alt="The Device Toolbar."/>
   <figcaption>
-    <b>Imagem 13</b>. A barra de ferramentas do dispositivo
+    <b>Figure 17</b>. The Device Toolbar
   </figcaption>
 </figure>
 
-### Limitar apenas a CPU {: #cpu }
+### Throttle the CPU only {: #cpu }
 
-Para limitar somente a CPU e não a rede, acesse o painel **Performance**, clique em
-**Capture Settings** ![Configurações de captura][capture]{:.inline-icon}e selecione
-**4x slowdown** ou **6x slowdown** na lista **CPU**.
+To throttle the CPU only and not the network, go to the **Performance** panel, click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){:.inline-icon}, and then select **4x slowdown** or **6x slowdown** from the **CPU** list.
 
 <figure>
   <img src="imgs/cpu.png"
-       alt="A lista CPU."/>
+       alt="The CPU list."/>
   <figcaption>
-    <b>Imagem 14</b>. A lista CPU
+    <b>Figure 18</b>. The CPU list
   </figcaption>
 </figure>
 
-### Limitar apenas a rede {: #network }
+### Throttle the network only {: #network }
 
-Para limitar somente a rede e não a CPU, acesse o painel **Network** e selecione
-**Fast 3G** ou **Slow 3G** na lista **Throttle**.
+To throttle the network only and not the CPU, go the **Network** panel and select **Fast 3G** or **Slow 3G** from the **Throttle** list.
 
 <figure>
   <img src="imgs/network.png"
-       alt="A lista Throttle."/>
+       alt="The Throttle list."/>
   <figcaption>
-    <b>Imagem 14</b>. A lista Throttle
+    <b>Figure 19</b>. The Throttle list
   </figcaption>
 </figure>
 
-Ou pressione <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) ou
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) para abrir
-o menu de comando, digite `3G` e selecione **Enable fast 3G throttling** ou
-**Enable slow 3G throttling**.
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `3G`, and select **Enable fast 3G throttling** or **Enable slow 3G throttling**.
 
 <figure>
   <img src="imgs/commandmenu.png"
-       alt="O menu de comando."/>
+       alt="The Command Menu."/>
   <figcaption>
-    <b>Imagem 15</b>. O menu de comando
+    <b>Figure 20</b>. The Command Menu
   </figcaption>
 </figure>
 
-Você também pode definir o limite da rede no painel **Performance**. Clique em
-**Capture Settings** ![Configurações de captura][capture]{: .inline-icon } e depois
-selecione **Fast 3G** ou **Slow 3G** na lista **Network**.
+You can also set network throttling from the **Performance** panel. Click **Capture Settings** ![Capture Settings](/web/tools/chrome-devtools/images/shared/capture-settings.png){: .inline-icon } and then select **Fast 3G** or **Slow 3G** from the **Network** list.
 
 <figure>
   <img src="imgs/network2.png"
-       alt="Configuração de limite da rede no painel Performance."/>
+       alt="Setting network throttling from the Performance panel."/>
   <figcaption>
-    <b>Imagem 16</b>. Configuração de limite da rede no painel Performance
+    <b>Figure 21</b>. Setting network throttling from the Performance panel
   </figcaption>
 </figure>
 
-## Modificar geolocalização {: #geolocation }
+## Override geolocation {: #geolocation }
 
-Para abrir a IU de modificação da geolocalização, clique em **Customize and control DevTools**
-![Personalizar e controlar DevTools][customize]{: .inline-icon } e selecione
-**More tools** > **Sensors**.
+To open the geolocation overriding UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
-       alt="Sensores"/>
+       alt="Sensors"/>
   <figcaption>
-    <b>Imagem 17</b>. Sensores
+    <b>Figure 22</b>. Sensors
   </figcaption>
 </figure>
 
-Ou pressione <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) ou
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) para abrir
-o menu de comando, digite `Sensors` e selecione **Show Sensors**.
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
-       alt="Mostrar sensores"/>
+       alt="Show Sensors"/>
   <figcaption>
-    <b>Imagem 18</b>. Mostrar sensores
+    <b>Figure 23</b>. Show Sensors
   </figcaption>
 </figure>
 
-Selecione uma das predefinições da lista **Geolocation** ou selecione **Custom location**
-para inserir as próprias coordenadas. Você também pode selecionar **Location unavailable** para testar como sua
-página se comporta quando a geolocalização está em estado de erro.
+Select one of the presets from the **Geolocation** list, or select **Custom location** to enter your own coordinates, or select **Location unavailable** to test out how your page behaves when geolocation is in an error state.
 
 <figure>
   <img src="imgs/geolocation.png"
-       alt="Geolocalização"/>
+       alt="Geolocation"/>
   <figcaption>
-    <b>Imagem 19</b>. Geolocalização
+    <b>Figure 24</b>. Geolocation
   </figcaption>
 </figure>
 
-## Definir orientação {: #orientation }
+## Set orientation {: #orientation }
 
-Para abrir a IU de orientação, clique em **Customize and control DevTools**
-![Personalizar e controlar DevTools][customize].{: .inline-icon } e selecione
-**More tools** > **Sensors**.
-
+To open the orientation UI click **Customize and control DevTools** ![Customize and control DevTools](/web/tools/chrome-devtools/images/shared/customize-and-control-devtools.png){: .inline-icon } and then select **More tools** > **Sensors**.
 
 <figure>
   <img src="imgs/sensors.png"
-       alt="Sensores"/>
+       alt="Sensors"/>
   <figcaption>
-    <b>Imagem 20</b>. Sensores
+    <b>Figure 25</b>. Sensors
   </figcaption>
 </figure>
 
-Ou pressione <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) ou
-<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) para abrir
-o menu de comando, digite `Sensors` e selecione **Show Sensors**.
+Or press <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Mac) or 
+<kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> (Windows, Linux, Chrome OS) to open the Command Menu, type `Sensors`, and then select **Show Sensors**.
 
 <figure>
   <img src="imgs/show-sensors.png"
-       alt="Mostrar sensores"/>
+       alt="Show Sensors"/>
   <figcaption>
-    <b>Imagem 21</b>. Mostrar sensores
+    <b>Figure 26</b>. Show Sensors
   </figcaption>
 </figure>
 
-Selecione uma das predefinições da lista **Orientation** ou selecione **Custom orientation**
-para definir seus próprios valores Alfa, Beta e Gama.
+Select one of the presets from the **Orientation** list or select **Custom orientation** to set your own alpha, beta, and gamma values.
 
 <figure>
   <img src="imgs/orientation.png"
-       alt="Orientação"/>
+       alt="Orientation"/>
   <figcaption>
-    <b>Imagem 22</b>. Orientação
+    <b>Figure 27</b>. Orientation
   </figcaption>
 </figure>
 
@@ -344,5 +363,4 @@ para definir seus próprios valores Alfa, Beta e Gama.
 
 {% include "web/_shared/helpful.html" %}
 
-Consulte [Junte-se à comunidade DevTools](/web/tools/chrome-devtools/#community) para ver outras maneiras
-de enviar seu feedback.
+See [Join the DevTools community](/web/tools/chrome-devtools/#community) for other ways to leave feedback.

@@ -1,120 +1,45 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Pastikan Anda mendapatkan kinerja terbaik dari penerapan pekerja layanan.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Ensure you're getting the best performance out of your service worker implementation.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-09-21 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2017-09-21 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Pekerja layanan berkinerja tinggi memuat {: .page-title }
+# High-performance service worker loading {: .page-title }
 
 {% include "web/_shared/contributors/jeffposnick.html" %}
 
-Menambahkan [pekerja
-layanan](/web/fundamentals/getting-started/primers/service-workers) ke aplikasi
-web web◉bisa menawarkan manfaat kinerja signifikan, web◉bisa menawarkan manfaat kinerja signifikan
-meskipun mengikuti semua [praktik terbaik caching browser
-tradisional](/web/fundamentals/performance/optimizing-content-efficiency/http-caching).
-Tetapi ada beberapa praktik terbaik yang harus diikuti untuk mengoptimalkan waktu
-muat Anda. Kiat berikut akan membantu Anda mendapatkan kinerja terbaik dari
-penerapan pekerja layanan.
+Adding a [service worker](/web/fundamentals/getting-started/primers/service-workers) to your web app can offer significant performance benefits, going beyond what's possible even when following all the [traditional browser caching best practices](/web/fundamentals/performance/optimizing-content-efficiency/http-caching). But there are a few best practices to follow in order to optimize your load times. The following tips will ensure you're getting the best performance out of your service worker implementation.
 
-## Pertama, apa itu permintaan navigasi?
+## First, what are navigation requests?
 
-Permintaan navigasi (secara singkat) didefinisikan dalam spesifikasi [Fetch
-](https://fetch.spec.whatwg.org/#navigation-request) sebagai: <em>
-Permintaan [navigasi](https://fetch.spec.whatwg.org/#concept-request) adalah
-permintaan yang
-[tujuannya](https://fetch.spec.whatwg.org/#concept-request-destination) adalah
-"<code>document</code>".</em> Meski secara teknik benar, definisi itu k
-nuansa, dan menjual murah pentingnya navigasi di kinerja aplikasi
-web. Dalam bahasa sehari-hari, permintaan navigasi terjadi setiap kali Anda memasukkan
-URL di bilah lokasi browser, berinteraksi dengan
-<code>[window.location](https://developer.mozilla.org/en-US/docs/Web/API/Window/location)</code>,
-atau mengunjungi tautan dari satu halaman web ke halaman lain. Menempatkan `<iframe>`
-di halaman juga akan mengarah kepada permintaan navigasi untuk `<iframe>` `src`.
+Navigation requests are (tersely) defined in the [Fetch specification](https://fetch.spec.whatwg.org/#navigation-request) as: *A navigation [request](https://fetch.spec.whatwg.org/#concept-request) is a request whose [destination](https://fetch.spec.whatwg.org/#concept-request-destination) is "`document`".* While technically correct, that definition lacks nuance, and it undersells the importance of navigations on your web app's performance. Colloquially, a navigation request takes place whenever you enter a URL in your browser's location bar, interact with
+<code><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/location">window.location</a></code>, or visit a link from one web page to another. Putting an `<iframe>` on a page will also lead to a navigation request for the `<iframe>`'s `src`.
 
-Note: [Aplikasi satu halaman](https://en.wikipedia.org/wiki/Single-page_application),
-mengandalkan [API Histori](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-dan modifikasi DOM di tempat, cenderung menghindari permintaan navigasi saat beralih
-dari tampilan ke tampilan. Tetapi permintaan awal di sesi browser untuk
-aplikasi satu halaman masih navigasi.
+Note: [Single page applications](https://en.wikipedia.org/wiki/Single-page_application), relying on the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) and in-place DOM modifications, tend to avoid navigation requests when switching from view to view. But the initial request in a browser's session for a single page app is still a navigation.
 
-Saat aplikasi web mungkin membuat banyak permintaan [subsumber daya
-lain](https://fetch.spec.whatwg.org/#subresource-request) untuk
-menampilkan semua kontennya—untuk elemen seperti skrip, gambar, atau gaya—ini
-HTML dalam respons navigasi yang bertanggung jawab atas memulai semua
-permintaan lain. Setiap penundaan respons permintaan awal navigasi akan
-sangat jelas bagi pengguna Anda, karena mereka dibiarkan menatap layar kosong selama
-periode waktu yang tidak ditentukan.
+While your web app might make many other [subresource requests](https://fetch.spec.whatwg.org/#subresource-request) in order to display all its contents—for elements like scripts, images, or styles—it's the HTML in the navigation response that's responsible for kicking off all the other requests. Any delays in the response for the initial navigation request will be painfully obvious to your users, as they're left staring at a blank screen for an indeterminate period of time.
 
-Note: [Push server HTTP/2](/web/fundamentals/performance/http2/#server_push)
-menambahkan metode di sini, karena memungkinkan respons subsumber daya dikembalikan tanpa
-latensi tambahan, sepanjang respons navigasi. Tetapi setiap penundaan dalam
-dalam membuat server jarak jauh juga akan menyebabkan penundaan
-data yang didorong ke klien.
+Note: [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push) adds a wrinkle here, as it allows subresource responses to be returned without additional latency, alongside the navigation response. But any delays in establishing the connection to the remote server will also lead to delays the data being pushed down to the client.
 
-Praktik [terbaik caching
-tradisional](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#top_of_page),
-jenis yang bergantung pada header `Cache-Control` HTTP dan bukan pekerja layanan,
-harus [membuka jaringan setiap
-navigasi](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#invalidating_and_updating_cached_responses),
-untuk memastikan semua URL subsumber daya segar. Keinginan kinerja
-web adalah mendapatkan semua manfaat subsumber daya yang di-cache secara agresif,
-*tanpa* mengharuskan permintaan navigasi yang bergantung pada jaringan. Dengan
-pekerja layanan yang dikonfigurasi dengan benar disesuaikan dengan arsitektur
-khusus situs Anda, yang sekarang memungkinkan.
+Traditional [caching best practices](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#top_of_page), the kind that rely on HTTP `Cache-Control` headers and not a service worker, require [going to the network each navigation](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#invalidating_and_updating_cached_responses), to ensure that all of the subresource URLs are fresh. The holy grail for web performance is to get all the benefits of aggressively cached subresources, *without* requiring a navigation request that's dependent on the network. With a properly configured service worker tailored to your site's specific architecture, that's now possible.
 
-## Untuk kinerja terbaik, pintas jaringan untuk navigasi
+## For best performance, bypass the network for navigations
 
-Dampak terbesar menambahkan pekerja layanan ke aplikasi web berasal dari
-merespons permintaan navigasi tanpa menunggu jaringan.
-Skenario-kasus-terbaik untuk terhubung ke server web kemungkinan akan menerima perintah
-magnitudo lebih lama dari yang diperlukan untuk membaca data yang di-cache secara lokal. Dalam skenario
-di mana koneksi klien kurang ideal—pada dasarnya, apa pun di jaringan
-seluler—jumlah waktu yang diperlukan untuk mengembalikan byte data pertama dari
-jaringan dapat dengan mudah melebihi total waktu yang diperlukan untuk memproses HTML
-lengkap.
+The biggest impact of adding a service worker to your web application comes from responding to navigation requests without waiting on the network. The best-case-scenario for connecting to a web server is likely to take orders of magnitude longer than it would take to read locally cached data. In scenarios where a client's connection is less than ideal—basically, anything on a mobile network—the amount of time it takes to get back the first byte of data from the network can easily outweigh the total time it would take to render the full HTML.
 
-Dengan memilih penerapan pekerja layanan cache pertama yang benar sangat bergantung pada
-arsitektur situs Anda.
+Choosing the right cache-first service worker implementation largely depends on your site's architecture.
 
-### Streaming respons gabungan
+### Streaming composite responses
 
-Jika HTML dapat dipecah menjadi bagian kecil secara alami, dengan header
-dan footer statis bersama dengan bagian tengah yang bervariasi tergantung pada URL permintaan,
-navigasi penanganan menggunakan respons yang di-stream sudah ideal. Anda bisa menyusun
-respons dari setiap bagian yang di-cache secara terpisah. Dengan
-stream memastikan bahwa bagian awal dari respons adalah terekspos ke
-klien secepat mungkin, sehingga penguraian HTML lebih cepat diberikan dan
-permintaan subsumber daya tambahan dilakukan.
+If your HTML can naturally be split into smaller pieces, with a static header and footer along with a middle portion that varies depending on the request URL, then handling navigations using a streamed response is ideal. You can compose the response out of individual pieces that are each cached separately. Using streams ensures that the initial portion of the response is exposed to the client as soon as possible, giving it a head start on parsing the HTML and making any additional subresource requests.
 
-Artikel "[Stream Jalan Anda Menuju Respons Langsung](/web/updates/2016/06/sw-readablestreams)"
-memberikan gambaran dasar pendekatan ini, tetapi untuk contoh
-dan demo nyata, "[2016 - tahunnya stream web](https://jakearchibald.com/2016/streams-ftw/) Jake Archibald"
-adalah panduan pasti.
+The "[Stream Your Way to Immediate Responses](/web/updates/2016/06/sw-readablestreams)" article provides a basic overview of this approach, but for real-world examples and demos, Jake Archibald's "[2016 - the year of web streams](https://jakearchibald.com/2016/streams-ftw/)" is the definitive guide.
 
-Note: Untuk beberapa aplikasi web, tidak ada yang menghindari jaringan saat merespons
-permintaan navigasi. Mungkin HTML untuk setiap URL di situs tergantung pada data
-dari sistem pengelolaan konten, atau mungkin situs Anda menggunakan tata letak yang bervariasi dan
-tidak cocok dengan struktur shell aplikasi yang umum. Pekerja layanan masih
-membuka pintu untuk peningkatan atas *status quo* untuk memuat HTML.
-Dengan stream, Anda bisa merespons permintaan navigasi segera dengan
-sebagian HTML biasa yang di-cache—mungkin situs Anda penuh `<head>` dan beberapa elemen
-`<body>` awal—saat masih memuat sisa HTML, khusus untuk
-URL yang diberikan, dari jaringan.
+Note: For some web apps, there's no avoiding the network when responding to a navigation request. Maybe the HTML for each URL on your site depends on data from a content management system, or maybe your site uses varying layouts and doesn't fit into a generic, application shell structure. Service workers still open the door for improvements over the *status quo* for loading your HTML. Using streams, you can respond to navigation requests immediately with a common, cached chunk of HTML—perhaps your site's full `<head>` and some initial `<body>` elements—while still loading the rest of the HTML, specific to a given URL, from the network.
 
-### Menyimpan cache HTML statis
+### Caching static HTML
 
-Jika Anda punya aplikasi web sederhana yang sepenuhnya bergantung pada dokumen
-HTML statis, maka Anda beruntung: lokasi untuk menghindari jaringan
-mudah. Anda memerlukan pekerja layanan yang merespons navigasi dengan
-HTML yang sebelumnya disimpan di cache, dan itu juga termasuk logika non-pengeblokan untuk terus memperbarui
-HTML itu saat situs Anda berkembang.
+If you've got a simple web app that relies entirely on a set of static HTML documents, then you're in luck: your path to avoiding the network is straightforward. You need a service worker that responds to navigations with previously cached HTML, and that also includes non-blocking logic for keeping that HTML up-to-date as your site evolves.
 
-Satu pendekatan adalah menggunakan pengendali `fetch` pekerja layanan yang menerapkan
-[kebijakan stale-while-revalidate](/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
-untuk permintaan navigasi, seperti ini:
+One approach is to use a service worker `fetch` handler that implements a [stale-while-revalidate policy](/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate) for navigation requests, like so:
 
 ```js
 self.addEventListener('fetch', event => {
@@ -150,24 +75,13 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-Pendekatan lain yaitu menggunakan alat seperti [Workbox](https://workboxjs.org/), yang
-terhubung ke proses build aplikasi web untuk menghasilkan pekerja layanan yang
-menangani penyimpanan cache semua sumber daya statis (bukan hanya dokumen HTML), memberikan
-cache-pertama ke semua sumber daya ini, dan memperbarui sumber daya ini.
+Another approach is to use a tool like [Workbox](https://workboxjs.org/), which hooks into your web app's build process to generate a service worker that handles caching all of your static resources (not just HTML documents), serving them cache-first, and keeping them up to date.
 
-### Menggunakan Shell Aplikasi
+### Using an Application Shell
 
-Jika Anda memiliki aplikasi halaman tunggal yang ada,
-[arsitektur shell aplikasi](/web/fundamentals/architecture/app-shell)
-mudah diterapkan. Ada strategi jelas untuk menangani
-permintaan navigasi tanpa mengandalkan jaringan: setiap permintaan navigasi,
-terlepas dari URL tertentu, dipenuhi dengan salinan yang di-cache dari
-"shell" umum dalam dokumen HTML. Shell ini mencakup semua yang diperlukan untuk mem-boot
-aplikasi satu halaman, dan logika perutetan sisi klien bisa merender
-konten khusus URL permintaan.
+If you have an existing single page application, then the [application shell architecture](/web/fundamentals/architecture/app-shell) is straightforward to implement. There's a clear-cut strategy for handling navigation requests without relying on the network: each navigation request, regardless of the specific URL, is fulfilled with a cached copy of a generic "shell" of an HTML document. The shell includes everything needed to bootstrap the single page application, and client-side routing logic can then render the content specific to the request's URL.
 
-Dengan ditulis tangan, pengendali pekerja layanan `fetch` yang sesuai akan terlihat
-sesuatu seperti:
+Written by hand, the corresponding service worker `fetch` handler would look something like:
 
 ```js
 // Not shown: install and activate handlers to keep app-shell.html
@@ -181,26 +95,15 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-[Workbox](https://workboxjs.org/) juga bisa membantu di sini, baik dengan memastikan
-`app-shell.html` disimpan di cache dan diperbarui, juga memberikan
-[penunjang](https://workboxjs.org/reference-docs/latest/module-workbox-sw.Router.html#registerNavigationRoute)
-untuk merespons permintaan navigasi dengan shell yang di-cache.
+[Workbox](https://workboxjs.org/) can also help here, both by ensuring your `app-shell.html` is cached and kept up to date, as well as providing [helpers](https://workboxjs.org/reference-docs/latest/module-workbox-sw.Router.html#registerNavigationRoute) for responding to navigation requests with the cached shell.
 
-## ⚠️ Gotcha kinerja
+## ⚠️ Performance gotchas
 
-Jika Anda tidak bisa merespons navigasi dengan data yang disimpan di cache, tetapi Anda memerlukan pekerja
-layanan untuk fungsionalitas lain—seperti menyediakan
-[konten fallback offline](/web/fundamentals/instant-and-offline/offline-cookbook/#generic-fallback),
-atau [menangani notifikasi push](/web/fundamentals/getting-started/codelabs/push-notifications/)
-—berarti Anda dalam situasi aneh. Jika Anda tidak melakukan tindakan pencegahan tertentu,
-turunnya kinerja dapat Anda alami saat menyertakan pekerja layanan.
-Tetapi dengan menghindari gotcha ini, dasar Anda akan kuat.
+If you can't respond to navigations using cached data, but you need a service worker for other functionality—like providing [offline fallback content](/web/fundamentals/instant-and-offline/offline-cookbook/#generic-fallback), or [handling push notifications](/web/fundamentals/getting-started/codelabs/push-notifications/) —then you're in an awkward situation. If you don't take specific precautions, you could end up taking a performance hit when you add in your service worker. But by steering clear of these gotchas, you'll be on solid ground.
 
-### Jangan pernah menggunakan pengendali fetch "passthrough"
+### Never use a "passthrough" fetch handler
 
-Jika Anda menggunakan pekerja layanan hanya untuk notifikasi push, Anda mungkin
-secara keliru berpikir bahwa hal berikut diperlukan, atau hanya akan diperlakukan
-sebagai tanpa-op:
+If you're using a service worker just for push notifications, you might mistakenly think that the following is either required, or will just be treated as a no-op:
 
 ```js
 // Don't do this!
@@ -209,36 +112,16 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-Tipe pengendali fetch "passthrough" ini berbahaya, karena semuanya akan
-terus bekerja di aplikasi web, tetapi latensi
-kecil akan terjadi setiap kali permintaan jaringan dibuat. Tetapi ada biaya tambahan dalam
-memulai pekerja layanan jika ini belum berjalan, dan ada juga
-biaya tambahan dalam meneruskan respons dari pekerja layanan ke klien yang membuat
-permintaan itu.
+This type of "passthrough" fetch handler is insidious, since everything will continue to work in your web application, but you'll end up introducing a small latency hit whenever a network request is made. There's overhead involved in starting up a service worker if it's not already running, and there's also overhead in passing the response from the service worker to the client that made the request.
 
-Jika pekerja layanan tidak berisi `fetch` pengendali sama sekali, beberapa browser
-akan membuat catatan tentang itu dan [tidak ragu-ragu memulai pekerja
-layanan](https://github.com/w3c/ServiceWorker/issues/718) setiap kali ada
-permintaan layanan.
+If your service worker doesn't contain a `fetch` handler at all, some browsers will make note of that and [not bother starting up the service worker](https://github.com/w3c/ServiceWorker/issues/718) whenever there's a network request.
 
-### Gunakan pramuat navigasi jika diperlukan
+### Use navigation preload when appropriate
 
-Ada beberapa skenario di mana Anda *memerlukan* `fetch` pengendali untuk menggunakan strategi
-penyimpanan cache untuk subsumber data tertentu, tetapi arsitektur Anda membuatnya tidak mungkin
-merespons permintaan navigasi. Atau, Anda mungkin tidak masalah jika
-menggunakan data yang disimpan di cache sebagai respons navigasi, tetapi Anda masih ingin membuat
-permintaan jaringan agar data baru ditukar setelah halaman memuat.
+There are scenarios in which you *need* a `fetch` handler to use a caching strategy for certain subresources, but your architecture makes it impossible to respond to navigation requests. Alternatively, you might be okay with using cached data in your navigation response, but you still want to make a network request for fresh data to swap in after the page has loaded.
 
-Fitur yang dikenal sebagai
-[Pramuat Navigasi](https://developer.mozilla.org/en-US/docs/Web/API/NavigationPreloadManager)
-relevan untuk kedua kasus penggunaan itu. Fitur ini bisa mengurangi keterlambatan yang mungkin disebabkan oleh
-pekerja layanan yang tidak merespons navigasi. Fitur ini
-juga bisa digunakan untuk permintaan "out of band" data baru yang bisa
-digunakan oleh kode sisi klien setelah halaman memuat. Terdapat semua detail dalam artikel
-"[Mempercepat Pekerja Layanan dengan Pramuat Navigasi](/web/updates/2017/02/navigation-preload)"
-yang Anda perlukan untuk mengonfigurasi pekerja layanan
-dengan sesuai.
+A feature known as [Navigation Preload](https://developer.mozilla.org/en-US/docs/Web/API/NavigationPreloadManager) is relevant for both of those use cases. It can mitigate the delays that a service worker that didn't respond to navigations might otherwise introduce. It can also be used for "out of band" requests for fresh data that could then be used by client-side code after the page has loaded. The "[Speed up Service Worker with Navigation Preloads](/web/updates/2017/02/navigation-preload)" article has all the details you'd need to configure your service worker accordingly.
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

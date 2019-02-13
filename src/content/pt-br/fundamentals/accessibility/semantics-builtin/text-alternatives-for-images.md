@@ -1,93 +1,60 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Usando o atributo alt para fornecer alternativas em texto a imagens
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using the alt attribute to provide text alternatives for images
 
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# Text Alternatives for Images {: .page-title }
 
-# Alternativas em Texto Para Imagens {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-
-
-
-As imagens são um componente importante da maioria das páginas da Web, e
-são, naturalmente, um ponto sensível para usuários de baixa visão. Devemos considerar a função de uma
-imagem em uma página para descobrir que tipo de alternativa de texto ela deve ter.
- Veja esta imagem.
+Images are an important component of most web pages, and are of course a particular sticking point for low-vision users. We must consider the role an image plays in a page to work out what type of text alternative it should have. Take a look at this image.
 
     <article>
       <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
       <img src="imgs/160204193356-01-cat-500.jpg">
     </article>
+    
 
 <article>
   <h2>Study shows 9 out of 10 cats quietly judging their owners as they sleep</h2>
   <img src="imgs/160204193356-01-cat-500.jpg">
 </article>
 
-Na página, temos a imagem de um gato, ilustrando um artigo sobre o famoso
- comportamento crítico dos gatos. Um leitor de tela anunciaria esta imagem usando
-seu nome literal, `"/160204193356-01-cat-500.jpg"`. Isso é exato, mas não tem
-utilidade alguma.
+In the page we have a picture of a cat, illustrating an article on cats' well-known judgmental behavior. A screen reader will announce this image using its literal name, `"/160204193356-01-cat-500.jpg"`. That's accurate, but not at all useful.
 
-Você pode usar o atributo `alt` para fornecer uma alternativa de texto útil a
-esta imagem &mdash; por exemplo, "Um gato olhando ameaçadoramente para o espaço".
+You can use the `alt` attribute to provide a useful text alternative to this image &mdash; for example, "A cat staring menacingly off into space."
 
-    <img src="/160204193356-01-cat-500.jpg" alt="Um gato encarando de forma ameaçadora">
+    <img src="/160204193356-01-cat-500.jpg" alt="A cat staring menacingly off into space">
+    
 
-Assim, o leitor de tela pode anunciar uma descrição sucinta da imagem (
-vista na barra preta VoiceOver) e o usuário pode escolher se deseja ir para
-o artigo.
+Then the screen reader can announce a succinct description of the image ( seen in the black VoiceOver bar) and the user can choose whether to move on to the article.
 
-![uma imagem com texto alternativo melhor](imgs/funioncat2.png)
+![an image with improved alt text](imgs/funioncat2.png)
 
-Alguns comentários sobre `alt`:
+A couple of comments about `alt`:
 
- - `alt` permite que você especifique uma string simples a ser usada sempre que a
-imagem não estiver disponível, por exemplo, quando a imagem não for carregada,
-ou for acessada por robô de Web lento, ou for encontrada por um leitor de tela.
- - `alt` difere de `title`, ou qualquer tipo de legenda, na medida em que é utilizado *somente*
-se a imagem não estiver disponível.
+- `alt` allows you to specify a simple string to be used any time the image isn't available, such as when the image fails to load, or is accessed by web crawling bot, or is encountered by a screen reader.
+- `alt` differs from `title`, or any type of caption, in that it is *only* used if the image is not available.
 
-Escrever texto alternativo útil é quase uma forma de arte. Para que uma string seja uma alternativa utilizável
-em texto, ela precisa transmitir o mesmo conceito que a imagem, no mesmo
-contexto.
+Writing useful alt text is a bit of an art. In order for a string to be a usable text alternative, it needs to convey the same concept as the image, in the same context.
 
-Considere uma imagem do logotipo vinculado no cabeçalho de uma página, como os mostrados acima.
-Podemos descrever a imagem com bastante precisão como "O logotipo da Funion".
+Consider a linked logo image in the masthead of a page like those shown above. We can describe the image pretty accurately as "The Funion logo".
 
-    <img class="logo" src="logo.jpg" alt="O logotipo da Funion">
+    <img class="logo" src="logo.jpg" alt="The Funion logo">
+    
 
-Pode ser tentador dar-lhe uma alternativa de texto simples como "casa" ou "página
-principal", mas isso é um desserviço a usuários de baixa visão e àqueles que enxergam.
+It might be tempting to give it a simpler text alternative of "home" or "main page", but that does a disservice to both low-vision and sighted users.
 
-Mas imagine um usuário de leitor de tela que deseja localizar o logotipo no cabeçalho
-da página; atribuir um valor alternativa de "casa", na verdade, cria uma
-experiência mais confusa. E um usuário que enxerga enfrenta o mesmo desafio &mdash; descobrir
-o que clicar no logotipo do site faz &mdash; que um usuário de leitor de tela.
+But imagine a screen reader user who wants to locate the masthead logo on the page; giving it an alt value of "home" actually creates a more confusing experience. And a sighted user faces the same challenge &mdash; figuring out what clicking the site logo does &mdash; as a screen reader user.
 
-Por outro lado, nem sempre é útil para descrever uma imagem. Por exemplo,
-considere uma imagem de lupa dentro de um botão de pesquisa que tem o texto
-"Buscar". Se o texto não estivesse ali, você definitivamente daria a essa imagem um
-valor alternativo "buscar". Mas, como temos o texto visível, o leitor de tela lerá
-em voz alta a palavra "busca"; assim, um valor `alt` idêntico na
-imagem é redundante.
+On the other hand, it's not always useful to describe an image. For example, consider a magnifying glass image inside a search button that has the text "Search". If the text wasn't there, you would definitely give that image an alt value of "search". But because we have the visible text, the screen reader will pick up and read aloud the word "search"; thus, an identical `alt` value on the image is redundant.
 
-No entanto, sabemos que, se deixarmos o texto `alt` de fora, provavelmente ouviremos
-o nome do arquivo de imagem em vez disso, o que é inútil e potencialmente confuso. Neste
-caso, você pode simplesmente usar um atributo `alt` vazio, e o leitor de tela
-pulará a imagem completamente.
+However, we know that if we leave the `alt` text out, we'll probably hear the image file name instead, which is both useless and potentially confusing. In this case you can just use an empty `alt` attribute, and the screen reader will skip the image altogether.
 
     <img src="magnifying-glass.jpg" alt="">
+    
 
-Resumindo, todas as imagens devem ter um atributo `alt`, mas nem todos eles precisam
-conter texto. Imagens importantes devem ter texto alternativo descritivo que descreva
-sucintamente o que a imagem é, enquanto imagens decorativas devem ter
- atributos alternativos vazios &mdash; ou seja, `alt=""`.
+To summarize, all images should have an `alt` attribute, but they need not all have text. Important images should have descriptive alt text that succinctly describes what the image is, while decorative images should have empty alt attributes &mdash; that is, `alt=""`.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

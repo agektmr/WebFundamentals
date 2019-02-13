@@ -1,127 +1,120 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: La pintura es el proceso de rellenar los píxeles que, finalmente, se convierten en una composición en las pantallas de los usuarios. A menudo, es la tarea del proceso que más tiempo se ejecuta, y la que se debe evitar siempre que sea posible.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# Simplifica la complejidad de la pintura y reduce las áreas de pintura {: .page-title }
+# Simplify Paint Complexity and Reduce Paint Areas {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-La pintura es el proceso de rellenar los píxeles que, finalmente, se convierten en una composición en las
- pantallas de los usuarios. A menudo, es la tarea del proceso que más tiempo se 
-ejecuta, y la que se debe evitar siempre que sea posible.
+Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-### TL;DR {: .hide-from-toc } 
+### TL;DR {: .hide-from-toc }
 
-* Si se cambia alguna propiedad que no sea transforms u opacity, siempre se desencadena la función de pintura.
-* La pintura es, generalmente, la parte más costosa de la canalización de píxeles; evítala siempre que sea posible.
-* Reduce las áreas de pintura mediante la promoción de las capas y la orquestación de las animaciones.
-* Utiliza el generador de perfiles de pintura de Chrome DevTools para evaluar la complejidad y el costo de la pintura; reduce su uso siempre que sea posible.
+* Changing any property apart from transforms or opacity always triggers paint.
+* Paint is often the most expensive part of the pixel pipeline; avoid it where you can.
+* Reduce paint areas through layer promotion and orchestration of animations.
+* Use the Chrome DevTools paint profiler to assess paint complexity and cost; reduce where you can.
 
-## Activación de diseño y pintura
+## Triggering Layout And Paint
 
-Si activas un diseño, _siempre activarás la pintura_, ya que si se modifica la geometría de un elemento sus píxeles deberán corregirse.
+If you trigger layout, you will *always trigger paint*, since changing the geometry of any element means its pixels need fixing!
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="Canalización de píxeles completa.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="The full pixel pipeline." />
 
-También puedes activar la pintura si modificas las propiedades no geométricas, como los fondos, el color del texto o las sombras. En esos casos, el diseño no será necesario y la canalización tendrá el siguiente aspecto:
+You can also trigger paint if you change non-geometric properties, like backgrounds, text color, or shadows. In those cases layout won’t be needed and the pipeline will look like this:
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="Canalización de píxeles sin diseño.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="The pixel pipeline without layout." />
 
-## Usa Chrome DevTools para identificar rápidamente los cuellos de botella de pintura
+## Use Chrome DevTools to quickly identify paint bottlenecks
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="Opción “Show paint rectangles” en DevTools.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="The show paint rectangles option in DevTools.">
   </figure>
 </div>
 
-Puedes usar Chrome DevTools para identificar rápidamente las áreas que se pintan. Ingresa a DevTools y presiona la tecla Escape del teclado. Accede a la pestaña Rendering, en el panel que aparece, y selecciona “Show paint rectangles”.
+You can use Chrome DevTools to quickly identify areas that are being painted. Go to DevTools and hit the escape key on your keyboard. Go to the rendering tab in the panel that appears and choose “Show paint rectangles”.
 
 <div style="clear:both;"></div>
 
-Con esta opción activada, en Chrome la pantalla parpadeará con color verde cada vez que se aplique pintura. Si ves que toda la pantalla parpadea con color verde o que esto sucede en algunas áreas de la pantalla que según tu parecer no deberían pintarse, te recomendamos investigar un poco más sobre el tema.
+With this option switched on Chrome will flash the screen green whenever painting happens. If you’re seeing the whole screen flash green, or areas of the screen that you didn’t think should be painted, then you should dig in a little further.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="Página parpadeando con color verde cada vez que se aplica pintura.">
-
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="The page flashing green whenever painting occurs." />
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="Activación y desactivación de la generación de perfiles de pintura en Chrome DevTools.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="The toggle to enable paint profiling in Chrome DevTools.">
   </figure>
 </div>
 
-Existe una opción en Timeline de Chrome DevTools con la que podrás obtener más información: un generador de perfiles de pintura. Para habilitarlo, accede a Timeline y marca la casilla “Paint” que aparece en la parte superior. Es importante que _solo esta función esté activada cuando se intenta crear un perfil relacionado con la pintura_, ya que esta función posee una sobrecarga y esto distorsionará la creación de perfiles de rendimiento. Esta función se puede aprovechar mejor si deseas obtener más información sobre lo que se está pintando exactamente.
+There’s an option in the Chrome DevTools timeline which will give you more information: a paint profiler. To enable it, go to the Timeline and check the “Paint” box at the top. It’s important to *only have this switched on when trying to profile paint issues*, as it carries an overhead and will skew your performance profiling. It’s best used when you want more insight into what exactly is being painted.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="Botón para iniciar el generador de perfiles de pintura." class="screenshot">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="The button to bring up the paint profiler." class="screenshot">
   </figure>
 </div>
 
-Desde aquí, ahora podrás ejecutar una grabación de Timeline, y los registros de pintura serán más detallados. Si haces clic en el registro de pintura de un fotograma, podrás tener acceso al generador de perfiles de pintura de dicho fotograma:
+From here you can now run a Timeline recording, and paint records will carry significantly more detail. By clicking on a paint record in a frame you will now get access to the Paint Profiler for that frame:
 
 <div style="clear:both;"></div>
 
-Si haces clic en el generador de perfiles de pintura, aparecerá una vista en la que podrás ver lo que se pintó, el tiempo que esto llevó y las llamadas de pintura individuales que se necesitaron:
+Clicking on the paint profiler brings up a view where you can see what got painted, how long it took, and the individual paint calls that were required:
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Paint Profiler de Chrome DevTools.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler." />
 
-Este generador de perfiles te permite conocer tanto el área como la complejidad (que es, en realidad, el tiempo que tarda en aplicarse la pintura). Puedes consultar estos dos aspectos para solucionar el problema si no puedes evitar la pintura.
+This profiler lets you know both the area and the complexity (which is really the time it takes to paint), and both of these are areas you can look to fix if avoiding paint is not an option.
 
-## Promueve elementos que se muevan o se atenúen
+## Promote elements that move or fade
 
-La pintura no siempre se realiza en una sola imagen de la memoria. De hecho, es posible que el navegador aplique pintura en varias imágenes, o capas del compositor, si es necesario.
+Painting is not always done into a single image in memory. In fact, it’s possible for the browser to paint into multiple images, or compositor layers, if necessary.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="Representación de las capas del compositor.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="A representation of compositor layers." />
 
-El beneficio de este enfoque es que los elementos que se vuelven a pintar regularmente o se mueven en la pantalla mediante transforms pueden manipularse sin afectar a los demás elementos. Lo mismo sucede con los paquetes de edición, como Sketch, GIMP o Photoshop, en los cuales cada capa se puede manipular y componer sobre el resto de las capas para crear la imagen final.
+The benefit of this approach is that elements that are regularly repainted, or are moving on screen with transforms, can be handled without affecting other elements. This is the same as with art packages like Sketch, GIMP, or Photoshop, where individual layers can be handled and composited on top of each other to create the final image.
 
-La mejor forma de crear una capa nueva es a través de la propiedad `will-change` de CSS. Esto funciona en Chrome, Opera y Firefox y, con un valor de `transform`, se creará una capa nueva del compositor:
-
+The best way to create a new layer is to use the `will-change` CSS property. This will work in Chrome, Opera and Firefox, and, with a value of `transform`, will create a new compositor layer:
 
     .moving-element {
       will-change: transform;
     }
+    
 
-
-En el caso de los navegadores que no son compatibles con `will-change`, pero se benefician con la creación de capas, como Safari y Mobile Safari, debes usar correcta o incorrectamente una transformación 3D para crear, de manera forzosa, una capa nueva:
-
+For browsers that don’t support `will-change`, but benefit from layer creation, such as Safari and Mobile Safari, you need to (mis)use a 3D transform to force a new layer:
 
     .moving-element {
       transform: translateZ(0);
     }
+    
 
+Care must be taken not to create too many layers, however, as each layer requires both memory and management. There is more information on this in the [Stick to compositor-only properties and manage layer count](stick-to-compositor-only-properties-and-manage-layer-count) section.
 
-Sin embargo, debes tener suficiente precaución para no crear demasiadas capas, ya que para cada una se requiere memoria y administración. Podrás encontrar más información en la sección [Limítate solo a las propiedades del compositor y administra el recuento de capas](stick-to-compositor-only-properties-and-manage-layer-count).
+If you have promoted an element to a new layer, use DevTools to confirm that doing so has given you a performance benefit. **Don't promote elements without profiling.**
 
-Si promoviste un elemento a una capa nueva, usa DevTools para confirmar que al hacerlo obtuviste un beneficio de rendimiento. **No promuevas elementos sin generar perfiles.**
+## Reduce paint areas
 
-## Reduce las áreas de pintura
+Sometimes, however, despite promoting elements, paint work is still necessary. A large challenge of paint issues is that browsers union together two areas that need painting, and that can result in the entire screen being repainted. So, for example, if you have a fixed header at the top of the page, and something being painted at the bottom the screen, the entire screen may end up being repainted.
 
-En algunos casos, no obstante, aunque se promuevan los elementos será necesario realizar trabajos de pintura de todos modos. Un gran desafío, en términos de problemas relacionados con la pintura, es que los navegadores unen dos áreas que necesitan pintura; esto puede hacer que se vuelva a pintar toda la pantalla. Entonces, por ejemplo, si tienes un encabezado fijo en la parte superior de la página y un elemento que se está pintando en la parte inferior de la pantalla, es posible que se pinte nuevamente toda la pantalla.
+Note: On High DPI screens elements that are fixed position are automatically promoted to their own compositor layer. This is not the case on low DPI devices because the promotion changes text rendering from subpixel to grayscale, and layer promotion needs to be done manually.
 
-Note: Los elementos de las pantallas con valores altos de PPP (Puntos por pulgada) que están en una posición fija se promueven automáticamente a su propia capa del compositor. Esto no es así en los dispositivos con valores bajos de PPP, debido a que la promoción modifica la representación de los textos desde subpíxeles a escala de grises, y la promoción de las capas debe hacerse manualmente.
+Reducing paint areas is often a case of orchestrating your animations and transitions to not overlap as much, or finding ways to avoid animating certain parts of the page.
 
-Reducir las áreas de pintura suele implicar orquestar tus animaciones y transiciones para que no se superpongan demasiado, o encontrar estrategias para evitar animar ciertas partes de la página.
-
-## Simplificación de la complejidad de la pintura
+## Simplify paint complexity
 
 <div class="attempt-right">
   <figure>
-    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="Tiempo que tarda en pintarse parte de la pantalla.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="The time taken to paint part of the screen.">
   </figure>
 </div>
 
-Cuando se trata de la pintura, algunas tareas son más costosas que otras. Por ejemplo, todo elemento que incluya un desenfoque (como una sombra, por ejemplo) tardará más en pintarse que, por ejemplo, un cuadro rojo en dibujarse. Sin embargo, en términos de CSS, esto no siempre es evidente: `background: red;` y `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` no necesariamente se ven como si tuvieran características de rendimiento muy diferentes, pero de hecho las tienen.
+When it comes to painting, some things are more expensive than others. For example, anything that involves a blur (like a shadow, for example) is going to take longer to paint than -- say -- drawing a red box. In terms of CSS, however, this isn’t always obvious: `background: red;` and `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` don’t necessarily look like they have vastly different performance characteristics, but they do.
 
-El generador de perfiles de pintura mencionado anteriormente te permite determinar si necesitas buscar otras formas de lograr los efectos. Pregúntate si es posible usar un conjunto de estilos menos exigente o medios alternativos para lograr el resultado final.
+The paint profiler above will allow you to determine if you need to look at other ways to achieve effects. Ask yourself if it’s possible to use a cheaper set of styles or alternative means to get to your end result.
 
-Siempre que sea posible, evita aplicar pintura durante las animaciones en particular, ya que los **10 ms** que tienes por fotograma no suelen bastar para finalizar el trabajo de pintura, en particular en los dispositivos móviles.
+Where you can you always want to avoid paint during animations in particular, as the **10ms** you have per frame is normally not long enough to get paint work done, especially on mobile devices.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

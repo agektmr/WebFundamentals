@@ -1,43 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentação de referência para a auditoria do Lighthouse "HTML tem uma meta tag de janela de visualização".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Has A &lt;meta name="viewport"&gt; Tag With width Or initial-scale" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-04 #} {# wf_blink_components: N/A #}
 
-# HTML tem uma meta tag de janela de visualização {: .page-title }
+# Has A Viewport Meta Tag With width Or initial-scale {: .page-title }
 
-## Por que a auditoria é importante {: #why }
+## Overview {: #overview }
 
-Sem uma meta tag de janela de visualização, os dispositivos móveis renderizam páginas nas larguras de tela
-típicas de desktop e depois ajustam a escala das páginas para as telas dos dispositivos móveis. A definição da
-janela de visualização permite controlar sua largura e escala.
-Consulte os links a seguir para saber mais:
+Without a viewport meta tag, mobile devices render pages at typical desktop screen widths, and then scale the pages to fit the mobile screens. Setting the viewport enables you to control the width and scaling of the viewport. Check out the following links to learn more:
 
-* [Configurar a janela de visualização](/speed/docs/insights/ConfigureViewport).
-* [Definir a janela de visualização](/web/fundamentals/design-and-ux/responsive/#set-the-viewport).
+* [Configure the Viewport](/speed/docs/insights/ConfigureViewport)
+* [Set the Viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport)
 
-## Como ser aprovado na auditoria {: #how }
+## Recommendations {: #recommendations }
 
-Adicione uma tag `<meta>` à janela de visualização no `<head>` do HTML.
+Add a viewport `<meta>` tag in the `<head>` of your HTML.
 
     <head>
       ...
       <meta name="viewport" content="width=device-width, initial-scale=1">
       ...
     </head>
+    
 
-O par chave-valor `width=device-width` define a largura da janela de visualização como
-a largura do dispositivo. O par chave-valor `initial-scale=1` define o nível inicial de
-zoom ao acessar a página.
+The `width=device-width` key-value pair sets the width of the viewport to the width of the device. The `initial-scale=1` key-value pair sets the initial zoom level when visiting the page.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-O Lighthouse verifica se existe uma tag `<meta name="viewport">` no `<head>`
-do documento. Além disso, verifica se o nó contém um atributo `content`
-e se o valor desse atributo contém o texto `width=`. No entanto,
-ele não verifica se `width` é igual a `device-width`. O Lighthouse também não
-verifica a existência de um par chave-valor `initial-scale`.
+Lighthouse checks that there's a `<meta name="viewport">` tag in the `<head>` of the document. It also checks that the node contains a `content` attribute and that the value of this attribute contains the text `width=`. However, it does not check that `width` equals `device-width`. Lighthouse also does not check for a `initial-scale` key-value pair.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

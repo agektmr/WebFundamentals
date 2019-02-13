@@ -1,74 +1,68 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:不走寻常路，为项目创建完全自定义的动画。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Go offroad and create totally custom animations for your projects.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 自定义缓动 {: .page-title }
+# Custom Easing {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-有时您不想使用 CSS 随附的缓动关键字，或者要使用 Web Animations 或 JavaScript 框架。在这些情况下，一般可以定义自己的曲线（或公式），这让您能更好地控制项目动画的感觉。
+Sometimes you won't want to use the easing keywords that are included with CSS, or you will be using Web Animations or a JavaScript framework. In these cases, you can typically define your own curves (or equations), and this provides a lot of control over the feel of your project's animations.
 
 ### TL;DR {: .hide-from-toc }
-* 自定义缓动使您能够给项目提供更多个性。
-* 您可以创建与默认动画曲线（缓出、缓入等）相似的三次贝塞尔曲线，只是重点放在不同的地方。
-* 当需要对动画时间和行为（例如弹性或弹跳动画）进行更多控制时，请使用 JavaScript。
 
+* Custom easing allows you to give more personality to your projects.
+* You can create cubic Bézier curves that resemble the default animation curves (ease-out, ease-in, etc.), but with emphasis in different places.
+* Use JavaScript when you need more control over the animation timing and behavior, for example, elastic or bounce animations.
 
-如果使用 CSS 编写动画，您将发现可以通过定义三次贝塞尔曲线来定义时间。事实上，关键字 `ease`、`ease-in`、`ease-out` 和 `linear` 映射到预定义的贝塞尔曲线，详细说明请参考 [CSS 变换规范](http://www.w3.org/TR/css3-transitions/) 和 [Web Animations 规范](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve)。
+If you're animating with CSS, you'll find that you can define cubic Bézier curves to define the timing. In fact, the keywords `ease`, `ease-in`, `ease-out`, and `linear` map to predefined Bézier curves, which are detailed in the [CSS transitions specification](http://www.w3.org/TR/css3-transitions/) and the [Web Animations specification](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve).
 
-这些贝塞尔曲线有四个值，即 2 对数字，每对数字描述三次贝塞尔曲线的控制点的 X 和 Y 坐标。贝塞尔曲线的起点坐标为 (0, 0)，终点坐标为 (1, 1)；由您设置两个控制点的 X 和 Y 值。两个控制点的 X 值必须在 0 到 1 之间，每个控制点的 Y 值可以超过 [0, 1] 限制，但此规范未说明可超过多少。
+These Bézier curves take four values, or two pairs of numbers, with each pair describing the X and Y coordinates of a cubic Bézier curve’s control points. The starting point of the Bézier curve has a coordinate of (0, 0) and the end coordinate is (1, 1); you get to set the X and Y values of the two control points. The X values for the two control points must be between 0 and 1, and each control point’s Y value can exceed the [0, 1] limit, although the spec isn’t clear by how much.
 
-更改每个控制点的 X 和 Y 值将实现截然不同的曲线，从而使动画有截然不同的感觉。例如，如果第一个控制点在右下角，则动画在开头缓慢。如果它在左上角，动画在开头会显得很快。相反，如果第二控制点在网格的右下角，则动画在结尾处变快；而在左上角时，动画将在结尾处变慢。
+Changing the X and Y value of each control point gives you a vastly different curve, and therefore a vastly different feel to your animation. For example, if the first control point is in the lower right area, the animation will be slow to start. If it’s in the top left area, it’s going to be fast to start. Conversely, if the second control point is in the bottom right area of the grid, it’s going to be fast at the end; if it’s in the top left, it will be slow to end.
 
-为了对比，以下有两条曲线：一条典型的缓入缓出曲线和一条自定义曲线：
+For comparison, here are two curves: a typical ease-in-out curve and a custom curve:
 
 <div class="attempt-left">
   <figure>
-    <img src="images/ease-in-out-markers.png" alt="缓入缓出动画的曲线。" />
+    <img src="images/ease-in-out-markers.png" alt="Ease-in-out animation curve." />
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/custom.png" alt="自定义动画的曲线。" />
+    <img src="images/custom.png" alt="Custom animation curve." />
   </figure>
 </div>
 
-[查看自定义缓动的动画](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
+[See an animation with custom easing](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
 
-此自定义曲线的 CSS 为：
-
+The CSS for the custom curve is:
 
     transition: transform 500ms cubic-bezier(0.465, 0.183, 0.153, 0.946);
     
 
-前两个数字是第一个控制点的 X 和 Y 坐标，后两个数字是第二个控制点的 X 和 Y 坐标。
+The first two numbers are the X and Y coordinates of the first control point, and the second two numbers are the X and Y coordinates of the second control point.
 
-制作自定义曲线很有趣，您可以有效控制对动画的感觉。以上述曲线为例，您可以看到曲线与经典的缓入缓出曲线相似，但缓入即“开始”部分缩短，而结尾减速部分拉长。
+Making a custom curve is a lot of fun, and it gives you significant control over the feel of the animation. For example, given the above curve, you can see that the curve resembles a classic ease-in-out curve, but with a shortened ease-in, or "getting started," portion, and an elongated slowdown at the end.
 
-使用此[动画曲线工具](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external }进行试验，并查看此曲线如何影响动画的感觉。
+Experiment with this [animation curve tool](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external } and see how the curve affects the feel of an animation.
 
-## 使用 JavaScript 框架实现更多控制
+## Use JavaScript frameworks for more control
 
-有时您需要三次贝塞尔曲线未能提供的更多控制。如果您需要弹跳的感觉，您可以考虑使用 JavaScript 框架，因为使用 CSS 或 Web Animations 很难实现这个效果。
+Sometimes you need even more control than a cubic Bézier curve can provide. If you wanted an elastic bounce feel, you might consider using a JavaScript framework, because this is a difficult effect to achieve with either CSS or Web Animations.
 
 ### TweenMax
 
-[GreenSock 的 TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified)（或 TweenLite，如果您想要超轻量版本）是一个强大的框架，您可以在小型 JavaScript 库中获得很多控制，它是一个非常成熟的代码库。
+One powerful framework is [GreenSock’s TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (or TweenLite if you want to keep things really lightweight), because you get a lot of control from it in a small JavaScript library, and it’s a very mature codebase.
 
-[查看弹性缓动的动画](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
+[See an elastic ease animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
 
-要使用 TweenMax，请在页面中包括此脚本：
-
+To use TweenMax, include this script in your page:
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     
 
-将该脚本放到合适位置后，您可以对元素调用 TweenMax，并且告诉它您想要的任何缓动，以及您想要哪些属性。有大量缓动选项可供使用；以下代码使用一个弹性缓出：
-
+After the script is in place, you can call TweenMax against your element and tell it which properties you’d like, along with any easing you’d like. There are many easing options that you can use; the code below uses an elastic ease-out:
 
     var box = document.getElementById('my-box');
     var animationDurationInSeconds = 1.5;
@@ -79,10 +73,8 @@ description:不走寻常路，为项目创建完全自定义的动画。
     });
     
 
-[TweenMax 文档](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/)重点说明了您使用的所有选项，非常值得一读。
+The [TweenMax documentation](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/) highlights all the options you have here, so it's well worth a read.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

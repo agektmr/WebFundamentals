@@ -1,64 +1,59 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: JavaScript ci consente di modificare praticamente qualsiasi aspetto della pagina: contenuto, stile e il relativo comportamento in seguito alle interazioni degli utenti. Tuttavia, JavaScript può anche bloccare la costruzione e ritardare quando la pagina viene sottoposta a rendering. Per fornire performance ottimali, rendi asincrono JavaScript ed elimina tutti i JavaScript superflui dal percorso di rendering critico.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: JavaScript allows us to modify just about every aspect of the page: content, styling, and its response to user interaction. However, JavaScript can also block DOM construction and delay when the page is rendered. To deliver optimal performance, make your JavaScript async and eliminate any unnecessary JavaScript from the critical rendering path.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2013-12-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>JavaScript>Runtime #}
 
-# Aggiunta di interattività con JavaScript {: .page-title }
+# Adding Interactivity with JavaScript {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-
-JavaScript ci consente di modificare praticamente qualsiasi aspetto della pagina: contenuto, stile e il relativo comportamento in seguito alle interazioni degli utenti. Tuttavia, JavaScript può anche bloccare la costruzione DOM e ritardare quando la pagina viene sottoposta a rendering. Per fornire performance ottimali, rendi asincrono JavaScript ed elimina tutti i JavaScript superflui dal percorso di rendering critico.
-
-
+JavaScript allows us to modify just about every aspect of the page: content, styling, and its response to user interaction. However, JavaScript can also block DOM construction and delay when the page is rendered. To deliver optimal performance, make your JavaScript async and eliminate any unnecessary JavaScript from the critical rendering path.
 
 ### TL;DR {: .hide-from-toc }
-- JavaScript può eseguire query e modificare DOM e CSSOM.
-- L'esecuzione di JavaScript blocca CSSOM.
-- JavaScript blocca la costruzione DOM, salvo esplicitamente dichiarata come asincrono.
 
+* JavaScript can query and modify the DOM and the CSSOM.
+* JavaScript execution blocks on the CSSOM.
+* JavaScript blocks DOM construction unless explicitly declared as async.
 
-JavaScript è un linguaggio dinamico che viene eseguito nel browser e ci consente di alterare praticamente qualsiasi aspetto del comportamento di una pagina: possiamo modificare il contenuto della pagina attraverso l'aggiunta o rimozione di elementi dalla struttura DOM, possiamo cambiare le proprietà CSSOM di ciascun elemento, possiamo gestire l'input dell'utente e molto altro ancora. Per illustrare questa procedura in azione, aggiungiamo al nostro esempio precedente 'Ciao mondo' un semplice script inline:
+JavaScript is a dynamic language that runs in a browser and allows us to alter just about every aspect of how the page behaves: we can modify content by adding and removing elements from the DOM tree; we can modify the CSSOM properties of each element; we can handle user input; and much more. To illustrate this, let's augment our previous "Hello World" example with a simple inline script:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/script.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-* JavaScript ci permette di accedere al DOM e di estrarre il nodo span nascosto: il nodo potrebbe non essere visibile nella struttura di rendering, ma è ancora presente nel DOM. Quindi, una volta che siamo in possesso del riferimento, ne possiamo modificare il testo (tramite .textContent) e quindi sostituire la proprietà di stile di visualizzazione calcolata da `none` a `inline`. Alla fine dell'operazione, la nostra pagina visualizzerà '**Ciao studenti interattivi.**'.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/script.html){: target="_blank" .external }
 
-* JavaScript ci consente anche di creare, definire lo stile e aggiungere e rimuovere nuovi elementi dal DOM. In realtà, tecnicamente la nostra intera pagina potrebbe essere solo un grande file JavaScript che crea e definisce lo stile degli elementi uno ad uno: così funzionerebbe, ma lavorare con HTML e CSS risulta molto più facile nella prassi. Nella seconda parte della nostra funzione JavaScript creiamo un nuovo elemento div, ne impostiamo il contenuto di testo, ne definiamo lo stile e lo aggiungiamo al corpo.
+* JavaScript allows us to reach into the DOM and pull out the reference to the hidden span node; the node may not be visible in the render tree, but it's still there in the DOM. Then, when we have the reference, we can change its text (via .textContent), and even override its calculated display style property from "none" to "inline." Now our page displays "**Hello interactive students!**".
 
-<img src="images/device-js-small.png" class="center" alt="anteprima pagina">
+* JavaScript also allows us to create, style, append, and remove new elements in the DOM. Technically, our entire page could be just one big JavaScript file that creates and styles the elements one by one. Although that would work, in practice using HTML and CSS is much easier. In the second part of our JavaScript function we create a new div element, set its text content, style it, and append it to the body.
 
-In questo modo, abbiamo modificato il contenuto e lo stile CSS di un nodo DOM esistente e abbiamo aggiunto un nodo interamente nuovo al documento. La nostra pagina non vincerà nessun premio di design, ma illustra la potenza e la flessibilità che ci offre JavaScript.
+<img src="images/device-js-small.png"  alt="page preview" />
 
-Tuttavia, esiste un grande caveat di performance in agguato. JavaScript ci offre molta potenza, ma crea anche numerose limitazioni aggiuntive sulle modalità e sulle tempistiche di rendering della pagina.
+With that, we've modified the content and the CSS style of an existing DOM node, and added an entirely new node to the document. Our page won't win any design awards, but it illustrates the power and flexibility that JavaScript affords us.
 
-Innanzitutto, nota che nell'esempio di cui sopra, il nostro script inline è vicino al fondo della pagina. Perché? Ebbene, dovresti provarci da solo, ma se spostiamo lo script sopra l'elemento _span_, noterai che lo script avrà esito negativo e indicherà che non riesce a trovare un riferimento a nessun elemento _span_ nel documento, ad esempio _getElementsByTagName('span')_ restituirà _null_. Questo dimostra una proprietà importante: il nostro script viene eseguito nel punto preciso in cui viene inserito nel documento. Quando il parser HTML incontra un tag script, sospende il processo di costruzione del DOM e cede il controllo al motore JavaScript; una volta che il motore JavaScript ha ultimato l'esecuzione, il browser riprende da dove si è fermato e continua con la costruzione DOM.
+However, while JavaScript affords us lots of power, it creates lots of additional limitations on how and when the page is rendered.
 
-In altre parole, il nostro blocco di script non riesce a trovare altri elementi nella pagina perché non sono stati ancora elaborati. Oppure, messa in termini leggermente diversi: **esecuzione del nostro script inline blocca la costruzione DOM, il che ritarda anche il rendering iniziale.**
+First, notice that in the above example our inline script is near the bottom of the page. Why? Well, you should try it yourself, but if we move the script above the *span* element, you'll notice that the script fails and complains that it cannot find a reference to any *span* elements in the document; that is, *getElementsByTagName(‘span')* returns *null*. This demonstrates an important property: our script is executed at the exact point where it is inserted in the document. When the HTML parser encounters a script tag, it pauses its process of constructing the DOM and yields control to the JavaScript engine; after the JavaScript engine finishes running, the browser then picks up where it left off and resumes DOM construction.
 
-Un'altra proprietà ingegnosa dell'introdurre gli script nella nostra pagina è il fatto che possono leggere e modificare non solo il DOM, ma anche le proprietà CSSOM. In realtà, questo è esattamente ciò che stiamo facendo nel nostro esempio, quando cambiamo la proprietà di visualizzazione dell'elemento span da `none` a `inline`. Il risultato finale? Adesso abbiamo una race condition.
+In other words, our script block can't find any elements later in the page because they haven't been processed yet! Or, put slightly differently: **executing our inline script blocks DOM construction, which also delays the initial render.**
 
-Cosa succede se il browser non ha terminato il download e la costruzione del CSSOM nel momento in cui vogliamo eseguire lo script? La risposta è semplice e non molto positiva per le performance: **il browser ritarderà l'esecuzione dello script finché non avrà terminato il download e la costruzione di CSSOM, e, mentre aspettiamo, anche la costruzione DOM è bloccata.**
+Another subtle property of introducing scripts into our page is that they can read and modify not just the DOM, but also the CSSOM properties. In fact, that's exactly what we're doing in our example when we change the display property of the span element from none to inline. The end result? We now have a race condition.
 
-In poche parole, JavaScript introduce tantissime nuove dipendenze tra l'esecuzione di DOM, CSSOM e JavaScript e può causare ritardi significativi nella rapidità in cui il browser può elaborare ed eseguire il rendering della nostra pagina sullo schermo:
+What if the browser hasn't finished downloading and building the CSSOM when we want to run our script? The answer is simple and not very good for performance: **the browser delays script execution and DOM construction until it has finished downloading and constructing the CSSOM.**
 
-1. La posizione dello script nel documento è significativa.
-2. La costruzione DOM viene sospesa quando si incontra un tag script e fino al completamento dell'esecuzione dello script.
-3. JavaScript può eseguire query e modificare il DOM e il CSSOM.
-4. L'esecuzione JavaScript viene ritardata finché CSSOM non è pronto.
+In short, JavaScript introduces a lot of new dependencies between the DOM, the CSSOM, and JavaScript execution. This can cause the browser significant delays in processing and rendering the page on the screen:
 
-Quando parliamo di 'ottimizzare il percorso di rendering critico', in buona parte stiamo parlando di comprendere e ottimizzare il grafico di dipendenze tra HTML, CSS e JavaScript.
+* The location of the script in the document is significant.
+* When the browser encounters a script tag, DOM construction pauses until the script finishes executing.
+* JavaScript can query and modify the DOM and the CSSOM.
+* JavaScript execution pauses until the CSSOM is ready.
 
+To a large degree, "optimizing the critical rendering path" refers to understanding and optimizing the dependency graph between HTML, CSS, and JavaScript.
 
-## Blocco parser vs. JavaScript asincrono
+## Parser blocking versus asynchronous JavaScript
 
-Per impostazione predefinita, l'esecuzione di JavaScript è 'blocco parser': quando il browser incontra uno script nel documento deve sospendere la costruzione DOM, passare il controllo al runtime JavaScript e lasciare che lo script si esegua prima di procedere con la costruzione DOM. Abbiamo già visto questo in azione con uno script inline nel nostro esempio precedente. In realtà, gli script inline sono sempre blocco parser a meno di non prendere accorgimenti speciali e scrivere un codice aggiuntivo per rinviarne l'esecuzione.
+By default, JavaScript execution is "parser blocking": when the browser encounters a script in the document it must pause DOM construction, hand over control to the JavaScript runtime, and let the script execute before proceeding with DOM construction. We saw this in action with an inline script in our earlier example. In fact, inline scripts are always parser blocking unless you write additional code to defer their execution.
 
-Per quanto riguarda gli script inclusi tramite tag script? Prendiamo il nostro esempio precedente ed estraiamo il nostro codice in un file separato:
+What about scripts included via a script tag? Let's take our previous example and extract the code into a separate file:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/split_script.html" region_tag="full" adjust_indentation="auto" %}
@@ -67,20 +62,25 @@ Per quanto riguarda gli script inclusi tramite tag script? Prendiamo il nostro e
 **app.js**
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/app.js" region_tag="full"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/app.js" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-Ti aspetteresti che l'ordine di esecuzione fosse diverso utilizzando un tag `<script>` invece di uno snippet inline JavaScript? Ovviamente, la risposta è "no" dato che sono identici e devono comportarsi nello stesso modo. In entrambi i casi, il browser dovrà fermarsi ed eseguire lo script prima di poter elaborare la parte restante del documento. Tuttavia, **nel caso di un file JavaScript esterno, il browser dovrà anche sospendere e attendere che lo script sia recuperato dal disco, dalla cache o da un server remoto, il che può aggiungere decine di migliaia di millisecondi di ritardo al percorso di rendering critico.**
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/split_script.html){: target="_blank" .external }
 
-Detto questo, buone notizie, abbiamo una scappatoia. Per impostazione predefinita, tutti i JavaScript sono blocco parser e il browser non sa ciò che lo script sta pianificando di eseguire sulla pagina, per questo deve presumere lo scenario peggiore possibile e bloccare il parser. Tuttavia, se potessimo segnalare al browser e informarlo che lo script non deve essere eseguito nel punto esatto in cui vi viene fatto riferimento nel documento? In questo modo, il browser potrebbe continuare a costruire il DOM e lasciare che lo script si esegua una volta pronto, ad esempio, quando il file è stato recuperato dalla cache o da un server remoto.
+Whether we use a &lt;script&gt; tag or an inline JavaScript snippet, you'd expect both to behave the same way. In both cases, the browser pauses and executes the script before it can process the remainder of the document. However, **in the case of an external JavaScript file the browser must pause to wait for the script to be fetched from disk, cache, or a remote server, which can add tens to thousands of milliseconds of delay to the critical rendering path.**
 
-Quindi come otteniamo questo risultato? È molto semplice, contrassegniamo il nostro script come _async_:
+By default all JavaScript is parser blocking. Because the browser does not know what the script is planning to do on the page, it assumes the worst case scenario and blocks the parser. A signal to the browser that the script does not need to be executed at the exact point where it's referenced allows the browser to continue to construct the DOM and let the script execute when it is ready; for example, after the file is fetched from cache or a remote server.
+
+To achieve this, we mark our script as *async*:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/split_script_async.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-Aggiungendo la parola chiave async al tag script, questo informa il browser che non deve bloccare la costruzione del DOM mentre attende che lo script divenga disponibile, questa è un'ottima vittoria per la performance.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/split_script_async.html){: target="_blank" .external }
 
+Adding the async keyword to the script tag tells the browser not to block DOM construction while it waits for the script to become available, which can significantly improve performance.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

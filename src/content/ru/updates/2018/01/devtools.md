@@ -1,22 +1,14 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Local Overrides, accessibility tools, performance and SEO audits, and more.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Local Overrides, accessibility tools, performance and SEO audits, and more.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-17 #}
-{# wf_tags: chrome65,devtools,devtools-whatsnew #}
-{# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #}
-{# wf_featured_snippet: Local Overrides, accessibility tools, performance and SEO audits, and more. #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-03 #} {# wf_published_on: 2018-01-17 #} {# wf_tags: chrome65,devtools,devtools-whatsnew #} {# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #} {# wf_featured_snippet: Local Overrides, accessibility tools, performance and SEO audits, and more. #} {# wf_blink_components: Platform>DevTools #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Что нового в DevTools (Chrome 65) {: .page-title }
+# What's New In DevTools (Chrome 65) {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Новые функции, входящие в DevTools в Chrome 65, включают:
+New features coming to DevTools in Chrome 65 include:
 
 * [**Local Overrides**](#overrides)
 * [New accessibility tools](#a11y)
@@ -25,7 +17,7 @@ description: Local Overrides, accessibility tools, performance and SEO audits, a
 * [Multiple recordings in the **Performance** panel](#recordings)
 * [Reliable code stepping with workers and asynchronous code](#stepping)
 
-Читайте дальше или смотрите видео-версию этих примечаний к выпуску ниже.
+Read on, or watch the video version of these release notes, below.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="D1pV7ermy6w"
@@ -33,12 +25,11 @@ description: Local Overrides, accessibility tools, performance and SEO audits, a
   </iframe>
 </div>
 
-Note: Проверьте, какая версия Chrome вы используете в `chrome://version` . Если вы используете более раннюю версию, эти функции не будут существовать. Если вы используете более позднюю версию, эти функции могут быть изменены. Chrome автоматически обновляет новую основную версию каждые 6 недель.
+Note: Check what version of Chrome you're running at `chrome://version`. If you're running an earlier version, these features won't exist. If you're running a later version, these features may have changed. Chrome auto-updates to a new major version about every 6 weeks.
 
-## Локальная переопределяет {: #overrides }
+## Local Overrides {: #overrides }
 
-** Локальные перестановки ** позволяют вносить изменения в DevTools и сохранять эти изменения при загрузке страниц. Раньше любые изменения, которые вы делали в DevTools, терялись при перезагрузке страницы.
-** Локальные переопределения ** работают для большинства типов файлов с несколькими исключениями. См. Раздел [Limitations](#overrides-limitations) .
+**Local Overrides** let you make changes in DevTools, and keep those changes across page loads. Previously, any changes that you made in DevTools would be lost when you reloaded the page. **Local Overrides** work for most file types, with a couple of exceptions. See [Limitations](#overrides-limitations).
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/overrides.gif"
@@ -48,40 +39,38 @@ Note: Проверьте, какая версия Chrome вы используе
   </figcaption>
 </figure>
 
-Как это устроено:
+How it works:
 
-* Вы указываете каталог, в котором DevTools должен сохранять изменения.
-* Когда вы вносите изменения в DevTools, DevTools сохраняет копию измененного файла в ваш каталог.
-* Когда вы перезагружаете страницу, DevTools обслуживает локальный, измененный файл, а не сетевой ресурс.
+* You specify a directory where DevTools should save changes.
+* When you make changes in DevTools, DevTools saves a copy of the modified file to your directory.
+* When you reload the page, DevTools serves the local, modified file, rather than the network resource.
 
-Для настройки ** Локальные переадресации **:
+To set up **Local Overrides**:
 
-1. Откройте панель ** Sources **. 1. Откройте вкладку ** Переопределения **.
+1. Open the **Sources** panel.
+2. Open the **Overrides** tab.
+    
+    <figure> 
+    
+    ![The Overrides tab](/web/updates/images/2018/01/overrides.png) <figcaption> **Figure 2**. The **Overrides** tab </figcaption> </figure>
+3. Click **Setup Overrides**.
 
-     <figure>
-       <img src="/web/updates/images/2018/01/overrides.png"
-            alt="The Overrides tab"/>
-       <figcaption>
-         <b>Figure 2</b>. The <b>Overrides</b> tab
-       </figcaption>
-     </figure>
+4. Select which directory you want to save your changes to.
+5. At the top of your viewport, click **Allow** to give DevTools read and write access to the directory.
+6. Make your changes.
 
-1. Щелкните ** Настройка переопределения **. 1. Выберите каталог, в который вы хотите сохранить изменения. 1. В верхней части окна просмотра щелкните ** Разрешить **, чтобы дать DevTools доступ для чтения и записи в каталог. 1. Внесите свои изменения.
+### Limitations {: #overrides-limitations }
 
-### Ограничение {: #overrides-limitations }
+* DevTools doesn't save changes made in the **DOM Tree** of the **Elements** panel. Edit HTML in the **Sources** panel instead.
+* If you edit CSS in the **Styles** pane, and the source of that CSS is an HTML file, DevTools won't save the change. Edit the HTML file in the **Sources** panel instead.
 
-* DevTools не сохраняет изменения, внесенные в ** DOM Tree ** панели ** Elements **. Измените HTML на панели ** Sources **.
-* Если вы редактируете CSS на панели ** Styles **, а источником этого CSS является HTML-файл, DevTools не сохранит это изменение. Отредактируйте HTML-файл на панели ** Sources **.
+### Related features {: #overrides-related }
 
-### Связанные функции {: #overrides-related }
+* [Workspaces](/web/updates/2017/10/devtools-release-notes#workspaces). DevTools automatically maps network resources to a local repository. Whenever you make a change in DevTools, that change gets saved to your local repository, too.
 
-* [Workspaces][WS] . DevTools автоматически отображает сетевые ресурсы в локальный репозиторий. Всякий раз, когда вы вносите изменения в DevTools, это изменение также сохраняется в вашем локальном репозитории.
+## The Changes tab {: #changes }
 
-[WS]: /web/updates/2017/10/devtools-release-notes#workspaces
-
-## «Изменения» {: #changes }
-
-Отслеживайте изменения, которые вы делаете локально в DevTools с помощью новой вкладки ** Изменения **.
+Track changes that you make locally in DevTools via the new **Changes** tab.
 
 <figure>
   <img src="/web/updates/images/2018/01/changes.png"
@@ -91,13 +80,13 @@ Note: Проверьте, какая версия Chrome вы используе
   </figcaption>
 </figure>
 
-## Новые инструменты доступности {: #a11y }
+## New accessibility tools {: #a11y }
 
-Используйте новую панель ** Доступность **, чтобы проверить свойства доступности элемента, и проверьте коэффициент контрастности текстовых элементов в ** Color Picker **, чтобы убедиться, что они доступны для пользователей с нарушениями зрения или цветом недостатки.
+Use the new **Accessibility** pane to inspect the accessibility properties of an element, and inspect the contrast ratio of text elements in the **Color Picker** to ensure that they're accessible to users with low-vision impairments or color-vision deficiencies.
 
-### возможностей {: #a11y-pane }
+### Accessibility pane {: #a11y-pane }
 
-Используйте панель ** Доступность ** на панели ** Элементы **, чтобы исследовать свойства доступности выбранного в данный момент элемента.
+Use the **Accessibility** pane on the **Elements** panel to investigate the accessibility properties of the currently-selected element.
 
 <figure>
   <img src="/web/updates/images/2018/01/a11y-pane.png"
@@ -111,7 +100,7 @@ Note: Проверьте, какая версия Chrome вы используе
   </figcaption>
 </figure>
 
-Посмотрите на A11ycast от Rob Dodson по маркировке ниже, чтобы увидеть панель ** Доступность ** в действии.
+Check out Rob Dodson's A11ycast on labeling below to see the **Accessibility** pane in action.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="8dCUzOiMRy4"
@@ -120,11 +109,11 @@ Note: Проверьте, какая версия Chrome вы используе
   </iframe>
 </div>
 
-### Контрастность в {: #contrast } цветов {: #contrast }
+### Contrast ratio in the Color Picker {: #contrast }
 
-В [Color Picker][CP] теперь отображается коэффициент контрастности текстовых элементов. Увеличение коэффициента контрастности текстовых элементов делает ваш сайт более доступным для пользователей с нарушениями зрения и недостатками цветового зрения. См. [Color and contrast][contrast] чтобы узнать больше о том, как коэффициент контрастности влияет на доступность.
+The [Color Picker](/web/tools/chrome-devtools/css/reference#color-picker) now shows you the contrast ratio of text elements. Increasing the contrast ratio of text elements makes your site more accessible to users with low-vision impairments or color-vision deficiencies. See [Color and contrast](/web/fundamentals/accessibility/accessible-styles#color_and_contrast) to learn more about how contrast ratio affects accessibility.
 
-Улучшение цветового контраста ваших текстовых элементов делает ваш сайт более удобным для <i>всех</i> пользователей. Другими словами, если ваш текст серый с белым фоном, это трудно для кого-то читать.
+Improving the color contrast of your text elements makes your site more usable for *all* users. In other words, if your text is grey with a white background, that's hard for anyone to read.
 
 <figure>
   <img src="/web/updates/images/2018/01/contrast-ratio-collapsed.png"
@@ -134,13 +123,9 @@ Note: Проверьте, какая версия Chrome вы используе
   </figcaption>
 </figure>
 
-В ** Рисунок 5 **, две галочки рядом с ** 4.61 ** означают, что этот элемент соответствует [enhanced recommended contrast ratio (AAA)][enhanced]{:.external} . Если бы у него была только одна галочка, это означало бы, что она встретила [minimum recommended contrast ratio (AA)][minimum]{:.external} .
+In **Figure 5**, the two checkmarks next to **4.61** means that this element meets the [enhanced recommended contrast ratio (AAA)](https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast7){:.external}. If it only had one checkmark, that would mean it met the [minimum recommended contrast ratio (AA)](https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-contrast){:.external}.
 
-[enhanced]: https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast7
-[minimum]: https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-contrast
-
-Нажмите ** Показать больше **! [Show More][SM]{:.cdt-inl} чтобы расширить раздел ** Контрастность **. Белая линия в поле ** Цветной спектр ** обозначает границу между цветами, которые соответствуют рекомендуемому коэффициенту контрастности, и тем, которые этого не делают. Например, поскольку серый цвет в
-** Рисунок 6 ** соответствует рекомендациям, это означает, что все цвета под белой линией также соответствуют рекомендациям.
+Click **Show More** ![Show More](/web/updates/images/2018/01/show-more.png){:.cdt-inl} to expand the **Contrast Ratio** section. The white line in the **Color Spectrum** box represents the boundary between colors that meet the recommended contrast ratio, and those that don't. For example, since the grey color in **Figure 6** meets recommendations, that means that all of the colors below the white line also meet recommendations.
 
 <figure>
   <img src="/web/updates/images/2018/01/contrast-ratio-expanded.png"
@@ -150,16 +135,11 @@ Note: Проверьте, какая версия Chrome вы используе
   </figcaption>
 </figure>
 
-[CP]: /web/tools/chrome-devtools/css/reference#color-picker
-[contrast]: /web/fundamentals/accessibility/accessible-styles#color_and_contrast
-[SM]: /web/updates/images/2018/01/show-more.png
+#### Related features {: #contrast-related }
 
-#### Связанные функции {: #contrast-related }
+The **Audits** panel has an automated accessibility audit for ensuring that *every* text element on a page has a sufficient contrast ratio.
 
-Панель ** Audits ** имеет автоматизированный аудит доступности для обеспечения того, чтобы
-* каждый * текстовый элемент на странице имеет достаточный коэффициент контрастности.
-
-См. [Run Lighthouse in Chrome DevTools][audit] или смотрите A11ycast ниже, чтобы узнать, как использовать панель ** Audits ** для проверки доступности.
+See [Run Lighthouse in Chrome DevTools](/web/tools/lighthouse/#devtools), or watch the A11ycast below, to learn how to use the **Audits** panel to test accessibility.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="b0Q5Zp_yKaU"
@@ -168,17 +148,15 @@ Note: Проверьте, какая версия Chrome вы используе
   </iframe>
 </div>
 
-[audit]: /web/tools/lighthouse/#devtools
+## New audits {: #audits }
 
-## Новые проверки {: #audits }
+Chrome 65 ships with a whole new category of SEO audits, and many new performance audits.
 
-Chrome 65 поставляется с совершенно новой категорией аудита SEO и многими новыми аудитами эффективности.
+Note: The **Audits** panel is powered by [Lighthouse](/web/tools/lighthouse). Chrome 64 runs Lighthouse version 2.5. Chrome 65 runs Lighthouse version 2.8. So this section is simply a summary of the Lighthouse updates from 2.6, 2.7, and 2.8.
 
-Note: Панель ** Audits ** работает от [Lighthouse][LH] . Chrome 64 запускает Lighthouse версии 2.5. Chrome 65 запускает Lighthouse версии 2.8. Таким образом, этот раздел представляет собой просто сводку обновлений Lighthouse от 2.6, 2.7 и 2.8.
+### New SEO audits {: #seo }
 
-### Новые аудит SEO {: #seo }
-
-Обеспечение того, чтобы ваши страницы проходили каждый аудит в новой категории ** SEO **, может помочь улучшить рейтинг вашей поисковой системы.
+Ensuring that your pages pass each of the audits in the new **SEO** category may help improve your search engine rankings.
 
 <figure>
   <img src="/web/updates/images/2018/01/seo.png"
@@ -188,16 +166,16 @@ Note: Панель ** Audits ** работает от [Lighthouse][LH] . Chrome 
   </figcaption>
 </figure>
 
-### Новые аудиты эффективности {: #performance }
+### New performance audits {: #performance }
 
-Chrome 65 также обладает множеством новых аудитов эффективности:
+Chrome 65 also ships with many new performance audits:
 
-* Время загрузки JavaScript высок
-* Использует неэффективную политику кэша для статических активов
-* Избегает перенаправления страниц
-* Документ использует плагины
-* Минимизировать CSS
-* Минимизировать JavaScript
+* JavaScript boot-up time is high
+* Uses inefficient cache policy on static assets
+* Avoids page redirects
+* Document uses plugins
+* Minify CSS
+* Minify JavaScript
 
 <aside class="key-point">
   <b>Perf matters!</b> After Mynet improved their page load speed by 4X, users spent 43% more time
@@ -212,33 +190,23 @@ Chrome 65 также обладает множеством новых аудит
   started</a>.
 </aside>
 
-### Другие обновления {: #audits-other }
+### Other updates {: #audits-other }
 
 * [New, manual accessibility audits](/web/updates/2018/01/lighthouse#a11y)
-* [Updates to the WebP audit][webp] чтобы сделать его более содержательным для других форматов изображений следующего поколения
-* [A rehaul of the accessibility score][a11yscore]
-* Если аудит доступности недоступен для страницы, этот аудит больше не учитывает оценку доступности
-* Производительность теперь является верхней частью отчетов
+* [Updates to the WebP audit](/web/updates/2018/01/lighthouse#webp) to make it more inclusive of other next-generation image formats
+* [A rehaul of the accessibility score](/web/updates/2017/12/lighthouse#a11y)
+* If an accessibility audit is not applicable for a page, that audit no longer counts towards the accessibility score
+* Performance is now the top section in reports
 
-[seoaudits]: /web/updates/2018/01/lighthouse#seo
-[webp]: /web/updates/2018/01/lighthouse#webp
-[a11yscore]: /web/updates/2017/12/lighthouse#a11y
-[LH]: /web/tools/lighthouse
-[2.6]: /web/updates/2017/12/lighthouse
-[2.7]: /web/updates/2018/01/lighthouse
+## Reliable code stepping with workers and asynchronous code {: #stepping }
 
-## Надежный кодовый шаг с рабочими и асинхронный код {: #stepping }
+Chrome 65 brings updates to the **Step Into** ![Step Into](/web/tools/chrome-devtools/javascript/imgs/step-into.png){:.cdt-inl} button when stepping into code that passes messages between threads, and asynchronous code. If you want the previous stepping behavior, you can use the new **Step** ![Step](/web/tools/chrome-devtools/javascript/imgs/step.png){:.cdt-inl} button, instead.
 
-Chrome 65 добавляет обновления в ** Step Into **! Кнопка [Step Into][into]{:.cdt-inl} при [Step Into][into]{:.cdt-inl} в код, который передает сообщения между потоками и асинхронный код. Если вы хотите предыдущее поведение при шаге, вы можете использовать новый ** Шаг **! [Step][step]{:.cdt-inl} кнопки [Step][step]{:.cdt-inl} .
+### Stepping into code that passes messages between threads {: #workers }
 
-[into]: /web/tools/chrome-devtools/javascript/imgs/step-into.png
-[step]: /web/tools/chrome-devtools/javascript/imgs/step.png
+When you step into code that passes messages between threads, DevTools now shows you what happens in each thread.
 
-### кода, передающего сообщения между потоками. {: #workers }
-
-Когда вы входите в код, который передает сообщения между потоками, DevTools теперь показывает вам, что происходит в каждом потоке.
-
-Например, приложение в ** Рисунок 8 ** передает сообщение между основным потоком и рабочим потоком. После `postMessage()` вызов `postMessage()` в основном потоке DevTools приостанавливается в обработчике `onmessage` в рабочем потоке. Обработчик `onmessage` сам `onmessage` сообщение обратно в основной поток. Вступая в * этот * вызов, паузы DevTools возвращаются в основной поток.
+For example, the app in **Figure 8** passes a message between the main thread and the worker thread. After stepping into the `postMessage()` call on the main thread, DevTools pauses in the `onmessage` handler in the worker thread. The `onmessage` handler itself posts a message back to the main thread. Stepping into *that* call pauses DevTools back in the main thread.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/new-worker-stepping.gif"
@@ -248,7 +216,7 @@ Chrome 65 добавляет обновления в ** Step Into **! Кнопк
   </figcaption>
 </figure>
 
-Когда вы вступили в такой код в более ранних версиях Chrome, Chrome показал вам основную часть кода, как вы можете видеть в ** Рисунок 9 **.
+When you stepped into code like this in earlier versions of Chrome, Chrome only showed you the main-thread-side of the code, as you can see in **Figure 9**.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/old-worker-stepping.gif"
@@ -258,11 +226,11 @@ Chrome 65 добавляет обновления в ** Step Into **! Кнопк
   </figcaption>
 </figure>
 
-### в асинхронный код {: #async }
+### Stepping into asynchronous code {: #async }
 
-При вступлении в асинхронный код DevTools теперь предполагает, что вы хотите приостановить асинхронный код, который в конечном итоге будет работать.
+When stepping into asynchronous code, DevTools now assumes that you want to pause in the the asynchronous code that eventually runs.
 
-Например, в ** Рисунок 10 ** после `setTimeout()` в `setTimeout()` , DevTools запускает весь код, ведущий к этой точке за кулисами, а затем делает паузу в функции, переданной в `setTimeout()` .
+For example, in **Figure 10** after stepping into `setTimeout()`, DevTools runs all of the code leading up to that point behind the scenes, and then pauses in the function that's passed to `setTimeout()`.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/new-async-stepping.gif"
@@ -272,7 +240,7 @@ Chrome 65 добавляет обновления в ** Step Into **! Кнопк
   </figcaption>
 </figure>
 
-Когда вы вступили в такой код в Chrome 63, DevTools приостановился в коде, поскольку он хронологически работал, как вы можете видеть в ** Рисунок 11 **.
+When you stepped into code like this in Chrome 63, DevTools paused in code as it chronologically ran, as you can see in **Figure 11**.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/old-async-stepping.gif"
@@ -282,11 +250,9 @@ Chrome 65 добавляет обновления в ** Step Into **! Кнопк
   </figcaption>
 </figure>
 
-## Несколько записей в панели Performance {: #recordings }
+## Multiple recordings in the Performance panel {: #recordings }
 
-Панель ** Performance ** теперь позволяет временно сохранить до 5 записей. Записи удаляются при закрытии окна DevTools. См. [Get Started with Analyzing Runtime Performance][runtime] чтобы получить [Get Started with Analyzing Runtime Performance][runtime] к панели ** Performance **.
-
-[runtime]: /web/tools/chrome-devtools/evaluate-performance/
+The **Performance** panel now lets you temporarily save up to 5 recordings. The recordings are deleted when you close your DevTools window. See [Get Started with Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/) to get comfortable with the **Performance** panel.
 
 <figure>
   <img src="/web/updates/images/2018/01/recordings.png"
@@ -296,11 +262,11 @@ Chrome 65 добавляет обновления в ** Step Into **! Кнопк
   </figcaption>
 </figure>
 
-## : автоматизация действий DevTools с помощью Puppeteer 1.0 {: #puppeteer }
+## Bonus: Automate DevTools actions with Puppeteer 1.0 {: #puppeteer }
 
-Note: Этот раздел не относится к Chrome 65.
+Note: This section isn't related to Chrome 65.
 
-Версия 1.0 Puppeteer, инструмент автоматизации браузера, поддерживаемый командой Chrome DevTools, теперь отсутствует. Вы можете использовать Puppeteer для автоматизации многих задач, которые ранее были доступны только через DevTools, например, для захвата скриншотов:
+Version 1.0 of Puppeteer, a browser automation tool maintained by the Chrome DevTools team, is now out. You can use Puppeteer to automate many tasks that were previously only available via DevTools, such as capturing screenshots:
 
     const puppeteer = require('puppeteer');
     (async () => {
@@ -310,8 +276,9 @@ Note: Этот раздел не относится к Chrome 65.
       await page.screenshot({path: 'example.png'});
       await browser.close();
     })();
+    
 
-Он также имеет API-интерфейсы для множества обычно полезных задач автоматизации, таких как создание PDF-файлов:
+It also has APIs for lots of generally useful automation tasks, such as generating PDFs:
 
     const puppeteer = require('puppeteer');
     (async () => {
@@ -321,35 +288,20 @@ Note: Этот раздел не относится к Chrome 65.
       await page.pdf({path: 'hn.pdf', format: 'A4'});
       await browser.close();
     })();
+    
 
-См. [Quick Start][quickstart] чтобы узнать больше.
+See [Quick Start](/web/tools/puppeteer/get-started) to learn more.
 
-[quickstart]: /web/tools/puppeteer/get-started
+You can also use Puppeteer to expose DevTools features while browsing without ever explicitly opening DevTools. See [Using DevTools Features Without Opening DevTools](/web/updates/2018/01/devtools-without-devtools) for an example.
 
-Вы также можете использовать Puppeteer для раскрытия функций DevTools во время просмотра без явного открытия DevTools. См. [Using DevTools Features Without Opening DevTools][without] .
+## A request from the DevTools team: consider Canary {: #canary }
 
-[without]: /web/updates/2018/01/devtools-without-devtools
+If you're on Mac or Windows, please consider using [Chrome Canary](https://www.google.com/chrome/browser/canary.html) as your default development browser. If you report a bug or a change that you don't like while it's still in Canary, the DevTools team can address your feedback significantly faster.
 
-## Запрос от команды DevTools: рассмотрите Canary {: #canary }
+Note: Canary is the bleeding-edge version of Chrome. It's released as soon as its built, without testing. This means that Canary breaks from time-to-time, about once-a-month, and it's usually fixed within a day. You can go back to using Chrome Stable when Canary breaks.
 
-Если вы находитесь на Mac или Windows, рассмотрите возможность использования [Chrome Canary][canary] качестве браузера по умолчанию. Если вы сообщаете об ошибке или изменениях, которые вам не нравятся, пока они все еще находятся в Канарее, команда DevTools может быстрее реагировать на ваши отзывы.
+## Feedback {: #feedback }
 
-Note: Канарейка - это хронистая версия Chrome. Он выпущен сразу после его сборки, без тестирования. Это означает, что Канарейка прерывается время от времени, примерно раз в месяц, и обычно это фиксируется в течение дня. Вы можете вернуться к использованию Chrome Stable, когда Канарейский перерыв.
+The best place to discuss any of the features or changes you see here is the [google-chrome-developer-tools@googlegroups.com mailing list](https://groups.google.com/forum/#!forum/google-chrome-developer-tools). You can also tweet us at [@ChromeDevTools](https://twitter.com/chromedevtools) if you're short on time. If you're sure that you've encountered a bug in DevTools, please [open an issue](https://crbug.com/new).
 
-[canary]: https://www.google.com/chrome/browser/canary.html
-
-## Обратная связь {: #feedback }
-
-Лучшее место для обсуждения любых функций или изменений, которые вы видите здесь, - это [google-chrome-developer-tools@googlegroups.com mailing list][ML] . Вы также можете чирикать нас на [@ChromeDevTools](https://twitter.com/chromedevtools) если у вас короткое время. Если вы уверены, что столкнулись с ошибкой в ​​DevTools, пожалуйста, используйте [open an issue](https://crbug.com/new) .
-
-[ML]: https://groups.google.com/forum/#!forum/google-chrome-developer-tools
-
-## Предыдущие заметки о выпуске {: #links }
-
-См. Тег [devtools-whatsnew][tag] для ссылок на все предыдущие заметки о выпуске DevTools.
-
-[tag]: /web/updates/tags/devtools-whatsnew
-
-{% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
+<<../../_shared/discover.md>>

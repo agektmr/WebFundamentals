@@ -1,34 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Im Sinne der kürzestmöglichen Zeit bis zum ersten Rendern sind drei Variablen zu optimieren. Konkret muss die Anzahl der kritischen Ressourcen, die Zahl der kritischen Bytes und die Länge des kritischen Pfads minimiert werden.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Kritischen Rendering-Pfad optimieren {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Im Sinne der kürzestmöglichen Zeit bis zum ersten Rendern sind drei Variablen zu optimieren:
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
-* **Minimieren Sie die Anzahl der kritischen Ressourcen.**
-* **Minimieren Sie die Anzahl der kritischen Bytes.**
-* **Minimieren Sie die Länge des kritischen Pfads.**
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-Kritische Ressourcen sind Ressourcen, die das erste Rendern der Seite blockieren könnten. Je weniger Ressourcen sich auf der Seite befinden, desto weniger aufwendig ist es für den Browser, Inhalte auf dem Bildschirm darzustellen, und desto weniger Konflikte treten zwischen der CPU und anderen Ressourcen auf.
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-Außerdem kann der Browser umso schneller zur Verarbeitung der Inhalte und zu ihrer Darstellung auf dem Bildschirm übergehen, je weniger kritische Bytes herunterzuladen sind. Zur Reduzierung der Anzahl der Bytes können wir die Zahl der Ressourcen verringern, d. h., eliminieren oder nicht-kritisch machen, und zudem die Übertragungsmenge durch Komprimieren und Optimieren der einzelnen Ressourcen minimieren.
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-Die kritische Pfadlänge schließlich ist eine Funktion des Abhängigkeitsgraphen zwischen allen kritischen Ressourcen, die für die Seite und ihre Bytemengen erforderlich sind. Manche Ressourcen können nur heruntergeladen werden, nachdem eine vorherige Ressource verarbeitet wurde, und je größer die Ressource ist, umso mehr Paketumläufe werden zum Herunterladen benötigt.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-In anderen Worten: Die Anzahl der Ressourcen, ihre Bytemenge und die Länge des kritischen Pfads hängen miteinander zusammen, können aber separat bearbeitet werden. So können Sie möglicherweise die Anzahl der kritischen Ressourcen nicht reduzieren und den kritischen Pfad nicht verkürzen, aber die Verringerung der Zahl der kritischen Bytes wäre dennoch eine wichtige Optimierungsoption und dies gilt auch für die anderen Kombinationen.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-**Die Abfolge der Schritte zur Optimierung des kritischen Rendering-Pfads:**
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-1. Analysieren und beschreiben Sie den kritischen Pfad: Anzahl der Ressourcen, Bytes, Länge.
-2. Minimieren Sie die Anzahl der kritischen Ressourcen: eliminieren, Download zurückstellen, als asynchron kennzeichnen usw.
-3. Optimieren Sie die Reihenfolge, in der die übrigen kritischen Ressourcen geladen werden: Alle kritischen Inhalte sollen so frühzeitig wie möglich heruntergeladen werden, um die Länge des kritischen Pfads zu verkürzen.
-4. Optimieren Sie die Anzahl der kritischen Bytes, um die Download-Zeit, d. h. die Zahl der Paketumläufe, zu verringern.
+## Feedback {: #feedback }
 
-
-
+{% include "web/_shared/helpful.html" %}

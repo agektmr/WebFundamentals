@@ -1,272 +1,227 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Chrome DevTools 中的 Styles 窗格可以檢查和修改與元素關聯的 CSS 樣式。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Styles pane in Chrome DevTools to inspect and modify the CSS styles associated to an element.
 
-{# wf_updated_on: 2016-02-25 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 編輯樣式 {: .page-title }
+# Edit Styles {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-使用 <strong>Styles</strong> 窗格可以修改與元素關聯的 CSS 樣式。
+Warning: This page is deprecated. See [CSS Reference](/web/tools/chrome-devtools/css/reference).
 
+Use the **Styles** pane to modify the CSS styles associated to an element.
 
-![Styles 窗格](imgs/styles-pane.png)
-
+![Styles pane](imgs/styles-pane.png)
 
 ### TL;DR {: .hide-from-toc }
-- 利用 Styles 窗格，您可以在本地以儘可能多的方法更改 CSS，包括修改現有樣式、添加新樣式，以及爲樣式添加規則。
-- 如果您希望樣式可以保持（不會在重新加載後消失），則需要將其保存到您的開發工作區中。
 
+- The styles pane lets you change your CSS in as many ways as possible, locally, including editing existing styles, adding new styles, adding rules for styles.
+- If you want styles to persist (so they don't go away on a reload), you need to persist them to your development workspace.
 
-## 檢查應用到元素的樣式
+## Inspect styles applied to an element
 
-[選擇一個元素](edit-dom#inspect-an-element)以檢查其樣式。
-**Styles** 窗格可以顯示應用到選定元素的 CSS 規則，優先級從高到低：
+[Select an element](edit-dom#inspect-an-element) to inspect its styles. The **Styles** pane shows the CSS rules that apply to the selected element, from highest priority to lowest:
 
+- At the top is `element.style`. These are styles either applied directly to the element using the style property (for example, `<p style="color:green">`), or applied in DevTools.
 
-* 頂端爲 `element.style`。這些樣式要麼直接使用樣式屬性（例如 `<p style="color:green">`）直接應用到元素，要麼在 DevTools 中應用。
+- Below that are any CSS rules that match the element. For example, in the screenshot below the selected element receives `line-height:24px` from a rule defined in `tools.css`.
 
+- Below that are inherited styles, which include any inheritable style rules that match the selected element's ancestors. For example, in the screenshot below the selected element inherits `display:list-item` from `user agent stylesheet`.
 
+The labels on the image below correspond with the numbered items below it.
 
-* 下方是與元素匹配的任何 CSS 規則。例如，在下面的屏幕截圖中，選定元素從 `tools.css` 中定義的規則接收 `line-height:24px`。
+![Annotated Styles pane](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
 
+1. Styles associated with a selector that matches the element.
+2. [User agent stylesheets](http://meiert.com/en/blog/20070922/user-agent-style-sheets/) are clearly labelled, and are often overridden by the CSS on your web page.
+3. Rules that have been overridden by **cascading rules** are shown with strikethrough text.
+4. **Inherited** styles are displayed as a group under the "Inherited from `<NODE>`" header. Click the DOM node in the header to navigate to its position in the DOM tree view. (The [CSS 2.1 properties table](http://www.w3.org/TR/CSS21/propidx.html) shows which properties are inheritable.)
+5. Grey colored entries are rules that are not defined but instead **computed at runtime**.
 
+Understanding how cascading and inheritance works is essential to debugging your styles. The cascade relates to how CSS declarations are given weights to determine which rules should take precedence when they overlap with another rule. Inheritance relates to how HTML elements inherit CSS properties from their containing elements (ancestors). For more, see [W3C documentation on cascading](http://www.w3.org/TR/CSS2/cascade.html).
 
-* 再下方是繼承的樣式，其中包括與選定元素的祖先實體匹配的任何可繼承樣式規則。
-例如，在下面的屏幕截圖中，選定元素從 `user agent stylesheet` 繼承 `display:list-item`。
+## Inspect elements affected by a selector
 
+Hover your mouse over a CSS selector in the **Styles** pane to view all elements that are affected by the selector. For example, in the screenshot below the mouse is hovering over the selector `.wf-tools-guide__section-link a`. In the live page you can see all of the `<a>` elements that are affected by the selector.
 
+![viewing elements affected by selector](imgs/selector-hover.png)
 
-下圖上的標籤與其下方帶編號的項目對應。
+**Note**: this feature only highlights elements in the viewport; it's possible that other elements outside of the viewport are also affected by the selector.
 
-![帶標註的 Styles 窗格](/web/tools/chrome-devtools/inspect-styles/imgs/styles-annotated.png)
+## Add, enable, and disable CSS classes {:#classes}
 
-1. 與元素匹配的選擇器的關聯樣式。
-2. [User Agent 樣式表](http://meiert.com/en/blog/20070922/user-agent-style-sheets/)清晰標記，並且在網頁上經常被 CSS 替換。
-3. 已被**級聯規則**替換的規則將顯示爲帶刪除線的文本。
-4. **繼承的**樣式將在“Inherited from `<NODE>`”標頭下顯示爲一組。點擊標頭中的 DOM 節點可以導航到其在 DOM 樹視圖中的位置。
-（[CSS 2.1 屬性表](http://www.w3.org/TR/CSS21/propidx.html)顯示了哪些屬性是可以繼承的。）
-5. 灰色的條目不是已定義的規則，而是**在運行時計算的**規則。
+Warning: This page is deprecated. See [Toggle a class](/web/tools/chrome-devtools/css/reference#toggle-class).
 
+Click on the **.cls** button to view all of the CSS classes associated to the currently selected element. From there, you can:
 
+- Enable or disable the classes currently associated to the element.
+- Add new classes to the element. 
 
+![classes pane](imgs/classes.png)
 
-瞭解級聯和繼承的原理對於調試樣式至關重要。
-級聯與 CSS 聲明被賦予的權重有關，權重用於確定規則在與其他規則重疊時哪些規則的優先級更高。
-繼承與 HTML 元素如何從其所屬元素（祖先實體）繼承 CSS 屬性有關。
-如需瞭解詳情，請參閱[有關級聯的 W3C 文檔](http://www.w3.org/TR/CSS2/cascade.html)。
+## Edit an existing property name or value
 
+Warning: This page is deprecated. See [Change a declaration name or value](/web/tools/chrome-devtools/css/reference#change-declaration).
 
-## 檢查受選擇器影響的元素
+Click on a CSS property name or value to edit it. While a name or value is highlighted, press <kbd>Tab</kbd> to move forward to the next property, name, or selector. Hold <kbd>Shift</kbd> and press <kbd>Tab</kbd> to move backwards.
 
-在 **Styles** 窗格中將鼠標懸停在 CSS 選擇器上可以查看受該選擇器影響的所有元素。
-例如，在下面的屏幕截圖中，鼠標懸停在選擇器 `.wf-tools-guide__section-link a` 上。在實時頁面中，您可以看到受選擇器影響的所有 `<a>` 元素。
- 
+When editing a numeric CSS property value, increment and decrement with the following keyboard shortcuts:
 
-![查看受選擇器影響的元素](imgs/selector-hover.png)
+- <kbd>Up</kbd> and <kbd>Down</kbd> to increment and decrement the value by 1, or by .1 if the current value is between -1 and 1.
+- <kbd>Alt</kbd>+<kbd>Up</kbd> and <kbd>Alt</kbd>+<kbd>Down</kbd> to increment and decrement the value by 0.1.
+- <kbd>Shift</kbd>+<kbd>Up</kbd> to increment by 10 and <kbd>Shift</kbd>+<kbd>Down</kbd> to decrement by 10.
+- <kbd>Shift</kbd>+<kbd>Page Up</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Up</kbd> (Mac) to increment the value by 100. <kbd>Shift</kbd>+<kbd>Page Down</kbd> (Windows, Linux) or <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>Down</kbd> (Mac) to decrement the value by 100. 
 
-Note：此功能僅突出顯示視口中的元素；視口以外的其他元素也可能受選擇器影響。
- 
+## Add a new property declaration
 
-## 添加、啓用和停用 CSS 類 {: #classes }
+Warning: This page is deprecated. See [Add a declaration to an element](/web/tools/chrome-devtools/css/reference#add-declaration).
 
-點擊 **.cls** 按鈕可以查看與當前選定元素關聯的所有 CSS 類。
-從這裏，您可以執行以下操作：
+Click an empty space within an editable CSS rule to create a new declaration. Type it out, or paste the CSS into the **Styles** pane. Properties and their values are parsed and entered into the correct fields.
 
-* 啓用或停用當前與元素關聯的類。
-* 向元素添加新類。 
+Note: To enable or disable a style declaration, check or uncheck the checkbox next to it.
 
-![classes 窗格](imgs/classes.png)
+## Add a style rule
 
-## 編輯現有屬性名稱或值
+Warning: This page is deprecated. See [Add a style rule](/web/tools/chrome-devtools/css/reference#style-rule).
 
-點擊 CSS 屬性名稱或值可以對其進行編輯。在名稱或值突出顯示時，按 <kbd>Tab</kbd> 可以向前移動到下一個屬性、名稱或選擇器。
+Click the **New Style Rule** (![new style rule button](imgs/new-style-rule.png){:.inline}) button to add a new CSS rule.
 
-按 <kbd>Shift</kbd>+<kbd>Tab</kbd> 可以向後移動。
+Click and hold the button to choose which stylesheet the rule is added to.
 
-編輯數字式 CSS 屬性值時，可以使用下面的鍵盤快捷鍵增大和減小值：
+## Add or remove dynamic styles (pseudo-classes) {:#pseudo-classes}
 
+Warning: This page is deprecated. See [Toggle a pseudo-class](/web/tools/chrome-devtools/css/reference#pseudo-class).
 
-* 使用<kbd>向上鍵</kbd>和<kbd>向下鍵</kbd>能夠以 1 爲增量增大和減小值（如果當前值介於 -1 和 1 之間，則增量爲 0.1）。
-* 使用 <kbd>Alt</kbd>+<kbd>向上鍵</kbd>和 <kbd>Alt</kbd>+<kbd>向下鍵</kbd>能夠以 0.1 爲增量增大和減小值。
-* 使用 <kbd>Shift</kbd>+<kbd>向上鍵</kbd>能夠以 10 爲增量增大值；使用 <kbd>Shift</kbd>+<kbd>向下鍵</kbd>能夠以 10 爲增量減小值。
-* 使用 <kbd>Shift</kbd>+<kbd>Page Up</kbd>（Windows、Linux）或 <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>向上鍵</kbd> (Mac) 能夠以 100 爲增量增大值。使用 <kbd>Shift</kbd>+<kbd>Page Down</kbd>（Windows、Linux）或 <kbd>Shift</kbd>+<kbd>Function</kbd>+<kbd>向下鍵</kbd> (Mac) 能夠以 100 爲增量減小值。
+You can manually set dynamic pseudo-class selectors (such as `:active`, `:focus`, `:hover`, and `:visited`) on elements.
 
- 
+There are two ways to set these dynamic states on an element:
 
-## 添加新屬性聲明
+- Right-click on an element within the **Elements** panel and then select the target pseudo-class from the menu to enable or disable it.
+    
+    ![right-click on element 
+to enable pseudoclass selector](imgs/pseudoclass-rightclick.png)
 
-點擊可編輯 CSS 規則中的空白處可以創建一個新聲明。
-鍵入，或者將 CSS 粘貼到 **Styles** 窗格中。屬性及其值將解析並輸入到正確的字段中。
+- Select an element in the **Elements** panel, click the **:hov** button in the **Styles** pane, and use the checkboxes to enable or disable the selectors for the currently selected element.
+    
+    ![:hov pane](imgs/hov.png)
 
+## Add background-color or color to a style rule
 
-Note: 要啓用或停用樣式聲明，請選中或取消選中旁邊的複選框。
+Warning: This page is deprecated. See [Add a background-color declaration](/web/tools/chrome-devtools/css/reference#background-color) and [Add a color declaration](/web/tools/chrome-devtools/css/reference#color).
 
-## 添加樣式規則
+The **Styles** pane provides a shortcut for adding `color` and `background-color` declarations to a style rule.
 
-點擊 **New Style Rule** (![New Style Rule 按鈕](imgs/new-style-rule.png){:.inline}) 按鈕可以添加一個新的 CSS 規則。
+In the bottom-right of the style rule, there is a three-dot icon. You need to hover over the style rule in order to see it.
 
- 
+![three-dots icon in rule set](imgs/rule-set-three-dots-icon.png)
 
-點擊並按住按鈕可以選擇要向哪一個樣式表添加規則。 
+Hover over this icon to reveal buttons for adding a `color` declaration (![add color declaration](imgs/add-color.png){:.inline}) or a `background-color` declaration (![add background-color 
+declaration](imgs/add-background-color.png){:.inline}). Click on one of these buttons to add the declaration to the style rule.
 
-## 添加或移除動態樣式（僞類）{:#pseudo-classes}
+## Modify colors with the Color Picker {:#color-picker}
 
-您可以在元素上手動設置動態僞類選擇器（例如 `:active`、`:focus`、`:hover` 和 `:visited`）。
- 
+Warning: This page is deprecated. See [Change colors with the Color Picker](/web/tools/chrome-devtools/css/reference#color-picker).
 
-可以通過兩種方式在元素上設置動態狀態：
+To open the **Color Picker**, find a CSS declaration in the **Styles** pane that defines a color (such as `color: blue`). To the left of the declaration value there is a small, colored square. The color of the square matches the declaration value. Click on this little square to open the **Color Picker**.
 
-* 在 **Elements** 面板內右鍵點擊某個元素，然後從菜單中選擇目標僞類，將其啓用或停用。
-![右鍵點擊元素以啓用僞類選擇器](imgs/pseudoclass-rightclick.png)
-  
+![opening the color picker](imgs/open-color-picker.jpg)
 
+You can interact with the **Color Picker** in multiple ways:
 
+1. **Eyedropper**. See [Eyedropper](#eyedropper) for more information.
+2. **Current color**. A visual representation of the **current value**. 
+3. **Current value**. The hexadecimal, RGBA, or HSL representation of the **current color**. 
+4. **Color palette**. See [Color palettes](#color-palettes) for more information. 
+5. **Tint and shade selector**. 
+6. **Hue selector**. 
+7. **Opacity selector**.
+8. **Color value selector**. Click to toggle between RGBA, HSL, and hexadecimal. 
+9. **Color palette selector**. Click to select different templates.
 
-* 在 **Elements** 面板中選擇元素，然後在 **Styles** 窗格中點擊 **:hov** 按鈕，使用複選框啓用或停用當前選定元素的選擇器。
+![annotated color picker](imgs/annotated-color-picker.jpg)
 
+### Eyedropper {:#eyedropper}
 
+Click on the **eyedropper** button so that it is enabled (![enabled eyedropper](imgs/eyedropper-enabled.png){:.inline}), hover over a color on the live page, and then click to set the currently selected declaration value to the color that you're hovering over.
 
-  ![:hov 窗格](imgs/hov.png)
+![the eyedropper in action](imgs/eyedropper.jpg)
 
-## 向樣式規則添加背景色或顏色
+### Color palettes {:#color-palettes}
 
-**Styles** 窗格提供了一個用於向樣式規則添加 `color` 和 `background-color` 聲明的快捷方式。
+The **Color Picker** provides the following color palettes:
 
+- **Page Colors**. A set of colors automatically generated from the page's CSS.
+- **Material Design**. A collection of colors consistent with the [Material Design spec](https://www.google.com/design/spec/style/color.html). 
+- **Custom**. A set of any colors you choose. DevTools saves your custom palette, even across pages, until you delete it. 
 
-樣式規則的右下角有一個由三個點組成的圖標。您需要將鼠標懸停到樣式規則上才能看到這個圖標。
+#### Modifying a custom color palette {:#custom-color-palette}
 
+Press the **plus sign** button to add the current color to the palette. Click and hold on a color to drag it to a different position, or drag it to the **trash can** icon to delete it. Right-click on a color and select **Remove color** to delete it. Select **Remove all to the right** to delete all of the colors to the right of the currently selected color. Right-click anywhere within the color palette region and select **Clear template** to delete all of the template's colors.
 
-![規則集中的三點圖標](imgs/rule-set-three-dots-icon.png)
+## View and edit CSS custom properties (CSS variables) {:#custom-properties}
 
-將鼠標懸停到此圖標上可以調出用於添加 `color` 聲明 (![添加 color 聲明](imgs/add-color.png){:.inline}) 或 `background-color` 聲明 (![添加 background-color 聲明](imgs/add-background-color.png){:.inline}) 的按鈕。點擊這些按鈕之一可以將聲明添加到樣式規則中。
- 
+You can view and edit declarations that define or use [CSS custom properties](/web/updates/2016/02/css-variables-why-should-you-care) (informally known as CSS variables) just like any other declaration.
 
-## 使用 Color Picker 修改顏色 {: #color-picker }
+Custom properties are usually [defined](https://drafts.csswg.org/css-variables/#defining-variables) in the `:root` selector. To view a custom property defined in `:root`, inspect the `html` element.
 
-要打開 **Color Picker**，請在 **Styles** 窗格中查找一個定義顏色的 CSS 聲明（例如 `color: blue`）。
-聲明值的左側有一個帶顏色的小正方形。
-正方形的顏色與聲明值匹配。
-點擊小正方形可以打開 **Color Picker**。
+![custom property defined on :root](imgs/css-var-defined-on-root.png)
 
-![打開 Color Picker](imgs/open-color-picker.jpg)
+Custom properties do not have to be defined on the `:root` selector, however. If you defined it elsewhere, inspect the element on which it was defined to view the definition.
 
-您可以通過多種方式與 **Color Picker** 交互：
+You can view and edit declaration values that use custom properties just like any other declaration value.
 
-1. **取色器**。請參閱[取色器](#eyedropper)瞭解更多信息。
-2. **當前顏色**。**當前值**的可視表示。
-3. **當前值**。**當前顏色**的十六進制、RGBA 或 HSL 表示。
-4. **調色板**。請參閱[調色板](#color-palettes)瞭解更多信息。
-5. **着色和陰影選擇器**。
-6. **色調選擇器**。
-7. **不透明度選擇器**。
-8. **顏色值選擇器**。點擊可以在 RGBA、HSL 和十六進制之間切換。
-9. **調色板選擇器**。點擊可以選擇不同的模板。
+If you see a declaration value like `var(--main-color)` as in the screenshot below, it means that the declaration is using custom properties. These values can be edited like any other declaration value. Currently there is no way to jump to the custom property definition.
 
-![帶標註的 Color Picker](imgs/annotated-color-picker.jpg)
+![using a custom property](imgs/css-var-in-use.png)
 
-[md]: https://www.google.com/design/spec/style/color.html
+## Edit Sass, Less or Stylus
 
-### 取色器 {: #eyedropper }
+If you are using Sass, Less, Stylus or any other CSS preprocessor, editing the generated CSS output files in the Styles editor won't help as they don't map to your original source.
 
-點擊**取色器**按鈕將其啓用 (![啓用的取色器](imgs/eyedropper-enabled.png){:.inline})，在實時頁面上將鼠標懸停到某種顏色上，然後點擊，將當前選定的聲明值設置爲您懸停的顏色。
+With CSS source maps, DevTools can automatically map the generated files to the original source files, which lets you live-edit these in the Sources panel and view the results without having to leave DevTools or refresh the page.
 
+### The preprocessor workflow
 
+When you inspect an element whose styles are provided by a generated CSS file, the Elements panel displays a link to the original source file, not the generated CSS file.
 
+![Elements panel showing .scss stylesheet](imgs/sass-debugging.png)
 
-![取色器實例](imgs/eyedropper.jpg)
+To jump to the source file:
 
-### 調色板 {: #color-palettes }
+1. Click the link to open the (editable) source file in the Sources panel.
+2. <kbd class="kbd">Ctrl</kbd> + **Click** (or <kbd class="kbd">Cmd</kbd> + **click**) on any CSS property name or value to open the source file and jump to the appropriate line.
 
-**Color Picker** 提供了下列調色板：
+![Sources panel showing .scss file](imgs/sass-sources.png)
 
-* **Page Colors**。一組從頁面的 CSS 自動生成的顏色。
-* **Material Design**。一組符合 [Material Design 規範][md]的顏色。
-* **Custom**。您選擇的任意一組顏色。DevTools 可以保存您的自定義調色板（甚至在不同的頁面間），直至您將其刪除。
- 
+When you save changes to a CSS preprocessor file in DevTools, the CSS preprocessor should re-generate the CSS files. Then DevTools then reloads the newly-generated CSS file.
 
-#### 修改自定義調色板 {: #custom-color-palette }
+### Enable/Disable CSS source maps & auto-reloading
 
-按**加號**按鈕可以將當前顏色添加到調色板中。
-點擊並按住顏色可以將其拖動到不同的位置，或者將其拖動到**垃圾桶**圖標進行刪除。
-右鍵點擊顏色並選擇 **Remove color** 可以將其刪除。
-選擇 **Remove all to the right** 可以刪除當前選定顏色右側的所有顏色。
-右鍵點擊調色板區域中的任何位置，然後選擇 **Clear template** 可以刪除模板的所有顏色。
+**CSS source maps are enabled by default**. You can choose to enable automatic reloading of generated CSS files. To enable CSS source maps and CSS reload:
 
+1. Open DevTools Settings and click **General**.
+2. Turn on **Enable CSS source maps** and **Auto-reload generated CSS**.
 
+### Requirements & Gotchas
 
-## 查看和編輯 CSS 自定義屬性（CSS 變量）{: #custom-properties }
+- **Changes made in an external editor** are not detected by DevTools until the Sources tab containing the associated source file regains focus.
+- **Manual editing of a CSS file** generated by the Sass/LESS/other compiler will break the source map association until the page is reloaded.
+- **Using [Workspaces](/web/tools/setup/setup-workflow)?** Make sure the generated CSS file is also mapped into the workspace. You can verify this by looking in Sources panel right-side tree, and seeing the CSS is served from your local folder.
+- **For DevTools to automatically reload styles** when you change the source file, your preprocessor must be set up to regenerate CSS files whenever a source file changes. Otherwise, you must regenerate CSS files manually and reload the page to see your changes.
+- **You must be accessing your site or app from a web server** (not a **file://** URL), and the server must serve the CSS files as well as the source maps (.css.map) and source files (.scss, etc.).
+- If you are *not* using the Workspaces feature, the web server must also supply the `Last-Modified` header.
 
-您可以查看和編輯定義或使用 [CSS 自定義屬性][intro]（之前稱爲 CSS 變量）的聲明，就像查看和編輯任何其他聲明一樣。
+Learn how to setup source maps in [Setup CSS & JS Preprocessors](/web/tools/setup/setup-preprocessors).
 
- 
+## Emulate print media {:#emulate-print-media}
 
-自定義屬性通常在 `:root` 選擇器中[定義][def]。
-要查看在 `:root` 中定義的自定義屬性，請檢查 `html` 元素。
+Warning: This page is deprecated. See [View a page in print mode](/web/tools/chrome-devtools/css/reference#print-mode).
 
+To view a page in print mode:
 
-![:root 上定義的自定義屬性](imgs/css-var-defined-on-root.png)
+1. Open the **Main Menu**.
+2. Select **More Tools** > **Rendering Settings**. The Rendering Settings tab opens at the bottom of your DevTools window.
+3. Set **Emulate media** to **Print**.
 
-不過，並不一定要在 `:root` 選擇器上定義自定義屬性。如果您在其他地方定義，請在定義元素的地方檢查元素以查看定義。
+## Feedback {: #feedback }
 
-
-
-您可以查看和編輯使用自定義屬性的聲明值，就像查看和編輯任何其他聲明值一樣。
- 
-
-如果您看到一個像 `var(--main-color)` 一樣的聲明值（如下面的屏幕截圖所示），則表示聲明正在使用自定義屬性。
-可以像編輯任何其他聲明值一樣編輯這些值。
-目前，沒有辦法跳轉到自定義屬性定義。
-
-
-![使用自定義屬性](imgs/css-var-in-use.png)
-
-[intro]: /web/updates/2016/02/css-variables-why-should-you-care
-[def]: https://drafts.csswg.org/css-variables/#defining-variables
-
-## 編輯 Sass、Less 或 Stylus
-
-如果您在使用 Sass、Less、Stylus 或任何其他 CSS 預處理器，則在 Styles 編輯器中編輯生成的 CSS 輸出文件不會有任何作用，因爲它們不會映射到您的源代碼。
-
-藉助 CSS 源映射，DevTools 可以將生成的文件自動映射到源代碼文件，這樣，您可以在 Sources 面板中實時編輯這些文件並查看結果，而不用離開 DevTools 或刷新頁面。 
-
-### 預處理器工作流
-
-在檢查樣式由生成的 CSS 文件提供的元素時，Elements 面板會顯示原始的源文件而不是生成的 CSS 文件的鏈接。
-
-![顯示 .scss 樣式表的 Elements 面板](imgs/sass-debugging.png)
-
-要跳轉到源文件，請執行以下操作：
-
-1. 點擊鏈接，在 Sources 面板中打開（可編輯）源文件。
-2. <kbd class="kbd">Ctrl</kbd> + **點擊**（或 <kbd class="kbd">Cmd</kbd> + **點擊**）任何 CSS 屬性名稱或值，打開源文件並跳轉到相應行。
-
-![顯示 .scss 文件的 Sources 面板](imgs/sass-sources.png)
-
-在 DevTools 中保存對 CSS 預處理器文件的更改時，CSS 預處理器應重新生成 CSS 文件。然後，DevTools 將重新加載新生成的 CSS 文件。
-
-### 啓用/停用 CSS 源映射和自動重新加載
-
-**默認情況下，CSS 源映射處於啓用狀態**。您可以選擇啓用生成的 CSS 文件的自動重新加載。要啓用 CSS 源映射和 CSS 重新重新加載，請執行以下操作：
-
-1. 打開 DevTools 的 Settings 面板並點擊 **General**。
-2. 開啓 **Enable CSS source maps** 和 **Auto-reload generated CSS**。
-
-### 要求和問題
-
-- DevTools 無法檢測到**在外部編輯器中進行的更改**，直至包含關聯的源文件的 Sources 標籤重新獲得焦點。
-- **手動修改 Sass/LESS/其他編譯器生成的 CSS 文件**將中斷源映射關聯，直至頁面重新加載。
-- **使用<a href="/web/tools/setup/setup-workflow">工作區</a>？**確保生成的 CSS 文件同時映射到工作區中。爲此，您可以查看 Sources 面板右側樹，確定 CSS 是從您的本地文件夾提供。
-- **要使 DevTools 在您更改源文件時自動重新加載樣式**，必須將您的預處理器設置爲在源文件每次發生更改時都重新生成 CSS 文件。否則，您必須手動重新生成 CSS 文件並重新加載頁面才能看到更改。
-- **您必須從網絡服務器訪問您的網站或應用**（不是從 **file://** 網址），服務器必須提供 CSS 文件，以及源映射 (.css.map) 和源文件 (.scss, etc.)。
-- 如果您_未_使用“工作區”功能，網絡服務器還必須提供 `Last-Modified` 標頭。
-
-在[設置 CSS 與 JS 預處理器](/web/tools/setup/setup-preprocessors)中瞭解如何設置源映射。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

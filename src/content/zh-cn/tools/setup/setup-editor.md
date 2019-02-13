@@ -1,123 +1,93 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:代码编辑器是您的主要开发工具；可以使用代码编辑器编写和保存代码行。了解代码编辑器的快捷键并安装主要插件可以更快地编写出更好的代码。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2014-05-28 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-05-28 #}
 
-# 设置您的编辑器 {: .page-title }
+# Set Up Your Editor {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-代码编辑器是您的主要开发工具；可以使用代码编辑器编写和保存代码行。了解代码编辑器的快捷键并安装主要插件可以更快地编写出更好的代码。
-
+Your code editor is your main development tool; you use it to write and save lines of code. Write better code faster by learning your editor's shortcuts and installing key plugins.
 
 ### TL;DR {: .hide-from-toc }
-- 选择一个能够让您自定义快捷键并拥有许多插件的编辑器，以便帮助您编写更好的代码。
-- 使用软件包管理器，更轻松地发现、安装和更新插件。
-- 安装可以让您在开发期间提高效率的插件；请从此指南中的推荐开始。
 
+- Choose an editor that lets you customize shortcuts and has lots of plugins to help you write better code.
+- Make use of the package manager to make it easier to discover, install, and update plugins.
+- Install plugins that help keep you productive during development; start with the recommendations in this guide.
 
-## 安装 Sublime 文本编辑器
+## Install Sublime text editor
 
-[Sublime](http://www.sublimetext.com/){: .external } 是一款非常优秀的编辑器，具有强大的功能，让编写代码充满乐趣。
-您可以安装软件包管理器，轻松地安装插件和添加新功能。
+[Sublime](http://www.sublimetext.com/){: .external } is a great editor with a solid base level of functionality which makes writing code a pleasure. You can install a package manager that makes it easy to install plugins and add new functionality.
 
+There are currently two download options for Sublime Text, either [version 2](http://www.sublimetext.com/2) or [version 3](http://www.sublimetext.com/3). Version 3 is pretty stable and will give you access to packages not available in Sublime Text 2, however you may find version 2 more reliable.
 
-Sublime Text 当前有两种下载选项，[版本 2](http://www.sublimetext.com/2) 或[版本 3](http://www.sublimetext.com/3)。版本 3 非常稳定，让您可以访问 Sublime Text 2 不支持的软件包，不过您可能会发现版本 2 更加可靠。
+Note: Rob Dodson's [blog post](http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/) on how to get to know and love Sublime is a great reference for getting the most out of your editor. The concepts are relevant to any text editor, not just Sublime.
 
-Note: Rob Dodson 有关如何了解和爱上 Sublime 的<a href='http://robdodson.me/blog/2012/06/23/sublime-text-2-tips-and-shortcuts/'>博文</a>是充分利用编辑器一个非常好的参考。这些概念与所有文本编辑器相关，而不仅仅与 Sublime 相关。
+## Why use a package manager?
 
-## 为什么要使用软件包管理器？
+Package managers make it easy to find, install, and keep packages & plugins up-to-date.
 
-使用软件包管理器，您可以轻松地查找、安装和更新软件包与插件。
+<img src="imgs/package_control.png" class="center" alt="Screenshot of Sublime Text Editors Package Control" />
 
+You can install a Package Manager for Sublime by following these instructions <https://packagecontrol.io/installation>.
 
-<img src="imgs/package_control.png" class="center" alt="Sublime Text 编辑器的 Package Control 屏幕截图"/>
+You only need to do this once, after which see below for our recommended list of plugins.
 
-您可以按照这些说明为 Sublime 安装 Package Manager
-[https://packagecontrol.io/installation](https://packagecontrol.io/installation)。
+## Install plugins
 
-您只需执行一次操作，之后请参见下方我们推荐的插件列表。
+Plugins help you stay more productive. What are the things you keep having to go back out to other tools to do?
 
+Linting - there's a plugin for that. Showing what changes haven't been committed
 
-## 安装插件
+- there are plugins for that. Integration with other tools, such as GitHub, there are plugins for that.
 
-插件可以帮助您提高效率。您必须退回去使用其他工具执行的任务是什么？
+Package managers make it very easy to find, install, and update plugins:
 
+1. In the Sublime Text editor, open your package manager (ctrl+shift+p).
+2. Enter 'Install Package'.
+3. Enter the name of the plugin you are looking for (or else browse all plugins).
 
-Linting（检查代码潜在问题）- 有一个插件可以执行这项任务。显示一些更改未被提交
-- 有一些插件可以解决这个问题。与其他工具集成（如 GitHub），许多插件都可以实现这个目标。
-
-
-利用软件包管理器，您可以轻松地查找、安装和更新插件：
-
-1. 在 Sublime Text 编辑器中，打开您的软件包管理器 (ctrl+shift+p)。
-2. 输入“Install Package”。
-3. 输入您正在查找的插件名称（或者浏览所有插件）。
-
-
-查看 [Sublime Text 插件趋势列表](https://packagecontrol.io/browse)。
-这里是一些我们喜爱并推荐您安装的一些插件，它们能够帮助您加快开发速度：
-
+Check out these [trending lists of Sublime Text plugins](https://packagecontrol.io/browse). Here are the plugins we love and recommend you install because they help you speed up your development:
 
 ### Autoprefixer
 
-如果想要快速地将供应商前缀添加到 CSS，您可以使用这款方便的插件。
+If you want a quick way to add vendor prefixes to your CSS, you can do so with this handy plugin.
 
+Write CSS, ignoring vendor prefixes and when you want to add them, hit `ctrl+shift+p` and type `Autoprefix CSS`.
 
-编写 CSS，忽略供应商前缀，当您想要添加它们时，按 `ctrl+shift+p`，然后键入 `Autoprefix CSS`。
+[We cover how you can automate this in your build process](/web/tools/setup/setup-buildtools), that way your CSS stays lean and you don't need to remember to hit `ctrl+shift+p`.
 
-
-[我们会介绍如何在构建流程中实现这项操作的自动化](/web/tools/setup/setup-buildtools)，这样，您的 CSS 就会始终保持简洁，您无需记得要按 `ctrl+shift+p`。
-
-
-
-
-<img src="imgs/sublime-autoprefixer.gif" alt="Sublime Autoprefixer 插件示例" />
+![Sublime Autoprefixer Plugin Example](imgs/sublime-autoprefixer.gif)
 
 ### ColorPicker
 
-从调色板中选取颜色，然后通过按 `ctrl+shift+c` 将其添加至您的 CSS。
+Pick any color from the palette and add it to your CSS with `ctrl+shift+c`.
 
-<img src="imgs/sublime-color-picker.png" alt="Sublime ColorPicker 插件" />
+![Sublime Color Picker Plugin](imgs/sublime-color-picker.png)
 
 ### Emmet
 
-为您的文本编辑器添加一些有用的键盘快捷键和代码段。您可以在 [Emmet.io](http://emmet.io/){: .external } 上观看视频，了解它的用途（个人比较喜欢的是“Toggle Comment”命令）。
+Add some useful keyboard shortcuts and snippets to your text editor. Check out the video on [Emmet.io](http://emmet.io/){: .external } for an intro into what it can do (a personal favorite is the 'Toggle Comment' command).
 
+![Demo of the Emmet.io Plugin](imgs/emmet-io-example.gif)
 
+### HTML-CSS-JS prettify
 
-<img src="imgs/emmet-io-example.gif" alt="Emmet.io 插件的演示" />
+This extension gives you a command to format your HTML, CSS and JS. You can even prettify your files whenever your save a file.
 
-### HTML-CSS-JS 修饰
-
-此扩展程序为您提供了可以设置 HTML、CSS 和 JS 格式的命令。无论何时保存文件，您都可以修饰文件。
-
-
-<img src="imgs/sublime-prettify.gif" alt="Sublime Prettify 插件的 GIF" />
+![Gif of the Sublime Prettify Plugin](imgs/sublime-prettify.gif)
 
 ### Git Gutter
 
-文件有更改时，可以在 gutter 中添加标记。
+Add a marker in the gutter wherever there is a change made to a file.
 
-<img src="imgs/sublime-git-gutter.png" alt="Sublime Git Gutter 插件的屏幕截图" />
+![Screenshot of the Sublime Git Gutter Plugin](imgs/sublime-git-gutter.png)
 
 ### Gutter Color
 
-Note: 仅适用于 Sublime Text 3
+Note: This is only available in Sublime Text 3
 
-Gutter Color 可以在 CSS 旁为您显示小色样。
+Gutter Color shows you a small color sample next to your CSS.
 
-<img src="imgs/sublime-gutter-color.png" alt="Sublime Gutter Color 的屏幕截图" />
+![Sublime Gutter Color Screenshot](imgs/sublime-gutter-color.png)
 
-此插件需要 ImageMagick。如果使用 Mac OS X，我们建议您尝试 [CactusLabs](http://cactuslab.com/imagemagick/){: .external } 的安装程序（您可能需要重启计算机才能使其工作）。
-
-
-
-
-
-
-
-{# wf_devsite_translation #}
+The plugin requires ImageMagick. If you are on Mac OS X, we recommend trying the installer from [CactusLabs](http://cactuslab.com/imagemagick/){: .external } (you may need to restart your machine to get it working).

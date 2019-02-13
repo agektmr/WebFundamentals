@@ -1,286 +1,202 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Campuran terjadi bila HTML pertama dimuat melalui koneksi HTTPS aman, namun sumber daya lainnya dimuat melalui koneksi HTTPS tidak aman.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Mixed occurs when initial HTML is loaded over a secure HTTPS connection, but other resources are loaded over an insecure HTTP connection.
 
-{# wf_updated_on: 2018-02-12 #}
-{# wf_published_on: 2015-09-25 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-09-25 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# Apa yang Dimaksud Dengan Materi Campuran? {: .page-title }
+# What Is Mixed Content? {: .page-title }
 
 {% include "web/_shared/contributors/johyphenel.html" %}
 
-**Materi campuran** terjadi bila HTML pertama dimuat melalui koneksi HTTPS
-aman, namun sumber daya lainnya (seperti gambar, video, stylesheet, skrip)
-dimuat melalui koneksi HTTPS tidak aman. Ini disebut materi campuran
-karena materi HTTP maupun materi HTTPS dimuat untuk menampilkan laman yang sama,
-dan permintaan awal sudah aman melalui HTTPS. Browser modern menampilkan
-peringatan tentang tipe materi ini untuk menunjukkan kepada pengguna bahwa laman ini
-berisi sumber daya yang tidak aman.
+**Mixed content** occurs when initial HTML is loaded over a secure HTTPS connection, but other resources (such as images, videos, stylesheets, scripts) are loaded over an insecure HTTP connection. This is called mixed content because both HTTP and HTTPS content are being loaded to display the same page, and the initial request was secure over HTTPS. Modern browsers display warnings about this type of content to indicate to the user that this page contains insecure resources.
 
 ### TL;DR {: .hide-from-toc }
 
-* HTTPS penting untuk melindungi situs maupun pengguna Anda dari serangan.
-* Materi campuran mengurangi keamanan dan pengalaman pengguna pada situs HTTPS Anda.
+* HTTPS is important to protect both your site and your users from attack.
+* Mixed content degrades the security and user experience of your HTTPS site.
 
-## Permintaan sumber daya dan browser web
+## Resource requests and web browsers
 
-Bila browser _mengunjungi_ sebuah laman situs web, ia akan meminta sumber daya HTML. Server web kemudian mengembalikan materi HTML, yang akan di-parse dan ditampilkan browser kepada pengguna. Sering kali, satu file HTML tidak cukup untuk menampilkan satu laman lengkap, sehingga file HTML menyertakan referensi ke sumber daya lain yang perlu diminta oleh browser. Sub-sumber daya ini bisa berupa gambar, video, HTML ekstra, CSS, atau JavaScript, yang masing-masing akan diambil menggunakan permintaan terpisah.
+When a browser *visits* a website page, it is requesting for an HTML resource. The web server then returns the HTML content, which the browser parses and displays to users. Often a single HTML file isn't enough to display a complete page, so the HTML file includes references to other resources that the browser needs to request. These subresources can be things like images, videos, extra HTML, CSS, or JavaScript, which are each fetched using separate requests.
 
-## Manfaat HTTPS
+## HTTPS benefits
 
-Bila browser meminta sumber daya melalui HTTPS&mdash;singkatan dari HTTP Secure&mdash;ia
-akan menggunakan koneksi yang dienkripsi untuk berkomunikasi dengan server web.
+When a browser requests resources over HTTPS&mdash;which stands for HTTP Secure&mdash;it uses an encrypted connection to communicate with the web server.
 
-Penggunaan HTTPS memiliki tiga manfaat utama:
+Using HTTPS has three main benefits:
 
-* Autentikasi
-* Integritas data
-* Kerahasiaan
+* Authentication
+* Data integrity
+* Secrecy
 
-### Autentikasi
+### Authentication
 
-_Apakah situs web yang saya masuki ini memang situs web yang asli?_
+*Is the website I'm talking to who they claim to be?*
 
-HTTPS memungkinkan browser memeriksa apakah ia telah membuka situs web yang benar dan tidak
-dialihkan ke situs yang jahat. Saat mengunjungi situs web bank Anda,
-browser akan _mengautentikasi_ situs web tersebut, untuk menghindari penyerang yang
-berpura-pura menjadi bank Anda dan mencuri kredensial proses masuk Anda.
+HTTPS lets the browser check that it has opened the correct website and hasn't been redirected to a malicious site. When navigating to your bank's website, your browser *authenticates* the website, thus preventing an attacker from impersonating your bank and stealing your login credentials.
 
-### Integritas data
+### Data integrity
 
-_Apakah ada orang yang mengutak-atik materi yang saya kirim atau terima?_
+*Has anyone tampered with the content that I'm sending or receiving?*
 
-HTTPS memungkinkan browser mendeteksi apakah penyerang telah mengubah data yang
-diterima browser. Saat mentransfer uang menggunakan situs web bank Anda, ini akan mencegah
-penyerang mengubah nomor rekening tujuan saat permintaan Anda sedang
-dikirim.
+HTTPS lets the browser detect if an attacker has changed any data the browser receives. When transferring money using your bank's website, this prevents an attacker from changing the destination account number while your request is in transit.
 
-### Kerahasiaan
+### Secrecy
 
-_Bisakah seseorang melihat materi yang sedang saya kirim atau terima?_
+*Can anyone see the content I am sending or receiving?*
 
-HTTPS mencegah penyerang menyadap permintaan browser,
-melacak situs web yang dikunjungi, atau mencuri informasi yang dikirim atau diterima.
+HTTPS prevents an attacker from eavesdropping on the browser's requests, tracking the websites visited, or stealing information sent or received.
 
-### HTTPS, TLS, dan SSL
+### HTTPS, TLS, and SSL
 
-HTTPS singkatan dari HTTP Secure, Hyper(t)ext Transfer Protocol Secure. Bagian
-**secure** di sini berasal dari enkripsi yang ditambahkan ke permintaan yang dikirim
-dan diterima oleh browser. Saat ini hampir semua browser menggunakan protokol TLS untuk
-menyediakan enkripsi; **TLS** terkadang disebut SSL.
+HTTPS stands for HTTP Secure, Hyper(t)ext Transfer Protocol Secure. The **secure** portion here comes from the encryption added to the requests sent and received by the browser. Currently, most browsers use the TLS protocol to provide encryption; **TLS** is sometimes referred to as SSL.
 
-Detail HTTPS, TLS, dan SSL di luar cakupan artikel ini, namun jika
-Anda ingin mengetahui selengkapnya, sumber daya berikut merupakan tempat memulai yang tepat:
+Details of HTTPS, TLS, and SSL are beyond the scope of this article, but if you want to learn more, the following resources are a good place to start:
 
-* [HTTPS Wikipedia](https://en.wikipedia.org/wiki/HTTPS){: .external}
-* [TLS Wikipedia](https://en.wikipedia.org/wiki/Transport_Layer_Security){: .external}
-* [Kursus Kriptografi Khan Academy](https://www.khanacademy.org/computing/computer-science/cryptography){: .external}
-* [Bab TLS](https://hpbn.co/transport-layer-security-tls/){: .external} di [High Performance Browser Networking](https://hpbn.co/){: .external} oleh Ilya Grigorik
+* [Wikipedia HTTPS](https://en.wikipedia.org/wiki/HTTPS){: .external}
+* [Wikipedia TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security){: .external}
+* [Khan Academy Cryptography course](https://www.khanacademy.org/computing/computer-science/cryptography){: .external}
+* [TLS chapter](https://hpbn.co/transport-layer-security-tls/){: .external} in [High Performance Browser Networking](https://hpbn.co/){: .external} by Ilya Grigorik
 
-## Materi campuran melemahkan HTTPS
+## Mixed content weakens HTTPS
 
-Meminta sub-sumber daya menggunakan protokol HTTP tidak aman akan melemahkan keamanan
-keseluruhan laman, karena permintaan ini rawan terhadap **man-in-the-middle
-attacks**, karena penyerang menyadap koneksi jaringan dan melihat atau
-memodifikasi komunikasi di antara kedua pihak. Dengan sumber daya ini,
-penyerang sering kali bisa menguasai penuh suatu laman, bukan cuma
-sumber daya yang diretas.
+Requesting subresources using the insecure HTTP protocol weakens the security of the entire page, as these requests are vulnerable to **man-in-the-middle attacks**, where an attacker eavesdrops on a network connection and views or modifies the communication between two parties. Using these resources, an attacker can often take complete control over the page, not just the compromised resource.
 
-Walaupun banyak browser melaporkan peringatan materi campuran kepada pengguna, pada saat
-ini terjadi, semua sudah terlambat: permintaan tidak aman sudah dilaksanakan
-dan keamanan laman sudah diretas. Sayangnya, skenario ini
-sangat umum di web, itu sebabnya browser tidak bisa sekadar memblokir semua
-permintaan campuran tanpa membatasi fungsionalitas banyak situs.
+Although many browsers report mixed content warnings to the user, by the time this happens, it is too late: the insecure requests have already been performed and the security of the page is compromised. This scenario is, unfortunately, quite common on the web, which is why browsers can't just block all mixed requests without restricting the functionality of many sites.
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta gambar yang tidak aman. Materi ini seharusnya juga disajikan melalui HTTPS.">
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
   <figcaption>
-    Semua terserah Anda, sebagai developer, untuk memperbaiki masalah materi campuran di aplikasi Anda.
+    It's up to you, the developer, to fix mixed content issues in your application.
   </figcaption>
 </figure>
 
-### Contoh sederhana
+### A simple example
 
-Memuat skrip tidak aman dari laman HTTPS.
+Loading an insecure script from an HTTPS page.
 
-Dengan menampilkan contoh laman ini melalui **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external}&mdash;menyertakan tag skrip **HTTP** yang berusaha memuat materi campuran.
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../simple-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: .external}&mdash;includes an **HTTP** script tag which attempts to load mixed content.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/simple-example.html" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/simple-example.html){: target="_blank" .external }
 
-Dalam contoh ini, skrip `simple-example.js` dimuat dengan URL **HTTP**. Inilah kasus paling sederhana dari materi campuran. Bila browser meminta file `simple-example.js`, penyerang bisa menyuntikkan kode ke dalam materi yang dikembalikan
-dan mengambil alih keseluruhan laman.
+In this example, the script `simple-example.js` is loaded with an **HTTP** URL. This is the simplest case of mixed content. When the browser requests the `simple-example.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-Untunglah, hampir semua browser modern memblokir tipe materi berbahaya ini
-secara default. Lihat [perilaku browser dengan materi campuran](#browser-behavior-with-mixed-content){: .external}.
+Thankfully, most modern browsers block this type of dangerous content by default. See [browser behavior with mixed content](#browser-behavior-with-mixed-content){: .external}.
 
 <figure>
-  <img src="imgs/simple-mixed-content-error.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta skrip yang tidak aman. Permintaan ini telah diblokir; materi harus disajikan melalui HTTPS.">
-  <figcaption>Chrome memblokir skrip yang tidak aman.</figcaption>
+  <img src="imgs/simple-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure script. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Chrome blocks the insecure script.</figcaption>
 </figure>
 
-### Contoh XMLHttpRequest
+### An XMLHttpRequest example
 
-Memuat data tidak aman dengan XMLHttpRequest.
+Loading insecure data with XMLHttpRequest.
 
-Dengan menampilkan contoh laman ini melalui **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}&mdash;menyertakan `XMLHttpRequest` melalui **HTTP** untuk mengambil data `JSON` materi campuran.
+Viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../xmlhttprequest-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: .external}&mdash;includes an `XMLHttpRequest` over **HTTP** to fetch mixed content `JSON` data.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/xmlhttprequest-example.html" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/xmlhttprequest-example.html){: target="_blank" .external }
 
-Di sini, **HTTP** URL dibuat secara dinamis dalam JavaScript, dan akhirnya digunakan
-oleh `XMLHttpRequest` untuk memuat sumber daya tidak aman. Seperti contoh sederhana
-di atas, bila browser meminta file `xmlhttprequest-data.js`, penyerang bisa menyuntikkan
-kode ke dalam materi yang dikembalikan dan mengambil alih
-keseluruhan laman.
+Here the **HTTP** URL is constructed dynamically in JavaScript, and is eventually used by `XMLHttpRequest` to load an insecure resource. Like the simple example above, when the browser requests the `xmlhttprequest-data.js` file, an attacker can inject code into the returned content and take control of the entire page.
 
-Sebagian besar browser modern juga memblokir permintaan berbahaya ini.
+Most modern browsers block these dangerous requests as well.
 
 <figure>
-  <img src="imgs/xmlhttprequest-mixed-content-error.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta endpoint XMLHttpRequest yang tidak aman. Permintaan ini telah diblokir; materi harus disajikan melalui HTTPS.">
-  <figcaption>Chrome memblokir XMLHttpRequest yang tidak aman.</figcaption>
+  <img src="imgs/xmlhttprequest-mixed-content-error.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Chrome blocks the insecure XMLHttpRequest.</figcaption>
 </figure>
 
-### Contoh galeri gambar
+### An image gallery example
 
-Memuat gambar tidak aman dengan lightbox jQuery.
+Loading insecure images with jQuery lightbox.
 
-Bila menampilkan contoh laman ini melalui **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external}&mdash;mula-mula tidak memiliki masalah materi campuran; akan tetapi bila gambar kecil diklik, gambar materi campuran berukuran penuh akan dimuat melalui **HTTP**.
+When viewing this sample page over **HTTPS**&mdash;[**https**://googlesamples.github.io/web-fundamentals/.../image-gallery-example.html](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: .external}&mdash;initially it does not have any mixed content problems; however, when the thumbnail image is clicked, a full size mixed content image is loaded over **HTTP**.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/image-gallery-example.html" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/image-gallery-example.html){: target="_blank" .external }
 
-Galeri gambar sering kali mengandalkan tag `<img>` atribut `src` untuk menampilkan gambar kecil
-di laman, tag jangkar (`<a>`) atribut `href`
-kemudian digunakan untuk memuat gambar berukuran penuh untuk overlay galeri. Biasanya, tag
-`<a>` tidak menyebabkan materi campuran, namun dalam hal ini, kode jQuery
-menggantikan perilaku tautan default&mdash;untuk mengarahkan ke laman baru&mdash;dan sebagai ganti
-memuat gambar **HTTP** pada laman ini.
+Image galleries often rely on the `<img>` tag `src` attribute to display thumbnail images on the page, the anchor (`<a>`) tag `href` attribute is then used to load the full sized image for the gallery overlay. Normally `<a>` tags do not cause mixed content, but in this case, the jQuery code overrides the default link behavior&mdash;to navigate to a new page&mdash;and instead loads the **HTTP** image on this page.
 
 <figure>
-  <img src="imgs/image-gallery-warning.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta gambar yang tidak aman. Materi ini seharusnya juga disajikan melalui HTTPS.">
+  <img src="imgs/image-gallery-warning.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure image. This content should also be served over HTTPS.">
 </figure>
 
-Gambar tidak aman mengurangi keamanan situs Anda, namun tidak sebahaya
-tipe materi campuran lainnya. Browser modern tetap memuat gambar materi campuran,
-namun juga menampilkan peringatan kepada pengguna.
+Insecure images degrade the security of your site, but they are not as dangerous as other types of mixed content. Modern browsers still load mixed content images, but display warnings to the user as well.
 
-## Tipe materi campuran & ancaman keamanan berkaitan
+## Mixed content types & security threats associated
 
-Ada dua tipe materi campuran: aktif dan pasif.
+The two types of mixed content are: active and passive.
 
-**Materi campuran pasif** adalah materi yang tidak berinteraksi dengan bagian selebihnya
-pada laman, dan karenanya Man-in-the-Middle Attack terbatas pada apa yang bisa dilakukannya
-jika mereka menyadap atau mengubah materi itu. Materi campuran pasif meliputi
-gambar, video, dan materi audio, bersama sumber daya lain yang tidak bisa berinteraksi
-dengan bagian selebihnya pada laman.
+**Passive mixed content** refers to content that doesn't interact with the rest of the page, and thus a man-in-the-middle attack is restricted to what they can do if they intercept or change that content. Passive mixed content includes images, video, and audio content, along with other resources that cannot interact with the rest of the page.
 
-**Materi campuran aktif** berinteraksi dengan laman secara keseluruhan dan memungkinkan
-penyerang melakukan hampir semua hal pada laman. Materi campuran aktif meliputi
-skrip, stylesheet, iframe, sumber daya flash, dan kode lainnya yang bisa
-diunduh dan dieksekusi oleh browser.
+**Active mixed content** interacts with the page as a whole and allows an attacker to do almost anything with the page. Active mixed content includes scripts, stylesheets, iframes, flash resources, and other code that the browser can download and execute.
 
-### Materi campuran pasif
+### Passive mixed content
 
-Materi campuran pasif tetap menimbulkan ancaman keamanan pada situs dan pengguna Anda.
-Misalnya, penyerang bisa menyadap permintaan HTTP untuk gambar pada situs Anda dan
-menukar atau mengganti gambar-gambar ini; penyerang bisa menukar gambar tombol _simpan_ dan _hapus_,
-sehingga menyebabkan pengguna menghapus materi tanpa sengaja;
-mengganti diagram produk Anda dengan materi porno atau jorok, memalsukan situs
-Anda; atau mengganti gambar produk Anda dengan iklan untuk situs atau produk yang berbeda.
+Passive mixed content still poses a security threat to your site and your users. For example, an attacker can intercept HTTP requests for images on your site and swap or replace these images; the attacker can swap the *save* and *delete* button images, causing your users to delete content without intending to; replace your product diagrams with lewd or pornographic content, defacing your site; or replace your product pictures with ads for a different site or product.
 
-Walaupun penyerang tidak mengubah materi situs, Anda tetap memiliki
-masalah privasi yang besar karena penyerang bisa melacak pengguna dengan menggunakan permintaan
-materi campuran. Penyerang bisa tahu laman mana yang dikunjungi pengguna dan produk mana
-yang mereka lihat berdasarkan gambar atau sumber daya lain yang dimuat oleh browser.
+Even if the attacker doesn't alter the content of your site, you still have a large privacy issue where an attacker can track users using mixed content requests. The attacker can tell which pages a user visits and which products they view based on images or other resources that the browser loads.
 
-Berikut ini adalah contoh materi campuran pasif:
+The following is an example of passive mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/passive-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/passive-mixed-content.html){: target="_blank" .external }
 
-Sebagian besar browser tetap merender tipe materi campuran ini pada pengguna, akan tetapi
-juga menampilkan peringatan karena ini menimbulkan risiko keamanan dan privasi pada situs
-dan pengguna Anda.
+Most browsers still render this type of mixed content to the user, however a warning is also displayed as this poses a security and privacy risk to your site and users.
 
 <figure>
-  <img src="imgs/passive-mixed-content-warnings.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta video yang tidak aman. Materi ini seharusnya juga disajikan melalui HTTPS.">
-  <figcaption>Peringatan materi campuran dari Konsol JavaScript Chrome.</figcaption>
+  <img src="imgs/passive-mixed-content-warnings.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure video. This content should also be served over HTTPS.">
+  <figcaption>Mixed content warnings from the Chrome JavaScript console.</figcaption>
 </figure>
 
-### Materi campuran aktif
+### Active mixed content
 
-Materi campuran aktif menimbulkan ancaman lebih besar daripada yang pasif. Penyerang bisa
-mencegat dan menulis ulang materi aktif yang akan mengambil alih sepenuhnya
-kontrol atas laman Anda atau bahkan seluruh situs web Anda. Ini memungkinkan penyerang mengubah apa saja pada
-laman, termasuk menampilkan materi yang berbeda sama sekali, mencuri kata sandi pengguna
-atau kredensial proses masuk lainnya, mencuri cookie sesi pengguna, atau mengalihkan
-pengguna ke situs yang sama sekali berbeda.
+Active mixed content poses a greater threat than passive. An attacker can intercept and rewrite active content, thereby taking full control of your page or even your entire website. This allows the attacker to change anything about the page, including displaying entirely different content, stealing user passwords or other login credentials, stealing user session cookies, or redirecting the user to a different site entirely.
 
-Karena gawatnya ancaman ini, banyak browser yang memblokir tipe materi ini
-secara default untuk melindungi pengguna, namun fungsionalitas berbeda-beda antar vendor
-dan versi browser.
+Due to the severity of this threat, many browsers block this type of content by default to protect users, but functionality varies between browser vendors and versions.
 
-Yang berikut ini berisi contoh materi campuran aktif:
+The following contains examples of active mixed content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/security/prevent-mixed-content/_code/active-mixed-content.html" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/security/prevent-mixed-content/active-mixed-content.html){: target="_blank" .external }
 
 <figure>
-  <img src="imgs/active-mixed-content-errors.png" alt="Materi Campuran: Laman telah dimuat melalui HTTPS, namun meminta sumber daya yang tidak aman. Permintaan ini telah diblokir; materi harus disajikan melalui HTTPS.">
-  <figcaption>Kesalahan materi campuran dari Konsol JavaScript Chrome.</figcaption>
+  <img src="imgs/active-mixed-content-errors.png" alt="Mixed Content: The page was loaded over HTTPS, but requested an insecure resource. This request has been blocked; the content must be served over HTTPS.">
+  <figcaption>Mixed content errors from the Chrome JavaScript console.</figcaption>
 </figure>
 
-## Perilaku browser dengan materi campuran
+## Browser behavior with mixed content
 
-Oleh karena ancaman yang dijelaskan di atas, maka idealnya browser memblokir semua
-materi campuran. Akan tetapi, ini akan mengganggu banyak sekali situs web yang dimanfaatkan
-jutaan pengguna setiap hari. Kompromi saat ini adalah memblokir hampir semua
-tipe materi campuran yang berbahaya, dan mengizinkan tipe yang kurang berbahaya untuk tetap
-diminta.
+Due to the threats described above, it would be ideal for browsers to block all mixed content. However, this would break a large number of websites that millions of users rely on every day. The current compromise is to block the most dangerous types of mixed content and allow the less dangerous types to still be requested.
 
-Browser modern mengikuti [spesifikasi materi campuran](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }, yang mendefinisikan kategori [**materi yang bisa diblokir secara opsional**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external} dan [**materi yang bisa diblokir**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external}.
+Modern browsers follow [mixed content specification](https://w3c.github.io/webappsec/specs/mixedcontent/){: .external }, which defines [**optionally blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-optionally-blockable){: .external} and [**blockable content**](https://w3c.github.io/webappsec/specs/mixedcontent/#category-blockable){: .external} categories.
 
-Dari spesifikasi ini, sumber daya tergolong materi yang bisa diblokir secara opsional "bila risiko
-membiarkan penggunaannya sebagai materi campuran lebih penting daripada risiko melanggar
-bagian signifikan dari web"; inilah subset kategori [materi campuran
-pasif](#passive-mixed-content) yang dijelaskan di atas. Pada saat menulis artikel ini, sumber daya gambar,
-video, dan audio, serta tautan yang diambil lebih dini, adalah satu-satunya
-tipe sumber daya yang disertakan dalam materi yang bisa diblokir secara opsional. Kategori ini
-mungkin akan semakin kecil seiring waktu.
+From the spec, a resource qualifies as optionally blockable content "when the risk of allowing its usage as mixed content is outweighed by the risk of breaking significant portions of the web"; this is a subset of the [passive mixed content](#passive-mixed-content) category described above. At the time of this writing, images, video, and audio resources, as well as prefetched links, are the only resource types included in optionally blockable content. This category is likely to get smaller as time goes on.
 
-Semua materi yang tidak **bisa diblokir secara opsional** dianggap **bisa diblokir**,
-dan akan diblokir oleh browser.
+All content that is not **optionally blockable** is considered **blockable**, and is blocked by the browser.
 
-### Versi browser
+### Browser versions
 
-Perlu diingat bahwa tidak setiap pengunjung situs web Anda menggunakan
-browser terbaru. Aneka versi dari aneka vendor browser
-masing-masing berperilaku berbeda dengan materi campuran. Yang terburuk, sebagian browser dan versi
-tidak memblokir materi campuran sama sekali, sehingga sangat tidak aman bagi pengguna.
+It is important to remember that not every visitor to your website use the most up-to-date browsers. Different versions from different browser vendors each behave differently with mixed content. At worst, some browsers and versions don't block any mixed content at all, which is very unsafe for the user.
 
-Perilaku persis setiap browser terus berubah, sehingga kita tidak akan memasukkannya
-secara spesifik di sini. Jika Anda tertarik dengan cara perilaku browser spesifik, carilah
-informasi yang dipublikasikan oleh vendornya secara langsung.
+The exact behavior of each browser is constantly changing, so we won't include specifics here. If you're interested in how a specific browser behaves, look for information published by the vendors directly.
 
-Note: Pengguna mengandalkan Anda untuk melindungi mereka saat mengunjungi situs web Anda. Masalah materi campuran perlu Anda diperbaiki untuk melindungi <b>semua</b> pengunjung, termasuk mereka yang menggunakan browser lama.
+Note: Your users are counting on you to protect them when they visit your website. It is important to fix your mixed content issues to protect **all** your visitors, including those on older browsers.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

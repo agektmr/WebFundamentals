@@ -1,40 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome Developer Tools を使用して、ネイティブ Android アプリの WebView をデバッグします。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-{# wf_updated_on:2015-07-29 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# WebView のリモート デバッグ {: .page-title }
+# Remote Debugging WebViews {: .page-title }
 
 {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome Developer Tools を使用して、ネイティブ Android アプリの WebView をデバッグします。
+Debug WebViews in your native Android apps using Chrome Developer Tools.
 
-Android 4.4（KitKat）以降では、DevTools を使用してネイティブ Android アプリの WebView コンテンツをデバッグします。
-
-
+On Android 4.4 (KitKat) or later, use DevTools to debug WebView content in native Android applications.
 
 ### TL;DR {: .hide-from-toc }
-- ネイティブ Android アプリで WebView のデバッグを有効にし、Chrome DevTools で WebView をデバッグします。
-- デバッグが有効な WebView のリストにアクセスするには、<strong>chrome://inspect</strong> を使用します。
-- WebView のデバッグは、<a href='/web/tools/chrome-devtools/debug/remote-debugging'>リモート デバッグ</a>によるウェブページのデバッグと同じです。
 
+* Enable WebView debugging in your native Android app; debug WebViews in Chrome DevTools.
+* Access list of debug-enabled WebViews via **chrome://inspect**.
+* Debugging WebViews is the same as debugging a web page through [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging).
 
-##  デバッグのための WebView の設定
+## Configure WebViews for debugging
 
-WebView のデバッグは、アプリ内から有効にする必要があります。WebView のデバッグを有効にするには、WebView クラスの静的メソッド [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean)) を呼び出します。
-
+WebView debugging must be enabled from within your application. To enable WebView debugging, call the static method [setWebContentsDebuggingEnabled](https://developer.android.com/reference/android/webkit/WebView.html#setWebContentsDebuggingEnabled(boolean)) on the WebView class.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         WebView.setWebContentsDebuggingEnabled(true);
     }
     
 
-この設定は、アプリの WebView すべてに適用されます。
+This setting applies to all of the application's WebViews.
 
-**使い方**:WebView のデバッグは、アプリのマニフェスト内の `debuggable` フラグの状態に**影響されません**。`debuggable` が `true` の場合にのみ WebView のデバッグを有効にする場合は、実行時にフラグをテストしてください。
-
+**Tip**: WebView debugging is **not** affected by the state of the `debuggable` flag in the application's manifest. If you want to enable WebView debugging only when `debuggable` is `true`, test the flag at runtime.
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
@@ -42,22 +35,23 @@ WebView のデバッグは、アプリ内から有効にする必要がありま
     }
     
 
-##  DevTools で WebView を開く
+## Open a WebView in DevTools
 
-**chrome://inspect** ページには、端末上のデバッグが有効な WebView のリストが表示されます。
+The **chrome://inspect** page displays a list of debug-enabled WebViews on your device.
 
-デバッグを開始するには、デバッグする WebView の下にある [**inspect**] をクリックします。リモートのブラウザのタブの場合と同様に DevTools を使用します。
+To start debugging, click **inspect** below the WebView you want to debug. Use DevTools as you would for a remote browser tab.
 
-![WebView 内の要素の調査](imgs/webview-debugging.png)
+![Inspecting elements in a WebView](imgs/webview-debugging.png)
 
-WebView とともに表示されているグレーのグラフィックは、端末の画面を基準にしたサイズと位置を表します。WebView にタイトルが設定されている場合、タイトルも表示されます。
+The gray graphics listed with the WebView represent its size and position relative to the device's screen. If your WebViews have titles set, the titles are listed as well.
 
-## トラブルシューティング
+## Troubleshooting
 
-**chrome://inspect ページ**に WebView が表示されない場合は、次の解決方法をお試しください。
+Can't see your WebViews on the **chrome://inspect page**?
 
-* WebView のデバッグがアプリで有効になっていることを確認します。
-* 端末で、デバッグする WebView を使用しているアプリを開きます。その後、**chrome://inspect** ページを更新します。
+* Verify that WebView debugging is enabled for your app.
+* On your device, open the app with the WebView you want to debug. Then, refresh the **chrome://inspect** page.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

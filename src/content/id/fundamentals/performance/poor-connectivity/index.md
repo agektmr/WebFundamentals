@@ -1,35 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Sangat penting untuk memahami seperti apa aplikasi atau situs kita ketika memiliki konektivitas yang tidak dapat diandalkan. Berikut beberapa alat yang dapat membantu Anda.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: It's important to understand what using your app or site feels like when connectivity is poor or unreliable, and build accordingly. A range of tools can help you.
 
-{# wf_updated_on: 2016-10-16 #}
-{# wf_published_on: 2016-05-09 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2016-05-09 #} {# wf_blink_components: Platform>DevTools #}
 
-# Memahami bandwith yang rendah dan respons tinggi {: .page-title }
+# Understanding Low Bandwidth and High Latency {: .page-title }
 
 {% include "web/_shared/contributors/samdutton.html" %}
 
-Sangat penting untuk memahami bagaimana rasanya aplikasi atau situs kita memiliki konektivitas yang tidak dapat diandalkan. Berikut beberapa alat yang dapat membantu Anda.
+It's important to understand what using your app or site feels like when connectivity is poor or unreliable, and build accordingly. A range of tools can help you.
 
-## Uji dengan bandwith yang rendah dan respons tinggi
+## Test with low bandwidth and high latency {: #testing }
 
-<a href="http://adwords.blogspot.co.uk/2015/05/building-for-next-moment.html">Peningkatan proporsi</a> pengguna yang mengakses situs web berganti ke perangkat mobile. Walupun di rumah, <a href="https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/">banyak orang meninggalkan layanan broadband untuk perangkat mobile</a>.
+An [ increasing proportion](http://adwords.blogspot.co.uk/2015/05/building-for-next-moment.html) of people experience the web on mobile devices. Even at home, [ many people are abandoning fixed broadband for mobile](https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/).
 
-Dalam konteks ini, sangat penting untuk memahami seperti apa aplikasi atau situs kita ketika memiliki konektivitas yang tidak dapat diandalkan. Berikut beberapa alat yang dapat membantu Anda [meniru dan mensimulasikan](https://stackoverflow.com/questions/1584617/simulator-or-emulator-what-is-the-difference) bandwidth rendah dan [respons](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/) tinggi.
+In this context, it's important to understand what using your app or site feels like when connectivity is poor or unreliable. A range of software tools can help you [emulate and simulate](https://stackoverflow.com/questions/1584617/simulator-or-emulator-what-is-the-difference) low bandwidth and high [latency](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/).
 
-### Simulasi network throttling
+### Emulate network throttling
 
-Ketika membangun atau memperbarui situs web, Anda harus memastikan kinerja yang memadai dalam berbagai kondisi konektivitas. Beberapa alat berikut dapat membantu
+When building or updating a site, you must ensure adequate performance in a variety of connectivity conditions. Several tools can help.
 
-#### Alat peramban (browser)
+#### Browser tools
 
-[Chrome DevTools](/web/tools/chrome-devtools/profile/network-performance/network-conditions) memungkinkan anda untuk melakukan uji coba pada situs web dengan berbagai simulasi kecepatan proses unggah/unduh [round-trip times](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/), menggunakan pengaturan kustom atau yang sudah tersedia melalui panel Chrome DevTools Network:
+[Chrome DevTools](/web/tools/chrome-devtools) lets you test your site with a variety of upload/download speeds and [round-trip times](https://www.igvita.com/2012/07/19/latency-the-new-web-performance-bottleneck/), using presets or custom settings from the Network panel. See [Get Started with Analyze Network Performance](/web/tools/chrome-devtools/network-performance) to learn the basics.
 
 ![Chrome DevTools throttling](images/chrome-devtools-throttling.png)
 
-#### Alat sistem
+#### System tools
 
-Network Link Conditioner adalah panel preferensi yang tersedia pad Mac jika anda memasang [Hardware IO Tools](https://developer.apple.com/downloads/?q=Hardware%20IO%20Tools) untuk Xcode:
+Network Link Conditioner is a preference panel available on Mac if you install [Hardware IO Tools](https://developer.apple.com/downloads/?q=Hardware%20IO%20Tools) for Xcode:
 
 ![Mac Network Link Conditioner control panel](images/network-link-conditioner-control-panel.png)
 
@@ -37,71 +34,75 @@ Network Link Conditioner adalah panel preferensi yang tersedia pad Mac jika anda
 
 ![Mac Network Link Conditioner custom settings](images/network-link-conditioner-custom.png)
 
-#### Emulasi perangkat
+#### Device emulation
 
-[Android Emulator](http://developer.android.com/tools/devices/emulator.html#netspeed) memungkinkan anda untuk melakukan simulasi pada berbagai macam kondisi jaringan saat menjalankan aplikasi (termasuk browser web dan aplikasi web hybrid) di Android:
+[Android Emulator](http://developer.android.com/tools/devices/emulator.html#netspeed) allows you to simulate various network conditions while running apps (including web browsers and hybrid web apps) on Android:
 
 ![Android Emulator](images/android-emulator.png)
 
 ![Android Emulator settings](images/android-emulator-settings.png)
 
-Untuk iPhone, Network Link Conditioner dapat digunakan untuk mensimulasikan kondisi jaringan yang terganggu (lihat di atas).
+For iPhone, Network Link Conditioner can be used to simulate impaired network conditions (see above).
 
-### Uji pada lokasi dan jaringan yang berbeda
+### Test from different locations and networks
 
-Kinerja konektivitas tergantung pada lokasi server serta jenis jaringan.
+Connectivity performance depends on server location as well as network type.
 
-[WebPagetest](https://webpagetest.org) adalah layanan online yang memungkinkan serangkaian tes kinerja yang akan dijalankan untuk situs Anda menggunakan berbagai jaringan dan lokasi server. Misalnya, Anda dapat mencoba situs Anda dari server di India pada jaringan 2G, atau melalui kabel dari sebuah kota di Amerika Serikat.
+[WebPagetest](https://webpagetest.org) is an online service that enables a set of performance tests to be run for your site using a variety of networks and host locations. For example, you can try out your site from a server in India on a 2G network, or over cable from a city in the US.
 
 ![WebPagetest settings](images/webpagetest.png)
 
+Select a location and, from advanced settings, select a connection type. You can even automate testing using [scripts](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (for example, to log in to a site) or using their [RESTful APIs](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis). This helps you to include connectivity testing into build processes or performance logging.
 
-Pilih lokasi dan, dari pengaturan lanjutan, pilih jenis koneksi. Anda bahkan dapat mengotomatisasi pengujian menggunakan [script](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/scripting) (misalnya, untuk masuk ke sebuah situs) atau menggunakan [RESTful API](https://sites.google.com/a/webpagetest.org/docs/advanced-features/webpagetest-restful-apis) mereka. Hal ini membantu Anda untuk memasukkan pengujian konektivitas ke dalam proses logging.
-
-
-[Fiddler](http://www.telerik.com/fiddler) mendukung proxy global melalui [GeoEdge](http://www.geoedge.com/faq), dan aturan khusus yang dapat digunakan untuk mensimulasikan kecepatan modem:
+[Fiddler](http://www.telerik.com/fiddler) supports Global proxying via [GeoEdge](http://www.geoedge.com/faq), and its custom rules can be used to simulate modem speeds:
 
 ![Fiddler proxy](images/fiddler.png)
 
-### Uji pada jaringan yang terganggu
+### Test on an impaired network
 
-Software dan hardware proxy memungkinkan Anda untuk meniru kondisi jaringan seluler bermasalah, seperti bandwidth throttling, delay, dan packet loss yang acak. Sebuah proxy bersama atau gangguan jaringan dapat memungkinkan sebuah tim pengembang untuk menggabungkan pengujian jaringan dunia nyata dalam alur kerja mereka.
+Software and hardware proxies enable you to emulate problematic mobile network conditions, such as bandwidth throttling, packet delay, and random packet loss. A shared proxy or impaired network can enable a team of developers to incorporate real-world network testing in their workflow.
 
-Facebook's [Augmented Traffic Control](http://facebook.github.io/augmented-traffic-control/) (ATC) adalah aplikasi dengan lisensi BSD yang dapat digunakan untuk membentuk lalu lintas dan meniru kondisi jaringan yang terganggu:
+Facebook's [Augmented Traffic Control](http://facebook.github.io/augmented-traffic-control/) (ATC) is a BSD-licensed set of applications that can be used to shape traffic and emulate impaired network conditions:
 
 ![Facebook's Augmented Traffic Control](images/augmented-traffic-control.png)
 
-> Acara yang diadakan Facebook [2G Tuesdays](https://code.facebook.com/posts/1556407321275493/building-for-emerging-markets-the-story-behind-2g-tuesdays/) membantu memahami bagaimana orang-orang yang berada dalam jaringan 2G menggunakan produk mereka. Pada hari Selasa, karyawan mendapatkan pop-up yang memberikan mereka pilihan untuk mensimulasikan koneksi 2G.
+> Facebook even instituted [2G Tuesdays](https://code.facebook.com/posts/1556407321275493/building-for-emerging-markets-the-story-behind-2g-tuesdays/) to help understand how people on 2G use their product. On Tuesdays, employees get a pop-up that gives them the option to simulate a 2G connection.
 
-[Charles](https://www.charlesproxy.com/){: .external } HTTP/HTTPS proxy yang dapat digunakan untuk [mengatur bandwidth dan respons](http://www.charlesproxy.com/documentation/proxying/throttling/). Charles adalah aplikasi komersial, tapi versi free-trial tersedia.
+The [Charles](https://www.charlesproxy.com/){: .external } HTTP/HTTPS proxy can be used to [adjust bandwidth and latency](http://www.charlesproxy.com/documentation/proxying/throttling/). Charles is commercial software, but a free trial is available.
 
 ![Charles proxy bandwidth and latency settings](images/charles.png)
 
-Informasi lebih lanjut tentang Charles dapat dilihat di [codewithchris.com](http://codewithchris.com/tutorial-using-charles-proxy-with-your-ios-development-and-http-debugging/).
+More information about Charles is available from [codewithchris.com](http://codewithchris.com/tutorial-using-charles-proxy-with-your-ios-development-and-http-debugging/).
 
-## Menangani konektivitas tidak dapat diandalkan dan "lie-fi"
+## Handle unreliable connectivity and "lie-fi" {: #lie-fi }
 
-### Apa itu lie-fi?
+### What is lie-fi?
 
-Istilah <a href="http://www.urbandictionary.com/define.php?term=lie-fi">lie-fi</a> muncul sekitar tahun 2008 (ketika ponsel tampak seperti <a href="https://www.mobilegazette.com/2008-phones-wallchart.htm" title="Images of phones from 2008">ini</a>). Browser anda seolah-olah memiliki konektivitas, tapi ternyata tidak.
+The term [lie-fi](http://www.urbandictionary.com/define.php?term=lie-fi) dates back to at least 2008 (when phones looked like
+<a href="https://www.mobilegazette.com/2008-phones-wallchart.htm"
+title="Images of phones from 2008">this</a>), and refers to connectivity that isn't what it seems. Your browser behaves as if it has connectivity when, for whatever reason, it doesn't.
 
-Konektivitas yang disalahartikan dapat menimbulkan pengalaman buruk karena browser (atau JavaScript) berusaha untuk mengambil sumber daya ke situs web daripada berhenti. Lie-fi sebenarnya bisa lebih buruk daripada offline; setidaknya jika perangkat pasti offline JavaScript anda dapat mengambil tindakan yang tepat untuk mengatasinya.
+Misinterpreted connectivity can result in a poor experience as the browser (or JavaScript) persists in trying to retrieve resources rather than giving up and choosing a sensible fallback. Lie-fi can actually be worse than offline; at least if a device is definitely offline, your JavaScript can take appropriate evasive action.
 
-Lie-fi kemungkinan akan menjadi masalah yang lebih besar karena lebih banyak orang pindah ke ponsel dan jauh dari fixed broadband. Baru-baru ini [Data Sensus Amerika Serikat terbaru](https://www.ntia.doc.gov/blog/2016/evolving-technologies-change-nature-internet-use) menunjukkan [pindah dari fixed broadband](https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/). Grafik berikut menunjukkan penggunaan mobile internet di rumah pada 2015 dibandingkan dengan 2013:
+Lie-fi is likely to become a bigger problem as more people move to mobile and away from fixed broadband. Recent [US Census data](https://www.ntia.doc.gov/blog/2016/evolving-technologies-change-nature-internet-use) shows a [move away from fixed broadband](https://www.washingtonpost.com/news/the-switch/wp/2016/04/18/new-data-americans-are-abandoning-wired-home-internet/). The following chart shows the use of mobile internet at home in 2015 compared with 2013:
 
-<img src="images/home-broadband.png" class="center" alt="Chart from US census data showing the move to mobile away from fixed broadband, particularly in lower-income households">
+<img src="images/home-broadband.png" class="center" alt="Chart from US census data
+showing the move to mobile away from fixed broadband, particularly in lower-income households" />
 
-### Gunakan timeout untuk menangani konektivitas yang terputus-putus
+### Use timeouts to handle intermittent connectivity
 
-Sebelumnya, [metode Hacky menggunakan XHR](http://stackoverflow.com/questions/189430/detect-that-the-internet-connection-is-offline) telah digunakan untuk menguji konektivitas terputus, tapi service worker memungkinkan metode yang lebih dapat diandalkan untuk mengatur timeout pada jaringan. Jeff Posnick menjelaskan bagaimana untuk mencapai hal ini menggunakan timeout [sw-toolbox](https://github.com/GoogleChrome/sw-toolbox) dalam salah satu presentasinya [Instant Loading with Service Workers](https://youtu.be/jCKZDTtUA2A?t=19m58s):
+In the past, [hacky methods using XHR](http://stackoverflow.com/questions/189430/detect-that-the-internet-connection-is-offline) have been used to test for intermittent connectivity, but service worker enables more reliable methods to set network timeouts. This can be achieved using [Workbox](/web/tools/workbox/) with only a few lines of code:
 
-    toolbox.router.get(
+    workboxSW.router.registerRoute(
       '/path/to/image',
-      toolbox.networkFirst,
-      {networkTimeoutSeconds: 3}
-    );    
+      workboxSW.strategies.networkFirst({networkTimeoutSeconds: 3})
+    );
+    
 
-Sebuah [pilihan timeout](https://github.com/whatwg/fetch/issues/20) juga direncanakan untuk [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch), dan [Streams API](https://www.w3.org/TR/streams-api/) sehingga dapat membantu dengan mengoptimalkan pengiriman konten. Jake Archibald memberikan rincian lebih lanjut tentang mengatasi lie-fi di [Supercharging page load](https://youtu.be/d5_6yHixpsQ?t=6m42s).
+You can learn more about Workbox in Jeff Posnick's Chrome Dev Summit talk, [Workbox: Flexible PWA Libraries](https://www.youtube.com/watch?v=DtuJ55tmjps).
 
-Translated By: 
-{% include "web/_shared/contributors/mychaelgo.html" %}
+[Timeout functionality](/web/updates/2017/09/abortable-fetch) is also being developed for the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch), and the [Streams API](https://www.w3.org/TR/streams-api/) should help by optimizing content delivery and avoiding monolithic requests. Jake Archibald gives more details about tackling lie-fi in [Supercharging page load](https://youtu.be/d5_6yHixpsQ?t=6m42s).
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

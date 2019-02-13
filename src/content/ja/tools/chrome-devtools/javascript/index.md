@@ -1,19 +1,14 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools を使用して JavaScript のバグを見つけて修正する方法を説明します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to use Chrome DevTools to find and fix JavaScript bugs.
 
-{# wf_blink_components: Platform>DevTools #}
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-01-04 #}
+{# wf_blink_components: Platform>DevTools #} {# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2017-01-04 #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Chrome DevTools で JavaScript をデバッグする {: .page-title }
+# Get Started with Debugging JavaScript in Chrome DevTools {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-このチュートリアルでは、DevTools で JavaScript の問題をデバッグするための基本的なワークフローを説明します。
-この記事を読み進めるか、または下にあるこのチュートリアルのビデオ版をご覧ください。
+This tutorial teaches you the basic workflow for debugging any JavaScript issue in DevTools. Read on, or watch the video version of this tutorial, below.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="H0XScE08hy8"
@@ -21,76 +16,56 @@ description:Chrome DevTools を使用して JavaScript のバグを見つけて�
   </iframe>
 </div>
 
+## Step 1: Reproduce the bug {: #reproduce }
 
-## ステップ 1: バグを再現する {: #reproduce }
+Finding a series of actions that consistently reproduces a bug is always the first step to debugging.
 
-デバッグの最初のステップは、バグを一貫して再度発生させる一連のアクションを特定することです。
+1. Click **Open Demo**. The demo opens in a new tab.
+    
+    <a href="https://googlechrome.github.io/devtools-samples/debug-js/get-started"
+   target="devtools"
+   rel="noopener noreferrer"> <button>Open Demo</button> </a>
 
+2. Enter `5` in the **Number 1** text box.
 
-1. 次の**「デモを開く」** をクリックします。 新しいタブでデモが開きます。
+3. Enter `1` in the **Number 2** text box.
+4. Click **Add Number 1 and Number 2**. The label below the button says `5 + 1 = 51`. The result should be `6`. This is the bug you're going to fix.
+    
+    <figure> 
+    
+    ![The result of 5 + 1 is 51. It should be 6.](imgs/bug.png) <figcaption> **Figure 1**. The result of 5 + 1 is 51. It should be 6. </figcaption> </figure>
 
-     <a href="https://googlechrome.github.io/devtools-samples/debug-js/get-started"
-       target="devtools"
-       rel="noopener noreferrer">
-       <button>デモを開く</button>
-     </a>
+## Step 2: Get familiar with the Sources panel UI {: #sources-ui }
 
-1. **[Number 1]** テキストボックスに `5` を入力します。
-1. **[Number 2]** テキストボックスに `1` を入力します。
-1. **[Add Number 1 and Number 2]** をクリックします。 ボタンの下のラベルに `5 + 1 = 51` と表示されます。 結果は `6` になる必要があります。
- このバグを、これから修正します。
+DevTools provides a lot of different tools for different tasks, such as changing CSS, profiling page load performance, and monitoring network requests. The **Sources** panel is where you debug JavaScript.
 
-     <figure>
-       <img src="imgs/bug.png"
-         alt="5 + 1 の結果が 51 になっています。結果は 6 になる必要があります。"/>
-       <figcaption>
-         <b>図 1</b>。 5 + 1 の結果が 51 になっています。結果は 6 になる必要があります。
-</figcaption>
-     </figure>
+1. Open DevTools by pressing <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> (Mac) or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> (Windows, Linux). This shortcut opens the **Console** panel.
+    
+    <figure> 
+    
+    ![The Console panel.](imgs/console.png) <figcaption> **Figure 2**. The **Console** panel </figcaption> </figure>
+2. Click the **Sources** tab.
+    
+    <figure> 
+    
+    ![The Sources panel.](imgs/sources.png) <figcaption> **Figure 3**. The **Sources** panel </figcaption> </figure>
 
-## ステップ 2: Sources パネルの UI に精通する {: #sources-ui }
-
-DevTools には、CSS の変更、ページ読み込みパフォーマンスのプロファイリング、ネットワーク リクエストのモニタリングなどのいろいろなタスクのためのいろいろなツールがあります。
- **[Sources]** パネルで JavaScript をデバッグします。
-
-
-1. <kbd>Command</kbd>+<kbd>Option</kbd>+<kbd>I</kbd> キー（Mac）または <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> キー（Windows、Linux）を押して、DevTools を開きます。
- このショートカットを押すと、**[Console]** パネルが開きます。
-
-     <figure>
-       <img src="imgs/console.png" alt="[Console] パネル。"/>
-       <figcaption>
-         <b>図 2</b>。 <b>[Console]</b> パネル。
-       </figcaption>
-     </figure>
-
-1. **[Sources]** タブをクリックします。
-
-     <figure>
-       <img src="imgs/sources.png" alt="[Sources] パネル。"/>
-       <figcaption>
-         <b>図 3</b>。 <b>[Sources]</b> パネル。
-       </figcaption>
-     </figure>
-
-**[Sources]** パネルの UI は 3 つの部分からなっています。
+The **Sources** panel UI has 3 parts:
 
 <figure>
-  <img src="imgs/sources-annotated.png" alt="[Sources] パネルの UI の 3 つの部分。"/>
+  <img src="imgs/sources-annotated.png" alt="The 3 parts of the Sources panel UI."/>
   <figcaption>
-    <b>図 4</b>。 <b>[Sources]</b> パネルの UI の 3 つの部分
-</figcaption>
+    <b>Figure 4</b>. The 3 parts of the <b>Sources</b> panel UI
+  </figcaption>
 </figure>
 
-1. **[File Navigator]** ペイン。 ページによってリクエストされているすべてのファイルがここにリストされます。
-2. **[Code Editor]** ペイン。 **[File Navigator]** ペインでファイルを選択すると、そのファイルの内容がここに表示されます。
-3. **[JavaScript Debugging]** ペイン。 ページの JavaScript を検査するための各種ツール。 DevTools ウィンドウの幅が広いときには、このペインが **[Code Editor]** ペインの右側に表示されます。
+1. The **File Navigator** pane. Every file that the page requests is listed here.
+2. The **Code Editor** pane. After selecting a file in the **File Navigator** pane, the contents of that file are displayed here.
+3. The **JavaScript Debugging** pane. Various tools for inspecting the page's JavaScript. If your DevTools window is wide, this pane is displayed to the right of the **Code Editor** pane.
 
+## Step 3: Pause the code with a breakpoint {: #event-breakpoint }
 
-## ステップ 3: ブレークポイントでコードを一時停止する {: #event-breakpoint }
-
-このような問題をデバッグする一般的な方法は、コードに `console.log()`
-ステートメントを多数挿入して、スクリプト実行時のそれぞれの値を検査するというものです。 次に例を示します。
+A common method for debugging a problem like this is to insert a lot of `console.log()` statements into the code, in order to inspect values as the script executes. For example:
 
 <pre class="prettyprint">function updateLabel() {
   var addend1 = getNumber1();
@@ -102,223 +77,138 @@ DevTools には、CSS の変更、ページ読み込みパフォーマンスの�
   label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;
 }</pre>
 
-`console.log()` を使用する方法でも目的を達成することはできますが、**ブレークポイント**を使用したほうがより速く処理することができます。
-ブレークポイントを使用すると、コードの実行中にコードを一時停止し、その時点におけるすべての値を調べることができます。
- `console.log()` を使用する方法と比べて、ブレークポイントには次の利点があります。
+The `console.log()` method may get the job done, but **breakpoints** can get it done faster. A breakpoint lets you pause your code in the middle of its execution, and examine all values at that moment in time. Breakpoints have a few advantages over the `console.log()` method:
 
-* `console.log()` を使用した場合、ソースコードを手動で開き、関係するコードを探し、`console.log()` ステートメントを挿入し、ページを再読み込みして、Console でメッセージを確認する必要があります。
- ブレークポイントを使用した場合は、コードの構造を知らなくても、関係するコードで一時停止することができます。
-* `console.log()` ステートメントには、検査する値を 1 つずつ明示的に指定する必要があります。
- ブレークポイントを使用すると、その時点のすべての変数の値が DevTools に表示されます。
- コードに影響する変数が他にもあったことに気付かされる場合もあります。
+* With `console.log()`, you need to manually open the source code, find the relevant code, insert the `console.log()` statements, and then reload the page in order to see the messages in the Console. With breakpoints, you can pause on the relevant code without even knowing how the code is structured.
+* In your `console.log()` statements you need to explicitly specify each value that you want to inspect. With breakpoints, DevTools shows you the values of all variables at that moment in time. Sometimes there are variables affecting your code that you're not even aware of.
 
-このように、ブレークポイントを使用するなら、`console.log()` を使用する方法よりも速くバグを見つけて修正することができます。
+In short, breakpoints can help you find and fix bugs faster than the `console.log()` method.
 
-先ほどのデモに戻って、このアプリがどのように動作するかを考えると、経験に基づいて、間違いの合計（`5 + 1 = 51`）は **[Add Number 1 and Number 2]** ボタンに関連付けられた `click` イベント リスナーで計算されると推測することができます。
- それで、`click` リスナーが実行されるタイミング前後のコードを一時停止することになります。
- **[Event Listener Breakpoints]**
-を使用する場合は、次のとおりに操作します。
+If you take a step back and think about how the app works, you can make an educated guess that the incorrect sum (`5 + 1 = 51`) gets computed in the `click` event listener that's associated to the **Add Number 1 and Number 2** button. Therefore, you probably want to pause the code around the time that the `click` listener executes. **Event Listener Breakpoints** let you do exactly that:
 
-1. **[JavaScript Debugging]** ペインで、**[Event Listener Breakpoints]** をクリックしてセクションを展開します。
- DevTools に、**[Animation]** や **[Clipboard]** などの展開可能なイベント カテゴリのリストが表示されます。
-1. **[Mouse]** イベント カテゴリの横にある **[Expand]** ![[Expand]
- アイコン](/web/tools/chrome-devtools/images/expand.png) をクリックします{: .devtools-inline}。
-   DevTools に **click** や **mousedown** といったマウスイベントのリストが表示されます。 各イベントの横にはチェックボックスがあります。
-1. **click** のチェックボックスにチェックを入れます。 これで、DevTools は*いずれかの* `click` イベント リスナーが実行されると自動的に一時停止するようセットアップされます。
+1. In the **JavaScript Debugging** pane, click **Event Listener Breakpoints** to expand the section. DevTools reveals a list of expandable event categories, such as **Animation** and **Clipboard**.
+2. Next to the **Mouse** event category, click **Expand** ![Expand
+icon](/web/tools/chrome-devtools/images/expand.png){: .devtools-inline}. DevTools reveals a list of mouse events, such as **click** and **mousedown**. Each event has a checkbox next to it.
+3. Check the **click** checkbox. DevTools is now set up to automatically pause when *any* `click` event listener executes.
+    
+    <figure> 
+    
+    ![The click checkbox is enabled.](imgs/get-started-click-breakpoint.png) <figcaption> **Figure 5**. The **click** checkbox is enabled </figcaption> </figure>
+4. Back on the demo, click **Add Number 1 and Number 2** again. DevTools pauses the demo and highlights a line of code in the **Sources** panel. DevTools should be paused on this line of code:
+    
+    
+    
+    <pre class="prettyprint">function onClick() {</pre>
+    If you're paused on a different line of code, press **Resume Script Execution** ![Resume
+ Script Execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.cdt-inl} until you're paused on the correct line.
+    
+    <aside class="note"> **Note**: If you paused on a different line, you have a browser extension that registers a `click` event listener on every page that you visit. You were paused in the extension's `click` listener. If you use Incognito Mode to \[browse in private\]\[incognito\], which disables all extensions, you can see that you pause on the correct line of code every time. </aside>
 
-     <figure>
-       <img src="imgs/get-started-click-breakpoint.png"
-         alt="click のチェックボックスが有効になっている。"/>
-       <figcaption>
-         <b>図 5</b>。 <b>click</b> のチェックボックスが有効になっている
-       </figcaption>
-     </figure>
+**Event Listener Breakpoints** are just one of many types of breakpoints available in DevTools. It's worth memorizing all the different types, because each type ultimately helps you debug different scenarios as quickly as possible. See [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints) to learn when and how to use each type.
 
-1. デモに戻って、**[Add Number 1 and Number 2]** を再度クリックします。 DevTools はデモを一時停止し、**[Sources]** パネル内のあるコード行をハイライト表示します。
-   DevTools はコードの次の行で一時停止しているはずです。
+## Step 4: Step through the code {: #code-stepping }
 
-     <pre class="prettyprint">function onClick() {</pre>
+One common cause of bugs is when a script executes in the wrong order. Stepping through your code enables you to walk through your code's execution, one line at a time, and figure out exactly where it's executing in a different order than you expected. Try it now:
 
-     コードの別の行で一時停止している場合は、正しい行で一時停止するまで、**[Resume Script Execution]** ![Resume
-     Script Execution][resume]{:.cdt-inl} を押してください。
+1. On the **Sources** panel of DevTools, click **Step into next function call** ![Step into next function call](/web/tools/chrome-devtools/images/step-into.png){:.devtools-inline} to step through the execution of the `onClick()` function, one line at a time. DevTools highlights the following line of code:
+    
+    
+    
+    <pre class="prettyprint">if (inputsAreEmpty()) {</pre>
+2. Click **Step over next function call** ![Step over next function
+call](/web/tools/chrome-devtools/images/step-over.png){:.devtools-inline}. DevTools executes `inputsAreEmpty()` without stepping into it. Notice how DevTools skips a few lines of code. This is because `inputsAreEmpty()` evaluated to false, so the `if` statement's block of code didn't execute.
 
-     <aside class="note">
-       **注**: 想定外の行で一時停止した場合、訪問した各ページの `click` イベント リスナーを登録するブラウザ拡張機能がインストールされています。
- その拡張機能の `click` リスナーで一時停止しました。
- すべての拡張機能を無効にする Incognito Mode を使用して[プライベート モードでブラウジングする][incognito]と、毎回コードの正しい行で一時停止します。
-     </aside>
+That's the basic idea of stepping through code. If you look at the code in `get-started.js`, you can see that the bug is probably somewhere in the `updateLabel()` function. Rather than stepping through every line of code, you can use another type of breakpoint to pause the code closer to the probable location of the bug.
 
-[incognito]: https://support.google.com/chrome/answer/95464
+## Step 5: Set a line-of-code breakpoint {: #line-breakpoint }
 
-**[Event Listener Breakpoints]** は DevTools で利用可能な数多くの種類のブレークポイントの 1 つに過ぎません。
-いろいろあるタイプをすべて覚えておくだけの価値はあります。それぞれのタイプがいろいろな状況で迅速にデバッグするのに非常に役立つからです。
- 各タイプをいつどのように使用したらよいかについては、[ブレークポイントでコードを一時停止する][breakpoints]を参照してください。
+Line-of-code breakpoints are the most common type of breakpoint. When you've got a specific line of code that you want to pause on, use a line-of-code breakpoint:
 
+1. Look at the last line of code in `updateLabel()`:
+    
+    
+    
+    <pre class="prettyprint">label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;</pre>
+2. To the left of the code you can see the line number of this particular line of code, which is **32**. Click on **32**. DevTools puts a blue icon on top of **32**. This means that there is a line-of-code breakpoint on this line. DevTools now always pauses before this line of code is executed.
 
-[resume]: /web/tools/chrome-devtools/images/resume-script-execution.png
-[breakpoints]: /web/tools/chrome-devtools/javascript/breakpoints
+3. Click **Resume script execution** ![Resume script
+execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.devtools-inline}. The script continues executing until it reaches line 32. On lines 29, 30, and 31, DevTools prints out the values of `addend1`, `addend2`, and `sum` to the right of each line's semi-colon.
+    
+    <figure> 
+    
+    ![DevTools pauses on the line-of-code breakpoint on line 32.](imgs/line-of-code-breakpoint.png) <figcaption> **Figure 6**. DevTools pauses on the line-of-code breakpoint on line 32 </figcaption> </figure>
 
-## ステップ 4: コードをステップ実行する {: #code-stepping }
+## Step 6: Check variable values {: #check-values }
 
-バグの一般的な原因の 1 つは、スクリプトの実行順序が間違っていることです。
- コードをステップ実行すると、コードを 1 行ずつ実行して、予想とは異なる順序で実行されているコード行を見つけることができます。
- さっそく試してみましょう。
+The values of `addend1`, `addend2`, and `sum` look suspicious. They're wrapped in quotes, which means that they're strings. This is a good hypothesis for the explaining the cause of the bug. Now it's time to gather more information. DevTools provides a lot of tools for examining variable values.
 
-1. DevTools の **[Sources]** パネルで、**[Step into next function call]** ![Step into next function call][into]{:.devtools-inline}
- をクリックし、`onClick()` 関数を 1 行ずつステップ実行します。
-   DevTools では次のコード行がハイライト表示されます。
+### Method 1: The Scope pane {: #scope }
 
-     <pre class="prettyprint">if (inputsAreEmpty()) {</pre>
-
-1. **[Step over next function call]** ![Step over next function call][over]{:.devtools-inline} をクリックします。 DevTools は、ステップ実行せずに、`inputsAreEmpty()` を実行します。
- DevTools が数行のコードをスキップしていることに注意してください。
-   これは、`inputsAreEmpty()` が false と評価されたため、`if` 文のコードブロックが実行されなかったからです。
-
-
-以上がコードをステップ実行する際の基本的な考え方です。 `get-started.js` 内のコードを調べると、`updateLabel()` 関数のどこかにバグがあることがわかります。
- コードの各行をステップ実行する代わりに、別のタイプのブレークポイントを使用すると、バグがあると思われる箇所の付近でコードを一時停止することができます。
-
-
-
-[into]: /web/tools/chrome-devtools/images/step-into.png
-[over]: /web/tools/chrome-devtools/images/step-over.png
-
-## ステップ 5: コード行のブレークポイントを設定する {: #line-breakpoint }
-
-コード行のブレークポイントは、最も一般的なタイプのブレークポイントです。 特定のコード行で一時停止したい場合は、コード行のブレークポイントを使用します。
-
-
-
-1. `updateLabel()` の最後のコード行は、次のようになっています。
-
-     <pre class="prettyprint">label.textContent = addend1 + ' + ' + addend2 + ' = ' + sum;</pre>
-
-1. コードの左側には、この特定のコードの行番号 **32** が表示されています。
- **32** をクリックします。 DevTools により、**32**  の上に青いアイコンが配置されます。
- このアイコンは、この行にコード行のブレークポイントがあることを示します。
-   これで、DevTools は、このコード行が実行される前に常に一時停止します。
-1. **[Resume script execution]** ![Resume script execution][resume]{:.devtools-inline}
-をクリックします。 スクリプトは、行 32 に到達するまで実行されます。
-行 29、30、および 31 で、DevTools は各行のセミコロンの右に `addend1`、`addend2`、および `sum` の値を出力します。
-
-     <figure>
-       <img src="imgs/line-of-code-breakpoint.png"
-         alt="DevTools は行 32 のコード行のブレークポイントで一時停止します。"/>
-       <figcaption>
-         <b>図 6</b>。 DevTools は行 32 のコード行のブレークポイントで一時停止します
-       </figcaption>
-     </figure>
-
-## ステップ 6: 変数値をチェックする {: #check-values }
-
-`addend1`、`addend2`、および `sum` の値に問題がありそうです。 これらは引用符で囲まれており、文字として扱われているようです。
-  これがバグの原因であると考えられます。
-ここでさらに情報を収集しましょう。 DevTools には変数値を調べるためのたくさんのツールがあります。
-
-
-### 方法 1: [Scope] ペイン {: #scope }
-
-コードのある行で一時停止すると、その時点で定義されているローカル変数とグローバル変数が、それぞれの値とともに **[Scope]** ペインに表示されます。
- クロージャ変数が存在すれば、それも表示されます。
- 変数値をダブルクリックすると、値を編集できます。 コード内に一時停止する行がない場合、**[Scope]** ペインは空になります。
-
+When you're paused on a line of code, the **Scope** pane shows you what local and global variables are currently defined, along with the value of each variable. It also shows closure variables, when applicable. Double-click a variable value to edit it. When you're not paused on a line of code, the **Scope** pane is empty.
 
 <figure>
   <img src="imgs/scope-pane.png"
-    alt="[Scope] ペイン。"/>
+    alt="The Scope pane."/>
   <figcaption>
-    <b>図 7</b>。 <b>[Scope]</b> ペイン
-</figcaption>
+    <b>Figure 7</b>. The <b>Scope</b> pane
+  </figcaption>
 </figure>
 
-### 方法 2: Watch Expressions {: #watch-expressions }
+### Method 2: Watch Expressions {: #watch-expressions }
 
-**[Watch Expressions]** タブを使用して、変数の値を時間の経過に伴ってモニターすることができます。
-名前が示すように、[Watch Expressions] の対象は変数だけに限定されていません。 任意の有効な JavaScript 式を Watch Expression に保存することができます。
- さっそく試してみましょう。
+The **Watch Expressions** tab lets you monitor the values of variables over time. As the name implies, Watch Expressions aren't just limited to variables. You can store any valid JavaScript expression in a Watch Expression. Try it now:
 
-1. **[Watch]** タブをクリックします。
-1. **[Add Expression]** ![Add Expression][add] をクリックします{:.devtools-inline}。
-1. `typeof sum` と入力します。
-1. <kbd>Enter</kbd>を押します。 DevTools に `typeof sum: "string"` が表示されます。 コロンの右側の値が Watch Expression の結果です。
+1. Click the **Watch** tab.
+2. Click **Add Expression** ![Add Expression](/web/tools/chrome-devtools/javascript/imgs/add-expression.png){:.devtools-inline}.
+3. Type `typeof sum`.
+4. Press <kbd>Enter</kbd>. DevTools shows `typeof sum: "string"`. The value to the right of the colon is the result of your Watch Expression.
+    
+    <figure> 
+    
+    ![The Watch Expression pane.](imgs/get-started-watch-expression.png) <figcaption> **Figure 8**. The Watch Expression pane (bottom-right), after creating the `typeof sum` Watch Expression. If your DevTools window is large, the Watch Expression pane is on the right, above the **Event Listener Breakpoints** pane. </figcaption> </figure>
 
-     <figure>
-       <img src="imgs/get-started-watch-expression.png"
-         alt="[Watch Expression] ペイン。"/>
-       <figcaption>
-         <b>図 8</b>。 <code>typeof sum</code> Watch Expression を作成した後の [Watch Expression] ペイン（右下）。
+As suspected, `sum` is being evaluated as a string, when it should be a number. You've now confirmed that this is the cause of the bug.
 
-         DevTools ウィンドウが大きい場合、[Watch Expression] ペインは、右側の [<b>Event Listener Breakpoints</b>] ペインの上に表示されます。
+### Method 3: The Console {: #console }
 
-       </figcaption>
-     </figure>
+In addition to viewing `console.log()` messages, you can also use the Console to evaluate arbitrary JavaScript statements. In terms of debugging, you can use the Console to test out potential fixes for bugs. Try it now:
 
-予想どおり、`sum` は、数字ではなく、文字列として評価されています。
- これがバグの原因であることが、ここではっきりしました。
+1. If you don't have the Console drawer open, press <kbd>Escape</kbd> to open it. It opens at the bottom of your DevTools window.
+2. In the Console, type `parseInt(addend1) + parseInt(addend2)`. This statement works because you are paused on a line of code where `addend1` and `addend2` are in scope.
+3. Press <kbd>Enter</kbd>. DevTools evaluates the statement and prints out `6`, which is the result you expect the demo to produce.
+    
+    <figure> 
+    
+    ![The Console drawer, after evaluating parseInt(addend1) + parseInt(addend2).](imgs/get-started-console.png) <figcaption> **Figure 9**. The Console drawer, after evaluating `parseInt(addend1) + parseInt(addend2)`. </figcaption> </figure>
 
-### 方法 3: Console {: #console }
+## Step 7: Apply a fix {: #apply-fix }
 
-`console.log()` メッセージを表示するだけでなく、任意の JavaScript ステートメントを評価するためにも Console を使用することができます。
- デバッグのために、Console を使用して、バグの潜在的な修正をテストすることができます。
- さっそく試してみましょう。
+You've found a fix for the bug. All that's left is to try out your fix by editing the code and re-running the demo. You don't need to leave DevTools to apply the fix. You can edit JavaScript code directly within the DevTools UI. Try it now:
 
-1. [Console] ドロワーを開いていない場合は、<kbd>Escape</kbd> キーを押してドロワーを開きます。
- ドロワーは DevTools ウィンドウの下部に開きます。
-1. Console に `parseInt(addend1) + parseInt(addend2)` を入力します。 `addend1` と `addend2` がスコープ内であるコード行で一時停止しているので、このステートメントは実行されます。
-1. <kbd>Enter</kbd>を押します。 DevTools は文を評価し、`6` を出力します。これは、デモで生成されるべき結果です。
+1. Click **Resume script execution** ![Resume script
+execution](/web/tools/chrome-devtools/images/resume-script-execution.png){:.devtools-inline}.
+2. In the **Code Editor**, replace line 31, `var sum = addend1 + addend2`, with `var sum = parseInt(addend1) + parseInt(addend2)`.
+3. Press <kbd>Command</kbd>+<kbd>S</kbd> (Mac) or <kbd>Control</kbd>+<kbd>S</kbd> (Windows, Linux) to save your change.
+4. Click **Deactivate breakpoints** ![Deactivate
+breakpoints](/web/tools/chrome-devtools/images/deactivate-breakpoints-button.png){:.devtools-inline}. It changes blue to indicate that it's active. While this is set, DevTools ignores any breakpoints you've set.
+5. Try out the demo with different values. The demo now calculates correctly.
 
-     <figure>
-       <img src="imgs/get-started-console.png"
-         alt="parseInt(addend1) + parseInt(addend2) を評価した後の [Console] ドロワー。"/>
-       <figcaption>
-         <b>図 9</b>。 <code>parseInt(addend1) + parseInt(addend2)</code> を評価した後の [Console] ドロワー。
+Caution: This workflow only applies a fix to the code that is running in your browser. It won't fix the code for all users that visit your page. To do that, you need to fix the code that's on your servers.
 
-       </figcaption>
-     </figure>
+## Next steps {: #next-steps }
 
-[add]: /web/tools/chrome-devtools/javascript/imgs/add-expression.png
+Congratulations! You now know how to make the most of Chrome DevTools when debugging JavaScript. The tools and methods you learned in this tutorial can save you countless hours.
 
-## ステップ 7: 修正を適用する {: #apply-fix }
+This tutorial only showed you two ways to set breakpoints. DevTools offers many other ways, including:
 
-バグの修正対象箇所が見つかりました。 あとはコードを編集してデモを再度実行し、正しく修正されたか確認するだけです。
- 修正を適用するために DevTools を閉じる必要はありません。
- DevTools UI 内で JavaScript コードを直接編集できます。
- さっそく試してみましょう。
+* Conditional breakpoints that are only triggered when the condition that you provide is true.
+* Breakpoints on caught or uncaught exceptions.
+* XHR breakpoints that are triggered when the requested URL matches a substring that you provide.
 
-1. **[Resume script execution]** ![Resume script execution][resume]
-をクリックします{:.devtools-inline}。
-1. **Code Editor** で、行 31 の `var sum = addend1 + addend2` を   `var sum = parseInt(addend1) + parseInt(addend2)` に置き換えます。
-1. <kbd>Command</kbd>+<kbd>S</kbd> キー（Mac）または <kbd>Control</kbd>+<kbd>S</kbd> キー（Windows、Linux）を押して変更を保存します。
-1. **[Deactivate breakpoints]** ![Deactivate
-   breakpoints][deactivate] をクリックします{:.devtools-inline}。 アクティブであることを示す青色に変わります。
- この設定の間、DevTools は設定したすべてのブレークポイントを無視します。
-1. いろいろな値でデモを試してみましょう。 デモは正しく計算するようになりました。
+See [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/javascript/breakpoints) to learn when and how to use each type.
 
-Note: このワークフローでは、ブラウザで実行されているコードのみに修正が適用されることに注意してください。
-ページを訪問するすべてのユーザーのコードが修正されるわけではありません。 すべてのユーザーのコードを修正するには、サーバー上のコードを修正する必要があります。
+There's a couple of code stepping controls that weren't explained in this tutorial. See [Step over line of code](/web/tools/chrome-devtools/javascript/reference#stepping) to learn more.
 
-
-[deactivate]: /web/tools/chrome-devtools/images/deactivate-breakpoints-button.png
-
-## 次のステップ {: #next-steps }
-
-これで完了です。JavaScript をデバッグするときに Chrome DevTools を最大限に活用する方法がこれでわかりました。
- このチュートリアルで説明したツールや方法を使うことで、かなりの時間の節約になります。
-
-このチュートリアルでは、ブレークポイントの設定方法を 2 つだけ説明しましたが、 DevTools では、他にも次のような多くの方法を利用できます。
-
-
-* 指定した条件が満たされた場合にのみトリガーされる条件付きブレークポイント。
-* 捕捉された例外または捕捉されていない例外に対するブレークポイント。
-* リクエストした URL が指定した文字列に部分一致した場合にトリガーされる XHR ブレークポイント。
-
-
-各タイプをいつどのように使用したらよいかについては、[ブレークポイントでコードを一時停止する](/web/tools/chrome-devtools/javascript/breakpoints)
-を参照してください。
-
-このチュートリアルでは説明していませんが、コードをステップ実行するためのコントロールが他にもいくつかあります。 詳しくは、[行コードをステップ オーバーする](/web/tools/chrome-devtools/javascript/reference#stepping)を参照してください。
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

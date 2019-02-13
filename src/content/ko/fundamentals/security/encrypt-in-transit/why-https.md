@@ -1,11 +1,8 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 민감한 통신을 처리하지 않는 경우에도 항상 HTTPS를 사용하여 모든 웹사이트를 보호해야 합니다. HTTPS는 웹사이트뿐만 아니라 해당 웹사이트를 믿고 개인 정보를 제공하는 사람들을 위해 중요한 보안 및 데이터 무결성을 제공합니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should always protect all of your websites with HTTPS, even if they don’t handle sensitive communications. HTTPS provides critical security and data integrity both for your websites and for the people that entrust your websites with their personal information.
 
-{# wf_updated_on: 2019-01-18 #}
-{# wf_published_on: 2015-11-23 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-11-23 #} {# wf_blink_components: Internals>Network>SSL #}
 
-# HTTPS가 중요한 이유 {: .page-title }
+# Why HTTPS Matters {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
@@ -15,69 +12,32 @@ description: 민감한 통신을 처리하지 않는 경우에도 항상 HTTPS�
   </iframe>
 </div>
 
-민감한 통신을 처리하지 않는 경우에도 항상 HTTPS를 사용하여
-모든 웹사이트를 보호해야 합니다. 웹사이트와 사용자의 개인정보 모두에 대한
-중요한 보안 및 데이터 무결성을 제공하는 것과는 별개로, HTTPS는
-수많은 새로운 브라우저 기능, 특히
-[PWA(Progressive Web App)](/web/progressive-web-apps/)에 필요한 기능을 위한 필수 요건입니다.
+You should always protect all of your websites with HTTPS, even if they don’t handle sensitive communications. Aside from providing critical security and data integrity for both your websites and your users' personal information, HTTPS is a requirement for many new browser features, particularly those required for [progressive web apps](/web/progressive-web-apps/).
 
 ### TL;DR {: .hide-from-toc }
 
-* 악의가 있든 없든, 웹사이트 침입자는 웹사이트와 사용자 사이에서 보호되지 않는 모든 리소스를 이용합니다.
-* 수많은 침입자들은 집단 행동을 관찰하면서 사용자를 식별합니다. 
-* HTTPS는 웹사이트의 오용을 가로막지 못합니다. 이는 수많은 최첨단 기능과 서비스 워커처럼 앱 같은 기능을 위한 구현 기술의 요건이기도 합니다. 
+* Intruders both malignant and benign exploit every unprotected resource between your websites and users.
+* Many intruders look at aggregate behaviors to identify your users.
+* HTTPS doesn't just block misuse of your website. It's also a requirement for many cutting-edge features and an enabling technology for app-like capabilities such as service workers.
 
-## HTTPS는 웹사이트의 무결성 보호 
+## HTTPS protects the integrity of your website
 
-HTTPS는 침입자가 웹사이트와 사용자 브라우저 간 
-통신을 변조하는 것을 방지하는 데 도움을 줍니다. 침입자란 
-의도적인 악성 공격자와 합법적인 침입 회사(광고를 페이지에 삽입하는 
-ISP 또는 호텔)를 포함합니다.
+HTTPS helps prevent intruders from tampering with the communications between your websites and your users’ browsers. Intruders include intentionally malicious attackers, and legitimate but intrusive companies, such as ISPs or hotels that inject ads into pages.
 
-침입자는 보호되지 않은 통신을 이용하여 자신의 광고를 
-리소스에 삽입하거나, 사용자를 속여 민감한 정보를 제공하거나 
-맬웨어를 설치하게 합니다. 예를 들어, 일부 업체는 잠재적으로 
-사용자 환경을 파괴하고 
-보안상 취약점을 만드는 광고를 웹사이트에 삽입합니다.
+Intruders exploit unprotected communications to trick your users into giving up sensitive information or installing malware, or to insert their own advertisements into your resources. For example, some third parties inject advertisements into websites that potentially break user experiences and create security vulnerabilities.
 
-침입자는 웹사이트와 사용자 사이에 오가는 모든 보호되지 않은 
-리소스를 이용합니다. 이미지, 쿠키, 스크립트, HTML 등은 모두 
-이용 대상입니다. 침입은 사용자 컴퓨터, Wi-Fi 핫스팟 또는 손상된 ISP를
-비롯한 네트워크의 모든 지점에서 발생할 수 있습니다. 
+Intruders exploit every unprotected resource that travels between your websites and your users. Images, cookies, scripts, HTML … they’re all exploitable. Intrusions can occur at any point in the network, including a user’s machine, a Wi-Fi hotspot, or a compromised ISP, just to name a few.
 
-## HTTPS는 사용자의 개인정보 및 보안 보호
+## HTTPS protects the privacy and security of your users
 
-HTTPS는 침입자가 웹사이트와 사용자 간 통신을 몰래 수신하지
-못하도록 방지합니다.
+HTTPS prevents intruders from being able to passively listen to communications between your websites and your users.
 
-민감한 통신을 처리하는 웹사이트만 
-HTTPS가 필요하다고 많이 오해합니다. 모든 
-보호되지 않은 HTTP 요청은 사용자의 
-행동 및 신원 정보를 잠재적으로 노출할 수 있습니다. 보호되지 않은 웹사이트에 
-방문한 침입자는 
-집계된 사용자의 검색 활동을 확인하여 
-사용자의 
-행동 및 의도를 추측하고 사용자 신원을 
-[탈익명화](https://en.wikipedia.org/wiki/De-anonymization){: .external}합니다. 예를 들어, 
-직원이 보호되지 않은 의료 관련 글을 읽기만 했는데 그의 민감한 
-건강 상태가 의도치 않게 고용주에게 알려질 수 있습니다.
+One common misconception about HTTPS is that the only websites that need HTTPS are those that handle sensitive communications. Every unprotected HTTP request can potentially reveal information about the behaviors and identities of your users. Although a single visit to one of your unprotected websites may seem benign, some intruders look at the aggregate browsing activities of your users to make inferences about their behaviors and intentions, and to [de-anonymize](https://en.wikipedia.org/wiki/De-anonymization){: .external} their identities. For example, employees might inadvertently disclose sensitive health conditions to their employers just by reading unprotected medical articles.
 
-## HTTPS는 웹의 미래
+## HTTPS is the future of the web
 
-`getUserMedia()`를 통한
-오디오 녹음 또는 사진 촬영, 서비스 워커를 통한 오프라인 앱 경험 활성화, 또는 Progressive Web App 빌드를 비롯한 강력한 새 플랫폼 기능은
-사용자가 명시적으로
-허가해야 실행됩니다. [geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation){: .external}
-API 등과 같은 대부분의 이전 API도 실행하려면
-허락이 필요하도록 업데이트되는
-중입니다. HTTPS는 이러한 새 기능과 업데이트된 API에 대한 권한 워크플로의
-주요 구성 요소입니다.
+Powerful, new web platform features, such as taking pictures or recording audio with `getUserMedia()`, enabling offline app experiences with service workers, or building progressive web apps, require explicit permission from the user before executing. Many older APIs are also being updated to require permission to execute, such as the [geolocation](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation){: .external} API. HTTPS is a key component to the permission workflows for both these new features and updated APIs.
 
+## Feedback {: #feedback }
 
-
-
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

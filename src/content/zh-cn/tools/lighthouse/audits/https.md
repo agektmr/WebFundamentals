@@ -1,52 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“网站在 HTTPS 上”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-19 #}
-{# wf_published_on: 2016-09-19 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-19 #} {# wf_blink_components: N/A #}
 
-# 网站在 HTTPS 上 {: .page-title }
+# Uses HTTPS {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-所有网站均应使用 HTTPS 进行保护，即使是不处理敏感数据的网站也应如此。
-HTTPS 可防止入侵者篡改或被动地侦听您的网站和您的用户之间的通信。
+All websites should be protected with HTTPS, even ones that don't handle sensitive data. HTTPS prevents intruders from tampering with or passively listening in on the communications between your site and your users.
 
+HTTPS is also a prerequisite for many new, powerful web platform features, such as taking pictures or recording audio.
 
-HTTPS 也是许多强大的新网络平台功能（如拍照或录制音频）的前提条件。
+By definition, an app cannot qualify as a progressive web app if it does not run on HTTPS. This is because many core progressive web app technologies, such as service workers, require HTTPS.
 
+For more information on why all sites should be protected with HTTPS, see [Why You Should Always Use HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https).
 
-根据定义，一个应用如果不在 HTTPS 上运行，那么它就不符合成为 Progressive Web App 的条件。
-这是因为许多核心的 Progressive Web App 技术（如服务工作线程）都需要使用 HTTPS。
+## Recommendations {: #recommendations }
 
+Migrate your site to HTTPS.
 
-有关为什么所有网站都应使用 HTTPS 进行保护的详细信息，请参阅[为什么应始终使用 HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https)。
+Many hosting platforms, such as [Firebase](https://firebase.google.com/docs/hosting/){: .external } or [GitHub Pages](https://pages.github.com/){: .external }, are secure by default.
 
+If you're running your own servers and need a cheap and easy way to generate certificates, check out [Let's Encrypt](https://letsencrypt.org/){: .external }. For more help on enabling HTTPS on your servers, see the following set of docs: [Encrypting data in transit](/web/fundamentals/security/encrypt-in-transit/enable-https).
 
-## 如何通过此审查{: #how }
+If your page is already running on HTTPS but you're failing this audit, then you may have problems with mixed content. Mixed content is when a secure site requests an unprotected (HTTP) resource. Check out the following doc on the Chrome DevTools Security panel to learn how to debug these situations: [Understand security issues](/web/tools/chrome-devtools/debug/security).
 
-将您的网站迁移到 HTTPS。
+## More information {: #more-info }
 
-默认情况下，[Firebase](https://firebase.google.com/docs/hosting/){: .external } 或 [GitHub Pages](https://pages.github.com/){: .external } 等许多托管平台都是安全的。
+Lighthouse waits for an event from the Chrome Debugger Protocol indicating that the page is running on a secure connection. If the event is not heard within 10 seconds, the audit fails.
 
+## Feedback {: #feedback }
 
-
-如果您运行自己的服务器并且需要一个成本低廉且简单的方式来生成证书，请访问 [Let's Encrypt](https://letsencrypt.org/){: .external }。
-有关在您的服务器上启用 HTTPS 的更多帮助，请参阅以下文档集：[对传输中的数据进行加密](/web/fundamentals/security/encrypt-in-transit/enable-https)。
-
-
-
-如果您的页面已经在 HTTPS 上运行，但您没有通过此审查，那么，您可能存在混合内容问题。
-当安全的网站请求不受保护的 (HTTP) 资源时将出现混合内容。
-请在 Chrome DevTools Security 面板上查阅以下文档以了解如何处理这些情况：[了解安全问题](/web/tools/chrome-devtools/debug/security)。
-
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse 等待来自 Chrome Debugger Protocol 的一个事件，其可表明页面正在安全的连接上运行。
-如果在 10 秒内未侦听到此事件，则表示审查失败。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

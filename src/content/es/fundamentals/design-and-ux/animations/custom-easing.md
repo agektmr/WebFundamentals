@@ -1,74 +1,68 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Desvíate de lo común y crea animaciones totalmente personalizadas para tus proyectos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Go offroad and create totally custom animations for your projects.
 
-{# wf_updated_on: 2016-08-23 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Aceleración personalizada {: .page-title }
+# Custom Easing {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
-{% include "web/_shared/contributors/samthorogood.html" %}
+{% include "web/_shared/contributors/paullewis.html" %} {% include "web/_shared/contributors/samthorogood.html" %}
 
-En algunos casos, no te convendrá usar las palabras claves de aceleración que se incluyan con CSS, o usarás animaciones web o un framework de JavaScript. Generalmente, en estos casos puedes definir tus propias curvas (o ecuaciones), y esto te proporciona mucho control sobre el aspecto de las animaciones de tu proyecto.
+Sometimes you won't want to use the easing keywords that are included with CSS, or you will be using Web Animations or a JavaScript framework. In these cases, you can typically define your own curves (or equations), and this provides a lot of control over the feel of your project's animations.
 
 ### TL;DR {: .hide-from-toc }
-* La aceleración personalizada te permite darles más personalidad a tus proyectos.
-* Puedes crear curvas Bézier cúbicas similares a las curvas de animación predeterminadas (salida lenta, entrada lenta, etc.), pero con énfasis en diferentes lugares.
-* Usa JavaScript cuando necesites tener más control sobre la duración y el comportamiento de las animaciones; por ejemplo, animaciones elásticas o de rebote.
 
+* Custom easing allows you to give more personality to your projects.
+* You can create cubic Bézier curves that resemble the default animation curves (ease-out, ease-in, etc.), but with emphasis in different places.
+* Use JavaScript when you need more control over the animation timing and behavior, for example, elastic or bounce animations.
 
-Si realizas animaciones con CSS, descubrirás que puedes definir curvas Bézier cúbicas para definir la duración. De hecho, las palabras claves `ease`, `ease-in`, `ease-out` y `linear` se asignan a curvas Bézier predefinidas, las cuales se detallan en la [especificación de transiciones de CSS](http://www.w3.org/TR/css3-transitions/) y la [especificación de animaciones web](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve).
+If you're animating with CSS, you'll find that you can define cubic Bézier curves to define the timing. In fact, the keywords `ease`, `ease-in`, `ease-out`, and `linear` map to predefined Bézier curves, which are detailed in the [CSS transitions specification](http://www.w3.org/TR/css3-transitions/) and the [Web Animations specification](https://w3c.github.io/web-animations/#scaling-using-a-cubic-bezier-curve).
 
-Estas curvas Bézier toman cuatro valores o dos pares de números, y en cada par se describen las coordenadas X e Y de los puntos de control de una curva Bézier cúbica. El punto de inicio de la curva Bézier posee la coordenada (0, 0), y la coordenada final es (1, 1), por lo que puedes configurar los valores X e Y de los dos puntos de control. Los valores de X para los dos puntos de control deben ser de entre 0 y 1, y el valor Y de cada punto de control puede superar el límite [0, 1], aunque en las especificaciones no se aclara por cuánto.
+These Bézier curves take four values, or two pairs of numbers, with each pair describing the X and Y coordinates of a cubic Bézier curve’s control points. The starting point of the Bézier curve has a coordinate of (0, 0) and the end coordinate is (1, 1); you get to set the X and Y values of the two control points. The X values for the two control points must be between 0 and 1, and each control point’s Y value can exceed the [0, 1] limit, although the spec isn’t clear by how much.
 
-Si se cambian los valores X e Y de cada punto de control, se obtiene una curva muy diferente y, por consiguiente, tu animación tendrá una apariencia bastante distinta. Por ejemplo, si el primer punto de control se encuentra en el área inferior derecha, la animación será lenta al inicio. Si se encuentra en el área superior izquierda, será rápida al inicio. Por el contrario, si el segundo punto de control se encuentra en el área inferior derecha de la cuadrícula, la animación será rápida al final; mientras que, si se encuentra en el área superior izquierda, será lenta al final.
+Changing the X and Y value of each control point gives you a vastly different curve, and therefore a vastly different feel to your animation. For example, if the first control point is in the lower right area, the animation will be slow to start. If it’s in the top left area, it’s going to be fast to start. Conversely, if the second control point is in the bottom right area of the grid, it’s going to be fast at the end; if it’s in the top left, it will be slow to end.
 
-A modo de comparación, presentamos dos curvas: una típica de entrada y salida lenta, y una personalizada:
+For comparison, here are two curves: a typical ease-in-out curve and a custom curve:
 
 <div class="attempt-left">
   <figure>
-    <img src="images/ease-in-out-markers.png" alt="Curva de animación de entrada y salida lentas." />
+    <img src="images/ease-in-out-markers.png" alt="Ease-in-out animation curve." />
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/custom.png" alt="Curva de animación personalizada." />
+    <img src="images/custom.png" alt="Custom animation curve." />
   </figure>
 </div>
 
-[Ver una animación con aceleración personalizada](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
+[See an animation with custom easing](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-custom-curve.html){: target="_blank" .external }
 
-La CSS para la curva personalizada es la siguiente:
-
+The CSS for the custom curve is:
 
     transition: transform 500ms cubic-bezier(0.465, 0.183, 0.153, 0.946);
     
 
-Los dos primeros números son las coordenadas X e Y del primer punto de control; los dos segundos números son las coordenadas X e Y del segundo punto de control.
+The first two numbers are the X and Y coordinates of the first control point, and the second two numbers are the X and Y coordinates of the second control point.
 
-Crear una curva personalizada es una tarea divertida y te proporciona mucho control sobre el aspecto de la animación. Por ejemplo, si analizas la curva que se muestra anteriormente, podrás ver que es similar a una curva clásica de entrada y salida lentas, pero con una entrada lenta abreviada, o una porción de “comenzar”, y una reducción de velocidad más larga al final.
+Making a custom curve is a lot of fun, and it gives you significant control over the feel of the animation. For example, given the above curve, you can see that the curve resembles a classic ease-in-out curve, but with a shortened ease-in, or "getting started," portion, and an elongated slowdown at the end.
 
-Experimenta con esta [herramienta de curvas de animación](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external } y mira cómo la curva afecta la apariencia de la animación.
+Experiment with this [animation curve tool](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/curve-playground.html){: target="_blank" .external } and see how the curve affects the feel of an animation.
 
-## Uso de frameworks de JavaScript para tener más control
+## Use JavaScript frameworks for more control
 
-En algunos casos, necesitas tener incluso más control que el que puede proporcionar una curva Bézier cúbica. Si deseas una apariencia de rebote elástica, podrías considerar el uso de un framework de JavaScript, ya que se trata de un efecto difícil de alcanzar con CSS o animaciones web.
+Sometimes you need even more control than a cubic Bézier curve can provide. If you wanted an elastic bounce feel, you might consider using a JavaScript framework, because this is a difficult effect to achieve with either CSS or Web Animations.
 
 ### TweenMax
 
-Un framework potente es [TweenMax de Greensock](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (o TweenLite, si deseas que todo sea más liviano), ya que de este modo puedes tener mucho control en una pequeña biblioteca de JavaScript y este es un código base muy evolucionado.
+One powerful framework is [GreenSock’s TweenMax](https://github.com/greensock/GreenSock-JS/tree/master/src/minified) (or TweenLite if you want to keep things really lightweight), because you get a lot of control from it in a small JavaScript library, and it’s a very mature codebase.
 
-[Ver una animación de aceleración elástica](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
+[See an elastic ease animation](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/box-move-elastic.html){: target="_blank" .external }
 
-Para usar TweenMax, incluye la siguiente secuencia de comandos en tu página:
-
+To use TweenMax, include this script in your page:
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     
 
-Luego de que la secuencia de comandos esté lista, podrás llamar a TweenMax para tu elemento e indicarle qué propiedades te gustaría aplicar, junto con cualquier tipo de aceleración que desees usar. Puedes usar muchísimas opciones de aceleración. En el siguiente código se usa una salida lenta elástica:
-
+After the script is in place, you can call TweenMax against your element and tell it which properties you’d like, along with any easing you’d like. There are many easing options that you can use; the code below uses an elastic ease-out:
 
     var box = document.getElementById('my-box');
     var animationDurationInSeconds = 1.5;
@@ -79,10 +73,8 @@ Luego de que la secuencia de comandos esté lista, podrás llamar a TweenMax par
     });
     
 
-En la [documentación de TweenMax](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/) se mencionan todas las opciones disponibles, por lo que te recomendamos leerla.
+The [TweenMax documentation](https://greensock.com/docs/#/HTML5/GSAP/TweenMax/) highlights all the options you have here, so it's well worth a read.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

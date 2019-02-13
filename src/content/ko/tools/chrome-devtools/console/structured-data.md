@@ -1,36 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: table() 메서드를 사용하여 유사한 데이터 객체를 비교합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Compare similar data objects using the table() method.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 유사한 데이터 객체 비교 {: .page-title }
+# Compare Similar Data Objects {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
-Table() 메서드를 사용하여 구조적 데이터를 보고 데이터 객체를 비교합니다.
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %} View structured data and compare data objects using the table() method.
 
-`table()` 메서드를 사용하면 유사한 데이터를 포함하는 객체와 배열을 간편하게 볼 수 있습니다. 이 메서드를 호출하면 객체의 속성을 취하여 헤더를 생성합니다. 이때 행 데이터는 각 색인의 속성 값에서 가져옵니다.
+The `table()` method provides an easy way to view objects and arrays that include similar data. When called, it will take the properties of an object and create a header. The row data then comes from each index's properties value.
 
+## Basic example: Logging an array of objects
 
-## 기본 예시: 객체 배열 로깅
-
-가장 기본적인 형태에서 동일한 속성을 가진 일련의 객체와 배열만 있으면 `table()` 명령이 나머지를 알아서 처리합니다.
-
+In it's most basic form, all you need is an array with a bunch of objects that have the same properties, and the `table()` command will do the rest:
 
     console.table([{a:1, b:2, c:3}, {a:"foo", b:false, c:undefined}]);
     console.table([[1,2,3], [2,3,4]]);
     
-  
-출력 결과:
 
-![console table 표시](images/table-arrays.png)
+This will output:
 
-## 고급 예시: 특정 속성 로깅
+![console table display](images/table-arrays.png)
 
-`table()`에 대한 두 번째 매개변수를 사용하여 더 많은 고급 객체를 로깅할 수 있습니다. 표시할 속성 문자열을 포함하는 배열을 다음과 같이 정의합니다.
+## Advanced example: Logging specific properties
 
+The second parameter to `table()` can be used to log more advanced objects. Define an array containing the property strings you wish to display, like so:
 
     function Person(firstName, lastName, age) {
       this.firstName = firstName;
@@ -47,11 +39,10 @@ Table() 메서드를 사용하여 구조적 데이터를 보고 데이터 객체
     console.table(family, ["firstName", "lastName", "age"]);
     
 
-다음이 출력됩니다.
+This will output the following:
 
-![table 객체로 콘솔 출력](images/table-people-objects.png)
+![console output with table objects](images/table-people-objects.png)
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,295 +1,290 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: События движения и изменения ориентации мобильного устройства открывают доступ ко встроенному акселерометру, гироскопу и компасу
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Sensor>DeviceOrientation #}
 
-# Ориентация устройства {: .page-title }
+# Device Orientation & Motion {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
+Device motion and orientation events provide access to the built-in accelerometer, gyroscope, and compass in mobile devices.
 
-События движения и изменения ориентации мобильного устройства открывают доступ ко встроенному акселерометру, гироскопу и компасу
+These events can be used for many purposes; in gaming, for example, to control the direction or action of a character. When used with geolocation, they can help create more accurate turn-by-turn navigation or provide information about a specific location.
 
-Эти события могут использоваться во многих целях; например, в играх для 
-контроля за передвижениями персонажа либо для определения высоты прыжка 
-героя. Если использовать эти события вместе с функцией геолокации, можно создать более точную 
-пошаговую систему навигации или предоставить информацию о местонахождении магазина.
+Caution: Not all browsers use the same coordinate system, and they may report different values under identical situations. This has improved over time, but be sure to test your situation.
 
-Note: <b>Особенно</b> тщательно следует принимать решения об использовании событий, связанных с движением или изменением ориентации мобильных устройств.  К сожалению, не все браузеры используют одну и ту же систему координат, и поэтому при одинаковых условиях они могут возвращать различные значения.
+## TL;DR
 
-## В каком положении находится устройство?
+* Detect which side of the device is up and how the device is rotating.
+* Learn when and how to respond to motion and orientation events.
 
-Чтобы использовать данные, получаемые от событий изменения ориентации и движения устройства,
-важно понимать суть предоставляемых значений.  
+## Which end is up?
 
-### Система земных координат
+To use the data that the device orientation and motion events return, it is important to understand the values provided.
 
-Система земных координат описывается значениями осей `X`, `Y` и `Z`, ориентация которых определяется 
-направлением магнитного меридиана и силы тяжести.
+### Earth coordinate frame
 
-<ul>
-  <li>
-    <b>X:</b> расположена в направлении запад-восток (направлена на восток).
-  </li>
-    <li>
-    <b>Y:</b> расположена в направлении юг-север (направлена на север).
-  </li>
-    <li>
-    <b>Z:</b> представляет собой вертикальное направление, перпендикулярное к земле
- (направлена вверх).
-  </li>
-</ul>
+The Earth coordinate frame, described by the values `X`, `Y`, and `Z`, is aligned based on gravity and standard magnetic orientation.
 
-### Система координат устройства
+<table class="responsive">
+  
+<tr><th colspan="2">Coordinate system</th></tr>
+<tr>
+  <td><code>X</code></td>
+  <td>Represents the east-west direction (where east is positive).</td>
+</tr>
+<tr>
+  <td><code>Y</code></td>
+  <td>Represents the north-south direction (where north is positive).</td>
+</tr>
+<tr>
+  <td><code>Z</code></td>
+  <td>Represents the up-down direction, perpendicular to the ground
+      (where up is positive).
+  </td>
+</tr>
+</table>
 
-Система координат устройства описывается значениями по осям `x`, `y` и `z`, которые исходят
-из центра устройства.
+### Device coordinate frame
 
-<img src="images/axes.png" alt="Изображение системы координат устройства">
-<!-- Особая благодарность выражается Sheppy (https://developer.mozilla.org/en-US/profiles/Sheppy) 
-  за изображения, к которым был предоставлен свободный доступ. -->
+<div class="attempt-right">
+  <figure id="fig1">
+    <img src="images/axes.png" alt="illustration of device coordinate frame">
+    <figcaption>
+      Illustration of device coordinate frame
+    </figcaption>
+  </figure>
+</div>
 
-<ul>
-  <li>
-    <b>x:</b> эта ось расположена в плоскости экрана и направлена вправо.
-  </li>
-    <li>
-    <b>y:</b> эта ось расположена в плоскости экрана и направлена к его верхней части.
-  </li>
-    <li>
-    <b>z:</b> эта ось расположена перпендикулярно экрану или клавиатуре и направлена
-   наружу.
-  </li>
-</ul>
+<!-- Special thanks to Sheppy (https://developer.mozilla.org/en-US/profiles/Sheppy)
+  for his images which are in the public domain. -->
 
-На телефоне или планшете ориентация устройства определяется по типичной
-ориентации экрана.  На телефоне или планшете это 
-положение в портретной ориентации. На персональных компьютерах или ноутбуках ориентация 
-определяется по отношению к клавиатуре.
+The device coordinate frame, described by the values `x`, `y`, and `z`, is aligned based on the center of the device.
 
-### Данные о повороте
+<table class="responsive">
+  
+<tr><th colspan="2">Coordinate system</th></tr>
+<tr>
+  <td><code>X</code></td>
+  <td>In the plane of the screen, positive to the right.</td>
+</tr>
+<tr>
+  <td><code>Y</code></td>
+  <td>In the plane of the screen, positive towards the top.</td>
+</tr>
+<tr>
+  <td><code>Z</code></td>
+  <td>Perpendicular to the screen or keyboard, positive extending
+    away.
+  </td>
+</tr>
+</table>
 
-Данные о повороте поступают как величина [угла Эйлера](http://en.wikipedia.org/wiki/Euler_angles),
-представляющего собой разницу в градусах между координатами устройства
-и земными координатами.
+On a phone or tablet, the orientation of the device is based on the typical orientation of the screen. For phones and tablets, it is based on the device being in portrait mode. For desktop or laptop computers, the orientation is considered in relation to the keyboard.
+
+### Rotation data
+
+Rotation data is returned as a [Euler angle](https://en.wikipedia.org/wiki/Euler_angles), representing the number of degrees of difference between the device coordinate frame and the Earth coordinate frame.
+
+#### Alpha
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/alpha.png" alt="illustration of device coordinate frame">
-    <b>альфа:</b> Угол поворота вокруг оси z = 0&deg;, когда верхняя часть
-  устройства направлена точно на север.  При повороте устройства против часовой стрелки
-    значение `alpha` увеличивается.
+    <figcaption>
+      Illustration of alpha in the device coordinate frame
+    </figcaption>
   </figure>
 </div>
+
+The rotation around the z axis. The `alpha` value is 0&deg; when the top of the device is pointed directly north. As the device is rotated counter-clockwise, the `alpha` value increases.
+
+<div style="clear:both;"></div>
+
+#### Beta
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/beta.png" alt="illustration of device coordinate frame">
-    <b>бета:</b> Угол поворота вокруг оси x = 0&deg;, когда верхняя и 
-нижняя части устройства находятся на одинаковом расстоянии от земной поверхности. Значение
-    увеличивается, когда верхнюю часть устройства наклоняют в направлении земной поверхности.
+    <figcaption>
+      Illustration of beta in the device coordinate frame
+    </figcaption>
   </figure>
 </div>
+
+The rotation around the x axis. The `beta` value is 0&deg; when the top and bottom of the device are equidistant from the surface of the earth. The value increases as the top of the device is tipped toward the surface of the earth.
+
+<div style="clear:both;"></div>
+
+#### Gamma
 
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/gamma.png" alt="illustration of device coordinate frame">
-    <b>гамма:</b> Угол поворота вокруг оси y = 0&deg;, когда левая и
- правая части устройства находятся на одинаковом расстоянии от земной поверхности.  Значение
-    увеличивается, когда правую часть устройства наклоняют в направлении земной поверхности. 
+    <figcaption>
+      Illustration of gamma in the device coordinate frame
+    </figcaption>
   </figure>
 </div>
 
+The rotation around the y axis. The `gamma` value is 0&deg; when the left and right edges of the device are equidistant from the surface of the earth. The value increases as the right side is tipped towards the surface of the earth.
+
 <div style="clear:both;"></div>
 
-## Ориентация устройства 
+## Device orientation
 
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
-Событие 'изменение ориентации устройства' возвращает данные о повороте, такие как угол наклона устройства вперед-назад, из стороны в сторону и, если в телефоне или ноутбуке имеется компас, сведения о том, куда направлена лицевая сторона устройства.
+Use sparingly. Test for support. Don't update the UI on every orientation event; instead, sync to `requestAnimationFrame`.
 
+### When to use device orientation events
 
-#### TL;DR {: .hide-from-toc }
-- Не используйте это событие слишком часто.
-- Проверьте наличие поддержки.
-- Не обновляйте интерфейс при каждом событии. Вместо этого выполняйте синхронизацию с <code>requestAnimationFrame</code>.
+There are several uses for device orientation events. Examples include the following:
 
+* Update a map as the user moves.
+* Subtle UI tweaks, for example, adding parallax effects.
+* Combined with geolocation, can be used for turn-by-turn navigation.
 
-### Ситуации, в которых следует использовать события "изменение ориентации устройства"
+### Check for support and listen for events
 
-Существует несколько ситуаций, в которых можно использовать события "изменение ориентации устройства".  Например:
+To listen for `DeviceOrientationEvent`, first check to see if the browser supports the events. Then, attach an event listener to the `window` object listening for `deviceorientation` events.
 
-<ul>
-  <li>Обновление карты по мере перемещения пользователя.</li>
-  <li>Тонкая настройка интерфейса, например добавление эффектов параллакса.</li>
-  <li>В сочетании с возможностями геолокации можно использовать для пошаговой навигации.</li>
-</ul>
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', deviceOrientationHandler, false);
+      document.getElementById("doeSupported").innerText = "Supported!";
+    }
+    
 
-### Проверка наличия поддержки и прием событий
+### Handle the device orientation events
 
-Чтобы принимать события `DeviceOrientationEvent`, сначала проверьте, поддерживаются ли эти события
-в браузере.  Затем подключите приемник событий к объекту `window`,
-принимающему события `deviceorientation`. 
+The device orientation event fires when the device moves or changes orientation. It returns data about the difference between the device in its current position in relation to the [Earth coordinate frame](#earth-coordinate-frame).
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/native-hardware/device-orientation/_code/dev-orientation.html" region_tag="devori"   adjust_indentation="auto" %}
-</pre>
+The event typically returns three properties: [`alpha`](#alpha), [`beta`](#beta), and [`gamma`](#gamma). On Mobile Safari, an additional parameter [`webkitCompassHeading`](https://developer.apple.com/library/ios/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/){: .external } is returned with the compass heading.
 
-### Обработка событий "изменение ориентации устройства"
+## Device motion
 
-Событие "изменение ориентации устройства" запускается при перемещении или изменении
-ориентации устройства.  Событие возвращает данные об изменении текущего положения
-устройства по отношению к <a href="index.html#earth-coordinate-frame">
-системе земных координат</a>.
+The device orientation event returns rotation data, which includes how much the device is leaning front-to-back, side-to-side, and, if the phone or laptop has a compass, the direction the device is facing.
 
-Обычно событие возвращает три свойства:
-<a href="index.html#rotation-data">`alpha`</a>, 
-<a href="index.html#rotation-data">`beta`</a> и
-<a href="index.html#rotation-data">`gamma`</a>.  В браузере для мобильных устройств Mobile Safari возвращается
-дополнительный параметр <a href="https://developer.apple.com/library/safari/documentation/SafariDOMAdditions/Reference/DeviceOrientationEventClassRef/DeviceOrientationEvent/DeviceOrientationEvent.html">`webkitCompassHeading`</a> с заголовком
-"компас".
+Use device motion for when the current motion of the device is needed. `rotationRate` is provided in &deg;/sec. `acceleration` and `accelerationWithGravity` are provided in m/sec<sup>2</sup>. Be aware of differences between browser implementations.
 
+### When to use device motion events
 
+There are several uses for device motion events. Examples include the following:
 
+* Shake gesture to refresh data.
+* In games, to cause characters to jump or move.
+* For health and fitness apps.
 
-## Движение устройства 
+### Check for support and listen for events
 
+To listen for `DeviceMotionEvent`, first check to see if the events are supported in the browser. Then attach an event listener to the `window` object listening for `devicemotion` events.
 
-Движение устройства дает информацию о силе ускорения, приложенной к устройству в данный момент, и о скорости вращения
+    if (window.DeviceMotionEvent) {
+      window.addEventListener('devicemotion', deviceMotionHandler);
+      setTimeout(stopJump, 3*1000);
+    }
+    
 
+### Handle the device motion events
 
-#### TL;DR {: .hide-from-toc }
-- Используйте движение устройства для случаев, когда требуется знать текущие характеристики перемещения устройства.
-- значение скорости вращения <code>rotationRate</code> выражено в &deg;/сек.
-- значения <code>acceleration</code> и <code>accelerationWithGravity</code> измеряются в м/сек<sup>2</sup>.
-- Помните о разнице между вариантами браузеров.
+The device motion event fires on a regular interval and returns data about the rotation (in &deg;/second) and acceleration (in m/second<sup>2</sup>) of the device, at that moment in time. Some devices do not have the hardware to exclude the effect of gravity.
 
+The event returns four properties, [`accelerationIncludingGravity`](#device-coordinate-frame), [`acceleration`](#device-coordinate-frame), which excludes the effects of gravity, [`rotationRate`](#rotation-data), and `interval`.
 
-### Ситуации, в которых следует использовать события "движение устройства"
-
-Существует несколько ситуаций, в которых можно использовать события "движение устройства".  Например:
-
-<ul>
-  <li>Жест встряхивания для обновления данных.</li>
-  <li>В играх, чтобы заставить персонажей прыгнуть или переместиться.</li>
-  <li>В приложениях для здоровья и фитнеса</li>
-</ul>
-
-### Проверка поддержки и приема событий
-
-Чтобы принимать события `DeviceMotionEvent`, сначала проверьте, поддерживаются ли эти события
-в браузере.  Затем подключите приемник событий к объекту `window`,
-принимающему события `devicemotion`. 
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/native-hardware/device-orientation/_code/jump-test.html" region_tag="devmot"   adjust_indentation="auto" %}
-</pre>
-
-### Обработка событий "движение устройства"
-
-Событие "движение устройства" запускается через регулярные интервалы и возвращает данные о
-вращении (в &deg; в секунду) и ускорении (в м в секунду<sup>2</sup>)
-, которые характеризуют перемещение устройства в данный момент времени.  В некоторых устройствах нет компонентов, которые позволяют 
-не учитывать воздействие силы тяжести.
-
-Событие возвращает четыре свойства, 
-<a href="index.html#device-frame-coordinate">`accelerationIncludingGravity`</a>, 
-<a href="index.html#device-frame-coordinate">`acceleration`</a>, 
-в котором не учитывается воздействие силы тяжести, 
-<a href="index.html#rotation-data">`rotationRate`</a> и `interval`.
-
-Например, рассмотрим телефон, лежащий на горизонтальном столе
-экраном вверх.
+For example, let's take a look at a phone, lying on a flat table, with its screen facing up.
 
 <table>
-    <thead>
+  <thead>
     <tr>
-      <th data-th="State">Состояние</th>
-      <th data-th="Rotation">Вращение</th>
-      <th data-th="Acceleration (m/s<sup>2</sup>)">Ускорение (м/с<sup>2</sup>)</th>
-      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Ускорение с учетом силы тяжести (м/с<sup>2</sup>)</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
+      <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
+      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">Состояние покоя</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[0, 0, 9,8]</td>
+      <td data-th="Acceleration with gravity">[0, 0, 9.8]</td>
     </tr>
     <tr>
-      <td data-th="State">Движение вверх</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 5]</td>
-      <td data-th="Acceleration with gravity">[0, 0, 14,81]</td>
+      <td data-th="Acceleration with gravity">[0, 0, 14.81]</td>
     </tr>
     <tr>
-      <td data-th="State">Движение только вправо</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[3, 0, 9,81]</td>
+      <td data-th="Acceleration with gravity">[3, 0, 9.81]</td>
     </tr>
     <tr>
-      <td data-th="State">Движение вверх и вправо</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 0, 5]</td>
-      <td data-th="Acceleration with gravity">[5, 0, 14,81]</td>
+      <td data-th="Acceleration with gravity">[5, 0, 14.81]</td>
     </tr>
   </tbody>
 </table>
 
-В отличие от этого, если экран телефона расположен перпендикулярно к земле
-и виден наблюдателю:
+Conversely, if the phone were held so the screen was perpendicular to the ground, and was directly visible to the viewer:
 
 <table>
-    <thead>
+  <thead>
     <tr>
-      <th data-th="State">Состояние</th>
-      <th data-th="Rotation">Вращение</th>
-      <th data-th="Acceleration (m/s<sup>2</sup>)">Ускорение (м/с<sup>2</sup>)</th>
-      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Ускорение с учетом силы тяжести (м/с<sup>2</sup>)</th>
+      <th data-th="State">State</th>
+      <th data-th="Rotation">Rotation</th>
+      <th data-th="Acceleration (m/s<sup>2</sup>)">Acceleration (m/s<sup>2</sup>)</th>
+      <th data-th="Acceleration with gravity (m/s<sup>2</sup>)">Acceleration with gravity (m/s<sup>2</sup>)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="State">Состояние покоя</td>
+      <td data-th="State">Not moving</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[0, 9,81, 0]</td>
+      <td data-th="Acceleration with gravity">[0, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">Движение вверх</td>
+      <td data-th="State">Moving up towards the sky</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[0, 5, 0]</td>
-      <td data-th="Acceleration with gravity">[0, 14,81, 0]</td>
+      <td data-th="Acceleration with gravity">[0, 14.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">Движение только вправо</td>
+      <td data-th="State">Moving only to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[3, 0, 0]</td>
-      <td data-th="Acceleration with gravity">[3, 9,81, 0]</td>
+      <td data-th="Acceleration with gravity">[3, 9.81, 0]</td>
     </tr>
     <tr>
-      <td data-th="State">Движение вверх и вправо</td>
+      <td data-th="State">Moving up and to the right</td>
       <td data-th="Rotation">[0, 0, 0]</td>
       <td data-th="Acceleration">[5, 5, 0]</td>
-      <td data-th="Acceleration with gravity">[5, 14,81, 0]</td>
+      <td data-th="Acceleration with gravity">[5, 14.81, 0]</td>
     </tr>
   </tbody>
 </table>
 
-#### Пример. Расчет максимального ускорения объекта
+### Sample: Calculating the maximum acceleration of an object
 
-Один из способов использовать события "движение устройства" — вычисление максимального
-ускорения объекта.  Например, можно рассчитать максимальное ускорение
-человека в прыжке.
+One way to use device motion events is to calculate the maximum acceleration of an object. For example, what's the maximum acceleration of a person jumping?
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/native-hardware/device-orientation/_code/jump-test.html" region_tag="devmothand"   adjust_indentation="auto" %}
-</pre>
+    if (evt.acceleration.x > jumpMax.x) {
+      jumpMax.x = evt.acceleration.x;
+    }
+    if (evt.acceleration.y > jumpMax.y) {
+      jumpMax.y = evt.acceleration.y;
+    }
+    if (evt.acceleration.z > jumpMax.z) {
+      jumpMax.z = evt.acceleration.z;
+    }
+    
 
-После касания кнопки Go! пользователю предлагается подпрыгнуть!  В течение этого времени
-на странице сохраняются значения максимального (и минимального) ускорения, а после прыжка
- сообщается максимальное ускорение пользователя.
+After tapping the Go! button, the user is told to jump. During that time, the page stores the maximum (and minimum) acceleration values, and after the jump, tells the user their maximum acceleration.
 
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

@@ -1,86 +1,85 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Ray Input ライブラリを使用して、WebVR シーンに入力を追加する方法について説明します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Discover how to use the Ray Input library to add input to your WebVR scene.
 
-{# wf_updated_on:2016-12-12 #}
-{# wf_published_on:2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
-# WebVR シーンに入力を追加する {: .page-title }
+# Adding Input to a WebVR Scene {: .page-title }
 
-{% include "web/_shared/contributors/paullewis.html" %}
+{% include "web/_shared/webxr-status.html" %}
 
-警告:WebVR はまだ試験運用版であり、仕様変更の可能性があります。
+In the [Getting Started with WebVR section](../getting-started-with-webvr/) we looked at how to take a WebGL scene and add WebVR functionality to it. While that works, and you can look around the scene in VR, there’s so much more fun to be had when you can interact with entities in the scene.
 
-[WebVR のスタートガイドのセクション](../getting-started-with-webvr/)では、WebGL シーンを使用して WebVR 機能を追加する方法について説明しました。動作している VR シーンを見ながら、シーン内のエンティティを操作できれば、楽しみはさらに増大します。
+![A ray beam showing input in a WebVR Scene](./img/ray-input.jpg)
 
-![WebVR シーン内の入力を示すビーム](./img/ray-input.jpg)
+With WebVR (and 3D in general) there can be a variety of inputs, and ideally speaking we want to not only account for all of them, but switch between them as the user’s context changes.
 
-WebVR（一般的には 3D）は、さまざまな入力を受け付けることができます。理想的には、すべての入力に対応するだけでなく、ユーザーの状況変化に応じて入力を切り替える必要があります。
+A quick survey of input types available today includes:
 
-現在、次のような入力タイプが利用可能です。
+<img class="attempt-right" src="../img/touch-input.png" alt="Touch input icon" />
 
-<img class="attempt-right" src="../img/touch-input.png" alt="タップ入力アイコン">
+* **Mouse.**
+* **Touch.**
+* **Accelerometer & Gyroscope.**
+* **Controllers with no degrees of freedom** (like Cardboard). These are controllers that are tied entirely to the viewport, and typically the interaction is assumed to originate in the center of the viewport.
+* **Controllers with 3 degrees of freedom** (like the Daydream Controller). A controller with 3 degrees provides orientation information, but not location information. Typically such controllers are assumed to be held in the person’s left or right hand, and their position in 3D space is estimated.
+* **Controllers with 6 degrees of freedom** (like the Oculus Rift or Vive). Any controller with 6 degrees of freedom will provide both orientation and location information. These are typically at the upper end of capabilities range, and have the best accuracy.
 
-* **マウス。**
-* **タップ。**
-* **加速度計とジャイロスコープ。**
-* **自由度のないコントローラ**（Cardboard など）。ビューポートに完全に固定されたコントローラであり、通常、操作はビューポートの中心で開始されると想定されます。
-* **3 自由度のコントローラ**（Daydream コントローラなど）。3 自由度のコントローラは向きの情報を提供しますが、位置の情報は提供しません。通常、ユーザーはこのようなコントローラを左手または右手に持つという想定のもと、3D 空間内のコントローラの位置が推定されます。
-* **6 自由度のコントローラ**（Oculus Rift や Vive など）。6 自由度のコントローラは向きと位置の情報を提供します。通常、このようなコントローラは最高レベルの機能と精度を提供します。
+In the future, as WebVR matures, we may even see new input types, which means our code needs to be as future-proof as possible. Writing code to handle all input permutations, however, can get complicated and unwieldy. The [Ray Input](https://github.com/borismus/ray-input) library by Boris Smus already provides a flying start, supporting the majority of input types available today, so we will start there.
 
-今後、WebVR 機能の進化に伴い、新しい入力タイプが出てくる可能性があります。そのため、できるだけコードを将来にわたって使えるようにする必要があります。しかし、すべての入力配列を処理するコードを記述するのは複雑であり、実用的ではありません。Boris Smus が開発した [Ray Input](https://github.com/borismus/ray-input) ライブラリは既に活用されており、大半の入力タイプをサポートしているため、ここでは Ray Input の説明から始めます。
+Starting from our previous scene, let’s [add input handlers with Ray Input](https://googlechrome.github.io/samples/web-vr/basic-input/). If you want to look at the final code you should check out the [Google Chrome samples repo](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/basic-input/).
 
-前に作成したシーンをベースにして、[Ray Input を使って入力ハンドラを追加します](https://googlechrome.github.io/samples/web-vr/basic-input/)。最終的なコードを確認するには、[Google Chrome のサンプル リポジトリ](https://github.com/GoogleChrome/samples/tree/gh-pages/web-vr/basic-input/)をチェックアウトしてください。
+## Add the Ray Input library to the page
 
-##  Ray Input ライブラリをページに追加する
-
-簡素化するために、スクリプトタグで Ray Input を直接追加します。
+For simplicity’s sake, we can add Ray Input directly with a script tag:
 
     <!-- Must go after Three.js as it relies on its primitives -->
     <script src="third_party/ray.min.js"></script>
+    
 
-Ray Input を大きなビルドシステムの一部として使用している場合は、上記の方法でインポートできます。詳細については、[Ray Input の README](https://github.com/borismus/ray-input/blob/master/README.md) をご覧ください。
+If you’re using Ray Input as part of a bigger build system, you can import it that way, too. The [Ray Input README has more info](https://github.com/borismus/ray-input/blob/master/README.md), so you should check that out.
 
-##  入力にアクセスする
+## Get access to inputs
 
-VR ディスプレイにアクセスしたあと、利用可能な入力へのアクセスをリクエストすることができます。その後、イベントリスナを追加して、シーンをデフォルトのボックスの状態 "deselected" に更新します。
+After getting access to any VR Displays we can request access to any inputs that are available. From there we can add event listeners, and we’ll update the scene to default our box’s state as "deselected".
 
     this._getDisplays().then(_ => {
       // Get any available inputs.
       this._getInput();
       this._addInputEventListeners();
-
+    
       // Default the box to 'deselected'.
       this._onDeselected(this._box);
     });
+    
 
 Let’s take a look inside both the `_getInput` and `_addInputEventListeners` functions.
 
     _getInput () {
       this._rayInput = new RayInput.default(
           this._camera, this._renderer.domElement);
-
+    
       this._rayInput.setSize(this._renderer.getSize());
     }
+    
 
-Ray Input を作成するには、シーンの Three.js カメラに加えて、マウス、タップ、およびその他の必要なイベントリスナをバインドできる要素を Ray Input に渡す必要があります。要素を第 2 パラメータとして渡さないと、デフォルトで `window` にバインドされ、ユーザー インターフェース（UI）のパーツが入力イベントを受け取れなくなる場合があります。
+Creating a Ray Input involves passing it the Three.js camera from the scene, and an element onto which it can bind mouse, touch and any other event listeners it needs. If you don’t pass through an element as the second parameter it will default to binding to `window`, which may be prevent parts of your User Interface (‘UI’) from receiving input events!
 
-また、動作する領域のサイズを指定する必要があります。多くの場合、WebGL canvas 要素の領域を指定します。
+The other thing you need to do is tell it how big an area it needs to work with, which in most cases is the area of the WebGL canvas element.
 
-##  シーンのエンティティを操作できるようにする
+## Enable interactivity for scene entities
 
-次に、何をトラックして、どのイベントを受け取るかを Ray Input に指示する必要があります。
+Next we need to tell Ray Input what to track, and what events we’re interested in receiving.
 
     _addInputEventListeners () {
       // Track the box for ray inputs.
       this._rayInput.add(this._box);
-
+    
       // Set up a bunch of event listeners.
       this._rayInput.on('rayover', this._onSelected);
       this._rayInput.on('rayout', this._onDeselected);
       this._rayInput.on('raydown', this._onSelected);
       this._rayInput.on('rayup', this._onDeselected);
     }
+    
 
 As you interact with the scene, whether by mouse, touch, or other controllers, these events will fire. In the scene we can make our box’s opacity change based on whether the user is pointing at it.
 
@@ -88,33 +87,35 @@ As you interact with the scene, whether by mouse, touch, or other controllers, t
       if (!optMesh) {
         return;
       }
-
+    
       optMesh.material.opacity = 1;
     }
-
+    
     _onDeselected (optMesh) {
       if (!optMesh) {
         return;
       }
-
+    
       optMesh.material.opacity = 0.5;
     }
+    
 
-このコードを機能させるには、ボックスのマテリアルが透明度をサポートすることを Three.js に通知する必要があります。
+For this to work we’ll need to make sure that we tell Three.js that the box’s material should support transparency.
 
     this._box.material.transparent = true;
+    
 
-これにより、マウスとタップの操作がサポートされます。次は、Daydream コントローラなどの 3 自由度のコントローラに追加した場合の処理を確認しましょう。
+That should now cover mouse and touch interactions. Let’s see what’s involved with adding in a controller with 3 degrees of freedom, like the Daydream controller.
 
-##  Gamepad API 拡張機能を有効にする
+## Enable the Gamepad API extensions
 
-現在の WebVR で Gamepad API を使用する場合は、次の 2 つの重要なポイントを理解する必要があります。
+There are two important notes to understand about using the Gamepad API in WebVR today:
 
-* Chrome 56 では、`chrome://flags` で Gamepad 拡張機能フラグを有効にする必要があります。[オリジン トライアル](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md)がある場合は、WebVR API とともに Gamepad 拡張機能は既に有効なっています。**ローカルで開発するには、フラグを有効にする必要があります**。
+* In Chrome 56 you will need to enable the Gamepad Extensions flag in `chrome://flags`. If you have an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md) the Gamepad Extensions will already be enabled along with the WebVR APIs. **For local development you’ll need the flag enabled**.
 
-* **ユーザーが VR コントローラでボタンを押した場合にのみ**、Gamepad の姿勢情報（3 自由度のコントローラにアクセスする方法）が有効化されます。
+* Pose information for the gamepad (which is how you get access to those 3 degrees of freedom) are **only enabled once a user has pressed a button on their VR controller**.
 
-ユーザーはシーンにポインタが表示される前に操作する必要があるため、コントローラ上のボタンを押すようにユーザーに求める必要があります。ボタンを押すように求める最適なタイミングは、ヘッドマウント ディスプレイ（HMD）への表示を開始した後です。
+Because the user needs to interact before we can show them a pointer in the scene, we’ll need to ask them to press a button on their controller. The best time to do that is after we begin to present to the Head Mounted Display (‘HMD’).
 
     this._vr.display.requestPresent([{
       source: this._renderer.domElement
@@ -125,12 +126,13 @@ As you interact with the scene, whether by mouse, touch, or other controllers, t
     .catch(e => {
       console.error(`Unable to init VR: ${e}`);
     });
+    
 
-通常は HTML 要素を使用してこのような情報をユーザーに表示しますが、HMD は WebGL コンテキスト（のみ）を表示するため、メッセージをそのコンテキストに描画する必要があります。Three.js には、常にカメラの方を向いた[スプライト プリミティブ](https://threejs.org/docs/#Reference/Objects/Sprite)（通称「ビルボーディング」）がありり、そこに画像を描画することができます。
+Typically you might expect to use HTML Elements to show such information to users, but the HMD is displaying a WebGL context (and nothing else), so we must draw the message there. Three.js has a [Sprite primitive](https://threejs.org/docs/#Reference/Objects/Sprite) which will always face towards the camera (typically called “Billboarding”), and into which we can draw an image.
 
-![ユーザーに表示する [Press Button] メッセージ](./img/press-a-button.jpg)
+![Showing a "Press Button" message to users](./img/press-a-button.jpg)
 
-実行するコードは以下のようになります。
+The code to do that looks something like this.
 
     _showPressButtonModal () {
       // Get the message texture, but disable mipmapping so it doesn't look blurry.
@@ -138,23 +140,24 @@ As you interact with the scene, whether by mouse, touch, or other controllers, t
       map.generateMipmaps = false;
       map.minFilter = THREE.LinearFilter;
       map.magFilter = THREE.LinearFilter;
-
+    
       // Create the sprite and place it into the scene.
       const material = new THREE.SpriteMaterial({
         map, color: 0xFFFFFF
       });
-
+    
       this._modal = new THREE.Sprite(material);
       this._modal.position.z = -4;
       this._modal.scale.x = 2;
       this._modal.scale.y = 2;
       this._scene.add(this._modal);
-
+    
       // Finally set a flag so we can pick this up in the _render function.
       this._isShowingPressButtonModal = true;
     }
+    
 
-最後に、`_render` 関数で操作を監視し、この関数を使用してモーダルを非表示にします。また、HMD に対して `submitFrame()` を呼び出して canvas をフラッシュする場合と同じように、アップデートのタイミングを Ray Input に指示する必要があります。
+Finally in the `_render` function we can watch for interactions, and use that to hide the modal. We also need to tell Ray Input when to update, similarly to the way we call `submitFrame()` against the HMD to flush the canvas to it.
 
     _render () {
       if (this._rayInput) {
@@ -162,35 +165,37 @@ As you interact with the scene, whether by mouse, touch, or other controllers, t
             this._rayInput.controller.wasGamepadPressed) {
           this._hidePressButtonModal();
         }
-
+    
         this._rayInput.update();
-
+    
       }
       …
     }
+    
 
-##  ポインタ メッシュをシーンに追加する
+## Add the pointer mesh to the scene
 
-操作を可能にすることに加えて、ユーザーが指している場所を表示したい場合が多くあります。Ray Input では、シーンに追加してユーザーのポイント先を示すことができるメッシュが提供されています。
+As well as allowing interactions it’s highly likely that we will want to display something to the user that shows where they’re pointing. Ray Input provides a mesh that you can add to your scene to do just that.
 
     this._scene.add(this._rayInput.getMesh());
+    
 
-このメッシュを使用すると、コントローラで動かすことのできない HMD（Cardboard など）に十字線を表示したり、自由に動かせる HMD にビームのような光線を表示したりできます。マウスとタッチの場合、十字線は表示されません。
+With this we get a reticle for HMDs with no freedom of movement in their controller (like Cardboard), and a beam-like ray for those with freedom of movement. For mouse and touch there are no reticles shown.
 
-![WebVR シーン内の入力を示すビーム](./img/ray-input.jpg)
+![A ray beam showing input in a WebVR Scene](./img/ray-input.jpg)
 
-##  まとめ
+## Closing thoughts
 
-エクスペリエンスに入力を追加するときは、次のことに留意する必要があります。
+There are some things to keep in mind as you add input to your experiences.
 
-* **プログレッシブ エンハンスメントの原則を順守する必要があります。**ユーザーは、リストにある任意の入力配列を使用して作成されたシーンを見る可能性があるため、入力タイプに適切に対応できる UI を用意する必要があります。対象範囲を拡大するために、さまざまなデバイスと入力に対してテストを実施するようにしてください。
+* **You should embrace Progressive Enhancement.** Since a person may come to what you’ve built with any particular permutation of inputs from the list you should endeavor to plan your UI such that it can adapt properly between types. Where you can, test a range of devices and inputs to maximize reach.
 
-* **入力が厳密に正確ではない場合があります。**特に Daydream コントローラは 3 自由度ですが、6 自由度をサポートする空間で動作します。つまり、向きは正確ですが、3D スペースでの位置は推定する必要があります。これを考慮して、入力対象を拡大し、適切なスペースを確保して混乱を回避します。
+* **Inputs may not be perfectly accurate.** In particular a Daydream controller has 3 degrees of freedom, but it’s operating in a space which supports 6. That means that while its orientation is correct its position in 3D space has to be assumed. To account for this you may wish to make your input targets larger and ensure proper spacing to avoid confusion.
 
-シーンに入力を追加することは、没入的なエクスペリエンスを構築するうえで不可欠であり、[Ray Input](https://github.com/borismus/ray-input) を使用すると作業がずっと簡単になります。
+Adding input to your scene is vital to making an immersive experience, and with [Ray Input](https://github.com/borismus/ray-input) it’s much easier to get going.
 
-順調に進んでいるかお知らせください。
+Let us know how you get on!
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

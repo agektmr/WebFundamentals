@@ -1,46 +1,42 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“网站使用 rel="noopener" 打开外部锚”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Opens External Anchors Using rel="noopener"" Lighthouse audit.
 
-{# wf_updated_on:2016-11-30 #}
-{# wf_published_on:2016-11-30 #}
+{# wf_updated_on: 2018-11-30 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# 网站使用 rel="noopener" 打开外部锚 {: .page-title }
+# Links to cross-origin destinations are unsafe {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-当您的页面链接至使用 `target="_blank"` 的另一个页面时，新页面将与您的页面在同一个进程上运行。
-如果新页面正在执行开销极大的 JavaScript，您的页面性能可能会受影响。
+### Performance
 
+When you open another page using `target="_blank"`, the other page may run on the same process as your page, unless [Site Isolation](/web/updates/2018/07/site-isolation) is enabled. If the other page is running a lot of JavaScript, your page's performance may also suffer. See [The Performance Benefits of `rel=noopener`](https://jakearchibald.com/2016/performance-benefits-of-rel-noopener/){: .external rel="noopener" }.
 
-此外，`target="_blank"` 也是一个安全漏洞。新的页面可以通过 `window.opener` 访问您的窗口对象，并且它可以使用 `window.opener.location = newURL` 将您的页面导航至不同的网址。
+### Security
 
+The other page can access your `window` object with the `window.opener` property. This exposes an [attack surface](https://en.wikipedia.org/wiki/Attack_surface){: .external rel="noopener" } because the other page can potentially redirect your page to a malicious URL. See [About rel=noopener](https://mathiasbynens.github.io/rel-noopener/){: .external rel="noopener" }.
 
+## Recommendations {: #recommendations }
 
-如需了解详细信息，请参阅 [rel=noopener 的性能优势][jake]。
+Add `rel="noopener"` or `rel="noreferrer"` to each of the links that Lighthouse has identified in your report. In general, when you use `target="_blank"`, always add `rel="noopener"` or `rel="noreferrer"`.
 
-[jake]: https://jakearchibald.com/2016/performance-benefits-of-rel-noopener/
+    <a href="https://examplepetstore.com" target="_blank" rel="noopener">
+      Example Pet Store
+    </a>
+    
 
-## 如何通过此审查{: #how }
+* `rel="noopener"` prevents the new page from being able to access the `window.opener` property and ensures it runs in a separate process.
+* `rel="noreferrer"` attribute has the same effect, but also prevents the `Referer` header from being sent to the new page. See [Link type "noreferrer"](https://html.spec.whatwg.org/multipage/links.html#link-type-noreferrer){: .external rel="noopener" }.
 
-将 `rel="noopener"` 添加至 Lighthouse 在您的报告中识别的每个链接。
-一般情况下，当您在新窗口或标签中打开一个外部链接时，始终添加 `rel="noopener"`。
+## More information {: #more-info }
 
+Lighthouse uses the following algorithm to flag links as `rel="noopener"` candidates:
 
-    <a href="https://examplepetstore.com" target="_blank" rel="noopener">...</a>
+1. Gather all `<a>` nodes that contain the attribute `target="_blank"` and do not contain the attribute `rel="noopener"` or `rel="noreferrer"`.
+2. Filter out any same-host links.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Because Lighthouse filters out same-host links, there's an edge case that you might want to be aware of if you're working on a large site. If your page opens a link to another section of your site without using `rel="noopener"`, the performance implications of this audit still apply. However, you won't see these links in your Lighthouse results.
 
-Lighthouse 使用以下算法将链接标记为 `rel="noopener"` 候选项：
+[Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/dobetterweb/external-anchors-use-rel-noopener.js){: .external rel="noopener" }
 
+## Feedback {: #feedback }
 
-1. 收集所有包含属性 `target="_blank"`、但不包含属性 `rel="noopener"` 的 `<a>` 节点。
-1. 过滤任何主机相同的链接。
-
-
-由于 Lighthouse 会过滤主机相同的链接，因此，如果您处理大型网站，则会出现您可能需要注意的边缘情况。
-如果您的页面在未使用 `rel="noopener"` 的情况下打开一个指向网站另一个区域的链接，则此审查的性能影响仍然适用。不过，在您的 Lighthouse 结果中您不会看到这些链接。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

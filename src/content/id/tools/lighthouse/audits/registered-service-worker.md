@@ -1,44 +1,34 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Memiliki service worker terdaftar".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Registers A Service Worker" Lighthouse audit.
 
-{# wf_updated_on: 2016-07-25 #}
-{# wf_published_on: 2016-07-25 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: N/A #}
 
-# Memiliki Service Worker Terdaftar {: .page-title }
+# Registers A Service Worker {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Mendaftarkan service worker adalah langkah pertama untuk mengaktifkan fitur
-progressive web app berikut:
+Registering a service worker is the first step towards enabling the following progressive web app features:
 
 * Offline
-* Pemberitahuan push
+* Push notifications
 * Add to homescreen
 
-## Cara untuk lulus audit {: #how }
+See [Service Workers: an Introduction](/web/fundamentals/getting-started/primers/service-workers) to learn more.
 
-Mendaftarkan service worker hanya melibatkan beberapa baris kode, namun satu-satunya
-alasan Anda menggunakan service worker adalah untuk mengimplementasikan salah satu fitur progressive
-web app yang disebutkan di atas. Mengimplementasikan fitur tersebut membutuhkan lebih banyak
-pekerjaan.
+## Recommendations {: #recommendations }
 
-Untuk bantuan selengkapnya tentang caching file untuk penggunaan offline, lihat bagian "Cara untuk lulus
-audit" dari dokumen Lighthouse berikut: [URL merespons dengan 200 saat
-offline](http-200-when-offline#how).
+Registering a service worker involves only a few lines of code, but the only reason you'd use a service worker is to implement one of the progressive web app features outlined above. Implementing those features requires more work.
 
-Untuk mengaktifkan pemberitahuan push atau "add to homescreen", selesaikan
-tutorial langkah-demi-langkah berikut dan kemudian gunakan apa yang Anda pelajari untuk mengimplementasikan
-fitur dalam aplikasi Anda sendiri:
+For more help on caching files for offline use, see the "How to pass the audit" section of the following Lighthouse doc: [URL responds with a 200 when offline](http-200-when-offline#recommendations).
 
-* [Mengaktifkan pemberitahuan push untuk aplikasi
-  web Anda](https://codelabs.developers.google.com/codelabs/push-notifications).
-* [Menambahkan aplikasi web Anda ke layar
-  beranda pengguna](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
+For enabling push notifications or "add to homescreen", complete the following step-by-step tutorials and then use what you learn to implement the features in your own app:
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+* [Enable push notifications for your web app](https://codelabs.developers.google.com/codelabs/push-notifications).
+* [Add your web app to a user's home screen](https://codelabs.developers.google.com/codelabs/add-to-home-screen).
 
-Memeriksa apakah Chrome Debugger mengembalikan versi service worker.
+## More information {: #more-info }
 
+Checks if the Chrome Debugger returns a service worker version.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

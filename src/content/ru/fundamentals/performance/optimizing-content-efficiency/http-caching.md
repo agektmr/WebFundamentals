@@ -1,151 +1,142 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Скачивать ресурсы страницы заново при каждом посещении - это очень неудобно. Из-за повторных отправок запроса сайт может работать медленно. Кроме того, пользователю придется зря тратить большое количество трафика. Именно поэтому кеширование данных имеет огромное значение при оптимизации сайта.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Caching and reusing previously fetched resources is a critical aspect of optimizing for performance.
 
-{# wf_updated_on: 2014-01-04 #}
-{# wf_published_on: 2013-12-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2013-12-31 #} {# wf_blink_components: Blink>Network #}
 
-# HTTP-кеширование {: .page-title }
+# HTTP Caching {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Fetching something over the network is both slow and expensive. Large responses require many roundtrips between the client and server, which delays when they are available and when the browser can process them, and also incurs data costs for the visitor. As a result, the ability to cache and reuse previously fetched resources is a critical aspect of optimizing for performance.
 
+The good news is that every browser ships with an implementation of an HTTP cache. All you need to do is ensure that each server response provides the correct HTTP header directives to instruct the browser on when and for how long the browser can cache the response.
 
-Скачивать ресурсы страницы заново при каждом посещении - это очень неудобно. Из-за повторных отправок запроса сайт может работать медленно. Кроме того, пользователю придется зря тратить большое количество трафика. Именно поэтому кеширование данных имеет огромное значение при оптимизации сайта.
+Note: If you are using a WebView to fetch and display web content in your application, you might need to provide additional configuration flags to ensure that the HTTP cache is enabled, its size is set to a reasonable number to match your use case, and the cache is persisted. Check the platform documentation and confirm your settings.
 
+<img src="images/http-request.png"  alt="HTTP request" />
 
+When the server returns a response, it also emits a collection of HTTP headers, describing its content-type, length, caching directives, validation token, and more. For example, in the above exchange, the server returns a 1024-byte response, instructs the client to cache it for up to 120 seconds, and provides a validation token ("x234dff") that can be used after the response has expired to check if the resource has been modified.
 
-Во всех браузерах есть встроенный HTTP-кеш. Нам осталось убедиться, что в каждом ответе сервер указывает правильные директивы HTTP-заголовков. Они нужны, чтобы указать браузеру, когда и на какой период нужно кешировать ответ.
-
-Note: Если вы используете Webview для отправки и отображения контента в приложении, вам потребуется установить дополнительные параметры. С их помощью вы включите HTTP-кеш, выберете для него подходящий размер и убедитесь, что данные сохраняются в нем. Для этого прочитайте документацию платформы и проверьте настройки.
-
-<img src="images/http-request.png" class="center" alt="HTTP-запрос">
-
-Когда сервер возвращает запрос, он также отправляет набор HTTP-заголовков, описывающих тип контента, длину, команды для работы с кешем, маркер подтверждения и т. д. Например, в примере выше сервер возвращает запрос размером 1024 Б, отдает команду клиенту кешировать его на 120 секунд и отправляет маркер подтверждения (x234dff). Он используется, чтобы проверить, не изменился ли ресурс, после того как срок действия ответа истек.
-
-
-## Подтверждение кешированных ответов с помощью ETags
+## Validating cached responses with ETags
 
 ### TL;DR {: .hide-from-toc }
-- Сервер отправляет маркер подтверждения в HTTP-заголовке ETag.
-- С помощью маркера подтверждения можно проверить, изменился ли ресурс.
 
+* The server uses the ETag HTTP header to communicate a validation token.
+* The validation token enables efficient resource update checks: no data is transferred if the resource has not changed.
 
-Допустим, после нашего первого вызова прошло 120 секунд, и браузер начал новый запрос к тому же ресурсу. Сначала браузер проверяет локальный кеш и находит предыдущий ответ. Но его использовать нельзя, потому что срок его действия уже истек. Теперь браузер мог бы просто отправить новый запрос и получить ещё один полный ответ. Однако это неэффективно, потому что ресурс не изменился, и не имеет смысла снова скачивать байты, которые уже есть в кеше.
+Assume that 120 seconds have passed since the initial fetch and the browser has initiated a new request for the same resource. First, the browser checks the local cache and finds the previous response. Unfortunately, the browser can't use the previous response because the response has now expired. At this point, the browser could dispatch a new request and fetch the new full response. However, that’s inefficient because if the resource hasn't changed, then there's no reason to download the same information that's already in cache!
 
-Чтобы избежать этой проблемы, нужно использовать маркеры подтверждения, указанные в заголовках ETag. Сервер создает и возвращает произвольный маркер. Обычно это хеш или другая идентификационная метка файла. Клиент может не знать, как она создается, ему просто нужно отправить ее на сервер при следующем запросе. Если метка осталась прежней, то ресурс не изменился и скачивать его не надо.
+That’s the problem that validation tokens, as specified in the ETag header, are designed to solve. The server generates and returns an arbitrary token, which is typically a hash or some other fingerprint of the contents of the file. The client doesn't need to know how the fingerprint is generated; it only needs to send it to the server on the next request. If the fingerprint is still the same, then the resource hasn't changed and you can skip the download.
 
-<img src="images/http-cache-control.png" class="center" alt="Пример HTTP Cache-Control">
+<img src="images/http-cache-control.png"  alt="HTTP Cache-Control example" />
 
-В примере выше клиент автоматически отправляет маркер ETag в HTTP-заголовке If-None-Match. Сервер проверяет совпадение маркера с нужным ресурсом, и если тот не изменился, отправляет ответ 304 Not Modified. Это значит, что кешированный ответ остался прежним, и его можно снова использовать в течение следующих 120 секунд. Обратите внимание, что скачивать ресурс ещё раз не нужно. Это уменьшает время загрузки страницы и экономит пропускную способность канала.
+In the preceding example, the client automatically provides the ETag token in the "If-None-Match" HTTP request header. The server checks the token against the current resource. If the token hasn't changed, the server returns a "304 Not Modified" response, which tells the browser that the response it has in cache hasn't changed and can be renewed for another 120 seconds. Note that you don't have to download the response again, which saves time and bandwidth.
 
-Чем полезна проверка актуальности для разработчика? Браузер сделает все автоматически: проверит, был ли указан маркер подтверждения ранее, добавит его в исходящий запрос и обновит временные отметки на основе ответа от сервера. **Все, что нам нужно сделать, - проверить, действительно ли сервер отправляет нужные маркеры ETag. Чтобы узнать, какие параметры следует установить, ознакомьтесь с документацией к серверу.**
+As a web developer, how do you take advantage of efficient revalidation? The browser does all the work on our behalf. The browser automatically detects if a validation token has been previously specified, it appends the validation token to an outgoing request, and it updates the cache timestamps as necessary based on the received response from the server. **The only thing left to do is to ensure that the server is providing the necessary ETag tokens. Check your server documentation for the necessary configuration flags.**
 
-Note: Совет. В проекте HTML5 Boilerplate размещены <a href='https://github.com/h5bp/server-configs'>примеры файлов конфигурации</a> для самых популярных серверов с подробными комментариями для всех параметров и настроек. Найдите в списке нужный сервер, выберите подходящие настройки и убедитесь, что они установлены на вашем сервере.
-
+Note: Tip: The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. Find your favorite server in the list, look for the appropriate settings, and copy/confirm that your server is configured with the recommended settings.
 
 ## Cache-Control
 
 ### TL;DR {: .hide-from-toc }
-- Правила кеширования ресурса можно указать с помощью HTTP-заголовка Cache-Control.
-- Директивы Cache-Control определяют, где, как и на какое время может быть кеширован ресурс.
 
+* Each resource can define its caching policy via the Cache-Control HTTP header.
+* Cache-Control directives control who can cache the response, under which conditions, and for how long.
 
-Лучше всего, если запрос вообще не приходится отправлять на сервер. Используя местную копию ответа, можно избежать задержки при работе сайта и не скачивать лишние данные. Для этого спецификация HTTP позволяет серверу вернуть [несколько директив Cache-Control](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9), определяющих, как и на какое время ответ может быть сохранен в кеше браузера и других промежуточных кешах.
+From a performance optimization perspective, the best request is a request that doesn't need to communicate with the server: a local copy of the response allows you to eliminate all network latency and avoid data charges for the data transfer. To achieve this, the HTTP specification allows the server to return [Cache-Control directives](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9) that control how, and for how long, the browser and other intermediate caches can cache the individual response.
 
-Note: Заголовок Cache-Control указан в спецификации HTTP/1.1 и заменяет прошлые заголовки, использовавшиеся для определения правил кеширования (например, Expires). Cache-Control поддерживают все современные браузеры, поэтому он отлично подходит для оптимизации сайта.
+Note: The Cache-Control header was defined as part of the HTTP/1.1 specification and supersedes previous headers (for example, Expires) used to define response caching policies. All modern browsers support Cache-Control, so that's all you need.
 
-<img src="images/http-cache-control-highlight.png" class="center" alt="Пример HTTP Cache-Control">
+<img src="images/http-cache-control-highlight.png"  alt="HTTP Cache-Control example" />
 
-### `no-cache` и `no-store`
+### "no-cache" and "no-store"
 
-Директива no-cache означает, что при повторном запросе к тому же URL ответ можно использовать только после проверки изменений. Таким образом, если указан соответствующий маркер подтверждения (ETag), будет выполнена повторная проверка. Однако при отсутствии изменений данные не будут скачиваться ещё раз.
+"no-cache" indicates that the returned response can't be used to satisfy a subsequent request to the same URL without first checking with the server if the response has changed. As a result, if a proper validation token (ETag) is present, no-cache incurs a roundtrip to validate the cached response, but can eliminate the download if the resource has not changed.
 
-Действие директивы no-store намного проще. Она запрещает браузеру и всем промежуточным кешам сохранять какую-либо версию ответа. Директива используется, если в ответе содержится личная или банковская информация. Каждый раз, когда пользователь хочет использовать этот ресурс, на сервер отправляется запрос и ответ полностью скачивается заново.
+By contrast, "no-store" is much simpler. It simply disallows the browser and all intermediate caches from storing any version of the returned response&mdash;for example, one containing private personal or banking data. Every time the user requests this asset, a request is sent to the server and a full response is downloaded.
 
-### `public` и `private`
+### "public" vs. "private"
 
-Если в ответе содержится директива public, его можно кешировать, даже если с ним связана HTTP-аутентификация и код статуса ответа обычно нельзя сохранять. Эта директива требуется редко, потому что другая информация, заданная для кеширования, (например, max-age) показывает,
-что ответ можно сохранить.
+If the response is marked as "public", then it can be cached, even if it has HTTP authentication associated with it, and even when the response status code isn't normally cacheable. Most of the time, "public" isn't necessary, because explicit caching information (like "max-age") indicates that the response is cacheable anyway.
 
-Директива private, наоборот, используется для ответов, которые можно сохранить в кеше браузера, но не в промежуточных кешах. Это происходит из-за того, что подобная информация предназначается для одного пользователя. Например, HTML-страницу с личными данными пользователя можно кешировать в браузере, но не в сетях доставки контента.
+By contrast, the browser can cache "private" responses. However, these responses are typically intended for a single user, so an intermediate cache is not allowed to cache them. For example, a user's browser can cache an HTML page with private user information, but a CDN can't cache the page.
 
-### `max-age`
+### "max-age"
 
-Эта директива указывает период времени в секундах, в течение которого скачанный ответ может быть повторно использован. Отсчет начинается с момента запроса. Например, max-age=60 означает, что ответ может быть кеширован и использован в течение 60 секунд.
+This directive specifies the maximum time in seconds that the fetched response is allowed to be reused from the time of the request. For example, "max-age=60" indicates that the response can be cached and reused for the next 60 seconds.
 
-## Выбор правил Cache-Control
+## Defining optimal Cache-Control policy
 
-<img src="images/http-cache-decision-tree.png" class="center" alt="Схема выбора кеширования">
+<img src="images/http-cache-decision-tree.png"  alt="Cache decision tree" />
 
-Используйте схему выше, чтобы определить оптимальную политику кеширования для одного или нескольких ресурсов в приложении. Постарайтесь кешировать как можно больше ресурсов на максимально долгий период времени и предоставьте маркеры подтверждения для каждого ответа. Они нужны для проверки актуальность данных.
+Follow the decision tree above to determine the optimal caching policy for a particular resource, or a set of resources, that your application uses. Ideally, you should aim to cache as many responses as possible on the client for the longest possible period, and provide validation tokens for each response to enable efficient revalidation.
 
-<table>
+<table class="responsive">
+  
 <thead>
   <tr>
-    <th width="30%">Директивы Cache-Control</th>
-    <th>Значение</th>
+    <th colspan="2">Cache-Control directives &amp; Explanation</th>
   </tr>
 </thead>
 <tr>
   <td data-th="cache-control">max-age=86400</td>
-  <td data-th="значение">Ответ можно сохранить в браузере и промежуточных кешах (для него указана директива"public") на 1 день (60 секунд x 60 минут x 24 часа)</td>
+  <td data-th="explanation">Response can be cached by browser and any intermediary caches (that is, it's "public") for up to 1 day (60 seconds x 60 minutes x 24 hours).</td>
 </tr>
 <tr>
   <td data-th="cache-control">private, max-age=600</td>
-  <td data-th="значение">Браузер может кешировать ответ на 10 минут (60 секунд x 10 минут)</td>
+  <td data-th="explanation">Response can be cached by the client’s browser only for up to 10 minutes (60 seconds x 10 minutes).</td>
 </tr>
 <tr>
   <td data-th="cache-control">no-store</td>
-  <td data-th="значение">Ответ нельзя кешировать. При повторном запросе нужно скачать его заново.</td>
+  <td data-th="explanation">Response is not allowed to be cached and must be fetched in full on every request.</td>
 </tr>
 </table>
 
-По данным HTTP Archive, на 300 000 самых популярных сайтов по рейтингу Alexa около половины скачанных запросов [можно сохранить в кеше браузера](http://httparchive.org/trends.php#maxage0). Это помогло бы сэкономить огромные объемы данных при повторном посещении страниц. Однако это не означает, что в вашем приложении обязательно есть 50% ресурсов, которые можно сжать. Некоторые сайты сохраняются в кеше более чем на 90%, а на других размещено много личной или меняющейся со временем информации, которую кешировать невозможно.
+According to HTTP Archive, among the top 300,000 sites (by Alexa rank), the browser can cache [nearly half of all the downloaded responses](http://httparchive.org/trends.php#maxage0), which is a huge savings for repeat pageviews and visits. Of course, that doesn’t mean that your particular application can cache 50% of the resources. Some sites can cache more than 90% of their resources, while other sites might have a lot of private or time-sensitive data that can’t be cached at all.
 
-**Проверьте ваши страницы, определите, какие ресурсы можно кешировать, и убедитесь, что они возвращают правильные заголовки Cache-Control и ETag.**
+**Audit your pages to identify which resources can be cached and ensure that they return appropriate Cache-Control and ETag headers.**
 
-
-## Аннулирование и обновление кешированных ответов
+## Invalidating and updating cached responses
 
 ### TL;DR {: .hide-from-toc }
-- Ответы, сохраненные в локальном кеше, можно использовать, пока не истечет срок действия ресурса.
-- Чтобы обновить версию ответа, добавьте в URL файла соответствующую идентификационную метку.
-- Чтобы производительность приложения оставалась высокой, определите для него иерархию кешей.
 
+* Locally cached responses are used until the resource "expires."
+* Embedding a file content fingerprint in the URL enables you to force the client to update to a new version of the response.
+* Each application needs to define its own cache hierarchy for optimal performance.
 
-Все HTTP-запросы сначала направляются браузером в его кеш, чтобы проверить наличие действительного сохраненного ответа. Если совпадение найдено, ответ считывается из кеша, уменьшая время загрузки сайта и объем скачиваемых данных. **Однако нам может потребоваться обновить кешированный ответ или сделать его недействительным. Что нам предпринять в этом случае?**
+All HTTP requests that the browser makes are first routed to the browser cache to check whether there is a valid cached response that can be used to fulfill the request. If there's a match, the response is read from the cache, which eliminates both the network latency and the data costs that the transfer incurs.
 
-Предположим, мы задали команду кешировать таблицу стилей CSS в течение 24 часов (max-age=86400), но чуть позже обновили дизайн сайта и хотим, чтобы это увидели все пользователи. Как сообщить им, что нужно обновить устаревшую копию CSS в кеше? Это непросто, потому что нам потребуется изменить URL ресурса.
+**However, what if you want to update or invalidate a cached response?** For example, suppose you've told your visitors to cache a CSS stylesheet for up to 24 hours (max-age=86400), but your designer has just committed an update that you'd like to make available to all users. How do you notify all the visitors who have what is now a "stale" cached copy of your CSS to update their caches? You can't, at least not without changing the URL of the resource.
 
-Кешированный ответ сохраняется в браузере до тех пор, пока не истечет срок его действия или пока он не будет удален, например при очистке кеша браузера. Таким образом, во время изменения страницы не все пользователи работают с одинаковыми версиями файла: те, кто загрузил ресурс недавно, видят новую версию, а те, кто кешировал предыдущую (но ещё действительную) копию, - старую.
+After the browser caches the response, the cached version is used until it's no longer fresh, as determined by max-age or expires, or until it is evicted from cache for some other reason&mdash; for example, the user clearing their browser cache. As a result, different users might end up using different versions of the file when the page is constructed: users who just fetched the resource use the new version, while users who cached an earlier (but still valid) copy use an older version of its response.
 
-**Как совместить кеширование ресурсов и обновления сайта?** Можно просто отредактировать URL файла, чтобы пользователь скачивал новый ответ каждый раз, когда его контент меняется. Для этого добавьте в имя файла идентификационную метку или номер версии, например style.**x234dff**.css.
+**How do you get the best of both worlds: client-side caching and quick updates?** You change the URL of the resource and force the user to download the new response whenever its content changes. Typically, you do this by embedding a fingerprint of the file, or a version number, in its filename&mdash;for example, style.**x234dff**.css.
 
-<img src="images/http-cache-hierarchy.png" class="center" alt="Иерархия кешей">
+<img src="images/http-cache-hierarchy.png"  alt="Cache hierarchy" />
 
-Установка правил кеширования для каждого ресурса позволяет нам определять `иерархии кешей`. Благодаря этому мы можем указывать, на какой период сохранен ресурс и когда пользователь увидит его новую версию. Рассмотрим пример выше.
+The ability to define per-resource caching policies allows you to define "cache hierarchies" that allow you to control not only how long each is cached for, but also how quickly visitors see new versions. To illustrate this, analyze the above example:
 
-* Для HTML указана директива no-cache, поэтому браузер будет проверять актуальность документа при каждом запросе и при изменениях скачивать последнюю версию ресурса. Кроме того, мы изменили HTML-разметку, добавив идентификационные метки в URL CSS- и JavaScript-ресурсов. Если эти файлы изменятся, HTML тоже обновится, и браузер скачает новую копию HTML-ответа.
-* Браузерам и промежуточным кешам (например, сетям доставки контента) разрешено сохранять CSS. Срок его действия заканчивается через 1 год. Обратите внимание, что мы можем установить такой длинный период, потому что мы добавили идентификационную метку в название файла. Поэтому если CSS обновится, то URL тоже изменится.
-* Срок действия для JavaScript тоже истекает через 1 год. Однако ресурс отмечен директивой private, потому что в нем содержатся личные данные пользователи, которые нельзя сохранять в кеше сетей доставки контента.
-* У кешированного изображения нет версии или уникальной идентификационной метки, и срок его действия заканчивается через 1 день.
+* The HTML is marked with "no-cache", which means that the browser always revalidates the document on each request and fetches the latest version if the contents change. Also, within the HTML markup, you embed fingerprints in the URLs for CSS and JavaScript assets: if the contents of those files change, then the HTML of the page changes as well and a new copy of the HTML response is downloaded.
+* The CSS is allowed to be cached by browsers and intermediate caches (for example, a CDN), and is set to expire in 1 year. Note that you can use the "far future expires" of 1 year safely because you embed the file fingerprint in its filename: if the CSS is updated, the URL changes as well.
+* The JavaScript is also set to expire in 1 year, but is marked as private, perhaps because it contains some private user data that the CDN shouldn’t cache.
+* The image is cached without a version or unique fingerprint and is set to expire in 1 day.
 
-Таким образом, с помощью ETag, Cache-Control и уникальных URL мы можем достичь нужных нам результатов: долгих сроков действия, контроля над кешированием ресурса и обновлений в любой момент.
+The combination of ETag, Cache-Control, and unique URLs allows you to deliver the best of all worlds: long-lived expiration times, control over where the response can be cached, and on-demand updates.
 
-## Список методов оптимизации
+## Caching checklist
 
-Не существует одного идеального правила кеширования. Вы сами должны выбрать и установить подходящие настройки для каждого ресурса, а также указать нужную иерархию кешей. При это вы должны учесть много факторов: использование траффика, тип контента и требования к его актуальности.
+There's no one best cache policy. Depending on your traffic patterns, type of data served, and application-specific requirements for data freshness, you must define and configure the appropriate per-resource settings, as well as the overall "caching hierarchy."
 
-Помните о некоторых советах и техниках, которые помогут вам выбрать стратегию кеширования:
+Some tips and techniques to keep in mind as you work on caching strategy:
 
-1. **Используйте одинаковые URL для одного ресурса.** В противном случае контент каждый раз  будет скачиваться заново. Помните, что в URL [регистр букв имеет значение](http://www.w3.org/TR/WD-html40-970708/htmlweb.html)!
-2. **Убедитесь, что сервер отправляет маркер подтверждения (ETag).** Если ресурс на сервере не изменился, то благодаря этому маркеру те же байты не будут передаваться повторно.
-3. **Определите, какие ресурсы можно сохранить в промежуточных кешах.** Чаще всего это ответы, которые одинаковы для всех пользователей.
-4. **Определите подходящий срок действия для каждого ресурса.** У данных могут быть разные требования к частоте обновления информации. Учитывая это, выберите подходящее значение max-age для каждого ресурса.
-5. **Установите подходящую иерархию кешей для вашего сайта.** Используйте URL ресурсов с идентификационными отметками контента и короткие сроки действия (или директиву no-cache) для HTML-документов. С их помощью вы можете указать, когда кешированные версии данных будут обновлены.
-6. **Уменьшите пересылку данных.** Если часть ресурса, например функции JavaScript или наборы CSS-стилей, обновляется часто, отправляйте ее код в отдельном файле. Тогда та часть контента, которая меняется редко, например коды библиотек, может быть загружена из кеша. Это уменьшит количество скачиваемых данных при обновлении ресурса.
+* **Use consistent URLs:** if you serve the same content on different URLs, then that content will be fetched and stored multiple times. Tip: note that [URLs are case sensitive](http://www.w3.org/TR/WD-html40-970708/htmlweb.html).
+* **Ensure that the server provides a validation token (ETag):** validation tokens eliminate the need to transfer the same bytes when a resource has not changed on the server.
+* **Identify which resources can be cached by intermediaries:** those with responses that are identical for all users are great candidates to be cached by a CDN and other intermediaries.
+* **Determine the optimal cache lifetime for each resource:** different resources may have different freshness requirements. Audit and determine the appropriate max-age for each one.
+* **Determine the best cache hierarchy for your site:** the combination of resource URLs with content fingerprints and short or no-cache lifetimes for HTML documents allows you to control how quickly the client picks up updates.
+* **Minimize churn:** some resources are updated more frequently than others. If there is a particular part of a resource (for example, a JavaScript function or a set of CSS styles) that is often updated, consider delivering that code as a separate file. Doing so allows the remainder of the content (for example, library code that doesn't change very often), to be fetched from cache and minimizes the amount of downloaded content whenever an update is fetched.
 
+## Feedback {: .hide-from-toc }
 
+{% include "web/_shared/helpful.html" %}
 
-
+<div class="clearfix"></div>

@@ -1,180 +1,115 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Inspecciona y administra almacenamiento, bases de datos y memorias caché desde el panel Application.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Inspect and manage storage, databases, and caches from the Application panel.
 
-{# wf_updated_on: 2016-07-28 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Inspecciona y administra almacenamiento, bases de datos y memorias caché {: .page-title }
+# Inspect and Manage Storage, Databases, and Caches {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-Inspecciona y administra almacenamiento, bases de datos y memorias caché desde el panel
-<strong>Application</strong>.
-
+{% include "web/_shared/contributors/kaycebasques.html" %} Inspect and manage storage, databases, and caches from the
+<strong>Application</strong> panel.
 
 ### TL;DR {: .hide-from-toc }
-- Mira y edita almacenamiento local y de sesión.
-- Inspecciona y modifica bases de datos IndexedDB.
-- Ejecuta sentencias en una base de datos Web SQL.
-- Visualiza cachés de apps y service workers.
-- Borra por completo el almacenamiento, las bases de datos, los cachés y los service workers con un solo clic.
 
+* View and edit local and session storage.
+* Inspect and modify IndexedDB databases.
+* Execute statements on a Web SQL database.
+* View Application and Service Worker Caches.
+* Clear all storage, databases, caches, and service workers with a single button click.
 
-## Almacenamiento local{:#local-storage}
+## Local storage {:#local-storage}
 
-Si usas [almacenamiento local][ls] para guardar pares clave-valor (KVP), puedes
-inspeccionar, modificar y borrar estos KVP desde el subpanel **Local Storage**.
+If you're using [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) to store key-value pairs (KVPs), you can inspect, modify, and delete these KVPs from the **Local Storage** pane.
 
-![subpanel local storage][ls-pane]
+![local storage pane](/web/tools/chrome-devtools/manage-data/imgs/local-storage.png)
 
-* Haz doble clic en una clave o un valor para editar ese valor.
-* Haz doble clic en una celda vacía para agregar un KVP nuevo.
-* Haz clic en un KVP y luego presiona el botón **delete**
-  (![botón delete][delete]{:.inline}) para borrar ese KVP. Puedes
-  borrar todos los datos del almacenamiento local con un solo clic en un botón desde el
-  [subpanel **Clear storage**](#clear-storage).
-* Si al interactuar con una página se crean, borran o modifican
-  KVP, no verás esos cambios actualizados en tiempo real. Haz clic en el botón
-  **refresh** (![botón refresh][refresh]{:.inline}) para ver los cambios.
+* Double-click on a key or value to edit that value.
+* Double-click on an empty cell to add a new KVP.
+* Click on a KVP and then press the **delete** button (![delete button](/web/tools/chrome-devtools/manage-data/imgs/delete.png){:.inline}) to delete that KVP. You can wipe all of your local storage data with a single button click from the [**Clear storage** pane](#clear-storage).
+* If you're interacting with a page in a way that creates, deletes, or modifies KVPs, you won't see those changes get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to see your changes.
 
-[ls]: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-[subpanel ls]: /web/tools/chrome-devtools/manage-data/imgs/local-storage.png
-[refresh]: /web/tools/chrome-devtools/manage-data/imgs/refresh.png
-[delete]: /web/tools/chrome-devtools/manage-data/imgs/delete.png
+## Session storage {:#session-storage}
 
-## Almacenamiento de sesión{:#session-storage}
-
-El subpanel **Session Storage** funciona igual que el subpanel **Local Storage**.
- Consulta la sección [Almacenamiento local](#local-storage) anterior para aprender la manera de
-ver y editar el [almacenamiento de sesión][ss].
-
-[ss]: https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
+The **Session Storage** pane works the same as the **Local Storage** pane. Check out the [Local storage](#local-storage) section above to learn how to view and edit [session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
 
 ## IndexedDB {:#indexeddb}
 
-Usa el subpanel **IndexedDB** para inspeccionar, modificar y borrar datos de IndexedDB.
+Use the **IndexedDB** pane to inspect, modify, and delete IndexedDB data.
 
-Cuando expandes el subpanel **IndexedDB**, el primer nivel debajo de este son las
-bases de datos. Si hay varias bases de datos activas, verás diferentes
-entradas. En la captura de pantalla siguiente, solo hay una base de datos activa.
+When you expand the **IndexedDB** pane, the first level below that are databases. If there are multiple databases active, then you'll see multiple entries. In the screenshot below there's only one database active for the page.
 
-![pestaña indexeddb][idb-tab]
+![indexeddb tab](/web/tools/chrome-devtools/manage-data/imgs/idb-tab.png)
 
-Haz clic en el nombre de una base de datos para ver el origen de la seguridad, el nombre y la versión
-de dicha base de datos.
+Click on the name of a database to view the security origin, name, and version of that database.
 
-![base de datos de indexeddb][idb-db]
+![indexeddb database](/web/tools/chrome-devtools/manage-data/imgs/idb-db.png)
 
-Expande una base de datos para visualizar sus pares clave-valor (KVP).
+Expand a database to view its key-value pairs (KVPs).
 
-![pares clave-valor de indexeddb][idb-kvps]
+![indexeddb key-value pairs](/web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png)
 
-Usa los botones de desplazamiento junto al campo de texto **Start from key** para moverte por las
-páginas de KVP.
+Use the arrow buttons next to the **Start from key** textfield to move between pages of KVPs.
 
-Expande un valor y haz doble clic para editarlo.
-Cuando agregas, modificas o borras valores, esos cambios no se actualizan en
-tiempo real. Haz clic en el botón **refresh** para actualizar una base de datos.
-![edición de un kvp de indexeddb][idb-edit]
+Expand a value and double-click to edit that value. When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button to update a database. ![editing an indexeddb kvp](/web/tools/chrome-devtools/manage-data/imgs/idb-edit.png)
 
-Ingresa una clave en el campo de texto **Start from key** para filtrar todas las claves con
-un valor inferior al proporcionado.
+Enter a key in the **Start from key** textfield to filter out all keys with a value smaller than that one.
 
-![kvp filtrados][idb-filter]
+![filtered kvps](/web/tools/chrome-devtools/manage-data/imgs/idb-filter.png)
 
-Cuando agregas, modificas o borras valores, esos cambios no se actualizan en
-tiempo real. Haz clic en el botón **refresh** (![botón refresh][refresh]{:.inline})
-para actualizar la base de datos.
+When you add, modify, or delete values, those changes won't get updated in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to update a database.
 
-Haz clic en el botón **clear object store** (![clear object store][cos]{:.inline})
-para borrar todos los datos de la base de datos. Además de esto,
-también puedes anular el registro de service workers, y borrar otro almacenamiento y otros cachés con
-un solo clic desde el [subpanel **Clear storage**](#clear-storage).
-
-[idb-tab]: /web/tools/chrome-devtools/manage-data/imgs/idb-tab.png
-[idb-db]: /web/tools/chrome-devtools/manage-data/imgs/idb-db.png
-[idb-kvps]: /web/tools/chrome-devtools/manage-data/imgs/idb-kvps.png
-[idb-edit]: /web/tools/chrome-devtools/manage-data/imgs/idb-edit.png
-[idb-filter]: /web/tools/chrome-devtools/manage-data/imgs/idb-filter.png
-[cos]: /web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png
+Click the **clear object store** button (![clear object store](/web/tools/chrome-devtools/manage-data/imgs/clear-object-store.png){:.inline}) to delete all data from your database. You can also accomplish this as well as unregistering service workers and removing other storage and caches with a single click from the [**Clear storage** pane](#clear-storage).
 
 ## Web SQL {:#web-sql}
 
-Usa el subpanel **Web SQL** para consultar y modificar bases de datos Web SQL.
+Use the **Web SQL** pane to query and modify Web SQL databases.
 
-Haz clic en el nombre de una base de datos si deseas abrir una consulta para esa base de datos. Desde aquí,
-puedes ejecutar sentencias en la base de datos.
+Click on a database name to open a console for that database. From here you can execute statements on the database.
 
-![consola de web sql][wsc]
+![web sql console](/web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png)
 
-Haz clic en la tabla de una base de datos para ver los datos de la tabla.
+Click on a database table to view that table's data.
 
-![tabla de web sql][wst]
+![web sql table](/web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png)
 
-* No puedes actualizar valores desde aquí, pero puedes hacerlo mediante la consola
-  de la base de datos (consulta arriba).
-* Haz clic en el título de una columna para ordenar la tabla conforme a esa columna.
-* Los cambios que realices en la tabla no se actualizarán en tiempo real. Haz clic en el botón
-  **refresh** (![botón refresh][refresh]{:.inline}) para ver las
-  actualizaciones.
-* Ingresa una lista separada por espacios o comas con nombres de columnas en el campo de texto
-  **Visible columns** para ver solamente esas columnas.
-
-[wsc]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-console.png
-[wst]: /web/tools/chrome-devtools/manage-data/imgs/web-sql-table.png
+* You can't update values from here, but you can do so via the database console (see above).
+* Click on a column's header to sort the table by that column.
+* Changes that you make to a table won't update in realtime. Click the **refresh** button (![refresh button](/web/tools/chrome-devtools/manage-data/imgs/refresh.png){:.inline}) to view your updates.
+* Enter a space-separated or comma-separated list of column names in the **Visible columns** textfield to only display those columns.
 
 ## Application Cache {:#application-cache}
 
-Usa el subpanel **Application Cache** para inspeccionar recursos y reglas que se
-crearon mediante la [Application Cache API][appcache-api].
+Use the **Application Cache** pane to inspect resources and rules that have been created via the [Application Cache API](https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache).
 
-![subpanel application cache][appcache]
+![application cache pane](/web/tools/chrome-devtools/manage-data/imgs/appcache.png)
 
-Cada fila representa un recurso.
+Each row represents a resource.
 
-La columna **Type** tendrá uno de los siguientes valores:
+The **Type** column will have one of the following values:
 
-* **Master**: el atributo `manifest` del recurso indicó que este es un
-  caché maestro.
-* **Explicit**: este recurso se incluyó explícitamente en el manifiesto.
-* **Network**: en el manifiesto, se especificó que este recurso debe provenir de la
-  red.
-* **Fallback**: la URL de la columna **Resource** se mencionó como respaldo
-  de otra URL (no se muestra en DevTools).
+* **Master**. The `manifest` attribute on the resource indicated that this cache is its master.
+* **Explicit**. This resource was explicitly listed in the manifest.
+* **Network**. The manifest specified that this resource must come from the network.
+* **Fallback**. The URL in the **Resource** column was listed as a fallback for another URL (not shown in DevTools).
 
-En la parte inferior de la tabla, se encuentran íconos de estado que indican la conexión de la
-red y el estado de la caché de la app. La caché de la aplicación
-puede tener los siguientes estados:
+At the bottom of the table there are status icons indicating your network connection and the status of the application cache. The application cache can have the following statuses:
 
-* **IDLE**: no hay cambios nuevos en la caché.
-* **CHECKING**: se encuentra en curso el proceso de obtención del manifiesto y búsqueda de actualizaciones en él.
-* **DOWNLOADING**: se encuentra en curso el proceso de adición al caché.
-* **UPDATEREADY**: se encuentra disponible una versión nueva del caché.
-* **OBSOLETE**: se encuentra en curso el proceso de borrado de la caché.
+* **IDLE**. The cache has no new changes.
+* **CHECKING**. The manifest is being fetched and checked for updates.
+* **DOWNLOADING**. Resources are being added to the cache.
+* **UPDATEREADY**. A new version of the cache is available.
+* **OBSOLETE**. The cache is being deleted.
 
-[appcache-api]: https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache
-[appcache]: /web/tools/chrome-devtools/manage-data/imgs/appcache.png
+## Service Worker Caches {:#service-worker-caches}
 
-## Cachés de service worker {:#service-worker-caches}
-
-El subpanel **Cache Storage** en el panel **Application** te permite inspeccionar,
-modificar y depurar los cachés creados con la API de caché (proceso de trabajo). Consulta
-la guía que figura a continuación para obtener más ayuda.
+The **Cache Storage** pane on the **Application** panel lets you inspect, modify, and debug caches created with the (service worker) Cache API. Check out the guide below for more help.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.pwa #}
 
-## Borra service workers, almacenamiento, bases de datos y cachés {:#clear-storage}
+## Clear service workers, storage, databases, and caches {:#clear-storage}
 
-Algunas veces, simplemente necesitas borrar todos los datos provenientes de un origen determinado. El subpanel **Clear
-Storage** en el panel **Application** te permite anular selectivamente el registro de
-service workers, almacenamiento y cachés. Para borrar los datos, simplemente habilita las casillas de verificación
-que están junto a los componentes que deseas borrar y luego haz clic en **Clear site
-data**. La acción borra todos los datos del origen indicado en la etiqueta
-**Clear storage**.
+Sometimes you just need to wipe all of the data for a given origin. The **Clear Storage** pane on the **Application** panel lets you selectively unregister service workers, storage, and caches. To clear data, just enable the checkboxes next to the components that you want to wipe, and then click **Clear site data**. The action wipes all of the data for the origin listed under the **Clear storage** label.
 
-![clear storage][clear]
+![clear storage](/web/tools/chrome-devtools/manage-data/imgs/clear-storage.png)
 
-[borrar]: /web/tools/chrome-devtools/manage-data/imgs/clear-storage.png
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

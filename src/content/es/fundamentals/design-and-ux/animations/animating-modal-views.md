@@ -1,34 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Aprende a animar vistas modales en tus apps.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate modal views in your apps.
 
-{# wf_updated_on: 2016-08-24 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Animación de vistas modales {: .page-title }
+# Animating Modal Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
 <div class="attempt-right">
   <figure>
-    <img src="images/dont-press.gif" alt="Animación de una vista modal." />
+    <img src="images/dont-press.gif" alt="Animating a modal view." />
     <figcaption>
-      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">Probar</a>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/modal-view-animation.html" target="_blank" class="external">Try it</a>
     </figcaption>
   </figure>
 </div>
 
-Las vistas modales se usan para mensajes importantes. Por ello, tienes muy buenos motivos para bloquear la interfaz del usuario. Úsalas con cuidado ya que, si se usan demasiado, pueden resultar molestas y arruinar la experiencia del usuario. Sin embargo, en algunos casos son las vistas adecuadas, y cobran vida cuando se les agrega algún tipo de animación.
+Modal views are for important messages, and for which you have very good reasons to block the user interface. Use them carefully, because they're disruptive and can easily ruin the user’s experience if overused. But, in some circumstances, they’re the right views to use, and adding some animation will bring them to life.
 
 ### TL;DR {: .hide-from-toc }
-* Usa las vistas modales con moderación. Los usuarios se molestan si interrumpes su experiencia sin necesidad.
-* Se puede agregar una escala a la animación para lograr un agradable efecto de “aparición”.
-* Quita rápidamente la vista modal cuando el usuario la descarte. Sin embargo, trae la vista modal a la pantalla de manera más lenta para que no sorprenda al usuario.
+
+* Use modal views sparingly; users get frustrated if you interrupt their experience unnecessarily.
+* Adding scale to the animation gives a nice "drop on" effect.
+* Get rid of the modal view quickly when the user dismisses it. However, bring the modal view onto the screen a little more slowly so that it doesn't surprise the user.
 
 <div class="clearfix"></div>
 
-La superposición modal debería estar alineada con la ventana de visualización; para ello, configura su `position` en `fixed`:
-
+The modal overlay should be aligned to the viewport, so set its `position` to `fixed`:
 
     .modal {
       position: fixed;
@@ -44,10 +41,9 @@ La superposición modal debería estar alineada con la ventana de visualización
     }
     
 
-Posee un valor inicial de 0 de `opacity` y por ello está oculta, pero luego también deberá configurarse `pointer-events` en `none` para que los clics y los toques pasen a la capa inferior. Si esto no se realiza, se bloquearán todas las interacciones y toda la página dejará de responder. Finalmente, puesto que se animarán los atributos `opacity` y `transform`, estos deberán marcarse como modificaciones con `will-change` (consulta también [Uso de la propiedad will-change](animations-and-performance#using-the-will-change-property)).
+It has an initial `opacity` of 0, so it's hidden from view, but then it also needs `pointer-events` set to `none` so that clicks and touches pass through. Without that, it blocks all interactions, rendering the whole page unresponsive. Finally, because it animates its `opacity` and `transform`, those need to be marked as changing with `will-change` (see also [Using the will-change property](animations-and-performance#using-the-will-change-property)).
 
-Cuandvero la vista sea visible, deberá aceptar las interacciones y deberá tener un valor 1 de `opacity`:
-
+When the view is visible, it needs to accept interactions and have an `opacity` of 1:
 
     .modal.visible {
       pointer-events: auto;
@@ -55,15 +51,12 @@ Cuandvero la vista sea visible, deberá aceptar las interacciones y deberá tene
     }
     
 
-Cada vez que se requiera la vista modal, podrás usar JavaScript para alternar la clase “visible”:
-
+Now whenever the modal view is required, you can use JavaScript to toggle the "visible" class:
 
     modal.classList.add('visible');
     
 
-En este momento, la vista modal aparece sin animación, por lo que ahora puedes agregar eso
-(consulta también [Aceleración personalizada](custom-easing)):
-
+At this point, the modal view appears without any animation, so you can now add that in (see also [Custom Easing](custom-easing)):
 
     .modal {
       -webkit-transform: scale(1.15);
@@ -80,10 +73,9 @@ En este momento, la vista modal aparece sin animación, por lo que ahora puedes 
     }
     
 
-Si agregas `scale` a la propiedad transform, la vista parecerá posarse en la pantalla suavemente, lo cual generará un efecto agradable. La transición predeterminada se aplica a las propiedades transform y opacity con una curva personalizada y una duración de 0,1 segundos.
+Adding `scale` to the transform makes the view appear to drop onto the screen slightly, which is a nice effect. The default transition applies to both transform and opacity properties with a custom curve and a duration of 0.1 seconds.
 
-La duración es bastante breve, pero resulta ideal para los casos en los cuales el usuario descarte la vista y desee regresar a tu app. El punto negativo es que esto probablemente sea demasiado agresivo para el momento en que aparezca la vista modal. Para solucionarlo, anula los valores de transición para la clase `visible`:
-
+The duration is pretty short, though, but it's ideal for when the user dismisses the view and wants to get back to your app. The downside is that it’s probably too aggressive for when the modal view appears. To fix this, override the transition values for the `visible` class:
 
     .modal.visible {
     
@@ -101,10 +93,8 @@ La duración es bastante breve, pero resulta ideal para los casos en los cuales 
     }
     
 
-Ahora, la vista modal tarda 0.3 segundos en aparecer en pantalla. Esto es un poco menos agresivo, pero se descarta rápidamente y el usuario seguro lo valorará.
+Now the modal view takes 0.3 seconds to come onto the screen, which is a bit less aggressive, but it is dismissed quickly, which the user will appreciate.
 
+## Feedback {: #feedback }
 
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

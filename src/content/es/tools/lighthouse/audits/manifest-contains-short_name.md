@@ -1,41 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Documentación de referencia para la auditoría de Lighthouse "El manifiesto contiene la propiedad short_name".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains short_name" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-21 #}
-{# wf_published_on: 2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# El manifiesto contiene un nombre corto  {: .page-title }
+# Manifest Contains short_name {: .page-title }
 
-## Por qué es importante la auditoría {: #why }
+## Overview {: #overview }
 
-Después de que el usuario agrega tu app a la pantalla de inicio, `short_name` es el texto que
-se muestra en la pantalla de inicio junto al ícono de tu app. Por lo general, se usa
-cuando no hay espacio suficiente para mostrar el nombre completo de tu app.
+After a user adds your app to the homescreen, the `short_name` is the text that is displayed on the homescreen next to your app icon. In general, it is used wherever there is insufficient space to display the full name of your app.
 
-## Cómo aprobar la auditoría {: #how }
+## Recommendations {: #recommendations }
 
-Agrega la propiedad `short_name` al manifiesto de apps web.
+Add a `short_name` property in your Web App Manifest.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-La [extensión máxima
-recomendada](https://developer.chrome.com/apps/manifest/name#short_name) de Chrome es de
-12 caracteres.
+Chrome's [maximum recommended length](https://developer.chrome.com/apps/manifest/name#short_name) is 12 characters.
 
-Consulta [El manifiesto existe](manifest-exists#how)
-para obtener una lista de guías que muestran cómo implementar
-y probar correctamente la compatibilidad con "Add to Homescreen" en tu app.
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-La auditoría se aprueba si el manifiesto contiene la propiedad `short_name` o la propiedad `name`.
-El manifiesto que Lighthouse obtiene no es el que Chrome
-usa en la página, lo que puede dar resultados imprecisos.
+Audit passes if the manifest contains either `short_name` or `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

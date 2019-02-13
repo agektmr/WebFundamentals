@@ -1,204 +1,120 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Paint è il processo di riempimento dei pixel per l'eventuale composizione di immagini sugli schermi degli utenti. Spesso presenta un'esecuzione più lunga di tutte le altre attività in programma ed è quindi da evitare se possibile.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
-{# wf_updated_on: 2017-12-12 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# Semplifica la complessità di Paint e riduci le Aree di Paint {: .page-title}
+# Simplify Paint Complexity and Reduce Paint Areas {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Paint è il processo di riempimento dei pixel per l'eventuale composizione di
-immagini sugli schermi degli utenti. Spesso presenta un'esecuzione più lunga
-di tutte le altre attività in programma ed è quindi da evitare se possibile.
+Paint is the process of filling in pixels that eventually get composited to the users' screens. It is often the longest-running of all tasks in the pipeline, and one to avoid if at all possible.
 
 ### TL;DR {: .hide-from-toc }
 
-- La modifica di qualsiasi proprietà oltre a trasformazioni o opacità attiva
-sempre il paint.
-- Paint è spesso la parte più costosa della pipeline di pixel; evitalo quando
-puoi.
-- Riduci le aree di paint attraverso la promozione dei livelli e
-l'orchestrazione delle animazioni.
-- Usa il paint profiler di Chrome DevTools per valutare la complessità e il
-costo di paint; riducila dove puoi.
+* Changing any property apart from transforms or opacity always triggers paint.
+* Paint is often the most expensive part of the pixel pipeline; avoid it where you can.
+* Reduce paint areas through layer promotion and orchestration of animations.
+* Use the Chrome DevTools paint profiler to assess paint complexity and cost; reduce where you can.
 
-## Attiva Layout e Paint
+## Triggering Layout And Paint
 
-Attivando il layout, *attivi sempre* il paint poiché la modifica della
-geometria di un elemento comporta anche la correzione dei pixel!
+If you trigger layout, you will *always trigger paint*, since changing the geometry of any element means its pixels need fixing!
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"
-alt="The full pixel pipeline.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame.jpg"  alt="The full pixel pipeline." />
 
-Puoi anche attivare il paint se modifichi le proprietà non geometriche, come
-sfondi, colore del testo o ombre. In quei casi il layout non sarà necessario e
-la pipeline sarà simile a questa:
+You can also trigger paint if you change non-geometric properties, like backgrounds, text color, or shadows. In those cases layout won’t be needed and the pipeline will look like this:
 
-<img
-src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"
-alt="The pixel pipeline without layout.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/frame-no-layout.jpg"  alt="The pixel pipeline without layout." />
 
-## Utilizza Chrome DevTools per identificare rapidamente i colli di bottiglia di paint
+## Use Chrome DevTools to quickly identify paint bottlenecks
 
 <div class="attempt-right">
   <figure>
-<img
-src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg"
-alt="The show paint rectangles option in DevTools.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles.jpg" alt="The show paint rectangles option in DevTools.">
   </figure>
 </div>
 
-Puoi utilizzare Chrome DevTools per identificare rapidamente le aree che vengono
-dipinte. Vai a DevTools e premi il tasto Esc sulla tastiera. Vai alla scheda
-Rendering nel pannello visualizzato e seleziona Show paint rectangles.
+You can use Chrome DevTools to quickly identify areas that are being painted. Go to DevTools and hit the escape key on your keyboard. Go to the rendering tab in the panel that appears and choose “Show paint rectangles”.
 
 <div style="clear:both;"></div>
 
-Con questa opzione attivata Chrome evidenzierà in verde sullo schermo ogni volta
-che si verifica un paint. Se vedi lampeggiare in verde l'intero schermo
-o aree dello schermo che non pensavi dovessero essere dipinte allora dovresti
-approfondire un po'.
+With this option switched on Chrome will flash the screen green whenever painting happens. If you’re seeing the whole screen flash green, or areas of the screen that you didn’t think should be painted, then you should dig in a little further.
 
-<img
-src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"
-alt="The page flashing green whenever painting occurs.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/show-paint-rectangles-green.jpg"  alt="The page flashing green whenever painting occurs." />
 
 <div class="attempt-right">
   <figure>
-<img
-src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg"
-alt="The toggle to enable paint profiling in Chrome DevTools.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-toggle.jpg" alt="The toggle to enable paint profiling in Chrome DevTools.">
   </figure>
 </div>
 
-C'è un'opzione nella timeline di Chrome DevTools che ti darà più informazioni:
-un paint profiler. Per abilitarla vai sulla Timeline ed abilita la casella
-Paint in alto. È importante *attivarlo solo quando desideri analizzare i
-problemi relativi al paint* , poiché comporta un sovraccarico e distorce il
-profiling delle prestazioni. È meglio usarlo quando vuoi maggiori informazioni
-su cosa viene disegnato esattamente.
+There’s an option in the Chrome DevTools timeline which will give you more information: a paint profiler. To enable it, go to the Timeline and check the “Paint” box at the top. It’s important to *only have this switched on when trying to profile paint issues*, as it carries an overhead and will skew your performance profiling. It’s best used when you want more insight into what exactly is being painted.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-<img
-src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg"
-alt="The button to bring up the paint profiler." class="screenshot">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler-button.jpg" alt="The button to bring up the paint profiler." class="screenshot">
   </figure>
 </div>
 
-Da qui è ora possibile eseguire una registrazione della timeline ed i record di
-paint porteranno molti più dettagli. Facendo click su un record di paint in un
-frame ora avrai accesso al Paint Profiler per quel frame:
+From here you can now run a Timeline recording, and paint records will carry significantly more detail. By clicking on a paint record in a frame you will now get access to the Paint Profiler for that frame:
 
 <div style="clear:both;"></div>
 
-Facendo clic sul paint profiler viene mostrata una visualizzzione in cui puoi
-vedere cosa è stato disegnato, quanto tempo è trascorso e le singole chiamate di
-paint richieste:
+Clicking on the paint profiler brings up a view where you can see what got painted, how long it took, and the individual paint calls that were required:
 
-<img
-src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"
-alt="Chrome DevTools Paint Profiler.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/paint-profiler.jpg"  alt="Chrome DevTools Paint Profiler." />
 
-Questo profiler ti consente di conoscere sia l'area che la complessità (che
-rappresenta il tempo necessario per il disegno) ed entrambe sono aree che puoi
-cercare di risolvere, se evitare di dipingere non è un'opzione.
+This profiler lets you know both the area and the complexity (which is really the time it takes to paint), and both of these are areas you can look to fix if avoiding paint is not an option.
 
-## Promuovi elementi con movimento o dissolvenza
+## Promote elements that move or fade
 
-Il Paint non viene sempre eseguito per singola immagine in memoria. In effetti è
-possibile che il browser disegni più immagini o livelli di composizione se
-necessario.
+Painting is not always done into a single image in memory. In fact, it’s possible for the browser to paint into multiple images, or compositor layers, if necessary.
 
-<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"
-alt="A representation of compositor layers.">
+<img src="images/simplify-paint-complexity-and-reduce-paint-areas/layers.jpg"  alt="A representation of compositor layers." />
 
-Il vantaggio di questo approccio è che gli elementi ridisegnati
-regolarmente, o che si spostano sullo schermo a causa delle trasformazioni,
-possono essere gestiti senza influenzare altri elementi. È lo stesso dei
-pacchetti grafici come Sketch, GIMP o Photoshop, in cui i singoli livelli possono
-essere gestiti e composti l'uno sopra l'altro per creare l'immagine finale.
+The benefit of this approach is that elements that are regularly repainted, or are moving on screen with transforms, can be handled without affecting other elements. This is the same as with art packages like Sketch, GIMP, or Photoshop, where individual layers can be handled and composited on top of each other to create the final image.
 
-Il modo migliore per creare un nuovo livello è utilizzare la proprietà CSS
-`will-change`. Funziona in Chrome, Opera e Firefox e, con un valore `transform`,
-creerà un nuovo livello di composizione:
+The best way to create a new layer is to use the `will-change` CSS property. This will work in Chrome, Opera and Firefox, and, with a value of `transform`, will create a new compositor layer:
 
-```
-.moving-element {
-  will-change: transform;
-}
-```
+    .moving-element {
+      will-change: transform;
+    }
+    
 
-Per i browser che non supportano `will-change` ma beneficiano della creazione di
-livelli, come Safari e Mobile Safari, è necessario utilizzare (incorrettamente)
-una trasformazione 3D per forzare un nuovo livello:
+For browsers that don’t support `will-change`, but benefit from layer creation, such as Safari and Mobile Safari, you need to (mis)use a 3D transform to force a new layer:
 
-```
-.moving-element {
-  transform: translateZ(0);
-}
-```
+    .moving-element {
+      transform: translateZ(0);
+    }
+    
 
-Bisogna tuttavia fare attenzione a non creare troppi livelli poiché ogni livello
-richiede sia memoria che gestione. Vi sono ulteriori informazioni su questo
-argomento nella sezione [Attieniti alle proprietà di sola composizione e al
-conteggio della gestione
-livelli](stick-to-compositor-only-properties-and-manage-layer-count).
+Care must be taken not to create too many layers, however, as each layer requires both memory and management. There is more information on this in the [Stick to compositor-only properties and manage layer count](stick-to-compositor-only-properties-and-manage-layer-count) section.
 
-Se hai alzato di livello un elemento, usa DevTools per confermare che
-questo ti dia un vantaggio in termini di prestazioni. **Non promuovere elementi
-senza profiling.**
+If you have promoted an element to a new layer, use DevTools to confirm that doing so has given you a performance benefit. **Don't promote elements without profiling.**
 
-## Riduci le aree di paint
+## Reduce paint areas
 
-A volte, nonostante l'avanzamento degli elementi, il lavoro di paint è
-ancora necessario. Una delle maggiori problematiche relative al paint è che
-i browser uniscono insieme due aree che richiedono il paint con il risultato di
-eseguire una modifica al disegno dell'intero schermo. Ad esempio, se hai
-un'intestazione fissa nella parte superiore della pagina e qualcosa viene
-dipinto nella parte inferiore dello schermo, l'intero schermo potrebbe essere
-ridisegnato.
+Sometimes, however, despite promoting elements, paint work is still necessary. A large challenge of paint issues is that browsers union together two areas that need painting, and that can result in the entire screen being repainted. So, for example, if you have a fixed header at the top of the page, and something being painted at the bottom the screen, the entire screen may end up being repainted.
 
-Note: sugli schermi ad alto DPI gli elementi che sono in posizione fissa vengono
-automaticamente fatti avanzare al rispettivo livello di composizione. Questo non
-è il caso dei dispositivi a basso DPI perché l'avanzamento cambia il rendering
-del testo da subpixel a gradazioni di grigio e l'avanzamento di livello deve
-essere eseguito manualmente.
+Note: On High DPI screens elements that are fixed position are automatically promoted to their own compositor layer. This is not the case on low DPI devices because the promotion changes text rendering from subpixel to grayscale, and layer promotion needs to be done manually.
 
-Ridurre le aree di paint spesso significa gestire le animazioni e le
-transizioni in modo che non si sovrappongano più di tanto o trovare modi per
-evitare di animare alcune parti della pagina.
+Reducing paint areas is often a case of orchestrating your animations and transitions to not overlap as much, or finding ways to avoid animating certain parts of the page.
 
-## Semplifica la complessità di paint
+## Simplify paint complexity
 
 <div class="attempt-right">
   <figure>
-<img
-src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg"
-alt="The time taken to paint part of the screen.">
+    <img src="images/simplify-paint-complexity-and-reduce-paint-areas/profiler-chart.jpg" alt="The time taken to paint part of the screen.">
   </figure>
 </div>
 
-Quando si tratta di painting, alcune cose richiedono più risorse di altre. Ad
-esempio, qualsiasi cosa che implichi una sfocatura (come un'ombra ad esempio)
-richiederà più tempo del disegno di una casella rossa. In
-termini di CSS tuttavia questo non è sempre ovvio: `background: red;` e
-`box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` non sembra necessariamente che
-abbiano caratteristiche di performance molto diverse ma è così.
+When it comes to painting, some things are more expensive than others. For example, anything that involves a blur (like a shadow, for example) is going to take longer to paint than -- say -- drawing a red box. In terms of CSS, however, this isn’t always obvious: `background: red;` and `box-shadow: 0, 4px, 4px, rgba(0,0,0,0.5);` don’t necessarily look like they have vastly different performance characteristics, but they do.
 
-Il paint profiler di cui abbiamo paralto ti permetterà di determinare se devi
-cercare altri modi per ottenere un effetto. Chiediti se è possibile utilizzare
-una serie più economica di stili o mezzi alternativi per raggiungere il
-risultato finale.
+The paint profiler above will allow you to determine if you need to look at other ways to achieve effects. Ask yourself if it’s possible to use a cheaper set of styles or alternative means to get to your end result.
 
-Dove possibile puoi sempre evitare di disegnare durante le animazioni in
-particolare, dato che i **10 ms** che hai per frame normalmente non sono
-abbastanza lunghi per il lavoro di paint, specialmente sui dispositivi
-mobili.
+Where you can you always want to avoid paint during animations in particular, as the **10ms** you have per frame is normally not long enough to get paint work done, especially on mobile devices.
 
-Translated by
-{% include "web/_shared/contributors/lucaberton.html" %}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

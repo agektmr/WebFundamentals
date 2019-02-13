@@ -1,49 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Saiba como criar uma animação entre duas visualizações em seus aplicativos.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how to animate between two views in your apps.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# Animar entre visualizações {: .page-title }
+# Animating Between Views {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-Com frequência, os usuários deverão passar por diferentes visualizações no seu aplicativo, seja de uma lista para uma visualização de detalhes ou mostrar uma navegação de barra lateral. Animações entre essas visualizações prendem a atenção do usuário e dão ainda mais vida aos seus projetos.
+Often, you want to move users between views in your application, whether that's from a list to a details view, or show a sidebar navigation. Animations between these views keep the user engaged and add even more life to your projects.
 
 ### TL;DR {: .hide-from-toc }
-* Use alternância para mover-se entre visualizações; evite usar `left`, `top` ou qualquer outra propriedade que acione o layout.
-* Certifique-se de que as animações usadas sejam alegres e de curta duração.
-* Leve em consideração como as animações e os layouts mudam conforme o tamanho da tela aumenta; o que funciona para uma tela pequena pode parecer estranho quando usado em um contexto de desktop.
 
-A aparência e o comportamento dessas transições de visualização dependem dos tipos de visualizações com os quais você trabalha. Por exemplo, animar uma sobreposição modal sobre uma visualização deve ser uma experiência diferente do que uma transição entre uma visualização de lista e uma de detalhes.
+* Use translations to move between views; avoid using `left`, `top`, or any other property that triggers layout.
+* Ensure that any animations you use are snappy and the durations are kept short.
+* Consider how your animations and layouts change as the screen sizes go up; what works for a smaller screen may look odd when used in a desktop context.
 
-Success: Procure manter 60 fps para todas as suas animações. Dessa forma, seus usuários não verão animações oscilantes que interfiram com suas experiências. Certifique-se de que qualquer elemento de animação tenha `will-change` definido para tudo que você planeje alterar bem antes de começar a animação. Para alternâncias de visualização, você provavelmente usará `will-change: transform`.
+What these view transitions look and behave like depends on the type of views you’re dealing with. For example, animating a modal overlay on top of a view should be a different experience from transitioning between a list and details view.
 
-## Use alternâncias para mover-se entre visualizações
+Success: Try to maintain 60fps for all of your animations. That way, your users won't see stuttering animations that interfere with their experience. Ensure that any animating element has `will-change` set for anything you plan to change well ahead of the animation starting. For view transitions, it’s highly likely you will want to use `will-change: transform`.
+
+## Use translations to move between views
 
 <div class="attempt-left">
   <figure>
-    <img src="images/view-translate.gif" alt="Alternando entre duas visualizações" />
+    <img src="images/view-translate.gif" alt="Translating between two views" />
   </figure>
 </div>
 
-Para tornar a vida um pouco mais fácil, vamos presumir que há duas visualizações: uma visualização de lista e uma visualização de detalhes. Conforme o usuário toca em um item da lista dentro da visualização de lista, a visualização de detalhes aparece e a visualização de lista desaparece.
+To make life easier, assume that there are two views: a list view and a details view. As the user taps a list item inside the list view, the details view slides in, and the list view slides out.
 
 <div style="clear:both;"></div>
 
 <div class="attempt-right">
   <figure>
-    <img src="images/container-two-views.svg" alt="Hierarquia de visualização." />
+    <img src="images/container-two-views.svg" alt="View hierarchy." />
   </figure>
 </div>
 
-Para obter esse efeito, você precisará de um contêiner para ambas as visualizações com `overflow: hidden` definido. Dessa forma, as duas visualizações podem estar dentro do contêiner, lado a lado, sem mostrar barras de rolagem horizontais e cada visualização pode deslizar lado a lado, conforme necessário.
+To achieve this effect, you need a container for both views that has `overflow: hidden` set on it. That way, the two views can both be inside the container side-by-side without showing any horizontal scrollbars, and each view can slide side-to-side inside the container as needed.
 
 <div style="clear:both;"></div>
 
-O CSS para o contêiner é:
-
+The CSS for the container is:
 
     .container {
       width: 100%;
@@ -53,8 +50,7 @@ O CSS para o contêiner é:
     }
     
 
-A posição do contêiner é definida como `relative`. Isso significa que cada visualização dentro dele pode ser posicionada totalmente no canto superior esquerdo e movida com transformações. Esta abordagem é melhor para o desempenho do que usar a propriedade `left` (porque ela aciona o layout e a pintura) e é geralmente mais fácil de racionalizar.
-
+The position of the container is set as `relative`. This means that each view inside it can be positioned absolutely to the top left corner and then moved around with transforms. This approach is better for performance than using the `left` property (because that triggers layout and paint), and is typically easier to rationalize.
 
     .view {
       width: 100%;
@@ -69,8 +65,7 @@ A posição do contêiner é definida como `relative`. Isso significa que cada v
     }
     
 
-Adicionar um `transition` na propriedade `transform` proporciona um ótimo efeito deslizante. Para proporcionar um bom efeito, ele usa uma curva `cubic-bezier` personalizada, que discutimos no [Guia de easing personalizado](custom-easing).
-
+Adding a `transition` on the `transform` property provides a nice slide effect. To give it a nice feel, it’s using a custom `cubic-bezier` curve, which we discussed in the [Custom Easing guide](custom-easing).
 
     .view {
       /* Prefixes are needed for Safari and other WebKit-based browsers */
@@ -79,8 +74,7 @@ Adicionar um `transition` na propriedade `transform` proporciona um ótimo efeit
     }
     
 
-A visualização que está fora da tela deve ser alternada para a direita. Portanto, nesse caso, a visualização de detalhes precisa ser movida:
-
+The view that is offscreen should be translated to the right, so in this case the details view needs to be moved:
 
     .details-view {
       -webkit-transform: translateX(100%);
@@ -88,8 +82,7 @@ A visualização que está fora da tela deve ser alternada para a direita. Porta
     }
     
 
-Agora uma pequena quantidade de JavaScript é necessária para lidar com as classes. Isso alterna as classes adequadas nas visualizações.
-
+Now a small amount of JavaScript is necessary to handle the classes. This toggles the appropriate classes on the views.
 
     var container = document.querySelector('.container');
     var backButton = document.querySelector('.back-button');
@@ -112,8 +105,7 @@ Agora uma pequena quantidade de JavaScript é necessária para lidar com as clas
     backButton.addEventListener('click', onViewChange);
     
 
-Por fim, adicionamos as declarações CSS para essas classes.
-
+Finally, we add the CSS declarations for those classes.
 
     .view-change .list-view {
       -webkit-transform: translateX(-100%);
@@ -125,27 +117,25 @@ Por fim, adicionamos as declarações CSS para essas classes.
       transform: translateX(0);
     }
     
-[Experimente](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/inter-view-animation.html){: target="_blank" .external }
 
-Você pode expandir para cobrir várias visualizações e o conceito básico deverá permanecer o mesmo; cada visualização não visível deve estar fora da tela e trazida conforme necessário e a visualização atualmente na tela deve ser removida.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/animations/inter-view-animation.html){: target="_blank" .external }
 
-Warning: Criar este tipo de hierarquia entre vários navegadores pode ser um desafio. Por exemplo, o iOS exige uma propriedade CSS adicional,  <code>-webkit-overflow-scrolling: touch</code> para “reativar” a rolagem corrente, mas você não pode controlar o eixo como faz com a propriedade overflow padrão. Teste sua implementação em vários dispositivos!
+You could expand this to cover multiple views, and the basic concept should remain the same; each non-visible view should be offscreen and brought on as needed, and the currently onscreen view should be moved off.
 
-Além da transição entre visualizações, essa técnica também pode ser aplicada a outros elementos de deslizamento, como os elementos de navegação da barra lateral. A única diferença real é que você não precisará mover as outras visualizações.
+Caution: Making this kind of hierarchy in a cross-browser way can be challenging. For example, iOS requires an additional CSS property, `-webkit-overflow-scrolling: touch`, to "reenable" fling scrolling, but you don’t get to control which axis that’s for, as you can with the standard overflow property. Be sure to test your implementation across a range of devices!
 
-## Garanta que sua animação funcione com telas maiores
+In addition to transitioning between views, this technique can also be applied to other slide-in elements, like sidebar navigation elements. The only real difference is that you shouldn’t need to move the other views.
+
+## Ensure that your animation works with larger screens
 
 <div class="attempt-right">
   <figure>
-    <img src="images/container-two-views-ls.svg" alt="Hierarquia de visualização em uma tela grande." />
+    <img src="images/container-two-views-ls.svg" alt="View hierarchy on a large screen." />
   </figure>
 </div>
 
-Para uma tela maior, você deve manter a visualização de lista disponível a todo momento em vez de removê-la e deslizar a visualização de detalhes do lado direito. É muito parecido com lidar com uma visualização de navegação.
+For a larger screen, you should keep the list view around all the time rather than removing it, and slide on the details view from the right-hand side. It’s pretty much the same as dealing with a navigation view.
 
+## Feedback {: #feedback }
 
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

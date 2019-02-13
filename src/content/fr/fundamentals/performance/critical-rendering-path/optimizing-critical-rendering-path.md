@@ -1,36 +1,30 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Afin de fournir un premier affichage le plus rapidement possible, nous devons optimiser trois variables : réduire le nombre de ressources critiques, réduire le nombre d'octets critiques et réduire la longueur du chemin critique.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the key factors in optimizing the critical rendering path.
 
-{# wf_updated_on: 2014-04-27 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: N/A #}
 
-# Optimiser le chemin critique du rendu {: .page-title }
+# Optimizing the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+To deliver the fastest possible time to first render, we need to minimize three variables:
 
+- The number of critical resources.
+- The critical path length.
+- The number of critical bytes.
 
-Afin de fournir un premier affichage le plus rapidement possible, nous devons optimiser trois variables :
+A critical resource is a resource that could block initial rendering of the page. The fewer of these resources, the less work for the browser, the CPU, and other resources.
 
-* **Réduire le nombre de ressources critiques.**
-* **Réduire le nombre d'octets critiques.**
-* **Réduire la longueur du chemin critique.**
+Similarly, the critical path length is a function of the dependency graph between the critical resources and their bytesize: some resource downloads can only be initiated after a previous resource has been processed, and the larger the resource the more roundtrips it takes to download.
 
-Une ressource critique est toute ressource susceptible d'empêcher l'affichage initial de la page. Plus le nombre de ces ressources sur la page est réduit, moins le navigateur doit fournir de travail pour afficher le contenu à l'écran, et moins il y a de contention pour le processeur et les autres ressources.
+Finally, the fewer critical bytes the browser has to download, the faster it can process content and render it visible on the screen. To reduce the number of bytes, we can reduce the number of resources (eliminate them or make them non-critical) and ensure that we minimize the transfer size by compressing and optimizing each resource.
 
-De même, plus le nombre d'octets critiques que le navigateur doit télécharger est réduit, plus vite il peut passer au traitement du contenu et l'afficher à l'écran. Pour réduire le nombre d'octets, nous pouvons réduire le nombre de ressources en les éliminant ou en les rendant non critiques. Nous pouvons également nous assurer de réduire au maximum la taille du transfert en compressant et en optimisant chaque ressource.
+**The general sequence of steps to optimize the critical rendering path is:**
 
-Enfin, la longueur du chemin critique dépend du graphique de dépendance entre toutes les ressources critiques requises par la page et leur taille en octets : le téléchargement de certaines ressources ne peut être lancé que lorsqu'une ressource la précédent a été traitée. Et plus une ressource est importante, plus le nombre d'allers-retours nécessaires pour la télécharger sera élevé.
+1. Analyze and characterize your critical path: number of resources, bytes, length.
+2. Minimize number of critical resources: eliminate them, defer their download, mark them as async, and so on.
+3. Optimize the number of critical bytes to reduce the download time (number of roundtrips).
+4. Optimize the order in which the remaining critical resources are loaded: download all critical assets as early as possible to shorten the critical path length.
 
-Autrement dit, le nombre de ressources, leur taille en octets et la longueur du chemin critique sont liés, mais pas tout à fait identiques. Par exemple, il est possible que vous ne puissiez pas réduire le nombre de ressources critiques, ni raccourcir le chemin critique, mais que le fait de réduire le nombre d'octets critiques offre cependant une optimisation importante, et inversement.
+## Feedback {: #feedback }
 
-**La séquence générale des étapes d'optimisation du chemin critique du rendu est la suivante :**
-
-1. Analysez et définissez votre chemin critique : nombre de ressources, octets, longueur.
-2. Réduisez le nombre de ressources critiques : éliminez-les, différez leur téléchargement, marquez-les comme asynchrones, etc.
-3. Optimisez l'ordre de chargement des ressources critiques restantes : téléchargez en priorité tous les éléments critiques pour réduire la longueur du chemin critique.
-4. Optimisez le nombre d'octets critiques pour réduire la durée du téléchargement (le nombre d'allers-retours).
-
-
-
+{% include "web/_shared/helpful.html" %}

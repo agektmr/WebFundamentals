@@ -1,36 +1,23 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 1 枚の写真は 1000 語にも匹敵する内容を伝えます。また、画像はすべてのページにおいて非常に重要な役割を果たします。一方で、ダウンロードされるデータ量のほとんどを画像が占めることも少なくありません。レスポンシブ ウェブデザインでは、レイアウトだけでなく画像もデバイス特性に応じて変えることができます。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A picture is worth 1000 words, and images play an integral part of every page. But they also often account for most of the downloaded bytes. With responsive web design not only can our layouts change based on device characteristics, but images as well.
 
-{# wf_updated_on: 2018-12-15 #}
-{# wf_published_on: 2014-04-29 #}
+{# wf_updated_on: 2018-12-15 #} {# wf_blink_components: Blink>Image #} {# wf_published_on: 2014-04-29 #}
 
-# 画像 {: .page-title }
+# Images {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
+Responsive web design means that not only can our layouts change based on device characteristics, but content can change as well. For example, on high resolution (2x) displays, high resolution graphics ensure sharpness. An image that is 50% width may work just fine when the browser is 800px wide, but uses too much real estate on a narrow phone, and requires the same bandwidth overhead when scaled down to fit a smaller screen.
 
-レスポンシブ ウェブデザインでは、レイアウトだけでなくコンテンツもデバイス特性に応じて変えることができます。
-たとえば高解像度（2x）のディスプレイでは、高解像度のグラフィックを使用することで鮮明に表示されます。
-50%
-幅の画像は、幅が
-800px のブラウザでは適切に表示されても、画面幅が狭い携帯端末では占有するスペースが大きすぎます。また、狭い画面に合わせてスケールダウンしても必要な帯域幅は変わりません。
+## Art direction
 
+<img src="img/art-direction.png" alt="Art direction example"
+srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x" />
 
-##  アート ディレクション
-
-<img src="img/art-direction.png" alt="アート ディレクションの例"
-srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x">
-
-比率の変更、トリミング、画像全体の置き換えなど、画像の大幅な変更が必要となる場合もあります。
-このような画像の変更は通常、アート ディレクションと呼ばれます。
-詳しい例については [responsiveimages.org/demos/](https://responsiveimages.org/demos/){: .external }
-をご覧ください。
-
+Other times the image may need to be changed more drastically: changing the proportions, cropping, and even replacing the entire image. In this case, changing the image is usually referred to as art direction. See [responsiveimages.org/demos/](https://responsiveimages.org/demos/) for more examples.
 
 {% include "web/_shared/udacity/ud882.html" %}
 
-##  マークアップを用いた画像処理
+## Images in markup 
 
 <style>
   .side-by-side {
@@ -52,42 +39,31 @@ srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x">
   }
 </style>
 
-`img` 要素はコンテンツのダウンロード、デコード、レンダリングをする際に非常に便利です。また、最新のブラウザでは幅広い画像形式がサポートされています。デスクトップの場合と同様に、複数の端末に対応した画像を用意すると、わずかな調整だけで快適なエクスペリエンスを実現できます。
+ 
 
-
-
+The `img` element is powerful&mdash;it downloads, decodes, and renders content&mdash;and modern browsers support a range of image formats. Including images that work across devices is no different than for desktop, and only requires a few minor tweaks to create a good experience.
 
 ### TL;DR {: .hide-from-toc }
 
-- 相対サイズを使用すると、意図せず画像がコンテナからはみ出るのを防止できます。
-- デバイス特性に応じて異なる画像を指定（アート ディレクション）する場合は、`picture` 要素を使用します。
-- `img` 要素で `srcset` および `x` 記述子を使用して、ブラウザがさまざまな密度の中から最適な画像を選択できるようにします。
-- ページ上に画像が 1 つか 2 つしかなく、その画像がサイト上の別の場所では使用されていない場合は、インライン画像を使用してファイルのリクエストを削減することを検討します。
+* Use relative sizes for images to prevent them from accidentally overflowing the container.
+* Use the `picture` element when you want to specify different images depending on device characteristics (a.k.a. art direction).
+* Use `srcset` and the `x` descriptor in the `img` element to give hints to the browser about the best image to use when choosing from different densities.
+* If your page only has one or two images and these are not used elsewhere on your site, consider using inline images to reduce file requests.
 
+### Use relative sizes for images
 
-###  画像に相対サイズを使用する
+Remember to use relative units when specifying widths for images to prevent them from accidentally overflowing the viewport. For example, `width: 50%;` causes the image width to be 50% of the containing element (not 50% of the viewport or 50% of actual pixel size).
 
-意図せず画像がビューポートからはみ出ることを防ぐために、画像の幅の指定では必ず相対的な単位を使用してください。
-たとえば `width: 50%;`
-と指定すると、親要素に対して画像幅が 50% になります（ビューポートや実際のピクセルサイズの
-50% ではない）。
-
-CSS ではコンテンツをコンテナからオーバーフローさせることができるため、画像やほかのコンテンツのオーバーフローを避けるため、最大幅
-100% の使用が必要となります。次に例を示します。
-
-
+Because CSS allows content to overflow its container, you may need to use max- width: 100% to prevent images and other content from overflowing. For example:
 
     img, embed, object, video {
       max-width: 100%;
     }
+    
 
+Be sure to provide meaningful descriptions via the `alt` attribute on `img` elements; these help make your site more accessible by giving context to screen readers and other assistive technologies.
 
-`img` 要素の `alt` 属性を使用して、画像についてのわかりやすい説明を必ず追加してください。これらの情報をスクリーン リーダーなどのユーザー補助機能に提供することで、サイトのアクセシビリティを向上させることができます。
-
-
-
-
-###  高 DPI のデバイス向けに `srcset` で `img` を拡張する
+### Enhance `img`s with `srcset` for high DPI devices
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="Pzc5Dly_jEM"
@@ -95,47 +71,29 @@ CSS ではコンテンツをコンテナからオーバーフローさせるこ�
   </iframe>
 </div>
 
-`srcset` 属性で
-`img` 要素の機能を拡張すると、さまざまなデバイス特性に合わせた複数の画像ファイルを簡単に提供できます。
-CSS ネイティブの
-`image-set`
-[CSS 関数](#use-image-set-to-provide-high-res-images)
-と同様に
-`srcset` を使用すると、ブラウザ側でデバイス特性に応じて最適な画像を選択できます。たとえば、2x のディスプレイでは 2x の画像を使用することができます。さらに将来的には、2x のデバイスでもネットワークの帯域幅が限られている場合は 1x の画像を使用するなどの対応が可能になります。
+The `srcset` attribute enhances the behavior of the `img` element, making it easy to provide multiple image files for different device characteristics. Similar to the `image-set` [CSS function](#use-image-set-to-provide-high-res-images) native to CSS, `srcset` allows the browser to choose the best image depending on the characteristics of the device, for example using a 2x image on a 2x display, and potentially in the future, a 1x image on a 2x device when on a limited bandwidth network.
 
-
-
-<div style="clear:both;"></div>
-
+<div style="clear:both;">
+</div>
 
     <img src="photo.png" srcset="photo@2x.png 2x" ...>
+    
 
+On browsers that don't support `srcset`, the browser simply uses the default image file specified by the `src` attribute. This is why it is important to always include a 1x image that can be displayed on any device, regardless of capabilities. When `srcset` is supported, the comma-separated list of image/conditions is parsed prior to making any requests, and only the most appropriate image is downloaded and displayed.
 
-`srcset` をサポートしていないブラウザでは、`src` 属性に指定されたデフォルトの画像ファイルが使用されます。このため、機能に関係なくあらゆるデバイスで表示できる 1x の画像を必ず含めることが重要です。
-`srcset` がサポートされている場合は、カンマ区切りで指定された複数の画像と 条件のリストの解析後にリクエストが送信され、最適な画像のみがダウンロードされて表示されます。
+While the conditions can include everything from pixel density to width and height, only pixel density is well-supported today. To balance current behavior with future features, stick with simply providing the 2x image in the attribute.
 
+### Art direction in responsive images with `picture`
 
+<img class="attempt-right" src="img/art-direction.png" alt="Art direction example"
+srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x" />
 
-この条件にはピクセル密度、幅、高さなどのあらゆる項目を含めることができますが、現時点で十分にサポートされているのはピクセル密度のみです。
-現在の動作と将来的な機能のバランスを考慮し、この属性は 2x の画像の提供にのみ利用してください。
+To change images based on device characteristics, also known as art direction, use the `picture` element. The `picture` element defines a declarative solution for providing multiple versions of an image based on different characteristics, like device size, device resolution, orientation, and more.
 
+<div style="clear:both;">
+</div>
 
-
-###  `picture` を使用したレスポンシブ画像のアート ディレクション
-
-<img class="attempt-right" src="img/art-direction.png" alt="アート ディレクションの例"
-srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x">
-
-デバイス特性に基づいて画像を変更（アート ディレクション）するには、`picture` 要素を使用します。
-`picture`
-要素は、デバイスのサイズ、解像度、画面の向きなどさまざまな特性に基づいて複数のバージョンの画像を提供する、宣言型のソリューションを定義します。
-
-
-
-
-<div style="clear:both;"></div>
-
-試験運用:`picture` 要素に対応したブラウザが増えてきています。まだ未対応のブラウザもありますが、強力な下位互換性があり、[Picturefill polyfill](https://scottjehl.github.io/picturefill/){: .external } を使用できるものもあるため、使用することをお勧めします。さらに詳しい内容は [ResponsiveImages.org](http://responsiveimages.org/#implementation) のサイトをご覧ください。
+Dogfood: The `picture` element is beginning to land in browsers. Although it's not available in every browser yet, we recommend its use because of the strong backward compatibility and potential use of the [Picturefill polyfill](https://scottjehl.github.io/picturefill/). See the [ResponsiveImages.org](http://responsiveimages.org/#implementation) site for further details.
 
 <div class="video-wrapper">
   <iframe class="devsite-embedded-youtube-video" data-video-id="QINlm3vjnaY"
@@ -143,185 +101,215 @@ srcset="img/art-direction.png 1x, img/art-direction-2x.png 2x">
   </iframe>
 </div>
 
- <code>picture</code> 要素は、1 つの画像のソースに対して密度の異なる画像が複数存在する場合、またはレスポンシブ デザインで一部のタイプの画面に別の画像を表示するよう指定する場合に使用します。
+Use the `picture` element when an image source exists in multiple densities, or when a responsive design dictates a somewhat different image on some types of screens. Similar to the <code>video</code> element, multiple `source` elements can be included, making it possible to specify different image files depending on media queries or image format.
 
-<code>video</code>
-要素と同様に、複数の  <code>source</code>
-要素を追加して、メディアクエリや画像形式に応じて別の画像ファイルを指定できます。
+<div style="clear:both;">
+</div>
 
-
-<div style="clear:both;"></div>
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media.html" region_tag="picture" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media.html" region_tag="picture" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/media.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media.html){: target="_blank" .external }
 
-上の例では、ブラウザの幅が
-800px 以上の場合に、デバイスの解像度に応じて
-`head.jpg` または
-`head-2x.jpg` が使用されます。ブラウザの幅が 450px ～ 800px の場合も同様に、デバイスの解像度に応じて
-`head-small.jpg` または
-`head-small-2x.jpg` が使用されます。画面の幅が 450px より狭い場合や、`picture` 要素がサポートされていない下位互換の場合は、ブラウザは代わりに `img` 要素をレンダリングします。このため、img 要素は必ず含める必要があります。
+In the above example, if the browser width is at least 800px then either `head.jpg` or `head-2x.jpg` is used, depending on the device resolution. If the browser is between 450px and 800px, then either `head-small.jpg` or `head-small-
+2x.jpg` is used, again, depending on the device resolution. For screen widths less than 450px and backward compatibility where the `picture` element isn’t supported, the browser renders the `img` element instead, and should always be included.
 
+#### Relative sized images
 
-####  画像サイズを相対値で指定する
+When the final size of the image isn’t known, it can be difficult to specify a density descriptor for the image sources. This is especially true for images that span a proportional width of the browser and are fluid, depending on the size of the browser.
 
-画像の最終的なサイズがわからない場合は、画像ソースに対して密度の記述子を指定することが困難です。
-これは特に、ブラウザのサイズに応じて、ブラウザの幅に比例したサイズになるフルードな画像の場合に当てはまります。
+Instead of supplying fixed image sizes and densities, you can specify the size of each supplied image by adding a width descriptor along with the size of the image element, allowing the browser to automatically calculate the effective pixel density and choose the best image to download.
 
-
-
-画像のサイズと密度を固定値で指定する代わりに、提供する各画像サイズを幅の記述子と画像要素のサイズで指定すると、ブラウザ側で自動的に実際のピクセル密度を計算して最適な画像を選択してダウンロードできます。
-
-
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/sizes.html" region_tag="picture" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/sizes.html" region_tag="picture" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/sizes.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/sizes.html){: target="_blank" .external }
 
-
-上の例では、横幅がビューポート幅の半分（`sizes="50vw"`）になるように画像をレンダリングし、ブラウザ ウィンドウのサイズに関係なく、ブラウザの幅とデバイス ピクセル比に応じて、ブラウザで適切な画像を選択しています。
-
-
-この例でブラウザがどの画像を選択するかを、以下の表に示します。
-
+The above example renders an image that is half the viewport width (`sizes="50vw"`), and depending on the width of the browser and its device pixel ratio, allows the browser to choose the correct image regardless of how large the browser window is. For example, the table below shows which image the browser would choose:
 
 <table class="">
-  <thead>
-    <tr>
-      <th data-th="Browser width">ブラウザの幅</th>
-      <th data-th="Device pixel ratio">デバイス ピクセル比</th>
-      <th data-th="Image used">使用される画像</th>
-      <th data-th="Effective resolution">実際の解像度</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Browser width">400px</td>
-      <td data-th="Device pixel ratio">1</td>
-      <td data-th="Image used"><code>200.png</code></td>
-      <td data-th="Effective resolution">1x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">400px</td>
-      <td data-th="Device pixel ratio">2</td>
-      <td data-th="Image used"><code>400.png</code></td>
-      <td data-th="Effective resolution">2x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">320px</td>
-      <td data-th="Device pixel ratio">2</td>
-      <td data-th="Image used"><code>400.png</code></td>
-      <td data-th="Effective resolution">2.5x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">600px</td>
-      <td data-th="Device pixel ratio">2</td>
-      <td data-th="Image used"><code>800.png</code></td>
-      <td data-th="Effective resolution">2.67x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">640px</td>
-      <td data-th="Device pixel ratio">3</td>
-      <td data-th="Image used"><code>1000.png</code></td>
-      <td data-th="Effective resolution">3.125x</td>
-    </tr>
-    <tr>
-      <td data-th="Browser width">1100px</td>
-      <td data-th="Device pixel ratio">1</td>
-      <td data-th="Image used"><code>1400.png</code></td>
-      <td data-th="Effective resolution">1.27x</td>
-    </tr>
-  </tbody>
+  <tr>
+    <th data-th="Browser width">
+      Browser width
+    </th>
+    
+    <th data-th="Device pixel ratio">
+      Device pixel ratio
+    </th>
+    
+    <th data-th="Image used">
+      Image used
+    </th>
+    
+    <th data-th="Effective resolution">
+      Effective resolution
+    </th>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      400px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      1
+    </td>
+    
+    <td data-th="Image used">
+      <code>200.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      1x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      400px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      2
+    </td>
+    
+    <td data-th="Image used">
+      <code>400.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      2x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      320px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      2
+    </td>
+    
+    <td data-th="Image used">
+      <code>400.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      2.5x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      600px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      2
+    </td>
+    
+    <td data-th="Image used">
+      <code>800.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      2.67x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      640px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      3
+    </td>
+    
+    <td data-th="Image used">
+      <code>1000.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      3.125x
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Browser width">
+      1100px
+    </td>
+    
+    <td data-th="Device pixel ratio">
+      1
+    </td>
+    
+    <td data-th="Image used">
+      <code>1400.png</code>
+    </td>
+    
+    <td data-th="Effective resolution">
+      1.27x
+    </td>
+  </tr>
 </table>
 
+#### Account for breakpoints in responsive images
 
-####  レスポンシブ画像におけるブレークポイントの効果
+In many cases, the image size may change depending on the site’s layout breakpoints. For example, on a small screen, you might want the image to span the full width of the viewport, while on larger screens, it should only take a small proportion.
 
-多くの場合、画像サイズはサイトのレイアウトのブレークポイントによって変わる可能性があります。
-たとえば、狭い画面では画像をビューポートの幅全体に広げたほうがよいのに対し、広い画面では画像の占める部分を抑える必要があります。
-
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/breakpoints.html" region_tag="picture" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/breakpoints.html" region_tag="picture" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/breakpoints.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/breakpoints.html){: target="_blank" .external }
 
-上の例では、`sizes` 属性で複数のメディアクエリを使用して画像サイズを指定しています。
-ブラウザ幅が
-600px
-より広い場合は画像をビューポート幅の 25% に、ブラウザ幅が 500px ～ 600px の場合はビューポート幅の 50% に、ブラウザ幅が 500px 未満の場合はビューポート幅と同じになるように、それぞれ指定しています。
+The `sizes` attribute, in the above example, uses several media queries to specify the size of the image. When the browser width is greater than 600px, the image is 25% of the viewport width; when it is between 500px and 600px, the image is 50% of the viewport width; and below 500px, it is full width.
 
+### Make product images expandable<figure class="attempt-right"> 
 
+<img src="img/sw-make-images-expandable-good.png" srcset="img/sw-make-images-expandable-good.png 1x, img/sw-make-images-expandable-good-2x.png 2x" alt="J. Crews website with expandable product image" /> <figcaption class="success"> J. Crew's website with expandable product image. </figcaption> </figure> 
 
-###  商品の画像を拡大できるようにする
+Customers want to see what they're buying. On retail sites, users expect to be able to view high resolution closeups of products to get a better look at details, and [study participants](/web/fundamentals/getting-started/principles/#make-product-images-expandable) got frustrated if they weren't able to.
 
-<figure class="attempt-right">
-  <img src="img/sw-make-images-expandable-good.png" srcset="img/sw-make-images-expandable-good.png 1x, img/sw-make-images-expandable-good-2x.png 2x" alt="商品画像を拡大できる J. Crew のウェブサイト">
-  <figcaption class="success">
-    商品画像を拡大できる J. Crew のウェブサイト
-  </figcaption>
-</figure>
+A good example of tappable, expandable images is provided by the J. Crew site. A disappearing overlay indicates that an image is tappable, providing a zoomed in image with fine detail visible.
 
-ユーザーは購入しようとしている商品を見たいと考えます。また、ショッピング サイトでは商品画像を高解像度で拡大して詳細を確認できることを期待します。これができないと、[調査の参加者](/web/fundamentals/getting-started/principles/#make-product-images-expandable)は不満を感じるとの研究結果が出ています。
+<div style="clear:both;">
+</div>
 
+### Other image techniques
 
+#### Compressive images
 
-画像をタップして拡大できる適切な例として、J. Crew のサイトが挙げられます。一定時間後に非表示になるオーバーレイで画像をタップできることを説明し、画像をズームインして適切な詳細を見ることができるようにしています。
+The [compressive image technique](http://www.html5rocks.com/en/mobile/high-dpi/#toc-tech-overview) serves a highly compressed 2x image to all devices, no matter the actual capabilities of the device. Depending on the type of image and level of compression, image quality may not appear to change, but the file size drops significantly.
 
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/compressive.html){: target="_blank" .external }
 
+Caution: Use caution with the compressive technique because of the increased memory and decoding costs it requires. Resizing large images to fit on smaller screens is expensive and can be particularly painful on low-end devices where both memory and processing is limited.
 
-<div style="clear:both;"></div>
+#### JavaScript image replacement
 
-###  その他の画像テクニック
+JavaScript image replacement checks the capabilities of the device and "does the right thing." You can determine device pixel ratio via `window.devicePixelRatio`, get screen width and height, and even potentially do some network connection sniffing via `navigator.connection` or issuing a fake request. When you've collected all of this information, you can decide which image to load.
 
-####  圧縮画像
+One big drawback to this approach is that using JavaScript means that you will delay image loading until at least the look-ahead parser has finished. This means that images won't even start downloading until after the `pageload` event fires. In addition, the browser will most likely download both the 1x and 2x images, resulting in increased page weight.
 
-[圧縮画像技術](http://www.html5rocks.com/en/mobile/high-dpi/#toc-tech-overview)
-を使用すると、デバイスの実際の性能に関係なく、高圧縮の 2x 画像をあらゆるデバイスで表示できます。
-画像の種類や圧縮レベルによっては、画像の品質に変化がないように見える場合もありますが、ファイルサイズは大幅に削減されます。
+#### Inlining images: raster and vector
 
+There are two fundamentally different ways to create and store images&mdash;and this affects how you deploy images responsively.
 
+**Raster images** &mdash; such as photographs and other images, are represented as a grid of individual dots of color. Raster images might come from a camera or scanner, or be created with the HTML canvas element. Formats like PNG, JPEG, and WebP are used to store raster images.
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/compressive.html){: target="_blank" .external }
+**Vector images** such as logos and line art are defined as a set of curves, lines, shapes, fill colors and gradients. Vector images can be created with programs like Adobe Illustrator or Inkscape, or handwritten in code using a vector format such as SVG.
 
-Warning: メモリや必要なデコードの負荷が増加するため、圧縮技術の使用には注意が必要です。大きな画像を小さい画面に合わせてサイズ変更する処理はリソースを消費し、特にメモリと処理能力が限られているローエンド端末では負荷が大きくなります。
+##### SVG
 
-####  JavaScript で画像を置き換える
+SVG makes it possible to include responsive vector graphics in a web page. The advantage of vector file formats over raster file formats is that the browser can render a vector image at any size. Vector formats describe the geometry of the image&mdash;how it's constructed from lines, curves, and colors and so on. Raster formats, on the other hand, only have information about individual dots of color, so the browser has to guess how to fill in the blanks when scaling.
 
-JavaScript で画像を置換する際は、デバイスの性能をチェックして「適切な処理」を行います。
-`window.devicePixelRatio` によるデバイス ピクセル比の判別や、画面の幅と高さの取得のほか、`navigator.connection` によるネットワーク接続状況の取得や疑似リクエストの発行も可能です。これらの情報をすべて収集すると、読み込む画像を決定できます。
+Below are two versions of the same image: a PNG image on the left and an SVG on the right. The SVG looks great at any size, whereas the PNG next to it starts to look blurry at larger display sizes.
 
+<img class="side-by-side" src="img/html5.png" alt="HTML5 logo, PNG format" /> <img class="side-by-side" src="img/html5.svg" alt="HTML5 logo, SVG format" />
 
-この方法の大きな欠点として、JavaScript を使用するため、少なくとも先行するパーサーの処理が完了するまで画像が読み込まれないという問題があります。つまり、画像のダウンロードは、`pageload` イベントが発生するまで開始されません。また、ブラウザは 1x と 2x の両方の画像をダウンロードする可能性が高いため、ページの容量が増加します。
-
-
-
-####  ラスター画像とベクター画像をインライン化する
-
-画像の作成および保存には、根本的に異なる 2 種類の方法があります。どちらを使用するかによって、画像をレスポンシブに表示する方法が変わります。
-
-**ラスター画像**: 写真などの画像が該当します。色の付いた個々のドットから成るグリッドで画像が表現されます。ラスター画像はカメラやスキャナーから生成されるか、HTML Canvas 要素を使用して作成されます。ラスター画像の保存には、PNG、JPEG、WebP などの形式が使用されます。
-
-**ベクター画像**: ロゴやラインアートなどが該当します。曲線、直線、形状、塗り潰し色、グラデーションで定義されます。ベクター画像は、Adobe Illustrator や Inkscape といったプログラムで作成したり、SVG などのベクター形式を使用してコードを記述して作成することもできます。
-
-#####  SVG
-
-SVG を使用すると、ウェブページにレスポンシブなベクター グラフィックを含めることができます。ベクター ファイル形式がラスター ファイル形式よりも優れているのは、ブラウザが任意のサイズでベクター画像をレンダリングできる点です。ベクター形式では、直線、曲線、色などで構成される図形として画像を表現します。一方ラスター形式では、独立した色のドットに関する情報のみを使用するため、ブラウザはスケーリング時に空白を埋める方法を推測する必要があります。
-
-以下に、同じ画像を 2 種類の形式で示します。左が PNG、右が SVG です。SVG はどのサイズでも適切に表示されますが、左の PNG は大画面では不鮮明になります。
-
-<img class="side-by-side" src="img/html5.png" alt="PNG 形式の HTML5 ロゴ" />
-<img class="side-by-side" src="img/html5.svg" alt="SVG 形式の HTML5 ロゴ" />
-
-ページが発行するファイル リクエスト数を削減したい場合は、SVG や Data URI 形式を使用してインラインで画像のコードを記述できます。このページのソースを表示すると、以下のロゴが Data URI と SVG を使用してインラインで宣言されていることがわかります。
+If you want to reduce the number of file requests your page makes, you can code images inline using SVG or Data URI format. If you view the source of this page, you'll see that both logos below are declared inline: a Data URI and an SVG.
 
 <img class="side-by-side" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiB
       BZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW
@@ -377,366 +365,249 @@ SVG を使用すると、ウェブページにレスポンシブなベクター 
     jQ3OS44MjgsMjQyLjM4IDQ3OS44MjgsMjQyLjUwMiA0ODAsMjQyLjUwMiA1OTkuNjQsMjQyLjUw
     MiA1OTkuOCwyNDIuNTAyIDYwMC43OTYsMjMxLjMzOCANCgkJCQk2MDMuMDU5LDIwNi4xNTkgNjA
     0LjI0NywxOTIuODMzIDQ4MCwxOTIuODMzIDQ3OS44MjgsMTkyLjgzMyA0NzkuODI4LDIyMy42OD
-    IgCQkJIi8+DQoJCTwvZz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==">
-<svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-  width="396.74px" height="560px" viewBox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166       "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445      "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362       "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021       "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517      "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042       "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517      "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517      "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069       "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682       "/></g></g></g></svg>
+    IgCQkJIi8+DQoJCTwvZz4NCgk8L2c+DQo8L2c+DQo8L3N2Zz4NCg==" /> <svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="396.74px" height="560px" viewbox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166 "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445 "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362 "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021 "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517 "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042 "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517 "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517 "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069 "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682 "/></g></g></g></svg>
 
-SVG はモバイルおよびデスクトップに[幅広く対応](http://caniuse.com/svg-html5)しており、[最適化ツール](https://sarasoueidan.com/blog/svgo-tools/)によって SVG のサイズを大幅に削減できます。次のインライン SVG ロゴは一見同じようですが、一方は約 3 KB、他方はわずか 2 KB です。
+SVG has [great support](http://caniuse.com/svg-html5) on mobile and desktop, and [optimization tools](https://sarasoueidan.com/blog/svgo-tools/) can significantly reduce SVG size. The following two inline SVG logos look identical, but one is around 3KB and the other only 2KB:
 
-<svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="396.74px" height="560px" viewBox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166       "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445      "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362       "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021       "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517      "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042       "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517      "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517      "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069       "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682       "/></g></g></g></svg><svg class="side-by-side" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="50%" height="560px" viewBox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.7,242.5 414.3,293.4 479.8,293.4 480,293.4 480,242.5 479.8,242.5"/><path fill="#E44D26" d="M281.63 110.053l36.106 404.968L479.757 560l162.47-45.042l36.144-404.905H281.63z M611.283 489.2 L480 525.572V474.03l-0.229 0.063L378.031 445.85l-6.958-77.985h22.98h26.879l3.536 39.612l55.315 14.937l0.046-0.013v-0.004 L480 422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283 489.176z"/><polygon fill="#F16529" points="480,192.8 604.2,192.8 603.1,206.2 600.8,231.3 599.8,242.5 599.6,242.5 480,242.5 480,293.4 581.9,293.4 595.3,293.4 594.1,306.7 582.4,437.5 581.6,445.9 480,474 480,474 480,525.6 611.3,489.2 642.2,143.2 480,143.2"/><polygon fill="#F16529" points="541,343 480,343 480,422.4 535.2,407.4"/><polygon fill="#EBEBEB" points="414.3,293.4 409.7,242.5 479.8,242.5 479.8,242.4 479.8,223.7 479.8,192.8 355.5,192.8 356.6,206.2 368.9,343 479.8,343 479.8,293.4"/><polygon fill="#EBEBEB" points="479.8,474.1 479.8,422.4 479.8,422.4 424.5,407.5 420.9,367.9 394.1,367.9 371.1,367.9 378,445.9 479.8,474.1 480,474 480,474"/><polygon points="343.8,50.2 366.9,50.2 366.9,75.5 392.1,75.5 392.1,0 366.9,0 366.9,24.9 343.8,24.9 343.8,0 318.5,0 318.5,75.5 343.8,75.5"/><polygon points="425.3,25 425.3,75.5 450.5,75.5 450.5,25 472.8,25 472.8,0 403.1,0 403.1,25 425.3,25"/><polygon points="508.5,38.1 525.9,64.9 526.3,64.9 543.7,38.1 543.7,75.5 568.9,75.5 568.9,0 542.5,0 526.3,26.5 510.2,0 483.8,0 483.8,75.5 508.5,75.5"/><polygon points="642.2,50.6 606.7,50.6 606.7,0 581.4,0 581.4,75.5 642.2,75.5"/><polygon fill="#FFFFFF" points="480,474 581.6,445.9 582.4,437.5 594.1,306.7 595.3,293.4 581.9,293.4 480,293.4 479.8,293.4 479.8,343 480,343 541,343 535.2,407.4 480,422.4 479.8,422.4 479.8,422.4 479.8,474.1"/><polygon fill="#FFFFFF" points="479.8,242.4 479.8,242.5 480,242.5 599.6,242.5 599.8,242.5 600.8,231.3 603.1,206.2 604.2,192.8 480,192.8 479.8,192.8 479.8,223.7"/></g></g></g></svg>
+<svg class="side-by-side" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="396.74px" height="560px" viewbox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.737,242.502 414.276,293.362 479.828,293.362 480,293.362 480,242.502 479.828,242.502"/><path fill="#E44D26" d="M281.63,110.053l36.106,404.968L479.757,560l162.47-45.042l36.144-404.905H281.63z M611.283,489.176 L480,525.572V474.03l-0.229,0.063L378.031,445.85l-6.958-77.985h22.98h26.879l3.536,39.612l55.315,14.937l0.046-0.013v-0.004 L480,422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283,489.176z"/><polygon fill="#F16529" points="480,192.833 604.247,192.833 603.059,206.159 600.796,231.338 599.8,242.502 599.64,242.502 480,242.502 480,293.362 581.896,293.362 595.28,293.362 594.068,306.699 582.396,437.458 581.649,445.85 480,474.021 480,474.03 480,525.572 611.283,489.176 642.17,143.166 480,143.166 "/><polygon fill="#F16529" points="540.988,343.029 480,343.029 480,422.35 535.224,407.445 "/><polygon fill="#EBEBEB" points="414.276,293.362 409.737,242.502 479.828,242.502 479.828,242.38 479.828,223.682 479.828,192.833 355.457,192.833 356.646,206.159 368.853,343.029 479.828,343.029 479.828,293.362 "/><polygon fill="#EBEBEB" points="479.828,474.069 479.828,422.4 479.782,422.413 424.467,407.477 420.931,367.864 394.052,367.864 371.072,367.864 378.031,445.85 479.771,474.094 480,474.03 480,474.021 "/><polygon points="343.784,50.229 366.874,50.229 366.874,75.517 392.114,75.517 392.114,0 366.873,0 366.873,24.938 343.783,24.938 343.783,0 318.544,0 318.544,75.517 343.784,75.517 "/><polygon points="425.307,25.042 425.307,75.517 450.549,75.517 450.549,25.042 472.779,25.042 472.779,0 403.085,0 403.085,25.042 425.306,25.042 "/><polygon points="508.537,38.086 525.914,64.937 526.349,64.937 543.714,38.086 543.714,75.517 568.851,75.517 568.851,0 542.522,0 526.349,26.534 510.159,0 483.84,0 483.84,75.517 508.537,75.517 "/><polygon points="642.156,50.555 606.66,50.555 606.66,0 581.412,0 581.412,75.517 642.156,75.517 "/><polygon fill="#FFFFFF" points="480,474.021 581.649,445.85 582.396,437.458 594.068,306.699 595.28,293.362 581.896,293.362 480,293.362 479.828,293.362 479.828,343.029 480,343.029 540.988,343.029 535.224,407.445 480,422.35 479.828,422.396 479.828,422.4 479.828,474.069 "/><polygon fill="#FFFFFF" points="479.828,242.38 479.828,242.502 480,242.502 599.64,242.502 599.8,242.502 600.796,231.338 603.059,206.159 604.247,192.833 480,192.833 479.828,192.833 479.828,223.682 "/></g></g></g></svg><svg class="side-by-side" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="50%" height="560px" viewbox="281.63 0 396.74 560" enable-background="new 281.63 0 396.74 560" xml:space="preserve"><g><g><g><polygon fill="#E44D26" points="409.7,242.5 414.3,293.4 479.8,293.4 480,293.4 480,242.5 479.8,242.5"/><path fill="#E44D26" d="M281.63 110.053l36.106 404.968L479.757 560l162.47-45.042l36.144-404.905H281.63z M611.283 489.2 L480 525.572V474.03l-0.229 0.063L378.031 445.85l-6.958-77.985h22.98h26.879l3.536 39.612l55.315 14.937l0.046-0.013v-0.004 L480 422.35v-79.32h-0.172H368.853l-12.207-136.871l-1.189-13.325h124.371H480v-49.668h162.17L611.283 489.176z"/><polygon fill="#F16529" points="480,192.8 604.2,192.8 603.1,206.2 600.8,231.3 599.8,242.5 599.6,242.5 480,242.5 480,293.4 581.9,293.4 595.3,293.4 594.1,306.7 582.4,437.5 581.6,445.9 480,474 480,474 480,525.6 611.3,489.2 642.2,143.2 480,143.2"/><polygon fill="#F16529" points="541,343 480,343 480,422.4 535.2,407.4"/><polygon fill="#EBEBEB" points="414.3,293.4 409.7,242.5 479.8,242.5 479.8,242.4 479.8,223.7 479.8,192.8 355.5,192.8 356.6,206.2 368.9,343 479.8,343 479.8,293.4"/><polygon fill="#EBEBEB" points="479.8,474.1 479.8,422.4 479.8,422.4 424.5,407.5 420.9,367.9 394.1,367.9 371.1,367.9 378,445.9 479.8,474.1 480,474 480,474"/><polygon points="343.8,50.2 366.9,50.2 366.9,75.5 392.1,75.5 392.1,0 366.9,0 366.9,24.9 343.8,24.9 343.8,0 318.5,0 318.5,75.5 343.8,75.5"/><polygon points="425.3,25 425.3,75.5 450.5,75.5 450.5,25 472.8,25 472.8,0 403.1,0 403.1,25 425.3,25"/><polygon points="508.5,38.1 525.9,64.9 526.3,64.9 543.7,38.1 543.7,75.5 568.9,75.5 568.9,0 542.5,0 526.3,26.5 510.2,0 483.8,0 483.8,75.5 508.5,75.5"/><polygon points="642.2,50.6 606.7,50.6 606.7,0 581.4,0 581.4,75.5 642.2,75.5"/><polygon fill="#FFFFFF" points="480,474 581.6,445.9 582.4,437.5 594.1,306.7 595.3,293.4 581.9,293.4 480,293.4 479.8,293.4 479.8,343 480,343 541,343 535.2,407.4 480,422.4 479.8,422.4 479.8,422.4 479.8,474.1"/><polygon fill="#FFFFFF" points="479.8,242.4 479.8,242.5 480,242.5 599.6,242.5 599.8,242.5 600.8,231.3 603.1,206.2 604.2,192.8 480,192.8 479.8,192.8 479.8,223.7"/></g></g></g></svg>
 
-#####  Data URI
+##### Data URI
 
-Data URI を使用して、次の形式で  <code>img</code> 要素の src を Base64 エンコード文字列として設定すると、画像などのファイルをインラインで埋め込むことできます。
-
+Data URIs provide a way to include a file, such as an image, inline by setting the src of an `img` element as a Base64 encoded string using the following format:
 
     <img src="data:image/svg+xml;base64,[data]">
+    
 
-
-上記の HTML5 ロゴのコードの開始部分は次のようになります。
-
+The start of the code for the HTML5 logo above looks like this:
 
     <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiB
     BZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW ...">
+    
 
+(The full version is over 5000 characters in length!)
 
-（完全なコードの長さは 5000 文字に及びます！）
+Drag 'n' drop tool such as [jpillora.com/base64-encoder](https://jpillora.com/base64-encoder) are available to convert binary files such as images to Data URIs. Just like SVGs, Data URIs are [well supported](http://caniuse.com/datauri) on mobile and desktop browsers.
 
-[jpillora.com/base64-encoder](https://jpillora.com/base64-encoder) などのドラッグ アンド ドロップ ツールを使用して、画像などのバイナリ ファイルを Data URI に変換することができます。SVG と同様に、Data URI はモバイルおよびデスクトップのブラウザで[幅広くサポート](http://caniuse.com/datauri)されています。
+##### Inlining in CSS
 
-#####  CSS でのインライン化
+Data URIs and SVGs can also be inlined in CSS&mdash;and this is supported on both mobile and desktop. Here are two identical-looking images implemented as background images in CSS; one Data URI, one SVG:
 
-Data URI と SVG は CSS でインライン化することもできます。これはモバイルとデスクトップの両方でサポートされています。以下に示すのは、CSS で背景画像として実装された 2 つの画像です。どちらも同じように見えますが、片方は Data URI でもう片方は SVG です。
+<span class="side-by-side" id="data_uri"></span> <span class="side-by-side" id="svg"></span>
 
-<span class="side-by-side" id="data_uri"></span>
-<span class="side-by-side" id="svg"></span>
+##### Inlining pros & cons
 
-#####  インライン化の長所と短所
+Inline code for images can be verbose&mdash;especially Data URIs&mdash;so why would you want to use it? To reduce HTTP requests! SVGs and Data URIs can enable an entire web page, including images, CSS and JavaScript, to be retrieved with one single request.
 
-画像のインライン コード、特に Data URI は冗長になる可能性があります。では、なぜこの技術を使う必要があるのでしょうか。それは、HTTP リクエストを減らすためです。SVG や Data URI を使用すると、画像、CSS、JavaScript を含むウェブページ全体を 1 回のリクエストで取得できます。
+On the downside:
 
-短所:
+* On mobile, Data URIs can be [significantly slower](https://www.mobify.com/blog/data-uris-are-slow-on-mobile/) to display on mobile than images from an external `src`.
+* Data URIs can considerably increase the size of an HTML request.
+* They add complexity to your markup and your workflow.
+* The Data URI format is considerably bigger than binary (up to 30%) and therefore doesn't reduce total download size.
+* Data URIs cannot be cached, so must be downloaded for every page they're used on.
+* They're not supported in IE 6 and 7, incomplete support in IE8.
+* With HTTP/2, reducing the number of asset requests will become less of a priority.
 
-* モバイルでは、外部の  <code>src</code> の画像よりも Data URI を表示するほうが[はるかに遅くなる](https://www.mobify.com/blog/data-uris-are-slow-on-mobile/)可能性があります。
-* Data URI によって HTML リクエストのサイズが大幅に増加する場合があります。
-* マークアップやワークフローが複雑になります。
-* Data URI 形式はバイナリ形式よりもサイズかなり大きくなります（最大 30%）。したがって、ダウンロード全体のサイズを削減できません。
-* Data URI はキャッシュされないため、使用されるページごとにダウンロードする必要があります。
-* IE 6 および 7 はサポート対象外で、IE8 でも完全にはサポートされていません。
-* HTTP/2 では、アセット リクエストを削減すると優先順位が下がります。
+As with all things responsive, you need to test what works best. Use developer tools to measure download file size, the number of requests, and the total latency. Data URIs can sometimes be useful for raster images&mdash;for example, on a homepage that only has one or two photos that aren't used elsewhere. If you need to inline vector images, SVG is a much better option.
 
-他のあらゆるレスポンシブ対応と同様に、テストによって最適な方法を見つける必要があります。デベロッパー ツールを使用してダウンロードするファイルのサイズ、リクエスト数、総遅延時間を測定してください。Data URI はラスター画像で有用な場合があります（たとえば、他の場所で使用されていない写真が 1 枚か 2 枚のみあるホームページなど）。ベクター画像をインライン化する必要がある場合は、SVG の使用をお勧めします。
+## Images in CSS
 
-
-
-##  CSS での画像処理
-
-CSS の `background`
-プロパティを使用すると、要素に複雑な画像を追加できます。さらに、複数の画像の追加したり、画像を繰り返し使用したり、さまざまな処理が簡単に行えます。
-background
-プロパティをメディアクエリと併用すると、より高度な処理が可能になり、画面の解像度やビューポートのサイズなどの条件に応じて適切な画像を読み込むことができます。
-
-
+The CSS `background` property is a powerful tool for adding complex images to elements, making it easy to add multiple images, and causing them to repeat, and more. When combined with media queries, the background property becomes even more powerful, enabling conditional image loading based on screen resolution, viewport size, and more.
 
 ### TL;DR {: .hide-from-toc }
-- 画面サイズ、端末の解像度、ページ レイアウトを考慮して、ディスプレイ特性に合った最適な画像を使用します。
-- メディアクエリで `min-resolution` と `-webkit-min-device-pixel-ratio` を使用し、高 DPI ディスプレイの場合は CSS の `background-image` プロパティを変更します。
-- マークアップで 1x の画像に加えて srcset を使用し、高解像度の画像を提供します。
-- JavaScript の画像置換を利用する場合や、低解像度の端末に高圧縮かつ高解像度の画像を表示する場合は、パフォーマンスへの影響を考慮します。
 
+* Use the best image for the characteristics of the display, consider screen size, device resolution, and page layout.
+* Change the `background-image` property in CSS for high DPI displays using media queries with `min-resolution` and `-webkit-min-device-pixel-ratio`.
+* Use srcset to provide high resolution images in addition to the 1x image in markup.
+* Consider the performance costs when using JavaScript image replacement techniques or when serving highly compressed high resolution images to lower resolution devices.
 
-###  メディアクエリを使用して画像の選択的な読み込みやアート ディレクションを行う
+### Use media queries for conditional image loading or art direction
 
-メディアクエリはページ レイアウトの変更に加え、ビューポート幅に応じた画像の条件付き読み込みやアート ディレクションにも利用できます。
+Media queries not only affect the page layout; you can also use them to conditionally load images or to provide art direction depending on the viewport width.
 
+For example, in the sample below, on smaller screens only `small.png` is downloaded and applied to the content `div`, while on larger screens `background-image: url(body.png)` is applied to the body and `background-image:
+url(large.png)` is applied to the content `div`.
 
-
-たとえば以下の例では、小さい画面の場合は `small.png` のみがダウンロードされてコンテンツの `div` に適用されるのに対し、大きい画面の場合は
-`background-image: url(body.png)` が body に、`background-image: url(large.png)` がコンテンツの `div` にそれぞれ適用されます。
-
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/conditional-mq.html" region_tag="conditional" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/conditional-mq.html" region_tag="conditional" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/conditional-mq.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/conditional-mq.html){: target="_blank" .external }
 
-###  image-set を使用して高解像度の画像を表示する
+### Use image-set to provide high res images
 
-CSS の `image-set()` 関数を使用して `background` プロパティの動作を拡張することで、特性の異なる各デバイス向けに複数の画像ファイルを簡単に配信できます。これを利用して、ブラウザでデバイスの特性に応じて最適な画像を選択できます。たとえば、ディスプレイが 2x の場合は 2x の画像を使用する、デバイスが 2x でもネットワークが低速の場合は 1x の画像を使用する、といったことが可能です。
-
-
-
+The `image-set()` function in CSS enhances the behavior `background` property, making it easy to provide multiple image files for different device characteristics. This allows the browser to choose the best image depending on the characteristics of the device, for example using a 2x image on a 2x display, or a 1x image on a 2x device when on a limited bandwidth network.
 
     background-image: image-set(
       url(icon1x.jpg) 1x,
       url(icon2x.jpg) 2x
     );
+    
 
+In addition to loading the correct image, the browser also scales it accordingly. In other words, the browser assumes that 2x images are twice as large as 1x images, and so scales the 2x image down by a factor of 2, so that the image appears to be the same size on the page.
 
-適切な画像を読み込むほかに、ブラウザではスケーリングも適宜実施します。つまり、ブラウザでは
-2x の画像は 1x の画像の 2 倍のサイズであると推定し、2x の画像を係数 2 でスケールダウンして、ページ上で同じサイズに見えるようにします。
+Support for `image-set()` is still new and is only supported in Chrome and Safari with the `-webkit` vendor prefix. Take care to include a fallback image for when `image-set()` is not supported; for example:
 
-
-`image-set()` への対応は始まったばかりで、現在は Chrome と Safari のみで `-webkit` のベンダー プレフィックス付きでサポートされています。
-`image-set()` がサポートされていない場合に使う代替画像を準備する際は注意が必要です。以下を例に説明します。
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-set.html" region_tag="imageset" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-set.html" region_tag="imageset" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/image-set.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/image-set.html){: target="_blank" .external }
 
-上の例では、image-set に対応しているブラウザでは適切なアセットを読み込み、非対応の場合は 1x のアセットを代用します。
-ただし `image-set()` に対応しているブラウザは少ないため、ほとんどのブラウザでは 1x のアセットが読み込まれる点に注意してください。
+The above loads the appropriate asset in browsers that support image-set; otherwise it falls back to the 1x asset. The obvious caveat is that while `image-set()` browser support is low, most browsers get the 1x asset.
 
+### Use media queries to provide high res images or art direction
 
-###  メディアクエリを使用して高解像度の画像の表示やアート ディレクションを行う
-
-メディア クエリでは、[デバイス ピクセル比](http://www.html5rocks.com/en/mobile/high-dpi/#toc-bg)に基づいたルールを作成し、2x
-のディスプレイと 1x のディスプレイにそれぞれ別の画像を指定できます。
-
-
+Media queries can create rules based on the [device pixel ratio](http://www.html5rocks.com/en/mobile/high-dpi/#toc-bg), making it possible to specify different images for 2x versus 1x displays.
 
     @media (min-resolution: 2dppx),
     (-webkit-min-device-pixel-ratio: 2)
     {
       /* High dpi styles & resources here */
     }
+    
 
+Chrome, Firefox, and Opera all support the standard `(min-resolution: 2dppx)`, while the Safari and Android browsers both require the older vendor prefixed syntax without the `dppx` unit. Remember, these styles are only loaded if the device matches the media query, and you must specify styles for the base case. This also provides the benefit of ensuring something is rendered if the browser doesn't support resolution-specific media queries.
 
-Chrome、Firefox、Opera は標準の `(min-resolution: 2dppx)` をサポートしていますが、Safari と Android のブラウザでは、`dppx`
-単位を付けない古いベンダー プレフィックスの構文を使用する必要があります。
-これらのスタイルはデバイスがメディアクエリに一致する場合にのみ読み込まれること、および、基本となるスタイルを指定する必要があることに注意してください。
-この方法には、ブラウザが解像度固有のメディアクエリに非対応であっても、なんらかの画像が確実にレンダリングされるというメリットもあります。
-
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-query-dppx.html" region_tag="mqdppx" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/media-query-dppx.html" region_tag="mqdppx" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/media-query-dppx.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/media-query-dppx.html){: target="_blank" .external }
 
-また、min-width 構文を使用して、ビューポートのサイズに応じた代替画像を表示することもできます。
-この方法には、メディアクエリに一致しない限り画像がダウンロードされないというメリットがあります。
-たとえば、以下の `bg.png` はブラウザの幅が 500px 以上ある場合にのみダウンロードされて `body` に適用されます。
-
-
+You can also use the min-width syntax to display alternative images depending on the viewport size. This technique has the advantage that the image is not downloaded if the media query doesn't match. For example, `bg.png` is only downloaded and applied to the `body` if the browser width is 500px or greater:
 
     @media (min-width: 500px) {
       body {
         background-image: url(bg.png);
       }
     }
+    
 
+## Use SVG for icons
 
-
-##  アイコンに SVG を使用する
-
-ページにアイコンを追加する際は、できるだけ SVG のアイコンを使用し、状況に応じて Unicode 文字を使います。
-
-
+When adding icons to your page, use SVG icons where possible or in some cases, unicode characters.
 
 ### TL;DR {: .hide-from-toc }
-- アイコンにはラスター画像ではなく、SVG か Unicode を使用します。
 
+* Use SVG or unicode for icons instead of raster images.
 
-###  シンプルなアイコンを Unicode に置き換える
+### Replace simple icons with unicode
 
-多くのフォントではさまざまな Unicode グリフをサポートしており、画像の代わりにこれらのグリフを利用できます。
-Unicode フォントは画像と違って適切にスケーリングされ、画面上での表示サイズにかかわらず鮮明に見えます。
+Many fonts include support for the myriad of unicode glyphs, which can be used instead of images. Unlike images, unicode fonts scale well and look good no matter how small or large they appear on screen.
 
+Beyond the normal character set, unicode may include symbols for arrows (&#8592;), math operators (&#8730;), geometric shapes (&#9733;), control pictures (&#9654;), music notation (&#9836;), Greek letters (&#937;), even chess pieces (&#9822;).
 
-Unicode
-には通常の文字セット以外にも、矢印（&#8592;）、数学記号（&#8730;）、幾何学模様（&#9733;）、制御機能用記号（&#9654;）、音楽記号（&#9836;）、ギリシャ文字（&#937;）、チェスの駒（&#9822;）などの記号が含まれています。
-
-
-
-Unicode 文字は、HTML エンティティと同じように「`&#XXXX`」の形式で入力できます。「`XXXX`」には Unicode 文字の番号を指定します。
-次に例を示します。
-
+Including a unicode character is done in the same way named entities are: `&#XXXX`, where `XXXX` represents the unicode character number. For example:
 
     You're a super &#9733;
-
+    
 
 You're a super &#9733;
 
-###  複雑なアイコンを SVG に置き換える
+### Replace complex icons with SVG
 
-複雑なアイコンを使う必要がある場合は、SVG アイコンを使用します。SVG アイコンは一般に軽量で使いやすいく、CSS でスタイルを設定できます。
-SVG には、ラスター画像と比較して次のような数多くのメリットがあります。
+For more complex icon requirements, SVG icons are generally lightweight, easy to use, and can be styled with CSS. SVG have a number of advantages over raster images:
 
+* They're vector graphics that can be infinitely scaled.
+* CSS effects such as color, shadowing, transparency, and animations are straightforward.
+* SVG images can be inlined right in the document.
+* They are semantic.
+* They provide better accessibility with the appropriate attributes.
 
-* ベクター グラフィックであるため、無限にスケーリングできます。
-* 色、影、透明度、アニメーションなどの CSS 効果を直接適用できます。
-* SVG 画像はインラインでドキュメントに直接含めることができます。
-* セマンティックです。
-* 適切な属性の使用により、アクセシビリティにも対応できます。
-
-
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-svg.html" region_tag="iconsvg" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-svg.html" region_tag="iconsvg" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/icon-svg.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/icon-svg.html){: target="_blank" .external }
 
-###  アイコン フォント使用時の注意点
+### Use icon fonts with caution<figure class="attempt-right"> 
 
-<figure class="attempt-right">
-<img src="img/icon-fonts.png" class="center" srcset="img/icon-fonts.png 1x, img/icon-fonts-2x.png 2x" alt="フォント アイコンに Font Awesome を使用するページの例">
-  <figcaption>
-    <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/icon-font.html" target="_blank" class="external">
-      フォント アイコンに Font Awesome を使用するページの例
-    </a>
-  </figcaption>
-</figure>
+<img src="img/icon-fonts.png" class="center" srcset="img/icon-fonts.png 1x, img/icon-fonts-2x.png 2x" alt="Example of a page that uses FontAwesome for its font icons." /> <figcaption> <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/icon-font.html" target="_blank" class="external"> Example of a page that uses FontAwesome for its font icons. </a> </figcaption> </figure> 
 
-アイコン フォントは使いやすく、広く利用されていますが、SVG アイコンと比較するといくつかの欠点があります。
+Icon fonts are popular, and can be easy to use, but have some drawbacks compared to SVG icons:
 
+* They're vector graphics that can be infinitely scaled, but may be anti-aliased resulting in icons that aren’t as sharp as expected.
+* Limited styling with CSS.
+* Pixel perfect positioning can be difficult, depending on line-height, letter spacing, etc.
+* They aren't semantic, and can be difficult to use with screen readers or other assistive technology.
+* Unless properly scoped, they can result in a large file size for only using a small subset of the icons available.
 
-* ベクター グラフィックであるため無限にスケーリングできますが、アンチエイリアス処理のためアイコンの輪郭が不鮮明になる場合があります。
-* CSS によるスタイル設定に制限があります。
-* line-height や letter-spacing などの設定によっては、ピクセル単位での完全な位置指定が難しい場合があります。
-* セマンティックではないため、スクリーン リーダーなどのユーザー補助機能で利用しづらい場合があります。
-* 適切な範囲で使用しないと、一部のアイコンを使用するためだけにファイルサイズが大きくなる場合があります。
+<div style="clear:both;">
+</div>
 
-
-<div style="clear:both;"></div>
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-font.html" region_tag="iconfont" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/icon-font.html" region_tag="iconfont" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media/icon-font.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/icon-font.html){: target="_blank" .external }
 
-[Font
-Awesome](https://fortawesome.github.io/Font-Awesome/)、[Pictos](http://pictos.cc/){: .external }、[Glyphicons](https://glyphicons.com/)
-など、有料および無料のアイコン フォントが数多く提供されています。
+There are hundreds of free and paid icon fonts available including [Font Awesome](https://fortawesome.github.io/Font-Awesome/), [Pictos](http://pictos.cc/){: .external }, and [Glyphicons](https://glyphicons.com/).
 
-HTTP リクエストやファイルサイズの増加分とアイコンの必要性のバランスを必ず考慮してください。
-たとえば、必要なアイコンの数が少なければ、画像や画像スプライトを使用したほうが良い場合もあります。
+Be sure to balance the weight of the additional HTTP request and file size with the need for the icons. For example, if you only need a handful of icons, it may be better to use an image or an image sprite.
 
+## Optimize images for performance
 
-
-##  画像を最適化してパフォーマンスを向上させる
-
-ダウンロード容量の大半を画像が占めることはよくあり、ページ上の表示スペースの大部分を画像が占有することも少なくありません。
-そのため、画像を最適化することでウェブサイトの容量が大幅に削減され、パフォーマンスの改善につながるケースが多くあります。ブラウザでダウンロードしなければならない容量が少ないほど、クライアントの帯域幅における競合は減り、ブラウザですべてのアセットをダウンロードして画面に表示するまでの時間が短縮されます。
-
-
-
-
-
+Images often account for most of the downloaded bytes and also often occupy a significant amount of the visual space on the page. As a result, optimizing images can often yield some of the largest byte savings and performance improvements for your website: the fewer bytes the browser has to download, the less competition there is for client's bandwidth and the faster the browser can download and display all the assets.
 
 ### TL;DR {: .hide-from-toc }
-- 画像形式は無作為に選択せず、利用可能な各形式を理解したうえで最適なものを使用します。
-- ワークフローの中で画像最適化ツールと圧縮ツールを使用し、ファイルのサイズを縮小します。
-- 利用頻度の高い画像を image sprites にまとめて、HTTP リクエストの回数を減らします。
-- 最初に読み込むページ容量を減らし、読み込み時間を短縮するために、画面をスクロールして画像がビューに表示されてからデータを読み込むようにします。
 
+* Don't just randomly choose an image format&mdash;understand the different formats available and use the format best suited.
+* Include image optimization and compression tools into your workflow to reduce file sizes.
+* Reduce the number of http requests by placing frequently used images into image sprites.
+* To improve the initial page load time and reduce the initial page weight, consider loading images only after they’ve scrolled into view.
 
-###  適切な形式を選ぶ
+### Choose the right format
 
-画像については、[ベクター画像](https://en.wikipedia.org/wiki/Vector_graphics)
-と[ラスター画像](https://en.wikipedia.org/wiki/Raster_graphics)
-の 2 種類を検討する必要があります。ラスター画像の場合は、適切な圧縮形式（`GIF`、`PNG`、`JPG` など）の選択も必要です。
+There are two types of images to consider: [vector images](https://en.wikipedia.org/wiki/Vector_graphics) and [raster images](https://en.wikipedia.org/wiki/Raster_graphics). For raster images, you also need to choose the right compression format, for example: `GIF`, `PNG`, `JPG`.
 
+**Raster images**, like photographs and other images, are represented as a grid of individual dots or pixels. Raster images typically come from a camera or scanner, or can be created in the browser with the `canvas` element. As the image size gets larger, so does the file size. When scaled larger than their original size, raster images become blurry because the browser needs to guess how to fill in the missing pixels.
 
-**ラスター画像**とは、個々のドットやピクセルのグリッドで表現される写真などの画像です。
-ラスター画像は通常、カメラやスキャナで作成されますが、ブラウザ内で `canvas` 要素を使用して作成することもできます。
-画像サイズが大きくなると、ファイルのサイズも大きくなります。
-ラスター画像は元のサイズよりも大きくスケーリングすると、ブラウザ側で欠落しているピクセルを推測して補間する必要があるため、画像が不鮮明になります。
+**Vector images**, such as logos and line art, are defined by a set of curves, lines, shapes, and fill colors. Vector images are created with programs like Adobe Illustrator or Inkscape and saved to a vector format like [`SVG`](https://css-tricks.com/using-svg/). Because vector images are built on simple primitives, they can be scaled without any loss in quality or change in file size.
 
+When choosing the appropriate format, it is important to consider both the origin of the image (raster or vector), and the content (colors, animation, text, etc). No one format fits all image types, and each has its own strengths and weaknesses.
 
+Start with these guidelines when choosing the appropriate format:
 
-**ベクター画像**（ロゴやラインアートなど）は、曲線、直線、形状、塗りつぶし色の集合として定義されます。ベクター画像は、Adobe Illustrator や Inkscape などのプログラムを使用して作成され、[`SVG`](https://css-tricks.com/using-svg/) などのベクター形式で保存されます。ベクター画像は基本的な要素で構成されているため、ファイルサイズを変えずに、品質を保ったままスケーリングが可能です。
+* Use `JPG` for photographic images.
+* Use `SVG` for vector art and solid color graphics such as logos and line art. If vector art is unavailable, try `WebP` or `PNG`.
+* Use `PNG` rather than `GIF` as it allows for more colors and offers better compression ratios.
+* For longer animations consider using `<video>`, which provides better image quality and gives the user control over playback.
 
+### Reduce the file size
 
+You can reduce image file size considerably by "post-processing" the images after saving. There are a number of tools for image compression&mdash;lossy and lossless, online, GUI, command line. Where possible, it's best to try automating image optimization so that it's a first-class citizen in your workflow.
 
-適切な形式を選択するには、画像形式（ラスターまたはベクター）とコンテンツ（色、アニメーション、テキストなど）の両方を考慮することが重要です。すべての画像タイプに最適な形式はなく、各形式にはそれぞれ長所と短所があります。
+Several tools are available that perform further, lossless compression on `JPG` and `PNG` files with no effect on image quality. For `JPG`, try [jpegtran](http://jpegclub.org/) or [jpegoptim](http://freshmeat.net/projects/jpegoptim/) (available on Linux only; run with the --strip-all option). For `PNG`, try [OptiPNG](http://optipng.sourceforge.net/) or [PNGOUT](http://www.advsys.net/ken/util/pngout.htm).
 
+### Use image sprites
 
+<img src="img/sprite-sheet.png" class="attempt-right" alt="Image sprite sheet used in example" />
 
+CSS spriting is a technique whereby a number of images are combined into a single "sprite sheet" image. You can then use individual images by specifying the background image for an element (the sprite sheet) plus an offset to display the correct part.
 
-適切な形式を選ぶ際は、まず次のガイドラインを参考にしてください。
+<div style="clear:both;">
+</div>
 
-* 写真画像には `JPG` を使用します。
-* ベクターアートや無地のグラフィック（ロゴやラインアートなど）には `SVG` を使用します。
-  ベクターアートを利用できない場合は、`WebP` か `PNG` を使用します。
-* `GIF` ではなく `PNG` を使用します。これは、PNG のほうが使用できる色数が多く、圧縮率も優れているためです。
-* 長いアニメーションには、画質が良く、ユーザー側での再生操作が可能な `<video>` を使用することを検討します。
-
-
-###  ファイルサイズを小さくする
-
-画像ファイルのサイズは、保存後に「後処理」を行うことで大幅に削減できます。
-画像圧縮用のツールには、可逆および非可逆圧縮ツールや、オンライン、GUI、コマンドライン タイプのツールなど、さまざまな種類があります。
-可能であれば、ワークフローにおける画像の最適化作業を自動化することをおすすめします。
-
-
-また、`JPG`
-および `PNG` ファイルを、画質を下げずに可逆圧縮できるツールもいくつかあります。`JPG`
-の場合は、[jpegtran](http://jpegclub.org/){: .external }
-または
-[jpegoptim](http://freshmeat.net/projects/jpegoptim/){: .external }（Linux でのみ利用可能、–strip-all オプションを付けて実行）を利用できます。`PNG` の場合は、[OptiPNG](http://optipng.sourceforge.net/){: .external }
-または
-[PNGOUT](http://www.advsys.net/ken/util/pngout.htm) を利用できます。
-
-###  image sprites を使用する
-
-<img src="img/sprite-sheet.png" class="attempt-right" alt="例で使用されている image sprites シート">
-
-CSS スプライトとは、複数の画像を 1 つの「スプライト シート」という画像にまとめるテクニックです。
-個々の画像を使用するには、要素の背景画像（スプライト シート）とオフセットを指定して目的のパーツを表示します。
-
-
-
-<div style="clear:both;"></div>
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-sprite.html" region_tag="sprite" adjust_indentation="auto" %}
+<pre class="prettyprint">{% includecode content_path="web/fundamentals/design-and-ux/responsive/_code/image-sprite.html" region_tag="sprite" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/media//image-sprite.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/design-and-ux/responsive/image-sprite.html){: target="_blank" .external }
 
-画像スプライトを使用すると、複数の画像を取得するために必要なダウンロードの回数を減らせるというメリットがあります。ただし、キャッシュは有効にしておく必要があります。
+Spriting has the advantage of reducing the number of downloads required to get multiple images, while still enabling caching.
 
+### Consider lazy loading
 
-###  遅延読み込みの使用を検討する
+Lazy loading can significantly speed up loading on long pages that include many images below the fold by loading them either as needed or when the primary content has finished loading and rendering. In addition to performance improvements, using lazy loading can create infinite scrolling experiences.
 
-長いページの未表示の部分に画像が多く含まれている場合は、遅延読み込みによって、読み込み時間を大幅に短縮できます。具体的には、必要になった時点で画像を読み込むか、主要コンテンツの読み込みとレンダリングが完了した時点で画像を読み込みます。遅延読み込みを使用すると、パフォーマンスの向上だけでなく、無限にスクロールするページの作成も可能になります。
+Be careful when creating infinite scrolling pages&mdash;because content is loaded as it becomes visible, search engines may never see that content. In addition, users who are looking for information they expect to see in the footer, never see the footer because new content is always loaded.
 
+## Avoid images completely
 
-無限にスクロールするページを作成する場合、コンテンツは表示される時点で読み込まれるため、検索エンジンでコンテンツを認識できない場合があることに注意してください。
-また、ユーザーがフッターにある情報を見たい場合でも、新しいコンテンツが次々と読み込まれるため、フッターにたどり着きません。
+Sometimes the best image isn't actually an image at all. Whenever possible, use the native capabilities of the browser to provide the same or similar functionality. Browsers generate visuals that would have previously required images. This means that browsers no longer need to download separate image files thus preventing awkwardly scaled images. You can use unicode or special icon fonts to render icons.
 
+### Place text in markup instead of embedded in images
 
+Wherever possible, text should be text and not embedded into images. For example, using images for headlines or placing contact information&mdash;like phone numbers or addresses&mdash;directly into images prevents users from copying and pasting the information; it makes the information inaccessible for screen readers, and it isn't responsive. Instead, place the text in your markup and if necessary use webfonts to achieve the style you need.
 
+### Use CSS to replace images
 
-
-##  画像は極力使用しない
-
-画像そのものを使わずに、画像を表現した方が好ましい場合もあります。できるだけブラウザのネイティブ機能を利用して、同じ機能や同等の機能を提供するようにしてください。以前は画像が必要だったビジュアルを、今ではブラウザで表現できます。そのため、ブラウザで個々の画像ファイルをダウンロードする必要がなく、画像のサイズが不自然に変更されることもありません。アイコンのレンダリングには、Unicode または専用のアイコン フォントを使用できます。
-
-###  テキストは画像に埋め込まずにマークアップに含める
-
-テキストは、できるだけ画像に埋め込まず、テキスト形式のままにします。たとえば見出しに画像を使用したり、電話番号や住所などの連絡先情報を画像に埋め込んでしまうと、ユーザーはその情報をコピー＆ペーストできません。さらに、スクリーン リーダーも情報を取得できず、レスポンシブでなくなります。
-
-
-
-テキストはマークアップ内に配置し、必要な場合はウェブフォントを使用して所要のスタイルを適用してください。
-
-
-###  CSS を使用して画像を置き換える
-
-最新のブラウザでは、従来は画像を必要としていたスタイルを CSS の機能を使用して実現できます。
-たとえば
-`background` プロパティで複雑なグラデーションを、`box-shadow` プロパティで影を、`border-radius` プロパティで角丸を作成できます。
-
+Modern browsers can use CSS features to create styles that would previously have required images. For example: complex gradients can be created using the `background` property, shadows can be created using `box-shadow`, and rounded corners can be added with the `border-radius` property. 
 
 <style>
   p#noImage {
@@ -754,15 +625,11 @@ CSS スプライトとは、複数の画像を 1 つの「スプライト シー
   }
 </style>
 
-<p id="noImage">
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.Pellentesque sit
-amet augue eu magna scelerisque porta ut ut dolor.Nullam placerat egestas
-nisl sed sollicitudin.Fusce placerat, ipsum ac vestibulum porta, purus
-dolor mollis nunc, pharetra vehicula nulla nunc quis elit.Duis ornare
-fringilla dui non vehicula.In hac habitasse platea dictumst.Donec
-ipsum lectus, hendrerit malesuada sapien eget, venenatis tempus purus.
-</p>
+ 
 
+<p id="noImage">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque sit amet augue eu magna scelerisque porta ut ut dolor. Nullam placerat egestas nisl sed sollicitudin. Fusce placerat, ipsum ac vestibulum porta, purus dolor mollis nunc, pharetra vehicula nulla nunc quis elit. Duis ornare fringilla dui non vehicula. In hac habitasse platea dictumst. Donec ipsum lectus, hendrerit malesuada sapien eget, venenatis tempus purus.
+</p>
 
     <style>
       div#noImage {
@@ -772,11 +639,10 @@ ipsum lectus, hendrerit malesuada sapien eget, venenatis tempus purus.
         background: linear-gradient(rgba(9, 130, 154, 1), rgba(9, 130, 154, 0.5));
       }
     </style>
+    
 
+Keep in mind that using these techniques does require rendering cycles, which can be significant on mobile. If over-used, you'll lose any benefit you may have gained and it may hinder performance.
 
-これらの手法はレンダリング サイクルを必要とするため、モバイルではパフォーマンスに影響する可能性があります。
-使いすぎると、CSS のメリットが失われるだけでなく、パフォーマンスが低下するおそれもあります。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,43 +1,29 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「オフライン時に URL でステータスコード 200 を返す」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Responds With A 200 When Offline" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-15 #}
-{# wf_published_on: 2016-09-15 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-15 #} {# wf_blink_components: N/A #}
 
-#  オフライン時に URL でステータスコード 200 を返す {: .page-title }
+# Responds With A 200 When Offline {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-Progressive Web App はオフラインでも機能します。オフライン状態でページにアクセスした際に、Lighthouse
-へのレスポンスとして HTTP 200 が返されない場合は、そのページはオフラインで利用できません。
+Progressive web apps work offline. If Lighthouse does not receive an HTTP 200 response when accessing a page while offline, then the page is not accessible offline.
 
+## Recommendations {: #recommendations }
 
-##  監査に合格する方法 {: #how }
+1. Add a service worker to your app.
+2. Use the service worker to cache files locally.
+3. When offline, use the service worker as a network proxy to return the locally cached version of the file.
 
-1. アプリに Service Worker を追加します。
-2. Service Worker を使用して、ローカルにファイルをキャッシュします。
-3. Service Worker
-をネットワーク プロキシとして使用し、オフライン時にローカルにキャッシュしたファイルを返すようにします。
+To learn how to add a service worker into an existing app, see [Adding a Service Worker and Offline Into Your Web App](https://codelabs.developers.google.com/codelabs/offline). Use what you learn in this step-by-step, hands-on codelab to learn how to add a service worker into your own app. This covers steps 1 and 3 above.
 
-既存のアプリに Service Worker
-を追加する方法については、[ウェブアプリに Service Worker を追加してオフラインでの使用を可能にする](https://codelabs.developers.google.com/codelabs/offline) をご覧ください。
-この実践形式のコードラボでは、自身のアプリに Service Worker
-を追加する方法を順を追って説明しています。
-その中に、上記のステップ 1 と 3 の説明も含まれています。
+The codelab above shows you some basics on how to debug your service worker using Chrome DevTools. For more detailed help, see the codelab dedicated to this topic, [Debugging Service Workers](https://codelabs.developers.google.com/codelabs/debugging-service-workers).
 
-上記のコードラボでは、Chrome DevTools を使用して Service Worker をデバッグするための基本的な方法もいくつか紹介されています。
-さらに詳しい内容は、このトピックに特化したコードラボ
-[Debugging Service Workers](https://codelabs.developers.google.com/codelabs/debugging-service-workers)
-をご覧ください。
+Use the [Offline Cookbook](/web/fundamentals/instant-and-offline/offline-cookbook/) to determine which caching strategy fits your app best. This covers step 2 above.
 
-自身のアプリに最適なキャッシュ技術を特定するには、[Offline Cookbook](https://jakearchibald.com/2014/offline-cookbook/) の内容を参考にしてください。
-この記事に、上記のステップ 2 の説明が含まれています。
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse emulates an offline connection using the Chrome Debugging Protocol, and then attempts to retrieve the page using `XMLHttpRequest`.
 
-Lighthouse では、Chorme の Debugging Protocol を使用してオフライン接続をエミュレートし、`XMLHttpRequest` によってページの取得を試みます。
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

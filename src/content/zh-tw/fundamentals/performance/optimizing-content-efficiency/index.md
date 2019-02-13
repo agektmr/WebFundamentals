@@ -1,76 +1,74 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 每個應用程式所下載的資料數量不斷增加。為了提供卓越的效能，我們需要從小處著手，確保每一個位元組的放送過程最佳化！
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# 最佳化內容效率 {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-我們的網路應用程式在範圍、目標和功能上都在不斷增長。這是值得開心的現象！ 但是在邁向內容日趨豐富的網路時代時，過程中也產生了另一種趨勢：每個應用程式所下載的資料量也在持續穩步增長。為了提供卓越的效能，我們需要從小處著手，確保每一個位元組的放送過程最佳化！
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
-
-現代網路應用程式是什麼呢？ [HTTP Archive](http://httparchive.org/){: .external } 可以協助我們回答這個問題。這項專案的用意在於追蹤網路的建構過程，方法是透過定期檢索最受歡迎的網站 (Alexa 百萬熱門網站清單中的前 30 萬個)， 並記錄及匯總每個單獨目標的資源數量、內容類型和其他中繼資料的分析資料。
-
-<img src="images/http-archive-trends.png" class="center" alt="HTTP Archive 趨勢">
-
-<table>
+<table class="">
+  
+<colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>第 50 百分位</th>
-    <th>第 75 百分位</th>
-    <th>第 90 百分位</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
-  <td data-th="類型">HTML</td>
+  <td data-th="type">HTML</td>
   <td data-th="50%">13 KB</td>
   <td data-th="75%">26 KB</td>
   <td data-th="90%">54 KB</td>
 </tr>
 <tr>
-  <td data-th="類型">圖片</td>
+  <td data-th="type">Images</td>
   <td data-th="50%">528 KB</td>
   <td data-th="75%">1213 KB</td>
   <td data-th="90%">2384 KB</td>
 </tr>
 <tr>
-  <td data-th="類型">JavaScript</td>
+  <td data-th="type">JavaScript</td>
   <td data-th="50%">207 KB</td>
   <td data-th="75%">385 KB</td>
   <td data-th="90%">587 KB</td>
 </tr>
 <tr>
-  <td data-th="類型">CSS</td>
+  <td data-th="type">CSS</td>
   <td data-th="50%">24 KB</td>
   <td data-th="75%">53 KB</td>
   <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="類型">其他</td>
+  <td data-th="type">Other</td>
   <td data-th="50%">282 KB</td>
   <td data-th="75%">308 KB</td>
   <td data-th="90%">353 KB</td>
 </tr>
 <tr>
-  <td data-th="類型"><strong>總計</strong></td>
+  <td data-th="type"><strong>Total</strong></td>
   <td data-th="50%"><strong>1054 KB</strong></td>
   <td data-th="75%"><strong>1985 KB</strong></td>
   <td data-th="90%"><strong>3486 KB</strong></td>
 </tr>
 </table>
 
-以上資料呈現了 2013 年 1 月到 2014 年 1 月間，熱門網站使用者下載的資料位元組數量的增長趨勢。當然，並非每個網站都以相同的速率增長，也不是每個網站都需要相同數量的資料，我們也因此重點標出了分佈範圍內幾個不同的分位數：第 50 (中位數)、第 75 和第 90。
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-2014 年初，處於中位數的網站需要進行 75 次請求，共傳輸 1054 KB 位元組的資料。總位元組和請求數量在上一年中穩步增長。這項資訊並不值得意外，但其中蘊藏了重要的效能意涵：的確，網際網路速度越來越快，但在不同國家/地區的增長速度並不一致，而許多使用者仍受制於資料流上限和昂貴的按傳輸量計費方案，尤其在行動裝置上。
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-與電腦上的應用程式不同，網路應用程式不需要獨立的安裝過程：只要輸入網址，然後就會啟動及執行了。這是網路時代的一個關鍵特徵。但是，要做到這一點，**我們通常需要擷取幾十個、有時是幾百個不同的資源，相加起來可高達幾百萬位元組的資料量，並且必須在幾百毫秒內彙聚資訊，以實現我們追求的即時搜尋網路體驗。**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-看看這些要件，要實現即時搜尋網路體驗確實是不小的壯舉，這也正是為什麼最佳化內容效率如此關鍵：消除不必要的下載，透過各種壓縮技術來最佳化資源的傳輸編碼，並利用快取來消除多餘的下載。
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

@@ -1,52 +1,33 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 'HTTPS를 사용하는 사이트' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-19 #}
-{# wf_published_on: 2016-09-19 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-19 #} {# wf_blink_components: N/A #}
 
-# HTTPS를 사용하는 사이트  {: .page-title }
+# Uses HTTPS {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-민감한 데이터를 처리하지 않는 것을 포함하여 모든 웹사이트는 HTTPS로 보호되어야 합니다.
- HTTPS는 침입자가 데이터를 조작하거나
-사이트와 사용자 간의 통신을 수신하지 못하도록 차단합니다.
+All websites should be protected with HTTPS, even ones that don't handle sensitive data. HTTPS prevents intruders from tampering with or passively listening in on the communications between your site and your users.
 
-또한, HTTPS는 많은 새롭고 강력한 웹 플랫폼 기능(예: 사진 촬영 또는 오디오 녹음)을 사용하기 위한
-전제 조건입니다.
+HTTPS is also a prerequisite for many new, powerful web platform features, such as taking pictures or recording audio.
 
-기본적으로 HTTPS에서 실행되지 않으면 Progressive Web App이라고 할 수 없습니다.
- 핵심적인 Progressive Web App 기술 대부분(예: 서비스 워커)에
-HTTPS가 필요하기 때문입니다.
+By definition, an app cannot qualify as a progressive web app if it does not run on HTTPS. This is because many core progressive web app technologies, such as service workers, require HTTPS.
 
-모든 사이트를 HTTPS로 보호해야 하는 이유에 대한 자세한 내용은
-[항상 HTTPS를 사용해야 하는 이유](/web/fundamentals/security/encrypt-in-transit/why-https)를 참조하세요.
+For more information on why all sites should be protected with HTTPS, see [Why You Should Always Use HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https).
 
-## 감사를 통과하는 방법 {: #how }
+## Recommendations {: #recommendations }
 
-사이트를 HTTPS로 마이그레이션합니다.
+Migrate your site to HTTPS.
 
-많은 호스팅 플랫폼(예:
-[Firebase](https://firebase.google.com/docs/hosting/){: .external } 또는 [GitHub
-Pages](https://pages.github.com/){: .external })은 기본적으로 안전합니다.
+Many hosting platforms, such as [Firebase](https://firebase.google.com/docs/hosting/){: .external } or [GitHub Pages](https://pages.github.com/){: .external }, are secure by default.
 
-자체 서버를 운영하고 저렴하고 간단하게 인증서를 생성할 방법을 찾고 있다면
-[Let's Encrypt](https://letsencrypt.org/){: .external }를 참조하세요. 서버에서 HTTPS를 활성화하는 방법에 대한 자세한 내용은
-[전송 데이터
-암호화](/web/fundamentals/security/encrypt-in-transit/enable-https) 문서 집합을 참조하세요.
+If you're running your own servers and need a cheap and easy way to generate certificates, check out [Let's Encrypt](https://letsencrypt.org/){: .external }. For more help on enabling HTTPS on your servers, see the following set of docs: [Encrypting data in transit](/web/fundamentals/security/encrypt-in-transit/enable-https).
 
-이미 HTTPS에서 페이지를 실행하고 있지만 이 감사를 통과하지 못했다면
-혼합된 콘텐츠에 문제가 있을 수 있습니다. 혼합된 콘텐츠는 보안 사이트가
-보호되지 않은(HTTP) 리소스를 요청할 때 나타납니다. 이 상황을 해결하기 위한 자세한 방법은
-Chrome DevTools Security 패널 관련 문서
-[보안 문제 이해](/web/tools/chrome-devtools/debug/security)를 참조하세요.
+If your page is already running on HTTPS but you're failing this audit, then you may have problems with mixed content. Mixed content is when a secure site requests an unprotected (HTTP) resource. Check out the following doc on the Chrome DevTools Security panel to learn how to debug these situations: [Understand security issues](/web/tools/chrome-devtools/debug/security).
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse는 Chrome Debugger Protocol에서
-페이지가 보안 연결에서 실행 중임을 나타내는 이벤트를 기다립니다. 10초 이내에 이벤트를 수신하지 못하면
-감사를 통과하지 못합니다.
+Lighthouse waits for an event from the Chrome Debugger Protocol indicating that the page is running on a secure connection. If the event is not heard within 10 seconds, the audit fails.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

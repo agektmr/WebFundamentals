@@ -1,114 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2016-11-08 #}
-{# wf_published_on: 2016-11-08 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-11-08 #} {# wf_blink_components: Blink>SecurityFeature>CredentialManagement #}
 
-# Credential Management API {: .page-title }
+# The Credential Management API {: .page-title }
 
-{% include "web/_shared/contributors/agektmr.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/agektmr.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-[Credential Management API](https://www.w3.org/TR/credential-management/)는
-여러 기기 간에 원활한 로그인을
-위해 사이트와 브라우저 사이에서 프로그래밍 방식의 인터페이스를 제공하고 로그인 흐름이 막히지 않도록 해주는
-표준 기반 브라우저 API입니다.
+The [Credential Management API](https://www.w3.org/TR/credential-management/) is a standards-based browser API that provides a programmatic interface between the site and the browser for seamless sign-in across devices.
 
-<div class="attempt-right">
-  <figure>
-    <video src="animations/credential-management-smaller.mov" style="max-height: 400px;" autoplay muted loop controls></video>
-    <figcaption>사용자 로그인 흐름</figcaption>
-  </figure>
-</div>
+The Credential Management API:
 
-Credential Management API:
+* **Removes friction from sign-in flows** - Users can be automatically signed back into a site even if their session has expired or they saved credentials on another device.
+* **Allows one tap sign in with account chooser** - Users can choose an account in a native account chooser.
+* **Stores credentials** - Your application can store either a username and password combination or even federated account details. These credentials can be synced across devices by the browser.
 
-* **로그인 흐름을 단순하게** - 세션이 만료되었더라도 사용자를 사이트에 
-  다시 자동으로 로그인 상태로 전환할 수 있습니다.
-* **계정 선택기를 사용해 한 번의 탭으로 로그인 가능** - 로그인 양식을 제거한
-  기본 계정 선택기가 표시됩니다.
-* **인증 정보 저장** - 사용자 이름과 비밀번호 조합 또는 페더레이션된 계정
-  세부정보를 저장할 수 있습니다.
+Key Point: Using the Credential Management API requires the page be served from a secure origin.
 
-실제 사례를 보고 싶으세요? [Credential
-Management API 데모](https://credential-management-sample.appspot.com)를
-사용해보고
-[코드](https://github.com/GoogleChrome/credential-management-sample)도 살펴보세요.
+Want to see it in action? Try the [Credential Management API Demo](https://credential-management-sample.appspot.com) and take a look at the [code](https://github.com/GoogleChrome/credential-management-sample).
 
 <div class="clearfix"></div>
 
+### Check Credential Management API browser support
 
-## Credential Management 구현 절차
+Before using the Credential Management API, first check if `PasswordCredential` or `FederatedCredential` is supported.
 
-Credential Management
-API를 성공적으로 통합하는 방법이 많이 있고
-통합의 구체적인 사항은 사이트의 구조와 사용자 환경에 따라 다르지만, 이 흐름을 사용하는 사이트에는 다음과 같은 사용자 환경 관련 장점이
-있습니다.
+    if (window.PasswordCredential || window.FederatedCredential) {
+      // Call navigator.credentials.get() to retrieve stored
+      // PasswordCredentials or FederatedCredentials.
+    }
+    
 
-* 브라우저에 사용자 인증 정보를 하나만 저장한 기존 서비스 사용자를 즉시
-  로그인시켜 인증이 완료되자마자 로그인된 페이지로
-  리디렉션합니다.
-* 여러 사용자 인증 정보를 저장했거나 자동 로그인을 비활성화한
-  사용자는 한 대화상자에 답해야 웹사이트의 로그인된
-  페이지로 이동할 수 있습니다.
-* 사용자가 로그아웃하면 웹사이트에서는 그 사용자를 자동으로 다시 로그인시키지
-  않습니다.
+Warning: Feature detection by checking `navigator.credentials` may break your website on browsers supporting [WebAuthn](https://www.w3.org/TR/webauthn/)(PublicKeyCredential) but not all credential types (`PasswordCredential` and `FederatedCredential`) defined by the Credential Management API. [Learn more](/web/updates/2018/03/webauthn-credential-management).
 
-핵심 사항: Credential Management API를 사용하려면 안전한 출처에서 페이지를
-제공해야 합니다.
+### Sign in user
 
-### 사용자 인증 정보 검색과 로그인
+To sign in the user, retrieve the credentials from the browser's password manager and use them to log in the user.
 
-사용자를 로그인시키려면 브라우저의 비밀번호 관리자에서
-검색한 인증 정보를 사용하여 사용자 로그인을 수행합니다.
+For example:
 
-예:
+1. When a user lands on your site and they are not signed in, call [`navigator.credentials.get()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get).
+2. Use the retrieved credentials to sign in the user.
+3. Update the UI to indicate the user has been signed in.
 
-1. 사용자가 사이트를 방문할 때 로그인된 상태가 아니라면 
-   `navigator.credential.get()`을 호출합니다.
-2. 검색한 사용자 인증 정보를 사용하여 사용자 로그인을 진행합니다.
-3. 사용자가 로그인되었음을 나타내도록 UI를 업데이트합니다.
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#auto-sign-in).
 
-[인증 정보 검색](/web/fundamentals/security/credential-management/retrieve-credentials)에서
-자세한 내용을 확인할 수 있습니다.
+### Save or update user credentials
 
-### 사용자 인증 정보 저장 또는 업데이트
+If the user signed in with a federated identity provider such as Google Sign-In, Facebook, GitHub:
 
-사용자가 사용자 이름과 비밀번호로 로그인한 경우:
+1. After the user successfully signs in or creates an account, create the [`FederatedCredential`](https://developer.mozilla.org/en-US/docs/Web/API/FederatedCredential) with the user's email address as the ID and specify the identity provider with `FederatedCredentials.provider`.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
-1. 사용자가 올바르게 로그인하거나 계정을 만들거나 비밀번호를 변경한 후,
-   사용자 ID와 비밀번호로 `PasswordCredential`을
-   생성합니다.
-2. `navigator.credentials.store()`를 사용하여 인증 정보 객체를 저장합니다.
+Learn more in [Sign In Users](/web/fundamentals/security/credential-management/retrieve-credentials#federated-login).
 
+If the user signed in with a username and password:
 
-사용자가 Google
-Sign-In, Facebook, GitHub 등과 같이 페더레이션된 ID 제공자를 이용해 로그인한 경우:
+1. After the user successfully signs in or creates an account, create the [`PasswordCredential`](https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential) with the user ID and the password.
+2. Save the credential object using [`navigator.credentials.store()`](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/store).
 
-1. 사용자가 올바르게 로그인하거나 계정을 만들거나 비밀번호를 변경한 후,
-   사용자의 이메일 주소를 ID로 삼아 `FederatedCredential`을
-   생성하고 `.provider`로 ID 제공자를 지정합니다. 
-2. `navigator.credentials.store()`를 사용하여 인증 정보 객체를 저장합니다.
+Learn more in [Save Credentials from Forms](/web/fundamentals/security/credential-management/save-forms).
 
-[인증 정보 저장](/web/fundamentals/security/credential-management/store-credentials)에서
-자세한 내용을 확인할 수 있습니다.
+### Sign out
 
-### 로그아웃
+When the user signs out, call [`navigator.credentials.preventSilentAccess()`](/web/fundamentals/security/credential-management/retrieve-credentials#turn_off_auto_sign-in_for_future_visits) to prevent the user from being automatically signed back in.
 
-사용자가 로그아웃하면 `navigator.credentials.requireUserMediation()`을
-호출하여 사용자가 자동으로 다시 로그인되지 않도록 합니다.
+Disabling auto-sign-in also enables users to switch between accounts easily, for example, between work and personal accounts, or between accounts on shared devices, without having to re-enter their sign-in information.
 
-또한, 자동 로그인을 비활성화하면 사용자가 로그인 정보를 다시 입력할 필요 없이
-예컨대 업무용 계정과 개인용 계정 사이, 또는 공유 기기의
-계정들 사이에서 손쉽게 전환할 수 있습니다.
+Learn more in [Sign out](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out).
 
-[로그아웃](/web/fundamentals/security/credential-management/retrieve-credentials#sign-out)에서
-자세한 내용을 확인할 수 있습니다.
+## Feedback {: #feedback }
 
-
-## 추가 자료
-
-[MDN의 Credential Management API](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,42 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“清單包含簡稱”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains short_name" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 清單包含簡稱 {: .page-title }
+# Manifest Contains short_name {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-在用戶將您的應用添加到主屏幕後，`short_name` 是顯示在主屏幕上您的應用圖標旁的文本。
-一般情況下，在沒有充足的空間顯示應用的完整名稱時使用它。
+After a user adds your app to the homescreen, the `short_name` is the text that is displayed on the homescreen next to your app icon. In general, it is used wherever there is insufficient space to display the full name of your app.
 
+## Recommendations {: #recommendations }
 
-## 如何通過此審查 {: #how }
-
-在您的網絡應用清單中添加一個 `short_name` 屬性。
+Add a `short_name` property in your Web App Manifest.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-Chrome 的[最大建議長度](https://developer.chrome.com/apps/manifest/name#short_name)爲 12 個字符。
+Chrome's [maximum recommended length](https://developer.chrome.com/apps/manifest/name#short_name) is 12 characters.
 
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-有關向您展示如何在應用中正確實現和測試“添加到主屏幕”支持的指南清單，請查看[清單是否存在](manifest-exists#how)。
+Audit passes if the manifest contains either `short_name` or `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-如果清單包含一個 `short_name` 或 `name` 屬性，則表示通過了審查。Lighthouse 提取的清單獨立於 Chrome 當前在
-頁面上使用的清單，這可能會產生不準確的結果。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

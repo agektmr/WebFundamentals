@@ -1,222 +1,240 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: האינטרנט נגיש במגוון עצום של מכשירים. מטלפונים עם מסך קטן ועד לטלביזיות ענק. למד כיצד לבנות אתר שעובד היטב על פני כל המכשירים הללו.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The web is accessible on a huge range of devices, from small-screen phones to big-screen televisions. Each device presents its own benefits and constraints. As a web developer, you are expected to support a full ranges of devices.
 
-{# wf_updated_on: 2014-01-05 #}
-{# wf_published_on: 2013-12-31 #}
+{# wf_updated_on: 2015-10-05 #} {# wf_published_on: 2013-12-31 #}
 
-# האתר הראשון שלך שמותאם למגוון מכשירים {: .page-title }
+# Your First Multi-Device Site {: .page-title }
 
-Caution: This article has not been updated in a while and may not reflect reality. Instead, check out the free [Responsive Web Design](https://www.udacity.com/course/responsive-web-design-fundamentals--ud893){: .external } course on Udacity.
+Caution: This article has not been updated in a while and may not reflect reality. Instead, check out the free [Responsive Web Design](https://www.udacity.com/course/responsive-web-design-fundamentals--ud893) course on Udacity.
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-בניית חוויה ״רב מכשירית״ היא לא קשה כמו שזה נשמע. על ידי מעבר על מדריך זה, נוכל לבנות דף נחיתה למוצר <a href='https://www.udacity.com/course/mobile-web-development--cs256'>CS256 קורס לפיתוח לאתרים ניידים</a><br>שיעבוד היטב על פני מגוון רחב של מכשירים
+<img src="images/finaloutput-2x.jpg" alt="many devices showing the final project" class="attempt-right" />
 
-<img src="images/finaloutput-2x.jpg" alt="many devices showing the final project">
+Creating multi-device experiences is not as hard as it might seem. In this guide, we will build a product landing page for the [CS256 Mobile Web Development course](https://www.udacity.com/course/mobile-web-development--cs256) that works well across different device types.
 
-בנייה עבור מספר מכשירים עם יכולות שונות, דרכי אינטראקציה שונות וכמובן, גדלי מסך שונים יכולה להיראות מרתיעה, אם לא בלתי אפשרית.
+Building for multiple devices with differing capabilities, vastly different screen sizes and interaction methods can seem daunting, if not impossible to get started.
 
-זה לא קשה לבנות אתרים מגיבים באופן מלא כמו שנראה לך. כדי לשכנע, מדריך זה לוקח אותך דרך השלבים צעד אחר צעד. אתה מוזמן להשתמש בו כדי להתחיל.<br> חלקנו את הדרך לשתי צעדים פשוטים:
+It is not as hard to build fully responsive sites as you think, and to show you, this guide takes you through the steps that you can use to get started. We have broken it into two simple steps:
 
-1.  הגדר את (Information Architecture, IA) ובנה את השלד של העמוד.
-2.  הוסף את האלמנטים של העיצוב כדי להפוך את העמוד למותאם ודאג שהוא יראה טוב על מגוון מכשירים וגדלי מסך שונים.
+1. Defining the information architecture (commonly known as IA) and structure of the page,
+2. Adding design elements to make it responsive and look good across all devices.
 
+## Create your content and structure
 
+Content is the most important aspect of any site. So let’s design for the content and not let the design dictate the content. In this guide, we identify the content we need first, create a page structure based on this content, and then present the page in a simple linear layout that works well on narrow and wide viewports.
 
-## צור את התוכן והמבנה 
+### Create the page structure
 
+We have identified we need:
 
-תוכן הוא ההיבט החשוב ביותר של כל אתר. אז רצוי לעצב עבור התוכן ולא לתת לעיצוב להכתיב את התוכן. במדריך זה, אנו מזהים את התוכן שאנחנו צריכים בעדיפות ראשונה, ליצור מבנה דף המבוסס עליו ולאחר מכן, תציג את הדף בפריסה ליניארית שעובדת היטב על viewports הצר ורחב.
+1. An area that describes at a high-level our product "CS256: Mobile web development" course
+2. A form to collect information from users who are interested in our product
+3. An in depth description and video
+4. Images of the product in action
+5. A data table with information to back the claims up
 
+#### TL;DR {: .hide-from-toc }
 
-### צור את מבנה הדף
+* Identify the content you need first.
+* Sketch out Information Architecture (IA) for narrow and wide viewports.
+* Create a skeleton view of the page with content but without styling.
 
-אנו זיהינו שאנחנו צריכים:
+We have also come up with a rough information architecture and layout for both the narrow and wide viewports.
 
-1. קטע שיתאר במבט על את המוצר שלנו: "CS256: Mobile web development"
-2. טופס לאיסוף מידע ממשתמשים שמעוניינים במוצר שלנו
-3. תיאור מעמיק של הוידאו
-4. תמונות שמראות את המוצר בפעולה
-5. טבלת הנתונים עם מידע כדי לגבות את הטענות
+<div class="attempt-left">
+  <figure>
+    <img src="images/narrowviewport.png" alt="Narrow Viewport IA">
+    <figcaption>
+      Narrow Viewport IA
+     </figcaption>
+  </figure>
+</div>
 
+<div class="attempt-right">
+  <figure>
+    <img src="images/wideviewport.png" alt="Wide Viewport IA">
+    <figcaption>
+      Wide Viewport IA
+     </figcaption>
+  </figure>
+</div>
 
+<div style="clear:both;"></div>
 
-אנחנו גם צריכים לבוא עם ארכיטקטורת מידע ופריסה עבור שני viewports הצר ורחב.
-
-<img class="attempt-left" src="images/narrowviewport.png" alt="Narrow Viewport IA">
-<img  class="attempt-right" src="images/wideviewport.png" alt="Wide Viewport IA">
-<div class="clearfix"></div>
-
-
-זה ניתן להמיר בקלות לחלקים של דף שלד שאנו נשתמש לשאר הפרויקט הזה.
+This can be converted easily into the rough sections of a skeleton page that we will use for the rest of this project.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addstructure.html" region_tag="structure" adjust_indentation="auto" %}
 </pre>
 
-### הוסף תוכן לדף
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addstructure.html){: target="_blank" .external }
 
-המבנה הבסיסי של האתר הושלם. אנחנו יודעים את הסעיפים שאנחנו צריכים, תוכן שניתן להציג בסעיפים אלו, והיכן למקם אותו בכללי ארכיטקטורת מידע. כעת אנו יכולים להתחיל לבנות את האתר.
+### Add content to the page
 
-Note: הסטייל יגיע מאוחר יותר.
+The basic structure of the site is complete. We know the sections we need, the content to display in those sections, and where to position it in the overall information architecture. We can now start to build out the site.
 
-#### צור את הכותרת והטופס
+Note: We'll add the styling later
 
-הכותרת וטופס הבקשה הם הרכיבים הקריטיים של בדף שלנו. אלה חייבים להיות מוצגים למשתמש באופן מיידי.
+### Create the headline and form
 
-בכותרת, הוסף טקסט פשוט כדי לתאר את המהלך:
+The headline and request notification form are the critical components of our page. These must be presented to the user immediately.
+
+In the headline, add simple text to describe the course:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addheadline.html" region_tag="headline" adjust_indentation="auto" %}
 </pre>
 
-אנחנו צריכים גם למלא את הטופס. זה יהיה טופס פשוט שאוסף שמות של המשתמשים, מספרי הטלפון שלהם, וזמן נוח להם להתקשרות.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addheadline.html){: target="_blank" .external }
 
-כל הטפסים צריכים תוויות ומצייני מיקום כדי להקל על משתמשים להתמקד באלמנטים, להבין מה הוא אמור ללכת בהם, וגם כדי לעזור לכלי נגישות להבין את המבנה של הטופס. שם התכונה (name attribute) לא רק שולח את ערך הטופס לשרת, הוא משמש גם כדי לתת לי רמז חשוב לדפדפן כיצד למלא באופן אוטומטי את הטופס עבור המשתמש.
+We need to also fill out the form. It will be a simple form that collects the users' name, email address, and phone number.
 
-אנחנו נוסיף סוגים סמנטיים כדי לעשות את זה מהיר ופשוט למשתמשים להיות מסוגלים להזין תוכן במכשיר נייד. לדוגמא, בעת הזנת טלפון מספר, המשתמש צריך רק לראות לוח מקשי חיוג.
+All forms should have labels and placeholders to make it easy for users to focus elements, understand what is supposed to go in them, and to also help accessibility tools understand the structure of the form. The name attribute not only sends the form value to the server, it is also used to give important hints to the browser about how to automatically fill in the form for the user.
+
+We will add semantic types to make it quick and simple for users to be able to enter content on a mobile device. For example, when entering a telephone number, the user should just see a dial pad.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addform.html" region_tag="form" adjust_indentation="auto" %}
 </pre>
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.create-amazing-forms #}
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addform.html){: target="_blank" .external }
 
-#### צור את חלק הוידאו והמידע
+#### Create the Video and Information section
 
-החלק בדף של הוידאו והמידע יכיל יותר עומק. תהיה לה רשימה של התכונות של המוצרים שלנו והחלק הזה, גם יכיל מציין מיקום לוידאו שמראה את המוצר שלנו עובד עבור המשתמש.
+The Video and Information section of content will contain a little more depth. It will have a bulleted list of features of our products and will also contain a video placeholder that shows our product working for the user.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="section1" adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="section1" adjust_indentation="auto" %}
 </pre>
 
-סרטי וידאו משמשים לעתים קרובות כדי לתאר את התוכן באופן אינטראקטיבי, והם משמשים לעתים קרובות כדי להראות הדגמה של מוצר או רעיון.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-על ידי ביצוע שיטות העבודה מומלצת הללו, אתה יכול בקלות לשלב וידאו לתוך האתר שלך:
+Videos are often used to describe content in a more interactive manner and are frequently used to show a demonstration of a product or a concept.
 
-*  להוסיף `תכונת controls` כדי להקל על אנשים את ההפעלה של הווידאו. 
-*  הוסף תמונת `poster` לתת לאנשי תצוגה מקדימה של התוכן. 
-*  הוספה מספר `<source>` אלמנטים המבוססים על פורמטי וידאו נתמכים. 
-*  הוספת טקסט התאמה לאחור כדי לאפשר לאנשים להוריד את הווידאו, אם הם לא יכולים לראות אותו. 
+By following the best practices, you can easily integrate video into your site:
+
+* Add a `controls` attribute to make it easy for people to play the video.
+* Add a `poster` image to give people a preview of the content.
+* Add multiple `<source>` elements based on supported video formats.
+* Add fall-back text to let people download the video if they can't play it in the window.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addvideo.html" region_tag="video" adjust_indentation="auto" %}
 </pre>
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.video #}
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addvideo.html){: target="_blank" .external }
 
-#### צור את חלק התמונות
+#### Create the Images Section
 
-אתרים ללא תמונות יכולים להיות קצת משעממים. ישנם שני סוגים של תמונות:
+Sites without images can be a little boring. There are two types of images:
 
-*  הפוך תמונות תוכן (Content Images) &mdash; תמונות שמוטמעות במסמך משמשות להעברת מידע נוסף על הוכן.
-*  תמונות לסטייל (Stylistic Image) &mdash; תמונות שמשמשות להעניק לאתר מראה משופר. בדרך כלל, אילו הם תמונות רקע או תמונות תבנית. אנו נעבור על זה בחלק הבא [מאמר הבא](#).
+* Content images &mdash; images that are in-line in the document and are used to convey extra information about the content.
+* Stylistic images &mdash; images that are used to make the site look better; often these are background images, patterns and gradients. We will cover this in the [next section](#make-it-responsive).
 
-קטע התמונות בדף שלנו הוא אוסף של תמונות תוכן.
+The Images section in our page is a collection of content images.
 
-תמונות תוכן הן קריטיות להעברת המשמעות של הדף. תחשוב עליהם כמו על התמונות אשר נמצאות בשימוש במאמרי עיתונות. התמונות שאנו משתמשים הן תמונות של המורים על הפרויקט: כריס ווילסון, פיטר לוברס ושון בנט.
+Content images are critical to conveying the meaning of the page. Think of them like the images used in newspaper articles. The images we are using are pictures of the tutors on the project: Chris Wilson, Peter Lubbers and Sean Bennet.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addimages.html" region_tag="images" adjust_indentation="auto" %}
 </pre>
 
-התמונות מוגדרות בקנה מידה לרוחב של המסך 100%. זה עובד גם על מכשירים עם viewport צר, אבל פחות טוב באלה עם viewport רחב (כמו שולחן עבודה). אנחנו ננהל את זה בסעיף responsive design.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addimages.html){: target="_blank" .external }
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.images #}
+The images are set to scale to 100% of the width of the screen. This works well on devices with a narrow viewport, but less well on those with a wide viewport (like desktop). We will manage this in the responsive design section.
 
-ישנם אנשים רבים אשר לא יכולים לראות את התמונות ומשתמשים לעתים קרובות בעזר כגון קורא מסך כדי לנתח את הנתונים בדף וטכנולוגיה להעביר את זה למשתמש באופן מילולי. אתה צריך לוודא שכל התוכן של התמונות יכלול את התג התיאורי `alt` שהקורא המסך יכול לדבר אל המשתמש.
+Many people don't have the ability to view images and often use an assistive technology such as a screen reader that will parse the data on the page and relay that to the user verbally. You should ensure that all your content images have a descriptive `alt` tag that the screen reader can speak out to the user.
 
-בעת הוספה 'תגי alt` יש לוודא שאתה שומר את טקסט alt תמציתי כמו אפשר לתאר את התמונה באופן מלא. לדוגמא בדמו שלנו אנחנו מאתחלים את התכונה להיות "שם: תפקיד", זה מציג מספיק מידע למשתמש להבין כי סעיף זה הוא על המחברים ועל מה העבודה שלהם היא.
+When adding `alt` tags make sure that you keep the alt text as concise as possible to fully describe the image. For example in our demo we simply format the attribute to be "Name: Role", this presents enough information to the user to understand that this section is about the authors and what their job is.
 
-#### הוסף רשימה של מידע
+#### Add the Tabulated Data Section
 
-החלק האחרון הוא טבלה פשוטה המשמשת כדי להראות מספר סטטיסטיקות מוצר ספציפיות.
+The final section is a simple table that is used to show specific product stats about the product.
 
-יש להשתמש בטבלאות רק לנתונים טבלאיים, כלומר, מטריצות של מידע.
+Tables should only be used for tabular data, i.e, matrices of information.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="section3" adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addtable.html" region_tag="section3" adjust_indentation="auto" %}
 </pre>
 
-#### הוסף את החלק התחתון (Footer)
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addtable.html){: target="_blank" .external }
 
-רוב האתרים צריכים כותרת תחתונה כדי להציג תוכן כגון תנאים והגבלות, כתבי ויתור, ותכנים אחרים שאינם אמורים להיות בניווט הראשי או באזור התוכן העיקרי של העמוד.
+#### Add a Footer
 
-באתר שלנו, אנו רק מקשרים לתנאי שימוש, דף יצירת קשר, ופרופילי המדיה החברתית שלנו.
+Most sites need a footer to display content such as Terms and Conditions, disclaimers, and other content that isn't meant to be in the main navigation or in the main content area of the page.
+
+In our site, we'll just create a simple placeholder footer.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/addcontent.html" region_tag="footer" adjust_indentation="auto" %}
 </pre>
 
-### סיכום
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/addcontent.html){: target="_blank" .external }
 
-אנחנו יצרנו את קווי המתאר של האתר וזיהינו את כל האלמנטים מבניים הראשיים. בנוסף, גם דאגנו לכך שיש לנו את כל התוכן העיקרי מוכן ובמקום כדי לספק את הצרכים העסקיים שלנו.
+### Summary
 
-<img class="attempt-left" src="images/content.png" alt="Content">
-<img  class="attempt-right" src="images/narrowsite.png" alt="">
-<div class="clearfix"></div>
+We have created the outline of the site and we have identified all the main structural elements. We have also made sure that we have all the relevant content ready and in-place to satisfy our business needs.
 
+<div class="attempt-left">
+  <figure>
+    <img src="images/content.png" alt="Content">
+    <figcaption>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-without-styles.html">Content and structure</a>
+    </figcaption>
+  </figure>
+</div>
 
-תוכל להבחין כי העמוד נראה נורא עכשיו; זה הוא מכוון. תוכן הוא ההיבט החשוב ביותר של כל אתר ואנחנו צריכים לוודא שיש לנו את האדריכלות הטובה ביותר להצפת המידע. מדריך זה נתן לנו בסיס מצוין לבנות עליו. אנו נשפר את הסטייל של התוכן שלנו במדריך הבא.
+<div class="attempt-right">
+  <figure>
+    <img  src="images/narrowsite.png" alt="Designed site" style="max-width: 100%;">
+    <figcaption>
+      <a href="https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html">Final site</a>
+    </figcaption>
+  </figure>
+</div>
 
+You will notice that the page looks terrible right now; this is intentional. Content is the most important aspect of any site and we needed to make sure we had a good solid information architecture and density. This guide has given us an excellent base to build upon. We will style our content in the next guide.
 
-## הפוך את זה למגיב 
+## Make it responsive {: #make-it-responsive }
 
+The web is accessible on a huge range of devices from small-screen phones through to huge-screen televisions. Each device presents its own unique benefits and also constraints. As a web developer, you are expected to support all ranges of devices.
 
+We are building a site that works across multiple screen sizes and device types. We've crafted the Information Architecture of the page and created a basic structure. In this section, we will take our basic structure with content and turn it into a beautiful page that is responsive across a large number of screen sizes.
 
-האינטרנט נגיש במגוון עצום של מכשירים, מטלפונים קטנים ועד מסכי טלביזיות ענקים. למד כיצד לבנות אתר שעובד היטב בכל המכשירים הללו. כל מכשיר מציג יתרונות ייחודיים משלו וגם אילוצים. כמפתח, אתה אמור לתמוך בכל שלל המכשירים הללו באופן מיטבי.
+Following the principles of Mobile First web development, we start with a narrow viewport &mdash; similar to a mobile phone &mdash; and build for that experience first. Then we scale up to larger device classes. We can do this by making our viewport wider and making a judgment call on whether the design and layout look right.
 
-
-אנחנו בונים אתר שפועל על פני מסך בגדלים שונים ובמגוון מכשירים. [בארכיטקטורת](#)  המידע של הדף ויצרה מבנה בסיסי. במדריך זה, אנחנו ניקח את המבנה הבסיסי שלנו עם תוכן ולהפוך אותו לדף יפה שמגיב למספר רב של גדלי מסך.
-
-<figure class="attempt-left">
-  <img  src="images/content.png" alt="Content">
-  <figcaption><a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-without-styles.html"> Content and structure </a> </figcaption>
-</figure>
-<figure class="attempt-right">
-  <img  src="images/narrowsite.png" alt="Designed site">
-  <figcaption><a href="https://googlesamples.github.io/web-fundamentals/fundamentals/getting-started/your-first-multi-screen-site/content-with-styles.html"> Final site </a> </figcaption>
-</figure>
-<div class="clearfix"></div>
-
-
-בעקבות העקרונות של פיתוח רשת עם מחשבה על ניידים בתחילה, אנחנו מתחילים עם viewport צר &mdash; בדומה לטלפון נייד &mdash; אנו בונים עבור חווית משתמש כזו בתחילה.
-לאחר מכן, אנו עולים למכשירים גדולים יותר.
-אנחנו יכולים לעשות את זה על ידי התאמת ה viewport שלנו למסך רחב יותר וביצוע שיפוטי בשאלה האם העיצוב והפריסה נראים טוב.
-
-מוקדם יותר יצרנו כמה עיצובים ברמת מקרו לאיך התוכן שלנו צריך להיות מוצג. עכשיו אנחנו צריכים להפוך את הדף שלנו לדינמי כך שהוא יוכל להסתגל לפריסות שונות אלה. אנו עושים זאת על ידי קבלת החלטה על היכן למקם את נקודות העצירה שלנו. &mdash; נקודה אשר בה העיצוב משתנה על הדף &mdash; בהתאם לתוכן כך שהוא יותאם לגודל המסך.
+Earlier we created a couple of different high-level designs for how our content should be displayed. Now we need to make our page adapt to those different layouts. We do this by making a decision on where to place our breakpoints &mdash; a point where the layout and styles change &mdash; based on how the content fits the screen-size.
 
 ### TL;DR {: .hide-from-toc }
-- השתמש תמיד בviewport
-- תמיד להתחיל עם viewport צר בהתחלה ורק אז לצאת לממשקים רחבים יותר
-- לבסס את נקודות העצירה שלך כבויות כאשר אתה צריך להתאים את התוכן.
-- ליצור הפשטה ברמה גבוהה של הפריסה שלך על פני נקודות עצירה עקריות.
 
+* Always use a viewport.
+* Always start with a narrow viewport first and scale out.
+* Base your breakpoints off when you need to adapt the content.
+* Create a high-level vision of your layout across major breakpoints.
 
-### הוסף viewport
+### Add a viewport
 
-אפילו לדף בסיסי, אתה **חייב** תמיד להוסיף את תג meta viewport. Viewport הוא המרכיב הקריטי ביותר שאתה צריך לבניית חוויות רב מכשיר. בלי זה, האתר שלך לא יעבוד היטב במכשירים ניידים.
+Even for a basic page, you **must** always include a viewport meta tag. The viewport is the most critical component you need for building multi-device experiences. Without it, your site will not work well on a mobile device.
 
-Viewport מציין לדפדפן שהדף צריך להיות בקנה מידה מסויים כדי להתאים המסך. ישנן תצורות רבות ושונות שניתן לציין ל viewport שלך כדי לשלוט בתצוגה של הדף. בתור ברירת מחדל, אנו ממליצים:
+The viewport indicates to the browser that the page needs to be scaled to fit the screen. There are many different configurations that you can specify for your viewport to control the display of the page. As a default, we recommend:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/viewport.html" region_tag="viewport" adjust_indentation="auto" %}
 </pre>
 
-Viewport מתגורר בראש המסמך, ורק צריך להיות מוכלל פעם אחת.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/viewport.html){: target="_blank" .external }
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.responsive #}
+The viewport lives in the head of the document and only needs to be declared once.
 
-### קבע סגנון פשוט
+### Apply simple styling
 
-לחברה ולמוצר שלנו כבר יש (ברוב המקרים) מדריך מיתוג וגופן ספציפיים. הם מסופקים במדריך הסגנון.
+Our product and company already has a very specific branding and font guide-lines supplied in a style guide.
 
-#### מדריך הסגנון
+#### Style guide
 
-מדריך סגנון הוא דרך יעילה לקבלת הבנה ברמת על של הייצוג החזותי של הדף וזה עוזר לך לוודא שאתה עקבי בכל העיצוב.
+A style guide is a useful way to get a high-level understanding of the visual representation of the page and it helps you ensure that you are consistent throughout the design.
 
-##### צבעים
+#### Colors
 
 <div class="styles" style="font-family: monospace;">
   <div style="background-color: #39b1a4">#39b1a4</div>
@@ -227,18 +245,17 @@ Viewport מתגורר בראש המסמך, ורק צריך להיות מוכלל
   <div style="background-color: #dc4d38">#dc4d38</div>
 </div>
 
-#### הוספת תמונות בסטייל
+#### Add stylistic images
 
-במדריך הקודם, הוספנו תמונות בשם "תמונות תוכן". אלה היו תמונות שהיו חשובות לנרטיב של המוצר שלנו. תמונות סגנונית הן תמונות שאינם נחוצות כחלק מתכני הליבה אבל מוסיפות לעיצוב ותורמות להנחות את תשומת לבו של המשתמש לפיסת התוכן ספציפי.
+<img  src="images/narrowsite.png" alt="Designed site"  class="attempt-right" />
 
-דוגמא טובה לכך היא תמונת כותרת לתוכן "מעל לקפל" (אותו קו שהמשתמש רואה תמיד). הוא משמש לעתים קרובות כדי לפתות את המשתמשים לגלול ולקרוא עוד על המוצר..
+In the previous guide, we added images called "content images". These were images that were important to the narrative of our product. Stylistic images are images that are not needed as part of the core content but add visual flare or help guide the user's attention to a specific piece of content.
 
+A good example of this is a headline image for the 'above the fold' content. It is often used to entice the user to read more about the product.
 
-<img  src="images/narrowsite.png" alt="Designed site">
+They can be very simple to include. In our case, it will be the background to the header and we will apply it via some simple CSS.
 
-
-הם יכולים להיות פשוטים מאוד להכללה על הדף. במקרה שלנו, זה יהיה הרקע לכותרת ואנו נחיל אותו באמצעות כמה חוקי CSS פשוטים.
-
+<div style="clear:both;"></div>
 
     #headline {
       padding: 0.8em;
@@ -249,186 +266,185 @@ Viewport מתגורר בראש המסמך, ורק צריך להיות מוכלל
     }
     
 
-בחרנו תמונת רקע פשוטה שמטושטשת, כך שהיא לא לוקחת מהתוכן ויש לנו להגדיר אותה כ 'cover` על כל האלמנט; באופן שתמיד מותח אוה תוך שמירה על יחס ממדים נכון.
+We have chosen a simple background image that is blurred so it doesn't take away from the content and we have set it to `cover` the entire element; that way it always stretches whilst maintaining the correct aspect ratio.
 
-<div class="clearfix"></div>
+### Set your first breakpoint
 
-
-### קבע את נקודת השבירה הראשונה 
-
-העיצוב מתחיל להיראות רע ברוחב של 600px. במקרה שלנו, את אורכו של הקו הולך מעל 10 מילים (אורך הקריאה האופטימלי), ואותו אנו רוצים לשנות.
+The design starts to look bad at about 600px wide. In our case, the length of the line is going above 10 words (the optimal reading length) and that is where we want to change it.
 
 <video controls poster="images/firstbreakpoint.png" style="width: 100%;">
   <source src="videos/firstbreakpoint.mov" type="video/mov"></source>
   <source src="videos/firstbreakpoint.webm" type="video/webm"></source>
-  <p>סליחה אבל הדפדפן שלך לא תומך בהצגת וידאו
-     <a href="videos/firstbreakpoint.mov">הורד את הוידאו</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/firstbreakpoint.mov">Download the video</a>.
   </p>
 </video>
 
-600px נראה מקום טוב כדי לקבוע נקודת העצירה הראשונה שלנו מפני שהוא ייתן לנו מרווח כדי לשנות את מיקום אלמנטים כדי להפוך אותם מותאמים טוב יותר למסך. אנחנו יכולים לעשות את זה באמצעות טכנולוגיה המכונות [שאילתות מדיה(Media Queries)](/web/fundamentals/design-and-ux/responsive/#use-css-media-queries-for-responsiveness)
-
+600px appears to be a good place to create our first breakpoint as it will give us scope to reposition elements to make them fit the screen better. We can do this using a technology called [Media Queries](/web/fundamentals/design-and-ux/responsive/#use-media-queries).
 
     @media (min-width: 600px) {
     
     }
     
 
-יש יותר מקום על מסך גדול יותר כך יש יותר גמישות עם איך ניתן להציג תוכן.
+There is more space on a larger screen so there is more flexibility with how content can be displayed.
 
-Note: אתה לא צריך להעביר את כל האלמנטים בבת אחת, אתה יכול לבצע התאמות קטנות יותר במידת צורך..
+Note: You don't have to move all the elements at once, you can make smaller adjustments if needed.
 
-בהקשר של דף המוצר שלנו, נראה שאנחנו זקוקים למספר דברים:
+In the context of our product page, it looks like we will need to:
 
-* הגבל את הרוחב המרבי של העיצוב. 
-* שנה את הריפוד של אלמנטים בכדי להקטין את גודל הטקסט. 
-* העבר את הטופס לצוף בקנה אחד עם תוכן הכותרת. 
-* הפוך את הווידאו לצף סביב התוכן. 
-* הקטן את הגודל של התמונות וישר אותם לפי הרשת.
+* Constrain the maximum width of the design.
+* Alter the padding of elements and reduce the text size.
+* Move the form to float in-line with the heading content.
+* Make the video float around the content.
+* Reduce the size of the images and have them appear in a nicer grid.
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.first-break-point #}
+### Constrain the maximum width of the design
 
-### הגבל את הרוחב המירבי של העיצוב
+We have chosen to have only two major layouts: a narrow viewport and a wide viewport, which greatly simplifies our build process.
 
-אנחנו בחרנו רק שתי פריסות עיקריות: תצוגה צרה ותצוגה רחבה, אשר מאוד מפשטות את תהליך הבנייה שלנו.
+We have also decided to create full-bleed sections on the narrow viewport that stay full-bleed on the wide viewport. This means we should constrain the maximum width of the screen so that the text and paragraphs don't extend into one long, single line on ultra-wide screens. We have chosen this point to be about 800px.
 
-החלטתנו גם ליצור מקטעים על viewport הצר שישאר מלא גם על ה viewport הרחב. זה אומר שאנחנו צריכים להגביל את רוחב מרבי של המסך, כך שהטקסט ופסקאות לא התארכו לשורה ארוכה על מסכים רחבים במיוחד. בחרנו נקודה זו להיות על 800px.
+To achieve this, we need to constrain the width and center the elements. We need to create a container around each major section and apply a `margin:
+auto`. This will allow the screen to grow but the content remain centered and at a maximum size of 800px.
 
-כדי להשיג זאת, עלינו להגביל את הרוחב ולמרכז את האלמנטים. אנחנו צריך ליצור מיכל סביב כל סעיף עיקרי ולהחיל `margin: auto`. זה יאפשר המסך לגדול אבל התוכן יישאר מרוכז ובגודל מרבי של 800px.
+The container will be a simple `div` in the following form:
 
-המיכל יהיה 'div' פשוט בצורה הבאה:
-
-    <div class="container">
-    ...
-    </div>
+    <div class="container">...</div>
+    
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="containerhtml"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="containerhtml" adjust_indentation="auto" %}
 </pre>
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="container"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/constrainwidth.html" region_tag="container" adjust_indentation="auto" %}
 </pre>
 
-### התאמת הריפוד ולהקטין את גודל טקסט
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/constrainwidth.html){: target="_blank" .external }
 
-בחלון התצוגה הצר, אין לנו הרבה מקום להצגת תוכן. בשל כך יש להקטין באופן משמעותי את גודל ומשקל הכתב כדי שיתאימו מסך באופן טוב יותר.
+### Alter the padding and reduce text size
 
-עם viewport גדול יותר, אנחנו צריכים לקחת בחשבון שהמשתמש עובד עם מסך גדול יותר אבל גם נמצא רחוק יותר. כדי להגדיל את מידת הקריאות של תוכן, אנו יכולים להגדיל את הגודל ומשקל של הטיפוגרפיה. כמו כן, רצוי לשנות את הריפוד כדי להפוך את האזורים השונים לבולטים יותר.
+On the narrow viewport, we don't have a lot of space to display content so the size and weight of the typography is often drastically reduced to fit the screen.
 
-בדף המוצר שלנו, נוכל להגדיל את הריפוד של אלמנטי הsection על ידי הגדרה שישאר ב5% מהרוחב. אנו גם נגדיל את גודל הכותרות לכל אחד מהסעיפים.
+With a larger viewport, we need to consider that the user is more likely to be on a larger screen but further away. To increase the readability of the content, we can increase the size and weight of the typography and we can also alter the padding to make distinct areas stand out more.
+
+In our product page, we will increase the padding of the section elements by setting it to remain at 5% of the width. We will also increase the size of the headers for each of the sections.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="padding"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/alterpadding.html" region_tag="padding" adjust_indentation="auto" %}
 </pre>
 
-### לשנות את הריפוד ולהקטין את גודל טקסט
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/alterpadding.html){: target="_blank" .external }
 
-Viewport הצר שלנו היה תצוגה ליניארי שנערם. כל קטע עיקרי והתוכן בתוכם הוצג לפי סדר מלמעלה למטה.
+### Adapt elements to wide viewport
 
-Viewport רחב נותן לנו שטח נוסף לשימוש כדי להציג את התוכן בצורה אופטימלית למסך. לדף המוצר שלנו, על פי IA שאנחנו יכולים:
+Our narrow viewport was a stacked linear display. Each major section and the content inside them was displayed in order from top to bottom.
 
-*  הזז את הטופס סביב פרטי הכותרת.
-*  מקם את הווידאו בצד הימין של נקודות מפתח.
-*  קבע את התמונות בפסיפס שיותאם למסך
-*  הגדל את הטבלה
+A wide viewport gives us extra space to use to display the content in an optimal way for that screen. For our product page, this means that according to our IA we can:
 
-#### הצף את (Form) 
+* Move the form around the header information.
+* Position the video to the right of the key points.
+* Tile the images.
+* Expand the table.
 
-המשמעות של Viewport צר היא כי יש לנו הרבה פחות שטח אופקי עבור האלמנטים על המסך.
+#### Float the Form element
 
-כדי לעשות שימוש יעיל יותר של שטח המסך האופקי, אנחנו צריכים לפרוץ של הזרימה ליניארי של הכותרת ולהעביר את הטופס ורשימה להיות זה ליד זה.
+The narrow viewport means that we have a lot less horizontal space available for us to comfortably position elements on the screen.
 
+To make more effective use of the horizontal screen space, we need to break out of the linear flow of the header and move the form and list to be next to each other.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="formfloat"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floattheform.html" region_tag="formfloat" adjust_indentation="auto" %}
 </pre>
 
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="padding"   adjust_indentation="auto" %}
-</pre>
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floattheform.html){: target="_blank" .external }
 
 <video controls poster="images/floatingform.png" style="width: 100%;">
   <source src="videos/floatingform.mov" type="video/mov"></source>
   <source src="videos/floatingform.webm" type="video/webm"></source>
-  <p>סליחה אבל הדפדפן שלך אינו תומך בוידאו
-     <a href="videos/floatingform.mov">הורד את הוידאו</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/floatingform.mov">Download the video</a>.
   </p>
 </video>
 
-#### הצף את אלמנט הוידאו
+#### Float the Video element
 
-הווידאו בממשק viewport צר נועד להיות ברוחב מלא של המסך ואת מיקומו נקבע לאחר הרשימה של התכונות העיקריות. על viewport רחב, הוידאו יהיה בהיקף גדול מדי ונראה שגוי כאשר נמקם אותו ליד רשימת תכונות.
+The video in the narrow viewport interface is designed to be the full width of the screen and positioned after the list of key features. On a wide viewport, the video will scale up to be too large and look incorrect when placed next to our list of features.
 
-אלמנט הווידאו צריך להיות מועבר אל מחוץ לזרימה האנכית של ה viewport הצר ואמור להיות מוצג ליד הרשימה עם תבליטים של תוכן.
-
-<pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="floatvideo"   adjust_indentation="auto" %}
-</pre>
-
-#### סדר את התמונות
-
-התמונות בחלון התצוגה הצרה (מכשירים ניידים בעיקר) מוגדרות להיות ברוחב המלא של המסך ולהערם בצורה אנכית. זה לא מתכוונן היטב לחלון תצוגה רחבה.
-
-כדי להפוך את התמונות כדי שיראו טוב בחלון תצוגה רחבה, אנו נמתח אותן ל30% מרוחב המכל כאשר הוא אופקי (ולא אנכי במבט הצר על המכשיר). אנו גם להוסיף קצת רדיוס גבול ותיבת צל כדי להפוך את התמונות נראות מושכות יותר.
-
-
-<img src="images/imageswide.png" style="width:100%">
+The video element needs to be moved out of the vertical flow of the narrow viewport and should be displayed side-by-side with the bulleted list of content on a wide viewport.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/fixingfirstbreakpoint.html" region_tag="tileimages"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/floatthevideo.html" region_tag="floatvideo" adjust_indentation="auto" %}
 </pre>
 
-#### ליצור תמונות מגיבות ל DPI
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/floatthevideo.html){: target="_blank" .external }
 
-בעת שימוש בתמונות, יש לקחת את הגודל של נקודת מבט ואת הצפיפות של התצוגה בחשבון.
+#### Tile the Images
 
-האינטרנט נבנה למסכי 96 dpi. עם כניסתם של מכשירים ניידים, ראינו גידול ניכר בצפיפות פיקסלים של המסכים הללו. יתרה מכך, במחשבים ניידים יש גם retina . משום כך, תמונות שמקודדות ל96 dpi לעתים קרובות נראה נורא על מכשיר היי dpi.
+<img src="images/imageswide.png" class="attempt-right" />
 
-יש לנו פתרון שלא אומץ באופן נרחב עדיין. עבור דפדפנים שתומכים בה, אתה יכול להציג תמונה בצפיפות גבוהה על תצוגת צפיפות גבוהה.
+The images in the narrow viewport (mobile devices mostly) interface are set to be the full width of the screen and stacked vertically. This doesn't scale well on a wide viewport.
 
+To make the images look correct on a wide viewport, they are scaled to 30% of the container width and laid out horizontally (rather than vertically in the narrow view). We will also add some border radius and box-shadow to make the images look more appealing.
+
+<div style="clear:both;"></div>
+
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/tiletheimages.html" region_tag="tileimages" adjust_indentation="auto" %}
+</pre>
+
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/tiletheimages.html){: target="_blank" .external }
+
+#### Make images responsive to DPI
+
+When using images, take the size of the viewport and the density of the display into consideration.
+
+The web was built for 96dpi screens. With the introduction of mobile devices, we have seen a huge increase in the pixel density of screens not to mention Retina class displays on laptops. As such, images that are encoded to 96dpi often look terrible on a hi-dpi device.
+
+We have a solution that is not widely adopted yet. For browsers that support it, you can display a high density image on a high density display.
 
     <img src="photo.png" srcset="photo@2x.png 2x">
     
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.images #}
+#### Tables
 
-#### אבלאות
+Tables are very hard to get right on devices that have a narrow viewport and need special consideration.
 
-טבלאות הן אלמנט קשה כדי להתאימן על מכשירים שיש להם חלון תצוגה צרה וצריכים התייחסות מיוחדת.
+We recommend on a narrow viewport that you transform your table by changing each row into a block of key-value pairs (where the key is what was previously the column header, and the value is still the cell value). Fortunately, this isn't too difficult. First, annotate each `td` element with the corresponding heading as a data attribute. (This won't have any visible effect until we add some more CSS.)
 
+<pre class="prettyprint">
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/updatingtablehtml.html" region_tag="table-tbody" adjust_indentation="auto" %}
+</pre>
 
-אנו ממליצים על viewport צר שאתה בונה את הטבלה שלך לשתי שורות, ולהחליף את הכותרת ותאים בשורה כדי להפוך אותם לעמודה.
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/updatingtablehtml.html){: target="_blank" .external }
 
+Now we just need to add the CSS to hide the original `thead` and instead show the `data-th` labels using a `:before` pseudoelement. This will result in the multi-device experience seen in the following video.
 
 <video controls poster="images/responsivetable.png" style="width: 100%;">
   <source src="videos/responsivetable.mov" type="video/mov"></source>
   <source src="videos/responsivetable.webm" type="video/webm"></source>
-  <p>현재 브라우저에서 비디오를 지원하지 않습니다.
-     <a href="videos/responsivetable.mov">비디오 다운로드하기</a>.
+  <p>Sorry your browser doesn't support video.
+     <a href="videos/responsivetable.mov">Download the video</a>.
   </p>
 </video>
 
-באתר שלנו, היינו צריכים ליצור נקודת עצירה נוספת רק לתוכן הטבלה. כאשר אתה בונה למכשיר נייד בתחילה, קשה יותר לבטל סגנונות שימושיים. לכן אנחנו חייבים להחליף את ה CSS של ה viewport הצר מה viewport הרחב. זה נותן לנו הפסקה ברורה ועקבית.
+In our site, we had to create an extra breakpoint just for the table content. When you build for a mobile device first, it is harder to undo applied styles, so we must section off the narrow viewport table CSS from the wide viewport css. This gives us a clear and consistent break.
 
 <pre class="prettyprint">
-{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/content-with-styles.html" region_tag="table-css"   adjust_indentation="auto" %}
+{% includecode content_path="web/fundamentals/codelabs/your-first-multi-screen-site/_code/content-with-styles.html" region_tag="table-css" adjust_indentation="auto" %}
 </pre>
 
-### לסיכום
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/codelabs/your-first-multi-screen-site/content-with-styles.html){: target="_blank" .external }
 
-** מזל טוב. ** אם אתה קורא את זה, אתה כבר בנית את העמוד מוצר הראשון שלך שעובד על פני מגוון גדול של מכשירים, גדלי טופס, וגדלי מסכים.
+## Wrapping up
 
+Success: By the time you read this, you will have created your first simple product landing page that works across a large range of devices, form-factors, and screen sizes.
 
-אם תפעל לפי ההנחיות הבאות, אתה תהיה על המסלול להתחלה טובה:
+If you follow these guidelines, you will be off to a good start:
 
-1.  צור IA בסיסי ולמד את מבנה התוכן שלך לפני שאתה מקודד.
-2.  תמיד הגדר viewport.
-3.  צור את החוויה הבסיסית סביב הגישה של mobile-first
-4.  ברגע שיש לך החוויה הניידת, תוכל להגדיל את הרוחב של התצוגה עד שזה לא נראה טוב ולהגדיר נקודת העצירה שם.
-5.  המשך לנסות ולהתאים
-
-
-Translated By: 
-{% include "web/_shared/contributors/greenido.html" %}
-
+1. Create a basic IA and understand your content before you code.
+2. Always set a viewport.
+3. Create your base experience around mobile-first approach.
+4. Once you have your mobile experience, increase the width of the display until it doesn't look right and set your breakpoint there.
+5. Keep iterating.

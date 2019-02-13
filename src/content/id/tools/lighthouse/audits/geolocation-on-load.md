@@ -1,44 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Laman Tidak Secara Otomatis Meminta Geolokasi Saat Pemuatan Laman".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Requesting The Geolocation Permission On Page Load" Lighthouse audit.
 
-{# wf_updated_on: 2016-11-30 #}
-{# wf_published_on: 2016-11-30 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# Laman Tidak Secara Otomatis Meminta Geolokasi Saat Pemuatan Laman  {: .page-title }
+# Avoids Requesting The Geolocation Permission On Page Load {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Pengguna menjadi salah mempercayai atau bingung oleh laman yang secara otomatis meminta
-lokasi mereka saat pemuatan laman. Daripada secara otomatis meminta
-lokasi pengguna saat pemuatan laman, ikatlah permintaan ke isyarat pengguna, misalnya
-pengetukan tombol "Find Stores Near Me". Pastikan isyarat tersebut dengan jelas
-dan secara eksplisit menyatakan kebutuhan akan lokasi pengguna.
+Users are mistrustful of or confused by pages that automatically request their location on page load. Rather than automatically requesting a user's location on page load, tie the request to a user's gesture, such as a tapping a "Find Stores Near Me" button. Make sure that the gesture clearly and explicitly expresses the need for the user's location.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Pada **URL**, Lighthouse melaporkan nomor baris dan kolom dari
-kode Anda yang meminta lokasi pengguna. Buang panggilan ini, dan ikat
-permintaan tersebut ke isyarat pengguna sebagai gantinya. 
+Under **URLs**, Lighthouse reports the line and column numbers where your code is requesting the user's location. Remove these calls, and tie the requests to user gestures instead.
 
-Lihat [Minta izin secara bertanggung jawab][ask] untuk daftar praktik terbaik saat
-meminta lokasi pengguna.
+See [Ask permission responsibly](/web/fundamentals/native-hardware/user-location/#ask_permission_responsibly) for a list of best practices when requesting a user's location.
 
-[ask]: /web/fundamentals/native-hardware/user-location/#ask_permission_responsibly
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+If geolocation permission was already granted to a page before Lighthouse's audit, Lighthouse cannot determine if the page requests the user's location on page load. Reset the permissions and run Lighthouse again. See [Change website permissions](https://support.google.com/chrome/answer/6148059) for more help.
 
-Jika izin geolokasi sudah diberikan ke laman sebelum audit,
-Lighthouse tidak bisa menentukan apakah laman meminta lokasi pengguna
-saat pemuatan laman. Setel ulang izin dan jalankan lagi Lighthouse. Lihat
-[Ubah izin situs web][help] untuk bantuan selengkapnya.
+Lighthouse collects the JavaScript that was executed on page load. If this code contains calls to `geolocation.getCurrentPosition()` or `geolocation.watchPosition()`, and geolocation permission was not already granted, then the user's location was requested.
 
-Lighthouse mengumpulkan JavaScript yang telah dieksekusi saat pemuatan laman. Jika kode ini
-berisi panggilan ke `geolocation.getCurrentPosition()` atau
-`geolocation.watchPosition()`, dan izin geolokasi belum
-diberikan, maka akan diminta lokasi pengguna.
+## Feedback {: #feedback }
 
-[help]: https://support.google.com/chrome/answer/6148059
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

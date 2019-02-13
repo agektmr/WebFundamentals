@@ -1,61 +1,53 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 서버에서 HTTPS를 활성화하는 것은 웹페이지 보안에 매우 중요한 요소입니다.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Enabling HTTPS on your servers is critical to securing your webpages.
 
-{# wf_updated_on: 2018-02-12 #}
-{# wf_published_on: 2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature,Internals>Network>SSL #}
 
-# 서버에서 HTTPS 활성화 {: .page-title }
+# Enabling HTTPS on Your Servers {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
 ### TL;DR {: .hide-from-toc }
 
-* 2048비트 RSA 공개 키/비공개 키 쌍을 만듭니다.
-* 공개 키를 포함하는 CSR(인증서 서명 요청)을 생성합니다.
-* 생성한 CSR을 CA(인증 기관)와 공유하여 최종 인증서 또는 인증서 체인을 받습니다.
-* `/etc/ssl` 등 웹 액세스가 불가능한 곳(Linux 및 Unix)이나 IIS가 인증서를 필요로 하는 곳(Windows)에 최종 인증서를 설치합니다.
+* Create a 2048-bit RSA public/private key pair.
+* Generate a certificate signing request (CSR) that embeds your public key.
+* Share your CSR with your Certificate Authority (CA) to receive a final certificate or a certificate chain.
+* Install your final certificate in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS requires it (Windows).
 
-## 키 및 CSR(인증서 서명 요청) 생성
+## Generating keys and certificate signing requests
 
-이 절에서는 대부분의 Linux, BSD 및 Mac OS X 시스템과 함께 제공되는
-openssl 명령줄 프로그램을 사용하여 비공개 키/공개 키 및 CSR를 생성합니다.
+This section uses the openssl command-line program, which comes with most Linux, BSD, and Mac OS X systems, to generate private/public keys and a CSR.
 
+### Generate a public/private key pair
 
-### 공개 키/비공개 키 쌍 생성
+Let's start by generating a 2,048-bit RSA key pair. A smaller key, such as 1,024 bits, is insufficiently resistant to brute-force guessing attacks. A larger key, such as 4,096 bits, is overkill. Over time, key sizes increase as computer processing gets cheaper. 2,048 is currently the sweet spot.
 
-2,048비트 RSA 키 쌍을 생성하는 작업부터 시작합시다. 1,024비트와 같은
-작은 키는 무차별 암호 대입 공격(brute-force guessing attack)에 대응하는 데 충분하지 않습니다. 4,096비트와
-같은 큰 키는 대응이 과합니다. 시간이 지나면서 컴퓨터 처리 비용이
-저렴해질수록 키 크기는 증가합니다. 현재는 2,048비트가 이상적입니다.
-
-RSA 키 쌍을 생성하기 위한 명령어는 다음과 같습니다.
+The command to generate the RSA key pair is:
 
     openssl genrsa -out www.example.com.key 2048
+    
 
-그러면 다음과 같이 출력됩니다.
+This gives the following output:
 
     Generating RSA private key, 2048 bit long modulus
     .+++
     .......................................................................................+++
     e is 65537 (0x10001)
+    
 
-### 인증서 서명 요청 생성
+### Generate a certificate signing request
 
-이 단계에서는 조직과 웹사이트에 대한 공개 키와 정보를
-인증서 서명 요청(CSR)에 삽입합니다. *openssl*
-명령어는 필요한 메타데이터가 있는지 대화식으로 질문합니다.
+In this step, you embed your public key and information about your organization and your website into a certificate signing request or CSR. The *openssl* command interactively asks you for the required metadata.
 
-다음 명령을 실행하면
+Running the following command:
 
     openssl req -new -sha256 -key www.example.com.key -out www.example.com.csr
+    
 
-다음과 같이 출력됩니다.
+Outputs the following:
 
     You are about to be asked to enter information that will be incorporated
     into your certificate request
-
+    
     What you are about to enter is what is called a Distinguished Name or a DN.
     There are quite a few fields but you can leave some blank
     For some fields there will be a default value,
@@ -69,17 +61,19 @@ RSA 키 쌍을 생성하기 위한 명령어는 다음과 같습니다.
     Team
     Common Name (e.g. server FQDN or YOUR name) []:www.example.com
     Email Address []:webmaster@example.com
-
+    
     Please enter the following 'extra' attributes
     to be sent with your certificate request
     A challenge password []:
     An optional company name []:
+    
 
-CSR의 유효성을 확인하려면 다음 명령을 실행하세요.
+To ensure the validity of the CSR, run this command:
 
     openssl req -text -in www.example.com.csr -noout
+    
 
-응답은 다음과 같습니다.
+And the response should look like this:
 
     Certificate Request:
         Data:
@@ -101,254 +95,183 @@ CSR의 유효성을 확인하려면 다음 명령을 실행하세요.
              5f:05:f3:71:d5:f7:b7:b6:dc:17:cc:88:03:b8:87:29:f6:87:
              2f:7f:00:49:08:0a:20:41:0b:70:03:04:7d:94:af:69:3d:f4:
              ...
+    
 
-### CSR를 인증 기관에 제출
+### Submit your CSR to a certificate authority
 
-인증 기관(CA)으로 CSR을 보낼 때 사용해야 하는 방법은 CA마다
-제각기 다릅니다. 웹사이트에 있는 양식을 사용하거나 이메일로 CSR을 보내는 등
-다양한 방법이 있습니다. 몇몇 CA(또는 해당 재판매업체)는 이 프로세스의 일부 또는 전체(경우에
-따라 키 쌍 및 CSR 생성 포함)를 자동화할
-수도 있습니다.
+Different certificate authorities (CAs) require different methods for sending them your CSRs. Methods may include using a form on their website, sending the CSR by email, or something else. Some CAs (or their resellers) may even automate some or all of the process (including, in some cases, key pair and CSR generation).
 
-CA에 CSR를 보내고 지시에 따라 최종 인증서 또는 인증서 체인을
-받습니다.
+Send the CA to your CSR, and follow their instructions to receive your final certificate or certificate chain.
 
-공개 키 보증 서비스 수수료는 CA마다 다를
-수 있습니다.
+Different CAs charge different amounts of money for the service of vouching for your public key.
 
-복수의 고유한 DNS 이름(예: example.com, www.example.com,
-example.net 및 www.example.net 모두)에 매핑하거나 \*.example.com과 같은 '와일드카드' 이름 등 둘 이상의
-DNS 이름에 키를 매핑하는 옵션도 있습니다.
+There are also options for mapping your key to more than one DNS name, including several distinct names (e.g. all of example.com, www.example.com, example.net, and www.example.net) or "wildcard" names such as \*.example.com.
 
-예를 들어, 한 CA가 현재 다음 가격을 제공하고 있다고 가정합니다.
+For example, one CA currently offers these prices:
 
-* 표준: $16/년, example.com 및 www.example.com에 유효.
-* 와일드카드: $150/년, example.com 및 \*.example.com에 유효.
+* Standard: $16/year, valid for example.com and www.example.com.
+* Wildcard: $150/year, valid for example.com and \*.example.com.
 
-이 가격을 기준으로 계산하면 하위 도메인이 10개 이상인 경우에는 와일드카드 인증서가
-경제적이고, 9개 이하인 경우에는 1개 이상의 단일 이름 인증서를 구입하는 것이 좋습니다. (하위
-도메인이 6개 이상인 경우 서버에서 HTTPS를 사용하도록 설정할 때
-와일드카드 인증서가 더 편리할 것입니다.)
+At these prices, wildcard certificates are economical when you have more than 9 subdomains; otherwise, you can just buy one or more single-name certificates. (If you have more than, say, five subdomains, you might find a wildcard certificate more convenient when you come to enable HTTPS on your servers.)
 
-참고: 와일드카드 인증서에서 와일드카드는 단일 DNS 레이블에만 적용됩니다. \*.example.com에 유효한 인증서는 foo.example.com 및 bar.example.com에는 적용되지만 foo.bar.example.com에는 적용되지 _않습니다_.
+Note: Keep in mind that in wildcard certificates the wildcard applies to only one DNS label. A certificate good for \*.example.com will work for foo.example.com and bar.example.com, but _not_ for foo.bar.example.com.
 
-`/etc/ssl` 등 웹 액세스가 불가능한 곳(Linux 및 Unix)이나 IIS가 인증서를
-필요로 하는 곳(Windows)의 모든 프런트 엔드 서버에 인증서를 복사합니다.
+Copy the certificates to all your front-end servers in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS (Windows) requires them.
 
-## 서버에서 HTTPS 활성화
+## Enable HTTPS on your servers
 
-서버에서 HTTPS 활성화는 웹페이지에 보안을 제공하는 중요한 단계입니다.
+Enabling HTTPS on your servers is a critical step in providing security for your web pages.
 
-* Mozilla의 Server Configuration 도구를 사용하여 HTTPS를 지원하도록 서버를 설정합니다.
-* Qualys의 편리한 SSL Server Test를 통해 사이트를 정기적으로 테스트하여 A 또는 A+ 이상의 등급을 유지합니다.
+* Use Mozilla's Server Configuration tool to set up your server for HTTPS support.
+* Regularly test your site with the Qualys' handy SSL Server Test and ensure you get at least an A or A+.
 
-이 시점에서 중대한 작업 결정을 내려야 합니다. 다음 중 하나를 선택합니다.
+At this point, you must make a crucial operations decision. Choose one of the following:
 
-* 웹 서버에서 처리하는 콘텐츠의 호스트 이름 각각에 대해 고유한 IP 주소를
-  지정합니다.
-* 이름 기반 가상 호스팅을 사용합니다.
+* Dedicate a distinct IP address to each hostname your web server serves content from.
+* Use name-based virtual hosting.
 
-각 호스트 이름에 고유한 IP 주소를 사용해 왔다면 모든 클라이언트에서
-HTTP와 HTTPS 모두를 손쉽게 지원할 수 있습니다.
+If you have been using distinct IP addresses for each hostname, you can easily support both HTTP and HTTPS for all clients.
 
-하지만, 이름 기반 가상 호스팅이 일반적으로 더 편리하므로 대부분의 사이트 운영자는 이를 사용하여 IP
-주소를 유지합니다. Windows XP 및 Android 2.3 이전
-버전 기반의 IE 관련 문제는 HTTPS 이름 기반 가상 호스팅에 중요한 SNI([Server
-Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external})를
-인식하지 않는다는 점입니다.
+However, most site operators use name-based virtual hosting to conserve IP addresses and because it's more convenient in general. The problem with IE on Windows XP and Android earlier than 2.3 is that they do not understand [Server Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI), which is crucial for HTTPS name-based virtual hosting.
 
-SNI를 지원하지 않는 클라이언트는 최신 소프트웨어로
-언젠가 교체될 것이며, 곧 그렇게 되기를 바랍니다. 요청 로그에서 User Agent 문자열을 모니터링하여
-충분한 수의 사용자 모집단이 최신 소프트웨어로 마이그레이션한 때를 파악합니다. (원하는
-임계값을 결정할 수 있습니다. &lt; 5%, &lt; 1% 등으로 지정할 수 있습니다.)
+Someday—hopefully soon—clients that don't support SNI will be replaced with modern software. Monitor the user agent string in your request logs to know when enough of your user population has migrated to modern software. (You can decide what your threshold is; perhaps &lt; 5%, or &lt; 1%.)
 
-서버에서 HTTPS 서비스를 사용할 수 있도록 설정하지 않은 경우 지금 사용하도록
-설정합니다(HTTP에서 HTTPS로 리디렉션하지 않음. 아래 참조). 구입하고 설치한 인증서를 사용하도록
-웹 서버를 구성합니다. [Mozilla의 편리한
-Configuration
-Generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external}가
-유용하다는 것을 확인할 수 있을 것입니다.
+If you don't already have HTTPS service available on your servers, enable it now (without redirecting HTTP to HTTPS; see below). Configure your web server to use the certificates you bought and installed. You might find [Mozilla's handy configuration generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external} useful.
 
-호스트 이름/하위 도메인이 많은 경우 각각 올바른
-인증서를 사용해야 합니다.
+If you have many hostnames/subdomains, they each need to use the right certificate.
 
-Warning: 이미 이런 절차를 완료했지만 클라이언트를 HTTP로 다시 리디렉션하는 용도로만 HTTPS를 사용하고 있다면 지금 사용을 중단하세요. HTTPS와 HTTP가 원활하게 작동하도록 하려면 다음 섹션을 참조하세요.
+Warning: If you've already completed these steps, but are using HTTPS for the sole purpose of redirecting clients back to HTTP, stop doing that now. See the next section to make sure HTTPS and HTTP work smoothly.
 
-참고: 궁극적으로, HTTP 요청을 HTTPS로 리디렉션하고 HSTS(HTTP StrictTransport Security)를 사용해야 합니다. 하지만 이는 이 작업을 수행하기 위한 마이그레이션 프로세스에서 적절한 단계가 아닙니다. 'HTTP를 HTTPS로 리디렉션' 및 'STS(Strict Transport Security) 및 보안 쿠키 설정'을 참조하세요.
+Note: Ultimately you should redirect HTTP requests to HTTPS and use HTTP Strict Transport Security (HSTS). However, this is not the right stage in the migration process to do that; see “Redirect HTTP To HTTPS” and “Turn On Strict Transport Security And Secure Cookies.”
 
-지금뿐만 아니라 사이트 수명 전체에 걸쳐 [Qualys의 편리한 SSL Server Test](https://www.ssllabs.com/ssltest/){: .external }를 사용하여
-HTTPS 구성을 확인하세요. 운영하는 사이트는
-A 또는 A+ 등급을 받아야 하며, 이보다 낮은 등급을 초래하는 모든 원인은 버그로 처리해야 합니다.
-(알고리즘과 프로토콜을 상대로 한 공격은
-항상 발전하므로 현재의 A 등급은 향후 B 등급이 됩니다!)
+Now, and throughout your site's lifetime, check your HTTPS configuration with [Qualys' handy SSL Server Test](https://www.ssllabs.com/ssltest/){: .external }. Your site should score an A or A+; treat anything that causes a lower grade as a bug. (Today's A is tomorrow's B, because attacks against algorithms and protocols are always improving!)
 
-## 사이트 내 URL을 상대 URL로 만들기
+## Make intrasite URLs relative
 
-HTTP뿐만 아니라 HTTPS로도 사이트를 제공하므로 프로토콜에 상관없이
-사이트가 가능한 한 원활하게 작동해야 합니다. 중요한 요소는 사이트 내 링크에 대한
-상대적 URL을 사용하는 것입니다.
+Now that you are serving your site on both HTTP and HTTPS, things need to work as smoothly as possible, regardless of protocol. An important factor is using relative URLs for intrasite links.
 
-사이트 내 URL과 외부 URL이 프로토콜에 구속되지 않도록 해야 합니다. 즉, 상대 경로를 사용하거나 프로토콜을 제외해야 합니다(예: `//example.com/something.js`).
+Make sure intrasite URLs and external URLs are agnostic to protocol; that is, make sure you use relative paths or leave out the protocol like `//example.com/something.js`.
 
-HTTPS를 통해 HTTP 리소스를 포함하는
-페이지를 제공하는 경우 [혼합 콘텐츠](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content)로 알려진 문제가 발생합니다. 브라우저는 사용자에게 HTTPS의 모든 강점이 손실되었다는 내용의 경고를 표시합니다. 실제로, 능동적 혼합 콘텐츠(스크립트, 플러그인, CSS, iframe)의 경우 브라우저가 콘텐츠를 로드 또는 실행하지 않아 페이지가 끊어집니다.
+A problem arises when you serve a page via HTTPS that includes HTTP resources, known as [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content). Browsers warn users that the full strength of HTTPS has been lost. In fact, in the case of active mixed content (script, plug-ins, CSS, iframes), browsers often simply won't load or execute the content at all, resulting in a broken page. And remember, it's perfectly OK to include HTTPS resources in an HTTP page.
 
-참고: HTTP 페이지에 HTTPS 리소스를 포함하는 것은 괜찮습니다.
+Key Point: See [Fixing Mixed Content](/web/fundamentals/security/prevent-mixed-content/fixing-mixed-content) for more details about ways to fix and prevent mixed content.
 
-또한, 사이트 내부에서 다른 페이지에 대한 링크를 포함하는 경우
-HTTPS에서 HTTP로 다운그레이드될 수 있습니다.
+Additionally, when you link to other pages in your site, users could get downgraded from HTTPS to HTTP.
 
-이러한 문제는 페이지에 *http://* 스키마를 사용하는 정규화된 사이트 내 URL이
-포함될 때 발생합니다.
+These problems happen when your pages include fully-qualified, intrasite URLs that use the *http://* scheme.
 
-<p><span class="compare-worse">권장되지 않음</span> — 정규화된 사이트 내 URL을 사용하지 않는 것이 좋습니다.</p>
+<span class="compare-worse">Not recommended</span> — We recommend you avoid using fully qualified intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="http://example.com/jquery.js"></script>
-    <link rel="stylesheet" href="http://assets.example.com/style.css"/>
-    <img src="http://img.example.com/logo.png"/>;
-    <p>Read this nice <a href="http://example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>http://</b>example.com/jquery.js">&lt;/script>
+&lt;link rel="stylesheet" href="<b>http://</b>assets.example.com/style.css"/>
+&lt;img src="<b>http://</b>img.example.com/logo.png"/>;
+&lt;p>A &lt;a href="<b>http://</b>example.com/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-즉, 사이트 내 URL을 가급적 프로토콜에 상대적으로(프로토콜 배제, `//example.com`으로 시작) 또는 호스트에 상대적으로(`/jquery.js`와 같이 경로만으로 시작) 만들어야 합니다.
+In other words, make intrasite URLs as relative as possible: either protocol-relative (lacking a protocol, starting with `//example.com`) or host-relative (starting with just the path, like `/jquery.js`).
 
-<p><span class="compare-better">권장</span> — 프로토콜에 상대적인 사이트 내 URL을 사용하는 것이 좋습니다.</p>
+<span class="compare-better">Recommended</span> — We recommend that you use relative intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="//example.com/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="//example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>/jquery.js</b>">&lt;/script>
+&lt;link href="<b>/styles/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>/images/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-<p><span class="compare-better">권장</span> — 상대적인 사이트 내 URL을 사용하는 것이 좋습니다.</p>
+<span class="compare-better">Recommended</span> — Or, you can use protocol-relative intrasite URLs.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>//example.com/jquery.js</b>">&lt;/script>
+&lt;link href="<b>//assets.example.com/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>//img.example.com/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>//example.com/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-이 작업은 직접 하지 말고 스크립트를 사용하여 수행하세요. 사이트 콘텐츠가 데이터베이스에 포함된 경우
-데이터베이스의 개발 복사본에서 스크립트를 테스트하세요. 사이트
-콘텐츠가 단순한 파일로 구성된 경우 파일의 개발 복사본에서 스크립트를 테스트하세요. 변경 사항이 QA를 통과한 후에만 평상시와 같이 운영 환경에 적용하세요. [Bram van Damme의 스크립트](https://github.com/bramus/mixed-content-scan)나 유사한 스크립트를 사용하여 사이트의 혼합 콘텐츠를 검색할 수 있습니다.
+<span class="compare-better">Recommended</span> — We recommend that you use HTTP**S** URLs for intersite URLs (where possible).
 
-다른 사이트의 리소스를 포함하는 것과 달리 다른 사이트에 연결하는 경우에는
-해당 사이트의 작동 방식을 제어할 수 없으므로
-프로토콜을 변경하지 마세요.
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="/jquery.js">&lt;/script>
+&lt;link href="/styles/style.css" rel="stylesheet"/>
+&lt;img src="/images/logo.png"/>;
+&lt;p>A &lt;a href="/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+&lt;p>Check out this &lt;a href="<b>https://foo.com/</b>">other cool site.&lt;/a>&lt;/p>
+</pre>
 
-Success: 대규모 사이트에 대한 마이그레이션 작업이 더 원활하게 진행되도록 하려면 프로토콜에 상대적인 URL을 사용하는 것이 좋습니다. 아직 HTTPS를 완전히 배포할 수 있을지 확실치 않은 경우에 사이트의 모든 하위 리소스에 대해 HTTPS를 강제로 사용하게 하면 역효과가 날 수 있습니다. 일정 기간 HTTPS가 새롭고 이상할 가능성이 크므로 HTTP 사이트도 계속해서 작동되어야 합니다. 시간이 지남에 따라 마이그레이션을 완료하고 HTTPS를 락인(lock in)할 것입니다(아래 두 섹션 참조).
+Do this with a script, not by hand. If your site’s content is in a database, test your script on a development copy of your database. If your site’s content consists of simple files, test your script on a development copy of the files. Push the changes to production only after the changes pass QA, as normal. You can use [Bram van Damme’s script](https://github.com/bramus/mixed-content-scan) or something similar to detect mixed content in your site.
 
-사이트가 타사(예: CDN 또는 jquery.com)에서
-제공하는 스크립트, 이미지 또는 기타 리소스를 사용하는 경우 두 가지 옵션을 사용할 수 있습니다.
+When linking to other sites (as opposed to including resources from them), don’t change the protocol since you don’t have control over how those sites operate.
 
-* 이러한 리소스에 대해 프로토콜에 상대적인 URL을 사용합니다. 타사에서
-HTTPS를 지원하지 않을 경우 이를 지원하도록 요청합니다. jquery.com을 포함하여 대부분의 업체에서 이미 HTTPS를 지원하고 있습니다.
-* 개발자가 제어하고 HTTP와 HTTPS를 모두 제공하는 서버에서 리소스를
-제공합니다. 이 경우 사이트의 모양, 성능 및 보안을 더 효과적으로 제어할 수 있다는
-장점이 있습니다. 또한,
-타사를 따로 신뢰할 필요가 없습니다.
+Success: To make migration smoother for large sites, we recommend protocol-relative URLs. If you are not sure whether you can fully deploy HTTPS yet, forcing your site to use HTTPS for all sub-resources may backfire. There is likely to be a period of time in which HTTPS is new and weird for you, and the HTTP site must still work as well as ever. Over time, you’ll complete the migration and lock in HTTPS (see the next two sections).
 
-참고: HTML 페이지뿐만 아니라 스타일시트, 자바스크립트, 리디렉션 규칙, `<link>` 태그, CSP 선언에서도 사이트 내 URL을 변경해야 한다는 점을 명심하세요.
+If your site depends on scripts, images, or other resources served from a third party, such as a CDN or jquery.com, you have two options:
 
-## HTTP를 HTTPS로 리디렉션
+* Use protocol-relative URLs for these resources. If the third party does not serve HTTPS, ask them to. Most already do, including jquery.com.
+* Serve the resources from a server that you control, and which offers both HTTP and HTTPS. This is often a good idea anyway, because then you have better control over your site's appearance, performance, and security. In addition, you don't have to trust a third party, which is always nice.
 
-HTTPS가 사이트에 액세스할 수 있는 가장 좋은 방법임을 검색 엔진에 알리려면 [기본 링크](https://support.google.com/webmasters/answer/139066)를 페이지 헤드에 추가해야 합니다.
+Note: Keep in mind that you also need to change intrasite URLs in your stylesheets, JavaScript, redirect rules, `<link>` tags, and CSP declarations, not just in the HTML pages.
 
-페이지에서 `<link rel="canonical" href="https://…"/>` 태그를 설정하세요. 그러면
-검색 엔진이 사이트에 액세스할 수 있는 가장 좋은 방법을 결정하는 데 도움이 됩니다.
+## Redirect HTTP to HTTPS
 
-## STS(Strict Transport Security) 및 보안 쿠키 설정
+You need to put a [canonical link](https://support.google.com/webmasters/answer/139066) at the head of your page to tell search engines that HTTPS is the best way to get to your site.
 
-이제 HTTPS 사용을 '락인(lock in)'할 준비가 되었습니다.
+Set `<link rel="canonical" href="https://…"/>` tags in your pages. This helps search engines determine the best way to get to your site.
 
-* 301 리디렉션 비용을 방지하려면 HSTS(HTTP Strict Transport Security)를 사용하세요.
-* 항상 쿠키에 보안 플래그를 설정하세요.
+## Turn on Strict Transport Security and secure cookies
 
-먼저, [STS(StrictTransportSecurity)](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security)를
-사용하여`http://` 참조를 따르는 경우에도 항상 HTTPS를 통해 서버에
-연결해야 함을 클라이언트에 지시합니다. 이를 통해
-[SSL 스트라이핑](http://www.thoughtcrime.org/software/sslstrip/){: .external }과 같은 공격이 차단되고
-[HTTP를 HTTPS로 리디렉션](#redirect-http-to-https)에서 활성화한 `301 redirect`의
-라운드 트립 비용도 방지됩니다.
+At this point, you are ready to "lock in" the use of HTTPS.
 
-참고: <a href="https://tools.ietf.org/html/rfc6797#section-12.1">사이트의 TLS 구성에 오류가 발생한 경우(예: 만료된 인증서) 알려진 HSTS 호스트로 사이트를 확인한 클라이언트는 <i>실패</i></a>할 가능성이 높습니다. HSTS는 이런 식으로 네트워크 공격자가 클라이언트를 속여 HTTPS로 보호되지 않는 사이트에 액세스하도록 유인할 수 없도록 한다는 명시적으로 목적으로 고안된 기술입니다. 인증서 유효성 검사 오류와 함께 HTTPS 배포를 방지하는 데 충분한 정도로 사이트 운영이 강력하다고 확신하기 전에는 HSTS를 활성화하지 마세요.
+* Use HTTP Strict Transport Security (HSTS) to avoid the cost of the 301 redirect.
+* Always set the Secure flag on cookies.
 
-`Strict-Transport-Security` 헤더를 설정하여 HSTS(HTTP Strict Transport Security)를 설정하세요. [OWASP의 HSTS 페이지에 다양한 서버 소프트웨어에 대한 지침 링크가 나와 있습니다](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security).
+First, use [Strict Transport Security](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) to tell clients that they should always connect to your server via HTTPS, even when following an `http://` reference. This defeats attacks such as [SSL Stripping](http://www.thoughtcrime.org/software/sslstrip/){: .external }, and also avoids the round-trip cost of the `301 redirect` that we enabled in [Redirect HTTP to HTTPS](#redirect-http-to-https).
 
-대부분의 웹 서버는 사용자설정 헤더를 추가하기 위한 유사한 기능을 제공합니다.
+Note: Clients that have noted your site as a known HSTS Host are likely to <a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>hard-fail</i> if your site ever has an error in its TLS configuration</a> (such as an expired certificate). HSTS is explicitly designed this way to ensure that network attackers cannot trick clients into accessing the site without HTTPS. Do not enable HSTS until you are certain that your site operation is robust enough to avoid ever deploying HTTPS with certificate validation errors.
 
-참고: `max-age`는 초 단위로 측정됩니다. 낮은 값부터 시작하고 HTTPS 전용 사이트를 운영하는 데 더 편안해질수록 `max-age`를 점차 높이세요.
+Turn on HTTP Strict Transport Security (HSTS) by setting the `Strict-Transport-Security` header. [OWASP's HSTS page has links to instructions](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security) for various server software.
 
-또한 클라이언트가 HTTP를 통해 쿠키(예:
-인증 또는 사이트 기본 설정용 쿠키)를 전송하지 않도록 하는 것도 중요합니다. 예를 들어, 사용자의
-인증 쿠키가 일반 텍스트 형식으로 노출되면 다른 모든 것이
-올바르더라도 전체 세션의 보안이 보장되지 않게
-됩니다.
+Most web servers offer a similar ability to add custom headers.
 
-따라서, 웹 애플리케이션을 변경하여 항상 이 애플리케이션에서 설정하는
-쿠키에 보안 플래그를 설정하도록 하세요. [이 OWASP 페이지에서는 여러 애플리케이션 프레임워크에서 보안 플래그를 설정하는 방법에 대해 설명합니다](https://www.owasp.org/index.php/SecureFlag). 모든 애플리케이션 프레임워크에는 플래그를 설정하기 위한 방법이 있습니다.
+Note: `max-age` is measured in seconds. You can start with low values and gradually increase the `max-age` as you become more comfortable operating an HTTPS-only site.
 
-대부분의 웹 서버는 단순한 리디렉션 기능을 제공합니다. `301 (Moved Permanently)`를 사용하여
-검색 엔진 및 브라우저에 HTTPS 버전이 기본임을 알리고 사용자를 사이트의 HTTP 버전에서 HTTPS 버전으로 리디렉션하세요.
+It is also important to make sure that clients never send cookies (such as for authentication or site preferences) over HTTP. For example, if a user's authentication cookie were to be exposed in plain text, the security guarantee of their entire session would be destroyed—even if you have done everything else right!
 
-## 마이그레이션 우려 사항
+Therefore, change your web application to always set the Secure flag on cookies that it sets. [This OWASP page explains how to set the Secure flag](https://www.owasp.org/index.php/SecureFlag) in several application frameworks. Every application framework has a way to set the flag.
 
-대부분의 개발자는 HTTP에서 HTTPS로 마이그레이션에 대해 우려합니다.
-Google 웹마스터 팀에서 [우수한 안내 서비스](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J)를 제공합니다.
+Most web servers offer a simple redirect feature. Use `301 (Moved Permanently)` to indicate to search engines and browsers that the HTTPS version is canonical, and redirect your users to the HTTPS version of your site from HTTP.
 
-### 검색 순위
+## Migration concerns
 
-Google은 [HTTPS를 긍정적인 검색 품질 지표로 사용합니다](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html).
-또한 이 검색 순위를 유지하면서
-[사이트 이전, 이동 또는 마이그레이션 방법](https://support.google.com/webmasters/topic/6029673)에
-대한 가이드를 게시하고 있습니다. Bing도 [웹마스터를 위한
-지침](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a)을 게시하고 있습니다.
+Many developers have legitimate concerns about migrating from HTTP to HTTPS. The Google Webmasters Team has some [excellent guidance](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J) available.
 
-### 성능
+### Search ranking
 
-콘텐츠 및 애플리케이션 레이어가 잘 조율된 경우([Steve Souders의
-서적](https://stevesouders.com/){: .external } 참조) 나머지 TLS 성능 우려 사항은
-일반적으로 애플리케이션의 전반적인 비용에 대해
-상대적으로 매우 작은 수준입니다. 또한, 이러한 비용은 절감하고
-상각할 수 있습니다. (TLS 최적화를 비롯한 유용한 정보는 Ilya Grigorik의
-[High Performance BrowserNetworking](https://hpbn.co/)을 참조하세요.) Ivan Ristic의 [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/)과 [Bulletproof SSL 및 TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/)도 참조하세요.
+Google uses [HTTPS as a positive search quality indicator](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html). Google also publishes a guide for [how to transfer, move, or migrate your site](https://support.google.com/webmasters/topic/6029673) while maintaining its search rank. Bing also publishes [guidelines for webmasters](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a).
 
-경우에 따라 TLS는 성능을 _향상_ 시킬 수 있습니다. 이는 주로 HTTP/2가 실현
-가능해졌기 때문입니다. Chris Palmer는 [Chrome Dev Summit 2014에서 HTTPS 및 HTTP/2 성능](/web/shows/cds/2014/tls-all-the-things)에 관한 고찰을 발표했습니다.
+### Performance
 
-### 참조자 헤더
+When the content and application layers are well-tuned (see [Steve Souders' books](https://stevesouders.com/){: .external } for great advice), the remaining TLS performance concerns are generally small, relative to the overall cost of the application. Additionally, you can reduce and amortize those costs. (For great advice on TLS optimization and generally, see [High Performance Browser Networking](https://hpbn.co/) by Ilya Grigorik.) See also Ivan Ristic's [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/) and [Bulletproof SSL And TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/).
 
-사용자 에이전트는 사용자가 HTTPS 사이트의 링크를 따라 다른 HTTP 사이트에 접속할 때 참조자 헤더를 전송하지 않습니다. 이것이 문제라면 다음과 같은 방법을 활용하여 해결할
-수 있습니다.
+In some cases, TLS can *improve* performance, mostly as a result of making HTTP/2 possible. Chris Palmer gave a talk on [HTTPS and HTTP/2 performance at Chrome Dev Summit 2014](/web/shows/cds/2014/tls-all-the-things).
 
-* 다른 사이트를 HTTPS로 마이그레이션해야 합니다. 피참조자 사이트가 이 가이드의 [서버에서 HTTPS 사용](#enable-https-on-your-servers) 섹션을 참조하여 설정을 완료할 수 있는 경우 사이트의 링크를 `http://`에서 `https://`로 변경하거나  프로토콜에 상대적인 링크를 사용할 수 있습니다.
-* 참조자 헤더와 관련한 다양한 문제를 해결하려면 새 [참조자 정책 표준](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta)을 사용하세요.
+### Referer headers
 
-검색 엔진이 HTTPS로 마이그레이션하는 중이기 때문에 HTTPS로 마이그레이션하면 앞으로 _더 많은_ 참조자 헤더를 볼 가능성이 높습니다.
+When users follow links from your HTTPS site to other HTTP sites, user agents don't send the Referer header. If this is a problem, there are several ways to solve it:
 
-Caution: [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3)에 따라, 클라이언트는 참조 페이지가 보안 프로토콜로 이전된 경우 참조자 헤더 필드를 (보안이 유지되지 않는) HTTP 요청에 포함하지 **않아야** 합니다.
+* The other sites should migrate to HTTPS. If referee sites can complete the [Enable HTTPS on your servers](#enable-https-on-your-servers) section of this guide, you can change links in your site to theirs from `http://` to `https://`, or you can use protocol-relative links.
+* To work around a variety of problems with Referer headers, use the new [Referrer Policy standard](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta).
 
-### 광고 수익
+Because search engines are migrating to HTTPS, in the future you are likely see *more* Referer headers when you migrate to HTTPS.
 
-광고를 표시함으로써 사이트의 수익을 내는 사이트 운영자는 HTTPS
-마이그레이션으로 인해 광고 효과가 저하되지 않도록 하기를 원합니다. 하지만, 혼합 콘텐츠
-보안 문제로 인해 HTTP `<iframe>`이 HTTPS 페이지에서 작동하지 않습니다. 여기에 까다로운
-집단 행동 문제가 있습니다. 광고주가 HTTPS를 통해 게시할 때까지
-사이트 운영자는 광고 수익 손실 없이 HTTPS로 마이그레이션할 수
-없습니다. 하지만 사이트 운영자가 HTTPS로 마이그레이션할 때까지 광고주는 HTTPS를 통해 게시할 생각을 거의 갖지 않습니다.
+Caution: According to the [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3), clients **SHOULD NOT** include a Referer header field in a (non-secure) HTTP request if the referring page is transferred with a secure protocol.
 
-광고주는 적어도 HTTPS를 통해 광고 서비스를 제공해야 합니다(이 페이지의
-'서버에서 HTTPS 활성화' 섹션을 참조하여 설정을 완료하는 방법을 통해). 많은 광고주가 이미 이렇게 하고 있습니다. HTTPS를
-전혀 지원하지 않는 광고주에게는 적어도 이를 시작하도록 요청해야 합니다.
-많은 광고주가 제대로 상호 운용할 때까지 개발자는 [사이트 내 URL을 상대 URL로 만들기](#make-intrasite-urls-relative)를 시도하는 것을 연기하고 싶을 수 있습니다.
+### Ad revenue
 
+Site operators that monetize their site by showing ads want to make sure that migrating to HTTPS does not reduce ad impressions. But due to mixed content security concerns, an HTTP `<iframe>` doesn't work in an HTTPS page. There is a tricky collective action problem here: until advertisers publish over HTTPS, site operators cannot migrate to HTTPS without losing ad revenue; but until site operators migrate to HTTPS, advertisers have little motivation to publish HTTPS.
 
-{# wf_devsite_translation #}
+Advertisers should at least offer ad service via HTTPS (such as by completing the "Enable HTTPS on your servers" section on this page. Many already do. You should ask advertisers that do not serve HTTPS at all to at least start. You may wish to defer completing [Make IntraSite URLs relative](#make-intrasite-urls-relative) until enough advertisers interoperate properly.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

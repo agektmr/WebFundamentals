@@ -1,78 +1,81 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: É fácil não dar atenção às condições de rede que seus usuários terão no dispositivo móvel. Use o DevTools para emular diferentes condições de rede. Conserte qualquer problema de tempo de carregamento, seus usuários ficarão gratos.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: It’s easy to overlook the network conditions your users will face on mobile. Use DevTools to emulate different network conditions. Fix any load time issues and your users will thank you.
 
-{# wf_updated_on: 2015-07-20 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# Otimizar desempenho sob condições de rede diversas {: .page-title }
+# Optimize Performance Under Varying Network Conditions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/jonathangarbee.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/jonathangarbee.html" %}
 
-É fácil não dar atenção às condições de rede que seus usuários terão no dispositivo móvel. Use o DevTools para emular diferentes condições de rede. Conserte qualquer problema de tempo de carregamento, seus usuários ficarão gratos.
+<aside class="note">
+  <b>Note:</b> This page is deprecated. At the top of each section, there's a
+  link to an up-to-date page where you can find similar information.
+</aside>
 
+It’s easy to overlook the network conditions your users will face on mobile. Use DevTools to emulate different network conditions. Fix any load time issues and your users will thank you.
 
 ### TL;DR {: .hide-from-toc }
-- Sem afetar o tráfego para outras abas, avalie o desempenho do seu site usando o emulador de rede do Chrome DevTools.
-- Use perfis personalizados específicos das condições de rede do seu público.
 
+- Without affecting traffic to other tabs, evaluate your site''s performance using the Chrome DevTools network emulator.
+- Use custom profiles that are specific to your audiences network conditions.
 
-## Emular a conectividade de rede
+## Emulate network connectivity
 
-O condicionamento da rede permite testar seu site em diversas conexões de rede, incluindo Edge, 3G e até off-line.
-Ele limita a taxa de transferência de download e upload a um máximo.
-A manipulação da latência gera um atraso mínimo no tempo de viagem de ida e volta (RTT) da conexão.
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See <a href="reference#throttling">
+  Simulate network throttling</a> for up-to-date information.
+</aside>
 
-O condicionamento de rede é ativado pelo painel Network.
-Selecione uma conexão no menu suspenso para aplicar a limitação de rede e a manipulação de latência.
+Network conditioning allows you to test your site on a variety of network connections, including Edge, 3G, and even offline. It throttles the maximum download and upload throughput (rate of data transfer). Latency manipulation enforces a minimum delay in connection round-trip time (RTT).
 
-![Selecionar limitação de rede](imgs/throttle-selection.png)
+Network Conditioning is turned on through the Network panel. Select a connection from the dropdown to apply network throttling and latency manipulation.
 
-**Dica**: Você também pode definir limites para a rede pela gaveta 
-[Network conditions](#network-conditions)
+![Select Network Throttle](imgs/throttle-selection.png)
 
-Quando um limite é ativado, o indicador do painel exibe um ícone de aviso.
-Ele visa lembrar você de que a limitação fica ativa quando você está em outros painéis.
+**Tip**: You can also set network throttles via the [Network conditions](#network-conditions) drawer.
 
-![Seletor do painel Network com indicador de aviso](imgs/throttling-enabled.png)
+When a Throttle is enabled the panel indicator will show a warning icon. This is to remind you that throttling is enabled when you are in other panels.
 
-## Limites personalizados
+![Network Panel Selector With Warning Indicator](imgs/throttling-enabled.png)
 
-O DevTools fornece uma base sólida de condições padrão.
-Você pode adicionar condições personalizadas para atender às principais condições do seu público.
+## Custom throttles
 
-Para adicionar uma condição, abra o menu suspenso para aplicá-la.
-No cabeçalho **custom**, encontre e selecione a opção **Add...**.
-Isso abrirá a caixa de diálogo do DevTools com a guia "Throttling" aberta.
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See <a href="reference#throttling">
+  Simulate network throttling</a> for up-to-date information.
+</aside>
 
-![Índice das configurações de limite](imgs/throttle-index.png)
+DevTools provides a solid foundation of default conditions. You may need to add custom conditions to cover your audiences primary conditions.
 
-Primeiramente, clique no botão **Add custom profile**.
-Isso abre um formulário embutido para fornecer as condições dos perfis.
-Preencha o formulário precisamente e pressione o botão **Add** quando atender às suas necessidades.
+To add a condition open the dropdown to apply a condition. Under the **custom** header find and select the **Add...** option. This will open the DevTools settings dialog with the "Throttling" tab open.
 
-![Adicionar limite personalizado nas configurações de limite](imgs/add-custom-throttle.png)
+![Throttle Settings Index](imgs/throttle-index.png)
 
-Você pode modificar um perfil personalizado existente passando o cursor no dado que quiser.
-Com o cursor em cima do dado, os ícones **Edit** e **Delete** são exibidos à direita do campo.
+First, click the **Add custom profile** button. This opens an inline form to supply the profiles conditions. Accurately fill the form out then press the **Add** button when it meets your needs.
 
-![Modificar dado personalizado nas configurações de limite](imgs/hover-to-modify-custom-throttle.png)
+![Throttle Settings Add Custom Throttle](imgs/add-custom-throttle.png)
 
-Agora você pode fechar a caixa de diálogo de configurações.
-Seus novos perfis personalizados serão exibidos no cabeçalho **custom** ara selecionar uma condição.
+You may modify an existing custom profile by hovering the entry. On hover the **Edit** and **Delete** icons are shown to the right of the entry.
 
-## Abrir a gaveta de condições de rede {:#network-conditions}
+![Throttle Settings Modify Custom Entry](imgs/hover-to-modify-custom-throttle.png)
 
-Você pode acessar funções de rede, mesmo com outros painéis do DevTools abertos, com
-a gaveta **Network conditions**. 
+Now you may close the settings dialog. Your new custom profiles will be shown under the **custom** header to select a condition.
 
-![a gaveta network conditions](imgs/network-drawer.png)
+## Open the network conditions drawer {:#network-conditions}
 
-Acesse a gaveta no menu principal do DevTools (**Main Menu** > **More Tools** >
-**Network Conditions**).
+<aside class="note">
+  <b>Note:</b> This page is deprecated. See
+  <a href="reference#network-conditions">Network Conditions drawer</a> for
+  up-to-date information.
+</aside>
 
-![como abrir a gaveta network conditions](imgs/open-network-drawer.png)
+You can access network functions while other DevTools panels are open with the **Network conditions** drawer.
 
+![the network conditions drawer](imgs/network-drawer.png)
 
-{# wf_devsite_translation #}
+Access the drawer from the DevTools main menu (**Main Menu** > **More Tools** > **Network Conditions**).
+
+![opening the network conditions drawer](imgs/open-network-drawer.png)
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

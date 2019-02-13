@@ -1,101 +1,77 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: DevTools 콘솔에서 페이지의 항목 상태를 탐색합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Explore the state of any item on your page from the DevTools console.
 
-{# wf_updated_on: 2015-05-11 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 식 평가 {: .page-title }
+# Evaluate Expressions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/josephmedley.html" %}
-평가 기능 중 하나를 사용하여 DevTools 콘솔에서 페이지의 항목 상태를 탐색합니다.
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/josephmedley.html" %} Explore the state of any item on your page from the DevTools console using one of its evaluation capabilities.
 
-DevTools 콘솔에서는 페이지에 있는 항목 상태를
-바로 알 수 있습니다.
-자바스크립트에 대한 지식과 자바스크립트를 지원하는 여러 가지 기능을 조합하여
-입력한 식을 평가할 수 있습니다.
-
+The DevTools console allows you to learn the state of items in your page in an ad-hoc manner. Evaluate any expression you can type using a combination of your knowledge of JavaScript and several features that support it.
 
 ### TL;DR {: .hide-from-toc }
-- 식을 입력하여 평가합니다.
-- 단축키 중 하나를 사용하여 요소를 선택합니다.
--  <code>inspect()</code>를 사용하여 DOM 요소와 자바스크립트 힙 객체를 검사합니다.
-- $0 - 4를 사용하여 최근에 선택한 요소와 객체에 액세스합니다.
 
+- Evaluate an expression just by typing it.
+- Select elements using one of the shortcuts.
+- Inspect DOM elements and JavaScript heap objects using `inspect()`.
+- Access recently selected elements and objects using $0 - 4.
 
-## 식 탐색
+## Navigate expressions
 
-콘솔은
-<kbd class="kbd">Enter</kbd>를 누르면 입력된 모든 자바스크립트 식을 평가합니다.
-식을 입력하는 동안
-속성 이름 제안이 나타납니다.
-콘솔은 자동완성 및 탭 완성 기능도 제공합니다.
+The console evaluates any JavaScript expression you provide when pressing <kbd class="kbd">Enter</kbd>. As you type an expression, property name suggestions appear; the console also provides auto-completion and tab-completion.
 
-일치 항목이 여러 개 있는 경우
-<kbd class="kbd">↑</kbd>와 <kbd class="kbd">↓</kbd>를 사용하여 해당 항목을 순환할 수 있습니다. <kbd class="kbd">→</kbd>를 누르면 현재 제안이 선택됩니다.
-제안이 한 개 있는 경우
-<kbd class="kbd">Tab</kbd>을 선택하세요.
+If there are multiple matches,
+<kbd class="kbd">↑</kbd> and <kbd class="kbd">↓</kbd> cycles through them. Pressing <kbd class="kbd">→</kbd> selects the current suggestion. If there's a single suggestion,
+<kbd class="kbd">Tab</kbd> selects it.
 
-![콘솔의 간단한 식](images/evaluate-expressions.png)
+![Simple expressions in the console.](images/evaluate-expressions.png)
 
-## 요소 선택
+## Select elements
 
-다음 단축키를 사용하여 요소를 선택합니다.
+Use the following shortcuts to select elements:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">단축키 &amp; 설명</th>
+      <th colspan="2">Shortcut &amp; Description</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Shortcut">$()</td>
-      <td data-th="Description">지정된 CSS 선택기와 일치하는 첫 번째 요소를 반환합니다.  <code>document.querySelector()</code>의 단축키입니다.</td>
+      <td data-th="Description">Returns the first element that matches the specified CSS selector. Shortcut for <code>document.querySelector()</code>.</td>
     </tr>
     <tr>
       <td data-th="Shortcut">$$()</td>
-      <td data-th="Description">지정된 CSS 선택기와 일치하는 모든 요소의 배열을 반환합니다.  <code>document.querySelectorAll()</code>의 별칭입니다.</td>
+      <td data-th="Description">Returns an array of all the elements that match the specified CSS selector. Alias for <code>document.querySelectorAll()</code>.</td>
     </tr>
     <tr>
       <td data-th="Shortcut">$x()</td>
-      <td data-th="Description">지정된 XPath와 일치하는 요소의 배열을 반환합니다.</td>
+      <td data-th="Description">Returns an array of elements that match the specified XPath.</td>
     </tr>
   </tbody>
 </table>
 
-대상 선택의 예:
+Examples of target selection:
 
     $('code') // Returns the first code element in the document.
     $$('figure') // Returns an array of all figure elements in the document.
     $x('html/body/p') // Returns an array of all paragraphs in the document body.
+    
 
-## DOM 요소와 자바스크립트 힙 객체 검사
+## Inspect DOM elements and JavaScript heap objects
 
-`inspect()` 함수는 DOM 요소 또는 자바스크립트 참조를
-매개변수로 사용합니다.
-DOM 요소를 제공하면
-DevTools가 Elements 패널로 이동하여 해당 요소를 표시합니다.
-자바스크립트 참조를 제공하면
-Profile 패널로 이동합니다.
+The `inspect()` function takes a DOM element or JavaScript reference as a parameter. If you provide a DOM element, the DevTools goes to the Elements panel and displays that element. If you provide a JavaScript reference, then it goes to the Profile panel.
 
-이 페이지의 콘솔에서 다음 코드를 실행하면
-이 그림을 가져와서 Elements 패널에 표시합니다.
-이는 `$_` 속성을 사용하여
-마지막으로 평가된 식의 출력을 가져옵니다.
+When this code executes in your console on this page, it grabs this figure and displays it on the Elements panel. This takes advantage of the `$_` property to get the output of the last evaluated expression.
 
     $('[data-target="inspecting-dom-elements-example"]')
     inspect($_)
+    
 
-## 최근에 선택한 요소와 객체에 액세스
+## Access recently selected elements and objects
 
-콘솔은 마지막으로 사용한 다섯 개의 요소와 객체를
-간편히 액세스할 수 있도록 변수에 저장합니다.
-$0 - 4를 사용하여
-콘솔 내에서 해당 요소에 액세스합니다.
-컴퓨터는 0부터 카운트를 시작한다는 점에 유의하세요.
-즉, 최신 항목은 $0이고 가장 오래된 항목은 $4입니다.
+The console stores the last five used elements and objects in variables for easy access. Use $0 - 4, to access these elements from within the console. Remember computers begin counting from 0; this means the latest item is $0 and the oldest item is $4.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

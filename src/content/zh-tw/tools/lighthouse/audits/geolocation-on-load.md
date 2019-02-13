@@ -1,42 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“頁面在加載時不會自動請求地理定位”Lighthouse 審查的參考文檔。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Requesting The Geolocation Permission On Page Load" Lighthouse audit.
 
-{# wf_updated_on: 2016-11-30 #}
-{# wf_published_on: 2016-11-30 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# 頁面在加載時不會自動請求地理定位 {: .page-title }
+# Avoids Requesting The Geolocation Permission On Page Load {: .page-title }
 
-## 爲什麼說此審查非常重要 {: #why }
+## Overview {: #overview }
 
-頁面在加載時自動請求用戶位置會使用戶不信任頁面或感到困惑。
-應將此請求與用戶的手勢（如點按一個“Find Stores Near Me”按鈕）進行關聯，而不是在頁面加載時自動請求用戶的位置。
+Users are mistrustful of or confused by pages that automatically request their location on page load. Rather than automatically requesting a user's location on page load, tie the request to a user's gesture, such as a tapping a "Find Stores Near Me" button. Make sure that the gesture clearly and explicitly expresses the need for the user's location.
 
-確保手勢清楚明確地表達了對用戶位置的需求。
+## Recommendations {: #recommendations }
 
+Under **URLs**, Lighthouse reports the line and column numbers where your code is requesting the user's location. Remove these calls, and tie the requests to user gestures instead.
 
-## 如何通過此審查 {: #how }
+See [Ask permission responsibly](/web/fundamentals/native-hardware/user-location/#ask_permission_responsibly) for a list of best practices when requesting a user's location.
 
-在 **URLs** 下，Lighthouse 報告您的代碼在其中請求用戶位置的行號和列號。
-刪除這些調用，將此請求與用戶手勢進行關聯。
- 
+## More information {: #more-info }
 
-有關請求用戶位置時的最佳做法列表，請參閱[以負責任的方式請求權限][ask]。
+If geolocation permission was already granted to a page before Lighthouse's audit, Lighthouse cannot determine if the page requests the user's location on page load. Reset the permissions and run Lighthouse again. See [Change website permissions](https://support.google.com/chrome/answer/6148059) for more help.
 
+Lighthouse collects the JavaScript that was executed on page load. If this code contains calls to `geolocation.getCurrentPosition()` or `geolocation.watchPosition()`, and geolocation permission was not already granted, then the user's location was requested.
 
-[ask]: /web/fundamentals/native-hardware/user-location/#ask_permission_responsibly
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-如果在 Lighthouse 審查前已向頁面授予地理定位權限，則 Lighthouse 無法確定此頁面在加載時是否請求用戶的位置。重置權限並再次運行 Lighthouse。請參閱[更改網站權限][help]以獲取更多幫助。
-
-
-Lighthouse 收集在頁面加載時執行的 JavaScript。如果此代碼包含對 `geolocation.getCurrentPosition()` 或 `geolocation.watchPosition()` 的調用，且未授予地理定位權限，則會請求用戶的位置。
-
-
-
-
-[help]: https://support.google.com/chrome/answer/6148059
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

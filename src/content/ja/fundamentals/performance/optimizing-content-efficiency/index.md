@@ -1,29 +1,26 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: アプリでダウンロードするデータの量は増え続けています。優れたパフォーマンスを実現するには、データ配信をできるだけ最適化する必要があります。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-{# wf_updated_on: 2015-10-05 #}
-{# wf_published_on: 2014-03-31 #}
-
-#  コンテンツの効率の最適化 {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-ウェブ アプリケーションは、その対象範囲、目標、機能において成長を続けています。これは良いことです。ただし、ウェブを充実させるための絶え間ない進歩は、別の傾向も強めています。各アプリケーションでダウンロードするデータの量が一定のペースで増え続けているのです。優れたパフォーマンスを実現するには、すべてのバイトの配信を最適化する必要があります。
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
-最近のウェブ アプリケーションの現状を知るには、[HTTP Archive](http://httparchive.org/){: .external } のデータが役立つでしょう。このプロジェクトでは、人気のあるサイト（Alexa の上位 100 万のサイトリストから 300,000 サイト以上）を定期的にクロールし、サイト別にリソースの数、コンテンツの種類、その他のメタデータに関する分析を記録し集約することで、ウェブの構築方法を追跡しています。
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-<img src="images/http-archive-trends.png"  alt="HTTP Archive のトレンド">
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
 <table class="">
+  
 <colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>50 パーセンタイル</th>
-    <th>75 パーセンタイル</th>
-    <th>90 パーセンタイル</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
@@ -33,7 +30,7 @@ description: アプリでダウンロードするデータの量は増え続け�
   <td data-th="90%">54 KB</td>
 </tr>
 <tr>
-  <td data-th="type">画像</td>
+  <td data-th="type">Images</td>
   <td data-th="50%">528 KB</td>
   <td data-th="75%">1213 KB</td>
   <td data-th="90%">2384 KB</td>
@@ -51,26 +48,27 @@ description: アプリでダウンロードするデータの量は増え続け�
   <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="type">その他</td>
+  <td data-th="type">Other</td>
   <td data-th="50%">282 KB</td>
   <td data-th="75%">308 KB</td>
   <td data-th="90%">353 KB</td>
 </tr>
 <tr>
-  <td data-th="type"><strong>合計</strong></td>
+  <td data-th="type"><strong>Total</strong></td>
   <td data-th="50%"><strong>1054 KB</strong></td>
   <td data-th="75%"><strong>1985 KB</strong></td>
   <td data-th="90%"><strong>3486 KB</strong></td>
 </tr>
 </table>
 
-上記データは、2013 年 1 月～2014 年 1 月の間に、ウェブ上の人気のある宛先でダウンロードされたバイト数が増加している傾向を捕捉しています。もちろん、すべてのサイトが同じ割合で拡大しているわけではなく、同じデータ量を必要とするわけでもありません。このため、分布内の異なる分位数（50（中央値）、75、90）に注目しています。
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-中央値のサイトは 2014 年初めには 75 のリクエストで構成され、転送されたバイト数は合計 1054 KB になり、合計バイト数（およびリクエスト数）は、前年を通して一定のペースで増加し続けました。これ自体はそれほど驚くことではありませんが、これはパフォーマンスに関する重大な意味を含んでいます。インターネットの速度は確かに向上してはいるものの、高速化の勢いは国によって異なり、特にモバイル ユーザーなど、多くのユーザーはデータ容量の上限と高額の従量性プランにまだ縛られています。
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-デスクトップ アプリケーションと異なり、ウェブ アプリケーションは個別のインストール プロセスを必要としません。URL を入力すれば実行されます。それがウェブの重要な特徴です。しかし、このためには、**数十から数百に及ぶこともあるさまざまなリソースを取得する必要があります。さらに、すべて合計したデータ量はメガバイト単位になることがあり、目的とする瞬時のウェブ エクスペリエンスを実現するには数百ミリ秒単位で一式を提供する必要があります。**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-これらの要件を踏まえて瞬時のウェブ エクスペリエンスを実現するのは並大抵のことではありません。これが、コンテンツの効率を最適化することが重要である理由です。不要なダウンロードを回避し、さまざまな圧縮技術で各リソースの転送エンコードを最適化し、可能な場合に必ずキャッシュを利用することで、ダウンロードをの冗長性を排除するのです。
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

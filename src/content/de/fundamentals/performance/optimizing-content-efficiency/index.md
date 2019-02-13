@@ -1,76 +1,74 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Die Menge der Daten, die von den einzelnen Anwendungen heruntergeladen wird, steigt beständig an. Im Sinne einer hohen Leistungsfähigkeit muss die Bereitstellung eines jeden Bytes optimiert werden!
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: The amount of data downloaded by apps continues to increase over time. To deliver great performance you must optimize data delivery as much as possible.
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Effizienz der Inhalte optimieren {: .page-title }
+# Optimizing Content Efficiency {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Our web applications continue to grow in their scope, ambition, and functionality -- that's a good thing. However, the relentless march toward a richer web is driving another trend: the amount of data downloaded by each application continues to increase at a steady pace. To deliver great performance we need to optimize delivery of each and every byte!
 
+What does a modern web application look like? [HTTP Archive](http://httparchive.org/){: .external } can help us answer this question. The project tracks how the web is built by periodically crawling the most popular sites (300,000+ from the Alexa Top 1M list) and recording and aggregating analytics on the number of resources, content types, and other metadata for each individual destination.
 
-Die Webanwendungen werden immer umfangreicher, ehrgeiziger und funktionsreicher - das ist eine gute Sache. Allerdings bewirkt die ungebremste Entwicklung hin zu einem üppigerem Web einen weiteren Trend: die Datenmengen, die von den einzelnen Anwendungen heruntergeladen werden, nehmen kontinuierlich zu. Im Sinne einer hohen Leistungsfähigkeit muss die Bereitstellung eines jeden Datenbytes optimiert werden!
+<img src="images/http-archive-trends.png"  alt="HTTP Archive trends" />
 
-
-Wie sieht eine moderne Webanwendung aus? Das [HTTP Archive](http://httparchive.org/) kann uns bei der Beantwortung dieser Frage helfen. Mit dem Projekt wird die Entwicklung des Internet verfolgt. Dazu werden die beliebtesten Websites (mehr als 300.000 aus der Liste `Alexa Top 1M`) durchsucht und Analysen zur Anzahl der Ressourcen, zu den Inhaltstypen und zu anderen Metadaten aufgezeichnet und zusammengetragen.
-
-<img src="images/http-archive-trends.png" class="center" alt="Trends laut HTTP Archive">
-
-<table>
+<table class="">
+  
+<colgroup><col span="1"><col span="1"><col span="1"><col span="1"></colgroup>
 <thead>
   <tr>
     <th></th>
-    <th>50. Perzentil</th>
-    <th>75. Perzentil</th>
-    <th>90. Perzentil</th>
+    <th>50th percentile</th>
+    <th>75th percentile</th>
+    <th>90th percentile</th>
   </tr>
 </thead>
 <tr>
-  <td data-th="Typ">HTML</td>
+  <td data-th="type">HTML</td>
   <td data-th="50%">13 KB</td>
   <td data-th="75%">26 KB</td>
   <td data-th="90%">54 KB</td>
 </tr>
 <tr>
-  <td data-th="Typ">Bilder</td>
+  <td data-th="type">Images</td>
   <td data-th="50%">528 KB</td>
   <td data-th="75%">1213 KB</td>
   <td data-th="90%">2384 KB</td>
 </tr>
 <tr>
-  <td data-th="Typ">JavaScript</td>
+  <td data-th="type">JavaScript</td>
   <td data-th="50%">207 KB</td>
   <td data-th="75%">385 KB</td>
   <td data-th="90%">587 KB</td>
 </tr>
 <tr>
-  <td data-th="Typ">CSS</td>
+  <td data-th="type">CSS</td>
   <td data-th="50%">24 KB</td>
   <td data-th="75%">53 KB</td>
   <td data-th="90%">108 KB</td>
 </tr>
 <tr>
-  <td data-th="Typ">Sonstige</td>
+  <td data-th="type">Other</td>
   <td data-th="50%">282 KB</td>
   <td data-th="75%">308 KB</td>
   <td data-th="90%">353 KB</td>
 </tr>
 <tr>
-  <td data-th="Typ"><strong>Gesamt</strong></td>
+  <td data-th="type"><strong>Total</strong></td>
   <td data-th="50%"><strong>1054 KB</strong></td>
   <td data-th="75%"><strong>1985 KB</strong></td>
   <td data-th="90%"><strong>3486 KB</strong></td>
 </tr>
 </table>
 
-Mit den obigen Daten wird die Zunahme der Zahl der heruntergeladenen Bytes für populäre Ziele im Internet zwischen Januar 2013 und Januar 2014 aufgezeigt. Natürlich wächst nicht jede Website mit derselben Geschwindigkeit und benötigt nicht dieselbe Datenmenge. Aus diesem Grund haben wir die verschiedenen Quantile innerhalb der Verteilung hervorgehoben: das 50. (Median), 75. und 90.
+The above data captures the trend in growth of number of downloaded bytes for popular destinations on the web between January 2013 and January 2014. Of course, not every site grows at the same rate or requires the same amount of data, hence the reason why we are highlighting the different quantiles within the distribution: 50th (median), 75th, and 90th.
 
-Eine mediane Website Anfang 2014 besteht aus 75 Anfragen, die zusammen 1054 KB an übertragenen Bytes ergeben, und die Gesamtzahl der Bytes und Anfragen hat während des gesamten vorigen Jahres mit konstanter Geschwindigkeit zugenommen. Diese Tatsache an sich ist nicht allzu überraschend, aber sie führt zu wichtigen Schlussfolgerungen bezüglich der Leistung: Zum einen wird das Internet schneller, allerdings unterscheidet sich dieser Geschwindigkeitszuwachs in den einzelnen Ländern und viele Nutzer müssen immer noch Datenobergrenzen und teuere Tarife in Kauf nehmen - vor allem auf Mobilgeräten.
+A median site at the beginning of 2014 is composed of 75 requests that add up to 1054 KB of total transferred bytes, and the total number of bytes (and requests) has grown at a steady pace throughout the previous year. This by itself should not be all that surprising, but it does carry important performance implications: yes, internet speeds are getting faster, but they are getting faster at different rates in different countries, and many users are still subject to data caps and expensive metered plans - especially on mobile.
 
-Im Gegensatz zu ihren Desktop-Pendants erfordern Webanwendungen keine Installation: Einfach die URL eingeben und schon kann`s losgehen - das ist ein Hauptmerkmal des Internets. Damit dies jedoch möglich wird, **müssen oftmals Dutzende und manchmal Hunderte verschiedener Ressourcen abgerufen werden, die zusammen Megabytes an Daten ergeben können und in Hunderten von Millisekunden zusammengetragen werden müssen, um die unmittelbare Weberfahrung bereitzustellen, die angestrebt wird.**
+Unlike their desktop counterparts, web applications do not require a separate installation process: enter the URL and we are up and running -- that’s a key feature of the web. However, to make this happen **we often have to fetch dozens, and sometime hundreds, of various resources, all of which can add up to megabytes of data and must come together in hundreds of milliseconds to facilitate the instant web experience we are aiming for.**
 
-Angesichts dieser Anforderungen ist die Umsetzung einer unmittelbaren Weberfahrung keine einfache Aufgabe und deshalb ist die Optimierung der Effizienz der Inhalte entscheidend, die folgende Maßnahmen umfasst: Vermeidung unnötiger Downloads, Optimierung der Übertragungscodierung der einzelnen Ressourcen über diverse Komprimierungstechniken und die Nutzung des Cachespeichers wann immer möglich, um redundante Downloads zu eliminieren.
+Achieving an instant web experience in light of these requirements is no small feat, which is why optimizing content efficiency is critical: eliminating unnecessary downloads, optimizing transfer encoding of each resource through various compression techniques, and leveraging caching whenever possible to eliminate redundant downloads.
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

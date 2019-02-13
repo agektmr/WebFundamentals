@@ -1,33 +1,50 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: 'Time to Interactive' Lighthouse 감사의 참조 문서입니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Time to Interactive" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-05 #}
-{# wf_published_on: 2016-10-05 #}
+{# wf_updated_on: 2018-10-01 #} {# wf_published_on: 2018-08-16 #} {# wf_blink_components: Platform>DevTools #}
 
-# Time to Interactive  {: .page-title }
+# Time to Interactive {: .page-title }
 
-## 감사가 중요한 이유 {: #why }
+## Overview {: #overview }
 
-페이지 로드는 사용자가 페이지의 성능을 이해하는 중요한 요소입니다.
- 자세한 내용은 [RAIL 메서드로 성능 측정](/web/fundamentals/performance/rail)을 참조하세요.
+<blockquote>
+  <p>
+    Load is not a single moment in time — it’s an experience that no one metric can fully capture.
+    There are multiple moments during the load experience that can affect whether a user perceives
+    it as "fast" or "slow".
+  </p>
+  <p>--- <a class="external" href="https://w3c.github.io/paint-timing/">Paint Timing spec</a></p>
+</blockquote>
 
-이 사용자가 상호작용할 수 있을 만큼 페이지가 준비되기까지의 시간을
-알아냅니다.
+The Time to Interactive (TTI) metric measures how long it takes a page to become interactive. "Interactive" is defined as the point where:
 
-## 감사를 통과하는 방법 {: #how }
+* The page has displayed useful content, which is measured with [First Contentful Paint](/web/tools/lighthouse/audits/first-contentful-paint).
+* Event handlers are registered for most visible page elements.
+* The page responds to user interactions within 50 milliseconds.
 
-페이지 로드 성능을 개선할 방법에 대한 자세한 내용은 Speed Index 감사의 [감사를 통과하는 방법](speed-index#how) 섹션을
-참조하세요.
-Time to Interactive 점수가 낮을 수록 좋습니다.
+Some sites optimize content visibility at the expense of interactivity. This can create a frustrating user experience. The site appears to be ready, but when the user tries to interact with it, nothing happens.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Recommendations {: #recommendations }
 
-Time to Interactive는 레이아웃이 안정되고,
-주요 웹 글꼴이 보이고, 메인 스레드가 사용자 입력을 처리하기에 충분한 시점으로
-정의됩니다.
+To improve your TTI score, defer or remove unnecessary JavaScript work that occurs during page load. See [Optimize JavaScript Bootup](/web/fundamentals/performance/optimizing-content-efficiency/javascript-startup-optimization/) and [Reduce JavaScript Payloads with Tree Shaking](/web/fundamentals/performance/optimizing-javascript/tree-shaking/), and [Reduce JavaScript Payloads with Code Splitting](/web/fundamentals/performance/optimizing-javascript/code-splitting/).
 
-이 지표는 초기 단계이고 변경될 수 있습니다.
+### Tracking TTI in the real world {: #RUM }
 
+To measure when TTI actually occurs on your users' devices, see [Tracking TTI](/web/fundamentals/performance/user-centric-performance-metrics#tracking_tti). The code snippet describes how to programmatically access TTI data and submit it to Google Analytics.
 
-{# wf_devsite_translation #}
+TTI can be difficult to track in the wild. You may prefer to track [First Input Delay](/web/updates/2018/05/first-input-delay), instead.
+
+## More information {: #more-info }
+
+See [Definition](https://github.com/WICG/time-to-interactive#definition){: .external } for more details on how exactly TTI is calculated.
+
+This metric was previously called Consistently Interactive.
+
+Sources:
+
+* [Audit source](https://github.com/GoogleChrome/lighthouse/blob/master/lighthouse-core/audits/metrics/interactive.js){:.external}
+* [Time to Interactive Explainer](https://github.com/WICG/time-to-interactive){: .external }
+* [First Interactive and Consistently Interactive](https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c){: .external }
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

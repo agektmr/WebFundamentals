@@ -1,31 +1,29 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 対称性を破ることで、プロジェクトにコントラストと魅力を与えます。プロジェクトで非対称のアニメーションを使う場面と、その方法について学習します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Breaking symmetry provides contrast and appeal to your projects. Learn when and how to apply this to your projects.
 
-{# wf_updated_on:2014-10-21 #}
-{# wf_published_on:2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# タイミングを変えてアニメーションを表示する {: .page-title }
+# Asymmetric animation timing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-場面に応じてアニメーションのタイミングを変えることで、オリジナリティを出しつつ、ユーザー操作に迅速に応答してユーザー エクスペリエンスを向上させることができます。さらに、コントラストを強調し、インターフェースをより魅力的に見えるようにすることが可能です。
+Asymmetric animation timing improves the user experience by allowing you to express personality while at the same time respond quickly to user interactions. It also provides contrast to the feel, which makes the interface more visually appealing.
 
 ### TL;DR {: .hide-from-toc }
-* さまざまなタイミングでアニメーションを表示して、独創的でコントラストの効いた画面に仕上げます。
-* 常にユーザー操作を優先します。タップやクリックに対する応答期間は短くし、それ以外の場合は応答時間を長くします。
 
+* Use asymmetric animation timing to add personality and contrast to your work.
+* Always favor the user's interaction; use shorter durations when responding to taps or clicks, and reserve longer durations for times when you aren't.
 
-アニメーションに関する「ルール」でよく言われているように、自身のアプリケーションに合うアニメーションを見つけるためには試行錯誤を重ねる必要があります。ただ、ユーザー エクスペリエンスに関して言えば、ユーザーは辛抱強くありません。経験則では、**ユーザーの操作に対しては常に迅速に応答**することが重要です。ほとんどの場合、ユーザーのアクションは非対称であるため、アニメーションも非対称にすることができます。
+Like most "rules" of animation, you should experiment to find out what works for your application, but when it comes to the user experience, users are notoriously impatient. The rule of thumb is to **always respond to a user interaction quickly**. That said, most of the time the user's action is asymmetric, and therefore the animation can be, too.
 
-たとえば、ユーザーがサイドバー ナビゲーションを表示するためにタップした場合は、100 ミリ秒くらいで、できるだけ迅速に表示する必要があります。ただし、ユーザーがメニューを閉じるときは、もう少し余裕をもって 300 ミリ秒くらいで、ゆっくりとビューをアニメーション化します。
+For example, when a user taps to display a sidebar navigation, you should display it as quickly as possible, with a duration of around 100ms. When the user dismisses the menu, however, you can afford to animate the view out a little more slowly, say, around the 300ms mark.
 
-一方、モーダル ビューを使用してエラーまたは他の重要なメッセージを表示する場合は、これと逆になります。このようなケースでは、300 ミリ秒くらいで少し遅めにビューを表示します。そしてユーザー操作でビューを非表示にする際は、迅速に消す必要があります。
+By contrast, when you bring on a modal view, this is normally to display an error or some other critical message. In such cases, you will want to bring on the view a little more slowly, again around the 300ms mark, but dismissal, which the user triggers, should happen very quickly.
 
-一般的な経験則は次のとおりです。
+The general rule of thumb, then, is the following:
 
-* ユーザーの操作によってトリガーされた UI アニメーションの場合、ビュー トランジションまたは要素の表示は、最初は高速（継続時間を短く）、最後は低速（継続時間を長く）にするのが原則です。
-* 一方、エラーまたはモーダル ビューなどのコードによってトリガーされた UI アニメーションの場合は、最初は低速に（継続時間を長く）、最後は高速（継続時間を短く）にするのが原則です。
+* For UI animations triggered by a user’s interaction, such as view transitions or showing an element, have a fast intro (short duration), but a slow outro (longer duration).
+* For UI animations triggered by your code, such as errors or modal views, have a slower intro (longer duration), but a fast outro (short duration).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

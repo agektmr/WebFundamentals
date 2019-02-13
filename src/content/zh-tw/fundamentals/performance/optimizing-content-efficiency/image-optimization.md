@@ -1,51 +1,41 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 網頁上大部分的下載位元組通常都是圖片，而且圖片也常常佔據了廣大的視覺空間。因此，只要將圖片最佳化，就能節省大量位元組，並提升網站的效能：瀏覽器要下載的位元組愈少，用戶端頻寬的爭用情況就越少，瀏覽器下載速度就可提升，並在螢幕上顯示實用的內容。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml
 
-{# wf_updated_on: 2014-05-09 #}
-{# wf_published_on: 2014-05-06 #}
+{# wf_updated_on: 2018-08-30 #} {# wf_published_on: 2014-05-06 #} {# wf_blink_components: Blink>Image #}
 
-# 圖片最佳化 {: .page-title }
+# Image Optimization {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+Images often account for most of the downloaded bytes on a web page and also often occupy a significant amount of visual space. As a result, optimizing images can often yield some of the largest byte savings and performance improvements for your website: the fewer bytes the browser has to download, the less competition there is for the client's bandwidth and the faster the browser can download and render useful content on the screen.
 
+Image optimization is both an art and science: an art because there is no one definitive answer for how best to compress an individual image, and a science because there are many well developed techniques and algorithms that can significantly reduce the size of an image. Finding the optimal settings for your image requires careful analysis along many dimensions: format capabilities, content of encoded data, quality, pixel dimensions, and more.
 
-網頁上大部分的下載位元組通常都是圖片，而且圖片也常常佔據了廣大的視覺空間。因此，只要將圖片最佳化，就能節省大量位元組，並提升網站的效能：瀏覽器要下載的位元組愈少，用戶端頻寬的爭用情況就越少，瀏覽器下載速度就可提升，並在螢幕上顯示實用的內容。
-
-
-
-圖片最佳化不僅是藝術，也是一門科學。這是藝術，因為每個圖片都獨一無二，要如何才可將圖片妥善壓縮，我們沒有絕對的答案。這同時也是科學，因為目前已有開發完善的技術，可以大幅降低圖片大小。如要找出圖片的最佳設定，您需要仔細分析許多面向：例如格式的能力、編碼資料的內容、品質、像素維度等等。
-
-##清除及取代圖片
+## Eliminating and replacing images
 
 ### TL;DR {: .hide-from-toc }
-- 消除不必要的圖片資源
-- 儘量運用 CSS3 效果
-- 使用網路字型，避免在圖片中將文字編碼
 
+* Eliminate unnecessary image resources
+* Leverage CSS3 effects where possible
+* Use web fonts instead of encoding text in images
 
-請先問自己一個問題：這張圖片真的能達成預期的效果嗎？ 良好的設計通常都很簡單，而且能產生最佳的效能。與 HTML、CSS、JavaScript 等網頁資產相比，圖片相對會佔用較多的位元組。如果您能將圖片資源清除，這通常就是最棒的最佳化策略了。話說回來，如果將圖片放在適當的位置，有效傳達的資訊將勝過千言萬語。因此，如何取捨就看您自己了。
+The very first question you should ask yourself is whether an image is, in fact, required to achieve the effect you are after. Good design is simple and will also always yield the best performance. If you can eliminate an image resource, which often requires a large number of bytes relative to HTML, CSS, JavaScript and other assets on the page, then that is always the best optimization strategy. That said, a well-placed image can also communicate more information than a thousand words, so it is up to you to find that balance.
 
-接下來，您應該考量是否有替代技術可以更經濟有效率的方式，達成您預期的結果：
+Next, you should consider if there is an alternative technology that could deliver the desired results, but in a more efficient manner:
 
-* **CSS 效果** (漸層、陰影等) 和 CSS 動畫可用來產生不受解析度限制的資產。無論解析度高低或縮放大小為何，這類資產都能常保清晰，而且所需的位元組遠比圖片檔案少。
-* **網路字型**不僅可呈現美觀的字型，也保留了選取、搜尋及調整文字大小的功能，大幅提升使用上的便利性。
+* **CSS effects** (gradients, shadows, etc.) and CSS animations can be used to produce resolution-independent assets that always look sharp at every resolution and zoom level, often at a fraction of the bytes required by an image file.
+* **Web fonts** enable use of beautiful typefaces while preserving the ability to select, search, and resize text - a significant improvement in usability.
 
-如果您採用了將文字編碼嵌入圖片的方式，請立即停下來重新考慮。就良好的設計、品牌宣傳和可讀性來說，優美的字型自然是關鍵的要素。但是嵌入圖片的文字卻會導致負面的使用者體驗，因為這類文字無法搜尋、縮放、無法剖析，而且在高 DPI 裝置上顯示的效果也不好。雖然使用網路字型時必須遵循[專屬的最佳化流程](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/){: .external}，但是網路字型解決了所有的疑問，絕對是顯示文字的最佳選擇。
+If you ever find yourself encoding text in an image asset, stop and reconsider. Great typography is critical to good design, branding, and readability, but text-in-images delivers a poor user experience: the text is not selectable, not searchable, not zoomable, not accessible, and not friendly for high-DPI devices. The use of web fonts requires its [own set of optimizations](https://www.igvita.com/2014/01/31/optimizing-web-font-rendering-performance/), but it addresses all of these concerns and is always a better choice for displaying text.
 
-
-## 向量和點陣圖片
+## Vector vs. Raster images
 
 ### TL;DR {: .hide-from-toc }
-- 向量圖片非常適用於由幾何圖形組成的圖片
-- 向量圖片不受縮放和解析度的影響
-- 如果複雜的畫面中包含許多不規則的圖形和細節，請使用點陣圖片
 
+* Vector images are ideal for images that consist of geometric shapes
+* Vector images are zoom and resolution-independent
+* Raster images should be used for complex scenes with lots of irregular shapes and details
 
-確定圖片就是可達成您預期效果的最佳媒體後，下一個關鍵抉擇就是選取適合的格式：
-
-&nbsp;
+Once you've determined that an image is, in fact, the optimal format to achieve the desired effect, the next critical choice is to select the appropriate format:
 
 <div class="attempt-left">
   <figure>
@@ -53,6 +43,7 @@ description: 網頁上大部分的下載位元組通常都是圖片，而且圖�
     <figcaption>Zoomed-in vector image</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
     <img src="images/raster-zoom.png" alt="Zoomed-in raster image">
@@ -60,74 +51,73 @@ description: 網頁上大部分的下載位元組通常都是圖片，而且圖�
   </figure>
 </div>
 
-* [向量圖片](http://en.wikipedia.org/wiki/Vector_graphics){: .external}會使用線條、圓點和多邊形呈現圖片。
-* [點陣圖片](http://en.wikipedia.org/wiki/Raster_graphics){: .external}會將每個像素的值嵌入正方形網格內。
+<div style="clear:both;"></div>
 
-兩種格式各有優缺點。向量格式適合由簡單幾何圖形組成的圖片 (例如標誌、文字、圖示等等)，無論解析度高低或縮放大小為何，都可顯示清晰的圖片，因此也非常適合高解析度的螢幕和需要在不同大小顯示的資產。
+* [Vector graphics](https://en.wikipedia.org/wiki/Vector_graphics) use lines, points, and polygons to represent an image.
+* [Raster graphics](https://en.wikipedia.org/wiki/Raster_graphics) represent an image by encoding the individual values of each pixel within a rectangular grid.
 
-不過，當畫面非常複雜 (例如相片)，向量格式就顯得使不上力：即使描述所有圖形的 SVG 標記數量高得嚇人，結果看起來還是缺乏「真實感」。如果發生這種情況，您就應該考慮使用點陣圖片格式，例如 GIF、PNG、JPEG 或 JPEG-XR 和 WebP 這類較新的格式。
+Each format has its own set of pros and cons. Vector formats are ideally suited for images that consist of simple geometric shapes (for example, logos, text, icons, and so on), and deliver sharp results at every resolution and zoom setting, which makes them an ideal format for high-resolution screens and assets that need to be displayed at varying sizes.
 
-點陣圖片並沒有不受解析度高低和縮放大小影響的屬性，當您放大點陣圖片時，將會看到鋸齒狀和模糊的影像。因此，您可能需要為點陣圖片儲存多個解析度的版本，才能為使用者提供最佳體驗。
+However, vector formats fall short when the scene is complicated (for example, a photo): the amount of SVG markup to describe all the shapes can be prohibitively high and the output may still not look "photorealistic". When that's the case, that's when you should be using a raster image format such as GIF, PNG, JPEG, or one of the newer formats such as JPEG-XR and WebP.
 
+Raster images do not have the same nice properties of being resolution or zoom independent - when you scale up a raster image you'll see jagged and blurry graphics. As a result, you may need to save multiple versions of a raster image at various resolutions to deliver the optimal experience to your users.
 
-## 高解析度螢幕的意涵
+## Implications of high-resolution screens
 
 ### TL;DR {: .hide-from-toc }
-- 在高解析度螢幕中，每個 CSS 像素具有多個裝置像素
-- 高解析度圖片需要非常多的像素和位元組
-- 無論解析度高低，圖片最佳化技術都一樣
 
+* High resolution screens have multiple device pixels per CSS pixel
+* High resolution images require significantly higher number of pixels and bytes
+* Image optimization techniques are the same regardless of resolution
 
-談到圖片像素時，我們必須區分不同類型的像素，也就是 CSS 像素和裝置像素。單一 CSS 像素可包含多個裝置像素，例如單一 CSS 像素可能直接對應單一裝置像素，或者受到多個裝置像素的支援。這有什麼重要的？ 問得好！裝置像素愈多，螢幕上顯示的內容就愈精緻。
+When we talk about image pixels, we need to distinguish between different kinds of pixels: CSS pixels and device pixels. A single CSS pixel may contain multiple device pixels - for example, a single CSS pixel may correspond directly to a single device pixel, or may be backed by multiple device pixels. What's the point? Well, the more device pixels there are, the finer the detail of the displayed content on the screen.
 
-<img src="images/css-vs-device-pixels.png" class="center" alt="CSS 和裝置像素">
+<img src="images/css-vs-device-pixels.png"  alt="CSS vs device pixels" />
 
-高 DPI (HiDPI) 螢幕可呈現出美不勝收的畫面，但是美麗需要代價：我們的圖片資產需要更詳細的資訊，才可發揮高裝置像素的功能。好消息是向量圖片非常適合這項工作，因為這類圖片在任何解析度都能保持畫面清晰。為了顯示更精緻的細節，我們可能會耗用較多的處理資源，但是基礎資產仍然不變，而且不受解析度的影響。
+High DPI (HiDPI) screens produce beautiful results, but there is one obvious tradeoff: our image assets require more detail in order to take advantage of the higher device pixel counts. The good news is, vector images are ideally suited for this task, as they can be rendered at any resolution with sharp results - we might incur a higher processing cost to render the finer detail, but the underlying asset is the same and is resolution independent.
 
-另一方面，點陣圖片面臨的挑戰更大，因為這類圖片會將資料嵌入每個像素中。像素愈多，點陣圖片的檔案大小就愈大。讓我們以 100x100 (CSS) 像素顯示的相片資產為例，看看其中的差異：
+On the other hand, raster images pose a much larger challenge because they encode image data on a per-pixel basis. Hence, the larger the number of pixels, the larger the filesize of a raster image. As an example, let's consider the difference between a photo asset displayed at 100x100 (CSS) pixels:
 
 <table>
+  
 <thead>
   <tr>
-    <th>螢幕解析度</th>
-    <th>總像素</th>
-    <th>未壓縮的檔案大小 (每像素 4 個位元組)</th>
+    <th>Screen resolution</th>
+    <th>Total pixels</th>
+    <th>Uncompressed filesize (4 bytes per pixel)</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
-  <td data-th="解析度">1x</td>
-  <td data-th="總像素">100 x 100 = 10,000</td>
-  <td data-th="檔案大小">40,000 位元組</td>
+  <td data-th="resolution">1x</td>
+  <td data-th="total pixels">100 x 100 = 10,000</td>
+  <td data-th="filesize">40,000 bytes</td>
 </tr>
 <tr>
-  <td data-th="解析度">2x</td>
-  <td data-th="總像素">100 x 100 x 4 = 40,000</td>
-  <td data-th="檔案大小">160,000 位元組</td>
+  <td data-th="resolution">2x</td>
+  <td data-th="total pixels">100 x 100 x 4 = 40,000</td>
+  <td data-th="filesize">160,000 bytes</td>
 </tr>
 <tr>
-  <td data-th="解析度">3x</td>
-  <td data-th="總像素">100 x 100 x 9 = 90,000</td>
-  <td data-th="檔案大小">360,000 位元組</td>
+  <td data-th="resolution">3x</td>
+  <td data-th="total pixels">100 x 100 x 9 = 90,000</td>
+  <td data-th="filesize">360,000 bytes</td>
 </tr>
-</tbody>
 </table>
 
-當我們將解析度增加一倍時，實際螢幕和總像素數量會增加四倍：水平像素和垂直像素各增加一倍後再相乘。因此，當螢幕變為「2 倍」時，所需像素不只是兩倍，而是增加為四倍。
+When we double the resolution of the physical screen, the total number of pixels increases by a factor of four: double the number of horizontal pixels, times double the number of vertical pixels. Hence, a "2x" screen not just doubles, but quadruples the number of required pixels!
 
-這在實際應用上代表什麼意思？ 高解析度螢幕可讓我們放送美觀的圖片，這可說是一項優異的產品功能。不過，高解析度螢幕也需要高解析度圖片才能相得益彰：請儘量使用不受解析度影響且可常保清晰畫值的向量圖片。如果必須使用點陣圖片，請將每個圖片的多個版本最佳化後再進行放送。如需瞭解詳情，請繼續閱讀。
+So, what does this mean in practice? High resolution screens enable us to deliver beautiful images, which can be a great product feature. However, high resolution screens also require high-resolution images: prefer vector images whenever possible as they are resolution independent and always deliver sharp results, and if a raster image is required, deliver and optimize multiple variants of each image with the help of [`srcset` and `picture`](/web/fundamentals/design-and-ux/responsive/images#images-in-markup).
 
-
-## 最佳化向量圖片
+## Optimizing vector images
 
 ### TL;DR {: .hide-from-toc }
-- SVG 是一種 XML 圖片格式
-- 請將 SVG 檔案迷你化，以便縮減檔案大小
-- 請使用 GZIP 壓縮 SVG 檔案
 
+* SVG is an XML-based image format
+* SVG files should be minified to reduce their size
+* SVG files should be compressed with GZIP
 
-所有現代的瀏覽器都支援可縮放向量圖片 (SVG)。SVG 是一種適用於二維圖形的 XML 圖片格式：我們可以直接將 SVG 標記嵌入網頁，或者當做外部資源使用。您可使用大部分的向量繪圖軟體，或是直接在文字編輯器手繪的方式建立 SVG 檔案。
-
+All modern browsers support Scalable Vector Graphics (SVG), which is an XML-based image format for two-dimensional graphics: we can embed the SVG markup directly on the page, or as an external resource. In turn, an SVG file can be created by most vector-based drawing software, or by hand and directly in your favorite text editor.
 
     <?xml version="1.0" encoding="utf-8"?>
     <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -141,290 +131,299 @@ description: 網頁上大部分的下載位元組通常都是圖片，而且圖�
     </svg>
     
 
-上方示例會顯示從 Adobe Illustrator 匯出，外緣是黑色而背景為紅色的簡單圓形。如您所見，其中包含了許多中繼資料，例如圖層資訊、備註和 XML 命名空間，但是在瀏覽器中顯示資產時，通常不需要這些資料。因此，我們大力建議您透過 [svgo](https://github.com/svg/svgo){: .external} 工具將 SVG 檔案迷你化。
+The above example renders a simple circle shape with a black outline and red background and was exported from Adobe Illustrator. As you can tell, it contains a lot of metadata, such as layer information, comments, and XML namespaces that are often unnecessary to render the asset in the browser. As a result, it is always a good idea to minify your SVG files by running through a tool like [svgo](https://github.com/svg/svgo).
 
-以上述示例說明，svgo 可將上述由 Illustrator 產生的 SVG 檔案大小縮減 58%，也就是從 470 位元組降為 199 位元組。此外，因為 SVG 是 XML 格式，我們也可以運用 GZIP 壓縮技術縮減傳輸大小，請確認您的伺服器可壓縮 SVG 資產！
+Case in point, svgo reduces the size of the above SVG file generated by Illustrator by 58%, taking it from 470 to 199 bytes. Further, because SVG is an XML-based format, we can also apply GZIP compression to reduce its transfer size - make sure your server is configured to compress SVG assets!
 
-
-## 最佳化點陣圖片
-
-### TL;DR {: .hide-from-toc }
-- 點陣圖片是一格像素
-- 每個像素都會包含顏色和透明度資訊
-- 圖片壓縮器會使用多種技術縮減每個像素所需的位元數，藉此降低圖片的檔案大小
-
-
-點陣圖片就是個別像素構成的二維網格，例如 100x100 像素的圖片就是 10,000 像素的數列。話說回來，每個像素都會儲存 [RGBA](http://en.wikipedia.org/wiki/RGBA_color_space){: .external} 值：(R) 紅色頻道、(G) 綠色頻道、(B) 藍色頻道和 (A) Alpha (透明) 頻道。
-
-在內部作業中，瀏覽器會將 256 個值 (色調) 分配給每個頻道，換算後等於每個頻道 8 位元 (2 ^ 8 = 256)，每個像素 4 位元組 (4 個頻道 x 8 位元 = 32 位元 = 4 位元組)。因此，如果我們知道網格的維度，就可以輕鬆計算出檔案大小：
-
-* 100 x 100px 的圖片是由 10,000 像素所組成
-* 10,000 像素 x 4 位元組 = 40,000 位元組
-* 40,000 位元組 / 1024 = 39 KB
-
-^
-
-Note: 順帶一提，無論使用哪種圖片格式將伺服器傳輸到用戶端，當圖片經過瀏覽器解碼後，每個像素一律會佔用 4 位元組的記憶體。對於大型圖片和可用記憶體有限的裝置 (例如低階行動裝置) 來說，這是重要的考量因素。
-
-<table>
-<thead>
-  <tr>
-    <th>維度</th>
-    <th>像素</th>
-    <th>檔案大小</th>
-  </tr>
-</thead>
-<tbody>
-<tr>
-  <td data-th="維度">100 x 100</td>
-  <td data-th="像素">10,000</td>
-  <td data-th="檔案大小">39 KB</td>
-</tr>
-<tr>
-  <td data-th="維度">200 x 200</td>
-  <td data-th="像素">40,000</td>
-  <td data-th="檔案大小">156 KB</td>
-</tr>
-<tr>
-  <td data-th="維度">300 x 300</td>
-  <td data-th="像素">90,000</td>
-  <td data-th="檔案大小">351 KB</td>
-</tr>
-<tr>
-  <td data-th="維度">500 x 500</td>
-  <td data-th="像素">250,000</td>
-  <td data-th="檔案大小">977 KB</td>
-</tr>
-<tr>
-  <td data-th="維度">800 x 800</td>
-  <td data-th="像素">640,000</td>
-  <td data-th="檔案大小">2500 KB</td>
-</tr>
-</tbody>
-</table>
-
-大小為 39KB 的 100x100 圖片看起來似乎微不足道，但是大型圖片的檔案大小會迅速爆增，導致下載圖片資產變得費時，同時也會耗用大量資源。還好，目前我們談到的都是「未壓縮」圖片格式。那麼，我們要如何縮減圖片檔案的大小呢？
-
-縮減圖片的「位元深度」就是一個簡單的策略。我們可以從每個頻道 8 位元縮減為較小的調色盤：每個頻道 8 位元代表每個頻道有 256 個值，總共就有 16,777,216 (2563) 色。如果我們將調色盤縮減為 256 色，會發生什麼情況呢？ 這樣一來，所有 RGB 頻道總共只需要 8 位元，而每個像素也立即省下兩位元組。這個數據代表原本每個像素 4 位元組的格式大幅壓縮了 50%！
-
-<img src="images/artifacts.png" class="center" alt="壓縮雜訊">
-
-Note: 由左至右 (PNG)：32 位元 (1600 百萬色)、7 位元 (128 色)、5 位元 (32 色)。包含色彩逐漸轉換 (漸層、天空等) 的複雜畫面 需要大型調色盤，才可避免視覺雜訊 (例如 5 位元資產中的像素化天空)。另一方面，如果圖片僅使用少數顏色，大型調色盤只是白白浪費了寶貴的位元資源！
-
-將儲存在個別像素的資料最佳化之後，我們就可以更進一步看看周圍的像素：事實上，許多圖片 (特別是相片) 的相鄰像素都具有類似的顏色，例如天空、重複出現的質地等等。這項資訊對我們大有幫助，因為壓縮器可套用[差分編碼](http://en.wikipedia.org/wiki/Delta_encoding){: .external}。相對於儲存每個像素的個別值的方式，我們可以儲存相鄰像素之間的差異：如果相鄰像素完全相同，則差分為「零」，因此我們只需要儲存一個位元！ 但是，不繼續探索下去就太可惜了...
-
-人類的眼精對於不同顏色的敏感度各有差異：我們可以依據這個原則減少或增價這些顏色的調色盤，以達到將顏色編碼最佳化的目的。
-「附近」像素可構成二維網格，這表示每個像素都有多個鄰居：我們可以循著這個脈絡提升差分編碼的成效。
-有別於僅關注每個像素的相鄰像素，我們可以看看涵蓋附近像素的較大區塊，分別為不同區塊編碼不同的設定。依此類推...
-
-如您所見，圖片最佳化很快就變得複雜起來 (或說變得有趣嗎？這就見仁見智了)。圖片最佳化也是學界和商界積極研究的領域。因為圖片佔據了大量位元組，積極開發更優異的圖片壓縮技術，可說是價值連城！ 如果您渴望進一步瞭解相關資訊，請前往[維基百科網頁](http://en.wikipedia.org/wiki/Image_compression){: .external}，或是參閱 [WebP 壓縮技術白皮書](/speed/webp/docs/compression)以獲得實際操作示例。
-
-再說明一次，這些資訊非常實用，但也充滿學術理論：我們到底要如何透過這些資訊將網頁的圖片最佳化？ 雖然我們無法發明最新的壓縮技術，但是瞭解問題的輪廓 (RGBA、像素、位元深度和各種最佳化技術) 也是不可或缺的一環。在我們繼續探討不同的點陣圖片格式之前，請務必瞭解上述這些概念並牢記在心。
-
-
-## 失真和無失真圖片壓縮
+## Optimizing raster images
 
 ### TL;DR {: .hide-from-toc }
-- 因為人類眼睛運作機制的緣故，圖片非常適合採用失真壓縮
-- 圖片最佳化是失真和無失真壓縮的一項功能
-- 將圖片最佳化時，使用失真或無失真演算法會造成圖片格式略有不同
-- 並沒有所有圖片都適用的最佳格式或「品質設定」：每種特定的壓縮器和圖片內容組合都會產生獨一無二的結果
 
+* A raster image is a grid of pixels
+* Each pixel encodes color and transparency information
+* Image compressors use a variety of techniques to reduce the number of required bits per pixel to reduce file size of the image
 
-對於特定的資料類型 (例如網頁原始碼或可執行檔)，我們不希望壓縮器修改或遺漏任何原始資訊：任何資料位元遺失或出錯都會使得檔案內容的意義完全改變，更糟的是，整個檔案可能會完全損毀。至於其他的資料類型 (例如圖片、音訊和影片)，即使壓縮檔和原始檔案有些出入，也還算是可接受的範圍。
+A raster image is simply a 2-dimensional grid of individual "pixels" - for example, a 100x100 pixel image is a sequence of 10,000 pixels. In turn, each pixel stores the "[RGBA](https://en.wikipedia.org/wiki/RGBA_color_space)" values: (R) red channel, (G) green channel, (B) blue channel, and (A) alpha (transparency) channel.
 
-事實上，由於人類眼睛運作機制的緣故，我們常常會為了縮減圖片檔案大小而捨棄一些像素資訊。舉例來說，我們的眼睛對於每種顏色的敏感度各有不同，這表示我們可以運用較少的位元來為部分顏色編碼。因此，一般的圖片最佳化流程大概都是由下列兩個步驟組成：
+Internally, the browser allocates 256 values (shades) for each channel, which translates to 8 bits per channel (2 ^ 8 = 256), and 4 bytes per pixel (4 channels x 8 bits = 32 bits = 4 bytes). As a result, if we know the dimensions of the grid we can easily calculate the filesize:
 
-1. 圖片經過[失真](http://en.wikipedia.org/wiki/Lossy_compression){: .external}篩選器處理，以除去部分像素資料
-1. 圖片經過[無失真](http://en.wikipedia.org/wiki/Lossless_compression){: .external}篩選器處理，以壓縮像素資料
+* 100 x 100px image is composed of 10,000 pixels
+* 10,000 pixels x 4 bytes = 40,000 bytes
+* 40,000 bytes / 1024 = 39 KB
 
-**您可自行決定是否要進行第一個步驟，實際採用的演算法會依據特定圖片格式有所差異。不過，請記得任何圖片都可以經過失真壓縮處理，藉此縮減大小。** 事實上，執行失真和無失真壓縮步驟時，各種圖片格式 (例如 GIF、PNG、JPEG 等) 的差異會因為搭配 (或略過) 特定演算法而有所不同。
+Note: As an aside, regardless of the image format used to transfer the data from the server to the client, when the image is decoded by the browser, each pixel always occupies 4 bytes of memory. This can be an important constraint for large images and devices which do not have a lot of available memory - for example, low-end mobile devices.
 
-那麼，什麼才是「最佳」的失真和無失真最佳化設定? 答案取決於圖片內容和您自訂的條件。例如，您在面對龐大的檔案大小和因為採用失真壓縮而產生的視覺雜訊，對於兩者之間的取捨：在某些情況下，您可能會略過失真最佳化步驟，以便完整傳達精緻的細節；在其他情況下，您可能可以採用較為積極的失真最佳化步驟，藉此縮減圖片資產的檔案大小。我們並沒有一體適用的完美設定，您必須自行依當時情況做出正確的判斷。
+<table>
+  
+<thead>
+  <tr>
+    <th>Dimensions</th>
+    <th>Pixels</th>
+    <th>File size</th>
+  </tr>
+</thead>
 
-<img src="images/save-for-web.png" class="center" alt="儲存為網頁用">
+<tr>
+  <td data-th="dimensions">100 x 100</td>
+  <td data-th="pixels">10,000</td>
+  <td data-th="file size">39 KB</td>
+</tr>
+<tr>
+  <td data-th="dimensions">200 x 200</td>
+  <td data-th="pixels">40,000</td>
+  <td data-th="file size">156 KB</td>
+</tr>
+<tr>
+  <td data-th="dimensions">300 x 300</td>
+  <td data-th="pixels">90,000</td>
+  <td data-th="file size">351 KB</td>
+</tr>
+<tr>
+  <td data-th="dimensions">500 x 500</td>
+  <td data-th="pixels">250,000</td>
+  <td data-th="file size">977 KB</td>
+</tr>
+<tr>
+  <td data-th="dimensions">800 x 800</td>
+  <td data-th="pixels">640,000</td>
+  <td data-th="file size">2500 KB</td>
+</tr>
+</table>
 
-舉個簡單的例子，在使用 JPEG 等失真格式時，壓縮程式通常會提供一個可自訂的「品質」設定 (例如 Adobe Photoshop 中的「儲存為網頁用」功能提供的品質滑桿)。該設定通常是介於 1 和 100 之間的數字，用於控制特定的失真和無失真演算法組合的內部工作。為了獲得最佳效果，請大膽試驗圖片的不同品質設定，不必擔心品質下降，因為這麼做的視覺效果通常非常好，而檔案大小可能會大幅減少。
+39KB for a 100x100 pixel image may not seem like a big deal, but the filesize quickly explodes for larger images and makes image assets both slow and expensive to download. Thankfully, what we've described so far is the "uncompressed" image format. What could we do to reduce the image file size?
 
-Note: 請注意，如果使用不同的演算法將圖片編碼，則無法直接比較不同圖片格式的品質水準：品質為 90 JPEG 的圖片和品質為 90 WebP 的圖片看起來就大不相同。事實上，即使是相同圖片格式的品質水準，也會因為採用壓縮器而產生視覺上的差異！
+One simple strategy is to reduce the "bit-depth" of the image from 8 bits per channel to a smaller color palette: 8 bits per channel gives us 256 values per channel and 16,777,216 (256 ^ 3) colors in total. What if we reduced the palette to 256 colors? Then we would only need 8 bits in total for the RGB channels and immediately save two bytes per pixel -- that's 50% compression savings over our original 4 bytes per pixel format!
 
+<img src="images/artifacts.png"  alt="Compression artifacts" />
 
-##選擇正確的圖片格式
+Note: Left to right (PNG): 32-bit (16M colors), 7-bit (128 colors), 5-bit (32 colors). Complex scenes with gradual color transitions (gradients, sky, etc.) require larger color palettes to avoid visual artifacts such as the pixelated sky in the 5-bit asset. On the other hand, if the image only uses a few colors, then a large palette is simply wasting precious bits!
+
+Next, once we've optimized the data stored in individual pixels we could get more clever and look at nearby pixels as well: turns out, many images, and especially photos, have many nearby pixels with similar colors - for example, the sky, repeating textures, and so on. Using this information to our advantage the compressor can apply "[delta encoding](https://en.wikipedia.org/wiki/Delta_encoding)" where instead of storing the individual values for each pixel, we can store the difference between nearby pixels: if the adjacent pixels are the same, then the delta is "zero" and we only need to store a single bit! But why stop there...
+
+The human eye has different level of sensitivity to different colors: we can optimize our color encoding to account for this by reducing or increasing the palette for those colors. "Nearby" pixels form a two dimensional grid, which means that each pixel has multiple neighbors: we can use this fact to further improve delta encoding. Instead of looking at just the immediate neighbors for each pixel, we can look at larger blocks of nearby pixels and encode different blocks with different settings. And so on...
+
+As you can tell, image optimization gets complicated quickly (or fun, depending on your perspective), and is an active area of academic and commercial research. Images occupy a lot of bytes and there is a lot of value in developing better image compression techniques! If you're curious to learn more, head to the [Wikipedia page](https://en.wikipedia.org/wiki/Image_compression), or check out the [WebP compression techniques whitepaper](/speed/webp/docs/compression) for a hands-on example.
+
+So, once again, this is all great, but also very academic: how does it help us optimize images on our pages? Well, we are definitely not in a position to invent new compression techniques, but it's important to understand the shape of the problem: RGBA pixels, bit-depth, and various optimization techniques. All of these concepts are critical to understand and keep in mind before we dive into the discussions of various raster image formats.
+
+## Lossless vs lossy image compression
 
 ### TL;DR {: .hide-from-toc }
-- 請先選取通用的格式：GIF、PNG、JPEG
-- 反覆實驗後，為每種格式選取最佳設定：品質、調色盤大小等
-- 考慮為現代用戶端新增 WebP 和 JPEG XR 資產 scaled-images: null
-- 傳送可放大的資產是最簡單有效的最佳化作業
-- 請特別留意大型資產，因為這類資產會耗費大量資源
-- 透過將圖片放大為正常顯示大小，可減少不必要的像素數量
 
+* Due to how our eyes work, images are great candidates for lossy compression
+* Image optimization is a function of lossy and lossless compression
+* Differences in image formats are due to the difference in how and which lossy and lossless algorithms are used to optimize the image
+* There is no single best format or "quality setting" for all images: each combination of particular compressor and image contents produce a unique output
 
-除了不同的失真壓縮演算法和無失真壓縮演算法之外，不同的圖片格式支援不同的功能，例如動畫和透明度 (alpha) 頻道。因此，為特定圖片選擇「正確的格式」時，必須同時考量預期視覺效果和功能兩方面的要求。
+For certain types of data, such as source code for a page, or an executable file, it is critical that a compressor does not alter or lose any of the original information: a single missing or wrong bit of data could completely change the meaning of the contents of the file, or worse, break it entirely. For some other types of data, such as images, audio, and video, it may be perfectly acceptable to deliver an "approximate" representation of the original data.
 
+In fact, due to how the eye works, we can often get away with discarding some information about each pixel in order to reduce the filesize of an image - for example, our eyes have different sensitivity to different colors, which means that we can use fewer bits to encode some colors. As a result, a typical image optimization pipeline consists of two high level steps:
 
-<table>
-<thead>
-  <tr>
-    <th>格式</th>
-    <th>透明度</th>
-    <th>動畫</th>
-    <th>瀏覽器</th>
-  </tr>
-</thead>
-<tbody>
-<tr>
-  <td data-th="格式"><a href="http://en.wikipedia.org/wiki/Graphics_Interchange_Format">GIF</a></td>
-  <td data-th="透明度">支援</td>
-  <td data-th="動畫">支援</td>
-  <td data-th="瀏覽器">所有</td>
-</tr>
-<tr>
-  <td data-th="格式"><a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a></td>
-  <td data-th="透明度">支援</td>
-  <td data-th="動畫">不支援</td>
-  <td data-th="瀏覽器">所有</td>
-</tr>
-<tr>
-  <td data-th="格式"><a href="http://en.wikipedia.org/wiki/JPEG">JPEG</a></td>
-  <td data-th="透明度">不支援</td>
-  <td data-th="動畫">不支援</td>
-  <td data-th="瀏覽器">所有</td>
-</tr>
-<tr>
-  <td data-th="格式"><a href="http://en.wikipedia.org/wiki/JPEG_XR">JPEG XR</a></td>
-  <td data-th="透明度">支援</td>
-  <td data-th="動畫">支援</td>
-  <td data-th="瀏覽器">IE</td>
-</tr>
-<tr>
-  <td data-th="格式"><a href="http://en.wikipedia.org/wiki/WebP">WebP</a></td>
-  <td data-th="透明度">支援</td>
-  <td data-th="動畫">支援</td>
-  <td data-th="瀏覽器">Chrome、Opera、Android</td>
-</tr>
-</tbody>
-</table>
+1. Image is processed with a "[lossy](https://en.wikipedia.org/wiki/Lossy_compression)" filter that eliminates some pixel data
+2. Image is processed with a "[lossless](https://en.wikipedia.org/wiki/Lossless_compression)" filter that compresses the pixel data
 
-最普遍廣受支援的三種格式分別是：GIF、PNG 和 JPEG。除了這些格式之外，某些瀏覽器還支援 WebP 和 JPEG XR 等較新的格式，可以提供更好的整體壓縮效果以及更多的功能。那麼，您應該使用哪種格式呢？
+**The first step is optional, and the exact algorithm will depend on the particular image format, but it is important to understand that any image can undergo a lossy compression step to reduce its size.** In fact, the difference between various image formats, such as GIF, PNG, JPEG, and others, is in the combination of the specific algorithms they use (or omit) when applying the lossy and lossless steps.
 
-<img src="images/format-tree.png" class="center" alt="儲存為網頁用">
+So, what is the "optimal" configuration of lossy and lossless optimization? The answer depends on the image contents and your own criteria such as the tradeoff between filesize and artifacts introduced by lossy compression: in some cases you may want to skip lossy optimization to communicate intricate detail in its full fidelity, and in others you may be able to apply aggressive lossy optimization to reduce the filesize of the image asset. This is where your own judgment and context need to come into play - there is no one universal setting.
 
-1. **是否需要動畫？ 如果需要，GIF 是唯一的通用選擇。**
-  * GIF 限制調色盤最多為 256 色，這對於大多數圖片都不是好選擇。此外，PNG-8 透過小調色盤為圖片提供更好的壓縮比例。因此，當您需要動畫時，GIF 才是正確的選擇。
-1. ** 是否需要使用最高的解析度保留精細的細節？ 請使用 PNG。**
-  * 除了選擇調色盤大小，PNG 並不採用任何失真壓縮演算法。因此，產生的圖片品質最高，但代價是檔案大小明顯高於其他格式。請謹慎使用。
-  * 如果圖片資產包含由幾何圖形組成的圖片，請考慮將其轉換成向量 (SVG) 格式！
-  * 如果圖片資產包含文字，請停下來重新考慮。圖片中的文字無法選取、搜尋或「縮放」。如果需要顯示自訂的外觀 (因為品牌塑造或其他原因)，則應使用網路字型。
-1. **是否要最佳化照片、螢幕擷圖或類似的圖片資源？ 請使用 JPEG。**
-  * JPEG 混合使用失真最佳化和無失真最佳化，藉此縮減圖片資產的檔案大小。請嘗試幾種 JPEG 品質水準，為圖片資產找到品質和檔案大小的最佳平衡點。
+<img src="images/save-for-web.png" class="attempt-right" alt="Save for web" />
 
-最後，確定每個資產的最佳圖片格式和設定之後，請考慮增加一個以 WebP 和 JPEG XR 編碼的版本。這兩種格式都是新格式，不過很遺憾，這兩種格式尚未獲得所有瀏覽器的普遍支援，但是可以為較新的用戶端大幅節省資源。舉例來說，與可比較的 JPEG 圖片相比，WebP 平均可以[使檔案大小縮減 30%](/speed/webp/docs/webp_study)。
+As a hands-on example, when using a lossy format such as JPEG, the compressor will typically expose a customizable "quality" setting (for example, the quality slider provided by the "Save for Web" functionality in Adobe Photoshop), which is typically a number between 1 and 100 that controls the inner workings of the specific collection of lossy and lossless algorithms. For best results, experiment with various quality settings for your images, and don't be afraid to dial down the quality - the visual results are often very good and the filesize savings can be quite large.
 
-因為 WebP 和 JPEG XR 都未獲得普遍支援，您需要為應用程式或伺服器額外增加一個邏輯，以放送適合的資源：
+Note: Note that quality levels for different image formats are not directly comparable due to differences in algorithms used to encode the image: quality 90 JPEG will produce a very different result than a quality 90 WebP. In fact, even quality levels for the same image format may produce visibly different output based on implementation of the compressor!
 
-* 某些 CDN 提供圖片最佳化服務，包括放送 JPEG XR 和 WebP。
-* 某些開放原始碼的工具 (例如 PageSpeed for Apache 或 PageSpeed for Nginx) 可將最佳化、轉換及放送適合資源的作業自動化。
-* 您可以額外新增應用程式邏輯來偵測用戶端、檢查用戶端支援的格式，並放送最適合的圖片格式。
-
-最後請注意，如果您使用 Webview 在原生應用程式中轉譯內容，將可以完全控制用戶端，並獨佔使用 WebP！ Facebook、Google+ 和許多其他應用程式都使用 WebP 放送應用程式內的所有圖片，省下的資源絕對讓您感到物超所值。如要瞭解 WebP 的詳細資訊，請觀看 Google I/O 2013 的 [WebP：部署更快、更小、更絢麗的圖片](https://www.youtube.com/watch?v=pS8udLMOOaE)演講。
-
-
-## 工具和參數微調
-
-天底下並沒有任何適用於所有圖片的完美圖片格式、工具或最佳化參數集。為了獲得最佳效果，您必須根據圖片內容、視覺和其他技術要求，選擇格式及其設定。
-
-<table>
-<thead>
-  <tr>
-    <th>工具</th>
-    <th>說明</th>
-  </tr>
-</thead>
-<tbody>
-<tr>
-  <td data-th="工具"><a href="http://www.lcdf.org/gifsicle/">gifsicle</a></td>
-  <td data-th="說明">建立及最佳化 GIF 圖片</td>
-</tr>
-<tr>
-  <td data-th="工具"><a href="http://jpegclub.org/jpegtran/">jpegtran</a></td>
-  <td data-th="說明">最佳化 JPEG 圖片</td>
-</tr>
-<tr>
-  <td data-th="工具"><a href="http://optipng.sourceforge.net/">optipng</a></td>
-  <td data-th="說明">無失真 PNG 最佳化</td>
-</tr>
-<tr>
-  <td data-th="工具"><a href="http://pngquant.org/">pngquant</a></td>
-  <td data-th="說明">失真 PNG 最佳化</td>
-</tr>
-</tbody>
-</table>
-
-
-請大膽試驗每個壓縮程式的參數。不妨降低品質，看看效果如何，然後取消重來。當您發現一組美觀的設定之後，即可對網站上其他類似圖片套用這些設定。但是，切勿認為您必須使用相同設定來壓縮所有圖片。
-
-
-## 提供縮放的圖片資產
+## Selecting the right image format
 
 ### TL;DR {: .hide-from-toc }
-{# wf_TODO #}
-Warning: A tag here did NOT convert properly, please fix! ''
 
+* Start by selecting the right universal format: GIF, PNG, JPEG
+* Experiment and select the best settings for each format: quality, palette size, etc.
+* Consider adding WebP and JPEG XR assets for modern clients
 
-圖片最佳化可以歸納為兩個標準：將用於為每個圖片像素進行編碼的位元組數最佳化，以及將像素總數最佳化：圖片的檔案大小就是像素總數乘以用於為每個像素進行編碼的位元組數。專注在這兩方面就對了！
-
-因此，最簡單有效的圖片最佳化方法就是，確保我們提供的像素剛好可以在瀏覽器中以所需大小顯示資產。聽起來很簡單，是嗎？ 只可惜，大多數網頁的許多圖片資產都達不到這個要求：一般來說，網頁會提供較大的資產，然後任由瀏覽器進行重新縮放 (這也會佔用額外的 CPU 資源)，並以較低的解析度顯示。
-
-<img src="images/resized-image.png" class="center" alt="已調整大小的圖片">
-
-Note: 將游標懸停在 Chrome DevTools 中的圖片 image 元素，即可同時看見圖片資產的「自然」和「顯示」大小。在上述示例中，系統會下載 300x260 的像素圖片，要顯示時再於用戶端縮小為 245x212。
-
-提供超額的像素不僅會導致額外的間接成本，通常最後下場都是讓瀏覽器代替我們重新縮放圖片，而我們也因此錯失絕佳機會，無法縮減及最佳化轉譯網頁所需得總位元組數。另外請注意，大小調整不僅是減少圖片像素數的功能，同時也可以縮減自然大。
+In addition to different lossy and lossless compression algorithms, different image formats support different features such as animation and transparency (alpha) channels. As a result, the choice of the "right format" for a particular image is a combination of desired visual results and functional requirements.
 
 <table>
+  
 <thead>
   <tr>
-    <th>自然大小</th>
-    <th>顯示大小</th>
-    <th>不必要的像素數</th>
+    <th>Format</th>
+    <th>Transparency</th>
+    <th>Animation</th>
+    <th>Browser</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
-  <td data-th="自然">110 x 110</td>
-  <td data-th="顯示">100 x 100</td>
-  <td data-th="間接成本">110 x 110 - 100 x 100 = 2100</td>
+  <td data-th="format"><a href="http://en.wikipedia.org/wiki/Graphics_Interchange_Format">GIF</a></td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
-  <td data-th="自然">410 x 410</td>
-  <td data-th="顯示">400 x 400</td>
-  <td data-th="間接成本">410 x 410 - 400 x 400 = 8100</td>
+  <td data-th="format"><a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a></td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">No</td>
+  <td data-th="browser">All</td>
 </tr>
 <tr>
-  <td data-th="自然">810 x 810</td>
-  <td data-th="顯示">800 x 800</td>
-  <td data-th="間接成本">810 x 810 - 800 x 800 = 16100</td>
+  <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG">JPEG</a></td>
+  <td data-th="transparency">No</td>
+  <td data-th="animation">No</td>
+  <td data-th="browser">All</td>
 </tr>
-</tbody>
+<tr>
+  <td data-th="format"><a href="http://en.wikipedia.org/wiki/JPEG_XR">JPEG XR</a></td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
+  <td data-th="browser">IE</td>
+</tr>
+<tr>
+  <td data-th="format"><a href="http://en.wikipedia.org/wiki/WebP">WebP</a></td>
+  <td data-th="transparency">Yes</td>
+  <td data-th="animation">Yes</td>
+  <td data-th="browser">Chrome, Opera, Android</td>
+</tr>
 </table>
 
-請注意，在上述這三種情況下，顯示大小只比圖片的自然大小「小 10 個像素」。但是，自然大小越大，我們必須編碼及提供的額外像素數就會明顯增加！ 因此，儘管您也許無法保證每個資產都以精確的顯示大小提供，但是，**您應確保不必要的像素數降到最低，並確保較大資產盡可能以接近顯示大小提供。**
+There are three universally supported image formats: GIF, PNG, and JPEG. In addition to these formats, some browsers also support newer formats such as WebP and JPEG XR, which offer better overall compression and more features. So, which format should you use?
 
-## 圖片最佳化檢查表
+<img src="images/format-tree.png"  alt="Save for web" />
 
-圖片最佳化不僅是藝術，也是一門科學。這是藝術，因為每個圖片都獨一無二，要如何才可將圖片妥善壓縮，我們沒有絕對的答案。這同時也是科學，因為目前已有開發完善的技術和演算法，可以大幅降低圖片大小。
+1. **Do you need animation? If so, GIF is the only universal choice.** 
+    * GIF limits the color palette to at most 256 colors, which makes it a poor choice for most images. Further, PNG-8 delivers better compression for images with a small palette. As a result, GIF is the right answer only when animation is required.
+2. **Do you need to preserve fine detail with highest resolution? Use PNG.** 
+    * PNG does not apply any lossy compression algorithms beyond the choice of the size of the color palette. As a result, it will produce the highest quality image, but at a cost of significantly higher filesize than other formats. Use judiciously.
+    * If the image asset contains imagery composed of geometric shapes, consider converting it to a vector (SVG) format!
+    * If the image asset contains text, stop and reconsider. Text in images is not selectable, searchable, or "zoomable". If you need to convey a custom look (for branding or other reasons), use a web font instead.
+3. **Are you optimizing a photo, screenshot, or a similar image asset? Use JPEG.** 
+    * JPEG uses a combination of lossy and lossless optimization to reduce filesize of the image asset. Try several JPEG quality levels to find the best quality vs. filesize tradeoff for your asset.
 
-在最佳化圖片時，請記住下列技巧和方法：
+Finally, once you've determined the optimal image format and its settings for each of your assets, consider adding an additional variant encoded in WebP and JPEG XR. Both of these formats are new, and unfortunately are not (yet) universally supported by all browsers, but they can nonetheless provide significant savings for newer clients - for example, on average, WebP delivers a [30% filesize decrease](/speed/webp/docs/webp_study) over a comparable JPEG image.
 
-* **優先選用向量格式：**向量圖片不受解析度和縮放程度影響，最適用於多裝置或高解析度的情況。
-* **縮減及壓縮 SVG 資源：**大多數繪圖應用程式產生的 XML 標記通常包含不必要的中繼資料，可以放心刪除；請確保伺服器設定為對 SVG 資產採用 GZIP 壓縮。
-* **選擇最佳點陣圖片格式：**確定功能要求，然後選擇適合每個特定資產的格式。
-* **試驗點陣格式的最佳品質設定：**請大膽降低「品質」設定，效果通常非常好，節省的位元組可能會很可觀。
-* **刪除不必要的圖片中繼資料：**許多點陣圖片包含不必要的資產中繼資料：地理資訊、相機資訊等。請使用適合的工具刪除這些資料。
-* **提供可縮放的圖片：**調整伺服器上的圖片大小，確保「顯示」大小盡可能接近圖片的「自然」大小。請特別留意較大的圖片，因為調整這些圖片的大小時，通常會產生最大的間接成本！
-* **自動化、自動化、自動化：**請投資自動化工具和基礎設施，如此可以確保所有圖片資產一定會經過最佳化。
+Since neither WebP and JPEG XR are universally supported, you will need to add additional logic to your application or servers to serve the appropriate resource:
 
+* Some CDNs provide image optimization as a service, including JPEG XR and WebP delivery.
+* Some open-source tools (for example, PageSpeed for Apache or Nginx) automate the optimization, conversion, and serving of appropriate assets.
+* You can add additional application logic to detect the client, check which formats they support, and serve the best available image format.
 
+Finally, note that if you are using a Webview to render content in your native application, then you have full control of the client and can use WebP exclusively! Facebook, Google+ and many others use WebP to deliver all of their images within their applications - the savings are definitely worth it. To learn more about WebP, checkout the [WebP: Deploying Faster, Smaller, and More Beautiful Images](https://www.youtube.com/watch?v=pS8udLMOOaE) presentation from Google I/O 2013.
 
+## Tools and parameter tuning
 
+There is no one perfect image format, tool, or a set of optimization parameters that apply to all images. For best results you will have to pick the format and its settings depending on the contents of the image, and its visual and other technical requirements.
+
+<table>
+  
+<thead>
+  <tr>
+    <th>Tool</th>
+    <th>Description</th>
+  </tr>
+</thead>
+
+<tr>
+  <td data-th="tool"><a href="http://www.lcdf.org/gifsicle/">gifsicle</a></td>
+  <td data-th="description">create and optimize GIF images</td>
+</tr>
+<tr>
+  <td data-th="tool"><a href="http://jpegclub.org/jpegtran/">jpegtran</a></td>
+  <td data-th="description">optimize JPEG images</td>
+</tr>
+<tr>
+  <td data-th="tool"><a href="http://optipng.sourceforge.net/">optipng</a></td>
+  <td data-th="description">lossless PNG optimization</td>
+</tr>
+<tr>
+  <td data-th="tool"><a href="http://pngquant.org/">pngquant</a></td>
+  <td data-th="description">lossy PNG optimization</td>
+</tr>
+</table>
+
+Don't be afraid to experiment with parameters of each compressor. Dial down the quality, see how it looks, then rinse, lather and repeat. Once you've found a good set of settings, you can apply them to other similar images on your site, but don't assume that all images must be compressed with the same settings.
+
+## Delivering scaled image assets
+
+### TL;DR {: .hide-from-toc }
+
+* Delivering scaled assets is one of the simplest and most effective optimizations
+* Pay close attention to large assets as they result in high overhead
+* Reduce the number of unnecessary pixels by scaling your images to their display size
+
+Image optimization boils down to two criteria: optimizing the number of bytes used to encode each image pixel, and optimizing the total number of pixels: the filesize of the image is simply the total number of pixels times the number of bytes used to encode each pixel. Nothing more, nothing less.
+
+<img src="images/resized-image.png" class="attempt-right" alt="Resized image" />
+
+As a result, one of the simplest and most effective image optimization techniques is to ensure that we are not shipping any more pixels than needed to display the asset at its intended size in the browser. Sounds simple, right? Unfortunately, most pages fail this test for many of their image assets: typically, they ship larger assets and rely on the browser to rescale them - which also consumes extra CPU resources - and display them at a lower resolution.
+
+Note: Hovering over the image element in Chrome DevTools reveals both the "natural" and "display" sizes of the image asset. In above example the 300x260 pixel image is downloaded but is then downscaled (245x212) on the client when it is displayed.
+
+The overhead of shipping unnecessary pixels, only to have the browser rescale the image on our behalf, is a big missed opportunity to reduce and optimize the total number of bytes required to render the page. Further, note that resizing is not simply a function of the number of pixels by which the image is reduced by, but also of its natural size.
+
+<table>
+  
+<thead>
+  <tr>
+    <th>Screen resolution</th>
+    <th>Natural size</th>
+    <th>Display size (CSS px)</th>
+    <th>Unnecessary pixels</th>
+  </tr>
+</thead>
+
+<tr>
+  <td data-th="resolution">1x</td>
+  <td data-th="natural">110 x 110</td>
+  <td data-th="display">100 x 100</td>
+  <td data-th="overhead">110 x 110 - 100 x 100 = 2100</td>
+</tr>
+<tr>
+  <td data-th="resolution">1x</td>
+  <td data-th="natural">410 x 410</td>
+  <td data-th="display">400 x 400</td>
+  <td data-th="overhead">410 x 410 - 400 x 400 = 8100</td>
+</tr>
+<tr>
+  <td data-th="resolution">1x</td>
+  <td data-th="natural">810 x 810</td>
+  <td data-th="display">800 x 800</td>
+  <td data-th="overhead">810 x 810 - 800 x 800 = 16100</td>
+</tr>
+<tr>
+  <td data-th="resolution">2x</td>
+  <td data-th="natural">220 x 220</td>
+  <td data-th="display">100 x 100</td>
+  <td data-th="overhead">220 x 220 - (2 x 100) x (2 x 100) = 8400</td>
+</tr>
+<tr>
+  <td data-th="resolution">2x</td>
+  <td data-th="natural">820 x 820</td>
+  <td data-th="display">400 x 400</td>
+  <td data-th="overhead">820 x 820 - (2 x 400) x (2 x 400) = 32400</td>
+</tr>
+<tr>
+  <td data-th="resolution">2x</td>
+  <td data-th="natural">1620 x 1620</td>
+  <td data-th="display">800 x 800</td>
+  <td data-th="overhead">1620 x 1620 - (2 x 800) x (2 x 800) = 64400</td>
+</tr>
+</table>
+
+Note that in all of the cases above the display size is "only 10 CSS pixels smaller" than the required asset for each screen resolution. However, the number of extra pixels, and their associated overhead, rises rapidly as the display dimensions of the image increase! As a result, while you may not be able to guarantee that every single asset is delivered at the exact display size, **you should ensure that the number of unnecessary pixels is minimal, and that your large assets in particular are delivered as close as possible to their display size.**
+
+## Image optimization checklist
+
+Image optimization is both an art and a science: an art because there is no one definitive answer for how to best compress an individual image, and a science because there are well-developed techniques and algorithms that can help significantly reduce the size of an image.
+
+Some tips and techniques to keep in mind as you work on optimizing your images:
+
+* **Prefer vector formats:** vector images are resolution and scale independent, which makes them a perfect fit for the multi-device and high-resolution world.
+* **Minify and compress SVG assets:** XML markup produced by most drawing applications often contains unnecessary metadata which can be removed; ensure that your servers are configured to apply GZIP compression for SVG assets.
+* **Pick best raster image format:** determine your functional requirements and select the one that suits each particular asset.
+* **Experiment with optimal quality settings for raster formats:** don't be afraid to dial down the "quality" settings, the results are often very good and byte savings are significant.
+* **Remove unnecessary image metadata:** many raster images contain unnecessary metadata about the asset: geo information, camera information, and so on. Use appropriate tools to strip this data.
+* **Serve scaled images:** resize images on the server and ensure that the "display" size is as close as possible to the "natural" size of the image. Pay close attention to large images in particular, as they account for largest overhead when resized!
+* **Automate, automate, automate:** invest into automated tools and infrastructure that will ensure that all of your image assets are always optimized.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

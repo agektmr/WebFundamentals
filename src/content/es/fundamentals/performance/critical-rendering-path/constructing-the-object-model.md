@@ -1,23 +1,19 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Obtén información acerca de cómo el navegador construye los árboles del DOM y el CSSOM.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn how the browser constructs the DOM and CSSOM trees.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>DOM #}
 
-# Construcción del modelo de objetos {: .page-title }
+# Constructing the Object Model {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Para que el navegador pueda representar la página, debe construir los árboles del DOM y el CSSOM. En consecuencia, debemos asegurarnos de proporcionar lenguaje de marcado HTML y CSS al navegador lo más rápido posible.
-
+Before the browser can render the page, it needs to construct the DOM and CSSOM trees. As a result, we need to ensure that we deliver both the HTML and CSS to the browser as quickly as possible.
 
 ### TL;DR {: .hide-from-toc }
-- Bytes → caracteres → tokens → nodos → modelo de objetos.
-- El lenguaje de marcado HTML se transforma en un Document Object Model (DOM) y el lenguaje de marcado CSS se transforma en un CSS Object Model (CSSOM).
-- DOM y CSSOM son estructuras de datos independientes.
-- Timeline de Chrome DevTools nos permite capturar e inspeccionar los costos de construcción y procesamiento del DOM y CSSOM.
 
+- Bytes → characters → tokens → nodes → object model.
+- HTML markup is transformed into a Document Object Model (DOM); CSS markup is transformed into a CSS Object Model (CSSOM).
+- DOM and CSSOM are independent data structures.
+- Chrome DevTools Timeline allows us to capture and inspect the construction and processing costs of DOM and CSSOM.
 
 ## Document Object Model (DOM)
 
@@ -25,65 +21,61 @@ Para que el navegador pueda representar la página, debe construir los árboles 
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/basic_dom.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Pruébalo](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/basic_dom.html){: target="_blank" .external }
 
-Comencemos con el caso más sencillo: una página HTML estándar, con un poco de texto y una sola imagen. ¿Cómo el navegador procesa esta página?
+Let’s start with the simplest possible case: a plain HTML page with some text and a single image. How does the browser process this page?
 
-<img src="images/full-process.png" alt="Proceso de construcción del DOM">
+<img src="images/full-process.png" alt="DOM construction process" />
 
-1. **Conversión:** el navegador lee los bytes sin procesar del HTML del disco o de la red y los traduce en caracteres individuales según la codificación especificada del archivo (por ejemplo, UTF-8).
-1. **Conversión en tokens:** el navegador convierte cadenas de caracteres en tokens diferentes&mdash;especificados por el [estándar W3C HTML5](http://www.w3.org/TR/html5/){: .external }; por ejemplo, "&lt;html&gt;", "&lt;body&gt;"&mdash;y otras cadenas entre paréntesis angulares. Cada token tiene un significado especial y un conjunto de reglas propio.
-1. **Lexicalización:** los tokens emitidos se convierten en "objetos" que definen sus propiedades y reglas.
-1. **Construcción del DOM:** Por último, debido a que el lenguaje de marcado HTML define relaciones entre etiquetas diferentes (algunas etiquetas están contenidas en otras), los objetos creados se vinculan en una estructura de datos en forma de árbol que también captura las relaciones entre objetos primarios y secundarios definidas en el lenguaje de marcado original: el objeto _HTML_ es un elemento primario del objeto _body_, el objeto _body_ es un elemento primario del objeto _paragraph_, etc.
+1. **Conversion:** The browser reads the raw bytes of HTML off the disk or network, and translates them to individual characters based on specified encoding of the file (for example, UTF-8).
+2. **Tokenizing:** The browser converts strings of characters into distinct tokens&mdash;as specified by the [W3C HTML5 standard](http://www.w3.org/TR/html5/){: .external }; for example, "&lt;html&gt;", "&lt;body&gt;"&mdash;and other strings within angle brackets. Each token has a special meaning and its own set of rules.
+3. **Lexing:** The emitted tokens are converted into "objects," which define their properties and rules.
+4. **DOM construction:** Finally, because the HTML markup defines relationships between different tags (some tags are contained within other tags) the created objects are linked in a tree data structure that also captures the parent-child relationships defined in the original markup: the *HTML* object is a parent of the *body* object, the *body* is a parent of the *paragraph* object, and so on.
 
-<img src="images/dom-tree.png"  alt="Árbol del DOM">
+<img src="images/dom-tree.png"  alt="DOM tree" />
 
-**El resultado final de todo este proceso es el Document Object Model (DOM) de nuestra página simple, que el navegador usa para todos los demás procesamientos de la página.**
+**The final output of this entire process is the Document Object Model (DOM) of our simple page, which the browser uses for all further processing of the page.**
 
-Cada vez que el navegador procesa el lenguaje de marcado HTML, realiza todos los pasos que se mencionan más arriba: convertir bytes en caracteres, identificar tokens, convertir tokens en nodos y compilar el árbol del DOM. Todo este proceso puede tardar un poco, especialmente si hay mucho HTML para procesar.
+Every time the browser processes HTML markup, it goes through all of the steps above: convert bytes to characters, identify tokens, convert tokens to nodes, and build the DOM tree. This entire process can take some time, especially if we have a large amount of HTML to process.
 
-<img src="images/dom-timeline.png"  alt="Seguimiento de la construcción del DOM en DevTools">
+<img src="images/dom-timeline.png"  alt="Tracing DOM construction in DevTools" />
 
-Note: Supondremos que conoces algo de Chrome DevTools; es decir, que sabes capturar una cascada de red o registrar una línea de tiempo. Si necesitas un actualizador rápido, lee la <a href='/web/tools/chrome-devtools/'>documentación de Chrome DevTools</a>; si recién comienzas a usar DevTools, te recomendamos realizar el curso <a href='http://discover-devtools.codeschool.com/'>Discover DevTools</a> (descubre DevTools) de Codeschool.
+Note: We're assuming that you have basic familiarity with Chrome DevTools - that is, you know how to capture a network waterfall or record a timeline. If you need a quick refresher, check out the [Chrome DevTools documentation](/web/tools/chrome-devtools/); if you're new to DevTools, we recommend that you take the Codeschool [Discover DevTools](http://discover-devtools.codeschool.com/) course.
 
-Si abres Chrome DevTools y registras una línea de tiempo mientras se carga la página, puedes ver el tiempo necesario para este paso. En el ejemplo anterior, la conversión de un fragmento de HTML en un árbol del DOM tardó ~5 ms. Respecto de una página más grande, este proceso puede durar mucho más. Cuando creas animaciones fluidas, puede convertirse fácilmente en un cuello de botella si el navegador debe procesar grandes cantidades de HTML.
+If you open up Chrome DevTools and record a timeline while the page is loaded, you can see the actual time taken to perform this step&mdash;in the example above, it took us ~5ms to convert a chunk of HTML into a DOM tree. For a larger page, this process could take significantly longer. When creating smooth animations, this can easily become a bottleneck if the browser has to process large amounts of HTML.
 
-El árbol del DOM captura las propiedades y relaciones del lenguaje de marcado del documento, pero no muestra indicios sobre el aspecto que debe tener el elemento al representarse Esa es tarea del CSSOM.
+The DOM tree captures the properties and relationships of the document markup, but it doesn't tell us how the element will look when rendered. That’s the responsibility of the CSSOM.
 
 ## CSS Object Model (CSSOM)
 
-Mientras el navegador construía el DOM de nuestra página simple, encontró una etiqueta de vínculo en el encabezado del documento que hacía referencia a una hoja de estilo CSS externa: style.css. Previendo que necesita este recurso para representar la página, envía de inmediato una solicitud de este recurso, que regresa con el siguiente contenido:
+While the browser was constructing the DOM of our simple page, it encountered a link tag in the head section of the document referencing an external CSS stylesheet: style.css. Anticipating that it needs this resource to render the page, it immediately dispatches a request for this resource, which comes back with the following content:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/style.css" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-Podríamos haber declarado nuestros estilos directamente en el lenguaje de marcado HTML (integrado), pero mantener la independencia de nuestro lenguaje de marcado CSS respecto del HTML nos permite abordar el contenido y el diseño como dos temas independientes: los diseñadores pueden trabajar en CSS, los programadores en HTML, etc.
+We could have declared our styles directly within the HTML markup (inline), but keeping our CSS independent of HTML allows us to treat content and design as separate concerns: designers can work on CSS, developers can focus on HTML, and so on.
 
-Al igual que con HTML, debemos convertir las reglas de CSS recibidas en algo que el navegador comprenda y con lo que pueda trabajar. Por lo tanto, repetimos el proceso de HTML, pero para CSS en lugar de HTML:
+As with HTML, we need to convert the received CSS rules into something that the browser can understand and work with. Hence, we repeat the HTML process, but for CSS instead of HTML:
 
-<img src="images/cssom-construction.png"  alt="Pasos para la construcción del CSSOM">
+<img src="images/cssom-construction.png"  alt="CSSOM construction steps" />
 
-Los bytes del CSS se convierten en caracteres, luego en tokens y nodos y, por último, se vinculan en una estructura de árbol conocida como "CSS Object Model" (CSSOM):
+The CSS bytes are converted into characters, then tokens, then nodes, and finally they are linked into a tree structure known as the "CSS Object Model" (CSSOM):
 
-<img src="images/cssom-tree.png"  alt="Árbol del CSSOM">
+<img src="images/cssom-tree.png"  alt="CSSOM tree" />
 
-¿Por qué el CSSOM tiene una estructura de árbol? Al computar el conjunto final de estilos para cualquier objeto de la página, el navegador comienza por la regla aplicable más general para ese nodo (por ejemplo, si es un campo secundario del elemento body, se aplican todos los estilos de body) y luego define mejor y de manera recursiva los estilos computados aplicando reglas más específicas; es decir, las reglas se ordenan en cascada de forma "descendente".
+Why does the CSSOM have a tree structure? When computing the final set of styles for any object on the page, the browser starts with the most general rule applicable to that node (for example, if it is a child of a body element, then all body styles apply) and then recursively refines the computed styles by applying more specific rules; that is, the rules "cascade down."
 
-Para ser más concretos, considera el árbol del CSSOM anterior. El texto de la etiqueta _span_ que se coloca en el elemento body tiene un tamaño de fuente de 16 píxeles y es de color rojo; el orden de tamaño de fuente se encuentra en una jerarquía de órdenes descendentes desde el elemento body hasta el elemento span. No obstante, si la etiqueta span es el elemento secundario de una etiqueta paragraph (p) no se mostrará su contenido.
+To make it more concrete, consider the CSSOM tree above. Any text contained within the *span* tag that is placed within the body element, has a font size of 16 pixels and has red text&mdash;the font-size directive cascades down from the body to the span. However, if a span tag is child of a paragraph (p) tag, then its contents are not displayed.
 
-Ten en cuenta también que el árbol anterior no es el árbol completo del CSSOM y en él solo se muestran los estilos que decidimos anular en nuestra hoja de estilos. Cada navegador proporciona un conjunto de estilos predeterminado, también conocidos como "estilos de usuario-agente"&mdash;lo que vemos cuando no proporcionamos los nuestros&mdash;y nuestros estilos simplemente anulan a los predeterminados (por ejemplo, [estilos de IE predeterminados](http://www.iecss.com/){: .external }).
+Also, note that the above tree is not the complete CSSOM tree and only shows the styles we decided to override in our stylesheet. Every browser provides a default set of styles also known as "user agent styles"&mdash;that’s what we see when we don’t provide any of our own&mdash;and our styles simply override these defaults (for example, [default IE styles](http://www.iecss.com/){: .external }).
 
-Para averiguar cuánto demora el procesamiento de CSS, puedes registrar una línea de tiempo en DevTools y buscar el evento "Recalculate Style": a diferencia del análisis del DOM, la línea de tiempo no muestra una entrada "Parse CSS" independiente y, en su lugar, captura el análisis y la construcción del árbol del CSSOM, además del cálculo recursivo de los estilos computados en este evento.
+To find out how long the CSS processing takes you can record a timeline in DevTools and look for "Recalculate Style" event: unlike DOM parsing, the timeline doesn’t show a separate "Parse CSS" entry, and instead captures parsing and CSSOM tree construction, plus the recursive calculation of computed styles under this one event.
 
-<img src="images/cssom-timeline.png"  alt="Seguimiento de la construcción del CSSOM en DevTools">
+<img src="images/cssom-timeline.png"  alt="Tracing CSSOM construction in DevTools" />
 
-Nuestras hojas de estilo simples demoran ~0,6ms en procesarse y afectan a 8 elementos de la página; no mucho, pero una vez más, no es gratis. Sin embargo, ¿de dónde vienen los 8 elementos? El CSSOM y el DOM son estructuras de datos independientes. Resulta que el navegador está escondiendo un paso importante. A continuación, hablaremos sobre el [árbol de representación](/web/fundamentals/performance/critical-rendering-path/render-tree-construction) que vincula al DOM y el CSSOM.
+Our trivial stylesheet takes ~0.6ms to process and affects eight elements on the page&mdash;not much, but once again, not free. However, where did the eight elements come from? The CSSOM and DOM are independent data structures! Turns out, the browser is hiding an important step. Next, lets talk about the [render tree](/web/fundamentals/performance/critical-rendering-path/render-tree-construction) that links the DOM and CSSOM together.
 
-<a href="render-tree-construction" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Render-Tree Construction">
-  <button>A continuación: Construcción, diseño y color del árbol de representación</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

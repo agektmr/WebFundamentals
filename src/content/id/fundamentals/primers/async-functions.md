@@ -1,20 +1,14 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Fungsi async memungkinkan Anda untuk menulis kode berbasis-promise seakan-akan itu sinkron
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Async functions allow you to write promise-based code as if it were synchronous
 
-{# wf_published_on: 2016-10-20 #}
-{# wf_updated_on: 2017-07-12 #}
+{# wf_published_on: 2016-10-20 #} {# wf_updated_on: 2018-10-10 #} {# wf_blink_components: Blink>JavaScript #}
 
-# Fungsi async - membuat promise lebih bersahabat {: .page-title }
+# Async functions - making promises friendly {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-Fungsi async diaktifkan secara default di Chrome 55 dan terus terang saja
-fungsi tersebut cukup luar biasa. Fungsi async memungkinkan Anda untuk menulis kode berbasis-promise seakan-akan itu sinkron,
-namun tanpa memblokir thread utama. Fungsi tersebut membuat kode asinkron Anda kurang
-"cerdas" dan lebih mudah dibaca.
+Async functions are enabled by default in Chrome 55 and they're quite frankly marvelous. They allow you to write promise-based code as if it were synchronous, but without blocking the main thread. They make your asynchronous code less "clever" and more readable.
 
-Fungsi async bekerja seperti ini:
+Async functions work like this:
 
     async function myFirstAsyncFunction() {
       try {
@@ -24,19 +18,15 @@ Fungsi async bekerja seperti ini:
         // …
       }
     }
+    
 
-Jika Anda menggunakan kata kunci `async` sebelum definisi fungsi, maka Anda bisa menggunakan
-`await` di dalam fungsi. Ketika Anda `await` promise, fungsi tersebut dihentikan sementara
-dengan cara yang tak-memblokir sampai promise selesai. Jika promise itu terpenuhi, Anda
-mendapatkan kembali nilai tersebut. Jika promise ditolak, nilai yang ditolak akan dibuang.
+If you use the `async` keyword before a function definition, you can then use `await` within the function. When you `await` a promise, the function is paused in a non-blocking way until the promise settles. If the promise fulfills, you get the value back. If the promise rejects, the rejected value is thrown.
 
-Note: Jika Anda belum familier dengan promise, lihat [panduan promise
-kami](/web/fundamentals/getting-started/primers/promises).
+Note: If you're unfamiliar with promises, check out [our promises guide](/web/fundamentals/getting-started/primers/promises).
 
-## Contoh: Pembuatan Log pengambilan
+## Example: Logging a fetch
 
-Katakanlah kita ingin mengambil URL dan membuat log respons sebagai teks. Berikut adalah bagaimana itu terlihat
-menggunakan promise:
+Say we wanted to fetch a URL and log the response as text. Here's how it looks using promises:
 
     function logFetch(url) {
       return fetch(url)
@@ -47,8 +37,9 @@ menggunakan promise:
           console.error('fetch failed', err);
         });
     }
+    
 
-Dan berikut adalah fungsi yang sama dengan menggunakan async:
+And here's the same thing using async functions:
 
     async function logFetch(url) {
       try {
@@ -59,78 +50,73 @@ Dan berikut adalah fungsi yang sama dengan menggunakan async:
         console.log('fetch failed', err);
       }
     }
+    
 
-Mempunyai jumlah baris yang sama, namun semua callback menghilang. Cara ini membuat membaca
-jauh lebih mudah, terutama bagi mereka yang belum familier dengan promise.
+It's the same number of lines, but all the callbacks are gone. This makes it way easier to read, especially for those less familiar with promises.
 
-Note: Semua yang Anda `await` diteruskan melalui `Promise.resolve()`, sehingga Anda bisa
-dengan aman `await` promise non-asli.
+Note: Anything you `await` is passed through `Promise.resolve()`, so you can safely `await` non-native promises.
 
-## Async mengembalikan nilai
+## Async return values
 
-Fungsi async *selalu* mengembalikan promise, apakah Anda menggunakan `await` atau tidak. Promise
-diselesaikan dengan fungsi async apa pun yang dikembalikan, atau ditolak dengan
-fungsi async apa pun yang dikeluarkan. Jadi dengan:
+Async functions *always* return a promise, whether you use `await` or not. That promise resolves with whatever the async function returns, or rejects with whatever the async function throws. So with:
 
     // wait ms milliseconds
     function wait(ms) {
       return new Promise(r => setTimeout(r, ms));
     }
-
+    
     async function hello() {
       await wait(500);
       return 'world';
     }
+    
 
-…memanggil `hello()` mengembalikan sebuah promise yang *dilaksanakan* dengan `"world"`.
+…calling `hello()` returns a promise that *fulfills* with `"world"`.
 
     async function foo() {
       await wait(500);
       throw Error('bar');
     }
+    
 
-…memanggil `foo()` mengembalikan sebuah promise yang *ditolak* dengan `Error('bar')`.
+…calling `foo()` returns a promise that *rejects* with `Error('bar')`.
 
-## Contoh: Streaming respons
+## Example: Streaming a response
 
-Keuntungan fungsi async semakin bertambah pada contoh yang lebih kompleks. Misalnya kita ingin
-streaming respons sembari keluar dari potongan, dan mengembalikan ukuran akhir.
+The benefit of async functions increases in more complex examples. Say we wanted to stream a response while logging out the chunks, and return the final size.
 
-Note: Ungkapan "keluar dari potongan" membuat mulut saya sakit.
+Note: The phrase "logging out the chunks" made me sick in my mouth.
 
-Berikut tampilan dengan promise:
+Here it is with promises:
 
     function getResponseSize(url) {
       return fetch(url).then(response => {
         const reader = response.body.getReader();
         let total = 0;
-
+    
         return reader.read().then(function processResult(result) {
           if (result.done) return total;
-
+    
           const value = result.value;
           total += value.length;
           console.log('Received chunk', value);
-
+    
           return reader.read().then(processResult);
         })
       });
     }
+    
 
-Lihat saya, Jake "wielder of promises" Archibald. Lihat bagaimana saya memanggil
-`processResult` dalam dirinya sendiri untuk menyiapkan loop asinkron? Menulis hal itu membuat
-saya merasa *sangat cerdas*. Tapi seperti kebanyakan kode "cerdas", Anda harus menatapnya dalam
-waktu sangat lama untuk mencari tahu apa yang dilakukannya, seperti salah satu gambar mata-ajaib dari
-tahun 90-an.
+Check me out, Jake "wielder of promises" Archibald. See how I'm calling `processResult` inside itself to set up an asynchronous loop? Writing that made me feel *very smart*. But like most "smart" code, you have to stare at it for ages to figure out what it's doing, like one of those magic-eye pictures from the 90's.
 
-Mari kita lakukan lagi dengan fungsi async:
+Let's try that again with async functions:
 
     async function getResponseSize(url) {
       const response = await fetch(url);
       const reader = response.body.getReader();
       let result = await reader.read();
       let total = 0;
-
+    
       while (!result.done) {
         const value = result.value;
         total += value.length;
@@ -138,37 +124,31 @@ Mari kita lakukan lagi dengan fungsi async:
         // get the next result
         result = await reader.read();
       }
-
+    
       return total;
     }
+    
 
-Semua "kecerdasan" hilang. Loop asinkron yang membuat saya merasa begitu puas
-diganti dengan while-loop yang terpercaya dan membosankan. Jauh lebih baik. Di masa mendatang, kita akan mendapatkan
-[iterator async](https://github.com/tc39/proposal-async-iteration){: .external},
-yang akan
-[menggantikan loop `while` dengan loop for-of](https://gist.github.com/jakearchibald/0b37865637daf884943cf88c2cba1376){: .external}, membuatnya lebih rapi.
+All the "smart" is gone. The asynchronous loop that made me feel so smug is replaced with a trusty, boring, while-loop. Much better. In future, we'll get [async iterators](https://github.com/tc39/proposal-async-iteration){: .external}, which would [replace the `while` loop with a for-of loop](https://gist.github.com/jakearchibald/0b37865637daf884943cf88c2cba1376){: .external}, making it even neater.
 
-Note: Saya mencintai streaming. Jika Anda belum familier dengan streaming,
-[lihat panduan saya](https://jakearchibald.com/2016/streams-ftw/#streams-the-fetch-api){: .external}.
+Note: I'm sort-of in love with streams. If you're unfamiliar with streaming, [check out my guide](https://jakearchibald.com/2016/streams-ftw/#streams-the-fetch-api){: .external}.
 
-## Sintaks fungsi async lainnya
+## Other async function syntax
 
-Kita telah melihat `async function() {}`, namun kata kunci `async` bisa digunakan
-dengan sintaks fungsi lainnya:
+We've seen `async function() {}` already, but the `async` keyword can be used with other function syntax:
 
-### Fungsi Arrow
+### Arrow functions
 
     // map some URLs to json-promises
     const jsonPromises = urls.map(async url => {
       const response = await fetch(url);
       return response.json();
     });
+    
 
-Note: `array.map(func)` tidak peduli bahwa saya memberikannya fungsi async, fungsi itu hanya
-melihatnya sebagai fungsi yang mengembalikan promise. Fungsi ini tidak akan menunggu fungsi
-pertama untuk diselesaikan sebelum memanggil yang kedua.
+Note: `array.map(func)` doesn't care that I gave it an async function, it just sees it as a function that returns a promise. It won't wait for the first function to complete before calling the second.
 
-### Metode objek
+### Object methods
 
     const storage = {
       async getAvatar(name) {
@@ -176,78 +156,78 @@ pertama untuk diselesaikan sebelum memanggil yang kedua.
         return cache.match(`/avatars/${name}.jpg`);
       }
     };
-
+    
     storage.getAvatar('jaffathecake').then(…);
+    
 
-### Metode kelas
+### Class methods
 
     class Storage {
       constructor() {
         this.cachePromise = caches.open('avatars');
       }
-
+    
       async getAvatar(name) {
         const cache = await this.cachePromise;
         return cache.match(`/avatars/${name}.jpg`);
       }
     }
-
+    
     const storage = new Storage();
     storage.getAvatar('jaffathecake').then(…);
+    
 
-Note: Konstruktor dan getter/setelan kelas tidak bisa asinkron.
+Note: Class constructors and getters/setters cannot be async.
 
-## Hati-hati! Hindari terlalu sekuensial
+## Careful! Avoid going too sequential
 
-Meskipun Anda menulis kode yang terlihat sinkron, pastikan Anda tidak melewatkan
-kesempatan untuk melakukan hal-hal secara paralel.
+Although you're writing code that looks synchronous, ensure you don't miss the opportunity to do things in parallel.
 
     async function series() {
-      await wait(500);
-      await wait(500);
+      await wait(500); // Wait 500ms…
+      await wait(500); // …then wait another 500ms.
       return "done!";
     }
+    
 
-Fungsi di atas membutuhkan waktu 1000 md untuk diselesaikan, sedangkan:
+The above takes 1000ms to complete, whereas:
 
     async function parallel() {
-      const wait1 = wait(500);
-      const wait2 = wait(500);
-      await wait1;
-      await wait2;
+      const wait1 = wait(500); // Start a 500ms timer asynchronously…
+      const wait2 = wait(500); // …meaning this timer happens in parallel.
+      await wait1; // Wait 500ms for the first timer…
+      await wait2; // …by which time this timer has already finished.
       return "done!";
     }
+    
 
-…fungsi di atas membutuhkan waktu 500 md untuk diselesaikan, karena kedua proses tunggu terjadi pada waktu yang sama.
-Mari kita lihat contoh praktiknya…
+…the above takes 500ms to complete, because both waits happen at the same time. Let's look at a practical example…
 
-### Contoh: Keluaran pengambilan secara urut
+### Example: Outputting fetches in order
 
-Misalnya kita ingin mengambil serangkaian URL dan membuat log sesegera mungkin, dengan
-urutan yang benar.
+Say we wanted to fetch a series URLs and log them as soon as possible, in the correct order.
 
-*Tarik napas dalam-dalam* - Beginilah itu akan terlihat dengan promise:
+*Deep breath* - here's how that looks with promises:
 
     function logInOrder(urls) {
       // fetch all the URLs
       const textPromises = urls.map(url => {
         return fetch(url).then(response => response.text());
       });
-
+    
       // log them in order
       textPromises.reduce((chain, textPromise) => {
         return chain.then(() => textPromise)
           .then(text => console.log(text));
       }, Promise.resolve());
     }
+    
 
-Ya, benar, saya menggunakan `reduce` untuk merangkai urutan promise. Saya *begitu
-cerdas*. Namun ini adalah pengkodean *begitu cerdas* yang sebaiknya tidak kita gunakan.
+Yeah, that's right, I'm using `reduce` to chain a sequence of promises. I'm *so smart*. But this is a bit of *so smart* coding we're better off without.
 
-Namun, ketika mengubah fungsi di atas menjadi fungsi async, bisa saja tergoda untuk
-*terlalu sekuensial*:
+However, when converting the above to an async function, it's tempting to go *too sequential*:
 
-<span class="compare-worse">Tidak disarankan</span> - terlalu sekuensial
+<span class="compare-worse">Not recommended</span> - too sequential
 
     async function logInOrder(urls) {
       for (const url of urls) {
@@ -255,12 +235,11 @@ Namun, ketika mengubah fungsi di atas menjadi fungsi async, bisa saja tergoda un
         console.log(await response.text());
       }
     }
+    
 
-Terlihat jauh lebih rapi, tapi pengambilan kedua saya tidak dimulai sampai pengambilan pertama
-telah dibaca sepenuhnya, dan seterusnya. Ini jauh lebih lambat dibandingkan contoh promise yang
-melakukan pengambilan secara paralel. Untungnya ada jalan tengah yang ideal:
+Looks much neater, but my second fetch doesn't begin until my first fetch has been fully read, and so on. This is much slower than the promises example that performs the fetches in parallel. Thankfully there's an ideal middle-ground:
 
-<span class="compare-better">Disarankan</span> - bagus dan paralel
+<span class="compare-better">Recommended</span> - nice and parallel
 
     async function logInOrder(urls) {
       // fetch all the URLs in parallel
@@ -268,79 +247,62 @@ melakukan pengambilan secara paralel. Untungnya ada jalan tengah yang ideal:
         const response = await fetch(url);
         return response.text();
       });
-
+    
       // log them in sequence
       for (const textPromise of textPromises) {
         console.log(await textPromise);
       }
     }
+    
 
-Dalam contoh ini, URL diambil dan dibaca secara paralel, namun 
-`reduce` bit yang "cerdas" diganti dengan for-loop standar, membosankan, dan bisa dibaca.
+In this example, the URLs are fetched and read in parallel, but the "smart" `reduce` bit is replaced with a standard, boring, readable for-loop.
 
-## Dukungan browser & solusi
+## Browser support & workarounds
 
-Pada saat penulisan, fungsi async diaktifkan secara default dalam Chrome 55, tapi
-fungsi tersebut sedang dikembangkan di semua browser utama:
+At time of writing, async functions are enabled by default in Chrome, Edge, Firefox, and Safari.
 
-* Edge - [Versi 14342+ di belakang flag](https://developer.microsoft.com/en-us/microsoft-edge/platform/status/asyncfunctions/)
-* Firefox - [development aktif](https://bugzilla.mozilla.org/show_bug.cgi?id=1185106)
-* Safari - [development aktif](https://bugs.webkit.org/show_bug.cgi?id=156147)
+### Workaround - Generators
 
-### Solusi - Generator
+If you're targeting browsers that support generators (which includes [the latest version of every major browser](http://kangax.github.io/compat-table/es6/#test-generators){:.external} ) you can sort-of polyfill async functions.
 
-Jika Anda menargetkan browser yang mendukung generator (yang mencakup
-[versi terbaru dari setiap browser utama](http://kangax.github.io/compat-table/es6/#test-generators){:.external}
-) Anda bisa mengurutkan fungsi async polyfill.
+[Babel](https://babeljs.io/){: .external} will do this for you, [here's an example via the Babel REPL](https://goo.gl/0Cg1Sq){: .external}
 
-[Babel](https://babeljs.io/){: .external} akan melakukannya untuk Anda,
-[berikut adalah contoh melalui Babel REPL](https://goo.gl/0Cg1Sq){: .external}
-- perhatikan bagaimana miripnya kode yang ditranspilasi. Transformasi ini merupakan bagian dari 
-[preset es2017 Babel](http://babeljs.io/docs/plugins/preset-es2017/){: .external}.
+- note how similar the transpiled code is. This transformation is part of [Babel's es2017 preset](http://babeljs.io/docs/plugins/preset-es2017/){: .external}.
 
-Note: Babel REPL menyenangkan untuk digunakan. Cobalah.
+Note: Babel REPL is fun to say. Try it.
 
-Saya menyarankan pendekatan transpiling, karena Anda bisa mematikannya setelah
-browser target mendukung fungsi async, namun jika Anda *benar-benar* tidak ingin menggunakan
-transpiler, Anda dapat mengambil
-[polyfill Babel](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external}
-dan menggunakannya sendiri. Daripada:
+I recommend the transpiling approach, because you can just turn it off once your target browsers support async functions, but if you *really* don't want to use a transpiler, you can take [Babel's polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external} and use it yourself. Instead of:
 
     async function slowEcho(val) {
       await wait(1000);
       return val;
     }
+    
 
-…Anda akan menyertakan [polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external}
-dan menulis:
+…you'd include [the polyfill](https://gist.github.com/jakearchibald/edbc78f73f7df4f7f3182b3c7e522d25){: .external} and write:
 
     const slowEcho = createAsyncFunction(function*(val) {
       yield wait(1000);
       return val;
     });
+    
 
-Perhatikan bahwa Anda harus meneruskan generator (`function*`) ke `createAsyncFunction`,
-dan menggunakan `yield` sebagai ganti `await`. Selain itu, semuanya sama.
+Note that you have to pass a generator (`function*`) to `createAsyncFunction`, and use `yield` instead of `await`. Other than that it works the same.
 
-### Solusi - regenerator
+### Workaround - regenerator
 
-Jika Anda menargetkan browser lama, Babel juga bisa melakukan transpile generator,
-memungkinkan Anda untuk menggunakan fungsi async hingga sampai IE8. Untuk melakukannya, Anda membutuhkan
-[preset es2017 Babel](http://babeljs.io/docs/plugins/preset-es2017/){: .external}
-*dan* [preset es2015](http://babeljs.io/docs/plugins/preset-es2015/){: .external}.
+If you're targeting older browsers, Babel can also transpile generators, allowing you to use async functions all the way down to IE8. To do this you need [Babel's es2017 preset](http://babeljs.io/docs/plugins/preset-es2017/){: .external} *and* the [es2015 preset](http://babeljs.io/docs/plugins/preset-es2015/){: .external}.
 
-[Keluarannya tidak semenarik](https://goo.gl/jlXboV), jadi waspadalah terhadap
-code-bloat.
+The [output is not as pretty](https://goo.gl/jlXboV), so watch out for code-bloat.
 
-## Lakukan async ke semua hal!
+## Async all the things!
 
-Setelah fungsi async terdapat di semua browser, gunakan mereka pada setiap
-fungsi yang mengembalikan-promise! Fungsi async tidak hanya membuat kode Anda lebih rapi, tapi juga
-memastikan bahwa fungsi tersebut akan *selalu* mengembalikan promise.
+Once async functions land across all browsers, use them on every promise-returning function! Not only do they make your code tidier, but it makes sure that function will *always* return a promise.
 
-Saya benar-benar bersemangat tentang fungsi async [kembali ke
-2014](https://jakearchibald.com/2014/es7-async-functions/){: .external}, dan
-sangat senang bisa melihatnya hadir, secara nyata, dalam browser. Whoop!
+I got really excited about async functions [back in 2014](https://jakearchibald.com/2014/es7-async-functions/){: .external}, and it's great to see them land, for real, in browsers. Whoop!
 
+## Feedback {: .hide-from-toc }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
+
+<div class="clearfix"></div>

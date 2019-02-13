@@ -1,106 +1,75 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:如果网站和应用运行不佳，用户就会注意到，因此优化渲染性能非常重要！
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Users notice if sites and apps don't run well, so optimizing rendering performance is crucial!
 
-{# wf_updated_on: 2015-03-20 #}
-{# wf_published_on: 2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>Paint #}
 
-# 渲染性能 {: .page-title }
+# Rendering Performance {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-现在的网络用户[希望他们访问的页面具有交互性并且运行顺畅](https://paul.kinlan.me/what-news-readers-want/)，这正是您需要投入越来越多时间和精力的地方。页面不仅要快速加载，而且要顺畅地运行；滚动应与手指的滑动一样快，并且动画和交互应如丝绸般顺滑。
+Users of today’s web [expect that the pages they visit will be interactive and smooth](https://paul.kinlan.me/what-news-readers-want/) and that’s where you need to increasingly focus your time and effort. Pages should not only load quickly, but also run well; scrolling should be stick-to-finger fast, and animations and interactions should be silky smooth.
 
+To write performant sites and apps you need to understand how HTML, JavaScript and CSS is handled by the browser, and ensure that the code you write (and the other 3rd party code you include) runs as efficiently as possible.
 
-
-要编写高性能的网站和应用，您需要了解浏览器如何处理 HTML、JavaScript 和 CSS，并确保您编写的代码（和您要包括的其他第三方代码）尽可能高效地运行。
-
-##  60fps 与设备刷新率
+## 60fps and Device Refresh Rates
 
 <div class="attempt-right">
   <figure>
-    <img src="images/intro/response.jpg" alt="用户与网站进行交互。">
+    <img src="images/intro/response.jpg" alt="User interacting with a website.">
   </figure>
 </div>
 
-目前大多数设备的屏幕刷新率为 **60 次/秒**。因此，如果在页面中有一个动画或渐变效果，或者用户正在滚动页面，那么浏览器渲染动画或页面的每一帧的速率也需要跟设备屏幕的刷新率保持一致。
+Most devices today refresh their screens **60 times a second**. If there’s an animation or transition running, or the user is scrolling the pages, the browser needs to match the device’s refresh rate and put up 1 new picture, or frame, for each of those screen refreshes.
 
+Each of those frames has a budget of just over 16ms (1 second / 60 = 16.66ms). In reality, however, the browser has housekeeping work to do, so all of your work needs to be completed inside **10ms**. When you fail to meet this budget the frame rate drops, and the content judders on screen. This is often referred to as **jank**, and it negatively impacts the user's experience.
 
+## The pixel pipeline
 
+There are five major areas that you need to know about and be mindful of when you work. They are areas you have the most control over, and key points in the pixels-to-screen pipeline:
 
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-其中每个帧的预算时间仅比 16 毫秒多一点 (1 秒/ 60 = 16.66 毫秒)。但实际上，浏览器有整理工作要做，因此您的所有工作需要在 **10 毫秒**内完成。如果无法符合此预算，帧率将下降，并且内容会在屏幕上抖动。
-此现象通常称为**卡顿**，会对用户体验产生负面影响。
+* **JavaScript**. Typically JavaScript is used to handle work that will result in visual changes, whether it’s jQuery’s `animate` function, sorting a data set, or adding DOM elements to the page. It doesn’t have to be JavaScript that triggers a visual change, though: CSS Animations, Transitions, and the Web Animations API are also commonly used.
+* **Style calculations**. This is the process of figuring out which CSS rules apply to which elements based on matching selectors, for example, `.headline` or `.nav > .nav__item`. From there, once rules are known, they are applied and the final styles for each element are calculated.
+* **Layout**. Once the browser knows which rules apply to an element it can begin to calculate how much space it takes up and where it is on screen. The web’s layout model means that one element can affect others, for example the width of the `<body>` element typically affects its children’s widths and so on all the way up and down the tree, so the process can be quite involved for the browser.
+* **Paint**. Painting is the process of filling in pixels. It involves drawing out text, colors, images, borders, and shadows, essentially every visual part of the elements. The drawing is typically done onto multiple surfaces, often called layers.
+* **Compositing**. Since the parts of the page were drawn into potentially multiple layers they need to be drawn to the screen in the correct order so that the page renders correctly. This is especially important for elements that overlap another, since a mistake could result in one element appearing over the top of another incorrectly.
 
+Each of these parts of the pipeline represents an opportunity to introduce jank, so it's important to understand exactly what parts of the pipeline your code triggers.
 
-## 像素管道
+Sometimes you may hear the term "rasterize" used in conjunction with paint. This is because painting is actually two tasks: 1) creating a list of draw calls, and 2) filling in the pixels.
 
-您在工作时需要了解并注意五个主要区域。
-这些是您拥有最大控制权的部分，也是像素至屏幕管道中的关键点：
+The latter is called "rasterization" and so whenever you see paint records in DevTools, you should think of it as including rasterization. (In some architectures creating the list of draw calls and rasterizing are done in different threads, but that isn't something under developer control.)
 
+You won’t always necessarily touch every part of the pipeline on every frame. In fact, there are three ways the pipeline *normally* plays out for a given frame when you make a visual change, either with JavaScript, CSS, or Web Animations:
 
-<img src="images/intro/frame-full.jpg"  alt="完整的像素管道">
+### 1. JS / CSS > Style > Layout > Paint > Composite
 
-* **JavaScript**。一般来说，我们会使用 JavaScript 来实现一些视觉变化的效果。比如用 jQuery 的 `animate` 函数做一个动画、对一个数据集进行排序或者往页面里添加一些 DOM 元素等。当然，除了 JavaScript，还有其他一些常用方法也可以实现视觉变化效果，比如：CSS Animations、Transitions 和 Web Animation API。
-* **样式计算**。此过程是根据匹配选择器（例如 `.headline` 或 `.nav > .nav__item`）计算出哪些元素应用哪些 CSS 规则的过程。从中知道规则之后，将应用规则并计算每个元素的最终样式。
-* **布局**。在知道对一个元素应用哪些规则之后，浏览器即可开始计算它要占据的空间大小及其在屏幕的位置。网页的布局模式意味着一个元素可能影响其他元素，例如 `<body>` 元素的宽度一般会影响其子元素的宽度以及树中各处的节点，因此对于浏览器来说，布局过程是经常发生的。
-* **绘制**。绘制是填充像素的过程。它涉及绘出文本、颜色、图像、边框和阴影，基本上包括元素的每个可视部分。绘制一般是在多个表面（通常称为层）上完成的。
-* **合成**。由于页面的各部分可能被绘制到多层，由此它们需要按正确顺序绘制到屏幕上，以便正确渲染页面。对于与另一元素重叠的元素来说，这点特别重要，因为一个错误可能使一个元素错误地出现在另一个元素的上层。
+<img src="images/intro/frame-full.jpg"  alt="The full pixel pipeline" />
 
-管道的每个部分都有机会产生卡顿，因此务必准确了解您的代码触发管道的哪些部分。
+If you change a “layout” property, so that’s one that changes an element’s geometry, like its width, height, or its position with left or top, the browser will have to check all the other elements and “reflow” the page. Any affected areas will need to be repainted, and the final painted elements will need to be composited back together.
 
-有时您可能听到与绘制一起使用的术语“栅格化”。这是因为绘制实际上分为两个任务：
-1) 创建绘图调用的列表，以及 2) 填充像素。
+### 2. JS / CSS > Style > Paint > Composite
 
+<img src="images/intro/frame-no-layout.jpg" alt="The  pixel pipeline without layout." />
 
-后者称为“栅格化”，因此每当您在 DevTools 中看到绘制记录时，就应当将其视为包括栅格化。
-（在某些架构下，绘图调用的列表创建以及栅格化是在不同的线程中完成，但是这不是开发者所能控制的。）
+If you changed a “paint only” property, like a background image, text color, or shadows, in other words one that does not affect the layout of the page, then the browser skips layout, but it will still do paint.
 
+### 3. JS / CSS > Style > Composite
 
+<img src="images/intro/frame-no-layout-paint.jpg" alt="The pixel pipeline without layout or paint." />
 
-不一定每帧都总是会经过管道每个部分的处理。实际上，不管是使用 JavaScript、CSS 还是网络动画，在实现视觉变化时，管道针对指定帧的运行通常有三种方式：
+If you change a property that requires neither layout nor paint, and the browser jumps to just do compositing.
 
+This final version is the cheapest and most desirable for high pressure points in an app's lifecycle, like animations or scrolling.
 
+Note: If you want to know which of the three versions above changing any given CSS property will trigger head to [CSS Triggers](https://csstriggers.com). And if you want the fast track to high performance animations, read the section on [changing compositor-only properties](stick-to-compositor-only-properties-and-manage-layer-count).
 
+Performance is the art of avoiding work, and making any work you do as efficient as possible. In many cases it's about working with the browser, not against it. It’s worth bearing in mind that the work listed above in the pipeline differ in terms of computational cost; some tasks are more expensive than others!
 
-### 1. JS / CSS > 样式 > 布局 > 绘制 > 合成
-
-<img src="images/intro/frame-full.jpg"  alt="完整的像素管道">
-
-如果您修改元素的“layout”属性，也就是改变了元素的几何属性（例如宽度、高度、左侧或顶部位置等），那么浏览器将必须检查所有其他元素，然后“自动重排”页面。任何受影响的部分都需要重新绘制，而且最终绘制的元素需进行合成。
-
-
-
-### 2. JS / CSS > 样式 > 绘制 > 合成
-
-<img src="images/intro/frame-no-layout.jpg" alt="无布局的像素管道。">
-
-如果您修改“paint only”属性（例如背景图片、文字颜色或阴影等），即不会影响页面布局的属性，则浏览器会跳过布局，但仍将执行绘制。
-
-
-
-### 3. JS / CSS > 样式 > 合成
-
-<img src="images/intro/frame-no-layout-paint.jpg" alt="无布局或绘制的像素管道。">
-
-如果您更改一个既不要布局也不要绘制的属性，则浏览器将跳到只执行合成。
-
-
-这个最后的版本开销最小，最适合于应用生命周期中的高压力点，例如动画或滚动。
-
-
-Note: 如果想知道更改任何指定 CSS 属性将触发上述三个版本中的哪一个，请查看 [CSS 触发器](https://csstriggers.com)。如果要快速了解高性能动画，请阅读[更改仅合成器的属性](stick-to-compositor-only-properties-and-manage-layer-count)部分。
-
-性能是一种避免执行工作的艺术，并且使您执行的任何操作尽可能高效。
-许多情况下，这需要与浏览器配合，而不是跟它对着干。
-值得谨记的是，上面列出的各项管道工作在计算开销上有所不同；一些任务比其他任务的开销要大！
-
-
-
-接下来，让我们深入了解此管道的各个不同部分。我们会以一些常见问题为例，阐述如何诊断和修正它们。
-
+Let’s take a dive into the different parts of the pipeline. We’ll take a look at the common issues, as well how to diagnose and fix them.
 
 {% include "web/_shared/udacity/ud860.html" %}
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

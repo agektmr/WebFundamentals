@@ -1,381 +1,217 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 웹페이지의 접근성 개선
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Improving accessibility for web pages
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-06-26 #}
 
-{# wf_updated_on: 2016-06-26 #}
-{# wf_published_on: 2016-06-26 #}
+# Accessibility {: .page-title }
 
-# 접근성 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %} {% include "web/_shared/contributors/robdodson.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
-{% include "web/_shared/contributors/robdodson.html" %}
-
-
-이 문서 세트는
-[Udacity의
-접근성 과정](https://www.udacity.com/course/web-accessibility--ud891){: .external }에서 다루는 콘텐츠 중 일부를 텍스트 기반 버전으로 만든 것입니다.
-동영상으로 진행되는 교육 과정을 그대로 옮기는 것보다는
-해당 과정의 원래 내용을 토대로
-접근성의 원리와 실무 사항을 더욱 간결하게 다룰 목적으로 이런 문서를 작성했습니다.
+This document set is a text-based version of part of the content covered in the [Udacity course on Accessibility](https://www.udacity.com/course/web-accessibility--ud891){: .external }. Rather than a direct transcription of the video course, it is meant to be a more concise treatment of accessibility principles and practices, using the course's original content as a base.
 
 ### TL;DR {: .hide-from-toc }
-- 접근성의 의미와 웹 개발에 접근성을 적용하는 방법을 학습합니다.
-- 모든 사용자가 웹사이트에 액세스할 수 있고 유용하게 활용할 수 있도록 하는 방법을 학습합니다.
-- 개발에 미치는 영향을 최소화하면서 기본적인 접근성을 포함하는 방법을 학습합니다.
-- 사용 가능한 HTML 기능과 이런 기능을 사용하여 접근성을 개선하는
-  방법을 학습합니다.
-- 세련된 접근성 환경을 만들기 위한 고급 접근성 기법에
-  대해 학습합니다.
 
+- Learn what accessibility means and how it applies to web development.
+- Learn how to make web sites accessible and usable for everyone.
+- Learn how to include basic accessibility with minimal development impact.
+- Learn what HTML features are available and how to use them to improve accessibility.
+- Learn about advanced accessibility techniques for creating polished accessibility experiences.
 
-접근성과 접근성의 범위 및 영향을 잘 이해하면 더욱 뛰어난 웹 개발자가
-될 수 있습니다. 이 가이드는 모든 사용자가 쉽게 웹사이트에 액세스하여 이용할 수 있도록
-하는 방법을 이해하는 데 도움을 줄 목적으로 작성되었습니다.
+Understanding accessibility, its scope, and its impact can make you a better web developer. This guide is intended to help you understand how you can make your websites accessible and usable for everyone.
 
-'접근성'을 한마디로 쉽게 설명하긴 어려울 수 있지만
-구현하기 어렵게 만들 필요는 없습니다. 이 가이드에서는 최소한의 노력으로 손쉽게 접근성을 개선할 수 있는
-몇 가지 방법, HTML에 내장된 기능을 사용하여 더욱 원활하게 액세스할 수 있고 강력한 인터페이스를 만드는 방법,
-첨단 기법을 활용하여 세련된 액세스 환경을 만드는 방법을
-확인할 수 있을 것입니다.
+"Accessibility" can be difficult to spell, but it doesn't have to be difficult to accomplish. In this guide, you will see how to get some easy wins to help improve accessibility with minimal effort, how you can use what's built in to HTML to create more accessible and robust interfaces, and how to leverage some advanced techniques for creating polished accessible experiences.
 
-또한, 이런 기법 중 다수가 장애가 있는 사용자뿐 아니라 *모든* 사용자가 더욱 즐거운 마음으로 간편하게 사용할 수 있는
-인터페이스를 만드는 데 도움이 된다는 사실을
-깨닫게 될 것입니다.
+You'll also find that many of these techniques will help you create interfaces that are more pleasant and easy to use for *all* users, not just for those with disabilities.
 
-물론, 많은 개발자들은 접근성의 의미에 대해 막연한 수준으로만 이해하고 있습니다.
-말하자면, 정부 계약, 검사 목록, 스크린 리더 등의 대략적 개념으로만 말이죠.
-그리고 접근성에 대해 이런저런 오해를 하는 경우도 많습니다.
-예를 들어, 많은 개발자들이 접근성 문제를 언급하면 유쾌하고 매력적인 사용 환경과 접근 가능하긴 하지만 왠지 투박하고
-보기 흉한 사용 환경 중에서
-억지로 선택해야 하는 게 아닌가 생각하기도 합니다.
+Of course, many developers have only a hazy understanding of what accessibility means &mdash; something to do with government contracts, checklists, and screen readers, right? &mdash; and there are plenty of misconceptions floating around. For example, many developers feel that addressing accessibility will force them to choose between creating a delightful and attractive experience, and one that is clunky and ugly but accessible.
 
-물론, 사실과는 전혀 동떨어진 생각일 뿐입니다. 그래서 먼저 접근성의 개념부터 분명히 정리한 후
-자세한 얘기를 해보도록 하겠습니다. 접근성이란 어떤 의미이며 여기서 무엇을 배우게
-될까요?
+That is, of course, not the case at all, so let's clear that up before we get into anything else. What do we mean by accessibility, and what are we here to learn about?
 
-## 접근성이란?
-폭넓게 말하자면, 어떤 사이트가 접근 가능하다거나 액세스 가능하다고 할 때 그 사이트의
-콘텐츠를 사용할 수 있고 말 그대로 *누구든* 사이트에서 제공하는 기능을 조작할 수
-있음을 의미합니다. 개발자로서는 별 다른 생각 없이 모든 사용자가 키보드, 마우스 또는 터치 스크린을 보고 사용할 수 있고,
-자신과 똑같은 방식으로 웹페이지 콘텐츠와 상호 작용할 수 있을 거라
-여기기 십상입니다. 이런 생각을 바탕으로 웹사이트를 개발하면
-어떤 사람들에게는 문제 없이 잘 작동하지만 또 어떤 사람들에게는 단순히 성가신 수준부터 아예 웹사이트를 이용하지 못할 정도의
-수준까지 다양한 문제를 일으킬 수 있습니다.
+## What is accessibility?
 
-접근성이란 '전형적인' 사용자라는 좁은 범위를 벗어난 곳에 있는 사용자, 즉 개발자가 예상하는 것과는 다르게 웹페이지에
-액세스하거나 상호 작용할지도 모르는 사용자가
-경험하는 사용 환경을 지칭합니다. 구체적으로 말하자면,
-어떤 유형의 결함이나 장애를 가진 사용자를 배려한 사용 환경을 말합니다.
-여기서 말하는 사용 환경은 물리적인 것이 아닌 환경이나 일시적 환경일 수도 있다는 점을 염두에 두시기 바랍니다.
+Broadly speaking, when we say a site is accessible, we mean that the site's content is available, and its functionality can be operated, by literally *anyone*. As developers, it's easy to assume that all users can see and use a keyboard, mouse, or touch screen, and can interact with your page content the same way you do. This can lead to an experience that works well for some people, but creates issues that range from simple annoyances to show-stoppers for others.
 
-예를 들어, 우리는 보통 신체적 결함이 있는 사용자에 대한 접근성을 토론의 중심으로 삼으려는 경향이 있지만,
-다른 이유로 웹페이지나 웹페이지에서 제공하는 기능에 액세스할 수 없는
-인터페이스를 사용하는 환경을 모두 언급할 수 있습니다. 휴대폰에서 데스크톱 사이트를
-사용하면서 문제에 부딪힌 적 있으세요? 혹시
-'고객님께서 접속하신 지역은 서비스가 제한된 지역입니다'와 같은 메시지를 보신 적은 있으세요?
-아니면 태블릿에서 익숙한 메뉴를 찾을 수 없었던 적은요? 이런 것이 전부 접근성 문제입니다.
+Accessibility, then, refers to the experience of users who might be outside the narrow range of the "typical" user, who might access or interact with things differently than you expect. Specifically, it concerns users who are experiencing some type of impairment or disability &mdash; and bear in mind that that experience might be non-physical or temporary.
 
-더 자세한 내용을 학습해 나가면서, 이처럼 폭넓고 더욱 전반적인 관점에서 접근성 문제를 다루면
-거의 확실히 사용자 환경이 개선된다는 점을
-깨닫게 되실 겁니다. 예를 하나 들어볼게요.
+For example, although we tend to center our discussion of accessibility on users with physical impairments, we can all relate to the experience of using an interface that is not accessible to us for other reasons. Have you ever had a problem using a desktop site on a mobile phone, or seen the message "This content is not available in your area", or been unable to find a familiar menu on a tablet? Those are all accessibility issues.
 
-![접근성이 나쁜 양식](imgs/pooraccess.jpg)
+As you learn more, you'll find that addressing accessibility issues in this broader, more general sense almost always improves the user experience for everyone. Let's look at an example:
 
-이 양식에는 여러 가지 접근성 문제가 있습니다.
+![a form with poor accessibility](imgs/pooraccess.jpg)
 
- - 텍스트의 명암비가 낮아 시력이 약한 사용자는 제대로 읽기 힘듭니다.
- - 왼쪽에 레이블을 배치하고 오른쪽에 입력란을 배치할 경우 많은 사람들이
-   이 두 가지 요소의 관련성을 쉽게 알아차리지 못합니다. 심지어
-   페이지를 이용하기 위해 확대 기능을 사용해야 하는 사용자에겐 거의 불가능한 일입니다. 휴대폰 화면에 이런 식으로 배치되어 있다고 상상해 보세요. 아마 어떤 요소가 어떤 요소와 연관되어 있는지 알아내느라
-   화면상에서 이리저리 이동해야 할 것입니다.
- - 'Remember details?' 레이블은 체크박스와 연관되어 있지 않으므로
-   레이블을 그냥 클릭하는 것이 아니라 작은 사각형을 찾아 그 위에서만 정확히 탭하거나 클릭해야 하므로 너무 불편합니다.
-   또한, 스크린 리더를 사용하는 사람은 둘 사이의 연관성을 알아내는 데 애먹을
-   것입니다.
+This form has several accessibility issues.
 
-이제 접근성 문제를 해결하고 이 문제를 해결한 뒤의 형식을 살펴보겠습니다.
-레이블을 표시하는 대상과 레이블이 유사해지도록 텍스트를 어둡게 하고 디자인을 수정한 다음,
-레이블을 클릭해서 전환할 수 있도록
-레이블과 확인란을 연결할 것입니다.
+- The text is low contrast, which is hard for low-vision users to read.
+- Having labels on the left and fields on the right makes it hard for many people to associate them, and almost impossible for someone who needs to zoom in to use the page; imagine looking at this on a phone and having to pan around to figure out what goes with what.
+- The "Remember details?" label isn't associated with the checkbox, so you have to tap or click only on the tiny square rather than just clicking the label; also, someone using a screen reader would have trouble figuring out the association.
 
-![접근성을 개선한 형식](imgs/betteraccess.jpg)
+Now let's wave our accessibility wand and see the form with those issues fixed. We're going to make the text darker, modify the design so that the labels are close to the things they're labeling, and fix the label to be associated with the checkbox so you can toggle it by clicking the label as well.
 
-어느 쪽을 사용하고 싶으신가요? '접근성 버전'이라고 답했다면
-이 가이드의 주요 전제를 대략 이해하고 있는 것입니다. 일부 사용자들이
-엄청난 불편이라고 생각하는 부분은 다른 사용자에게도 불편을 야기하는 경우가 많습니다.
-그러므로 접근성 문제를 해결하면 모든 사람의 경험이 개선됩니다.
+![a form with improved accessibility](imgs/betteraccess.jpg)
 
-## 웹 콘텐츠 접근성 가이드라인
+Which would you rather use? If you said "the accessible version", you're on your way to understanding a main premise of this guide. Often, something that's a complete blocker for a few users is also a pain point for many others, so by fixing the accessibility issue you improve the experience for everyone.
 
-이 가이드에서는 [웹 콘텐츠 접근성 가이드라인
-(WCAG) 2.0](https://www.w3.org/TR/WCAG20/){: .external }을 참조할 것입니다. 이 문서는
-접근성 전문가들이 방법론적으로 '접근성'의 의미를
-고심하여 모은 가이드라인과 모범 사례의 집합입니다. 실제로 여러 국가에서
-웹 접근성 법적 요구사항에 이 가이드라인을 사용합니다.
+## Web Content Accessibility Guidelines
 
-WCAG는 네 가지 원칙으로 구성되며 주로 *POUR*라는 약자로 표현됩니다.
+Throughout this guide we'll refer to the [Web Content Accessibility Guidelines (WCAG) 2.0](https://www.w3.org/TR/WCAG20/){: .external }, a set of guidelines and best practices put together by accessibility experts to address what "accessibility" means in a methodical way.
 
- - **인지 가능(Perceivable)**: 사용자가 콘텐츠를 인지할 수 있나요? 시각과 같이 어떤 감각으로 인지할 수 있다고 해서
-   모든 사용자가 인지할 수 있다는 뜻은 아니라는 점을
-   떠올리는 데 도움이 됩니다.
+WCAG is organized around four principles often called by the acronym *POUR*:
 
- - **작동 가능(Operable)**: 사용자가 UI 구성 요소를 사용하고 콘텐츠를 탐색할 수 있나요? 예를 들어
-   마우스 오버 상호작용은 마우스나 터치스크린을 사용할 수 없는 사람은
-   작동시킬 수 없습니다.
+- **Perceivable**: Can users perceive the content? This helps us keep in mind that just because something is perceivable with one sense, such as sight, that doesn't mean that all users can perceive it.
 
- - **이해 가능(Understandable)**: 사용자가 콘텐츠를 이해할 수 있나요? 사용자가
-   인터페이스를 이해할 수 있고 인터페이스는 혼란을 피할 수 있을 만큼 일관적인가요?
+- **Operable**: Can users use UI components and navigate the content? For example, something that requires a hover interaction cannot be operated by someone who can't use a mouse or touch screen.
 
- - **안정적(Robust)**: 다양한 사용자 에이전트(브라우저)로 콘텐츠를
-   사용할 수 있나요? 지원 기술과 호환되나요?
+- **Understandable**: Can users understand the content? Can users understand the interface and is it consistent enough to avoid confusion?
 
-WCAG는 콘텐츠 접근성의 의미에 대한 종합적 개요를 제공하지만
-이는 다소 소화하기 어려울 수 있습니다. 이런 어려움을 줄이기 위해서
-[WebAIM](http://webaim.org/){: .external } (Web Accessibility in Mind) 그룹이
-WCAG 가이드라인을 웹 콘텐츠를 대상으로 하는 따라 하기 쉬운 목록으로
-간결히 작성했습니다.
+- **Robust**: Can the content be consumed by a wide variety of user agents (browsers)? Does it work with assistive technology?
 
-[WebAIM 검사 목록](http://webaim.org/standards/wcag/checklist){: .external }은
-구현해야 할 것에 대해 간결하고 높은 수준의 정보를 제공하고
-상세한 정의가 필요할 경우에 대비하여 기본적인 WCAG 표준과
-링크되어 있습니다.
+While WCAG provides a comprehensive overview of what it means for content to be accessible, it can also be a bit overwhelming. To help mitigate this, the [WebAIM](http://webaim.org/){: .external } (Web Accessibility in Mind) group has distilled the WCAG guidelines into an easy-to-follow checklist, targeted specifically for web content.
 
-이 도구를 사용하면 접근성 작업 방향을 정할 수 있고,
-프로젝트가 지정된 기준을 충족하는 한 콘텐츠에 액세스하는 사용자에게
-긍정적인 경험을 제공한다는 확신을 가질 수 있습니다.
+The [WebAIM checklist](http://webaim.org/standards/wcag/checklist){: .external } can give you a short, high-level summary of what you need to implement, while also linking to the underlying WCAG specification if you need an expanded definition.
 
-## 사용자 다양성 이해
+With this tool in hand, you can chart a direction for your accessibility work and be confident that, as long as your project meets the outlined criteria, your users should have a positive experience accessing your content.
 
-접근성에 대해 학습할 때는 전 세계의 다양한 사용자 범위와
-이러한 사용자가 영향을 미치는 다양한 종류의 접근성 주제에 대해 이해하면
-도움이 됩니다. 자세한 설명을 위해 Google의 기술 프로그램 관리자로
-시력이 전혀 없는 Victor Tsaran의 유익한 질문/답변 세션을 아래에 제공하였습니다.
+## Understanding users' diversity
+
+When learning about accessibility, it helps to have an understanding of the diverse range of users in the world and the kinds of accessibility topics that affect them. To explain further, here's an informative question/answer session with Victor Tsaran, a Technical Program Manager at Google, who is totally blind.
 
 <figure class="attempt-right">
-  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">	
+  <img src="imgs/victor_tsaran.jpg" alt="Victor Tsaran">    
   <figcaption>Victor Tsaran</figcaption>
 </figure>
 
-<hr>
+<hr />
 
-> *Google에서 어떤 일을 하시나요?*
+> *What do you work on at Google?*
 
-저는 Google에서 모든 다양한 사용자가 장애나 능력과 관계없이
-제품을 사용할 수 있도록 돕고 있습니다.
+Here at Google my job is to help ensure that our products work for all of our diverse users, regardless of impairment or ability.
 
-> *사용자는 어떤 장애가 있나요?*
+> *What kinds of impairments do users have?*
 
-콘텐츠 액세스가 어려운 장애라고 하면
-보통 사람들은 저와 같이 시각 장애가 있는
-사용자를 바로 떠올립니다. 사실, 맞습니다. 시각 장애는 웹사이트를
-사용할 때 정말 좌절스러울 뿐만 아니라, 심지어 아예 사용이 불가능할 수도 있습니다.
+When we think about the kinds of impairments which would make it difficult for someone to access our content, many people will immediately picture a blind user like me. And it's true, this impairment can really make it frustrating or even impossible to use a lot of web sites.
 
-많은 현대적 웹 기술이 등장하면서
-시각 장애인 사용자가 웹 액세스 시 사용하는 도구와 호환되지 않는
-사이트가 제작되는 안타까운 부작용이 생겨났습니다. 그러나 접근성 문제는 그뿐이 아닙니다. 장애를
-4가지(시각, 운동, 청각, 인지)로
-분류하면 유용합니다.
+A lot of modern web techniques have the unfortunate side effect of creating sites which don't work well with the tools used by blind users to access the web. However, there is actually more to accessibility than that. We find it useful think of impairments falling into four broad buckets: visual, motor, hearing, and cognitive.
 
-> *하나씩 살펴볼까요? 시각 장애의 예를
-알려주실 수 있나요?*
+> *Let's go through those one at a time. Can you give some examples of visual impairments?*
 
-시각 장애는 두 가지 범주로 나뉩니다. 저처럼
-앞이 전혀 보이지 않는 사람은 스크린 리더나 점자를 사용하고, 또는 그 두 가지를 혼용해서 사용합니다.
+Visual impairments can be split into a few categories: Users with no vision, like me, might use a screen reader, braille, or combination of the two.
 
 <figure class="attempt-right">
-  <img src="imgs/braille-reader.png" alt="점자 판독기">	
-  <figcaption>점자 판독기</figcaption>
+  <img src="imgs/braille-reader.png" alt="A braille reader">    
+  <figcaption>A braille reader</figcaption>
 </figure>
 
-정말로 앞이 전혀 보이지 않는 것은 상당히 드문 일이지만
-여러분이 앞이 전혀 보이지 않는 사람을 최소 한 명 이상 알거나 만나보았을 가능성이 큽니다.
- 그러나 저시력 사용자는
-그 수가 훨씬 많습니다.
+Now, it's actually pretty unusual to have literally no vision, but still, there's a good chance you know or have met at least one person who can't see at all. However there are also a much larger number of what we call low-vision users.
 
-각막이 없는 제 아내와 같은 사람을 포함하여 저시력 사용자는 범위가 넓습니다.
-참고로, 제 아내는 기본적으로 사물을 볼 수는 있지만 활자를 읽는 것은 어려워하고
-법적으로는 시각 장애인으로 간주됩니다. 또는, 저시력 사용자에는
-시력이 낮아서 매우 도수가 높은 처방 안경을 써야 하는 사람도 포함됩니다.
+This is a broad range, from someone like my wife, who doesn't have any corneas &mdash; so while she can basically see things she has a hard time reading print and is considered legally blind &mdash; to someone who might have just poor vision and needs to wear very strong prescription glasses.
 
-범위가 매우 넓기 때문에 이 범주의 사람들이 사용하는 보조 기구도 천차만별입니다.
-어떤 사람은 스크린 리더나 점자 디스플레이를 사용합니다.
-(인쇄된 텍스트를 보는 것보다 쉽다는 이유로 화면에 표시된 점자를 읽는 여성도 있다고 들었습니다.) 어떤 사람은 전체 화면 판독 기능은 없는
-문자 음성 변환 기술을 사용하거나
-화면의 일부만 확대하는 화면 돋보기를 사용하기도 합니다. 아니면
-브라우저 확대/축소 기능으로 모든 글꼴을 확대하기도 합니다.
- 운영체제의
-고대비 모드나 고대비 브라우저 확장, 고대비 웹사이트 테마처럼
-대비를 높인 옵션도 사용합니다.
+There's a huge range, and so naturally there's a big range of accommodations that people in this category use: some do use a screen reader or a braille display (I've even heard of one woman who reads braille displayed on-screen because it's easier to see than printed text), or they might use text-to-speech technology without the full screen reader functionality, or they might use a screen magnifier which zooms in on part of the screen, or they might just use their browser zoom to make all the fonts bigger. They might also use high-contrast options like an operating system high-contrast mode, a high-contrast browser extension or a high-contrast theme for a website.
 
 <figure class="attempt-right">
-  <img src="imgs/high-contrast.png" alt="고대비 모드">	
-  <figcaption>고대비 모드</figcaption>
+  <img src="imgs/high-contrast.png" alt="High-contrast mode">   
+  <figcaption>High-contrast mode</figcaption>
 </figure>
 
-많은 사용자가 이런 도구를 복합적으로 사용합니다. 제 친구 Laura는
-고대비 모드와 브라우저 확대/축소, 문자 음성 변환 기능을 전부 사용합니다.
+A lot of users even use a combination of these, like my friend Laura who uses a combination of high-contrast mode, browser zoom and text-to-speech.
 
-저시력은 많은 사람과 관련이 있는 장애입니다. 우선 우리는 모두
-나이가 들면서 노안을 경험합니다. 그러므로 여러분이 저시력을 경험한 적이 없다고 해도
-부모님이 불평하는 말은 들어보셨을 것입니다. 그러나
-햇빛이 비치는 창가에서 노트북을 사용할 때 갑자기 아무것도 읽을 수 없게 되는
-불편한 경험을 하는 사람이 많습니다. 아니면 레이저 시술을 받았거나
-방 건너편에 있는 무언가를 읽으려는 사람도 제가 말씀드린 보조 도구를
-사용합니다. 그래서 개발자들이
-저시력 사용자에게 쉽게 공감할 수 있으리라 생각합니다.
+Low vision is something a lot of people can relate to. For a start, we all experience deteriorating vision as we age, so even if you haven't experienced it there's a good chance you've heard your parents complain about it. But a lot of people experience the frustration of taking their laptop out by a sunny window only to find they suddenly can't read anything! Or anyone who's had laser surgery or maybe just has to read something from across the room might have used one of those accommodations I mentioned. So I think it's pretty easy for developers to have some empathy for low-vision users.
 
-아, 깜빡 잊을 뻔했는데 색각에 이상이 있는 사람도 있습니다.
-남성의 약 9%가 일종의 색각 결함이 있다고 합니다! 여성은 약 1%입니다.
- 이런 사람은 빨간색과 녹색, 노란색과 파란색을 구분하기 어려울 수도 있습니다.
-다음에 인증 양식을 디자인할 때는 이 점을 기억하세요.
+Oh, and I shouldn't forget to mention people with poor color vision &mdash; about 9% of males have some form of color vision deficiency! Plus about 1% of females. They may have trouble distinguishing red and green, or yellow and blue. Think about that the next time you design form validation.
 
-> *운동 장애는 무엇인가요?*
+> *What about motor impairments?*
 
-네, 운동 능력 장애 또는 운동 장애라고 합니다. 이 집단은
-RSI가 있거나 통증이 있어서 마우스를 사용하고 싶어하지 않는 사람에서부터
-신체적 마비가 있어서
-특정 신체 부위의 운동 능력이 제한된 사람까지 다양합니다.
+Yes, motor impairments, or dexterity impairments. This group ranges all the way from those who would prefer not to use a mouse, because perhaps they've had some RSI or something and find it painful, to someone who may be physically paralyzed and have limited range of motion for certain parts of their body.
 
 <figure class="attempt-right">
-  <img src="imgs/eye-tracking.png" alt="안구 추적 기기를 사용하는 사람">	
-  <figcaption>안구 추적 기기</figcaption>
+  <img src="imgs/eye-tracking.png" alt="A person using an eye tracking device"> 
+  <figcaption>An eye tracking device</figcaption>
 </figure>
 
-운동 장애가 있는 사용자는 키보드, 스위치 기기, 음성 제어를 사용하거나
-심지어 안구 추적 기기로 컴퓨터와 상호작용합니다.
+Motor impaired users may use a keyboard, switch device, voice control, or even an eye-tracking device to interact with their computer.
 
-시각 장애와 마찬가지로 운동 장애는 일시적이거나 상황적 문제일 수 있습니다.
- 마우스를 사용하는 쪽의 손목이 골절되었을 수도 있고, 노트북의 트랙패드가
-고장났거나 흔들리는 기차를 타고 있을 수도 있습니다. 사용자의 운동 능력이
-저하되는 상황은 여러 가지가 있습니다. 우리는
-이런 상황을 배려함으로써 영구적 장애가 있는 사람뿐만 아니라 일시적으로 포인터 기반 UI를 사용할 수 없는
-사람까지 전반적으로 사용자 환경을 개선할 수 있습니다.
+Similar to vision impairments, mobility can also be a temporary or situational issue: Maybe you have a broken wrist on your mouse hand. Maybe the trackpad is broken on your laptop, or you're just riding on a shaky train. There can be a lot of situations where a user's mobility is impeded, and by making sure we cater for them we improve the experience overall, both for anyone with a permanent impairment but also for anyone who temporarily finds that they can't use a pointer-based UI.
 
+> *Great, let's talk about hearing impairments.*
 
-> *좋습니다. 청각 장애에 대해 이야기해볼까요.*
-
-이 집단은 청각 장애가 심한 사람부터 난청인 사람까지 다양합니다. 시각과 마찬가지로
-청각은 나이를 먹으면서 감퇴합니다. 많은 사용자가
-보청기와 같은 일반적 보조 도구를 사용하여 도움을 받습니다.
+This group can range from the profoundly deaf through to hard-of-hearing. And much like eyesight, our hearing tends to degrade with age. Many of us use common affordances like hearing aids to help us.
 
 <figure class="attempt-right">
-  <img src="imgs/screen-captions.png" alt="아래에 자막이 나오는 텔레비전">	
-  <figcaption>화면 자막</figcaption>
+  <img src="imgs/screen-captions.png" alt="A television with captions at the bottom">   
+  <figcaption>Screen captions</figcaption>
 </figure>
 
-청각 장애가 있는 사용자를 위해 소리에
-의지하지 말아야 합니다. 영상 자막을 사용하고
-소리가 인터페이스에 포함된다면 다른 대안을 마련해야 합니다.
+For hearing-impaired users we need to make sure that we're not relying on sound, so making sure to use things like video captions and transcripts, and providing some kind of alternative, if sound is part of the interface.
 
-시각 장애와 운동 장애에서 보았듯이
-청각에 이상이 없는 사람도 이런
-보조 도구의 도움을 받을 수 있습니다. 제 친구들은 대부분이 동영상에 자막이 있는 것이 좋다고 말합니다.
-개방형 사무실에서 일할 때 헤드폰을 가져오지 않아도
-동영상을 볼 수 있으니까요!
+And like we saw with vision and motor impairments, it's really easy to imagine a situation where someone whose ears work fine would benefit from these accommodations as well. A lot of my friends say they love it when videos have captions and transcripts because it means that if they're in an open plan office and didn't bring their headphones, they can still watch the video!
 
-> *알겠습니다. 인지 장애에 대해 설명해주시겠어요?*
+> *All right, can you tell us a bit about cognitive impairments?*
 
-ADD, 난독증, 자폐증처럼 여러 가지 인지 장애가 있습니다.
-이런 사람들은 다른 방식으로 액세스하고 싶어 하거나 그래야 할 필요가 있습니다. 물론 이 집단을 위한
-보조 도구가 매우 다양하지만
-다른 영역과 겹치는 부분도 있습니다. 예를 들어, 확대/축소 기능을 사용해서
-글을 읽거나 집중력을 강화합니다. 또한, 이런 사용자는
-산만한 요소와 인지 부하를 최소화하기 때문에 최소한의 디자인이 가장 좋습니다.
+There's a range of cognitive conditions like ADD, Dyslexia, and Autism, which can mean that people want or need to access things differently. The accommodations for these groups are naturally extremely diverse, but we definitely find some overlap with other areas, like using zoom functionality to make reading or concentrating easier. Also, these users may find that really minimal design works best because it minimizes distraction and cognitive load.
 
-누구나 인지 과부하의 스트레스와 관련될 수 있다고 생각합니다.
-인지 장애가 있는 사람에게 효과적으로 만든다면
-모든 사람에게 쾌적한 경험을
-제공할 수 있습니다.
+I think everyone can relate to the stress of cognitive overload, so it's obvious that if we create something that works well for someone with a cognitive impairment, we're going to be creating something which is going to be a pleasant experience for everyone.
 
-> *그렇다면 접근성을 간단히 말하면 뭐라고 생각하시나요?*
+> *So, how would you summarize how you think about accessibility?*
 
-사람들의 다양한 능력과 장애를 살펴보면
-완벽한 시각과 청각, 운동 능력, 인지 능력을 가진 사람을 대상으로만 제품을 디자인하고 제작하는 것은 매우 한정적이라는 것을 알 수 있습니다.
-오히려 문제를 키우는 것에 가깝습니다. 모든 사람에게 더욱 스트레스를 주면서도
-사용성은 낮은 경험을 제공하고 어떤 사람은 아예 사용하지 못하게
-배제됩니다.
+When you look at the broad range of abilities and disabilities that people might have, you can see that designing and building products only for people who have perfect vision, hearing, dexterity, and cognition seems incredibly narrow. It's almost self-defeating, because we're creating a more stressful and less usable experience for everyone, and for some users creating an experience which actually excludes them altogether.
 
+<hr />
 
-<hr>
+In this interview, Victor identified a range of impairments, and placed them into four broad categories: *visual*, *motor*, *hearing*, and *cognitive*. He also pointed out that each type of impairment might be *situational*, *temporary*, or *permanent*.
 
-이 인터뷰에서 Victor는 장애의 종류를
-*시각*, *운동*, *청각*, *인지*의 네 가지 범주로 분류하였습니다. 또한,
-각각의 장애 유형은 *상황적*,
-*일시적* 또는 *영구적*일 수 있다고 지적했습니다.
-
-접근 장애의 실제 예시를 살펴보고
-이 범주와 유형 중에 어디에 속하는지 알아보겠습니다. 일부 장애는
-하나 이상의 범주/유형에 포함될 수 있습니다.
+Let's take a look at some real-world examples of access impairments and see where they fall within those categories and types. Note that some impairments may fall into more than one category or type.
 
 <table>
   <tr>
     <th></th>
-    <th>상황적</th>
-    <th>일시적</th>
-    <th>영구적</th>
+    <th>Situational</th>
+    <th>Temporary</th>
+    <th>Permanent</th>
   </tr>
   <tr>
-    <th>시각</th>
+    <th>Visual</th>
     <td></td>
-    <td>뇌진탕</td>
-    <td>시각 장애</td>
+    <td>concussion</td>
+    <td>blindness</td>
   </tr>
   <tr>
-    <th>운동</th>
-    <td>아기를 안고 있을 경우</td>
-    <td>팔 골절, RSI*</td>
+    <th>Motor</th>
+    <td>holding a baby</td>
+    <td>broken arm, RSI*</td>
     <td>RSI*</td>
   </tr>
   <tr>
-    <th>청각</th>
-    <td>소음이 심한 사무실</td>
+    <th>Hearing</th>
+    <td>noisy office</td>
     <td></td>
     <td></td>
   </tr>
   <tr>
-    <th>인지</th>
+    <th>Cognitive</th>
     <td></td>
-    <td>뇌진탕</td>
+    <td>concussion</td>
     <td></td>
   </tr>
 </table>
 
-*반복성 긴장성 장애: 예를 들어 수근골 증후군, 테니스 엘보, 탄발지가 있음
+*Repetitive Strain Injury: e.g., carpal tunnel syndrome, tennis elbow, trigger finger
 
+## Next steps
 
-## 다음 단계
+We've covered quite a bit of ground already! You have read about
 
-벌써 상당히 많은 내용을 배웠습니다! 지금까지 알게 된 내용은 다음과 같습니다.
+- what accessibility is and why it matters for everyone
+- the WCAG and the WebAIM accessibility checklist
+- different types of impairments you should consider
 
- - 접근성의 정의와 모든 사람에게 접근성이 중요한 이유
- - WCAG 및 WebAIM 접근성 검사 목록
- - 고려해야 할 다양한 유형의 장애
+For the rest of the guide, we'll dive into the practical aspects of creating accessible web sites. We'll organize this effort around three main subject areas:
 
-나머지 가이드에서는 접근성 있는 웹사이트 제작의
-실무적 측면을 살펴보겠습니다. 이 내용은 크게 세 가지로
-구성됩니다.
+- [**Focus**](/web/fundamentals/accessibility/focus): We'll look at how to build things that can be operated with a keyboard instead of a mouse. This is important for users with motor impairments, of course, but it also ensures that your UI is in good shape for all users.
 
- - [**포커스**](/web/fundamentals/accessibility/focus): 마우스 대신
-   키보드로 작동하게 만드는 것이 왜 중요한지 살펴볼 것입니다. 물론 운동 장애가 있는
-   사용자에게도 중요하지만
-   모든 사용자에게 좋은 UI를 만드는 데도 중요합니다.
+- [**Semantics**](/web/fundamentals/accessibility/semantics-builtin): We'll make sure that we express our user interface in a robust way that works with a variety of assistive technologies.
 
- - [**의미 체계**](/web/fundamentals/accessibility/semantics-builtin): 다양한 지원
-   기술과 호환되고 안정적으로 작동하는 사용자 인터페이스를 표현하는지
-   확인할 것입니다.
+- [**Styling**](/web/fundamentals/accessibility/accessible-styles): We'll consider visual design and look at some techniques for making the visual elements of the interface as flexible and usable as possible.
 
- - [**스타일 지정**](/web/fundamentals/accessibility/accessible-styles): 시각적 디자인을
-   고려하고 인터페이스를 최대한 유연하고 사용하기 좋게 해주는 시각적 요소에 대해
-   살펴볼 것입니다.
+Each of those subjects could fill a whole course, so we won't cover every aspect of creating accessible web sites. However, we'll give you enough information to get started, and point you to some good places where you can learn more about each topic.
 
-각 주제만으로도 한 강좌를 모두 채울 수 있으므로
-접근 가능한 웹사이트 제작의 모든 측면을 들여다보지는 않을 것입니다. 하지만 처음 시작하기 충분한 정보를
-제공하고 각 주제에 대해 자세히 배울 수 있는
-좋은 곳을 알려드리겠습니다.
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

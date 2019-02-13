@@ -1,31 +1,29 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 打破對稱性，可為您的專案帶來對比和吸引力。 瞭解將此套用至您專案的時機與方法。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Breaking symmetry provides contrast and appeal to your projects. Learn when and how to apply this to your projects.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 非對稱式的動畫計時 {: .page-title }
+# Asymmetric animation timing {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-為您動畫持續時間加入非對稱式，有助於您的使用者體驗，讓您在表達個性的同時，還能快速回應使用者互動。 它還能為操作感提供對比效果，讓互動更具視覺吸引力。
+Asymmetric animation timing improves the user experience by allowing you to express personality while at the same time respond quickly to user interactions. It also provides contrast to the feel, which makes the interface more visually appealing.
 
 ### TL;DR {: .hide-from-toc }
-- 使用非對稱式動畫計時，為您的工作加入個性和對比。
-- 一律以有利於使用者互動的方式設計；當回應點選或點擊時，使用較短的持續時間，並在其他情況下則預留較慢的持續時間。
 
+* Use asymmetric animation timing to add personality and contrast to your work.
+* Always favor the user's interaction; use shorter durations when responding to taps or clicks, and reserve longer durations for times when you aren't.
 
-像大多數的動畫「規則」，您應該多嘗試不同方法，以找出最適合您應用程式的方式，但牽涉到使用者體驗的問題時，使用者是眾所周知地沒耐心。 一般的經驗法則是 **一律迅速回應使用者的互動**。 有鑑於此，大多數情況下的使用者的行為為非對稱式，因此動畫也可能是。
+Like most "rules" of animation, you should experiment to find out what works for your application, but when it comes to the user experience, users are notoriously impatient. The rule of thumb is to **always respond to a user interaction quickly**. That said, most of the time the user's action is asymmetric, and therefore the animation can be, too.
 
-例如，當使用者點選以叫出側邊欄導覽時，您應該儘快將之帶上螢幕，持續時間約為 100ms 左右。 然而當使用者關閉功能表時，您能以動畫慢速淡出檢視，例如以約 300ms 為目標。
+For example, when a user taps to display a sidebar navigation, you should display it as quickly as possible, with a duration of around 100ms. When the user dismisses the menu, however, you can afford to animate the view out a little more slowly, say, around the 300ms mark.
 
-相較之下，當您帶出一個強制回應檢視時，這通常是要顯示錯誤或一些其他重要訊息。 在這種情況下，您可能以更慢的速度帶出檢視，一樣是約 300ms 左右，但由使用者觸發的關閉動作，則應該要儘快發生。
+By contrast, when you bring on a modal view, this is normally to display an error or some other critical message. In such cases, you will want to bring on the view a little more slowly, again around the 300ms mark, but dismissal, which the user triggers, should happen very quickly.
 
-那麼一般的經驗法則是：
+The general rule of thumb, then, is the following:
 
-* 針對使用者互動觸發的 UI 動畫，例如檢視轉換或顯示元素，應該擁有快速開場 (短持續時間)，但使用緩慢的出場 (較長持續時間)。
-* 您的程式碼觸發的 UI 動畫，例如錯誤或強制回應檢視，應該擁有較慢的開場 (較長持續時間)，但使用快速出場 (短持續時間)。
+* For UI animations triggered by a user’s interaction, such as view transitions or showing an element, have a fast intro (short duration), but a slow outro (longer duration).
+* For UI animations triggered by your code, such as errors or modal views, have a slower intro (longer duration), but a fast outro (short duration).
 
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

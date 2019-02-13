@@ -1,111 +1,103 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: JavaScript は一般に、視覚変化のトリガーとなるものです。視覚変化はスタイル操作を通じて直接行われることもあれば、データの検索やソートのように、計算が最終的に視覚変化につながることもあります。タイミングの悪い JavaScript や長時間実行される JavaScript はパフォーマンス低下の原因になることが多いため、可能な限り JavaScript の影響を最小限に抑える必要があります。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: JavaScript is often the trigger for visual changes. Sometimes that's directly through style manipulations, and sometimes it's calculations that will result in visual changes, like searching or sorting some data. Badly-timed or long-running JavaScript can be a common cause of performance issues, and you should look to minimize its impact where you can.
 
-{# wf_updated_on:2015-03-20 #}
-{# wf_published_on:2015-03-20 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2015-03-20 #} {# wf_blink_components: Blink>CSS #}
 
-# スタイル計算のスコープと複雑さの軽減 {: .page-title }
+# Reduce the Scope and Complexity of Style Calculations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-要素の追加や削除、属性やクラスの変更やアニメーションを介して DOM を変更すると、ブラウザで要素スタイルの再計算が発生するほか、多くの場合、ページ全体またはページの一部のレイアウト（またはリフロー）が発生します。
-このプロセスはスタイル計算と呼ばれます。<em></em>
+Changing the DOM, through adding and removing elements, changing attributes, classes, or through animation, will all cause the browser to recalculate element styles and, in many cases, layout (or reflow) the page, or parts of it. This process is called *computed style calculation*.
 
-スタイル計算の最初の段階では、適合セレクターの集合を作成します。つまり、特定の要素に適用されるクラス、疑似セレクター、および ID をブラウザによって確定します。
+The first part of computing styles is to create a set of matching selectors, which is essentially the browser figuring out which classes, pseudo-selectors and IDs apply to any given element.
 
-このプロセスの次の段階では、適合セレクターからすべてのスタイルルールを取り出し、要素の最終的なスタイルを確定します。Blink（Chrome と Opera のレンダリング エンジン）では、現在少なくとも、これらのプロセスのコストはほぼ同じです。
+The second part of the process involves taking all the style rules from the matching selectors and figuring out what final styles the element has. In Blink (Chrome and Opera's rendering engine) these processes are, today at least, roughly equivalent in cost:
 
-> 要素のスタイル計算に必要な時間の約 50% は適合セレクターを見つけるのに費やされ、残りの時間は適合ルールから RenderStyle（計算されたスタイル表現）を構築するのに使われます。
-> Rune Lillesveen, Opera / [Style Invalidation in Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/view)
+> Roughly 50% of the time used to calculate the computed style for an element is used to match selectors, and the other half of the time is used for constructing the RenderStyle (computed style representation) from the matched rules. Rune Lillesveen, Opera / [Style Invalidation in Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/view)
 
 ### TL;DR {: .hide-from-toc }
 
-* セレクターの複雑性を軽減します。BEM のようなクラス中心の方法論を使用してください。
-* スタイル計算を実行する必要のある要素の数を減らします。
+* Reduce the complexity of your selectors; use a class-centric methodology like BEM.
+* Reduce the number of elements on which style calculation must be calculated.
 
-## セレクターの複雑性の軽減
+## Reduce the complexity of your selectors
 
-最も単純な場合、CSS 内でクラスのみを使用して要素を参照します。
-
+In the simplest case you reference an element in your CSS with just a class:
 
     .title {
       /* styles */
     }
+    
 
-
-しかしながら、プロジェクトの拡張に伴って、CSS はより複雑になり、最終的には次のようなセレクターを使用することになります。
-
+But, as any project grows, it will likely result in more complex CSS, such that you may end up with selectors that look like this:
 
     .box:nth-last-child(-n+1) .title {
       /* styles */
     }
+    
 
-
-スタイルを適用する必要があることを認識するために、実際、ブラウザは「これはタイトルのクラスを持つ要素なのか。そのタイトルは n 番下の子である親と、ボックスのクラスがある 1 つの要素を持っているのか」を判断しなければなりません。これを判断すするためには、使用するセレクターと対象のブラウザに応じて、長い時間がかかる可能性があります。セレクターの意図する動作はクラスに変更されることもあります。
-
+In order to know that the styles need to apply the browser has to effectively ask “is this an element with a class of title which has a parent who happens to be the minus nth child plus 1 element with a class of box?” Figuring this out *can* take a lot of time, depending on the selector used and the browser in question. The intended behavior of the selector could instead be changed to a class:
 
     .final-box-title {
       /* styles */
     }
+    
 
+You can take issue with the name of the class, but the job just got a lot simpler for the browser. In the previous version, in order to know, for example, that the element is the last of its type, the browser must first know everything about all the other elements and whether the are any elements that come after it that would be the nth-last-child, which is potentially a lot more expensive than simply matching up the selector to the element because its class matches.
 
-クラスの名前を変更することもできますが、処理はブラウザにとってより単純になりました。以前のバージョンでは、たとえば、特定の要素がその型の最後の要素であることを知るために、ブラウザはその他の全要素に関する情報を認識し、それらの要素が特定の要素に後続する要素（n 番目の最後の子要素）かどうかを確定する必要がありました。この処理は、クラスが一致することに基づいて単にセレクターを要素に適合するよりも、ずっと高価なものです。
+## Reduce the number of elements being styled
 
-## スタイル計算が実行される要素の数の削減
-パフォーマンスに関するもう 1 つの考慮事項（通常、数多くのスタイル更新にとってより重要な要因）は、要素の変更時に実行する必要のある作業の総量です。
+Another performance consideration, which is typically *the more important factor for many style updates*, is the sheer volume of work that needs to be carried out when an element changes.
 
-スタイル計算では、各要素を少なくとも 1 回は全スタイルとチェックして、スタイルが一致するかどうかを確認する必要があります。そのため、一般的に、要素のスタイル計算を実行するときの最悪ケースのコストは、要素の数にセレクターの数を掛けた積に比例します。
+In general terms, the worst case cost of calculating the computed style of elements is the number of elements multiplied by the selector count, because each element needs to be at least checked once against every style to see if it matches.
 
-注: 従来は、たとえば body 要素上のクラスを変更した場合、ページ内のすべての子要素のスタイルを再計算する必要がありました。好都合なことに、現在は状況が異なります。一部のブラウザは各要素に固有の小さいルール集合を保守しており、要素が変更された場合、その要素のスタイルが再計算されます。つまり、ツリー内での要素の位置、および変更された内容によっては、要素を再計算する必要がない場合もあります。
+Note: It used to be the case that if you changed a class on -- say -- the body element, that all the children in the page would need to have their computed styles recalculated. Thankfully that is no longer the case; some browsers instead maintain a small collection of rules unique to each element that, if changed, cause the element’s styles to be recalculated. That means that an element may or may not need to be recalculated depending on where it is in the tree, and what specifically got changed.
 
-ページ全体を無効にする代わりに、通常、少数の要素をスタイル計算の直接対象とすることができます。ブラウザは必ずしも変更によって潜在的に影響を受けるすべての要素をチェックする必要はないため、最近のブラウザでは、これは大きな問題にはなりません。一方、古いブラウザはこのような処理に対して最適化されていない場合があります。可能な場合は、**無効化される要素の数を減らす**必要があります。
+Style calculations can often be targeted to a few elements directly rather than invalidating the page as a whole. In modern browsers this tends to be much less of an issue, because the browser doesn’t necessarily need to check all the elements potentially affected by a change. Older browsers, on the other hand, aren’t necessarily as optimized for such tasks. Where you can you should **reduce the number of invalidated elements**.
 
-注: ウェブ コンポーネントを詳しく見る際は、ここでのスタイル計算の処理が若干異なることに注目してください。デフォルトでは、スタイルは Shadow DOM の境界を越えず、その適用範囲はツリー全体ではなく個々のコンポーネントに制限されています。ただし、全般的には同じ概念が適用されます。つまり、小さいツリーと単純なルールは、大きいツリーまたは複雑なルールよりも効率的に処理されます。
+Note: If you’re into Web Components it’s worth noting that style calculations here are a little different, since by default styles do not cross the Shadow DOM boundary, and are scoped to individual components rather than the tree as a whole. Overall, however, the same concept still applies: smaller trees with simpler rules are more efficiently processed than large trees or complex rules.
 
-##  スタイル再計算コストの計測
+## Measure your Style Recalculation Cost
 
-スタイル再計算のコストを計測する最も容易で最適な方法は、Chrome DevTools のタイムライン モードを使用することです。最初に、DevTools を開き、[Timeline] タブに移動し、記録を開始してサイトを操作します。記録を停止すると、下記のような画像が表示されます。
+The easiest and best way to measure the cost of style recalculations is to use Chrome DevTools’ Timeline mode. To begin, open DevTools, go to the Timeline tab, hit record and interact with your site. When you stop recording you’ll see something like the image below.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/long-running-style.jpg"  alt="長時間実行されているスタイル計算を示す DevTools">
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/long-running-style.jpg"  alt="DevTools showing long-running style calculations." />
 
-最上部の細長い帯は 1 秒あたりのフレーム数を示します。バーが下部の線（60 fps の線）より上に表示されている場合、長時間実行されているフレームがあります。
+The strip at the top indicates frames per second, and if you see bars going above the lower line, the 60fps line, then you have long running frames.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/frame-selection.jpg"  alt="Chrome DevTools でのトラブル領域の拡大表示">
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/frame-selection.jpg"  alt="Zooming in on a trouble area in Chrome DevTools." />
 
-スクロールのような特定のインタラクション、または他のインタラクションの間に、長時間実行されているフレームがある場合、そのフレームを詳細に調査する必要があります。
+If you have a long running frame during some interaction like scrolling, or some other interaction, then it bears further scrutiny.
 
-上記の例のように、大きい紫色のブロックがある場合は、レコードをクリックすると詳細情報が表示されます。
+If you have a large purple block, as in the case the above, click the record to get more details.
 
-<img src="images/reduce-the-scope-and-complexity-of-style-calculations/style-details.jpg"  alt="長時間実行されているスタイル計算の詳細の表示">
+<img src="images/reduce-the-scope-and-complexity-of-style-calculations/style-details.jpg"  alt="Getting the details of long-running style calculations." />
 
-この例では、長時間（18 ミリ秒超）にわたり実行されているスタイル再計算イベントがあります。偶然、このイベントはスクロールの最中に発生しており、ユーザーは顕著な震動に気付くことになります。
+In this grab there is a long-running Recalculate Style event that is taking just over 18ms, and it happens to be taking place during a scroll, causing a noticeable judder in the experience.
 
-イベント自体をクリックすると、コールスタックが表示され、JavaScript 内でスタイル変更を発生させている部分が指摘されます。その他に、変更によって影響された要素の数（この例では 400 要素以上）、およびスタイル計算の実行にかかった時間も表示されます。この情報を使用して、コード修正の試行を開始できます。
+If you click the event itself you are given a call stack, which pinpoints the place in your JavaScript that is responsible for triggering the style change. In addition to that, you also get the number of elements that have been affected by the change (in this case just over 400 elements), and how long it took to perform the style calculations. You can use this information to start trying to find a fix in your code.
 
-##  BEM（Block、Element、Modifier）の使用
+## Use Block, Element, Modifier
 
-[BEM（Block、Element、Modifier）](https://bem.info/){: .external } のようなコーディングへのアプローチは実際にセレクターに埋め込まれ、上記のパフォーマンス上の利点の実現に役立ちます。その理由は、すべてのものが単一のクラスを持つことが推奨され、階層が必要な場合は、階層がクラス名にも埋め込まれるためです。
-
+Approaches to coding like [BEM (Block, Element, Modifier)](https://bem.info/){: .external } actually bake in the selector matching performance benefits above, because it recommends that everything has a single class, and, where you need hierarchy, that gets baked into the name of the class as well:
 
     .list { }
     .list__list-item { }
+    
 
-
-若干の修飾子が必要である場合は、最後の子クラスに特別な処理を実行する上記の例のように、そのような修飾子を追加することができます。
-
+If you need some modifier, like in the above where we want to do something special for the last child, you can add that like so:
 
     .list__list-item--last-child {}
+    
 
+If you’re looking for a good way to organize your CSS, BEM is a really good starting point, both from a structure point-of-view, but also because of the simplifications of style lookup.
 
-CSS を編成する適切な方法を探している場合は、スタイル検索の簡略化のためにも、構造の観点からも、BEM は実に最適な出発点になります。
+If you don’t like BEM, there are other ways to approach your CSS, but the performance considerations should be assessed alongside the ergonomics of the approach.
 
-BEM を好まない場合は、CSS にアプローチする他の方法がありますが、パフォーマンスに関する考慮事項をアプローチの動作工学とともに評価する必要があります。
-
-## リソース
+## Resources
 
 * [Style invalidation in Blink](https://docs.google.com/document/d/1vEW86DaeVs4uQzNFI5R-_xS9TcS1Cs_EUsHRSgCHGu8/edit)
-* [BEM（Block、Element、Modifier）](https://bem.info/){: .external }
+* [BEM (Block, Element, Modifier)](https://bem.info/){: .external }
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

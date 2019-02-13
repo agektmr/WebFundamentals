@@ -1,22 +1,14 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Local Overrides, accessibility tools, performance and SEO audits, and more.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Local Overrides, accessibility tools, performance and SEO audits, and more.
 
-{# wf_updated_on: 2018-03-05 #}
-{# wf_published_on: 2018-01-17 #}
-{# wf_tags: chrome65,devtools,devtools-whatsnew #}
-{# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #}
-{# wf_featured_snippet: Local Overrides, accessibility tools, performance and SEO audits, and more. #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-12-03 #} {# wf_published_on: 2018-01-17 #} {# wf_tags: chrome65,devtools,devtools-whatsnew #} {# wf_featured_image: /web/updates/images/generic/chrome-devtools.png #} {# wf_featured_snippet: Local Overrides, accessibility tools, performance and SEO audits, and more. #} {# wf_blink_components: Platform>DevTools #}
 
 {% include "web/tools/chrome-devtools/_shared/styles.html" %}
 
-# Có gì mới trong DevTools (Chrome 65) {: .page-title }
+# What's New In DevTools (Chrome 65) {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Các tính năng mới sắp tới với DevTools trong Chrome 65 bao gồm:
+New features coming to DevTools in Chrome 65 include:
 
 * [**Local Overrides**](#overrides)
 * [New accessibility tools](#a11y)
@@ -25,7 +17,7 @@ Các tính năng mới sắp tới với DevTools trong Chrome 65 bao gồm:
 * [Multiple recordings in the **Performance** panel](#recordings)
 * [Reliable code stepping with workers and asynchronous code](#stepping)
 
-Đọc tiếp hoặc xem phiên bản video của các ghi chú phát hành này bên dưới.
+Read on, or watch the video version of these release notes, below.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="D1pV7ermy6w"
@@ -33,12 +25,11 @@ Các tính năng mới sắp tới với DevTools trong Chrome 65 bao gồm:
   </iframe>
 </div>
 
-Note: Kiểm tra xem bạn đang chạy phiên bản Chrome nào tại `chrome://version` . Nếu bạn đang chạy phiên bản cũ hơn, các tính năng này sẽ không tồn tại. Nếu bạn đang chạy phiên bản mới hơn, các tính năng này có thể đã thay đổi. Chrome tự động cập nhật lên phiên bản chính mới khoảng 6 tuần một lần.
+Note: Check what version of Chrome you're running at `chrome://version`. If you're running an earlier version, these features won't exist. If you're running a later version, these features may have changed. Chrome auto-updates to a new major version about every 6 weeks.
 
-## Ghi đè {: #overrides }
+## Local Overrides {: #overrides }
 
-** Ghi đè cục bộ ** cho phép bạn thực hiện thay đổi trong DevTools và giữ những thay đổi đó trên các lần tải trang. Trước đây, mọi thay đổi bạn đã thực hiện trong DevTools sẽ bị mất khi bạn tải lại trang.
-** Ghi đè cục bộ ** hoạt động đối với hầu hết các loại tệp, với một vài ngoại lệ. Xem [Limitations](#overrides-limitations) .
+**Local Overrides** let you make changes in DevTools, and keep those changes across page loads. Previously, any changes that you made in DevTools would be lost when you reloaded the page. **Local Overrides** work for most file types, with a couple of exceptions. See [Limitations](#overrides-limitations).
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/overrides.gif"
@@ -48,40 +39,38 @@ Note: Kiểm tra xem bạn đang chạy phiên bản Chrome nào tại `chrome:/
   </figcaption>
 </figure>
 
-Làm thế nào nó hoạt động:
+How it works:
 
-* Bạn chỉ định thư mục nơi DevTools lưu các thay đổi.
-* Khi bạn thực hiện thay đổi trong DevTools, DevTools lưu một bản sao của tệp đã sửa đổi vào thư mục của bạn.
-* Khi bạn tải lại trang, DevTools phục vụ tệp được sửa đổi cục bộ, chứ không phải tài nguyên mạng.
+* You specify a directory where DevTools should save changes.
+* When you make changes in DevTools, DevTools saves a copy of the modified file to your directory.
+* When you reload the page, DevTools serves the local, modified file, rather than the network resource.
 
-Để thiết lập ** Ghi đè cục bộ **:
+To set up **Local Overrides**:
 
-1. Mở bảng ** Nguồn **. 1. Mở tab ** Ghi đè **.
+1. Open the **Sources** panel.
+2. Open the **Overrides** tab.
+    
+    <figure> 
+    
+    ![The Overrides tab](/web/updates/images/2018/01/overrides.png) <figcaption> **Figure 2**. The **Overrides** tab </figcaption> </figure>
+3. Click **Setup Overrides**.
 
-     <figure>
-       <img src="/web/updates/images/2018/01/overrides.png"
-            alt="The Overrides tab"/>
-       <figcaption>
-         <b>Figure 2</b>. The <b>Overrides</b> tab
-       </figcaption>
-     </figure>
+4. Select which directory you want to save your changes to.
+5. At the top of your viewport, click **Allow** to give DevTools read and write access to the directory.
+6. Make your changes.
 
-1. Nhấp vào ** Ghi đè thiết lập **. 1. Chọn thư mục bạn muốn lưu thay đổi. 1. Ở đầu chế độ xem của bạn, nhấp vào ** Cho phép ** để cấp cho DevTools khả năng đọc và ghi vào thư mục. 1. Thực hiện thay đổi của bạn.
+### Limitations {: #overrides-limitations }
 
-### Giới hạn {: #overrides-limitations }
+* DevTools doesn't save changes made in the **DOM Tree** of the **Elements** panel. Edit HTML in the **Sources** panel instead.
+* If you edit CSS in the **Styles** pane, and the source of that CSS is an HTML file, DevTools won't save the change. Edit the HTML file in the **Sources** panel instead.
 
-* DevTools không lưu các thay đổi được thực hiện trong ** DOM Tree ** của bảng điều khiển ** Elements **. Chỉnh sửa HTML trong bảng ** Nguồn ** thay thế.
-* Nếu bạn chỉnh sửa CSS trong khung ** Kiểu ** và nguồn của CSS đó là một tệp HTML, DevTools sẽ không lưu thay đổi. Thay vào đó, hãy chỉnh sửa tệp HTML trong bảng ** Nguồn **.
+### Related features {: #overrides-related }
 
-### Các tính năng liên quan {: #overrides-related }
+* [Workspaces](/web/updates/2017/10/devtools-release-notes#workspaces). DevTools automatically maps network resources to a local repository. Whenever you make a change in DevTools, that change gets saved to your local repository, too.
 
-* [Workspaces][WS] . DevTools tự động ánh xạ tài nguyên mạng tới một kho lưu trữ cục bộ. Bất cứ khi nào bạn thực hiện thay đổi trong DevTools, thay đổi đó cũng được lưu vào kho lưu trữ cục bộ của bạn.
+## The Changes tab {: #changes }
 
-[WS]: /web/updates/2017/10/devtools-release-notes#workspaces
-
-## Tab Thay đổi {: #changes }
-
-Theo dõi các thay đổi bạn thực hiện cục bộ trong DevTools thông qua tab ** Thay đổi ** mới.
+Track changes that you make locally in DevTools via the new **Changes** tab.
 
 <figure>
   <img src="/web/updates/images/2018/01/changes.png"
@@ -91,13 +80,13 @@ Theo dõi các thay đổi bạn thực hiện cục bộ trong DevTools thông 
   </figcaption>
 </figure>
 
-## Công cụ trợ năng mới {: #a11y }
+## New accessibility tools {: #a11y }
 
-Sử dụng ngăn ** Trợ năng mới ** để kiểm tra các thuộc tính trợ năng của một phần tử và kiểm tra tỷ lệ tương phản của các phần tử văn bản trong Bộ chọn màu ** để đảm bảo chúng có thể truy cập được với người dùng bị khiếm thị hoặc màu sắc kém hình dung thiếu sót.
+Use the new **Accessibility** pane to inspect the accessibility properties of an element, and inspect the contrast ratio of text elements in the **Color Picker** to ensure that they're accessible to users with low-vision impairments or color-vision deficiencies.
 
-### năng {: #a11y-pane }
+### Accessibility pane {: #a11y-pane }
 
-Sử dụng ngăn ** Accessibility ** trên bảng điều khiển ** Elements ** để điều tra thuộc tính trợ năng của phần tử hiện được chọn.
+Use the **Accessibility** pane on the **Elements** panel to investigate the accessibility properties of the currently-selected element.
 
 <figure>
   <img src="/web/updates/images/2018/01/a11y-pane.png"
@@ -111,7 +100,7 @@ Sử dụng ngăn ** Accessibility ** trên bảng điều khiển ** Elements *
   </figcaption>
 </figure>
 
-Hãy xem A11ycast của Rob Dodson trên nhãn bên dưới để xem cửa sổ ** Accessibility ** đang hoạt động.
+Check out Rob Dodson's A11ycast on labeling below to see the **Accessibility** pane in action.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="8dCUzOiMRy4"
@@ -120,11 +109,11 @@ Hãy xem A11ycast của Rob Dodson trên nhãn bên dưới để xem cửa sổ
   </iframe>
 </div>
 
-Tỷ lệ tương phản ### trong Bộ chọn màu {: #contrast }
+### Contrast ratio in the Color Picker {: #contrast }
 
-[Color Picker][CP] bây giờ cho bạn thấy tỷ lệ tương phản của các phần tử văn bản. Việc tăng tỷ lệ tương phản của các yếu tố văn bản làm cho trang web của bạn dễ truy cập hơn đối với người dùng bị khiếm thị kém hoặc thiếu thị lực. Xem [Color and contrast][contrast] để tìm hiểu thêm về cách tỷ lệ tương phản ảnh hưởng đến khả năng truy cập.
+The [Color Picker](/web/tools/chrome-devtools/css/reference#color-picker) now shows you the contrast ratio of text elements. Increasing the contrast ratio of text elements makes your site more accessible to users with low-vision impairments or color-vision deficiencies. See [Color and contrast](/web/fundamentals/accessibility/accessible-styles#color_and_contrast) to learn more about how contrast ratio affects accessibility.
 
-Cải thiện độ tương phản màu của các yếu tố văn bản làm cho trang web của bạn dễ sử dụng hơn cho <i>tất cả</i> người dùng. Nói cách khác, nếu văn bản của bạn có màu xám với nền màu trắng thì thật khó để mọi người đọc.
+Improving the color contrast of your text elements makes your site more usable for *all* users. In other words, if your text is grey with a white background, that's hard for anyone to read.
 
 <figure>
   <img src="/web/updates/images/2018/01/contrast-ratio-collapsed.png"
@@ -134,13 +123,9 @@ Cải thiện độ tương phản màu của các yếu tố văn bản làm ch
   </figcaption>
 </figure>
 
-Trong ** Hình 5 **, hai dấu kiểm bên cạnh ** 4.61 ** có nghĩa là phần tử này đáp ứng [enhanced recommended contrast ratio (AAA)][enhanced]{:.external} . Nếu nó chỉ có một dấu kiểm, điều đó có nghĩa là nó đã đáp ứng được [minimum recommended contrast ratio (AA)][minimum]{:.external} .
+In **Figure 5**, the two checkmarks next to **4.61** means that this element meets the [enhanced recommended contrast ratio (AAA)](https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast7){:.external}. If it only had one checkmark, that would mean it met the [minimum recommended contrast ratio (AA)](https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-contrast){:.external}.
 
-[enhanced]: https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast7
-[minimum]: https://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-contrast
-
-Nhấp vào ** Hiển thị thêm **! [Show More][SM]{:.cdt-inl} để mở rộng ** Tỷ lệ tương phản **. Đường màu trắng trong hộp ** Color Spectrum ** đại diện cho ranh giới giữa các màu thỏa mãn tỷ lệ tương phản được khuyến nghị và các màu không phù hợp. Ví dụ: vì màu xám trong
-** Hình 6 ** đáp ứng các khuyến nghị, điều đó có nghĩa là tất cả các màu bên dưới đường màu trắng cũng đều đáp ứng các khuyến nghị.
+Click **Show More** ![Show More](/web/updates/images/2018/01/show-more.png){:.cdt-inl} to expand the **Contrast Ratio** section. The white line in the **Color Spectrum** box represents the boundary between colors that meet the recommended contrast ratio, and those that don't. For example, since the grey color in **Figure 6** meets recommendations, that means that all of the colors below the white line also meet recommendations.
 
 <figure>
   <img src="/web/updates/images/2018/01/contrast-ratio-expanded.png"
@@ -150,16 +135,11 @@ Nhấp vào ** Hiển thị thêm **! [Show More][SM]{:.cdt-inl} để mở rộ
   </figcaption>
 </figure>
 
-[CP]: /web/tools/chrome-devtools/css/reference#color-picker
-[contrast]: /web/fundamentals/accessibility/accessible-styles#color_and_contrast
-[SM]: /web/updates/images/2018/01/show-more.png
+#### Related features {: #contrast-related }
 
-#### Các tính năng liên quan {: #contrast-related }
+The **Audits** panel has an automated accessibility audit for ensuring that *every* text element on a page has a sufficient contrast ratio.
 
-Bảng điều khiển ** Kiểm tra ** có kiểm tra khả năng truy cập tự động để đảm bảo rằng
-* mọi phần tử * văn bản trên một trang có tỷ lệ tương phản đủ.
-
-Xem [Run Lighthouse in Chrome DevTools][audit] hoặc xem A11ycast bên dưới để tìm hiểu cách sử dụng bảng điều khiển ** Kiểm tra ** để kiểm tra khả năng truy cập.
+See [Run Lighthouse in Chrome DevTools](/web/tools/lighthouse/#devtools), or watch the A11ycast below, to learn how to use the **Audits** panel to test accessibility.
 
 <div class="video-wrapper-full-width">
   <iframe class="devsite-embedded-youtube-video" data-video-id="b0Q5Zp_yKaU"
@@ -168,17 +148,15 @@ Xem [Run Lighthouse in Chrome DevTools][audit] hoặc xem A11ycast bên dưới 
   </iframe>
 </div>
 
-[audit]: /web/tools/lighthouse/#devtools
+## New audits {: #audits }
 
-## mới {: #audits }
+Chrome 65 ships with a whole new category of SEO audits, and many new performance audits.
 
-Chrome 65 mang đến một danh mục kiểm toán SEO hoàn toàn mới và nhiều kiểm tra hiệu suất mới.
+Note: The **Audits** panel is powered by [Lighthouse](/web/tools/lighthouse). Chrome 64 runs Lighthouse version 2.5. Chrome 65 runs Lighthouse version 2.8. So this section is simply a summary of the Lighthouse updates from 2.6, 2.7, and 2.8.
 
-Note: Bảng điều khiển ** Kiểm tra ** được cung cấp bởi [Lighthouse][LH] . Chrome 64 chạy phiên bản Lighthouse 2.5. Chrome 65 chạy phiên bản Lighthouse 2.8. Vì vậy, phần này chỉ đơn giản là một bản tóm tắt các cập nhật Lighthouse từ 2.6, 2.7 và 2.8.
+### New SEO audits {: #seo }
 
-### Kiểm tra SEO mới {: #seo }
-
-Đảm bảo rằng các trang của bạn vượt qua mỗi lần kiểm tra trong danh mục ** SEO ** mới có thể giúp cải thiện thứ hạng công cụ tìm kiếm của bạn.
+Ensuring that your pages pass each of the audits in the new **SEO** category may help improve your search engine rankings.
 
 <figure>
   <img src="/web/updates/images/2018/01/seo.png"
@@ -188,16 +166,16 @@ Note: Bảng điều khiển ** Kiểm tra ** được cung cấp bởi [Lightho
   </figcaption>
 </figure>
 
-### Kiểm tra hiệu suất mới {: #performance }
+### New performance audits {: #performance }
 
-Chrome 65 cũng có nhiều kiểm tra hiệu suất mới:
+Chrome 65 also ships with many new performance audits:
 
-* Thời gian khởi động JavaScript cao
-* Sử dụng chính sách bộ đệm không hiệu quả trên tài sản tĩnh
-* Tránh chuyển hướng trang
-* Tài liệu sử dụng plugin
-* Giảm bớt CSS
-* Giảm bớt JavaScript
+* JavaScript boot-up time is high
+* Uses inefficient cache policy on static assets
+* Avoids page redirects
+* Document uses plugins
+* Minify CSS
+* Minify JavaScript
 
 <aside class="key-point">
   <b>Perf matters!</b> After Mynet improved their page load speed by 4X, users spent 43% more time
@@ -212,33 +190,23 @@ Chrome 65 cũng có nhiều kiểm tra hiệu suất mới:
   started</a>.
 </aside>
 
-### Các cập nhật khác {: #audits-other }
+### Other updates {: #audits-other }
 
 * [New, manual accessibility audits](/web/updates/2018/01/lighthouse#a11y)
-* [Updates to the WebP audit][webp] để làm cho nó bao gồm các định dạng hình ảnh thế hệ tiếp theo khác
-* [A rehaul of the accessibility score][a11yscore]
-* Nếu kiểm tra khả năng truy cập không áp dụng cho một trang, việc kiểm tra đó không còn được tính vào điểm truy cập
-* Hiệu suất hiện là phần trên cùng trong báo cáo
+* [Updates to the WebP audit](/web/updates/2018/01/lighthouse#webp) to make it more inclusive of other next-generation image formats
+* [A rehaul of the accessibility score](/web/updates/2017/12/lighthouse#a11y)
+* If an accessibility audit is not applicable for a page, that audit no longer counts towards the accessibility score
+* Performance is now the top section in reports
 
-[seoaudits]: /web/updates/2018/01/lighthouse#seo
-[webp]: /web/updates/2018/01/lighthouse#webp
-[a11yscore]: /web/updates/2017/12/lighthouse#a11y
-[LH]: /web/tools/lighthouse
-[2.6]: /web/updates/2017/12/lighthouse
-[2.7]: /web/updates/2018/01/lighthouse
+## Reliable code stepping with workers and asynchronous code {: #stepping }
 
-## Mã đáng tin cậy với công nhân và mã không đồng bộ {: #stepping }
+Chrome 65 brings updates to the **Step Into** ![Step Into](/web/tools/chrome-devtools/javascript/imgs/step-into.png){:.cdt-inl} button when stepping into code that passes messages between threads, and asynchronous code. If you want the previous stepping behavior, you can use the new **Step** ![Step](/web/tools/chrome-devtools/javascript/imgs/step.png){:.cdt-inl} button, instead.
 
-Chrome 65 mang đến các cập nhật cho ** Bước vào **! Nút [Step Into][into]{:.cdt-inl} khi bước vào mã chuyển các thông điệp giữa các luồng và mã không đồng bộ. Nếu bạn muốn hành vi bước trước đó, bạn có thể sử dụng ** Bước ** mới! Nút [Step][step]{:.cdt-inl} , thay vào đó.
+### Stepping into code that passes messages between threads {: #workers }
 
-[into]: /web/tools/chrome-devtools/javascript/imgs/step-into.png
-[step]: /web/tools/chrome-devtools/javascript/imgs/step.png
+When you step into code that passes messages between threads, DevTools now shows you what happens in each thread.
 
-### Bước vào mã chuyển các thông điệp giữa các chủ đề {: #workers }
-
-Khi bạn bước vào mã chuyển các thông điệp giữa các luồng, DevTools sẽ hiển thị cho bạn những gì xảy ra trong mỗi luồng.
-
-Ví dụ, ứng dụng trong ** Hình 8 ** truyền một thông điệp giữa chủ đề chính và chuỗi công nhân. Sau khi bước vào cuộc gọi `postMessage()` trên chủ đề chính, DevTools tạm dừng trong trình xử lý `onmessage` trong luồng công nhân. Trình xử lý `onmessage` tự đăng một thông điệp trở lại luồng chính. Bước vào cuộc gọi * đó * sẽ tạm dừng DevTools trở lại trong chuỗi chính.
+For example, the app in **Figure 8** passes a message between the main thread and the worker thread. After stepping into the `postMessage()` call on the main thread, DevTools pauses in the `onmessage` handler in the worker thread. The `onmessage` handler itself posts a message back to the main thread. Stepping into *that* call pauses DevTools back in the main thread.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/new-worker-stepping.gif"
@@ -248,7 +216,7 @@ Ví dụ, ứng dụng trong ** Hình 8 ** truyền một thông điệp giữa 
   </figcaption>
 </figure>
 
-Khi bạn bước vào mã như thế này trong các phiên bản trước của Chrome, Chrome chỉ hiển thị cho bạn dòng chính của mã, như bạn có thể thấy trong ** Hình 9 **.
+When you stepped into code like this in earlier versions of Chrome, Chrome only showed you the main-thread-side of the code, as you can see in **Figure 9**.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/old-worker-stepping.gif"
@@ -258,11 +226,11 @@ Khi bạn bước vào mã như thế này trong các phiên bản trước củ
   </figcaption>
 </figure>
 
-### Bước vào mã không đồng bộ {: #async }
+### Stepping into asynchronous code {: #async }
 
-Khi bước vào mã không đồng bộ, DevTools bây giờ giả định rằng bạn muốn tạm dừng trong mã không đồng bộ mà cuối cùng chạy.
+When stepping into asynchronous code, DevTools now assumes that you want to pause in the the asynchronous code that eventually runs.
 
-Ví dụ, trong ** Hình 10 ** sau khi bước vào `setTimeout()` , DevTools chạy tất cả các mã dẫn đến điểm đó đằng sau hậu trường, và sau đó tạm dừng trong hàm được chuyển đến `setTimeout()` .
+For example, in **Figure 10** after stepping into `setTimeout()`, DevTools runs all of the code leading up to that point behind the scenes, and then pauses in the function that's passed to `setTimeout()`.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/new-async-stepping.gif"
@@ -272,7 +240,7 @@ Ví dụ, trong ** Hình 10 ** sau khi bước vào `setTimeout()` , DevTools ch
   </figcaption>
 </figure>
 
-Khi bạn bước vào mã như thế này trong Chrome 63, DevTools tạm dừng trong mã khi nó chạy theo thứ tự thời gian, như bạn có thể thấy trong ** Hình 11 **.
+When you stepped into code like this in Chrome 63, DevTools paused in code as it chronologically ran, as you can see in **Figure 11**.
 
 <figure>
   <img src="https://storage.googleapis.com/webfundamentals-assets/updates/2018/01/old-async-stepping.gif"
@@ -282,11 +250,9 @@ Khi bạn bước vào mã như thế này trong Chrome 63, DevTools tạm dừn
   </figcaption>
 </figure>
 
-## Nhiều bản ghi trong bảng Hiệu suất {: #recordings }
+## Multiple recordings in the Performance panel {: #recordings }
 
-Bảng điều khiển ** Hiệu suất ** hiện cho phép bạn lưu tạm thời tối đa 5 bản ghi. Bản ghi âm sẽ bị xóa khi bạn đóng cửa sổ DevTools. Xem [Get Started with Analyzing Runtime Performance][runtime] để cảm thấy thoải mái với bảng điều khiển ** Hiệu suất **.
-
-[runtime]: /web/tools/chrome-devtools/evaluate-performance/
+The **Performance** panel now lets you temporarily save up to 5 recordings. The recordings are deleted when you close your DevTools window. See [Get Started with Analyzing Runtime Performance](/web/tools/chrome-devtools/evaluate-performance/) to get comfortable with the **Performance** panel.
 
 <figure>
   <img src="/web/updates/images/2018/01/recordings.png"
@@ -296,11 +262,11 @@ Bảng điều khiển ** Hiệu suất ** hiện cho phép bạn lưu tạm th�
   </figcaption>
 </figure>
 
-Tiền thưởng ## : Tự động hóa các hành động DevTools với Puppeteer 1.0 {: #puppeteer }
+## Bonus: Automate DevTools actions with Puppeteer 1.0 {: #puppeteer }
 
-Note: Phần này không liên quan đến Chrome 65.
+Note: This section isn't related to Chrome 65.
 
-Phiên bản 1.0 của Puppeteer, một công cụ tự động hóa trình duyệt được duy trì bởi nhóm Chrome DevTools, hiện đã hết. Bạn có thể sử dụng Puppeteer để tự động hóa nhiều tác vụ trước đây chỉ có sẵn thông qua DevTools, chẳng hạn như chụp ảnh màn hình:
+Version 1.0 of Puppeteer, a browser automation tool maintained by the Chrome DevTools team, is now out. You can use Puppeteer to automate many tasks that were previously only available via DevTools, such as capturing screenshots:
 
     const puppeteer = require('puppeteer');
     (async () => {
@@ -310,8 +276,9 @@ Phiên bản 1.0 của Puppeteer, một công cụ tự động hóa trình duy�
       await page.screenshot({path: 'example.png'});
       await browser.close();
     })();
+    
 
-Nó cũng có API cho rất nhiều nhiệm vụ tự động hóa hữu ích nói chung, chẳng hạn như tạo tệp PDF:
+It also has APIs for lots of generally useful automation tasks, such as generating PDFs:
 
     const puppeteer = require('puppeteer');
     (async () => {
@@ -321,35 +288,20 @@ Nó cũng có API cho rất nhiều nhiệm vụ tự động hóa hữu ích n�
       await page.pdf({path: 'hn.pdf', format: 'A4'});
       await browser.close();
     })();
+    
 
-Xem [Quick Start][quickstart] để tìm hiểu thêm.
+See [Quick Start](/web/tools/puppeteer/get-started) to learn more.
 
-[quickstart]: /web/tools/puppeteer/get-started
+You can also use Puppeteer to expose DevTools features while browsing without ever explicitly opening DevTools. See [Using DevTools Features Without Opening DevTools](/web/updates/2018/01/devtools-without-devtools) for an example.
 
-Bạn cũng có thể sử dụng Puppeteer để trưng ra các tính năng của DevTools trong khi duyệt mà không bao giờ mở DevTools một cách rõ ràng. Xem [Using DevTools Features Without Opening DevTools][without] để biết ví dụ.
+## A request from the DevTools team: consider Canary {: #canary }
 
-[without]: /web/updates/2018/01/devtools-without-devtools
+If you're on Mac or Windows, please consider using [Chrome Canary](https://www.google.com/chrome/browser/canary.html) as your default development browser. If you report a bug or a change that you don't like while it's still in Canary, the DevTools team can address your feedback significantly faster.
 
-## Một yêu cầu từ nhóm DevTools: xem xét Canary {: #canary }
+Note: Canary is the bleeding-edge version of Chrome. It's released as soon as its built, without testing. This means that Canary breaks from time-to-time, about once-a-month, and it's usually fixed within a day. You can go back to using Chrome Stable when Canary breaks.
 
-Nếu bạn đang sử dụng Mac hoặc Windows, hãy xem xét sử dụng [Chrome Canary][canary] làm trình duyệt phát triển mặc định của bạn. Nếu bạn báo cáo lỗi hoặc thay đổi mà bạn không thích trong khi vẫn còn trong Canary, nhóm DevTools có thể giải quyết phản hồi của bạn nhanh hơn đáng kể.
+## Feedback {: #feedback }
 
-Note: Canary là phiên bản Chrome độc ​​nhất. Nó được phát hành ngay sau khi được xây dựng, mà không cần thử nghiệm. Điều này có nghĩa là Canary thường xuyên chia tay, khoảng một lần mỗi tháng và thường cố định trong vòng một ngày. Bạn có thể quay lại sử dụng Chrome Stable khi Canary ngừng hoạt động.
+The best place to discuss any of the features or changes you see here is the [google-chrome-developer-tools@googlegroups.com mailing list](https://groups.google.com/forum/#!forum/google-chrome-developer-tools). You can also tweet us at [@ChromeDevTools](https://twitter.com/chromedevtools) if you're short on time. If you're sure that you've encountered a bug in DevTools, please [open an issue](https://crbug.com/new).
 
-[canary]: https://www.google.com/chrome/browser/canary.html
-
-## Phản hồi {: #feedback }
-
-Nơi tốt nhất để thảo luận về bất kỳ tính năng hoặc thay đổi nào bạn thấy ở đây là [google-chrome-developer-tools@googlegroups.com mailing list][ML] . Bạn cũng có thể tweet chúng tôi tại [@ChromeDevTools](https://twitter.com/chromedevtools) nếu bạn thiếu thời gian. Nếu bạn chắc chắn rằng bạn đã gặp lỗi trong DevTools, hãy [open an issue](https://crbug.com/new) .
-
-[ML]: https://groups.google.com/forum/#!forum/google-chrome-developer-tools
-
-## Ghi chú phát hành trước {: #links }
-
-Xem thẻ [devtools-whatsnew][tag] để biết các liên kết đến tất cả các ghi chú phát hành DevTools trước đó.
-
-[tag]: /web/updates/tags/devtools-whatsnew
-
-{% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}
+<<../../_shared/discover.md>>

@@ -1,259 +1,115 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:モバイル端末とネットワークの普及のおかげで、かつてないほど大勢の人々がウェブを利用しています。 このユーザーベースが拡大するにつれて、これまで以上にパフォーマンスが重要となっています。 この記事では、パフォーマンスが重要なのはなぜか、またすべてのユーザーがより高速なウェブを利用できるようにするためにデベロッパーとして何ができるかについて考察します。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Thanks to mobile device and network proliferation, more people are using the web than ever before. As this user base grows, performance is more important than ever. In this article, find out why performance matters, and learn what you can do to make the web faster for everyone.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2018-03-08 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-10-04 #} {# wf_published_on: 2018-03-08 #} {# wf_blink_components: N/A #}
 
-# パフォーマンスが重要なのはなぜか {: .page-title }
+# Why Performance Matters {: .page-title }
 
 {% include "web/_shared/contributors/jeremywagner.html" %}
 
-ウェブでできることが増えていくにつれて、誰もがパフォーマンスという同じ問題に直面するようになっています。
- ウェブサイトで実行できる機能はかつてないほどに多くなりました。
- そのため多くのサイトでは、さまざまなネットワーク条件や端末に対して、高いレベルのパフォーマンスを実現することに苦慮しています。
+In our shared pursuit to push the web to do more, we're running into a common problem: performance. Sites have more features than ever before. So much so, that many sites now struggle to achieve a high level of performance across a variety of network conditions and devices.
 
+Performance issues vary. At best, they create small delays that are only briefly annoying to your users. At worst, they make your site completely inaccessible, unresponsive to user input, or both.
 
-パフォーマンスの問題は多岐にわたります。 条件が非常に良ければ、わずかな遅延が発生するのみで、ユーザーへの影響も小さくて済みます。
- しかし最悪の場合には、サイトに完全にアクセスできなくなったり、ユーザー入力に反応しなくなったり、あるいはその両方になることもあります。
+## Performance is about retaining users
 
+We want users to interact meaningfully with what we build. If it's a blog, we want people to read posts. If it's an online store, we want them to buy stuff. If it's a social network, we want them to interact with each other.
 
-## ユーザーを引きつけておくために必要とされるパフォーマンス
+Performance plays a major role in the success of any online venture. Here are some case studies that show how high-performing sites engage and retain users better than low-performing ones:
 
-ユーザーには自分が作成したものを有意義に利用してほしいと思うものです。 それがブログであれば、投稿を読んでもらいたいと思います。
- オンラインストアであれば、商品を購入してもらいたいと思います。
- ソーシャル ネットワークであれば、ユーザー同士が対話してほしいと思います。
+- [Pinterest increased search engine traffic and sign-ups by 15%](https://medium.com/@Pinterest_Engineering/driving-user-growth-with-performance-improvements-cfc50dafadd7) when they reduced perceived wait times by 40%.
+- [COOK increased conversions by 7%, decreased bounce rates by 7%, and increased pages per session by 10%](https://www.nccgroup.trust/uk/about-us/resources/cook-real-user-monitoring-case-study/?style=Website+Performance&resources=Case+Studies) when they reduced average page load time by 850 milliseconds.
 
+Here are a couple case studies where low performance had a negative impact on business goals:
 
-パフォーマンスがオンライン ベンチャーの成功に及ぼす影響は非常に大きくなっています。 パフォーマンスの低いサイトと比較してパフォーマンスの高いサイトがどのようにユーザーの注意を引き、ユーザーを引きつけておくことができるかを示すいくつかの事例があります。
+- [The BBC found they lost an additional 10% of users](https://www.creativebloq.com/features/how-the-bbc-builds-websites-that-scale) for every additional second their site took to load.
+- [DoubleClick by Google found 53% of mobile site visits were abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if a page took longer than 3 seconds to load.
 
+In the same DoubleClick by Google study cited above, it was found that sites loading within 5 seconds had 70% longer sessions, 35% lower bounce rates, and 25% higher ad viewability than sites taking nearly four times longer at 19 seconds. To get a rough idea of how your site's performance compares with your competitors, [check out the Speed Scorecard tool](https://www.thinkwithgoogle.com/feature/mobile/).<figure> 
 
+<img srcset="images/speed-scorecard-2x.png 2x, images/speed-scorecard-1x.png 1x"
+src="images/speed-scorecard-1x.png" alt="A screenshot of the Speed Scorecard
+tool, comparing performance across four popular news outlets." /> <figcaption>**Figure 1**. Speed Scorecard comparing the performance of four competing sites using Chrome UX Report data from 4G network users in the United States.</figcaption> </figure> 
 
-- Pinterest では、ユーザーが体感している待ち時間を 40% 削減した結果、[検索エンジンのトラフィックとサインアップ数が 15% 増加しました][pinterest]。
-- COOK では平均ページ読み込み時間を 850 ミリ秒短縮したところ、[コンバージョン数が 7% 増加し、直帰率が 7% 減少し、セッション当たりの閲覧ページ数が 10% 増加しました][COOK]。
+## Performance is about improving conversions
 
+Retaining users is crucial to improving conversions. Slow sites have a negative impact on revenue, and the opposite is also true. Here are some examples of how performance has played a role in making businesses more (or less) profitable:
 
+- For Mobify, [every 100ms decrease in homepage load speed worked out to a **1.11% increase** in session-based conversion, yielding an average annual revenue increase of **nearly $380,000**](http://resources.mobify.com/2016-Q2-mobile-insights-benchmark-report.html). Additionally, a 100ms decrease in checkout page load speed amounted to a **1.55% increase** in session-based conversion, which in turn yielded an average annual revenue increase of **nearly $530,000**.
+- DoubleClick found [publishers whose sites loaded within five seconds earned up to **twice as much ad revenue** than sites loading within 19 seconds](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/).
+- [When AutoAnything reduced page load time by half, they saw **a boost of 12-13% in sales**](https://www.digitalcommerce360.com/2010/08/19/web-accelerator-revs-conversion-and-sales-autoanything/).
 
-[pinterest]: https://medium.com/@Pinterest_Engineering/driving-user-growth-with-performance-improvements-cfc50dafadd7
-[COOK]: https://www.nccgroup.trust/uk/about-us/resources/cook-real-user-monitoring-case-study/?style=Website+Performance&resources=Case+Studies
+If you run a business on the web, performance is crucial. If your site's user experience is fast and responsive to user input, it can only serve you well. To see how performance could potentially affect your revenue, check out the [Impact Calculator](https://www.thinkwithgoogle.com/feature/mobile/) tool.<figure> 
 
-パフォーマンスが悪かったことが原因で、ビジネス目標に悪い影響が及んだいくつかの事例があります。
+<img srcset="images/impact-calculator-2x.png 2x, images/impact-calculator-1x.png
+1x" src="images/impact-calculator-1x.png" alt="A screenshot of the Impact
+Calculator, estimating how much revenue a site could stand to gain if
+performance improvements are made." /> <figcaption>**Figure 2**. The Impact Calculator estimates how much revenue you stand to gain by improving site performance.</figcaption> </figure> 
 
+## Performance is about the user experience
 
-- 自社サイトの読み込みにかかる時間が 1 秒増えるごとに [BBC はユーザーが 10% ずつ減少することを発見][BBC]しました。
-- ページの読み込みにかかる時間が 3 秒を超えると、[DoubleClick by Google は 53% のユーザーがモバイルサイトの訪問をあきらめることを発見][DoubleClick]しました。
+When you navigate to a URL, you do so from any number of potential starting points. Depending on a number of conditions, such as connection quality and the device you're using, your experience could be quite different from another user's.<figure> 
 
+![A comparison of two filmstrip reels
+of a page loading. The first shows a page loading on a slow connection, while
+the second shows the same page loading on a fast connection.](images/speed-comparison.png) <figcaption>**Figure 3**. A comparison of page load on a very slow connection (top) versus a faster connection (bottom).</figcaption> </figure> 
 
-[BBC]: https://www.creativebloq.com/features/how-the-bbc-builds-websites-that-scale
-[DoubleClick]: https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/
+As a site begins to load, there's a period of time where users wait for content to appear. Until this happens, there's no user experience to speak of. This lack of an experience is fleeting on fast connections. On slower connections, however, users are forced to wait. Users may experience more problems as page resources slowly trickle in.
 
-上記の引用元の DoubleClick by Google の研究では、5 秒以内に読み込めるサイトは読み込みにその 4 倍近い 19 秒かかるサイトに比べて、セッション時間が 70％ 長く、直帰率は 35％ 低く、広告視認度が 25% 高いことが判明しました。
- 自社サイトのパフォーマンスを競合他社と比較する方法の概要については、[Speed Scorecard ツールをご覧ください](https://www.thinkwithgoogle.com/feature/mobile/)。
+Performance is a foundational aspect of good user experiences. When sites ship a lot of code, browsers must use megabytes of the user's data plan in order to download the code. Mobile devices have limited CPU power and memory. They often get overwhelmed with what we might consider a small amount of unoptimized code. This creates poor performance which leads to unresponsiveness. Knowing what we know about human behavior, users will only tolerate low performing applications for so long before abandoning them. If you want to know more about how to assess your site's performance and find opportunities for improvement, check out [*How to Think About Speed Tools*](/web/fundamentals/performance/speed-tools/).<figure> 
 
+<img srcset="images/lighthouse-2x.png 2x, images/lighthouse-1x.png 1x"
+src="images/lighthouse-1x.png" alt="Page performance overview as seen in
+Lighthouse." /> <figcaption>**Figure 4**. Page performance overview as seen in [Lighthouse](/web/tools/lighthouse/).</figcaption> </figure> 
 
+## Performance is about people
 
-<figure>
-  <img srcset="images/speed-scorecard-2x.png 2x, images/speed-scorecard-1x.png 1x"
-src="images/speed-scorecard-1x.png" alt="人気のある 4 つのニュース報道サイトのパフォーマンスを比較した Speed Scorecard ツールのスクリーンショット。">
+Poorly performing sites and applications can also pose real costs for the people who use them.
 
-  <figcaption><b>図 1</b>。 Speed Scorecard で、米国の 4G ネットワーク ユーザーから送信される Chrome UX レポートのデータを使用して、競合する 4 つのサイトのパフォーマンスを比較。</figcaption>
+[As mobile users continue to make up a larger portion of internet users worldwide](http://gs.statcounter.com/platform-market-share/desktop-mobile-tablet), it's important to bear in mind that many of these users access the web through mobile LTE, 4G, 3G and even 2G networks. As Ben Schwarz of Calibre points out in [this study of real world performance](https://building.calibreapp.com/beyond-the-bubble-real-world-performance-9c991dcd5342), the cost of prepaid data plans is decreasing, which in turn is making access to the internet more affordable in places where it once wasn't. Mobile devices and internet access are no longer luxuries. They are common tools necessary to navigate and function in an increasingly interconnected world.
 
+[Total page size has been steadily increasing since at least 2011](http://beta.httparchive.org/reports/state-of-the-web#bytesTotal), and the trend appears to be continuing. As the typical page sends more data, users must replenish their metered data plans more often, which costs them money.
 
-</figure>
+In addition to saving your users money, fast and lightweight user experiences can also prove crucial for users in crisis. Public resources such as hospitals, clinics, and crisis centers have online resources that give users important and specific information that they need during a crisis. [While design is pivotal in presenting important information efficiently in stressful moments](https://aneventapart.com/news/post/eric-meyer-designing-for-crisis), the importance of delivering this information fast can't be understated. It's part of our job.
 
-## コンバージョン数を増やすために必要とされるパフォーマンス
+## Where to go from here
 
-ユーザーを引きつけておくことは、コンバージョン数を増やすために欠かせません。 サイトの読み込み速度が遅いと収益に悪い影響が及び、その逆もまた成り立ちます。
- ビジネスの収益性を上げる（または下げる）上でパフォーマンスがどのような役割を果たしているかを示すいくつかの例があります。
+While the lists below may seem daunting, understand you don't need to do *all* of these things to improve the performance of your site. They are just starting points, so don't feel overwhelmed! *Anything* you can do to improve performance will be helpful to your users.
 
+### Mind what resources you send
 
+An effective method of building high performance applications is to [audit *what* resources you send to users](/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads). While the [Network panel in Chrome DevTools](/web/tools/chrome-devtools/network-performance/) does a fantastic job of summarizing all the resources used on a given page, it can be daunting to know where to start if you haven't considered performance until now. Here are a few suggestions:
 
-- Mobify の場合、[ホームページの読み込み速度が 100 ミリ秒速くなるごとに、セッションベースのコンバージョン数が **1.11% 増加**し、結果として年平均で**約 4,200 万円**の増収となりました](http://resources.mobify.com/2016-Q2-mobile-insights-benchmark-report.html)。
-また、注文会計のページの読み込み速度を100 ミリ秒速くしたところ、セッションベースのコンバージョンが **1.55% 増加**し、結果として年平均で**約 5,830 万円**の増収となりました。
-- DoubleClick によれば、[読み込み時間が 5 秒以内であるサイトの発行者は、読み込みに 19 秒かかるサイトに比べて **2 倍もの広告収入**を上げている](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/)ことが分かっています。
-- [AutoAnything はページの読み込み時間を半分に短縮したところ、**売上が 12-13% 増加する**結果となりました](https://www.digitalcommerce360.com/2010/08/19/web-accelerator-revs-conversion-and-sales-autoanything/)。
+- If you use Bootstrap or Foundation to build your UI, ask yourself if they're necessary. Such abstractions add heaps of CSS the browser must download, parse, and apply to a page, all before your site-specific CSS enters the picture. [Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout) and [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout) are superb at creating both simple and complex layouts with relatively little code. [Because CSS is a render blocking resource](/web/fundamentals/performance/critical-rendering-path/render-blocking-css), the overhead of a CSS framework can delay rendering significantly. You can speed up your rendering by removing unnecessary overhead whenever possible.
+- JavaScript libraries are convenient, but not always necessary. Take jQuery for example: Element selection has been greatly simplified thanks to methods like [`querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) and [`querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll). Event binding is easy with [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). [`classList`](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList), [`setAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute), and [`getAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute) offer easy ways of working with classes and element attributes. If you must use a library, research for leaner alternatives. For example, [Zepto](http://zeptojs.com/) is a smaller jQuery alternative, and [Preact](https://preactjs.com/) is a much smaller alternative to React.
+- Not all websites need to be single page applications (SPAs), as they often make extensive use of JavaScript. [JavaScript is the most expensive resource we serve on the web byte for byte](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e), as it must not only be downloaded, but parsed, compiled and executed as well. For example, news and blog sites with optimized front end architecture can perform well as traditional multipage experiences. Particularly if [HTTP caching](/web/fundamentals/performance/optimizing-content-efficiency/http-caching) is configured properly, and optionally, if a [service worker](/web/fundamentals/primers/service-workers/) is used.
 
+### Mind how you send resources
 
+Efficient delivery is vital to building fast user experiences.
 
-ウェブを使ったビジネスを経営する場合は、パフォーマンスが非常に重要です。 すばやく操作することができ、ユーザーの入力への応答性に優れているサイトであるなら、それだけでも十分にメリットがあります。
- パフォーマンスがどのように収益に影響を与え得るかについては、[Impact Calculator](https://www.thinkwithgoogle.com/feature/mobile/) ツールでご確認ください。
+- [Migrate to HTTP/2](/web/fundamentals/performance/http2/). HTTP/2 addresses many performance problems inherent in HTTP/1.1, such as concurrent request limits and the lack of header compression.
+- [Download resources earlier using resource hints](/web/fundamentals/performance/resource-prioritization). `rel=preload` is one such resource hint that allows early fetches of critical resources before the browser would otherwise discover them. [This can have a pronounced positive effect](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf#0106) on page rendering and lowering [Time to Interactive](/web/tools/lighthouse/audits/time-to-interactive) when used judiciously. [`rel=preconnect` is another resource hint that can mask the latency of opening new connections for resources hosted on third party domains](https://www.igvita.com/2015/08/17/eliminating-roundtrips-with-preconnect/).
+- Modern sites ship [a *lot* of JavaScript](http://httparchive.org/trends.php#bytesJS&reqJS) [and CSS](http://httparchive.org/trends.php#bytesCSS&reqCSS) on average. It was common to bundle styles and scripts into large bundles in HTTP/1 environments. This was done because a large amount of requests was detrimental to performance. This is no longer the case now that HTTP/2 is on the scene, as multiple, simultaneous requests are cheaper. [Consider using code splitting in webpack](https://webpack.js.org/guides/code-splitting/) to limit the amount of scripts downloaded to only what is needed by the current page or view. Separate your CSS into smaller template or component-specific files, and only include those resources where they're likely to be used.
 
+### Mind how much data you send
 
+Here are some suggestions for limiting *how much* data you send:
 
-<figure>
-  <img srcset="images/impact-calculator-2x.png 2x, images/impact-calculator-1x.png
-1x" src="images/impact-calculator-1x.png" alt="Impact Calculator のスクリーンショット。パフォーマンスが改善された場合に、サイトがどれだけ収益を上げることができるかを予測するツール。">
+- [Minify text assets](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations). Minification is the removal of unnecessary whitespace, comments and other content in text-based resources. It significantly reduces the amount of data you send to users without impacting functionality. [Use uglification in JavaScript](https://www.npmjs.com/package/uglifyjs) to get more savings through shortening variable and method names. Since SVG is a text-based image format, [it can be optimized with SVGO](https://github.com/svg/svgo).
+- [Configure your server to compress resources](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer). Compression drastically reduces the amount of data you send to users, *especially* text assets. GZIP is a popular option, but [Brotli compression can go further](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/). Understand, however, that compression is *not* a catch-all for performance woes: Some file formats which are implicitly compressed (e.g., JPEG, PNG, GIF, WOFF, et cetera) don't respond to compression because they're already compressed.
+- [Optimize images](/web/fundamentals/performance/optimizing-content-efficiency/automating-image-optimization/) to ensure your site sends as little image data as possible. [Since images make up a large portion of the average per-page payload on the web](http://httparchive.org/trends.php#bytesImg&reqImg), image optimization represents a uniquely large opportunity to boost performance.
+- If you have time, consider serving alternative image formats. [WebP](/speed/webp/) enjoys reasonably [broad browser support](https://caniuse.com/#feat=webp), and uses less data than JPEG and PNG while keeping visual quality high. [JPEG XR is another alternative format](https://jpeg.org/jpegxr/index.html) supported in IE and Edge offering similar savings.
+- [Deliver images responsively](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images). The huge diversity of devices and their screens presents a tremendous opportunity to improve performance by sending images that are the best fit for the screens that view them. In the simplest use cases, you can add an [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset) to an `<img>` element to specify an array of images the browser can choose from. On the more complex side of things, you can use `<picture>` to help the browser choose the most optimal format (e.g., WebP over JPEG or PNG), or serve altogether different treatments of images for different screen sizes.
+- [Use video instead of animated GIFs](/web/fundamentals/performance/optimizing-content-efficiency/replace-animated-gifs-with-video/). Animated GIFs are *massive*. Videos of similar quality are *far* smaller, often by 80% or so. If your site makes heavy use of animated GIFs, this is probably the most impactful thing you can do to improve loading performance.
+- [Client hints](http://httpwg.org/http-extensions/client-hints.html) can tailor resource delivery based on current network conditions and device characteristics. The `DPR`, `Width` and `Viewport-Width` headers can help you [deliver the best images for a device using server-side code *and* deliver less markup](/web/updates/2015/09/automating-resource-selection-with-client-hints). The `Save-Data` header can help you [deliver lighter application experiences for users who are specifically asking you to do so](/web/updates/2016/02/save-data).
+- The [`NetworkInformation` API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation) exposes information about the user's network connection. This information can be used to modify application experiences for users on slower networks.
 
+For a more holistic guide on improving performance, check out our writeup on [the RAIL performance model](/web/fundamentals/performance/rail), which focuses on improving both load time and application responsiveness. [Our PRPL pattern guide is also an excellent resource](/web/fundamentals/performance/prpl-pattern/) for improving the performance of modern single page applications.
 
-  <figcaption><b>図 2</b>。 Impact Calculator を使用することで、サイトのパフォーマンスを向上させることによって得られる収益を見積もることができます。</figcaption>
+If you're excited to learn more about performance and how to make your site faster, browse through our performance documentation for guides on a variety of topics. We're constantly adding new guides and updating existing ones, so keep coming back!
 
-</figure>
+*Special thanks to [Addy Osmani](/web/resources/contributors/addyosmani), [Jeff Posnick](/web/resources/contributors/jeffposnick), [Matt Gaunt](/web/resources/contributors/mattgaunt), [Philip Walton](/web/resources/contributors/philipwalton), [Vinamrata Singal](/web/resources/contributors/vinamratasingal), [Daniel An](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/), and [Pete LePage](/web/resources/contributors/petelepage) for their extensive feedback in improving and launching this resource!*
 
-## ユーザー エクスペリエンスのために必要とされるパフォーマンス
-
-ある URL にアクセスしようとするとき、そのために取ることのできる方法はいくつもあります。
- 接続品質や使用する端末など、いくつもの条件によって、ユーザー エクスペリエンスはまったく異なるものとなり得ます。
-
-
-
-<figure>
-  <img src="images/speed-comparison.png" alt="あるページ読み込みの 2 枚のフィルムストリップ リールの比較。
- 最初のリールは低速接続でページ読み込みを示しており、2 番目のリールは同じページを高速接続で読み込んだ場合を示している。">
-
-  <figcaption><b>図 3</b>。 非常に低速な接続（上）と高速接続（下）でページを読み込んだ場合の比較。</figcaption>
-
-</figure>
-
-サイトの読み込みを開始すると、コンテンツが表示されるまでユーザーが待機する時間があります。
- コンテンツが表示されないうちは、ユーザー エクスペリエンスというものはありません。 ユーザー エクスペリエンスがないこの状態は、高速接続ではほんの一瞬です。
- しかし、低速接続では、ユーザーは待つことを余儀なくされます。
- ページ リソースのダウンロードが少しずつしか行われず非常にゆっくりとしている場合はなおのこと、ユーザーの利用に支障が出ることもあります。
-
-
-パフォーマンスは心地よいユーザー エクスペリエンスの土台をなすものです。
- サイトから送信されるコードが多いと、ブラウザはそのコードをダウンロードするために、ユーザーのデータプランのデータ容量を何メガバイトも消費します。
- モバイル端末の CPU パワーやメモリは限られています。
- サイズが小さくても最適化されていないコードが送られてくると、こうした端末ではコードの処理が手に負えなくなることもよくあります。
- そのため、パフォーマンスが低下して端末は反応しなくなってしまいます。
- また人の常として、ユーザーはパフォーマンスの悪いアプリケーションの処理を待ちきれずに、途中であきらめてしまうのです。
-自分のサイトのパフォーマンスを評価する方法について詳しく知り、パフォーマンスを向上するために何かしたいと思っておられるなら、[_How to Think About Speed Tools_](/web/fundamentals/performance/speed-tools/) をご覧ください。
-
-
-
-<figure>
-  <img srcset="images/lighthouse-2x.png 2x, images/lighthouse-1x.png 1x"
-src="images/lighthouse-1x.png" alt="Lighthouse で表示されるページ パフォーマンスの概要">
-
-  <figcaption><b>図 4</b>。 <a
-href="/web/tools/lighthouse/">Lighthouse</a> で表示されるページ パフォーマンスの概要</figcaption>
-</figure>
-
-## ユーザーのために必要とされるパフォーマンス
-
-パフォーマンスの悪いサイトやアプリケーションは、その利用者に実際に費用をかけさることにもなりかねません。
-
-
-[モバイル ユーザーが世界中のインターネット利用者の大半を占めるようになるにつれて](http://gs.statcounter.com/platform-market-share/desktop-mobile-tablet)、そのユーザーの多くがモバイル LTE、4G、3G、さらには 2G のネットワークからウェブにアクセスするということを念頭におくことは重要です。
- Calibre の作者である Ben Schwarz が [現実世界におけるパフォーマンスの研究](https://building.calibreapp.com/beyond-the-bubble-real-world-performance-9c991dcd5342)で指摘しているように、プリペイド データプランの利用料金が安価になってきたことによって、かつてはインターネットに手が届かなかった地域でインターネットへのアクセスがより手頃に利用できるようになっています。
- モバイル端末とインターネット アクセスはもはや贅沢品ではないのです。
-これらは、ますます相互に接続されていく世界を行き巡り行動するために必要なありふれたツールです。
-
-
-[総ページサイズは少なくとも 2011 年以来着実に増加しており](http://beta.httparchive.org/reports/state-of-the-web#bytesTotal)、引き続きその傾向が見られます。
- 標準的なページから送信されるデータが増えるにつれて、ユーザーは従量制のデータプランをより頻繁に補充しなければならなくなり、それには費用がかかります。
-
-
-ユーザーがお金を節約できるようにすることに加えて、高速で軽量なユーザー エクスペリエンスを提供することは、危機的な状況にあるユーザーのためにも非常に重要です。
- 病院、クリニック、および電話緊急相談センターなどの公的機関には、危機的な状態にある人に対して、その人が必要とする重要かつ具体的な情報を提供するオンライン リソースがあります。
- [ストレスを伴う状況で重要な情報を効果的に提供するためにデザインは非常に重要ですが](https://aneventapart.com/news/post/eric-meyer-designing-for-crisis)、その情報を高速に提供することの重要性を過小評価することはできません。
-
-
-
-それをわたしたちがするのです。
-
-## どうすればよいか
-
-下に挙げられている事柄を見るとできそうにないと感じてしまうかもしれませんが、サイトのパフォーマンスを改善するためにこれらのことを_すべて_実行する必要はありません。
- ここはあくまでスタート地点なので、圧倒されないでください。パフォーマンスを改善するためにあなたがすることは_すべて_ユーザーのためになります。
-
-
-### 送信するリソースに気を配る
-
-高性能なアプリケーションを構築する効果的な方法は、[ユーザーに_どんな_リソースを送信するかをチェックすること](/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads)です。
-[Chrome DevTools の[ネットワーク] パネル](/web/tools/chrome-devtools/network-performance/)には特定のページで使用されるすべてのリソースがみごとに要約されていますが、これまでパフォーマンスのことなど考えてこなかった人にしてみれば、いったいどこから始めればよいのかと戸惑ってしまうかもしれません。
- そのためのいくつかの提案があります。
-
-
-- UI のビルドに Bootstrap や Foundation を使用している場合は、それらが必要か自問してください。
- これらの抽象化を使用すると、サイト固有の CSS を描画する前に、ブラウザがダウンロードし解析してページに適用しなければならない CSS のヒープが増えてしまいます。
-[Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout) と [Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout) は、比較的少ないコードで単純なレイアウトと複雑なレイアウトの両方を作成する点で優れています。
-[CSS はレンダリング ブロック リソースなので](/web/fundamentals/performance/critical-rendering-path/render-blocking-css)、CSS フレームワークのオーバーヘッドはレンダリングをかなり遅くする可能性があります。
- できるだけ不要なオーバーヘッドを除去することで、レンダリングを高速化できます。
-- JavaScript ライブラリは便利ですが、必ずしも必要ではありません。 例として jQuery を考えてみましょう。
-[`querySelector`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) や [`querySelectorAll`](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll) などのメソッドのおかげで、要素選択は大幅に簡略化されました。
-[`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) を使用することで、イベント バインディングも簡単に行えます。
-[`classList`](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList)、[`setAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute)、および [`getAttribute`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttribute) によって、クラスと要素属性の処理が簡単になりました。
- ライブラリを使用する必要がある場合は、サイズの小さい代わりになるものを探しましょう。
- 例えば、[Zepto](http://zeptojs.com/) を jQuery の代わりに、[Preact](https://preactjs.com/) を React の代わりに使用することができ、そうしたほうがそれぞれサイズは小さくなります。
-- JavaScript を多用しているサイトも多いため、すべてのウェブサイトをシングル ページ アプリケーション（SPA）にする必要はありません。
- JavaScript は、ダウンロードするだけでなく、構文解析し、コンパイルし、実行する必要があるため、[サイズに応じて考えると、ウェブで提供するリソースとしては JavaScript が最も費用がかかります](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e)。
- 例えば、フロント エンド アーキテクチャが最適化されているニュースサイトやブログサイトは、従来のマルチページ エクスペリエンスのようによくスムーズに機能します。
- [HTTP キャッシング](/web/fundamentals/performance/optimizing-content-efficiency/http-caching)が適正に設定されていたり、[サービス ワーカー](/web/fundamentals/primers/service-workers/)を使用している場合は特にそう言えます。
-
-
-
-
-### リソースを送信する方法に気を配る
-
-効率的な配信は、高速なユーザー エクスペリエンスを達成するために不可欠です。
-
-- [HTTP/2 に移行します](/web/fundamentals/performance/http2/)。 HTTP/2 では、同時要求数の制限やヘッダー圧縮がないといった HTTP/1.1 につきもののパフォーマンス上の多くの問題が解消されています。
-- [リソースのヒントを使用して、先にリソースをダウンロードするようにします](/web/fundamentals/performance/resource-prioritization)。
- `rel=preload` はそのようなリソースのヒントで、ブラウザがリソースの必要を認識する前に、重要なリソースを事前にフェッチしておくことができます。
- この方法は、賢く利用すると、ページ レンダリングや[操作可能になるまでの時間](https://medium.com/reloading/preload-prefetch-and-priorities-in-chrome-776165961bbf#0106)の短縮に[顕著なプラスの効果があります](/web/tools/lighthouse/audits/time-to-interactive)。
- [`rel=preconnect` は、もう 1 つのリソースのヒントで、サードパーティ ドメインでホストされているリソースのための新しい接続を開くための待ち時間をマスクすることができます](https://www.igvita.com/2015/08/17/eliminating-roundtrips-with-preconnect/)。
-- 最近のほとんどのサイトは[_たくさん_の JavaScript](http://httparchive.org/trends.php#bytesJS&reqJS) [と CSS](http://httparchive.org/trends.php#bytesCSS&reqCSS) を送信します。
- HTTP/1 環境では、スタイルやスクリプトをまとめて大きなバンドルにするのが一般的でした。
-それは、大量のリクエストをやりとりすることがパフォーマンスの低下につながっていたからです。
-しかし、今や HTTP/2 が登場して、複数の同時リクエストを安価にやりとりできるようになると、こうしたことはもはや問題ではなくなりました。
- [webpack でのコード分割の使用を考慮して](https://webpack.js.org/guides/code-splitting/)、ダウンロードされるスクリプトの量を現在のページやビューで必要とされる分だけに制限します。
- CSS を小さなテンプレートまたはコンポーネント固有のファイルに分割して、使用する可能性があるリソースだけを含めます。
-
-
-
-### 送信するデータの量に気を配る
-
-　送信するデータの_量_を制限するためのいくつかの提案があります。
-
-- [テキスト資産を縮小する](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer#minification_preprocessing_context-specific_optimizations)。
-縮小するとは、テキストベースのリソースに含まれる不要なホワイトスペースやコメントや他のコンテンツを除去することを意味します。
- そうすることで、機能性に影響を与えることなく、ユーザーに送信するデータ量を大幅に削減することができます。
- [JavaScript で uglify 化を使って](https://www.npmjs.com/package/uglifyjs)、変数名やメソッド名を短くしてさらにデータ量を節約します。
- SVG はテキストベースの画像フォーマットなので、[SVGO を使って最適化することができます](https://github.com/svg/svgo)。
-- [リソースを圧縮するようにサーバーを構成します](/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer)。
-圧縮すると、ユーザーに送信するデータ量、_特に_テキスト資産を大幅に削減することができます。
- GZIP 
-が一般によく使われていますが、[Brotli 圧縮のほうがさらに高機能です](https://www.smashingmagazine.com/2016/10/next-generation-server-compression-with-brotli/)。
-しかし、圧縮がパフォーマンスを向上させる万能薬では_ない_ことに注意してください。
-暗黙的に圧縮されているいくつかのファイル フォーマット（JPEG、PNG、GIF、WOFF など）は、既に圧縮済みなので圧縮しても効果はありません。
-- [画像を最適化して](/web/fundamentals/performance/optimizing-content-efficiency/automating-image-optimization/)、サイトから送信される画像データのサイズをできるだけ小さくします。
- [ウェブの平均的なページ当たりのペイロードの大部分を画像が占めるため](http://httparchive.org/trends.php#bytesImg&reqImg)、画像の最適化はパフォーマンスを飛躍的に改善するうってつけの方法です。
-- 時間があれば、別の画像フォーマットを使用することを検討します。
-[WebP](/speed/webp/) はかなり[広範にブラウザをサポート](https://caniuse.com/#feat=webp)しており、JPEG や PNG よりも少ないデータで高い表示品質を維持しています。
- [JPEG XR はまた別の代替フォーマット](https://jpeg.org/jpegxr/index.html)で、IE と Edge でサポートされていて、同じくらいデータを節約できます。
-- [画像をレスポンシブに配信します](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images)。
-端末とその画面は多岐にわたるため、表示する画面に最適な画像を送信することにより、パフォーマンスを改善できる非常に大きな余地があります。
- 一番単純な事例では、`<img>` 要素に [`srcset` 属性](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-srcset)を追加して複数の画像を指定し、その中からブラウザが表示する画像を選択するようにできます。
-複雑なケースでは、`<picture>` を使用して、ブラウザが最適なフォーマット（WebP over JPEG や PNG など）を選択できるようにしたり、画面サイズによってまったく異なる画像処理が行われるようにしたりすることができます。
-- [アニメーション GIF ではなくビデオを使用します](/web/fundamentals/performance/optimizing-content-efficiency/replace-animated-gifs-with-video/)。
-アニメーション GIF は_データサイズの大きいファイル_です。 それに比べて同等品質のビデオはデータサイズが_かなり_小さく、ほとんどの場合 80％ 程度小さくなります。
- サイトがアニメーション GIF を多用しているのであれば、読み込みパフォーマンスの向上にはこの方法が最も効果があります。
-- [クライアント ヒント](http://httpwg.org/http-extensions/client-hints.html)は、現在のネットワーク条件と端末特性に基づいてリソースの配信を調整するのに役立ちます。
- `DPR`、`Width` および `Viewport-Width` といったヘッダーは、[サーバーサイド コードを使用して端末に最適な画像を配信し、_かつ_ 送信するマークアップを少なくする](/web/updates/2015/09/automating-resource-selection-with-client-hints)のに役立ちます。
-`Save-Data` ヘッダーは、[特に動作が軽いアプリケーションが配信されることを希望するユーザーの要望に応える](/web/updates/2016/02/save-data)のに役立ちます。
-- [`NetworkInformation` API](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation) は、ユーザーのネットワーク接続に関する情報を提供します。
- この情報を使用して、低速ネットワークを利用するユーザーのアプリケーション体験を調整することができます。
-
-パフォーマンスの向上に関する総合的なガイドについては、読み込み時間とアプリケーションの応答性の両方を向上させることに焦点を当てた [RAIL パフォーマンス モデル](/web/fundamentals/performance/rail)に関する記事を参照してください。
- [Google による PRPL パターン ガイド](/web/fundamentals/performance/prpl-pattern/)も、最新のシングル ページ アプリケーションのパフォーマンスを向上させるのに役立つ優れた記事です。
-
-
-
-
-パフォーマンスとサイトの高速化についてさらに詳しくは、Google のパフォーマンスに関する資料から、さまざまなトピックのガイド情報をご覧ください。
- Google では定期的に新しいガイドの追加と既存のガイドの更新を行っていますので、定期的に情報を確認することをお勧めします。
-
-
-_本資料の推敲と発行のために貴重な意見を寄せてくれた [Addy Osmani](/web/resources/contributors/addyosmani)、[Jeff Posnick](/web/resources/contributors/jeffposnick)、[Matt Gaunt](/web/resources/contributors/mattgaunt)、[Philip Walton](/web/resources/contributors/philipwalton)、[Vinamrata Singal](/web/resources/contributors/vinamratasingal)、[Daniel An](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/)、[Pete LePage](/web/resources/contributors/petelepage) の各氏に深く感謝いたします。_
-
-
-
-
-
-
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

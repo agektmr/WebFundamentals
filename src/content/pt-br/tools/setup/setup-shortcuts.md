@@ -1,79 +1,64 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Configure atalhos para tarefas da linha de comando que você usa com frequência. Se perceber que está digitando várias vezes a mesma coisa na linha de comando, isso ajudará você.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up shortcuts for the command line tasks you use over and over again. If you find yourself typing the same thing in your command line repeatedly, this will alleviate that.
 
-{# wf_updated_on: 2015-04-13 #}
-{# wf_published_on: 2014-09-24 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-09-24 #}
 
-# Configurar atalhos para a linha de comando {: .page-title }
+# Set Up Command Line Shortcuts {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-Configure atalhos para tarefas da linha de comando que você usa com frequência. Se perceber que está digitando várias vezes a mesma coisa na linha de comando, isso ajudará você.
-
+Set up shortcuts for the command line tasks you use over and over again. If you find yourself typing the same thing in your command line repeatedly, this will alleviate that.
 
 ### TL;DR {: .hide-from-toc }
-- Faça a linha de comando trabalhar para você: crie alias fáceis de lembrar e rápidos de digitar.
-- Teste os arquivos dot do Github para salvar, compartilhar e sincronizar com os seus atalhos da linha de comando.
 
+- Make the command line work for you; create aliases that are easy to remember and fast to type.
+- Give Github dotfiles a try to save, share and sync up your command line shortcuts.
 
-## Como configurá-los
+## How to set them up
 
-O modo mais fácil de criar atalhos para a linha de comando é adicionar alias para comandos
-comuns ao arquivo bashrc. Em Mac ou Linux:
+The easiest way to create command-line shortcuts is to add aliases for common commands to your bashrc file. On Mac or Linux:
 
-1. Em qualquer lugar da linha de comando, digite:
-
+1. From the command line anywhere, type:
+    
         open -a 'Sublime Text' ~/.bashrc
+        
 
-2. Adicione um novo alias, por exemplo:
-
+2. Add a new alias, for example:
+    
         alias master='git checkout master'
+        
 
-3. Sempre que estiver em uma pasta com o repositório git, poderá executar o comando
-   `master` e ele verificará o ramo mestre para você.
+3. Anytime you are in a directory with a git repo, you can run the command `master` and it will checkout the master branch for you.
 
-Observação: Veja estas instruções para [configurar alias no
-Windows](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682057(v=vs.85).aspx).
+Note: See these instructions for [setting up Windows aliases](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682057(v=vs.85).aspx).
 
-## Atalhos que recomendamos
+## Shortcuts we recommend
 
-Estes são alguns dos comandos que você pode achar úteis.
+These are a few commands that you may find useful.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2" data-th="Command">Comando &amp; alias</th>
+      <th colspan="2" data-th="Command">Command &amp; Alias</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Command">Abrir o editor</td>
+      <td data-th="Command">Open your editor</td>
       <td data-th="Alias"><code>alias st='open -a "Sublime Text"'</code></td>
     </tr>
     <tr>
-      <td data-th="Command">Inicializar um servidor</td>
+      <td data-th="Command">Launch a server</td>
       <td data-th="Alias"><code>alias server="python -m SimpleHTTPServer"</code></td>
     </tr>
     <tr>
-      <td data-th="Command">Acessar uma pasta em que você trabalha regularmente</td>
+      <td data-th="Command">Go to a directory you commonly work in</td>
       <td data-th="Alias"><code>alias p="cd ~/projects"</code></td>
     </tr>
   </tbody>
 </table>
 
+## Save, share and sync your shortcuts
 
-## Salvar, compartilhar e sincronizar os atalhos
+Store your shortcuts and dot files on Github. The major gain with this is your shortcuts can be shared across devices and they are always backed up.
 
-Armazene seus atalhos e arquivos dot no Github. O maior benefício disso é
-que seus atalhos podem ser armazenados em diversos dispositivos e sempre têm uma cópia de segurança.
-
-O Github ainda criou uma [página dedicada para arquivos dot](https://dotfiles.github.io/){: .external }
-e muitas pessoas da Equipe do Chrome usaram os
-[arquivos dot de Mathias Bynens](https://github.com/mathiasbynens/dotfiles).
-
-
-
-
-{# wf_devsite_translation #}
+Github even created a [dedicated page for dotfiles](https://dotfiles.github.io/){: .external } and quite a few of the Chrome Team have forked [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles).

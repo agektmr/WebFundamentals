@@ -1,503 +1,510 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:在此代码实验室中，您将学习如何使用新版 DevTools Application 面板调试服务工作线程。您还将学习如何模拟推送通知以验证您的订阅是否正确设置。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: In this codelab, you'll learn how to debug a service worker using the new DevTools Application panel. You'll also learn how to simulate a Push notification to verify your subscription is properly setup.
 
-{# wf_updated_on:2016-10-19 #}
-{# wf_published_on:2016-01-01 #}
+{# wf_auto_generated #} {# wf_updated_on: 2018-07-03 #} {# wf_published_on: 2016-01-01 #}
 
-
-# 调试服务工作线程 {: .page-title }
+# Debugging Service Workers {: .page-title }
 
 {% include "web/_shared/contributors/robdodson.html" %}
 
+## Introduction
 
+Service Workers give developers the amazing ability to handle spotty networks and create truly offline-first web apps. But being a new technology means they can sometimes be difficult to debug, especially as we wait for our tools to catch up.
 
-## 简介
+This codelab will walk you through creating a basic Service Worker and demonstrate how to use the new Application panel in Chrome DevTools to debug and inspect your worker.
 
-
-
-
-服务工作线程为开发者提供应对参差不齐的网络和创建真正离线优先网络应用的惊人能力。但是作为一种新技术，它们有时可能难以调试，特别是当我们等待工具跟上时。
-
-此代码实验室将引导您创建基本的服务工作线程，并演示如何使用 Chrome DevTools 中新的 Application 面板来调试和检查工作线程。
-
-### 我们将要开发什么应用？
+### What are we going to be building?
 
 ![6ffdd0864a80600.png](img/6ffdd0864a80600.png)
 
-在此代码实验室中，您将使用一个非常简单的 Progressive Web App，并学习在您遇到问题时可以在自己的应用中使用的技术。
+In this code lab you'll work with an extremely simple progressive web app and learn techniques you can employ in your own applications when you encounter issues.
 
-因为此代码实验室的重点是指导您使用工具，所以您可以在各个点和试验上随时停止。使用代码、刷新页面、打开新标签等。学习调试工具的最好方法只是打破传统并亲自动手安装它们。
+Because this code lab is focused on teaching you tools, feel free to stop at various points and experiment. Play with the code, refresh the page, open new tabs, etc. The best way to learn debugging tools is just to break things and get your hands dirty fixing them.
 
-### 您将学习的内容
+### What you'll learn
 
-* 如何使用 Application 面板检查服务工作线程
-* 如何浏览 Cache 和 IndexedDB
-* 如何模拟不同网络情况
-* 如何使用调试程序语句和断点调试服务工作线程
-* 如何模拟推送事件
+* How to inspect a Service Worker with the Application panel
+* How to explore the Cache and IndexedDB
+* How to simulate different network conditions
+* How to use debugger statements and breakpoints to debug a Service Worker
+* How to simulate Push events
 
-### 您需具备的条件
+### What you'll need
 
-* Chrome 52 或更高版本
-* 安装  [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)，或者使用您自己选择的 Web 服务器。
-* 示例代码
-* 文本编辑器
-* HTML、CSS 和 JavaScript 的基础知识
+* Chrome 52 or above
+* Install [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), or use your own web server of choice.
+* The sample code
+* A text editor
+* Basic knowledge of HTML, CSS and JavaScript
 
-此代码实验室的重点是调试服务工作线程以及有关使用服务工作线程的一些先备知识。某些概念只是一掠而过，有些则向您提供代码块（例如样式或不相关的 JavaScript）以直接复制和粘贴后使用。如果您对服务工作线程不熟悉，请务必[通读 API 入门指南](/web/fundamentals/primers/service-worker/)，然后再继续。
+This codelab is focused on debugging Service Workers and assumes some prior knowledge of working with Service Workers. Some concepts are glossed over or code blocks (for example styles or non-relevant JavaScript) are provided for you to simply copy and paste. If you are new to Service Workers be sure to [read through the API Primer](/web/fundamentals/primers/service-worker/) before proceeding.
 
+## Getting set up
 
-## 设置
+### Download the Code
 
+You can download all of the code for this codelab, by clicking the following button:
 
+[Download source code](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
 
+Unpack the downloaded zip file. This will unpack a root folder (`debugging-service-workers-master`), which contains one folder for each step of this codelab, along with all of the resources you will need.
 
-### 下载代码
+The `step-NN` folders contain the desired end state of each step of this codelab. They are there for reference. We'll be doing all our coding work in the directory called `work`.
 
-可通过点击以下按钮下载此代码实验室的所有代码：
+### Install and verify web server
 
-[链接](https://github.com/googlecodelabs/debugging-service-workers/archive/master.zip)
+While you're free to use your own web server, this codelab is designed to work well with the Chrome Web Server. If you don't have that app installed yet, you can install it from the Chrome Web Store.
 
-解压下载的 zip 文件。这将解压根文件夹 (`debugging-service-workers-master`)，其中包含此代码实验室的每个步骤的对应文件夹，以及您需要的所有资源。
+[Install Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
 
-`step-NN` 文件夹包含此代码实验室的每个步骤所需的结束状态。这些文件夹供您参考。我们将在一个名为 `work` 的目录中完成所有的编码工作。
+After installing the Web Server for Chrome app, click on the Apps shortcut on the bookmarks bar:
 
-### 安装并验证网络服务器
+![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)<aside class="key-point">
 
-尽管您可以使用自己的网络服务器，但此代码实验室的设计只有与 Chrome Web Server 结合使用时才能正常运行。如果您尚未安装此应用，可以从 Chrome 网上应用店安装。
+<p>More help:  <a href="https://support.google.com/chrome_webstore/answer/3060053?hl=en">Add and open Chrome apps</a></p>
 
-[链接](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb)
+</aside> 
 
-安装 Web Server for Chrome 后，点击书签栏上的 Apps 快捷方式： 
-
-![9efdf0d1258b78e4.png](img/9efdf0d1258b78e4.png)
-
-在随后出现的窗口中，点击 Web Server 图标： 
+In the ensuing window, click on the Web Server icon:
 
 ![dc07bbc9fcfe7c5b.png](img/dc07bbc9fcfe7c5b.png)
 
-接下来您将看到此对话框，您可以在其中配置本地网络服务器：
+You'll see this dialog next, which allows you to configure your local web server:
 
 ![433870360ad308d4.png](img/433870360ad308d4.png)
 
-点击 __choose folder__ 按钮，然后选择 `work` 文件夹。这样您就可以通过网络服务器对话框（在 __Web Server URL(s)__ 部分）中突出显示的网址为正在进行的工作提供支持。
+Click the **choose folder** button, and select the `work` folder. This will enable you to serve your work in progress via the URL highlighted in the web server dialog (in the **Web Server URL(s)** section).
 
-在 Options 下，选中“Automatically show index.html”旁边的框，如下所示：
+Under Options, check the box next to "Automatically show index.html", as shown below:
 
 ![8937a38abc57e3.png](img/8937a38abc57e3.png)
 
-然后将标记为“Web Server:STARTED”的切换按钮向左滑动，然后向右滑动，停止并重启服务器。
+Then stop and restart the server by sliding the toggle labeled "Web Server: STARTED" to the left and then back to the right.
 
 ![daefd30e8a290df5.png](img/daefd30e8a290df5.png)
 
-现在，在您的网络浏览器中访问您的工作网站（通过点击突出显示的 Web Server URL），然后您会看到如下页面：
+Now visit your work site in your web browser (by clicking on the highlighted Web Server URL) and you should see a page that looks like this:
 
 ![693305d127d9fe80.png](img/693305d127d9fe80.png)
 
-显然，此应用还没有做任何有趣的事情。我们将添加功能，以便验证其是否可在后续步骤中离线工作。## Application 标签简介
+Obviously, this app is not yet doing anything interesting. We'll add functionality so we can verify it works offline in subsequent steps.<aside class="key-point">
 
+<p>From this point forward, all testing/verification should be performed using this web server setup. You'll usually be able to get away with simply refreshing your test browser tab.</p>
 
+</aside> 
 
+## Introducing the Application tab
 
+### Inspecting the Manifest
 
+Building a Progressive Web Apps requires tying together a number of different core technologies, including Service Workers and Web App Manifests, as well as useful enabling technologies, like the Cache Storage API, IndexedDB, and Push Notifications. To make it easy for developers to get a coordinated view of each of these technologies the Chrome DevTools has incorporated inspectors for each in the new Application panel.
 
+* Open the Chrome DevTools and click on the tab that says **Application**
 
-### 检查清单
+![5d18df60c53a0420.png](img/5d18df60c53a0420.png)
 
-构建 Progressive Web App 需要将许多不同的核心技术（包括服务工作线程和网络应用清单）以及有用的支持技术（如 Cache Storage API、IndexedDB 和推送通知）结合在一起。为使开发人员能够轻松获得各种技术的协调视图，Chrome DevTools 在新版 Application 面板中为每个技术加入了检查器。
+Look in the sidebar and notice **Manifest** is currently highlighted. This view shows important information related to the `manifest.json` file such as its application name, start URL, icons, etc.
 
-* 打开 Chrome DevTools，然后点击显示为 __Application__ 的标签。
-
-![b380532368b4f56c.png](img/b380532368b4f56c.png)
-
-查看边栏，请注意 __Manifest__ 当前处于突出显示状态。此视图显示与 `manifest.json` 文件有关的重要信息，例如其应用名称、启动网址、图标等。
-
-虽然我们不会在此代码实验室中对其进行介绍，但请注意，有一个 __Add to homescreen__ 按钮，它可用于模拟添加应用到用户主屏幕的体验。
+Although we won't be covering it in this codelab, note that there is an **Add to homescreen** button which can be used to simulate the experience of adding the app to the user's homescreen.
 
 ![56508495a6cb6d8d.png](img/56508495a6cb6d8d.png)
 
-### 检查服务工作线程
+### Inspecting the Service Workers
 
-过去，检查服务工作线程需要在 Chrome 内部环境中进行调查，而且绝对不是最方便的用户体验。所有这一切都随着新的 __Application__ 标签而改变！
+In the past, inspecting a Service Worker required poking around in Chrome internals and was definitely not the most user friendly experience. All of that changes with the new **Application** tab!
 
-* 点击当前选择的 __Manifest__ 项下方的 __Service Workers__ 菜单项
+* Click on the **Service Workers** menu item below the currently selected **Manifest** item
 
-![3dea544e6b44979d.png](img/3dea544e6b44979d.png)
+![d4eeba0a3c66a04.png](img/d4eeba0a3c66a04.png)
 
-__Service Workers__ 视图提供有关当前源中活动的服务工作线程的信息。顶部的一行是一系列复选框。
+The **Service Workers** view provides information about Service Workers which are active in the current origin. Along the top row there are a series of checkboxes.
 
-* __Offline __- 将模拟断开与网络的连接。这将有助于快速验证您的服务工作线程的抓取处理程序是否正常运行。
-* __Update on reload__ - 将用新的服务工作线程强制替换当前服务工作线程（如果开发者已更新 `service-worker.js`）。通常情况下，浏览器将等待，直到用户在更新到新的服务工作线程之前关闭包含当前网站的所有标签。
-* __Bypass for network__ - 将强制浏览器忽略所有活动服务工作线程并从网络中获取资源。这有助于您使用 CSS 或 JavaScript 而不必担心服务工作线程意外缓存或返回旧文件。
-* __Show all__ - 将在不考虑来源的情况下，显示所有活动服务工作线程。
+* **Offline** - Will simulate being disconnected from the network. This can be useful to quickly verify that your Service Worker fetch handlers are working properly.
+* **Update on reload** - Will force the current Service Worker to be replaced by a new Service Worker (if the developer has made updates to their `service-worker.js`). Normally the browser will wait until a user closes all tabs that contain the current site before updating to a new Service Worker.
+* **Bypass for network** - Will force the browser to ignore any active Service Worker and fetch resources from the network. This is extremely useful for situations where you want to work on CSS or JavaScript and not have to worry about the Service Worker accidentally caching and returning old files.
+* **Show all** - Will show a list of all active Service Workers regardless of the origin.
 
-您将下方看到与当前活动服务工作线程（如果存在）有关的信息。最有用的字段之一是 __Status__ 字段，它显示服务工作线程的当前状态。由于这是首次启动应用，当前的服务工作线程已成功安装并激活，因此它显示一个绿色圆圈表示一切正常。
+Below that you will see information relating to the current active Service Worker (if there is one). One of the most useful fields is the **Status** field, which shows the current state of the Service Worker. Since this is the first time starting the app, the current Service Worker has successfully installed and been activated, so it displays a green circle to indicate everything's good.<aside class="key-point">
 
-请注意绿色状态指示灯旁边的 ID 号。这是当前活动服务工作线程的 ID。请记住它或写下来，因为稍后我们将使用它进行比较。
+<p>If you had installed a service worker on this localhost port previously, you will see an orange circle as well, indicating that the new service worker is waiting to activate. If this is the case, click <strong>skipWaiting</strong>.</p>
 
-* 在您的文本编辑器中，打开 `service-worker.js` 文件
+</aside> 
 
-当前服务工作线程的代码非常简单，只有几个控制台日志。
+Note the ID number next to the green status indicator. That's the ID for the currently active Service Worker. Remember it or write it down as we'll use it for a comparison in just a moment.
+
+* In your text editor, open the `service-worker.js` file
+
+The code for the current Service Worker is quite simple, just a couple of console logs.
 
     self.addEventListener('install', function(event) {
       console.log('Service Worker installing.');
     });
     
     self.addEventListener('activate', function(event) {
-      console.log('Service Worker activating.');  
-    });
-
-如果您切换回 DevTools 然后查看控制台，可以看到两个日志都已成功输出。
-
-![5fcfd389f5357c09.png](img/5fcfd389f5357c09.png)
-
-请更新 `service-worker.js` 的代码以查看其完成生命周期变更。
-
-* 更新 `service-worker.js` 中的注释，使其包含新消息。
-
-    self.addEventListener('install', function(event) {
-      console.log('A *new* Service Worker is installing.');
+      console.log('Service Worker activating.');
     });
     
-    self.addEventListener('activate', function(event) {
-      console.log('Finally active. Ready to start serving content!');  
-    });
 
-* 刷新页面并在 DevTools 中打开控制台
+If you switch back to the DevTools and look in the Console you can see that both logs have been output successfully.
 
-控制台记录 `A *new* Service Worker is installing.`，但不显示处于活动状态的新服务工作线程的第二条消息。
+![a8c1d1bb2a14eb24.png](img/a8c1d1bb2a14eb24.png)
 
-* 切换到 DevTools 中的 Application 标签
+Let's update the code for the `service-worker.js` to watch it go through a lifecycle change.
 
-在 Application 标签中，现有两个状态指示灯，各表示我们的两个服务工作线程的状态。
+* Update the comments in `service-worker.js` so they contain new messages
+    
+    self.addEventListener('install', function(event) { console.log('A *new* Service Worker is installing.'); });
+    
+    self.addEventListener('activate', function(event) { console.log('Finally active. Ready to start serving content!'); });
 
-![2e41dbf21437944c.png](img/2e41dbf21437944c.png)
+* Refresh the page and open the console in DevTools
 
-请注意第一个服务工作线程的 ID。它应该与原始服务工作线程 ID 匹配。当您安装新的服务工作线程时，在用户下一次访问页面之前，以前的工作线程将保持活动状态。
+The console logs `A *new* Service Worker is installing.` but doesn't show the 2nd message about the new Service Worker being active.
 
-第二个状态指示灯显示我们刚刚编辑的新服务工作线程。现在它处于等待状态。
+* Switch to the Application tab in DevTools
 
-强制激活新服务工作线程的简单方法是使用 __skipWaiting__ 按钮。
+In the Application tab there are now two status indicators, each representing the state of our two Service Workers.
+
+![67548710d5ca4936.png](img/67548710d5ca4936.png)
+
+Note the ID of the first Service Worker. It should match the original Service Worker ID. When you install a new Service Worker, the previous worker remains active until the next time the user visits the page.
+
+The second status indicator shows the new Service Worker we just edited. Right now it's in a waiting state.<aside class="key-point">
+
+<p><strong>Try it!</strong></p>
+
+<p>If a user has multiple tabs open for the same page, it will continue using the old Service Worker until those tabs are closed. Try opening a few more tabs and visiting this same page and notice how the Application panel still shows the old Service Worker as active.</p>
+
+</aside> 
+
+An easy way to force the new Service Worker to activate is with the **skipWaiting** button.
 
 ![7a60e9ceb2db0ad2.png](img/7a60e9ceb2db0ad2.png)
 
-* 点击 skipWaiting 按钮，然后切换至控制台
+* Click the skipWaiting button and then switch to the Console
 
-请注意现在控制台记录来自 `activate` 事件处理程序的消息。
+Note that the console now logs the message from the `activate` event handler:
 
-`Finally active. Ready to start serving content!`
+`Finally active. Ready to start serving content!`<aside class="key-point">
 
+<p><strong>Skip waiting</strong></p>
 
-## 浏览缓存
+<p>Having to click the <code>skipWaiting</code> button all the time can get a little annoying. If you'd like your Service Worker to force itself to become active you can include the line <code>self.skipWaiting()</code> in the <code>install</code> event handler. You can learn more about the <code>skipWaiting</code> method in  <a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-skipwaiting">the Service Workers spec</a>.</p>
 
+</aside> 
 
+## Exploring the cache
 
+Managing your own offline file cache with a Service Worker is an incredible super power. The new **Application** panel has a number of useful tools for exploring and modifying your stored resources which can be very helpful during development time.
 
-使用服务工作线程管理您的离线缓存文件是令人难以置信的超能力。新版 __Application__ 面板有很多有用的工具，用于浏览和修改存储的资源，这些工具在开发期间非常有用。
+### Add caching to your Service Worker
 
-### 为服务工作线程添加缓存
+Before you can inspect the cache you'll need to write a little code to store some files. Pre-caching files during the Service Worker's install phase is a useful technique to guarantee that crucial resources are available to user if they happen to go offline. Let's start there.
 
-在您可以检查缓存之前，您需要编写一些代码来存储一些文件。在服务工作线程的安装阶段，预缓存文件是一种有用的技术，可以确保在用户即将离线时关键资源可用。让我们由此开始。
-
-* 在更新 `service-worker.js` 之前，打开 DevTools __Application__ 面板，导航至 __Service Workers__ 菜单，然后选中显示为 __Update on reload__ 的框
+* Before updating the `service-worker.js`, open the DevTools **Application** panel, navigate to the **Service Workers** menu, and check the box that says **Update on reload**
 
 ![d4bcfb0983246797.png](img/d4bcfb0983246797.png)
 
-这一有用的技巧将强制页面使用最新的服务工作线程，因此您不必在每次要更改服务工作线程时点击 __skipWaiting__ 选项。
+This useful trick will force the page to use whatever Service Worker is the latest, so you don't have to click the **skipWaiting** option every time you want to make changes to your Service Worker.
 
-* 接下来，更新 `service-worker.js` 中的代码，显示如下
+* Next, update the code in `service-worker.js` so it looks like this
 
-```
-var CACHE_NAME = 'my-site-cache-v1';
-var urlsToCache = [
-  '/',
-  '/styles/main.css',
-  '/scripts/main.js',
-  '/images/smiley.svg'
-];
+    var CACHE_NAME = 'my-site-cache-v1';
+    var urlsToCache = [
+      '/',
+      '/styles/main.css',
+      '/scripts/main.js',
+      '/images/smiley.svg'
+    ];
+    
+    self.addEventListener('install', function(event) {
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
+    self.addEventListener('activate', function(event) {
+      console.log('Finally active. Ready to start serving content!');
+    });
+    
 
-self.addEventListener('install', function(event) {
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
+* Refresh the page
 
-self.addEventListener('activate', function(event) {
-  console.log('Finally active. Ready to start serving content!');  
-});
-```
+In the Application panel you might notice a warning shows up. This seems scary but it's just telling you that your old Service Worker was forcibly updated. Since that was the intention, this is totally O.K., but it can serve as a useful warning so you don't forget to turn the checkbox off when you're done editing the `service-worker.js` file.
 
-* 刷新页面
+![c6363ac5b51e06b1.png](img/c6363ac5b51e06b1.png)
 
-在 Application 面板中，您可能会注意到显示了错误。这似乎很可怕，但是点击 __details__ 按钮后，就会发现这只是 __Application__ 面板告知您的旧服务工作线程已被强制更新。由于这是预期行为，所以完全没问题，但是它可以起到警告的作用。因此请不要忘记在完成编辑 `service-worker.js` 文件后关闭复选框。
+### Inspecting Cache Storage
 
-![a039ca69d2179199.png](img/a039ca69d2179199.png)
+Notice that the **Cache Storage** menu item in the **Application** panel now has a caret indicating it can be expanded. If you don't see it, right click on **Cache Storage** and choose **Refresh Caches** (this doesn't actually do anything to the caches, it just updates the DevTools UI).
 
-### 检查 Cache Storage
+* Click to expand the **Cache Storage** menu, then click on `my-site-cache-v1`
 
-请注意 __Application__ 中的 __Cache Storage__ 菜单项现有一个插入符，显示它可展开。
+![7990023bd9e8fe7a.png](img/7990023bd9e8fe7a.png)
 
-* 点击以展开 __Cache Storage__ 菜单，然后点击 `my-site-cache-v1`
-
-![af2b3981c63b1529.png](img/af2b3981c63b1529.png)
-
-在这里您可看到由服务工作线程缓存的所有文件。如果您需要从缓存中移除文件，可以右键点击该文件，然后从上下文菜单中选择 __delete__ 选项。同样，您可以通过右键点击 `my-site-cache-v1`，然后选择 delete 以删除整个缓存。
+Here you can see all of the files cached by the Service Worker. If you need to remove a file from the cache you can right-click on it and select the **delete** option from the context menu. Similarly, you can delete the entire cache by right-clicking on `my-site-cache-v1` and choosing delete.
 
 ![5c8fb8f7948066e6.png](img/5c8fb8f7948066e6.png)
 
-### 清理平板
+### Cleaning the slate
 
-您可能已经注意到，除 __Cache Storage__，还有一些与存储资源有关的其他菜单项：Local Storage、Session Storage、IndexedDB、Web SQL、Cookie 以及 Application Cache ("AppCache")。在一个面板中精细控制每个资源是非常有用的！但是如果您处于想删除所有存储资源的情形下，访问每个菜单项并删除其内容是相当繁琐的。更好的做法是，您可以使用 __Clear storage__ 选项来一次性清理平板（请注意这也将注销所有的服务工作线程）。
+As you may have noticed, along with **Cache Storage**, there are a number of other menu items related to stored resources, including: Local Storage, Session Storage, IndexedDB, Web SQL, Cookies, and Application Cache ("AppCache"). Having granular control of each of these resources all in one panel is extremely useful! But if you were in a scenario where you wanted to delete all of the stored resources it would be pretty tedious to have to visit each menu item and delete their contents. Instead, you can use the **Clear storage** option to clean the slate in one fell swoop (note that this will also unregister any Service Workers).
 
-* 选择 __Clear storage__ 菜单选项
-* 点击 __Clear site data__ 按钮以删除所有存储资源
+* Select the **Clear storage** menu option
+* Click the **Clear selected** button to delete all stored resources
 
-![59838a73a2ea2aaa.png](img/59838a73a2ea2aaa.png)
+![744eb12fec050d31.png](img/744eb12fec050d31.png)
 
-如果您返回并点击 `my-site-cache-v1`，将看到已删除所有存储文件。
+If you go back to **Cache Storage** you'll now see that all the stored files have been deleted.
 
-![317d24238f05e69c.png](img/317d24238f05e69c.png)
+![3d8552f02b82f4d5.png](img/3d8552f02b82f4d5.png)<aside class="key-point">
 
-齿轮是什么？
+<p><strong>TIP:</strong> You can also use a new Incognito window for testing and debugging Service Workers. When the Incognito window is closed, Chrome will remove any cached data or installed Service Worker, ensuring that you always start from a clean state.</p>
 
-因为服务工作线程能够提出自己的网络请求，所以可有助于识别来自工作线程本身的网络流量。
+</aside> 
 
-* 当 `my-site-cache-v1` 仍然为空时，切换至 Network 面板
-* 刷新页面
+**What's with the gear?**
 
-在 Network 面板中，您应该看到对文件（例如 `main.css`）的一组初始请求。之后是前面带有齿轮图标的第二轮请求，这些请求似乎要获取相同的资源。
+Because the Service Worker is able to make its own network requests, it can be useful to identify network traffic which originated from the worker itself.
 
-![2ba393cf3d41e087.png](img/2ba393cf3d41e087.png)
+* While `my-site-cache-v1` is still empty, switch over to the Network panel
+* Refresh the page
 
-齿轮图标表示这些请求来自服务工作线程本身。具体而言，这些是由服务工作线程的 `install` 处理程序提出以填充离线缓存的请求。
+In the Network panel, you should see an initial set of request for files like `main.css`, followed by a second round of requests, prefixed with a gear icon, which seem to fetch the same assets.
 
+![8daca914fe2d9dc7.png](img/8daca914fe2d9dc7.png)
 
-## 模拟不同网络条件
+The gear icon signifies that these requests came from the Service Worker itself. Specifically, these are the requests being made by the Service Worker's `install` handler to populate the offline cache.<aside class="key-point">
 
+<p><strong>Learn More</strong>: For a deeper understanding of the Network panel identifies Service Worker traffic take a look at  <a href="http://stackoverflow.com/a/33655173/385997">this StackOverflow discussion</a>.</p>
 
+</aside> 
 
+## Simulating different network conditions
 
-服务工作线程的杀手锏功能之一是即使在用户离线时，它们也能够为其提供缓存内容。要验证一切是否按计划进行，请测试 Chrome 提供的一些网络节流工具。
+One of the killer features of Service Workers is their ability to serve cached content to users even when they're offline. To verify everything works as planned, let's test out some of the network throttling tools that Chrome provides.
 
-### 离线时提供请求服务
+### Serving requests while offline
 
-为提供离线内容，您需要将 `fetch` 处理程序添加到 `service-worker.js`中。
+In order to serve offline content, you'll need to add a `fetch` handler to your `service-worker.js`
 
-* 将以下代码添加到紧跟在 `activate` 处理程序后的 `service-worker.js`中。
+* Add the following code to `service-worker.js` just after the `activate` handler
 
-```
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-```
+    self.addEventListener('fetch', function(event) {
+      event.respondWith(
+        caches.match(event.request)
+          .then(function(response) {
+            // Cache hit - return response
+            if (response) {
+              return response;
+            }
+            return fetch(event.request);
+          }
+        )
+      );
+    });
+    
 
-* 切换到 __Application__ 面板，并验证 __Update on reload__ 仍处于选中状态
-* 刷新页面以安装新服务工作线程
-* 取消选中 __Update on reload__
-* 选中 __Offline__
+* Switch to the **Application** panel and verify that **Update on reload** is still checked
+* Refresh the page to install the new Service Worker
+* Uncheck **Update on reload**
+* Check **Offline**
 
-您的 __Application__ 面板应该如下显示：
+Your **Application** panel should look like this now:
 
-![873b58278064b627.png](img/873b58278064b627.png)
+![54d7f786f2a8838e.png](img/54d7f786f2a8838e.png)
 
-请注意 __Network__ 面板现在有一个黄色警告标志，表示您已离线（并提醒您如果要继续使用网络进行开发，您需要取消选中该复选框）。
+Notice the **Network** panel now has a yellow warning sign to indicate that you're offline (and to remind you that you'll want to uncheck that checkbox if you want to continue developing with the network).
 
-随着您的 `fetch` 处理程序到位，您的应用设置为 __Offline__，现在到了关键时刻。刷新页面，如果一切顺利，您应该继续看到网站内容，即使网络未提供任何信息。您可以切换至 __Network__ 面板以验证 Cache Storage 是否提供所有资源。请注意在 __Size__ 列中，表示这些资源来自 `(from Service Worker)`。这是一个信号，告诉我们服务工作线程拦截了请求，并提供了来自缓存的响应而不是碰撞网络。
+With your `fetch` handler in place, and your app set to **Offline**, now is the moment of truth. Refresh the page and if all goes well you should continue to see site content, even though nothing is coming from the network. You can switch to the **Network** panel to verify that all of the resources are being served from Cache Storage. Notice in the **Size** column it says these resources are coming `(from Service Worker)`. That's the signal that tells us the Service Worker intercepted the request, and served a response from the cache instead of hitting the network.
 
-![a6f485875ca088db.png](img/a6f485875ca088db.png)
+![96f2065b2f0adece.png](img/96f2065b2f0adece.png)
 
-您将注意到有失败的请求（例如对新服务工作线程或 `manifest.json` 的请求）。这是完全正常且符合预期的。
+You'll notice that there are failed requests (like for a new Service Worker or `manifest.json`). That's totally fine and expected.
 
-### 测试缓慢或奇怪的网络
+### Testing slow or flaky networks
 
-因为我们在各种不同的环境中使用我们的移动设备，不断在各种连接状态之间转换。不仅如此，在世界上的许多地方，3G 和 2G 速度仍是常态。为验证我们的应用适用于这些消费者，我们应该测试即使在较慢的连接情况下，它也能保持高性能。
+Because we use our mobile devices in a plethora of different contexts, we're constantly moving between various states of connectivity. There are also many parts of the world where 3G and 2G speeds are the norm. To verify that our app works well for these consumers, we should test that it is performant even on a slower connection.
 
-首先，让我们在服务工作线程不运行的情况下，模拟在缓慢的网络上应用是如何工作的。
+To start, let's simulate how the application works on a slow network when the Service Worker is not in play.
 
-* 在 __Application__ 面板中，取消选中 __Offline__
-* 选中 __Bypass for network__
+* From the **Application** panel, uncheck **Offline**
+* Check **Bypass for network**
 
-![739dc5811e4aa937.png](img/739dc5811e4aa937.png)
+![d9ea0e24a6ef374e.png](img/d9ea0e24a6ef374e.png)
 
-__Bypass for network__ 选项将告诉浏览器，当需要发出网络请求时跳过我们的服务工作线程。这表示 Cache Storage 未能提供任何内容，就好像我们没有安装任何服务工作线程一样。
+The **Bypass for network** option will tell the browser to skip our service worker when it needs to make a network request. This means nothing will be able to come from Cache Storage, it will be as if we have no Service Worker installed at all.
 
-* 接下来，切换至 __Network__ 面板
-* 使用 __Network Throttle__ 下拉菜单将网络速度设置为 `Regular 2G`。
+* Next, switch to the **Network** panel
+* Use the **Network Throttle** dropdown to set the network speed to `Regular 2G`
 
-__Network Throttle__ 下拉菜单位于 __Network__ 面板的右上角、__Network__ 面板的 __Offline__ 复选框旁边。默认情况下，它被设置为 `No throttling`。
+The **Network Throttle** dropdown is located in the top right of the **Network** panel, right next to the **Network** panel's own **Offline** checkbox. By default it is set to `No throttling`.
 
-![c59b54a853215598.png](img/c59b54a853215598.png)
+![662a15b44afb6633.png](img/662a15b44afb6633.png)
 
-* 将速度设置为 `Regular 2G`，刷新页面
+* With the speed set to `Regular 2G`, refresh the page
 
-请注意响应时间会飙升！现在每个资源的下载需要几百毫秒的时间。
+Notice the response times jump way up! Now each asset takes several hundred milliseconds to download.
 
-![70e461338a0bb051.png](img/70e461338a0bb051.png)
+![9774a4c588a6604c.png](img/9774a4c588a6604c.png)
 
-让我们看看服务工作线程在后台运行时有何不同。
+Let's see how things differ with our Service Worker back in play.
 
-* 仍将速度设置为 `Regular 2G`，切换回 __Application__ 标签
-* 取消选中 __Bypass for network__ 复选框
-* 切换回 __Network__ 面板
-* 刷新页面
+* With the network still set to `Regular 2G`, switch back to the **Application** tab
+* Uncheck the **Bypass for network** checkbox
+* Switch back to the **Network** panel
+* Refresh the page
 
-现在我们的响应时间急速下降至每个资源仅需几毫秒。对于网络速度较慢的用户来说，这是天壤之别！
+Now our response times jump down to a blazing fast few milliseconds per resource. For users on slower networks this is a night and day difference!
 
-![f0f6d3b0a1b1f18d.png](img/f0f6d3b0a1b1f18d.png)
+![44253f3de0e694b8.png](img/44253f3de0e694b8.png)<aside class="warning">
 
+<p>Before proceeding make sure you set the <strong>Network Throttle</strong> back to <code>No throttling</code></p>
 
-## 请记住，它只是 JavaScript
+</aside> 
 
+## Remember, it's just JavaScript
 
+Service Workers can feel like magic, but under the hood they're really just regular JavaScript files. This means you can use existing tools like `debugger` statements and breakpoints to debug them.
 
+### Working with the debugger
 
-服务工作线程就像一种魔法，但是在后台，它们实际上只是常规 JavaScript 文件。这表示您可以使用现有的工具（如 `debugger` 语句和断点）来调试它们。
+Many developers rely on good old `console.log()` when they have an issue in their app. But there's a much more powerful tool available in the toolbox: `debugger`.
 
-### 使用调试程序
+Adding this one line to your code will pause execution and open up the **Sources** panel in the DevTools. From here you can step through functions, inspect objects, and even use the console to run commands against the current scope. This can be especially useful for debugging a cranky Service Worker.
 
-许多开发者在他们的应用出现问题时，依赖于出色的旧版 `console.log()`。但是，工具箱中有一个更强大的工具：`debugger`。
+To test it out, let's debug our `install` handler.
 
-将这一行添加到您的代码中将暂停执行，并打开 DevTools 中的 __Sources__ 面板。从这里开始，您可以逐步执行函数、检查对象，甚至使用控制台对当前 作用域运行命令。这对于调试一个奇怪的服务工作线程尤其有用。
+* Add a `debugger` statement to the beginning of your `install` handler in `service-worker.js`
 
-为了对其进行测试，我们来调试 `install` 处理程序。
+    self.addEventListener('install', function(event) {
+      debugger;
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            return cache.addAll(urlsToCache);
+          })
+      );
+    });
+    
 
-* 在 `service-worker.js` 中 `install` 处理程序的开头添加一个 `debugger` 语句。
+* Refresh the page
 
-```
-self.addEventListener('install', function(event) {
-  debugger;
-  // Perform install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
-  );  
-});
-```
+The application will pause execution and switch panels over to **Sources** where the `debugger` statement is now highlighted in `service-worker.js`.
 
-* 从 __Application__ 面板中，刷新页面
-* 点击 __skipWaiting__ 以激活新服务工作线程
-* 再次刷新页面以允许 `fetch` 处理程序运行
+![2f20258491acfaa8.png](img/2f20258491acfaa8.png)<aside class="key-point">
 
-应用将暂停执行并将面板切换至 __Sources__，其中 `debugger` 语句现在将在 `service-worker.js` 中突出显示。
+<p><strong>Learn More</strong>: A full explanation of the <strong>Sources</strong> panel is outside the scope of this codelab but you can  <a href="/web/tools/chrome-devtools/debug/">learn more about the debugging capabilities of the DevTools</a> on the Google Developers site.</p>
 
-![d960b322c020d6cc.png](img/d960b322c020d6cc.png)
+</aside> 
 
-此视图提供了大量有用的工具。有一个工具是 __Scope__ 检查器，它让我们在当前函数作用域内看到对象的当前状态。
+There are a ton of useful tools available in this view. One such tool is the **Scope** inspector, which let's us see the current state of objects in the current function's scope.
 
-* 点击 `event: ExtendableEvent` 下拉菜单
+* Click on the `event: InstallEvent` dropdown
 
-![5116146f838a566.png](img/5116146f838a566.png)
+![3fa715abce820cea.png](img/3fa715abce820cea.png)
 
-从这里，您可以了解有关当前作用域内对象的各种有用的信息。例如，查看 `type` 字段，您可以验证当前事件对象是否为 `install` 事件。
+From here you can learn all sorts of useful information about the current in-scope objects. For instance, looking at the `type` field you can verify that the current event object is for the `install` event.
 
-### 使用断点
+* when you've finished exploring the **Scope** inspector, press the Resume button
 
-如果您正在 __Sources__ 面板中检查代码，您可能会发现设置一个断点比在您的实际文件中添加 `debugger` 语句更容易些。断点有类似的目的（它冻结执行，让我们检查应用），但是它可以在 DevTools 中自行设置。
+![97cd70fb204fa26b.png](img/97cd70fb204fa26b.png)
 
-要设置断点，您需要点击您希望应用停止执行的行号。
+This allows the script to resume executing after the break. Finally, let's complete the activation of the new service worker.
 
-* 从 __Sources__ 面板向下滚动到 `service-worker.js` 的第 25 行，然后点击行号
+* Return to the **Service Workers** section of the **Application** panel
+* Click on **skipWaiting** to activate the new Service Worker
 
-![da7b5f76723ca525.png](img/da7b5f76723ca525.png)
+### Using breakpoints instead
 
-这将在 `fetch` 处理程序的开头设置断点，以便可以检查其事件对象。
+If you're already inspecting your code in the **Sources** panel, you may find it easier to set a breakpoint, versus adding `debugger` statements to your actual files. A breakpoint serves a similar purpose (it freezes execution and lets you inspect the app) but it can be set from within DevTools itself.
 
-* 刷新页面
+To set a breakpoint you need to click the line number where you'd like the application to halt execution.
 
-请注意，与您使用 `debugger` 语句时类似，执行现在已停在有断点的行上。这表示您现在可以检查在您的应用中传递的 `FetchEvent` 对象，并确定它们请求的资源。
+* From the **Sources** panel, scroll down to line 39 of `service-worker.js` and click on the line number
 
-* 在 __Scope__ 检查器中，展开 `event` 对象
-* 展开 `request` 对象
-* 请注意 `url` 属性
+![dabccb06c7231b3e.png](img/dabccb06c7231b3e.png)
+
+This will set a breakpoint at the beginning of the `fetch` handler so you can inspect its event object.
+
+* Refresh the page
+
+Notice that, similar to when you used the `debugger` statement, execution has now stopped on the line with the breakpoint. This means you can now inspect the `FetchEvent` objects passing through your app and determine what resources they were requesting.
+
+* In the **Scope** inspector, expand the `event` object
+* Expand the `request` object
+* Note the `url` property
 
 ![f9b0c00237b4400d.png](img/f9b0c00237b4400d.png)
 
-您可以看到该 `FetchEvent` 正在 `http://127.0.0.1:8887/` 上请求资源，这是我们的 `index.html`。因为应用将处理许多 `fetch` 请求，您可以将断点留在原处并恢复执行。这使您能在每个 `FetchEvent` 在应用在传递时对其进行检查。有一项非常有用的技术，用于精确观察您的应用中的所有请求。
+You can see that this `FetchEvent` was requesting the resource at `http://127.0.0.1:8887/`, which is our `index.html`. Because the app will handle many `fetch` requests, you can leave the breakpoint in place and resume execution. This will let you inspect each `FetchEvent` as it passes through the app. A very useful technique for getting a fine grained look at all the requests in your app.
 
-* 按下 __Resume__ 按钮以允许继续脚本执行
+* Press the **Resume** button to allow script execution to continue
 
-![ce7b5e8df4e8bc07.png](img/ce7b5e8df4e8bc07.png)
+![66b08c42b47a9987.png](img/66b08c42b47a9987.png)
 
-稍后，执行将在同一断点处暂停。检查 `event.request.url` 属性，并请注意现在它显示 `http://127.0.0.1:8887/styles/main.css`。您可以继续用这种方式查看它请求 `smiley.svg`、`main.js`，最后是 `manifest.json`。
+After a moment, execution will pause on the same breakpoint. Check the `event.request.url` property and note it now displays `http://127.0.0.1:8887/styles/main.css`. You can continue in this way to watch it request `smiley.svg`, `main.js`, and finally the `manifest.json`.
 
+When you are finished exploring, remove any breakpoints and comment out the `debugger` call so that they don't interfere with the rest of the lab.
 
-## 测试推送通知
+## Testing Push notifications
 
+Push notifications are an important part of creating an engaging experience. Because notifications require coordination between an application server, a messaging service (like Google Cloud Messaging), and your Service Worker, it can be useful to test the Service Worker in isolation first to verify it is setup properly.
 
+### Adding Push support
 
+You may have noticed a button in the center of the application asking for the user to **Subscribe for Push Notifications**. This button is already wired up to request the Push notification permission from the user when clicked.
 
-推送通知是创造互动体验的重要组成部分。由于通知需要在应用服务器、消息服务（如 Google Cloud Messaging）和您的服务工作线程之间进行协调，因此首先要独立测试服务工作线程以验证其是否正确设置，这可能非常有用。
+![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)<aside class="warning">
 
-### 添加推送支持
+<p>The code used to set up this Push subscription is just for demo purposes and should not be used in production. For a thorough guide on setting up Push notifications  <a href="/web/fundamentals/engage-and-retain/push-notifications/">see this post</a> on the Google Developers site.</p>
 
-您可能已经注意到在应用中心有一个  __Subscribe for Push Notifications__ 按钮，它要求用户订阅推送通知。此按钮已被远程配置，以在用户点击时请求推送通知权限。
+</aside> 
 
-![3e7f08f9d8c1fc5c.png](img/3e7f08f9d8c1fc5c.png)
+The only remaining step is to add support for the `push` event to `service-worker.js`.
 
-最后的步骤是将 `push` 事件的支持添加至 `service-worker.js`。
+* Open `service-worker.js` and add the following lines after the `fetch` handler
 
-* 打开 `service-worker.js`，然后在 `fetch` 处理程序后添加以下几行
+    self.addEventListener('push', function(event) {
+      var title = 'Yay a message.';
+      var body = 'We have received a push message.';
+      var icon = '/images/smiley.svg';
+      var tag = 'simple-push-example-tag';
+      event.waitUntil(
+        self.registration.showNotification(title, {
+          body: body,
+          icon: icon,
+          tag: tag
+        })
+      );
+    });
+    
 
-```
-self.addEventListener('push', function(event) {  
-  var title = 'Yay a message.';  
-  var body = 'We have received a push message.';  
-  var icon = '/images/smiley.svg';  
-  var tag = 'simple-push-example-tag';
-  event.waitUntil(  
-    self.registration.showNotification(title, {  
-      body: body,  
-      icon: icon,  
-      tag: tag  
-    })  
-  );  
-});
-```
+With the handler in place it's easy to simulate a Push event.
 
-处理程序就绪后，就可以很轻松地模拟推送事件。
-
-* 打开 __Application__ 面板
-* 刷新页面，当您看到新的服务工作线程进入 `waiting` 阶段时，点击 __skipWaiting__ 按钮
-* 点击 __Subscribe to Push Notifications__ 按钮
-* 接受权限提示
+* Open the **Application** panel
+* Refresh the page, when you see the new Service Worker enter the `waiting` phase, click on the **skipWaiting** button
+* Click on the **Subscribe to Push Notifications** button in the app
+* Accept the permission prompt
 
 ![a8a8fa8d35b0667a.png](img/a8a8fa8d35b0667a.png)
 
-* 最后，点击 __Update__ 和 __Unregister__ 旁边的 __Push__ 按钮
+* Finally, click the **Push** button, next to **Update** and **Unregister** back in the **Application** tab
 
 ![eacd4c5859f5f3ff.png](img/eacd4c5859f5f3ff.png)
 
-您现在应该会看到在屏幕的右上角，出现一个确认服务工作线程是否按预期处理 `push` 事件的推送通知。
+You should now see a Push notification appear in the top right of the screen, confirming that the Service Worker is handling `push` events as expected.
 
 ![b552ed129bc6cdf6.png](img/b552ed129bc6cdf6.png)
 
-干得不错！
+Nice work!
 
-现在您的工具箱中有一些调试工具，您应该有能力解决项目中出现的任何问题。剩下的唯一的事情就是您要走出去，然后构建下一个惊人的 Progressive Web App！
+Now that you have some debugging tools in your toolbox, you should be well equipped to fix-up any issues that arise in your project. The only thing left is for you to get out there and build the next amazing Progressive Web App!
 
+## Found an issue, or have feedback? {: .hide-from-toc }
 
-
-
-
-## 发现问题，或者有反馈？{: .hide-from-toc }
-立即提交[问题](https://github.com/googlecodelabs/debugging-service-workers/issues)，帮助我们让代码实验室更加强大。
-谢谢！
-
-{# wf_devsite_translation #}
+Help us make our code labs better by submitting an [issue](https://github.com/googlecodelabs/debugging-service-workers/issues) today. And thanks!

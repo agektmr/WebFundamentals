@@ -1,134 +1,77 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Payment Request API per pagamenti veloci e facili sul web.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn the concept of the Web Payments and how it works at a high level.
 
-{# wf_published_on: 2016-07-25 #}
-{# wf_updated_on: 2018-03-29 #}
-{# wf_blink_components: Blink>Payments #}
+{# wf_published_on: 2018-09-10 #} {# wf_updated_on: 2018-09-25 #} {# wf_blink_components: Blink>Payments #} {# wf_featured_image: /web/fundamentals/payments/images/webpayments.png #}
 
-# Introduzione all'API Payment Request {: .page-title }
+# Web Payments Overview {: .page-title }
 
-{% include "web/_shared/contributors/agektmr.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/zkoch.html" %}
+{% include "web/_shared/contributors/agektmr.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/durgapandey.html" %}
 
-Fare acquisti online è comodo ma a volte può essere frustrante, in
-particolare sui dispositivi mobili. Sebbene il traffico sui dispositivi mobili
-continui ad aumentare, le conversioni dai dispositivi mobili rappresentano solo
-circa un terzo di tutti gli acquisti completati. In altre parole, gli utenti
-abbandonano gli acquisti sul cellulare il doppio delle volte degli acquisti
-effettuati dal desktop. Perché?
-
-![](images/1_why_users_abandon.png)
-
-*Perché gli utenti abbandonano i moduli di acquisto dei dispositivi mobili?*
-
-I moduli di acquisto online possono essere impegnativi per gli utenti, difficili da
-utilizzare, lenti da caricare e aggiornare e richiedono più passaggi da
-completare. Questo perché due componenti principali dei pagamenti online -
-sicurezza e convenienza - spesso funzionano inversamente: più di uno in
-genere significa meno dell'altro.
-
-La maggior parte dei problemi che portano all'abbandono possono essere
-direttamente ricondotti ai moduli di acquisto. Ogni app o sito ha il proprio
-processo di immissione e convalida dei dati e gli utenti spesso si trovano a
-dover inserire le stesse informazioni nel punto di acquisto di ogni app.
-Inoltre, gli sviluppatori di applicazioni faticano a creare flussi di acquisto
-che supportano più metodi di pagamento unici; anche piccole differenze nei
-requisiti del metodo di pagamento possono complicare il completamento del modulo
-e il processo di invio.
-
-Qualsiasi sistema che migliori o risolva uno o più di questi problemi è un
-cambiamento positivo. Abbiamo già iniziato a risolvere il problema con
-[Autofill](/web/updates/2015/06/checkout-faster-with-autofill), ma ora vorremmo
-parlare di una soluzione più completa.
-
-## Introduzione all'API Payment Request {: #introducing }
-
-L'API Payment Request è una possibile soluzione [standard
-W3C](https://www.w3.org/TR/payment-request/) che ha lo scopo di *eliminare i
-moduli di checkout* . Migliora notevolmente il flusso di lavoro degli utenti
-durante il processo di acquisto, offrendo un'esperienza utente più coerente e
-consentendo ai commercianti di sfruttare facilmente diversi metodi di pagamento.
-
-L'API Payment Request è progettata per essere indipendente dal fornitore,
-ossia non richiede l'uso di un particolare sistema di pagamento. Non
-si tratta di un nuovo metodo di pagamento né si integra direttamente con i
-processori di pagamento; piuttosto, è un canale che collega le informazioni di
-pagamento e spedizione dell'utente ai commercianti, con i seguenti obiettivi:
-
-- Lascia che il browser funga da intermediario tra commercianti, utenti e metodi
-di pagamento
-- Standardizza il flusso di comunicazione di pagamento il più possibile
-- Supporta perfettamente diversi metodi di pagamento sicuri
-- Funziona su qualsiasi browser, dispositivo o piattaforma, mobile e non
-
-L'API Payment Request è uno standard aperto con compatibilità browser che sostituisce i
-flussi di pagamento tradizionali consentendo ai commercianti di richiedere e
-accettare qualsiasi pagamento in una singola chiamata API. L'API consente alla
-pagina Web di scambiare informazioni con l'agente utente mentre l'utente fornisce
-l'input, prima di approvare o rifiutare una richiesta di pagamento.
-
-Meglio ancora, con il browser che funge da intermediario, tutte le informazioni
-necessarie per un checkout veloce possono essere memorizzate nel browser, in
-modo che gli utenti possano semplicemente confermare e pagare, tutto con un solo
-clic.
-
-### Processo della transazione di pagamento {: #transaction-process }
-
-Utilizzando l'API Payment Request, il processo della transazione è reso il più
-semplice possibile sia per gli utenti che per i commercianti.
-
-![](images/4_the_payment_transaction_process.png)
-
-*Il processo della transazione di pagamento*
-
-Il processo inizia quando il sito commerciale crea una nuova `PaymentRequest` e
-passa al browser tutte le informazioni necessarie per effettuare l'acquisto:
-l'importo da addebitare, la valuta prevista per il pagamento e quali metodi
-di pagamento sono accettati dal sito. Il browser determina la compatibilità tra
-i metodi di pagamento accettati per il sito e i metodi che l'utente ha
-installato sul dispositivo di destinazione.
-
-Il browser presenta quindi l'UI dei pagamenti all'utente, che
-seleziona un metodo di pagamento e autorizza la transazione. Un metodo di
-pagamento può essere semplice come una carta di credito già memorizzata dal
-browser o complesso come un'applicazione di terzi scritta specificamente per erogare
-pagamenti per il sito.
-
-Note: Pagare con Google è uno dei metodi di pagamento che puoi utilizzare per
-ottenere le carte dall'account Google di un utente e i token di pagamento sul
-dispositivo. Per ulteriori informazioni consulta la [documentazione sull'API
-Google Pay](/payments/web/paymentrequest/tutorial).
-
-<div class="attempt-right">
-  <figure>
-    <img src="images/5_9_payment_request_ui.png">
-    <figcaption>Interfaccia Payment Request </figcaption>
-  </figure>
+<div class="video-wrapper-full-width">
+  <iframe class="devsite-embedded-youtube-video" data-video-id="colCcgKoLUM"
+          data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
+  </iframe>
 </div>
 
-Dopo che l'utente ha autorizzato la transazione, tutti i dettagli di pagamento
-necessari vengono inviati direttamente al sito. Ad esempio, per un pagamento con
-carta di credito, il sito riceverà un numero di carta, un nome del titolare della
-carta, una data di scadenza e un CVC.
+## Introduction
 
-La Payment Request può anche essere estesa per restituire ulteriori
-informazioni, come gli indirizzi e le opzioni di spedizione, l'email del
-pagante e il telefono del pagante. Ciò consente di ottenere tutte le
-informazioni necessarie per finalizzare un pagamento senza mai mostrare
-all'utente un modulo di checkout.
+Web Payments is an emerging web standard being developed by the W3C to simplify online payments and enable a broader set of players to participate easily in the payments ecosystem on the web. The standards are flexible; they work with various types of payment systems and are intended to work on any browser on any device, payment method, or payment service provider. This flexibility enables development simplicity, deployment consistency, and future compatibility with emerging payment technologies.
 
-La bellezza del nuovo processo è triplice: dal punto di vista dell'utente, tutta
-la noiosa interazione precedente - richiesta, autorizzazione, pagamento e
-risultato - ora avviene in un'unica fase; dal punto di vista del sito Web,
-richiede solo una singola chiamata API JavaScript; dal punto di vista del metodo
-di pagamento, non vi è alcun cambiamento di processo.
+Benefits of Web Payments:
 
-Per iniziare a usare l'API, vai a vedere il nostro
-[approfondimento](/web/fundamentals/payments/deep-dive-into-payment-request).
+**For consumers**, they simplify checkout flow, by making it a few taps instead of typing small characters many times on a virtual keyboard.
 
-Translated by
-{% include "web/_shared/contributors/lucaberton.html" %}
+**For merchants**, they make it easier to implement with a variety of payment options already filtered for the customer.
 
-<div style="clear:both;"></div>
+**For payment handlers**, they allow bringing any type of payment methods to the web with relatively easy integration.
+
+**For payment service providers**, they bring new payment methods and enhance the ability of businesses to serve more customers with a better developer experience and more secure solutions.
+
+## 3 principles
+
+<section style="display:flex;background-color:#f7f7f7;padding-bottom:32px;">
+  <div style="min-width:50%;padding-top:32px;">
+    <img src="images/overview/standard-open.png" width="100%" alt="Standard and Open" title="">
+  </div>
+  <div style="min-width:50%">
+    <h3>Standard and Open</h3>
+    Web Payments are an open payment standard for the web platform for the first time
+    in history. They are available for any players to implement.</div>
+</section>
+
+<section style="display:flex;padding-bottom:32px;">
+  <div style="min-width:50%">
+    <h3>Easy and Consistent</h3>
+    Web Payments make checkout easy for the user, by reusing stored 
+payments and address information and removing the need for the user to fill in checkout forms. 
+Since the UI is implemented by the browser natively, users see a familiar and consistent checkout 
+experience on any website that makes use of the standard.</div>
+  <div style="min-width:50%;padding-top:32px;">
+    <img src="images/overview/easy-consistent.png" width="100%" alt="Standard and Open" title="">
+  </div>
+</section>
+
+<section style="display:flex;background-color:#f7f7f7;padding-bottom:32px;">
+  <div style="min-width:50%;padding-top:32px;">
+    <img src="images/overview/secure-flexible.png" width="100%" alt="Standard and Open" title="">
+  </div>
+  <div style="min-width:50%">
+    <h3>Secure and Flexible</h3>
+    Web Payments provide industry-leading payment technology to the 
+web, and can easily integrate a secure payment solution.</div>
+</section>
+
+## Next Up
+
+This document aims at developers who are working for payment industries, especially at merchants, payment service providers and payment handlers.
+
+**All developers** should start with reading through ["Basics" section](/web/fundamentals/payments/basics/how-payment-ecosystem-works).
+
+**Merchants without PCI-DSS compliance** should then consult with their payment service provider to see if they have support for Payment Request API. If they don't, consider forwarding this document and ask them to support W3C Payment APIs. [UX considerations](/web/fundamentals/payments/merchant-guide/payment-request-ux-considerations) of "Merchant Guide" should be also helpful.
+
+**Merchants or payment service providers with PCI-DSS compliance** should proceed to ["Merchants Guide"](/web/fundamentals/payments/merchant-guide/deep-dive-into-payment-request) and learn the Payment Request API in details.
+
+**Payment handlers** should proceed to "Payment Apps Developer Guide" section. Depending on your technology set, consider implementing either [Android payment app](/web/fundamentals/payments/payment-apps-developer-guide/android-payment-apps) or [web-based payment app](/web/fundamentals/payments/payment-apps-developer-guide/web-payment-apps) by reading respective section.
+
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

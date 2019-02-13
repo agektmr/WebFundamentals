@@ -1,74 +1,53 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:学习评估关键渲染路径。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Learn to measure the critical rendering path.
 
-{# wf_updated_on:2014-09-17 #}
-{# wf_published_on:2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>PerformanceAPIs>NavigationTiming #}
 
-# 评估关键渲染路径 {: .page-title }
+# Measuring the Critical Rendering Path {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-作为每个可靠性能策略的基础，准确的评估和检测必不可少。
-无法评估就谈不上优化。本文说明了评估 CRP 性能的不同方法。
+The foundation of every solid performance strategy is good measurement and instrumentation. You can't optimize what you can't measure. This doc explains different approaches for measuring CRP performance.
 
+* The Lighthouse approach runs a series of automated tests against a page, and then generates a report on the page's CRP performance. This approach provides a quick and easy high-level overview of CRP performance of a particular page loaded in your browser, allowing you to rapidly test, iterate, and improve its performance.
+* The Navigation Timing API approach captures [Real User Monitoring (RUM)](https://en.wikipedia.org/wiki/Real_user_monitoring) metrics. As the name implies, these metrics are captured from real user interactions with your site and provide an accurate view into real-world CRP performance, as experienced by your users across a variety of devices and network conditions.
 
-* Lighthouse 方法会对页面运行一系列自动化测试，然后生成关于页面的 CRP 性能的报告。
-这一方法对您的浏览器中加载的特定页面的 CRP 性能提供了快速且简单的高级概览，让您可以快速地测试、循环访问和提高其性能。
-* Navigation Timing API 方法会捕获[真实用户监控 (RUM)](https://en.wikipedia.org/wiki/Real_user_monitoring) 指标。如名称所示，这些指标捕获自真实用户与网站的互动，并为真实的 CRP 性能（您的用户在各种设备和网络状况下的体验）提供了准确的信息。
+In general, a good approach is to use Lighthouse to identify obvious CRP optimization opportunities, and then to instrument your code with the Navigation Timing API to monitor how your app performs out in the wild.
 
+## Auditing a page with Lighthouse {: #lighthouse }
 
+Lighthouse is a web app auditing tool that runs a series of tests against a given page, and then displays the page's results in a consolidated report. You can run Lighthouse as a Chrome Extension or NPM module, which is useful for integrating Lighthouse with continuous integration systems.
 
+See [Auditing Web Apps With Lighthouse](/web/tools/lighthouse/) to get started.
 
-通常情况下，最好利用 Lighthouse 发现明显的 CRP 优化机会，然后使用 Navigation Timing API 设置您的代码，以便监控应用在实际使用过程中的性能。
+When you run Lighthouse as a Chrome Extension, your page's CRP results look like the screenshot below.
 
+![Lighthouse's CRP audits](images/lighthouse-crp.png)
 
+See [Critical Request Chains](/web/tools/lighthouse/audits/critical-request-chains) for more information on this audit's results.
 
-## 使用 Lighthouse 审核页面 {: #lighthouse }
+## Instrumenting your code with the Navigation Timing API {: #navigation-timing }
 
-Lighthouse 是一个网络应用审核工具，可以对特定页面运行一系列测试，然后在汇总报告中显示页面的结果。
-您可以将 Lighthouse 作为 Chrome 扩展程序或 NPM 模块运行，这对将 Lighthouse 与持续集成系统集成非常有用。
+The combination of the Navigation Timing API and other browser events emitted as the page loads allows you to capture and record the real-world CRP performance of any page.
 
+<img src="images/dom-navtiming.png"  alt="Navigation Timing" />
 
+Each of the labels in the above diagram corresponds to a high resolution timestamp that the browser tracks for each and every page it loads. In fact, in this specific case we're only showing a fraction of all the different timestamps &mdash; for now we're skipping all network related timestamps, but we'll come back to them in a future lesson.
 
-请参阅[使用 Lighthouse 审核网络应用](/web/tools/lighthouse/)，开始使用 Lighthouse。
+So, what do these timestamps mean?
 
-您将 Lighthouse 作为 Chrome 扩展程序运行时，页面的 CRP 结果将如以下屏幕截图所示。
+* `domLoading`: this is the starting timestamp of the entire process, the browser is about to start parsing the first received bytes of the HTML document.
+* `domInteractive`: marks the point when the browser has finished parsing all of the HTML and DOM construction is complete.
+* `domContentLoaded`: marks the point when both the DOM is ready and there are no stylesheets that are blocking JavaScript execution - meaning we can now (potentially) construct the render tree. 
+    * Many JavaScript frameworks wait for this event before they start executing their own logic. For this reason the browser captures the `EventStart` and `EventEnd` timestamps to allow us to track how long this execution took.
+* `domComplete`: as the name implies, all of the processing is complete and all of the resources on the page (images, etc.) have finished downloading - in other words, the loading spinner has stopped spinning.
+* `loadEvent`: as a final step in every page load the browser fires an `onload` event which can trigger additional application logic.
 
+The HTML specification dictates specific conditions for each and every event: when it should be fired, which conditions should be met, and so on. For our purposes, we'll focus on a few key milestones related to the critical rendering path:
 
-![Lighthouse 的 CRP 审核](images/lighthouse-crp.png)
-
-请参阅[关键请求链][crc]，了解此审核结果的详细信息。
-
-
-[crc]: /web/tools/lighthouse/audits/critical-request-chains
-
-## 使用 Navigation Timing API 设置您的代码 {: #navigation-timing }
-
-结合使用 Navigation Timing API 和页面加载时发出的其他浏览器事件，您可以捕获并记录任何页面的真实 CRP 性能。
-
-
-
-<img src="images/dom-navtiming.png"  alt="Navigation Timing">
-
-上图中的每一个标签都对应着浏览器为其加载的每个网页追踪的细粒度时间戳。实际上，在这个具体例子中，我们展示的只是各种不同时间戳的一部分。我们暂且跳过所有与网络有关的时间戳，但在后面的课程中还会做详细介绍。
-
-那么，这些时间戳有什么含义呢？
-
-* `domLoading`：这是整个过程的起始时间戳，浏览器即将开始解析第一批收到的 HTML 文档字节。
-* `domInteractive`：表示浏览器完成对所有 HTML 的解析并且 DOM 构建完成的时间点。
-* `domContentLoaded`：表示 DOM 准备就绪并且没有样式表阻止 JavaScript 执行的时间点，这意味着现在我们可以构建渲染树了。
-    * 许多 JavaScript 框架都会等待此事件发生后，才开始执行它们自己的逻辑。因此，浏览器会捕获 `EventStart` 和 `EventEnd` 时间戳，让我们能够追踪执行所花费的时间。
-* `domComplete`：顾名思义，所有处理完成，并且网页上的所有资源（图像等）都已下载完毕，也就是说，加载转环已停止旋转。
-* `loadEvent`：作为每个网页加载的最后一步，浏览器会触发 `onload` 事件，以便触发额外的应用逻辑。
-
-HTML 规范中规定了每个事件的具体条件：应在何时触发、应满足什么条件等等。对我们而言，我们将重点放在与关键渲染路径有关的几个关键里程碑上：
-
-* `domInteractive` 表示 DOM 准备就绪的时间点。
-* `domContentLoaded` 一般表示 [DOM 和 CSSOM 均准备就绪](http://calendar.perfplanet.com/2012/deciphering-the-critical-rendering-path/)的时间点。
-    * 如果没有阻塞解析器的 JavaScript，则 `DOMContentLoaded` 将在 `domInteractive` 后立即触发。
-* `domComplete` 表示网页及其所有子资源都准备就绪的时间点。
-
+* `domInteractive` marks when DOM is ready.
+* `domContentLoaded` typically marks when [both the DOM and CSSOM are ready](http://calendar.perfplanet.com/2012/deciphering-the-critical-rendering-path/). 
+    * If there is no parser blocking JavaScript then `DOMContentLoaded` will fire immediately after `domInteractive`.
+* `domComplete` marks when the page and all of its subresources are ready.
 
 <div style="clear:both;"></div>
 
@@ -76,23 +55,18 @@ HTML 规范中规定了每个事件的具体条件：应在何时触发、应满
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/measure_crp.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[试一下](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/measure_crp.html){: target="_blank" .external }
 
-上面的例子乍一看可能有点晕，但实际上的确相当简单。Navigation Timing API 捕获所有相关时间戳，而我们的代码只是等待 `onload` 事件触发 - 回想一下，`onload` 事件在`domInteractive`、`domContentLoaded` 和 `domComplete` 之后触发 - 然后计算各个时间戳之间的间隔。
+The above example may seem a little daunting on first sight, but in reality it is actually pretty simple. The Navigation Timing API captures all the relevant timestamps and our code simply waits for the `onload` event to fire &mdash; recall that `onload` event fires after `domInteractive`, `domContentLoaded` and `domComplete` &mdash; and computes the difference between the various timestamps.
 
-<img src="images/device-navtiming-small.png"  alt="NavTiming 演示">
+<img src="images/device-navtiming-small.png"  alt="NavTiming demo" />
 
-完成了所有该做的工作，我们现在知道了需要追踪哪些具体的里程碑，以及用于输出这些评估的简单功能。请注意，除了将这些评估结果显示在网页上，您还可以修改代码，将这些评估结果发送到分析服务器上（[Google Analytics（分析）会自动完成这项工作](https://support.google.com/analytics/answer/1205784)），这是一种监控网页性能的好方法，可以借此找出哪些网页还需要作出进一步优化。
+All said and done, we now have some specific milestones to track and a simple function to output these measurements. Note that instead of printing these metrics on the page you can also modify the code to send these metrics to an analytics server ([Google Analytics does this automatically](https://support.google.com/analytics/answer/1205784)), which is a great way to keep tabs on performance of your pages and identify candidate pages that can benefit from some optimization work.
 
-## DevTools 怎么样呢？{: #devtools }
+## What about DevTools? {: #devtools }
 
-尽管本文档使用 Chrome DevTools 的 Network 面板说明 CRP 概念，DevTools 当前并不非常适合 CRP 评估，因为它没有隔离关键资源的内置机制。运行 [Lighthouse](#lighthouse) 审核来帮助识别此类资源。
+Although these docs sometimes use the Chrome DevTools Network panel to illustrate CRP concepts, DevTools is currently not well-suited for CRP measurements because it does not have a built-in mechanism for isolating critical resources. Run a [Lighthouse](#lighthouse) audit to help identify such resources.
 
+## Feedback {: #feedback }
 
-<a href="analyzing-crp" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Analyzing CRP">
-  <button>下一课：分析关键渲染路径性能</button>
-</a>
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

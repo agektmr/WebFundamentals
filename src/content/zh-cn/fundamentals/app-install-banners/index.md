@@ -1,226 +1,194 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:应用安装横幅有两种：网络应用安装横幅和本机应用安装横幅。这两种应用安装横幅让您的用户可以快速无缝地将您的网络或本机应用添加到他们的主屏幕，无需退出浏览器。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Add to Home Screen gives you the ability to let users quickly and seamlessly add your web app to their home screens without leaving the browser.
 
-{# wf_updated_on:2017-09-27 #}
-{# wf_published_on:2014-12-16 #}
+{# wf_updated_on: 2018-10-23 #} {# wf_published_on: 2014-12-16 #} {# wf_blink_components: Platform>Apps>AppLauncher>Install #}
 
-# 网络应用安装横幅 {: .page-title }
+# Add to Home Screen {: .page-title }
 
-{% include "web/_shared/contributors/mattgaunt.html" %}
-{% include "web/_shared/contributors/paulkinlan.html" %}
+{% include "web/_shared/contributors/petelepage.html" %}
 
-<div class="attempt-right">
-  <figure>
-    <img src="images/add-to-home-screen.gif" alt="网络应用安装横幅">
-  </figure>
-</div>
+**Add to Home Screen**, sometimes referred to as the web app install prompt, makes it easy for users to install your Progressive Web App on their mobile or [desktop device](/web/progressive-web-apps/desktop). After the user accepts the prompt, your PWA will be added to their launcher, and it will run like any other installed app.
 
-应用安装横幅有两种：**网络**应用安装横幅和[**本机**](native-app-install)应用安装横幅。
-这两种应用安装横幅让您的用户可以快速无缝地将您的网络或本机应用添加到他们的主屏幕，无需退出浏览器。
+Chrome handles most of the heavy lifting for you:
 
-添加应用安装横幅很轻松，Chrome 会为您处理大部分的繁重工作。
-您需要在您的网站中添加一个包含您的应用详细信息的网络应用清单文件。
+* On mobile, Chrome will generate a [WebAPK](/web/fundamentals/integration/webapks), creating an even more integrated experience for your users.
+* On desktop, your app will installed, and run in an [app window](/web/progressive-web-apps/desktop#app-window).
 
+## What are the criteria? {: #criteria }
 
-然后，Chrome 使用一组条件和访问频率启发式算法来确定何时显示横幅。
-请继续阅读以了解更多详情。
+{% include "web/fundamentals/app-install-banners/_a2hs-criteria.html" %}
 
-Note: Add to Homescreen（有时缩写为 A2HS）是网络应用安装横幅的另一个名称。两个术语相等同。
+Note: If the web app manifest includes `related_applications` and has `"prefer_related_applications": true`, the <a href="/web/fundamentals/app-install-banners/native">native app install prompt</a> will be shown instead.
 
-### 条件有哪些？
+## Show the Add to Home Screen dialog {: #trigger }
 
-Chrome 将在您的应用符合以下条件时自动显示横幅：
+<figure class="attempt-right">
+  <img src="images/a2hs-dialog-g.png" alt="Add to Home Screen dialog on Android">
+  <figcaption>Add to Home Screen dialog on Android</figcaption>
+</figure>
 
+In order to show the Add to Home Screen dialog, you need to:
 
-* 拥有一个[网络应用清单](../web-app-manifest/)文件，该文件具有：
-    - 一个 `short_name`（用于主屏幕）
-    - 一个 `name`（用于横幅中）
-    - 一个 192x192 png 图标（图标声明必须包含一个 mime 类型的 `image/png`）
-    - 一个加载的 `start_url`
-* 拥有一个在您的网站上注册的[服务工作线程](/web/fundamentals/getting-started/primers/service-workers)。
-* 通过 [HTTPS](/web/fundamentals/security/encrypt-in-transit/why-https) 提供（这是使用服务工作线程的一项要求）。
-* 被访问至少两次，这两次访问至少间隔五分钟。
+1. Listen for the `beforeinstallprompt` event
+2. Notify the user your app can be installed with a button or other element that will generate a user gesture event.
+3. Show the prompt by calling `prompt()` on the saved `beforeinstallprompt` event.
 
-Note: 网络应用安装横幅是一种新兴技术。显示应用安装横幅的条件将来可能会有所变化。请参阅[究竟是什么造就了 Progressive Web App？](https://infrequently.org/2016/09/what-exactly-makes-something-a-progressive-web-app/)，了解最新网络应用安装横幅条件中的规范引用（将随时间推移不断更新）。
+<div class="clearfix"></div>
 
-### 测试应用安装横幅 {: #test }
+Note: Chrome 67 and earlier showed an "Add to home screen" banner. It was removed in Chrome 68.
 
-设置网络应用清单后，您会想要验证它是否已正确定义。
-有两种方法供您选择。一种是手动，另一种是自动。
+### Listen for `beforeinstallprompt`
 
+If the add to home screen [criteria](#criteria) are met, Chrome will fire a `beforeinstallprompt` event, that you can use to indicate your app can be 'installed', and then prompt the user to install it.
 
-要手动触发应用安装横幅，请执行以下操作：
+When the `beforeinstallprompt` event has fired, save a reference to the event, and update your user interface to indicate that the user can add your app to their home screen.
 
-1. 打开 Chrome DevTools。
-2. 转到 **Application** 面板。
-3. 转到 **Manifest** 标签。
-4. 点击下面屏幕截图中红色突出显示部分的 **Add to homescreen**。
-
-![DevTools 上的“Add to homescreen”按钮](images/devtools-a2hs.png)
-
-请参阅[模拟“Add to Homescreen”事件](/web/tools/chrome-devtools/progressive-web-apps#add-to-homescreen)，获取更多帮助。
-
-
-
-要实现应用安装横幅的自动化测试，请使用 Lighthouse。Lighthouse 是一个网络应用审核工具。
-您可以将其作为 Chrome 扩展程序或 NPM 模块运行。
-要测试您的应用，您需要为 Lighthouse 提供要审核的特定页面。
-Lighthouse 会对此页面运行一套审核，然后以报告形式显示结果。
-
-
-下面屏幕截图中的两套 Lighthouse 审核显示了您的页面需要通过才能显示应用安装横幅的所有测试。
-
-
-![Lighthouse 的应用安装审核](images/lighthouse-a2hs.png)
-
-请参阅[使用 Lighthouse 审查网络应用](/web/tools/lighthouse/)，开始使用 Lighthouse。
-
-
-## 应用安装横幅事件
-
-Chrome 提供一个简单的机制，用于确定用户如何响应应用安装横幅，甚至可以取消或延迟应用安装横幅以等待一个更方便的时间。
-
-
-### 用户是否安装了此应用？
-
-`beforeinstallprompt` 事件返回一个名为 `userChoice` 的 promise，并当用户对提示进行操作时进行解析。
-promise 会对 `outcome` 属性返回一个值为 `dismissed` 或 `accepted` 的对象，如果用户将网页添加到主屏幕，则返回后者。
-
-
-
-    window.addEventListener('beforeinstallprompt', function(e) {
-      // beforeinstallprompt Event fired
-      
-      // e.userChoice will return a Promise. 
-      // For more details read: https://developers.google.com/web/fundamentals/getting-started/primers/promises
-      e.userChoice.then(function(choiceResult) {
-        
-        console.log(choiceResult.outcome);
-        
-        if(choiceResult.outcome == 'dismissed') {
-          console.log('User cancelled home screen install');
-        }
-        else {
-          console.log('User added to home screen');
-        }
-      });
-    });
+    let deferredPrompt;
     
-
-利用此工具，可以很好地了解您的用户如何与应用安装提示进行互动。
-
-
-
-### 延迟或取消提示
-
-Chrome 可管理触发提示的时间，但对于部分网站而言，这可能不是理想的做法。
-您可以在应用使用中延迟触发提示的时间，或甚至取消它。
- 
-
-当 Chrome 决定提示用户安装应用时，您可以阻止默认操作，并存储此事件以便稍后使用。
-然后，当用户与您的网站进行积极互动时，您可以通过对存储的事件调用 `prompt()` 重新触发提示。
-
- 
-
-这将使 Chrome 显示横幅和所有 Promise 属性，例如，您可绑定到 `userChoice`，以便您可以了解用户进行的操作。
-    var deferredPrompt;
-    window.addEventListener('beforeinstallprompt', function(e) {
-    
-      console.log('beforeinstallprompt Event fired');
-    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();
       // Stash the event so it can be triggered later.
       deferredPrompt = e;
-      
-      return false;
     });
-      
-    btnSave.addEventListener('click', function() {
-      if(deferredPrompt !== undefined) {
     
-        // The user has had a postive interaction with our app and Chrome
-        // has tried to prompt previously, so let's show the prompt.
-        deferredPrompt.prompt();
-        // Follow what the user has done with the prompt.
-        deferredPrompt.userChoice.then(function(choiceResult) {
-      
-          console.log(choiceResult.outcome);
-          if(choiceResult.outcome == 'dismissed') {
-      
-            console.log('User cancelled home screen install');
-          
+
+### Notify the user your app can be installed
+
+The best way to notify the user your app can be installed is by adding a button or other element to your user interface. **Don't show a full page interstitial or other elements that may be annoying or distracting.**
+
+<pre class="prettyprint">window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
+  <strong>// Update UI notify the user they can add to home screen
+  btnAdd.style.display = 'block';</strong>
+});
+</pre>
+
+Success: you may want to wait before showing the prompt to the user, so you don't distract them from what they're doing. For example, if the user is in a check-out flow, or creating their account, let them complete that before interrupting them with the prompt.
+
+### Show the prompt
+
+To show the add to home screen prompt, call `prompt()` on the saved event from within a user gesture. It will show a modal dialog, asking the user to to add your app to their home screen.
+
+Then, listen for the promise returned by the `userChoice` property. The promise returns an object with an `outcome` property after the prompt has shown and the user has responded to it.
+
+    btnAdd.addEventListener('click', (e) => {
+      // hide our user interface that shows our A2HS button
+      btnAdd.style.display = 'none';
+      // Show the prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice
+        .then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the A2HS prompt');
+          } else {
+            console.log('User dismissed the A2HS prompt');
           }
-          else {
-            console.log('User added to home screen');
-          }
-          // We no longer need the prompt.  Clear it up.
           deferredPrompt = null;
         });
-      }
     });
     
 
-或者，您可以通过阻止默认值取消提示框。
+You can only call `prompt()` on the deferred event once. If the user dismisses it, you'll need to wait until the `beforeinstallprompt` event is fired on the next page navigation.
 
-    window.addEventListener('beforeinstallprompt', function(e) {
-      console.log('beforeinstallprompt Event fired');
-      e.preventDefault();
-      return false;
+## The mini-info bar
+
+<figure class="attempt-right">
+  <img
+      class="screenshot"
+      src="/web/updates/images/2018/06/a2hs-infobar-cropped.png">
+  <figcaption>
+    The mini-infobar
+  </figcaption>
+</figure>
+
+The mini-infobar is an interim experience for Chrome on Android as we work towards creating a consistent experience across all platforms that includes an install button into the omnibox.
+
+The mini-infobar is a Chrome UI component and is not controllable by the site, but can be easily dismissed by the user. Once dismissed by the user, it will not appear again until a sufficient amount of time has passed (currently 3 months). The mini-infobar will appear when the site meets the [add to home screen criteria](/web/fundamentals/app-install-banners/#criteria), regardless of whether you `preventDefault()` on the `beforeinstallprompt` event or not.
+
+Note: The mini-info bar is not displayed on desktop devices.
+
+## Feedback {: .hide-from-toc }
+
+{% include "web/_shared/helpful.html" %}
+
+<div class="clearfix"></div>
+
+## Determine if the app was successfully installed {: #appinstalled }
+
+To determine if the app was successfully added to the user's home screen *after* they accepted the prompt, you can listen for the `appinstalled` event.
+
+    window.addEventListener('appinstalled', (evt) => {
+      app.logEvent('a2hs', 'installed');
     });
     
-## Native app install banners
 
-<div class="attempt-right">
-  <figure>
-     <img src="images/native-app-install-banner.gif" alt="本机应用安装横幅" style="max-height: 500px">
-  </figure>
-</div>
+## Detecting if your app is launched from the home screen {: #detect-mode }
 
-本机应用安装横幅类似于[网络应用安装横幅](.)，它们可以让用户无需离开网站即可安装您的本机应用，而不用将应用添加到主屏幕。
+### `display-mode` media query
 
+The `display-mode` media query makes it possible to apply styles depending on how the app was launched, or determine how it was launched with JavaScript.
 
+To apply a different background color for the app above when being launched from the home screen with `"display": "standalone"`, use conditional CSS:
 
-### 显示横幅的条件
-
-除了需要服务工作线程外，条件类似于网络应用安装横幅。
-您的网站必须满足以下条件：
-
-* 拥有一个[网络应用清单](../web-app-manifest/)文件，该文件具有：
-  - 一个 `short_name`
-  - 一个 `name`（用于横幅提示中）
-  - 一个 192x192 png 图标，您的图标声明应包括 mime 类型的 `image/png`
-  - 一个包含应用相关信息的 `related_applications` 对象
-* 通过 [HTTPS](/web/fundamentals/security/encrypt-in-transit/enable-https) 提供
-* 在两周课程期间，由用户在两天访问两次。
-
-
-### 清单要求
-
-要集成到任何清单中，请添加一个包含 `play` 平台（针对 Google Play）和应用 ID 的 `related_applications` 数组。
-
-
-
-    "related_applications": [
-      {
-      "platform": "play",
-      "id": "com.google.samples.apps.iosched"
+    @media all and (display-mode: standalone) {
+      body {
+        background-color: yellow;
       }
-    ]
+    }
     
 
-如果只是想要用户可以安装您的 Android 应用，而不显示网络应用安装横幅，那么请添加 `"prefer_related_applications": true`。
+It's also possible to detect if the `display-mode` is standalone from JavaScript:
 
-例如：
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('display-mode is standalone');
+    }
+    
 
+### Safari
 
-    "prefer_related_applications": true,
-    "related_applications": [
-      {
-      "platform": "play",
-      "id": "com.google.samples.apps.iosched"
-      }
-    ]
+To determine if the app was launched in `standalone` mode in Safari, you can use JavaScript to check:
 
+    if (window.navigator.standalone === true) {
+      console.log('display-mode is standalone');
+    }
+    
 
-{# wf_devsite_translation #}
+## Updating your app's icon and name
+
+### Android
+
+On Android, when the WebAPK is launched, Chrome will check the currently installed manifest against the live manifest. If an update is required, it will be [queued and updated](/web/fundamentals/integration/webapks#update-webapk) once the device has is plugged in and connected to WiFi.
+
+### Desktop
+
+On Desktop, the manifest is not automatically updated, but this is planned for a future update.
+
+## Test your add to home screen experience {: #test }
+
+You can manually trigger the `beforeinstallprompt` event with Chrome DevTools. This makes it possible to see the user experience, understand how the flow works or debug the flow. If the [PWA criteria](#pwa-criteria) aren't met, Chrome will throw an exception in the console, and the event will not be fired.
+
+Caution: Chrome has a slightly different install flow for desktop and mobile. Although the instructions are similar, testing on mobile **requires** remote debugging; without it, Chrome will use the desktop install flow.
+
+### Chrome for Android
+
+1. Open a [remote debugging](/web/tools/chrome-devtools/remote-debugging/) session to your phone or tablet.
+2. Go to the **Application** panel.
+3. Go to the **Manifest** tab.
+4. Click **Add to home screen**
+
+### Chrome OS, Linux, or Windows
+
+1. Open Chrome DevTools
+2. Go to the **Application** panel.
+3. Go to the **Manifest** tab.
+4. Click **Add to home screen**
+
+Dogfood: To test the install flow for Desktop Progressive Web Apps on Mac, you'll need to enable the `#enable-desktop-pwas` flag.
+
+### Will `beforeinstallprompt` be fired?
+
+The easiest way to test if the `beforeinstallprompt` event will be fired, is to use [Lighthouse](/web/tools/lighthouse/) to audit your app, and check the results of the [User Can Be Prompted To Install The Web App](/web/tools/lighthouse/audits/install-prompt) test.

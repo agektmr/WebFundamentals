@@ -1,73 +1,65 @@
-project_path: /web/_project.yaml
-book_path: /web/resources/_book.yaml
-description: "歡迎您將Web Fundamentals翻譯去其他的語言。"
+project_path: /web/_project.yaml book_path: /web/resources/_book.yaml description: "If you want to translate Web Fundamentals to other languages, anyone can contribute."
 
-{# wf_updated_on: 2017-10-10 #}
-{# wf_published_on: 2016-09-13 #}
+{# wf_updated_on: 2017-10-10 #} {# wf_published_on: 2016-09-13 #}
 
-# 翻譯 {: .page-title }
+# Translations {: .page-title }
 
 <!--div class="attempt-right">
   <figure>
     <img src="/web/images/gitlocalize_image0.png">
   </figure>
-</div-->
+</div--> We are experimenting with a translation tool called 
 
-我們現在在嘗試一個翻譯工具叫做[GitLocalize](https://gitlocalize.com/)。您可以跟著以下的步驟來翻譯Web Fundementals。
+[GitLocalize](https://gitlocalize.com/). Follow the steps to get started with your contribution:
 
-1. 去[GitLocalize中的Web Fundamentals軟件庫(repository)](https://gitlocalize.com/repo/107).
-2. 使用您的GitHub帳戶開啟新的GitLocalize帳戶。
-3. 尋找您想要翻譯的文章。
-4. 開始翻譯。
-5. 當翻譯完畢，請發送您的翻譯以進行審查。
-6. 檢查完畢的文章將會被語言管理員作為Pull Request發送到GitHub。
+1. Go to [GitLocalize's Web Fundamentals repository](https://gitlocalize.com/repo/107).
+2. Sign up using your GitHub account.
+3. Find the document you are going to translate.
+4. Start translating.
+5. When you are done, send the translation for reviews.
+6. Reviewed translation will be sent as a Pull Request by language moderator in the community.
 
-您可以從GitLocalize的[幫助頁面](https://docs.gitlocalize.com/)學到GitLocalize是如何操作的。
+To learn more about how GitLocalize works, visit [their help page](https://docs.gitlocalize.com/).
 
-如果您遇到任何問題或者有功能請求，您可以在[GitLocalize的issue tracker](https://github.com/gitlocalize/feedback/issues)提供建議。
+If you find any issues or feature requests, please file them in [GitLocalize's issue tracker](https://github.com/gitlocalize/feedback/issues).
 
-與其他翻譯貢獻者聊天，您可以[註冊ChromiumDev的Slack](https://join.slack.com/t/chromiumdev/shared_invite/enQtMzM3NjYwNjI0MDM4LTk2NjEyYTIxODk1MDYxMmNjNWYzMGMxZGVhMDNhY2I1ZjBhMjdlYTg0MTg4ZGE0OTQ0ZmYwNTRiMGJlYzVjOTE)並加入#l10n頻道。
+To chat with other translation contributors, [register to the ChromiumDev Slack](https://join.slack.com/t/chromiumdev/shared_invite/enQtMzM3NjYwNjI0MDM4LTk2NjEyYTIxODk1MDYxMmNjNWYzMGMxZGVhMDNhY2I1ZjBhMjdlYTg0MTg4ZGE0OTQ0ZmYwNTRiMGJlYzVjOTE) and join #l10n channel.
 
-Note: 讓別人來審查你的翻譯是非常重要的。[如果您翻譯的語言沒有版主](https://gitlocalize.com/repo/107/roles)，您可以在Slack的#l10n頻道尋找可以幫助您審查文章的人。 如果您有興趣當版主，您可以在#l10n找@agektmr。
+Note: It's important you find someone to review your translation. Try finding a reviewer in the Slack's #l10n channel if [no one is assigned as a language moderator yet](https://gitlocalize.com/repo/107/roles). If you are interested in becoming a moderator, ping @agektmr in #l10n.
 
-這是目前所支持的語言：阿拉伯文 (AR), 德文 (DE), 西班牙文 (ES),
-法文 (FR), 希伯來文 (HE), 印尼文 (ID), 義大利文 (IT), 日文 (JA),
-韓文 (KO), 荷蘭文 (NL), 波蘭文 (PL), 葡萄牙文 (PT-BR), 俄文 (RU),
-土耳其文 (TR), 繁體中文 (ZH-TW) 和 簡體中文 (ZH-CN).
+Our supported languages include: Arabic (AR), German (DE), Spanish (ES), French (FR), Hebrew (HE), Bahasa Indonesia (ID), Italian (IT), Japanese (JA), Korean (KO), Dutch (NL), Polish (PL), Portuguese (PT-BR), Russian (RU), Turkish (TR), Chinese Traditional (ZH-TW) and Chinese Simplified (ZH-CN).
 
-## 功勞
+## Credit
 
-我們希望您能得到翻譯文章的功勞。
+We want to make sure that you get the credit for the articles that you translate.
 
-將您的資料添加到`src/data/_contributors.yaml`，並將`- translator` 添加到 `role` 屬性。 我們使用這資料以讓您的資料出現在[貢獻者頁面](/web/resources/contributors)以及您翻譯的文章。 例如：
+Add your details to `src/data/_contributors.yaml` and add `- translator` to the `role` attribute. We use this information to populate our [contributors page](/web/resources/contributors) and also to attach your name to each article. For example:
 
+    paulkinlan:
+      name:
+        given: Paul
+        family: Kinlan
+      org:
+        name: Google
+          unit: Developer Relations
+      country: UK
+        role:
+    
+        - author
+        - engineer
+        - translator
+      homepage: http://paul.kinlan.me
+      google: +PaulKinlan
+      twitter: paul_kinlan
+      email: paulkinlan@google.com
+      description:
+        en: "Paul is a Developer Advocate"
+    
 
-```
-paulkinlan:
-  name:
-    given: Paul
-    family: Kinlan
-  org:
-    name: Google
-      unit: Developer Relations
-  country: UK
-    role:
-    - author
-    - engineer
-    - translator
-  homepage: http://paul.kinlan.me
-  google: +PaulKinlan
-  twitter: paul_kinlan
-  email: paulkinlan@google.com
-  description:
-    en: "Paul is a Developer Advocate"
-```
-
-由於GitLocalize中無法添加新的一段，請將以下這行加在文章的最後一段：
-
+Also, make sure to append your credit to the bottom of the article. Because in GitLocalize you can't add a new section, add your credit after multiple empty lines in the existing last section like following screenshot:
 
 ![](/web/images/gitlocalize_image1.png)
 
-## 许可证
+## License
 
-所有的內容是使用创作共用3.0。我們非常歡迎您的貢獻及翻譯，但是您必須簽署我們的[貢獻者許可協議](https://github.com/google/WebFundamentals/blob/master/CONTRIBUTING.md)。
+All of our content is Creative Commons 3.0. Contributions and translations are very much appreciated, however you must sign our [Contributor License Agreement](https://github.com/google/WebFundamentals/blob/master/CONTRIBUTING.md) for the code to be pulled back in to the repository.

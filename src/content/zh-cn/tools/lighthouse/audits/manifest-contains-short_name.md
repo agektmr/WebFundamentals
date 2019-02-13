@@ -1,41 +1,32 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“清单包含简称”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Manifest Contains short_name" Lighthouse audit.
 
-{# wf_updated_on:2016-09-21 #}
-{# wf_published_on:2016-09-21 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-21 #} {# wf_blink_components: N/A #}
 
-# 清单包含简称 {: .page-title }
+# Manifest Contains short_name {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-在用户将您的应用添加到主屏幕后，`short_name` 是显示在主屏幕上您的应用图标旁的文本。
-一般情况下，在没有充足的空间显示应用的完整名称时使用它。
+After a user adds your app to the homescreen, the `short_name` is the text that is displayed on the homescreen next to your app icon. In general, it is used wherever there is insufficient space to display the full name of your app.
 
+## Recommendations {: #recommendations }
 
-## 如何通过此审查{: #how }
-
-在您的网络应用清单中添加一个 `short_name` 属性。
+Add a `short_name` property in your Web App Manifest.
 
     {
       ...
       "short_name": "Air Horner",
       ...
     }
+    
 
-Chrome 的[最大建议长度](https://developer.chrome.com/apps/manifest/name#short_name)为 12 个字符。
+Chrome's [maximum recommended length](https://developer.chrome.com/apps/manifest/name#short_name) is 12 characters.
 
+Check out [Manifest Exists](manifest-exists#recommendations) for a list of guides that teach you how to properly implement and test "Add to Homescreen" support in your app.
 
+## More information {: #more-info }
 
-有关向您展示如何在应用中正确实现和测试“添加到主屏幕”支持的指南清单，请查看[清单是否存在](manifest-exists#how)。
+Audit passes if the manifest contains either `short_name` or `name` property. The manifest that Lighthouse fetches is separate from the one that Chrome is using on the page, which can possibly cause inaccurate results.
 
+## Feedback {: #feedback }
 
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-如果清单包含一个 `short_name` 或 `name` 属性，则表示通过了审查。Lighthouse 提取的清单独立于 Chrome 当前在页面上使用的清单，这可能会产生不准确的结果。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

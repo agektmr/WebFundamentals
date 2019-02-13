@@ -1,47 +1,37 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Uma análise detalhada do ciclo de vida dos service workers.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: A deep-dive into the service worker lifecycle.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2016-09-29 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_updated_on: 2018-12-05 #} {# wf_published_on: 2016-09-29 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# O ciclo de vida do Service Worker {: .page-title }
+# The Service Worker Lifecycle {: .page-title }
 
 {% include "web/_shared/contributors/jakearchibald.html" %}
 
-O ciclo de vida do service worker é a parte mais complicada.
-Se você não souber o que ele está tentando fazer nem os benefícios que ele traz, pode parecer que ele só atrapalha.
-Mas ao entender como ele funciona, é possível oferecer atualizações fáceis e discretas aos usuários, combinando o melhor da Web com o melhor dos padrões nativos.
+The lifecycle of the service worker is its most complicated part. If you don't know what it's trying to do and what the benefits are, it can feel like it's fighting you. But once you know how it works, you can deliver seemless, unobtrusive updates to users, mixing the best of web and native patterns.
 
-Essa é uma análise detalhada, mas os tópicos no início de cada seção abordam boa parte do que você precisa saber.
+This is a deep dive, but the bullets at the start of each section cover most of what you need to know.
 
-## A intenção
+## The intent
 
-O intent do ciclo de vida é:
+The intent of the lifecycle is to:
 
-* possibilitar o início do desenvolvimento off-line;
-* permitir que um novo service worker se prepare sem prejudicar o atual;
-* garantir que uma página de dentro do escopo seja totalmente controlada pelo mesmo service worker (ou por nenhum);
-* garantir que só uma versão do seu site seja executada por vez.
+* Make offline-first possible.
+* Allow a new service worker to get itself ready without disrupting the current one.
+* Ensure an in-scope page is controlled by the same service worker (or no service worker) throughout.
+* Ensure there's only one version of your site running at once.
 
-Esse último ponto é muito importante.
-Sem os service workers, os usuários podem carregar uma guia do site e depois abrir outra.
-Isso pode fazer com que haja duas versões do seu site em execução ao mesmo tempo.
-Às vezes, não tem problema, mas se você lidar com armazenamento, pode facilmente terminar com duas guias tendo opiniões diferentes sobre como gerenciar o armazenamento compartilhado.
-Isso pode gerar erros, ou pior: perda de dados.
+That last one is pretty important. Without service workers, users can load one tab to your site, then later open another. This can result in two versions of your site running at the same time. Sometimes this is ok, but if you're dealing with storage you can easily end up with two tabs having very different opinions on how their shared storage should be managed. This can result in errors, or worse, data loss.
 
-Atenção: os usuários odeiam perda de dados. Eles ficam extremamente desapontados.
+Caution: Users actively dislike data loss. It causes them great sadness.
 
-## O primeiro service worker resumido
+## The first service worker
 
-Resumindo:
+In brief:
 
-* O evento `install` é o primeiro evento que um service worker recebe e só acontece uma vez.
-* Uma promessa passada a `installEvent.waitUntil()` sinaliza a duração e o êxito ou uma falha na instalação.
-* Um service worker não receberá eventos como `fetch` e `push` até finalizar com sucesso a instalação e ficar "ativo".
-* Por padrão, as buscas de uma página não passam por um service worker a menos que a solicitação da página tenha passado por um. Por isso, você precisaria atualizar a página para ver os efeitos do service worker.
-* `clients.claim()` pode modificar esse padrão e assumir o controle de páginas não controladas.
+* The `install` event is the first event a service worker gets, and it only happens once.
+* A promise passed to `installEvent.waitUntil()` signals the duration and success or failure of your install.
+* A service worker won't receive events like `fetch` and `push` until it successfully finishes installing and becomes "active".
+* By default, a page's fetches won't go through a service worker unless the page request itself went through a service worker. So you'll need to refresh the page to see the effects of the service worker.
+* `clients.claim()` can override this default, and take control of non-controlled pages. 
 
 <style>
   .framebox-container-container {
@@ -62,21 +52,23 @@ Resumindo:
     filter: drop-shadow(0 6px 4px rgba(0,0,0,0.2));
   }
 </style>
+
+ 
+
 <div class="framebox-container-container">
-<div class="framebox-container">
-{% framebox height="100%" %}
-<link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"
-  integrity="sha384-al3qvxiX1jQs5ZPPnL8UubdkVRFveHNxF3ZNTbMXFxd8JBFwMIq8BVaVOW/CEUKB"
-  crossorigin="anonymous" defer>
+  <div class="framebox-container">
+    {% framebox height="100%" %} 
+    
+    <link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet" />
+    
+<script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TweenLite.min.js"
+  defer>
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"
-  integrity="sha384-fw2pCo41nKTwSnKUUxW43cI1kDLRw2qLaZQR2ZEQnh1s6xM6pP3H+SbM/Ehm6uI7"
-  crossorigin="anonymous" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"
-  integrity="sha384-yn7MLKNpLL+YDD9r3YvNFKEBhs/bzA4i51f28+h6KCYsZIhbif9+JcdK/lZOlnEY"
-  crossorigin="anonymous" defer></script>
-<style>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TimelineLite.min.js"
+  defer></script>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/plugins/CSSPlugin.min.js"
+  defer></script>
+ <style>
 .lifecycle-diagram {
   width: 100%;
   height: auto;
@@ -119,21 +111,7 @@ Resumindo:
   opacity: 0;
 }
 </style>
-<svg class="lifecycle-diagram" style="display:none">
-  <defs>
-    <g id="diagram-static">
-      <text y="6.7" x="14.5" class="label">Instalando</text><text y="6.7" x="81.1" class="label">Ativo</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/>
-    </g>
-    <g id="diagram-page">
-      <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" />
-      <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" />
-    </g>
-    <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/>
-    <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g>
-    <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g>
-  </defs>
-</svg>
-<svg class="lifecycle-diagram register" viewBox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g></svg>
+ <svg class="lifecycle-diagram" style="display:none"> <defs> <g id="diagram-static"> <text y="6.7" x="14.5" class="label">Installing</text><text y="6.7" x="81.1" class="label">Active</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/> </g> <g id="diagram-page"> <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" /> <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" /> </g> <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/> <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g> <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g> </defs> </svg> <svg class="lifecycle-diagram register" viewbox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g></svg> 
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -206,126 +184,125 @@ Resumindo:
     }
   });
 </script>
-{% endframebox %}
-</div>
+ {% endframebox %}
+  </div>
 </div>
 
-Veja este HTML:
+Take this HTML:
 
     <!DOCTYPE html>
-    Uma imagem aparecerá em três segundos:
+    An image will appear here in 3 seconds:
     <script>
       navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('SW registered!', reg))
         .catch(err => console.log('Boo!', err));
-
+    
       setTimeout(() => {
         const img = new Image();
         img.src = '/dog.svg';
         document.body.appendChild(img);
       }, 3000);
     </script>
+    
 
-Ele registra um service worker e adiciona a imagem de um cachorro após três segundos.
+It registers a service worker, and adds image of a dog after 3 seconds.
 
-Este é o service worker, `sw.js`:
+Here's its service worker, `sw.js`:
 
     self.addEventListener('install', event => {
       console.log('V1 installing…');
-
+    
       // cache a cat SVG
       event.waitUntil(
         caches.open('static-v1').then(cache => cache.add('/cat.svg'))
       );
     });
-
+    
     self.addEventListener('activate', event => {
       console.log('V1 now ready to handle fetches!');
     });
-
+    
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-
+    
       // serve the cat SVG from the cache if the request is
       // same-origin and the path is '/dog.svg'
       if (url.origin == location.origin && url.pathname == '/dog.svg') {
         event.respondWith(caches.match('/cat.svg'));
       }
     });
+    
 
-Ele armazena uma imagem de um gato em cache e a disponibiliza sempre que há uma solicitação de `/dog.svg`. Porém, se você [executar o exemplo acima](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, verá um cachorro na primeira vez que carregar a página. Atualize e você verá o gato.
+It caches an image of a cat, and serves it whenever there's a request for `/dog.svg`. However, if you [run the above example](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, you'll see a dog the first time you load the page. Hit refresh, and you'll see the cat.
 
-Note: gatos são melhores que cachorros. Porque *sim*.
+Note: Cats are better than dogs. They just *are*.
 
-### Escopo e controle
+### Scope and control
 
-O escopo padrão do registro de um service worker é `./` em relação ao URL do script. Isso significa que se você registrar um service worker em `//example.com/foo/bar.js`, seu escopo padrão será `//example.com/foo/`.
+The default scope of a service worker registration is `./` relative to the script URL. This means if you register a service worker at `//example.com/foo/bar.js` it has a default scope of `//example.com/foo/`.
 
-Chamamos de páginas, workers e `clients` dos workers compartilhados. Seu service worker só pode controlar clientes que estejam no escopo. Quando um cliente é "controlado", suas buscas passam pelo service worker em escopo. Você pode detectar se um cliente é controlado por `navigator.serviceWorker.controller`, que será "null" ou uma instância do service worker.
+We call pages, workers, and shared workers `clients`. Your service worker can only control clients that are in-scope. Once a client is "controlled", its fetches go through the in-scope service worker. You can detect if a client is controlled via `navigator.serviceWorker.controller` which will be null or a service worker instance.
 
-### Fazer o download, analisar e executar
+### Download, parse, and execute
 
-Seu primeiro service worker é transferido quando você chama `.register()`. Caso seu script falhe ao fazer o download, analisar ou se acionar um erro na execução inicial, a promessa de registro será rejeitada e o service worker será descartado.
+Your very first service worker downloads when you call `.register()`. If your script fails to download, parse, or throws an error in its initial execution, the register promise rejects, and the service worker is discarded.
 
-O Chrome DevTools exibe o erro no console e na seção de service workers na guia "Application":
+Chrome's DevTools shows the error in the console, and in the service worker section of the application tab:<figure> 
 
-<figure>
-  <img src="images/register-fail.png" class="browser-screenshot" alt="Erro exibido na guia Service Worker do DevTools"/>
-</figure>
+<img src="images/register-fail.png" class="browser-screenshot" alt="Error displayed in service worker DevTools tab" /> </figure> 
 
-### Instalar
+### Install
 
-O primeiro evento que um service worker recebe é `install`. Esse evento é acionado assim que o worker é executado e só é chamado uma vez por service worker. Se você alterar o script do service worker, o navegador o considerará um service worker diferente e ele receberá o próprio evento `install`. Falarei sobre [atualizações em detalhes mais tarde](#updates).
+The first event a service worker gets is `install`. It's triggered as soon as the worker executes, and it's only called once per service worker. If you alter your service worker script the browser considers it a different service worker, and it'll get its own `install` event. I'll cover [updates in detail later](#updates).
 
-O evento `install` é sua chance de armazenar em cache tudo de que você precisa antes de poder controlar clientes. A promessa que você passa a `event.waitUntil()` permite que o navegador saiba quando a instalação acaba e se foi concluída com sucesso.
+The `install` event is your chance to cache everything you need before being able to control clients. The promise you pass to `event.waitUntil()` lets the browser know when your install completes, and if it was successful.
 
-Se a promessa for rejeitada, significa que houve um erro na instalação, e o navegador descarta o service worker. Ele nunca controlará clientes. Isso significa que não podemos depender de "cat.svg" estar presente no cache nos eventos `fetch`. É uma dependência.
+If your promise rejects, this signals the install failed, and the browser throws the service worker away. It'll never control clients. This means we can't rely on "cat.svg" being present in the cache in our `fetch` events. It's a dependency.
 
-### Ativar
+### Activate
 
-Quando o service worker estiver pronto para controlar clientes e gerenciar eventos funcionais como `push` e `sync`, você terá um evento `activate`. Mas isso não significa que a página que chamou `.register()` será controlada.
+Once your service worker is ready to control clients and handle functional events like `push` and `sync`, you'll get an `activate` event. But that doesn't mean the page that called `.register()` will be controlled.
 
-Na primeira vez que você carregar [a demonstração](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, mesmo que `dog.svg` seja solicitado bem depois de o service worker ser ativado, ele não gerenciará a solicitação e você ainda verá a imagem do cachorro. O padrão é *consistência*. Caso sua página carregue sem um service worker, seus sub-recursos também carregarão dessa forma. Se você carregar [a demonstração](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external } uma segunda vez (em outras palavras, se atualizar a página), ela será controlada. A página e a imagem passarão por eventos `fetch`, e você verá um gato.
+The first time you load [the demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external }, even though `dog.svg` is requested long after the service worker activates, it doesn't handle the request, and you still see the image of the dog. The default is *consistency*, if your page loads without a service worker, neither will its subresources. If you load [the demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/){: .external } a second time (in other words, refresh the page), it'll be controlled. Both the page and the image will go through `fetch` events, and you'll see a cat instead.
 
 ### clients.claim
 
-Você pode controlar clientes fora do controle chamando `clients.claim()` dentro do service worker quando ele estiver ativo.
+You can take control of uncontrolled clients by calling `clients.claim()` within your service worker once it's activated.
 
-Veja uma [variação da demonstração acima](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/df4cae41fa658c4ec1fa7b0d2de05f8ba6d43c94/){: .external }, em que `clients.claim()` é chamado no evento `activate`. Você *deve* ver um gato na primeira vez. Digo *deve* porque, nesse caso, há uma condição de tempo. Você só verá um gato se o service worker for ativado e `clients.claim()` entrar em vigor antes de acontecer uma tentativa de carregamento da imagem.
+Here's [a variation of the demo above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/df4cae41fa658c4ec1fa7b0d2de05f8ba6d43c94/){: .external } which calls `clients.claim()` in its `activate` event. You *should* see a cat the first time. I say "should", because this is timing sensitive. You'll only see a cat if the service worker activates and `clients.claim()` takes effect before the image tries to load.
 
-Se você usar o service worker para carregar páginas de forma diferente de como elas são carregadas pela rede, `clients.claim()` poderá ser um problema, já que o service worker acaba controlando alguns clientes que carregaram sem ele.
+If you use your service worker to load pages differently than they'd load via the network, `clients.claim()` can be troublesome, as your service worker ends up controlling some clients that loaded without it.
 
-Note: vejo muitas pessoas incluindo `clients.claim()` em todos os casos, mas eu raramente faço isso. Ele só é importante no primeiro carregamento e, devido ao aprimoramento progressivo, a página normalmente funciona muito bem sem um service worker.
+Note: I see a lot of people including `clients.claim()` as boilerplate, but I rarely do so myself. It only really matters on the very first load, and due to progressive enhancement the page is usually working happily without service worker anyway.
 
-## Atualizar o service worker {: #updates}
+## Updating the service worker {: #updates}
 
-Em resumo:
+In brief:
 
-* Uma atualização é acionada:
-    * na navegação para uma página no escopo;
-    * em eventos funcionais como `push` e `sync`, a menos que tenha ocorrido uma verificação de atualização nas últimas 24 horas;
-    * na chamada de `.register()` *somente se* o URL do service worker tiver mudado.
-* A maioria dos navegadores, incluindo [Chrome 68 e versões posteriores](/web/updates/2018/06/fresher-sw), ignoram por padrão os cabeçalhos de cache ao verificar atualizações do script do service worker registrado. Eles ainda respeitam os cabeçalhos de cache ao buscarem recursos carregados em um service worker via `importScripts()`. Você pode modificar esse comportamento padrão definindo a opção [`updateViaCache`](/web/updates/2018/06/fresher-sw#updateviacache) ao registrar seu service worker.
-* Seu service worker é considerado atualizado se for diferente, em nível de byte, do que o navegador já tem. Estamos ampliando isso para incluir scripts/módulos importados também. * O service worker atualizado é inicializado junto com o que já existe e recebe o próprio evento `install`.
-* Se o novo worker tiver um código de status diferente de "ok" (por exemplo, 404), falhar em analisar, acionar um erro durante a execução ou for rejeitado durante a instalação, ele será descartado, mas o atual continuará ativo.
-* Depois de instalado, o worker atualizado espera (`wait`) até que o existente não esteja controlando nenhum cliente. Observe que os clientes se sobrepõem durante uma atualização.
-* `self.skipWaiting()` evita a espera, o que significa que o service worker é ativado assim que a instalação é concluída.
+* An update is triggered if any of the following happens: 
+    * A navigation to an in-scope page.
+    * A functional events such as `push` and `sync`, unless there's been an update check within the previous 24 hours.
+    * Calling `.register()` *only if* the service worker URL has changed. However, you should [avoid changing the worker URL](#avoid-url-change).
+* Most browsers, including [Chrome 68 and later](/web/updates/2018/06/fresher-sw), default to ignoring caching headers when checking for updates of the registered service worker script. They still respect caching headers when fetching resources loaded inside a service worker via `importScripts()`. You can override this default behavior by setting the [`updateViaCache`](/web/updates/2018/06/fresher-sw#updateviacache) option when registering your service worker.
+* Your service worker is considered updated if it's byte-different to the one the browser already has. (We're extending this to include imported scripts/modules too.)
+* The updated service worker is launched alongside the existing one, and gets its own `install` event.
+* If your new worker has a non-ok status code (for example, 404), fails to parse, throws an error during execution, or rejects during install, the new worker is thrown away, but the current one remains active.
+* Once successfully installed, the updated worker will `wait` until the existing worker is controlling zero clients. (Note that clients overlap during a refresh.)
+* `self.skipWaiting()` prevents the waiting, meaning the service worker activates as soon as it's finished installing.
 
 <div class="framebox-container-container">
-<div class="framebox-container">
-{% framebox height="100%" %}
-<link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"
-  integrity="sha384-al3qvxiX1jQs5ZPPnL8UubdkVRFveHNxF3ZNTbMXFxd8JBFwMIq8BVaVOW/CEUKB"
-  crossorigin="anonymous" defer>
+  <div class="framebox-container">
+    {% framebox height="100%" %} 
+    
+    <link href="https://fonts.googleapis.com/css?family=Just+Another+Hand" rel="stylesheet" />
+    
+<script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TweenLite.min.js" defer>
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TimelineLite.min.js"
-  integrity="sha384-fw2pCo41nKTwSnKUUxW43cI1kDLRw2qLaZQR2ZEQnh1s6xM6pP3H+SbM/Ehm6uI7"
-  crossorigin="anonymous" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"
-  integrity="sha384-yn7MLKNpLL+YDD9r3YvNFKEBhs/bzA4i51f28+h6KCYsZIhbif9+JcdK/lZOlnEY"
-  crossorigin="anonymous" defer></script>
-<style>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/TimelineLite.min.js" defer>
+</script>
+ <script src="https://www.gstatic.com/external_hosted/gsap/v1_18_0/plugins/CSSPlugin.min.js" defer>
+</script>
+ <style>
 .lifecycle-diagram {
   width: 100%;
   height: auto;
@@ -368,21 +345,7 @@ Em resumo:
   opacity: 0;
 }
 </style>
-<svg class="lifecycle-diagram" style="display:none">
-  <defs>
-    <g id="diagram-static">
-      <text y="6.7" x="14.5" class="label">Instalando</text><text y="6.7" x="81.1" class="label">Ativo</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/>
-    </g>
-    <g id="diagram-page">
-      <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" />
-      <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" />
-    </g>
-    <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/>
-    <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g>
-    <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g>
-  </defs>
-</svg>
-<svg class="lifecycle-diagram update" viewBox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><text x="47.7" y="6.7" class="label">Aguardando</text><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><g transform="matrix(1.1187 0 0 1.1187 67.745 12.408)" class="cog cog-old"><use xlink:href="#diagram-sw" width="10" height="10"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g><use xlink:href="#diagram-close" class="diagram-close"/></svg>
+ <svg class="lifecycle-diagram" style="display:none"> <defs> <g id="diagram-static"> <text y="6.7" x="14.5" class="label">Installing</text><text y="6.7" x="81.1" class="label">Active</text><circle r="14" cy="25.8" cx="14.5" class="state-placeholder"/><circle r="14" cy="25.8" cx="47.8" class="state-placeholder"/><circle r="14" cy="25.8" cx="81.2" class="state-placeholder"/> </g> <g id="diagram-page"> <path d="M 191.3,0 12.8,0 C 5.8,0 0,5.7 0,12.8 L 0,167 c 0,7.2 5.7,13 12.8,13 l 178.5,0 c 7,0 12.8,-5.8 12.8,-13 l 0,-154 C 204,6 198.7,0.2 191.6,0.2 Z M 11,11 c 0.5,-0.5 1,-0.7 1.8,-0.8 l 178.5,0 c 0.7,0 1.3,0.3 1.8,0.8 0.8,0.5 1,1 1,1.8 l 0,13.5 -184.1,0 0,-13.5 c 0,-0.7 0.3,-1.3 0.8,-1.8 z m 182,158 c -0.4,0.4 -1,0.7 -1.7,0.7 l -178.5,0 c -0.7,0 -1.3,-0.3 -1.8,-0.8 -0.5,-0.8 -0.8,-1.4 -0.8,-2 l 0,-130.4 183.6,0 0,130.5 c 0,0.8 -0.2,1.4 -0.7,2 z" /> <path d="m 26.5,18.6 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.2,0 c 0,2.8 -2.3,5 -5,5 -3,0 -5.2,-2.2 -5.2,-5 0,-3 2.3,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m 15.3,0 c 0,2.8 -2.3,5 -5.2,5 -2.8,0 -5,-2.2 -5,-5 0,-3 2.2,-5.2 5,-5.2 3,0 5.2,2.3 5.2,5.2 z m -5.2,111 102.7,0 0,10.4 -102.7,0 0,-10.3 z m 0,-16.8 102.7,0 0,10.2 -102.7,0 0,-10 z M 52,96 l 45.4,0 0,10.2 -45.4,0 0,-10.2 z m 0,-17 45.4,0 0,10.3 -45.4,0 0,-10.3 z m 0,-16.8 45.6,0 0,10.3 -45.6,0 0,-10.3 z m 100.2,1.3 -45.4,0 0,42 45.4,0 0,-42 z m -10.2,31.8 -25,0 0,-21.5 25,0 0,21.5 z" /> </g> <path id="diagram-sw" d="m 19.43,12.98 c 0.04,-0.32 0.07,-0.64 0.07,-0.98 0,-0.34 -0.03,-0.66 -0.07,-0.98 l 2.11,-1.65 c 0.19,-0.15 0.24,-0.42 0.12,-0.64 l -2,-3.46 C 19.54,5.05 19.27,4.97 19.05,5.05 l -2.49,1 C 16.04,5.65 15.48,5.32 14.87,5.07 L 14.49,2.42 C 14.46,2.18 14.25,2 14,2 L 10,2 C 9.75,2 9.54,2.18 9.51,2.42 L 9.13,5.07 C 8.52,5.32 7.96,5.66 7.44,6.05 l -2.49,-1 C 4.72,4.96 4.46,5.05 4.34,5.27 l -2,3.46 C 2.21,8.95 2.27,9.22 2.46,9.37 l 2.11,1.65 C 4.53,11.34 4.5,11.67 4.5,12 c 0,0.33 0.03,0.66 0.07,0.98 l -2.11,1.65 c -0.19,0.15 -0.24,0.42 -0.12,0.64 l 2,3.46 c 0.12,0.22 0.39,0.3 0.61,0.22 l 2.49,-1 c 0.52,0.4 1.08,0.73 1.69,0.98 l 0.38,2.65 C 9.54,21.82 9.75,22 10,22 l 4,0 c 0.25,0 0.46,-0.18 0.49,-0.42 l 0.38,-2.65 c 0.61,-0.25 1.17,-0.59 1.69,-0.98 l 2.49,1 c 0.23,0.09 0.49,0 0.61,-0.22 l 2,-3.46 c 0.12,-0.22 0.07,-0.49 -0.12,-0.64 L 19.43,12.98 Z M 12,15.5 c -1.93,0 -3.5,-1.57 -3.5,-3.5 0,-1.93 1.57,-3.5 3.5,-3.5 1.93,0 3.5,1.57 3.5,3.5 0,1.93 -1.57,3.5 -3.5,3.5 z"/> <g id="diagram-refresh"><circle id="page-action-circle" cx="81.2" cy="58.1" r="3.5" fill="#fff" stroke="#000" stroke-width=".5"/><path d="M82.76 56.48c-.4-.4-.97-.66-1.6-.66-1.23 0-2.23 1-2.23 2.24 0 1.24 1 2.25 2.24 2.25 1.05 0 1.92-.7 2.17-1.68h-.58c-.23.66-.86 1.13-1.6 1.13-.92 0-1.67-.76-1.67-1.7 0-.92.74-1.67 1.67-1.67.47 0 .88.2 1.2.5l-.92.9h1.97v-1.96l-.66.66z"/></g> <g id="diagram-close"><use xlink:href="#page-action-circle"/><path id="path5062" d="M83 56.58l-.37-.37-1.46 1.47-1.45-1.46-.37.38 1.46 1.46-1.45 1.46.37.36 1.45-1.45 1.46 1.46.37-.36-1.46-1.46z"/></g> </defs> </svg> <svg class="lifecycle-diagram update" viewbox="0 0 96.9 73"><rect ry="15.8" y="10" x="65.4" height="63" width="31.6" class="controlled"/><use xlink:href="#diagram-static"/><text x="47.7" y="6.7" class="label">Waiting</text><g transform="matrix(1.1187 0 0 1.1187 1.078 12.408)" class="cog cog-new"><use height="10" width="10" xlink:href="#diagram-sw"/></g><g transform="matrix(1.1187 0 0 1.1187 67.745 12.408)" class="cog cog-old"><use xlink:href="#diagram-sw" width="10" height="10"/></g><use transform="matrix(.09532 0 0 .09532 71.44 48.39)" xlink:href="#diagram-page" width="10" height="10" class="diagram-page"/><path d="M78.6 47.7c-1-6-2-11.6-1.6-17" class="fetch"/><path d="M83 47.5c1.4-5.4 3.3-10.8 2.4-16.2" class="fetch"/><path d="M75.7 47c-2.3-6.3-3.2-12.5-2-18.2" class="fetch"/><path d="M89.5 29.5c.3 6-.4 12-4 18" class="fetch"/><path d="M75.4 30.3c0 4-1 6 2 17.2" class="fetch"/><path d="M86.6 31C88 37 86 42 84 47.4" class="fetch"/><g class="refresh-rotator"><use xlink:href="#diagram-refresh" class="diagram-refresh"/></g><use xlink:href="#diagram-close" class="diagram-close"/></svg> 
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -483,23 +446,23 @@ Em resumo:
     }
   });
 </script>
-{% endframebox %}
+ {% endframebox %}
+  </div>
 </div>
-</div>
 
-Digamos que tenhamos alterado o script do nosso service worker para responder a uma imagem de um cavalo em vez de a de um gato:
+Let's say we changed our service worker script to respond with a picture of a horse rather than a cat:
 
-     const expectedCaches = ['static-v2'];
-
+    const expectedCaches = ['static-v2'];
+    
     self.addEventListener('install', event => {
       console.log('V2 installing…');
-
+    
       // cache a horse SVG into a new cache, static-v2
       event.waitUntil(
         caches.open('static-v2').then(cache => cache.add('/horse.svg'))
       );
     });
-
+    
     self.addEventListener('activate', event => {
       // delete any caches that aren't in expectedCaches
       // which will get rid of static-v1
@@ -515,151 +478,147 @@ Digamos que tenhamos alterado o script do nosso service worker para responder a 
         })
       );
     });
-
+    
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-
+    
       // serve the horse SVG from the cache if the request is
       // same-origin and the path is '/dog.svg'
       if (url.origin == location.origin && url.pathname == '/dog.svg') {
         event.respondWith(caches.match('/horse.svg'));
       }
     });
+    
 
-Note: eu não tenho uma opinião relevante sobre cavalos.
+Note: I have no strong opinions on horses.
 
-[Confira uma demonstração da informação acima](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }.
-Você ainda verá a imagem de um gato. Veja porque…
+[Check out a demo of the above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }. You should still see an image of a cat. Here's why…
 
-### Instalar
+### Install
 
-Veja que mudei o nome do cache de `static-v1` para `static-v2`. Isso significa que posso configurar o novo cache sem apagar nada no primeiro, que o service worker antigo ainda está usando.
+Note that I've changed the cache name from `static-v1` to `static-v2`. This means I can set up the new cache without overwriting things in the current one, which the old service worker is still using.
 
-Esse padrão cria caches específicos de cada versão, o que se parece com a forma que um aplicativo nativo agruparia recursos no próprio executável. Você também pode ter caches que não sejam específicos de versão, como `avatars`.
+This patterns creates version-specific caches, akin to assets a native app would bundle with its executable. You may also have caches that aren't version specific, such as `avatars`.
 
-### Aguardando
+### Waiting
 
-Depois de instalado, o service worker atualizado atrasa a ativação até que o existente não esteja mais controlando nenhum cliente. Esse estado é chamado de "espera" e é como o navegador garante que somente uma versão do seu service worker fique em execução por vez.
+After it's successfully installed, the updated service worker delays activating until the existing service worker is no longer controlling clients. This state is called "waiting", and it's how the browser ensures that only one version of your service worker is running at a time.
 
-Se você tiver executado [a demonstração atualizada](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, deve continuar vendo a imagem de um gato, porque o worker versão 2 ainda não foi ativado. É possível ver o novo service worker aguardando na guia "Application" do DevTools:
+If you ran [the updated demo](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, you should still see a picture of a cat, because the V2 worker hasn't yet activated. You can see the new service worker waiting in the "Application" tab of DevTools:<figure> 
 
-<figure>
-  <img src="images/waiting.png" class="browser-screenshot" alt="DevTools exibindo o novo service worker esperando"/>
-</figure>
+<img src="images/waiting.png" class="browser-screenshot" alt="DevTools showing new service worker waiting" /> </figure> 
 
-Mesmo que você só tenha uma guia aberta para a demonstração, atualizar a página não é suficiente para permitir que a nova versão assuma. Isso acontece por causa da forma com que as navegações nos navegadores funcionam. Quando você navega, a página atual não é descartada até que os cabeçalhos de resposta sejam recebidos, e mesmo assim, se a resposta tiver um cabeçalho `Content-Disposition`, a página atual pode continuar lá. Por causa dessa sobreposição, o service worker atual está sempre controlando um cliente durante uma atualização.
+Even if you only have one tab open to the demo, refreshing the page isn't enough to let the new version take over. This is due to how browser navigations work. When you navigate, the current page doesn't go away until the response headers have been received, and even then the current page may stay if the response has a `Content-Disposition` header. Because of this overlap, the current service worker is always controlling a client during a refresh.
 
-Para receber a atualização, feche ou saia de todas as guias usando o service worker atual. Depois, quando [navegar de volta para a demonstração](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, você verá o cavalo.
+To get the update, close or navigate away from all tabs using the current service worker. Then, when you [navigate to the demo again](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, you should see the horse.
 
-Esse padrão é parecido com o processo de atualização do Chrome. O download das atualizações do Chrome é feito em segundo plano, mas elas não são aplicadas até que o Chrome seja reiniciado. Enquanto isso, você pode continuar usando a versão atual sem interrupção. No entanto, isso é um problema durante o desenvolvimento, mas o DevTools tem formas de facilitar, o que é um dos [próximos assuntos deste artigo](#devtools).
+This pattern is similar to how Chrome updates. Updates to Chrome download in the background, but don't apply until Chrome restarts. In the mean time, you can continue to use the current version without disruption. However, this is a pain during development, but DevTools has ways to make it easier, which I'll cover [later in this article](#devtools).
 
-### Ativar
+### Activate
 
-Isso dispara quando o service worker antigo é descartado e seu novo service worker está pronto para controlar clientes. Esse é o momento ideal para fazer o que não é possível fazer enquanto o worker antigo ainda está em uso, como migrar bancos de dados e apagar caches.
+This fires once the old service worker is gone, and your new service worker is able to control clients. This is the ideal time to do stuff that you couldn't do while the old worker was still in use, such as migrating databases and clearing caches.
 
-Na demonstração acima, deixo uma lista de caches que espero que estejam lá e, no evento `activate`, me livro de todo o resto, o que remove o antigo cache `static-v1`.
+In the demo above, I maintain a list of caches that I expect to be there, and in the `activate` event I get rid of any others, which removes the old `static-v1` cache.
 
-Atenção: você pode não estar atualizando a versão anterior. Talvez este seja o service worker de muitas versões atrás.
+Caution: You may not be updating from the previous version. It may be a service worker many versions old.
 
-Se você passar uma promessa `event.waitUntil()`, ele carregará em buffer os eventos funcionais (`fetch`, `push`, `sync` etc.) até a promessa ser processada. Então, quando o evento `fetch` é acionado, a ativação está completa.
+If you pass a promise to `event.waitUntil()` it'll buffer functional events (`fetch`, `push`, `sync` etc.) until the promise resolves. So when your `fetch` event fires, the activation is fully complete.
 
-Atenção: a API de armazenamento em cache é o "armazenamento de origem" (como localStorage e IndexedDB). Se você tiver muitos sites na mesma origem (por exemplo, `yourname.github.io/myapp`) tome cuidado para não excluir o cache dos outros sites. Para evitar isso, dê ao cache um nome com prefixo único relacionado ao site atual, por exemplo, `myapp-static-v1`, e não toque neles a menos que comecem com `myapp-`.
+Caution: The cache storage API is "origin storage" (like localStorage, and IndexedDB). If you run many sites on the same origin (for example, `yourname.github.io/myapp`), be careful that you don't delete caches for your other sites. To avoid this, give your cache names a prefix unique to the current site, eg `myapp-static-v1`, and don't touch caches unless they begin with `myapp-`.
 
-### Pular a fase de espera
+### Skip the waiting phase
 
-A fase de espera indica que você está executando apenas uma versão do site de cada vez, mas não é preciso aguardar esse recurso. Você pode ativar o novo service worker antes chamando `self.skipWaiting()`.
+The waiting phase means you're only running one version of your site at once, but if you don't need that feature, you can make your new service worker activate sooner by calling `self.skipWaiting()`.
 
-Isso faz com que o service worker remova o worker atualmente ativo e ative-se assim que entrar na fase de espera (ou imediatamente se já estiver na fase de espera). Ele *não* faz com que o worker pule a instalação, somente a espera.
+This causes your service worker to kick out the current active worker and activate itself as soon as it enters the waiting phase (or immediately if it's already in the waiting phase). It *doesn't* cause your worker to skip installing, just waiting.
 
-Não faz diferença quando se chama `skipWaiting()`, desde que seja durante ou antes da espera. É muito comum chamá-lo no evento `install`:
+It doesn't really matter when you call `skipWaiting()`, as long as it's during or before waiting. It's pretty common to call it in the `install` event:
 
     self.addEventListener('install', event => {
       self.skipWaiting();
-
+    
       event.waitUntil(
         // caching etc
       );
     });
+    
 
-Talvez você queira chamá-lo como resultado de um `postMessage()` ao service worker. Por exemplo, usar `skipWaiting()` após uma interação do usuário.
+But you may want to call it as a results of a `postMessage()` to the service worker. As in, you want to `skipWaiting()` following a user interaction.
 
-[Veja esta demonstração que usa `skipWaiting()`](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v3.html){: .external }. Você deve ver a imagem de uma vaca sem ter que sair da página. Como com `clients.claim()`, é uma corrida, então você só verá a vaca se o novo service worker buscar, instalar e ativar antes de a página tentar carregar a imagem.
+[Here's a demo that uses `skipWaiting()`](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v3.html){: .external }. You should see a picture of a cow without having to navigate away. Like `clients.claim()` it's a race, so you'll only see the cow if the new service worker fetches, installs and activates before the page tries to load the image.
 
-Atenção: `skipWaiting()` significa que seu novo service worker provavelmente controla páginas que foram carregadas com uma versão antiga. Isso quer dizer que algumas buscas da sua página serão gerenciadas pelo service worker antigo, mas o novo service worker gerenciará as buscas seguintes. Se isso puder causar problema, não use `skipWaiting()`.
+Caution: `skipWaiting()` means that your new service worker is likely controlling pages that were loaded with an older version. This means some of your page's fetches will have been handled by your old service worker, but your new service worker will be handling subsequent fetches. If this might break things, don't use `skipWaiting()`.
 
-### Atualizações manuais
+### Manual updates
 
-Como mencionei mais cedo, o navegador verifica se há atualizações automaticamente após a navegação e eventos funcionais, mas você também pode acioná-las manualmente:
+As I mentioned earlier, the browser checks for updates automatically after navigations and functional events, but you can also trigger them manually:
 
     navigator.serviceWorker.register('/sw.js').then(reg => {
       // sometime later…
       reg.update();
     });
+    
 
-Se acreditar que o usuário usa seu site por muito tempo sem atualizar, pode ser uma boa ideia chamar `update()` em um intervalo (como de hora em hora).
+If you expect the user to be using your site for a long time without reloading, you may want to call `update()` on an interval (such as hourly).
 
-### Evitar alterar o URL do script do seu service worker
+### Avoid changing the URL of your service worker script {: #avoid-url-change}
 
-Se você tiver lido [minha postagem sobre práticas recomendadas de armazenamento em cache](https://jakearchibald.com/2016/caching-best-practices/){: .external }, você pode considerar atribuir um URL único a cada versão do service worker. **Não faça isso!** Esta costuma ser uma prática ruim para service workers, simplesmente atualize o script na sua localização atual.
+If you've read [my post on caching best practices](https://jakearchibald.com/2016/caching-best-practices/){: .external }, you may consider giving each version of your service worker a unique URL. **Don't do this!** This is usually bad practice for service workers, just update the script at its current location.
 
-Veja um dos problemas que essa abordagem pode gerar:
+It can land you with a problem like this:
 
-1. `index.html` registra `sw-v1.js` como um service worker.
-1. `sw-v1.js` armazena em cache e disponibiliza `index.html` de modo que funcione em modo off-line primeiro.
-1. Você atualiza `index.html` de modo que registre seu novo `sw-v2.js`.
+1. `index.html` registers `sw-v1.js` as a service worker.
+2. `sw-v1.js` caches and serves `index.html` so it works offline-first.
+3. You update `index.html` so it registers your new and shiny `sw-v2.js`.
 
-Se você fizer isso, o usuário nunca receberá `sw-v2.js`, porque `sw-v1.js` fornecerá a versão antiga de `index.html` do cache. Você se colocou em uma posição em que precisa atualizar o service worker para atualizar o service worker. Nossa!
+If you do the above, the user never gets `sw-v2.js`, because `sw-v1.js` is serving the old version of `index.html` from its cache. You've put yourself in a position where you need to update your service worker in order to update your service worker. Ew.
 
-Porém, para [a demonstração acima](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, *alterei* o URL do service worker. Meu intuito é que você, para fins de demonstração, possa alternar entre as versões. Não é algo que eu faria na produção.
+However, for [the demo above](https://cdn.rawgit.com/jakearchibald/80368b84ac1ae8e229fc90b3fe826301/raw/ad55049bee9b11d47f1f7d19a73bf3306d156f43/index-v2.html){: .external }, I *have* changed the URL of the service worker. This is so, for the sake of the demo, you can switch between the versions. It isn't something I'd do in production.
 
-## Facilitar o desenvolvimento {: #devtools}
+## Making development easy {: #devtools}
 
-O ciclo de vida de um service worker é criado pensando no usuário, mas durante o desenvolvimento, isso é bem complicado. Felizmente, temos algumas abordagens que podem ajudar:
+The service worker lifecycle is built with the user in mind, but during development it's a bit of a pain. Thankfully there are a few tools to help out:
 
-### Atualizar no recarregamento
+### Update on reload
 
-Essa é a minha favorita.
+This one's my favourite.<figure> 
 
-<figure>
-  <img src="images/update-on-reload.png" class="browser-screenshot" alt="DevTools mostrando a atualização no recarregamento"/>
-</figure>
+<img src="images/update-on-reload.png" class="browser-screenshot" alt="DevTools showing 'update on reload'" /> </figure> 
 
-Isso torna o ciclo de vida fácil para o desenvolvedor. Cada navegação vai:
+This changes the lifecycle to be developer-friendly. Each navigation will:
 
-1. buscar novamente o service worker;
-1. instalá-lo como uma nova versão, mesmo que tenha os mesmos bytes, o que significa que o evento `install` será executado e seu cache, atualizado;
-1. pular a fase de espera, de modo que o novo service worker seja ativado;
-1. navegar pela página.
+1. Refetch the service worker.
+2. Install it as a new version even if it's byte-identical, meaning your `install` event runs and your caches update.
+3. Skip the waiting phase so the new service worker activates.
+4. Navigate the page.
 
-Isso significa que você terá atualizações em cada navegação (incluindo atualização) sem ter que recarregar ou fechar a guia.
+This means you'll get your updates on each navigation (including refresh) without having to reload twice or close the tab.
 
-### Pular a espera
+### Skip waiting<figure> 
 
-<figure>
-  <img src="images/skip-waiting.png" class="browser-screenshot" alt="DevTools mostrando como pular a espera"/>
-</figure>
+<img src="images/skip-waiting.png" class="browser-screenshot" alt="DevTools showing 'skip waiting'" /> </figure> 
 
-Se você tiver um worker em espera, pode clicar em "skip waiting" no DevTools para promovê-lo a "active" imediatamente.
+If you have a worker waiting, you can hit "skip waiting" in DevTools to immediately promote it to "active".
 
-### Forçar recarregamento
+### Shift-reload
 
-Se você forçar a atualização da página, o service worker será totalmente ignorado. Essa abordagem não será controlada. Esse recurso está na especificação, então funciona em outros navegadores compatíveis com service workers.
+If you force-reload the page (shift-reload) it bypasses the service worker entirely. It'll be uncontrolled. This feature is in the spec, so it works in other service-worker-supporting browsers.
 
-## Gerenciar atualizações
+## Handling updates
 
-O service worker foi projetado como parte da [Web extensível](https://extensiblewebmanifesto.org/){: .external }. A ideia é que nós, como desenvolvedores de navegadores, reconheçamos que não somos melhores no desenvolvimento Web do que os desenvolvedores Web. Sendo assim, não devemos fornecer APIs de alto nível limitadas que resolvam um problema específico usando padrões de que *nós* gostamos. Em vez disso, devemos dar acesso total ao navegador para permitir que você o use como quiser, da forma que funcionar melhor para *seus* usuários.
+The service worker was designed as part of the [extensible web](https://extensiblewebmanifesto.org/){: .external }. The idea is that we, as browser developers, acknowledge that we are not better at web development than web developers. And as such, we shouldn't provide narrow high-level APIs that solve a particular problem using patterns *we* like, and instead give you access to the guts of the browser and let you do it how you want, in a way that works best for *your* users.
 
-Por isso, para permitir o maior número possível de padrões, todo o ciclo de atualização pode ser observado:
+So, to enable as many patterns as we can, the whole update cycle is observable:
 
     navigator.serviceWorker.register('/sw.js').then(reg => {
       reg.installing; // the installing worker, or undefined
       reg.waiting; // the waiting worker, or undefined
       reg.active; // the active worker, or undefined
-
+    
       reg.addEventListener('updatefound', () => {
         // A wild service worker has appeared in reg.installing!
         const newWorker = reg.installing;
-
+    
         newWorker.state;
         // "installing" - the install event has fired, but not yet complete
         // "installed"  - install complete
@@ -667,22 +626,23 @@ Por isso, para permitir o maior número possível de padrões, todo o ciclo de a
         // "activated"  - fully active
         // "redundant"  - discarded. Either failed install, or it's been
         //                replaced by a newer version
-
+    
         newWorker.addEventListener('statechange', () => {
           // newWorker.state has changed
         });
       });
     });
-
+    
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       // This fires when the service worker controlling this page
       // changes, eg a new worker has skipped waiting and become
       // the new active worker.
     });
+    
 
-## Você sobreviveu!
+## You survived!
 
-Está tudo bem! Ufa! Quanta teoria técnica. Fique atento, nas próximas semanas falaremos em detalhes sobre algumas aplicações práticas de tudo que foi abordado aqui.
+Phew! That was a lot of technical theory. Stay tuned in the coming weeks where we'll dive into some practical applications of the above.
 
 ## Feedback {: #feedback }
 

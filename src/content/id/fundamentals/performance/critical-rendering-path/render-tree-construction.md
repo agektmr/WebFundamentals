@@ -1,98 +1,84 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: TODO
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: TODO
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Layout,Blink>Paint #}
 
-# Konstruksi Pohon Render, Layout, dan Menggambar {: .page-title }
+# Render-tree Construction, Layout, and Paint {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Pohon CSSOM dan DOM digabungkan ke dalam satu pohon render, yang selanjutnya digunakan 
- untuk menghitung layout dari setiap elemen yang terlihat dan berfungsi sebagai masukan ke 
-proses menggambar yang merender piksel ke layar. Mengoptimalkan masing-masing langkah 
-ini penting untuk mencapai kinerja rendering yang optimal.
+The CSSOM and DOM trees are combined into a render tree, which is then used to compute the layout of each visible element and serves as an input to the paint process that renders the pixels to screen. Optimizing each of these steps is critical to achieving optimal rendering performance.
 
-Dalam bagian sebelumnya mengenai pengkonstruksian model objek, kami membangun DOM dan
-pohon CSSOM berdasarkan masukan HTML dan CSS. Akan tetapi, keduanya merupakan
-objek independen yang merekam berbagai aspek dokumen yang berbeda: satu
-menjelaskan materi dan yang lainnya menjelaskan aturan gaya yang harus
-diterapkan pada dokumen. Bagaimana kita menggabungkan keduanya dan memerintahkan browser untuk merender
-piksel pada layar?
+In the previous section on constructing the object model, we built the DOM and the CSSOM trees based on the HTML and CSS input. However, both of these are independent objects that capture different aspects of the document: one describes the content, and the other describes the style rules that need to be applied to the document. How do we merge the two and get the browser to render pixels on the screen?
 
 ### TL;DR {: .hide-from-toc }
-- Pohon DOM dan CSSOM digabungkan untuk membentuk pohon render.
-- Pohon render hanya mengandung simpul yang dibutuhkan untuk merender laman.
-- Layout menghitung posisi dan ukuran sebenarnya dari setiap objek.
-- Menggambar adalah langkah terakhir yang berlangsung di pohon render dan merender piksel ke layar.
 
+* The DOM and CSSOM trees are combined to form the render tree.
+* Render tree contains only the nodes required to render the page.
+* Layout computes the exact position and size of each object.
+* The last step is paint, which takes in the final render tree and renders the pixels to the screen.
 
-Langkah pertama adalah agar browser menggabungkan DOM dan CSSOM menjadi satu "pohon render" yang merekam semua materi DOM yang terlihat pada laman dan semua informasi gaya CSSOM untuk setiap simpul.
+First, the browser combines the DOM and CSSOM into a "render tree," which captures all the visible DOM content on the page and all the CSSOM style information for each node.
 
-<img src="images/render-tree-construction.png" alt="DOM dan CSSOM digabungkan untuk membuat pohon render" >
+<img src="images/render-tree-construction.png" alt="DOM and CSSOM are combined to create the render tree" />
 
-Untuk mengonstruksikan pohon render, browser secara kasar kira-kira melakukan yang berikut:
+To construct the render tree, the browser roughly does the following:
 
-1. Memulai pada akar pohon DOM, menyusuri setiap simpul yang terihat.
+1. Starting at the root of the DOM tree, traverse each visible node.
+    
+    * Some nodes are not visible (for example, script tags, meta tags, and so on), and are omitted since they are not reflected in the rendered output.
+    * Some nodes are hidden via CSS and are also omitted from the render tree; for example, the span node\---in the example above\---is missing from the render tree because we have an explicit rule that sets the "display: none" property on it.
 
-    * Sebagian simpul sama sekali tidak terlihat (misalnya, tag skrip, tag meta, dst.), serta ditiadakan karena tidak tercermin dalam keluaran yang dirender.
-    * Beberapa simpul tersembunyi melalui CSS dan juga dihilangkan dari pohon render; misalnya, simpul rentang---dalam contoh di atas---hilang dari pohon render karena kita memiliki aturan eksplisit yang menetapkan properti "display: none" di sana.
+2. For each visible node, find the appropriate matching CSSOM rules and apply them.
 
-1. Untuk setiap simpul yang terlihat, temukan aturan CSSOM yang sesuai dan terapkan.
-1. Pancarkan simpul yang terlihat dengan materi dan gaya terkomputasi.
+3. Emit visible nodes with content and their computed styles.
 
-Note: Untuk catatan, perhatikan bahwa `visibility: hidden` berbeda dari `display: none`. Yang pertama membuat elemen tidak terlihat, namun elemen itu masih menempati ruang dalam layout (yaitu dirender sebagai kotak kosong), sementara yang kedua (`display: none`) meniadakan seluruh elemen dari pohon render sedemikian hingga elemen itu tidak terlihat dan bukan merupakan bagian dari layout.
+Note: As a brief aside, note that `visibility: hidden` is different from `display: none`. The former makes the element invisible, but the element still occupies space in the layout (that is, it's rendered as an empty box), whereas the latter (`display: none`) removes the element entirely from the render tree such that the element is invisible and is not part of the layout.
 
-Keluaran akhirnya adalah sebuah render yang berisi materi serta informasi gaya dari semua materi yang terlihat pada layar.  **Dengan telah ditetapkannya pohon render, kita bisa melanjutkan ke tahapan "layout".**
+The final output is a render that contains both the content and style information of all the visible content on the screen. **With the render tree in place, we can proceed to the "layout" stage.**
 
-Sejauh ini kita telah menghitung simpul mana yang harus terlihat dan gaya terkomputasi, namun kita belum menghitung posisi dan ukuran persisnya di dalam [tampilan yang terlihat](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) perangkat---itulah tahap "layout", disebut juga "mengubah posisi/geometri."
+Up to this point we've calculated which nodes should be visible and their computed styles, but we have not calculated their exact position and size within the [viewport](/web/fundamentals/design-and-ux/responsive/#set-the-viewport) of the device\---that's the "layout" stage, also known as "reflow."
 
-Untuk menghitung ukuran dan posisi persisnya dari setiap objek pada laman, browser akan memulai di akar pohon render dan menjalankannya. Mari kita lihat contoh praktik sederhana berikut ini:
+To figure out the exact size and position of each object on the page, the browser begins at the root of the render tree and traverses it. Let's consider a simple, hands-on example:
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/critical-rendering-path/_code/nested.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/critical-rendering-path/nested.html){: target="_blank" .external }
 
-Tubuh laman di atas mengandung dua div yang disarangkan: div pertama (induk) menetapkan ukuran tampilan dari simpul hingga 50% dari lebar tampilan yang terlihat, dan div kedua---yang ditampung oleh induk---menetapkan lebarnya sebagai 50% dari induknya; yaitu, 25% dari lebar tampilan yang terlihat.
+The body of the above page contains two nested div's: the first (parent) div sets the display size of the node to 50% of the viewport width, and the second div\---contained by the parent\---sets its width to be 50% of its parent; that is, 25% of the viewport width.
 
-<img src="images/layout-viewport.png" alt="Menghitung informasi layout" >
+<img src="images/layout-viewport.png" alt="Calculating layout information" />
 
-Keluaran dari proses layout adalah "model kotak" yang dengan persis merekam posisi yang tepat dan ukuran dari setiap elemen di dalam tampilan yang terlihat: semua pengukuran relatif dikonversikan ke posisi piksel absolut dari layar.
+The output of the layout process is a "box model," which precisely captures the exact position and size of each element within the viewport: all of the relative measurements are converted to absolute pixels on the screen.
 
-Terakhir, setelah kini kita mengetahui simpul mana yang terlihat, gaya perhitungannya, dan geometri, akhirnya kita bisa meneruskan informasi ini ke tahap terakhir yang akan mengonversikan setiap simpul dalam pohon render ke piksel sebenarnya pada layar. Langkah ini sering disebut "painting" (penggambaran) atau "rasterizing" (rasterisasi).
+Finally, now that we know which nodes are visible, and their computed styles and geometry, we can pass this information to the final stage, which converts each node in the render tree to actual pixels on the screen. This step is often referred to as "painting" or "rasterizing."
 
-Ini dapat dilakukan kapan saja karena browser harus melakukan cukup banyak pekerjaan. Namun, Chrome DevTools dapat menyediakan beberapa wawasan ke dalam tiga tahapan yang dijelaskan di atas. Marilah kita mempelajari tahap layout untuk contoh "hello world" awal kita:
+This can take some time because the browser has to do quite a bit of work. However, Chrome DevTools can provide some insight into all three of the stages described above. Let's examine the layout stage for our original "hello world" example:
 
-<img src="images/layout-timeline.png" alt="Mengukur layout di DevTools" >
+<img src="images/layout-timeline.png" alt="Measuring layout in DevTools" />
 
-* Kejadian "Layout" menangkap konstruksi pohon render, posisi, dan perhitungan ukuran di Timeline.
-* Setelah layout selesai, browser akan menerbitkan kejadian "Paint Setup" dan "Paint" yang mengonversikan pohon render ke piksel sebenarnya pada layar.
+* The "Layout" event captures the render tree construction, position, and size calculation in the Timeline.
+* When layout is complete, the browser issues "Paint Setup" and "Paint" events, which convert the render tree to pixels on the screen.
 
-Waktu yang diperlukan untuk melakukan konstruksi pohon render, layout dan menggambar akan berbeda-beda berdasarkan ukuran dokumen, gaya yang diterapkan, dan tentu saja, perangkat yang menjalankannya: semakin besar dokumen, semakin banyak tugas yang harus dilakukan browser, semakin rumit gayanya, semakin lama waktu yang dihabiskan untuk penggambaran juga (mis. warna solid "mudah" digambar, dan bayangan jatuh jauh lebih "sulit" dihitung dan dirender).
+The time required to perform render tree construction, layout and paint varies based on the size of the document, the applied styles, and the device it is running on: the larger the document, the more work the browser has; the more complicated the styles, the more time taken for painting also (for example, a solid color is "cheap" to paint, while a drop shadow is "expensive" to compute and render).
 
-Laman ini akhirnya bisa dilihat di tampilan yang terlihat:
+The page is finally visible in the viewport:
 
-<img src="images/device-dom-small.png" alt="Laman Hello World yang dirender" >
+<img src="images/device-dom-small.png" alt="Rendered Hello World page" />
 
-Ini adalah rekap cepat langkah-langkah browser:
+Here's a quick recap of the browser's steps:
 
-1. Memproses markup HTML dan membangun pohon DOM.
-1. Memproses markup CSS dan membangun pohon CSSOM.
-1. Memadukan DOM dan CSSOM ke dalam pohon render.
-1. Menjalankan layout pada pohon render untuk menghitung geometri setiap simpul.
-1. Menggambar setiap simpul ke layar.
+1. Process HTML markup and build the DOM tree.
+2. Process CSS markup and build the CSSOM tree.
+3. Combine the DOM and CSSOM into a render tree.
+4. Run layout on the render tree to compute geometry of each node.
+5. Paint the individual nodes to the screen.
 
-Laman demo kami mungkin tampak sederhana, namun memerlukan cukup banyak pekerjaan! Jika DOM atau CSSOM dimodifikasi, Anda harus mengulangi proses untuk mencari tahu piksel yang perlu dirender di layar.
+Our demo page may look simple, but it requires quite a bit of work. If either the DOM or CSSOM were modified, you would have to repeat the process in order to figure out which pixels would need to be re-rendered on the screen.
 
-**_Mengoptimalkan jalur rendering penting_ adalah proses meminimalkan jumlah total waktu yang dihabiskan dalam langkah 1 sampai 5 pada urutan di atas.** Hal itu memungkinkan kita untuk merender materi ke layar sesegera mungkin dan juga mengurangi jumlah waktu antara pembaruan layar setelah render awal - yaitu mencapai laju penyegaran untuk materi interaktif.
+***Optimizing the critical rendering path* is the process of minimizing the total amount of time spent performing steps 1 through 5 in the above sequence.** Doing so renders content to the screen as quickly as possible and also reduces the amount of time between screen updates after the initial render; that is, achieve higher refresh rates for interactive content.
 
-<a href="render-blocking-css" class="gc-analytics-event"
-    data-category="CRP" data-label="Next / Render-Blocking CSS">
-  <button>Berikutnya: CSS Pemblokiran Render</button>
-</a>
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

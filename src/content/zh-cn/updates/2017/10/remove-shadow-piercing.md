@@ -1,43 +1,38 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: 向shadow-piercing CSS选择器说再见。
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Say goodbye to shadow-piercing CSS selectors.
 
-{# wf_updated_on: 2017-10-24 #}
-{# wf_published_on: 2017-10-24 #}
-{# wf_tags: webcomponents,shadowdom,style,css,deprecations,removals #}
-{# wf_featured_image: /web/updates/images/generic/styles.png #}
-{# wf_featured_snippet: 向shadow-piercing CSS选择器说再见。 #}
-{# wf_blink_components: Blink>DOM #}
+{# wf_updated_on: 2018-07-12 #} {# wf_published_on: 2017-10-24 #} {# wf_tags: webcomponents,shadowdom,style,css,deprecations,removals,chrome63 #} {# wf_featured_image: /web/updates/images/generic/styles.png #} {# wf_featured_snippet: Say goodbye to shadow-piercing CSS selectors. #} {# wf_blink_components: Blink>DOM #}
 
-# Chrome 63将删除::shadow 和 /deep/ {: .page-title }
+{% include "web/updates/_shared/see-all-dep-rem.html" %}
+
+# Removing ::shadow and /deep/ in Chrome 63 {: .page-title }
 
 {% include "web/_shared/contributors/robdodson.html" %}
 
+Starting in Chrome 63, you cannot use the shadow-piercing selectors `::shadow` and `/deep/` to style content inside of a shadow root.
 
-在Chrome63之后，你将无法使用shadow-piercing 选择器， `::shadow` 和 `/deep/` 来设计(style) shadow root里面的内容。
+- The `/deep/` combinator will act as a descendant selector. `x-foo /deep/ div` will work like `x-foo div`.
+- The `::shadow` pseudo-element will not match any elements.
 
-- `/deep/` 组合者(combinator)将会成为后代选择器。 `x-foo /deep/ div` 将会当成 `x-foo div`.
-- `::shadow` 伪元素(pseudo-element)将不会匹配任何元素。
+Note: If your site uses Polymer, the team has put together [a thorough guide](https://www.polymer-project.org/blog/2017-10-18-upcoming-changes.html) walking through steps to migrate off of `::shadow` and `/deep/`.
 
-Note: 如果你的網頁使用Polymer, Polymer團隊已發布了一個[如何讓你迁移](https://www.polymer-project.org/blog/2017-10-18-upcoming-changes.html) `::shadow` 和 `/deep/`的文章。
+## The decision to remove
 
-## 决定删除::shadow 和 /deep/ 的原因
+The `::shadow` and `/deep/` were deprecated in Chrome version 45. This was decided by all of the participants at the [April 2015 Web Components meetup](https://www.w3.org/wiki/Webapps/WebComponentsApril2015Meeting).
 
-`::shadow` 和 `/deep/` 已经在Chrome 45被弃用了。这是在[2015年4月由Web组件聚会](https://www.w3.org/wiki/Webapps/WebComponentsApril2015Meeting)中的全部的出席者决定的。
+The primary concern with shadow-piercing selectors is that they violate encapsulation and create situations where a component can no longer change its internal implementation.
 
-目前，shadow-piercing选择器的问题是它违反了封装(encapsulation)以及在某些时候组件无法更改组件的内部实施。
+Note: For the moment, `::shadow` and `/deep/` will continue to work with JavaScript APIs like `querySelector()` and `querySelectorAll()`. Ongoing support for these APIs is being [discussed on GitHub](https://github.com/w3c/webcomponents/issues/78).
 
-Note: 目前JavaScript API如`querySelector()` 和`querySelectorAll()`会继续支持`::shadow` 和`/deep/`。目前这API的支持[正在在GitHub上讨论](https://github.com/w3c/webcomponents/issues/78)。
+The [CSS Shadow Parts](https://tabatkins.github.io/specs/css-shadow-parts/) spec is being advanced as an alternative to shadow piercing selectors. Shadow Parts will allow a component author to expose named elements in a way that preserves encapsulation and still allows page authors the ability to style multiple properties at once.
 
+## What should I do if my site uses ::shadow and /deep/?
 
-[CSS Shadow Parts](https://tabatkins.github.io/specs/css-shadow-parts/)的规范正在被推进为shadow piercing选择器的替代。 Shadow Parts 将会允许组件的开发者公开指定的元素。这将会保留封装(encapsulation) 并允许网页的开发者可以一次过设计(style)多个属性。
+The `::shadow` and `/deep/` selectors only affect legacy Shadow DOM v0 components. If you're using Shadow DOM v1, you should not need to change anything on your site.
 
-## 如果我的网页使用了::shadow and /deep/我应该要怎样呢?
+You can use [Chrome Canary](https://www.google.com/chrome/browser/canary.html) to verify your site does not break with these new changes. If you notice issues, try and remove any usage of `::shadow` and `/deep/`. If it's too difficult to remove usage of these selectors, consider switching from native shadow DOM over to the shady DOM polyfill. You should only need to make this change if your site relies on native shadow DOM v0.
 
-`::shadow` 和 `/deep/` 选择器只会影响旧版的Shadow DOM v0组件。如果您已使用Shadow DOM v1，您不必为您的网页更改任何东西。
+## More information
 
-您可以使用[Chrome Canary](https://www.google.com/chrome/browser/canary.html)来确认您的网站不会因这更新而导致故障。如果你发现了问题，您可以尝试删除代码中所有的`::shadow` 和 `/deep/`。如果删除这些选择器对您来说太复杂，您可以尝试考虑用shady DOM polyfill来代替native shadow DOM。如果你的网页正在使用native shadow DOM v0，你才要需要做这个改变。
+[Intent to Remove](https://groups.google.com/a/chromium.org/d/topic/blink-dev/HX5Y8Ykr5Ns/discussion) &#124; [Chromestatus Tracker](https://www.chromestatus.com/feature/6750456638341120) &#124; [Chromium Bug](https://bugs.chromium.org/p/chromium/issues/detail?id=489954)
 
-Translated by
-{% include "web/_shared/contributors/henrylim.html" %}
-
+{% include "web/_shared/rss-widget-updates.html" %}

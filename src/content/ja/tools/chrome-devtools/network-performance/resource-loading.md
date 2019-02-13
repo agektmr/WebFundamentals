@@ -1,586 +1,464 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:Chrome DevTools の [Network] パネルを使って、ウェブ アプリケーションのネットワーク パフォーマンスを測定します。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Measure the network performance of your web application using the Chrome DevTools Network panel.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-04-13 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# リソース読み込み時間の測定 {: .page-title }
+# Measure Resource Loading Times {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
+Warning: This page is deprecated. At the top of each section, there's a link to an up-to-date page where you can find similar information.
 
-Warning: このページは推奨されていません。 各セクションの上部には、同じ情報が載っている最新ページへのリンクがあります。
+Measure the network performance of your site using the
+<strong>Network</strong> panel.
 
-
-サイトのネットワーク パフォーマンスを測定するには、<strong>[Network]</strong> パネルを使用します。
-
-
-
-**[Network]** パネルでは、タイミングの詳細データ、HTTP リクエストとレスポンスのヘッダー、Cookie など、ページでの各ネットワーク操作についての情報が記録されます。
-
-
-
+The **Network** panel records information about each network operation on a page, including detailed timing data, HTTP request and response headers, cookies, and more.
 
 ### TL;DR {: .hide-from-toc }
-- [Network] パネルを使って、ネットワーク アクティビティを記録、分析します。
-- リソースの読み込み情報を集約した状態で、またはリソースごとに個別に表示します。
-- フィルタをかけ、並べ替えてリソースの表示方法を変えます。
-- ネットワークの記録を保存、コピー、クリアします。
-- ニーズに合わせて [Network] パネルをカスタマイズします。
 
-## [Network] パネルの概要
+* Use the Network panel to record and analyze network activity.
+* View load information in aggregate or for individual resources.
+* Filter and sort how resources are displayed.
+* Save, copy, and clear network recordings.
+* Customize the Network panel to your needs.
+
+## Network panel overview
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、以下のセクションをご覧ください。
-
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#controls">[Controls] ペイン</a></li>
-    <li><a href="reference#filters">[Filters] ペイン</a></li>
-    <li><a href="reference#overview">[Overview] ペイン</a></li>
-    <li><a href="reference#requests">[Requests] ペイン</a></li>
-    <li><a href="reference#summary">[Summary] ペイン</a></li>
+    <li><a href="reference#controls">Controls pane</a></li>
+    <li><a href="reference#filters">Filters pane</a></li>
+    <li><a href="reference#overview">Overview pane</a></li>
+    <li><a href="reference#requests">Requests pane</a></li>
+    <li><a href="reference#summary">Summary pane</a></li>
   </ul>
 </aside>
 
-[Network] パネルは以下の 5 つのペインで構成されます。
+The Network panel consists of five panes:
 
-1. **Controls**。 これらのオプションを使って、**[Network]** パネルの外観と機能を管理します。
-2. **Filters**。 これらのオプションを使って、**[Requests Table]** にどのリソースを表示するか管理します。
- 使い方: 複数のフィルタを同時に選択するには、<kbd>Cmd</kbd>（Mac）または <kbd>Ctrl</kbd>
-   （Window/Linux）を押しながらフィルタをクリックします。
-3. **Overview**。 このグラフは、リソースが取得された時点のタイムラインを示します。
-   複数のバーが縦に積み重なっている場合、それらのリソースが同時に取得されたことを表します。
-4. **Requests Table**。 この表には、取得されたリソースがすべて一覧されます。
-   デフォルトでは、この表は時系列に並べ替えられ、先頭が最初に取得されたリソースになります。
-   リソースの名前をクリックすると、詳細情報が表示されます。
-   使い方: 表の見出しのいずれか（**[Timeline]** 以外）を右クリックすると、情報の列を追加または削除できます。
-5. **Summary**。 このペインでは、リクエストの総数、データ転送量、読み込み時間がひと目でわかります。
+1. **Controls**. Use these options to control how the **Network** panel looks and functions.
+2. **Filters**. Use these options to control which resources are displayed in the **Requests Table**. Tip: hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Window/Linux), and then click on a filter to select multiple filters at the same time.
+3. **Overview**. This graph shows a timeline of when resources were retrieved. If you see multiple bars stacked vertically, it means that those resources were retrieved simultaneously.
+4. **Requests Table**. This table lists out every resource that was retrieved. By default, this table is sorted chronologically, with the earliest resources at the top. Clicking on the name of a resource yields more information about it. Tip: right-click on any of the table headers except **Timeline** to add or remove columns of information.
+5. **Summary**. At a glance this pane tells you the total number of requests, amount of data transferred, and load times.
 
+![network panel panes](imgs/panes.png)
 
-![[network] パネルのペイン](imgs/panes.png)
+The **Requests Table** displays the following columns by default. You can [add and remove columns](#add-and-remove-table-columns).
 
-**[Requests Table]** には、以下の列がデフォルトで表示されます。 [列の追加と削除](#add-and-remove-table-columns)が可能です。
+* **Name**. The name of the resource.
+* **Status**. The HTTP status code.
+* **Type**. The MIME type of the requested resource.
+* **Initiator**. The object or process that initiated the request. It can have one of the following values: 
+    * **Parser**. Chrome's HTML parser initiated the request.
+    * **Redirect**. An HTTP redirect initiated the request.
+    * **Script**. A script initiated the request.
+    * **Other**. Some other process or action initiated the request, such as the user navigating to a page via a link, or by entering a URL in the address bar.
+* **Size**. The combined size of the response headers (usually a few hundred bytes) plus the response body, as delivered by the server.
+* **Time**. The total duration, from the start of the request to the receipt of the final byte in the response.
+* **Timeline**. The Timeline column displays a visual waterfall of all network requests. Clicking the header of this column reveals a menu of additional sorting fields.
 
-
-* **Name**。 リソースの名前。
-* **Status**。 HTTP ステータス コード。
-* **Type**。 リクエストされたリソースの MIME タイプ。
-* **Initiator**。 リクエストを開始したオブジェクトまたはプロセス。 以下の値のいずれかになります。
-  * **Parser**。 リクエストを開始したのは Chrome の HTML パーサー。
-  * **Redirect**。 リクエストを開始した HTTP リダイレクト。
-  * **Script**。 リクエストを開始したのはスクリプト。
-  * **Other**。 リクエストを開始したのは上記以外のプロセスまたは操作。ユーザーがリンクを使ってページを移動した場合や、アドレスバーに URL を入力した場合などです。
-* **Size**。 サーバーから配信されたときのレスポンス ヘッダーとレスポンス本文の合計サイズ（通常は、数百バイト）。
-* **Time**。 リクエスト開始からレスポンスの最終バイトを受け取るまでにかかった合計時間。
-* **Timeline**。 [Timeline] 列には、すべてのネットワーク リクエストの流れが目に見える形で表示されます。
- この列見出しをクリックすると、追加の並べ替えフィールドのメニューが表示されます。
-
-
-## ネットワーク アクティビティの記録
+## Record network activity
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#record">記録の開始または終了</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#record">Start or stop recording</a>
+  for up-to-date information.
 </aside>
 
-**[Network]** パネルが開くと、デフォルトでは、DevTools によってすべてのネットワーク アクティビティが記録されます。
- 記録するには、パネルが開いているときにページを再読み込みするか、現在読み込んでいるページでネットワーク アクティビティを待機します。
+When the **Network** panel is open, DevTools records all network activity by default. To record, just reload a page while the panel is open, or wait for network activity on the currently loaded page.
 
+You can tell whether or not DevTools is recording via the **record** button. When it's red (![record button on](imgs/record-on.png){:.inline}), DevTools is recording. When it's grey (![record button off](imgs/record-off.png){:.inline}), DevTools is not recording. Click this button to start or stop recording, or press the keyboard shortcut <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd>.
 
-**記録** ボタンを見れば、DevTools によって記録が行われているかどうかを判断できます。
- ボタンが赤の場合（![記録ボタン オン](imgs/record-on.png)
-{:.inline}）、DevTools は記録中です。
-ボタンが灰色の場合（![記録ボタン オフ](imgs/record-off.png){:.inline}）、DevTools は記録を行っていません。
- 記録を開始または終了するには、このボタンをクリックするか、キーボード ショートカット <kbd>Cmd/Ctrl</kbd>+<kbd>e</kbd> を押します。
-
-
-## 記録中のスクリーンショットの取得 {:#filmstrip}
+## Capture screenshots during recording {:#filmstrip}
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#screenshots">記録中のスクリーンショットの取得</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#screenshots">Capture screenshots during recording</a>
+  for up-to-date information.
 </aside>
 
-**[Network]** パネルでは、ページ読み込み中にスクリーンショットを取得できます。 この機能を **Filmstrip** と呼びます。
+The **Network** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
+Click on the **camera** icon to enable the Filmstrip. When the icon is grey, the Filmstrip is disabled (![filmstrip
+disabled](imgs/filmstrip-disabled.png){:.inline}). When the icon is blue, it is enabled (![filmstrip enabled](imgs/filmstrip-enabled.png){:.inline}).
 
-Filmstrip を有効にするには、**カメラ**アイコンをクリックします。 アイコンが灰色の場合、Filmstrip は無効になっています（![Filmstrip
-無効](imgs/filmstrip-disabled.png)
-{:.inline}）。 アイコンが青の場合、Filmstrip は有効になっています（![Filmstrip 有効](imgs/filmstrip-enabled.png){:.inline}）。
+Reload the page to capture the screenshots. The screenshots are displayed above the **Overview**.
 
-スクリーンショットを取得するには、ページを再読み込みします。 スクリーンショットは **Overview** ペインに表示されます。
+![recording with filmstrip](imgs/filmstrip.png)
 
+When you hover over a screenshot, the **Timeline** displays a vertical yellow line indicating when the frame was captured.
 
-![Filmstrip を使用した記録](imgs/filmstrip.png)
+![filmstrip overlay on timeline](imgs/filmstrip-timeline-overlay.png)
 
-スクリーンショットにカーソルを合わせると、フレームが取得された時点を示す黄色の縦線が **[Timeline]** に表示されます。
+Double-click on a screenshot to view a zoomed version of the screenshot. While a screenshot is zoomed, use the left and right arrows of your keyboard to navigate between screenshots.
 
+![zoomed filmstrip screenshot](imgs/filmstrip-zoom.png)
 
-![[Timeline] 上の Filmstrip のオーバーレイ](imgs/filmstrip-timeline-overlay.png)
-
-スクリーンショットをダブルクリックすると、スクリーンショットが拡大表示されます。 スクリーンショットの拡大表示中は、キーボードの左矢印キーと右矢印キーを使用してスクリーンショット間を移動します。
-
-
-
-![Filmstrip の拡大されたスクリーンショット](imgs/filmstrip-zoom.png)
-
-## DOMContentLoaded イベントと load イベントの情報の表示
+## View DOMContentLoaded and load event information
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#load">load イベントの表示</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#load">View load events</a>
+  for up-to-date information.
 </aside>
 
-**[Network]** パネルには 2 つのイベントがハイライト表示されます。
-[`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) および[`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load)です。
+The **Network** panel highlights two events: [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) and [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load).
 
+`DOMContentLoaded` is fired when the initial markup of a page has been parsed. It is displayed in two places on the **Network** panel:
 
-`DOMContentLoaded` は、ページの最初のマークアップが解析されたときに発生します。
- このイベントは、**[Network]** パネルの以下の 2 か所に表示されます。
+1. The blue vertical bar in the **Overview** pane signifies the event.
+2. In the **Summary** pane you can see the exact time of the event.
 
-1. **[Overview]** ペインの青い縦線がこのイベントを表します。
-2. **[Summary]** ペインにこのイベントの正確な時間が表示されます。
+![DOMContentLoaded event on network panel](imgs/domcontentloaded.png)
 
-![[Network] パネルの DOMContentLoaded イベント](imgs/domcontentloaded.png)
+`load` is fired when a page has fully loaded. It is displayed in three places:
 
-`load` は、ページが完全に読み込まれたときに発生します。 このイベントは、以下の 3 か所に表示されます。
+1. The red vertical bar in the **Overview** pane signifies the event.
+2. The red vertical bar in the **Requests Table** signifies the event, too.
+3. In the **Summary** pane you can see the exact time of the event.
 
-1. **[Overview]** ペインの赤い縦線がこのイベントを表します。
-2. **[Requests Table]** の赤い縦線もこのイベントを表します。
-3. **[Summary]** ペインにこのイベントの正確な時間が表示されます。
+![load event on network panel](imgs/load.png)
 
-![[Network] パネルの load イベント](imgs/load.png)
-
-## 1 つのリソースの詳細を表示
+## View details for a single resource
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#details">詳細を表示</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#details">View details</a>
+  for up-to-date information.
 </aside>
 
-リソース名（**[Requests Table]** の **[Name]** 列にある）をクリックすると、そのリソースに関する詳細情報が表示されます。
+Click on a resource name (under the **Name** column of the **Requests Table**) to view more information about that resource.
 
+The tabs available change depending on what type of resource you've selected, but the four tabs below are most common:
 
-利用できるタブは、選択したリソースの種類によって異なりますが、最も一般的なタブは以下の 4 つです。
+* **Headers**. HTTP headers associated with the resource.
+* **Preview**. Previews of JSON, image, and text resources.
+* **Response**. HTTP response data (if any).
+* **Timing**. A granular breakdown of the request lifecycle for the resource.
 
+![viewing details for a single resource](imgs/network-headers.png)
 
-* **Headers**。 リソースに関連付けられた HTTP ヘッダー。
-* **Preview**。 JSON、イメージ、テキストの各リソースのプレビュー。
-* **Response**。 HTTP レスポンス データ（存在する場合）。
-* **Timing**。 リソースのリクエスト ライフサイクルの詳細。
-
-
-![1 つのリソースの詳細表示](imgs/network-headers.png)
-
-### ネットワークのタイミングの表示
+### View network timing
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#timing">[Timing] タブ</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#timing">Timing tab</a>
+  for up-to-date information.
 </aside>
 
-**[Timing]** タブをクリックすると、1 つのリソースのリクエスト ライフサイクルが詳しく表示されます。
+Click the **Timing** tab to view a granular breakdown of the request lifecycle for a single resource.
 
-
-ライフサイクルは、以下のカテゴリにかかった時間を示します。
+The lifecycle shows how much time is spent in the following categories:
 
 <!-- the screenshot above and list below are redundant, but we include
      the text for SEO -->
 
-* キューイング
-* ストール
-* （該当する場合）:DNS 参照、初期接続、SSL ハンドシェイク
-* リクエスト送信
-* 待機（最初のバイトを受け取るまでの時間（TTFB））
-* コンテンツのダウンロード
+* Queuing
+* Stalled
+* If applicable: DNS lookup, initial connection, SSL handshake
+* Request sent
+* Waiting (Time to first byte (TTFB))
+* Content Download
 
-![[Timing] タブ](imgs/timing-tab.png)
+![timing tab](imgs/timing-tab.png)
 
-**[Timeline]** グラフ内のリソースにマウスカーソルを合わせても、同じ情報が表示されます。
+You can also view this same information by hovering your mouse over a resource within the **Timeline** graph.
 
-
-![タイムライン内の 1 つのリソースのタイミング データ](imgs/timeline-view-hover.png)
+![timing data for one resource in timeline](imgs/timeline-view-hover.png)
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.timing #}
 
-関連ガイド:
+Related Guides:
 
-* [リソース タイミングについて](understanding-resource-timing)
+* [Understanding Resource Timing](understanding-resource-timing)
 
-### HTTP ヘッダーの表示
+### View HTTP headers
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#headers">[Headers] タブ</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#headers">Headers tab</a>
+  for up-to-date information.
 </aside>
 
-**[Headers]** をクリックすると、そのリソースのヘッダーが表示されます。
+Clicking the **Headers** shows the headers for that resource.
 
-**[Headers]** タブには、リソースのリクエスト URL、HTTP メソッド、レスポンスのステータス コードが表示されます。
- また、HTTP レスポンスとリクエスト ヘッダーとその値、クエリ文字列パラメータも一覧表示されます。
+The **Headers** tab displays the resource's request URL, HTTP method, and response status code. Additionally, it lists the HTTP response and request headers and their values, and any query string parameters.
 
+![HTTP headers for a single resource](imgs/network-headers.png)
 
-![1 つのリソースの HTTP ヘッダー](imgs/network-headers.png)
+You can view response headers, request headers, or query string parameters in source or parsed format by clicking the `view source` or `view parsed` link next to each section.
 
-各セクションの横にある `view source` または `view parsed` リンクをクリックすると、レスポンス ヘッダー、リクエスト ヘッダー、またはクエリ文字列パラメータをソース形式か解析後の形式で表示できます。
+![view header source](imgs/view-header-source.png)
 
+You can also view query string parameters in URL-encoded or decoded format by clicking the `view URL encoded` or `view decoded` link next to that section.
 
+![view URL encoded](imgs/view-url-encoded.png)
 
-![ヘッダーのソースの表示](imgs/view-header-source.png)
-
-また、クエリ文字列パラメータ セクションの隣にある `view URL encoded` または `view decoded` リンクをクリックすると、文字列パラメータを URL にエンコードまたはデコードされた形式で表示できます。
-
-
-![URL エンコードの表示](imgs/view-url-encoded.png)
-
-### リソースのプレビュー
+### Preview a resource
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#preview">[Preview] タブ</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preview">Preview tab</a>
+  for up-to-date information.
 </aside>
 
-**[Preview]** タブをクリックすると、そのリソースのプレビューが表示されます。 **[Preview]** タブは、選択したリソースの種類によって、有益な情報を表示する場合もあれば、そうでない場合もあります。
+Click the **Preview** tab to view a preview of that resource. The **Preview** tab may or may not display any useful information, depending on the type of resource you've selected.
 
+![image resource preview](imgs/preview-png.png)
 
-
-![イメージリソースのプレビュー](imgs/preview-png.png)
-
-### HTTP レスポンス コンテンツの表示
+### View HTTP response content
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#response">[Response] タブ</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#response">Response tab</a>
+  for up-to-date information.
 </aside>
 
-**[Response]** タブをクリックすると、リソースの HTTP レスポンスのコンテンツが書式設定なしで表示されます。
- **[Response]** タブは、選択したリソースの種類によって、有益な情報を表示する場合もあれば、そうでない場合もあります。
+Click the **Response** tab to view the resource's unformatted HTTP response content. The **Response** tab may or may not contain any useful information, depending on the type of resource you've selected.
 
+![JSON resource response data](imgs/response-json.png)
 
-![JSON リソースのレスポンス データ](imgs/response-json.png)
-
-### Cookie の表示
+### View cookies
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#cookies">[Cookies] タブ</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#cookies">Cookies tab</a>
+  for up-to-date information.
 </aside>
 
-**[Cookies]** タブをクリックすると、リソースの HTTP リクエストとレスポンスのヘッダーで送信される Cookie の表が表示されます。
- このタブは、Cookie が送信される場合のみ利用できます。
+Click the **Cookies** tab to view a table of cookies transmitted in the resource's HTTP request and response headers. This tab is only available when cookies are transmitted.
 
+Below is a description of each of the columns in the table:
 
-以下に、表内の各列について説明します。
+* **Name**. The cookie's name.
+* **Value**. The cookie's value.
+* **Domain**. The domain the cookie belongs to.
+* **Path**. The URL path the cookie came from.
+* **Expires / Max-Age**. The value of the cookie's expires or max-age properties.
+* **Size**. The size of the cookie in bytes.
+* **HTTP**. Indicates that the cookie should only be set by the browser in the HTTP request, and cannot be accessed with JavaScript.
+* **Secure**. The presence of this attribute indicates that the cookie should only be transmitted over a secure connection.
 
-* **Name**。 Cookie の名前。
-* **Value**。 Cookie の値。
-* **Domain**。 Cookie が所属するドメイン。
-* **Path**。 Cookie の送信元 URL パス。
-* **Expires / Max-Age**。 Cookie の expires プロパティまたは max-age プロパティの値。
-* **Size**。 Cookie のサイズ（バイト単位）。
-* **HTTP**。 Cookie はブラウザが HTTP リクエストで設定し、JavaScript からはアクセスできないことを示します。
-* **Secure**。 この属性が存在する場合、セキュリティ保護された接続経由で Cookie を送信する必要があることを示します。
+![resource cookies](imgs/cookies.png)
 
-
-![リソースの Cookie](imgs/cookies.png)
-
-### WebSocket フレームの表示
+### View WebSocket frames
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#frames">[Frames] タブ</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#frames">Frames tab</a>
+  for up-to-date information.
 </aside>
 
-**[Frames]** タブをクリックすると、[`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) 接続情報が表示されます。
- このタブは、選択したリソースが `WebSocket` 接続を開始した場合にのみ表示されます。
+Click the **Frames** tab to view [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) connection information. This tab is only visible when the selected resource initiated a `WebSocket` connection.
 
+![websocket frames tab](imgs/websocket-frames.png)
 
-![WebSocket の [Frames] タブ](imgs/websocket-frames.png)
+The list below describes each of the columns in the table on the **Frames** tab:
 
-**[Frames]** タブの表に含まれる各列について説明します。
+* **Data**. The message payload. If the message is plain text, it's displayed here. For binary opcodes, this field displays the opcode's name and code. The following opcodes are supported: 
+    * Continuation Frame
+    * Binary Frame
+    * Connection Close Frame
+    * Ping Frame
+    * Pong Frame
+* **Length**. The length of the message payload in bytes.
+* **Time**. The time stamp when the message was created.
 
+Messages are color-coded according to their type:
 
-* **Data**。 メッセージ ペイロード。 メッセージが書式なしテキストの場合、ここに表示されます。
- バイナリ オペコードの場合、このフィールドにはオペコードの名前とコードが表示されます。
- サポートされるオペコードは以下のとおりです。
-  * 継続フレーム
-  * バイナリ フレーム
-  * 接続クローズ フレーム
-  * ping フレーム
-  * pong フレーム
-* **Length**。 メッセージ ペイロードの長さ（バイト単位）。
-* **Time**。 メッセージが作成された時点のタイムスタンプ。
+* Outgoing text messages are color-coded light-green.
+* Incoming text messages are white.
+* WebSocket opcodes are light-yellow.
+* Errors are light-red.
 
-以下のように、メッセージは種類に応じて色分けされます。
+**Notes about current implementation:**
 
-* 発信テキスト メッセージは薄い緑。
-* 着信テキスト メッセージは白。
-* WebSocket オペコードは薄い黄色。
-* エラーは薄い赤。
+* To refresh the **Frames** table after new messages arrive, click the resource name on the left.
+* Only the last 100 `WebSocket` messages are preserved by the **Frames** table.
 
-**現在の実装についての注意事項:**
-
-* 新しいメッセージの到着後に **[Frames]** 表を更新するには、左側のリソース名をクリックします。
-* **[Frames]** 表に保持されるのは、最新の 100 件の `WebSocket` メッセージだけです。
-
-## リソースの開始元と依存関係の表示 {:#initiators-dependencies}
+## View resource initiators and dependencies {:#initiators-dependencies}
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#initiators-dependencies">開始元と依存関係の表示</a> をご覧ください。
-
-
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#initiators-dependencies">View initiators and
+  dependencies</a> for up-to-date information.
 </aside>
 
-<kbd>Shift</kbd> キーを押しながらリソースにカーソルを合わせると、そのリソースの開始元と依存関係が表示されます。
- このセクションでは、**ターゲット** としてカーソルを合わせているリソースについて説明します。
+Hold <kbd>Shift</kbd> and hover over a resource to view its initiators and dependencies. This section refers to the resource that you are hovering over as the **target**.
 
+The first resource above the target that is color-coded green is the initiator of the target. If there is a second resource above that which is color-coded green, that's the initiator of the initiator. Any resources below the target that are color-coded red are dependencies of the target.
 
-ターゲットの上にあり、緑に色付けされ最初のリソースがターゲットの開始元です。
- ターゲットの上に、緑に色付けされた 2 つ目のリソースがある場合、ターゲットの開始元の開始元です。
- ターゲットの下にあり、赤に色付けされたリソースはすべてターゲットに依存します。
+In the screenshot below, the target is `dn/`. The initiator of the target is the script beginning with `rs=AA2Y`. The initiator of the initiator (`rs=AA2Y`) is `google.com`. Last, `dn.js` is a dependency of the target (`dn/`).
 
+![viewing resource initiators and
+dependencies](imgs/initiators-dependencies.png)
 
-以下のスクリーンショットではこのターゲットが `dn/` です。 ターゲットの開始元は、`rs=AA2Y` で始まるスクリプトです。
- その開始元（`rs=AA2Y`）の開始元が `google.com` です。
- 最後に、`dn.js` はターゲット（`dn/`）に依存します。
+Keep in mind that for pages with lots of resources it's possible that you may not be able to see all of the initiators or dependencies.
 
-
-![リソースの開始元と依存関係の表示](imgs/initiators-dependencies.png)
-
-
-多数のリソースを含むページでは、開始元と依存関係が一部表示されない場合があります。
-
-
-## リクエストの並べ替え
+## Sort requests
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#sort-by-activity">アクティビティ フェーズによる並べ替え</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#sort-by-activity">Sort by activity phase</a>
+  for up-to-date information.
 </aside>
 
-デフォルトでは、**[Requests Table]** 内のリソースが各リクエストの開始時間で並べ替えられるため、先頭にあるのが最初に開始されたリクエストになります。
+By default, the resources in the **Requests Table** are sorted by the start time of each request, starting with the earliest requests at the top.
 
+Click on the header of a column to sort the table by each resource's value for that header. Click the same header again to change the sort order to ascending or descending.
 
-列見出しをクリックすると、その見出しのリソース値の順番で表が並べ替えられます。
- もう一度同じ見出しをクリックすると、並べ替えの昇順と降順が切り替わります。
+The **Timeline** column is unique from the others. When clicked, it displays a menu of sort fields:
 
+* **Timeline**. Sorts by the start time of each network request. This is the default sort, and is the same as sorting by the **Start Time** option.
+* **Start Time**. Sorts by the start time of each network request (same as sorting by the **Timeline** option).
+* **Response Time**. Sorts by each request's response time.
+* **End Time**. Sorts by the time when each request completed.
+* **Duration**. Sorts by the total time of each request. Select this filter to determine which resource takes the longest time to load.
+* **Latency**. Sorts by the time between the start of the request and the beginning of the response. Select this filter to determine which resource takes the longest time to first byte (TTFB).
 
-**[Timeline]** 列は他の列とは異なり独自の操作があります。 この列見出しをクリックすると、並べ替えフィールドのメニューが表示されます。
+![Timeline sort fields](imgs/timeline-sort-fields.png)
 
-
-* **Timeline**。 各ネットワーク リクエストを開始時間順に並べ替えます。 これはデフォルトの並べ替え順で、**[Start Time]** オプションで並べ替えるのと同じです。
-* **Start Time**。 各ネットワーク リクエストを開始時間順に並べ替えます（**[Timeline]** オプションで並べ替えるのと同じです）。
-* **Response Time**。 各リクエストをレスポンスにかかった時間順に並べ替えます。
-* **End Time**。 各リクエストを完了時間順に並べ替えます。
-* **Duration**。 各リクエストを合計時間順に並べ替えます。 このフィルタを選択すると、読み込みに最も時間がかかるリソースを判断できます。
-* **Latency**。 リクエストを開始してからレスポンスが始まるまでにかかった時間で並べ替えます。
- このフィルタを選択すると、最初のバイトを受け取るまでの時間（TTFB）が最も長かったリソースを判断できます。
-
-
-![Timeline の並べ替え項目](imgs/timeline-sort-fields.png)
-
-## リクエストのフィルタ処理
+## Filter requests
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#filters">[Filters] パネル</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#filters">Filters panel</a>
+  for up-to-date information.
 </aside>
 
-**[Network]** パネルには、どのリソースを表示するのかフィルタ処理するさまざまな手段が用意されています。
- **[filters]** ボタン (![[filters] ボタン](imgs/filters.png)
-{:.inline})をクリックし、**[filters]** ペインを非表示にしたり表示したりします。
+The **Network** panel provides numerous ways to filter which resources are displayed. Click the **filters** button (![filters button](imgs/filters.png){:.inline}) to hide or display the **Filters** pane.
 
+Use the content type buttons to only display resources of the selected content type.
 
-コンテンツの種類ボタンを使用すると、選択した種類のリソースのみが表示されます。
+Note: Hold <kbd>Cmd</kbd> (Mac) or <kbd>Ctrl</kbd> (Windows/Linux) and then click to enable multiple filters simultaneously.
 
+![multiple content type filters selected
+simultaneously](imgs/multiple-content-type-filters.png)
 
-注: 複数のフィルタを同時に有効にするには、<kbd>Cmd</kbd>（Mac）または <kbd>Ctrl</kbd>（Windows/Linux）を押しながらフィルタをクリックします。
+The **filter** text field is deceptively powerful. If you enter an arbitrary string in it, the **Network** panel only displays the resources whose filenames match the given string.
 
-![複数のコンテンツの種類を同時に選択してフィルタ](imgs/multiple-content-type-filters.png)
+![resource name filtering](imgs/resource-name-filtering.png)
 
+The **filter** text field also supports various keywords that let you sort resources by various properties, such as file size using the `larger-than` keyword.
 
-**フィルタ** のテキスト フィールドはかなり効果的です。 任意の文字列を入力すると、**[Network]** パネルには、入力された文字列に一致するファイル名を持つリソースだけが表示されます。
+The list below describes all of the keywords.
 
+* `domain`. Only display resources from the specified domain. You can use a wildcard character (`*`) to include multiple domains. For example, `*.com` displays resources from all domain names ending in `.com`. DevTools populates the autocomplete dropdown menu with all of the domains it has encountered.
+* `has-response-header`. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete dropdown with all of the response headers that it has encountered.
+* `is`. Use `is:running` to find `WebSocket` resources.
+* `larger-than`. Show resources that are larger than the specified size, in bytes. Setting a value of `1000` is equivalent to setting a value of `1k`.
+* `method`. Show resources that were retrieved over a specified HTTP method type. DevTools populates the dropdown with all of the HTTP methods it has encountered.
+* `mime-type`. Show resources of a specified MIME type. DevTools populates the dropdown with all MIME types it has encountered.
+* `mixed-content`. Show all mixed content resources (`mixed-content:all`) or just the ones that are currently displayed (`mixed-content:displayed`).
+* `scheme`. Show resources retrieved over unprotected HTTP (`scheme:http`) or protected HTTPS (`scheme:https`).
+* `set-cookie-domain`. Show the resources that have a `Set-Cookie` header with a `Domain` attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered.
+* `set-cookie-name`. Show the resources that have a `Set-Cookie` header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered.
+* `set-cookie-value`. Show the resources that have a `Set-Cookie` header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered.
+* `status-code`. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete dropdown menu with all of the status codes it has encountered.
 
+![filtering by file size](imgs/larger-than.png)
 
-![リソース名でのフィルタリング](imgs/resource-name-filtering.png)
+Some of the keywords above mention an autocomplete dropdown menu. To trigger the autocomplete menu, type in the keyword followed by a colon. For example, in the screenshot below typing `domain:` triggered the autocomplete dropdown.
 
-**フィルタ** のテキスト フィールドでは、`larger-than` キーワードを使用してファイルサイズを指定するなど、多様なプロパティでリソースを並べ替えることができるようにさまざまなキーワードがサポートされています。
+![filter text field autocomplete](imgs/filter-autocomplete.png)
 
-
-
-すべてのキーワードについて以下で説明します。
-
-* `domain`。 指定したドメインのリソースのみを表示します。 複数のドメインを含めるには、ワイルドカード文字（`*`）を使用します。
- たとえば、`*.com` はドメイン名が `.com` で終わるすべてのドメインのリソースを表示します。
- DevTools では、見つかったすべてのドメインを含むオートコンプリート ドロップダウン メニューが設定されます。
-* `has-response-header`。 指定した HTTP レスポンス ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべてのレスポンス ヘッダーを含むオートコンプリート ドロップダウンが設定されます。
-* `is`。 `is:running` を使用して、`WebSocket` リソースを検索します。
-* `larger-than`。 指定したサイズ（バイト単位）よりも大きいリソースを表示します。
- 値 `1000` を設定するのと値 `1k` を設定するのは同じです。
-* `method`。 指定した HTTP メソッドの種類で取得されたリソースを表示します。
- DevTools では、見つかったすべての HTTP メソッドを含むドロップダウンが設定されます。
-* `mime-type`。 指定した MIME タイプのリソースを表示します。 DevTools では、見つかったすべての MIME タイプを含むドロップダウンが設定されます。
-* `mixed-content`。 すべての混在コンテンツ リソース（`mixed-content:all`）または現在表示されている混在コンテンツ リソースのみ（`mixed-content:displayed`）を表示します。
-* `scheme`。 保護されていない HTTP （`scheme:http`）または保護されている HTTPS （`scheme:https`）を経由して取得されたリソースを表示します。
-* `set-cookie-domain`。 指定した値と一致する `Domain` 属性を持つ `Set-Cookie` ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべての Cookie ドメインを含むオートコンプリート ドロップダウンが設定されます。
-* `set-cookie-name`。 指定した値と一致する名前を持つ `Set-Cookie` ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべての Cookie 名を含むオートコンプリート ドロップダウンが設定されます。
-* `set-cookie-value`。 指定した値と一致する値を持つ `Set-Cookie` ヘッダーを含むリソースを表示します。
- DevTools では、見つかったすべての Cookie 値を含むオートコンプリート ドロップダウンが設定されます。
-* `status-code`。 指定したコードと一致する HTTP ステータス コードを持つリソースだけを表示します。
- DevTools では、見つかったすべてのステータス コードを含むオートコンプリート ドロップダウン メニューが設定されます。
-
-
-![ファイルサイズによるフィルタリング](imgs/larger-than.png)
-
-上記のキーワードのいくつかで、オートコンプリート ドロップダウン メニューに触れています。 オートコンプリート メニューをトリガーするには、キーワードの後にコロンを入力します。
- たとえば、以下のスクリーンショットでは「`domain:`」と入力して、オートコンプリート ドロップダウンをトリガーしています。
-
-
-![テキスト フィールドのオートコンプリートでフィルタ](imgs/filter-autocomplete.png)
-
-## ネットワーク情報のコピー、保存、クリア
+## Copy, save, and clear network information
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、以下のセクションをご覧ください。
-
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#copy"> 1 つまたはすべてのリクエストのコピー</a></li>
-    <li><a href="reference#save-as-har">コンテンツ付きで HAR として保存</a></li>
-    <li><a href="reference#clear-cache">ブラウザ キャッシュのクリア</a></li>
-    <li><a href="reference#clear-cookies">ブラウザ cookie のクリア</a></li>
+    <li><a href="reference#copy">Copy one or all requests</a></li>
+    <li><a href="reference#save-as-har">Save as HAR with content</a></li>
+    <li><a href="reference#clear-cache">Clear browser cache</a></li>
+    <li><a href="reference#clear-cookies">Clear browser cookies</a></li>
   </ul>
 </aside>
 
-ネットワーク情報をコピー、保存、または削除するには、**[Requests Table]** 内でその情報を右クリックします。
- 一部のオプションは状況に依存するため、1 つのリソースを操作する場合、そのリソースの行を右クリックする必要があります。
+Right-click within the **Requests Table** to copy, save, or delete network information. Some of the options are context-sensitive, so if you want to operate on a single resource, you need to right-click on that resource's row. The list below describes each of the options.
 
- 以下に、それぞれのオプションについて説明します。
+* **Copy Response**. Copies the HTTP response of the selected resource to the system clipboard.
+* **Copy as cURL**. Copies the network request of the selected resource as a [cURL](http://curl.haxx.se/){: .external } command string to the system clipboard. See [Copying requests as cURL commands](#copy-requests-as-curl-commands).
+* **Copy All as HAR**. Copies all resources to the system clipboard as [HAR](https://en.wikipedia.org/wiki/.har){: .external } data. A HAR file contains a JSON data structure that describes the network "waterfall". Several [third-party](https://ericduran.github.io/chromeHAR/){: .external } [tools](https://code.google.com/p/harviewer/){: .external } can reconstruct the network waterfall from the data in the HAR file. See [Web Performance Power Tool: HTTP Archive (HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/) for more information.
+* **Save as HAR with Content**. Saves all network data to an HAR file along with each page resource. Binary resources, including images, are encoded as Base64-encoded text.
+* **Clear Browser Cache**. Clear the browser cache. **Tip**: You can also enable or disable the browser cache from the [**Network Conditions**](/web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions) drawer.
+* **Clear Browser Cookies**. Clear the browser's cookies.
+* **Open in Sources Panel**. Open the selected resource in the **Sources** panel.
+* **Open Link in New Tab**. Opens the selected resource in a new tab. You can also double-click the resource name in the Network table.
+* **Copy Link Address**. Copies the resource URL to the system clipboard.
+* **Save**. Save the selected text resource. Only displayed on text resources.
+* **Replay XHR**. Re-send the selected `XMLHTTPRequest`. Only displayed on XHR resources.
 
-* **Copy Response**。 選択したリソースの HTTP レスポンスをシステム クリップボードにコピーします。
-* **Copy as cURL**。 選択したリソースのネットワーク リクエストを [cURL](http://curl.haxx.se/){: .external } コマンド文字列としてシステム クリップボードにコピーします。
-  [リクエストを cURL コマンドとしてコピーする](#copy-requests-as-curl-commands)をご覧ください。
-* **Copy All as HAR**。 すべてのリソースを [HAR](https://en.wikipedia.org/wiki/.har){: .external } データとしてシステム クリップボードにコピーします。
-  HAR ファイルには、ネットワークの「ウォーターフォール」について記述する JSON データ構造が含まれています。
- いくつかの [サード パーティ](https://ericduran.github.io/chromeHAR/){: .external }
-  の [ツール](https://code.google.com/p/harviewer/){: .external } は、HAR ファイル内のデータからネットワーク ウォーターフォールを再構築できます。
- 詳細については、「[Web Performance Power Tool:
-HTTP Archive (HAR)](https://www.igvita.com/2012/08/28/web-performance-power-tool-http-archive-har/)」をご覧ください。
-* **Save as HAR with Content**。 すべてのネットワーク データを各ページリソースと共に HAR ファイルに保存します。
- イメージなどのバイナリ リソースは、Base64 エンコードのテキストとしてエンコードされます。
-* **Clear Browser Cache**。 ブラウザ キャッシュをクリアします。
-  **ヒント**:[**Network conditions**][nc] ドロワーからブラウザ キャッシュを有効または無効にすることもできます。
-* **Clear Browser Cookies**。 ブラウザの Cookie をクリアします。
-* **Open in Sources Panel**。 選択したリソースを **[Sources]** パネルで開きます。
-* **Open Link in New Tab**。 選択したリソースを新しいタブで開きます。 [Network] の表内のリソース名をダブルクリックすることもできます。
-* **Copy Link Address**。 リソースの URL をシステム クリップボードにコピーします。
-* **Save**。 選択したテキスト リソースを保存します。 テキスト リソースのみに表示されます。
-* **Replay XHR**。 選択した `XMLHTTPRequest` を再送信します。 XHR リソースのみに表示されます。
+![copy and save context menu](imgs/copy-save-menu.png)
 
-
-![コピーと保存のコンテキスト メニュー](imgs/copy-save-menu.png)
-
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-
-### 1 つまたはすべてのリクエストを cURL コマンドとしてコピー {: #curl }
+### Copy one or all requests as cURL commands {: #curl }
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#copy"> 1 つまたはすべてのリクエストをコピー</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#copy">Copy one or all requests</a>
+  for up-to-date information.
 </aside>
 
-[cURL](http://curl.haxx.se/){: .external } は、HTTP トランザクションを作成するコマンドライン ツールです。
+[cURL](http://curl.haxx.se/){: .external } is a command line tool for making HTTP transactions.
 
+Right-click on a resource within the Requests Table, hover over **Copy** and then select **Copy as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
-[Requests Table] 内のリソースを右クリックし、**[Copy]** にカーソルを合わせて **[Copy as cURL]** を選択すると、[Network] パネルで検出されたすべてのリソースの cURL リクエスト文字列がコピーされます。
+![Copy single request as cURL command](imgs/copy-as-curl.png)
 
+Select **Copy All as cURL** to copy a string of cURL requests for all resources that have been detected by the Network panel.
 
+When you copy all, filtering is ignored (e.g. if you filter the Network panel to only display CSS resources and then press **Copy All as cURL**, you'll get all the detected resources, not just the CSS).
 
-![1 つのリクエストを cURL コマンドとしてコピー](imgs/copy-as-curl.png)
-
-**[Copy All as cURL]** を選択すると、[Network] パネルで検出されたすべてのリソースの cURL リクエスト文字列がコピーされます。
-
-
-すべてをコピーする場合は、フィルタは無視されます（たとえば、 [Network] パネルでフィルタして CSS リソースのみを表示した状態で **[Copy All as cURL]** を選択すると、CSS だけではなく検出されたリソースすべてがコピーされます）。
-
-
-
-## [Network] パネルのカスタマイズ
+## Customize the Network panel
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#request-rows">リクエストの表示にサイズの大きい行またはサイズの小さい行を使用する</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#request-rows">Use large or small requests rows</a>
+  for up-to-date information.
 </aside>
 
-デフォルトの **[Requests Table]** には、短いサイズの行でリソースが表示されます。 **[Use large resource rows]** ボタン（![リソースをサイズの大きい行で表示ボタン](imgs/large-resource-rows-button.png){:.inline}）をクリックして、各行のサイズを大きくします。
+By default the **Requests Table** displays resources with small rows. Click the **Use large resource rows** button (![large resource rows button](imgs/large-resource-rows-button.png){:.inline}) to increase the size of each row.
 
+Large rows enable some columns to display two text fields: a primary field and a secondary field. The column header indicates the meaning of the secondary field.
 
-サイズの大きい行を使用すると、列によっては 2 つのテキストフィールド（プライマリ フィールドとセカンダリ フィールド）が表示されるようになります。
- その列見出しにはセカンダリ フィールドの意味が示されます。
+![large resource rows](imgs/large-resource-rows.png)
 
-
-![サイズを増やしたリソース行](imgs/large-resource-rows.png)
-
-### 表への列の追加と削除
+### Add and remove table columns
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、以下のセクションをご覧ください。
-
+  <b>Warning:</b> This page is deprecated. See following sections for up-to-date
+  information:
   <ul>
-    <li><a href="reference#columns">列の表示または非表示</a></li>
-    <li><a href="reference#custom-columns">カスタム列を追加</a></li>
+    <li><a href="reference#columns">Show or hide columns</a></li>
+    <li><a href="reference#custom-columns">Add custom columns</a></li>
   </ul>
 </aside>
 
-列を追加または削除するには、**[Requests Table]** の見出しのいずれかを右クリックします。
+Right-click on any of the headers in the **Requests Table** to add or remove columns.
 
+![Add or remove columns](imgs/add-remove-columns.png)
 
-![列を追加または削除する](imgs/add-remove-columns.png)
-
-### ナビゲーション時のネットワーク ログの保存
+### Preserve the network log upon navigation
 
 <aside class="warning">
-  <b>Warning: </b> このページは推奨されていません。 最新情報については、<a href="reference#preserve-log">ログの保存</a>
-
-  をご覧ください。
+  <b>Warning:</b> This page is deprecated. See
+  <a href="reference#preserve-log">Preserve log</a>
+  for up-to-date information.
 </aside>
 
-ネットワーク アクティビティの記録は、デフォルトでは、現在のページを再読み込みするか別のページを読み込むたびに破棄されます。
-**[Preserve log]** チェックボックスをオンにすると、このようなシナリオでもネットワークの以前のログが保存されます。
- 新しいレコードは、**[Requests Table]** の下に追加されます。
+By default, the network activity recording is discarded whenever you reload the current page or load a different page. Enable the **Preserve log** checkbox to save the network log across these scenarios. New records are appended to the bottom of the **Requests Table**.
 
-## 参考資料
+## Additional resources
 
-アプリケーションのネットワーク パフォーマンスの最適化については、以下の資料で詳細をご覧ください。
+To learn more optimizing the network performance of your application, see the following resources:
 
-* サイトに適用できるパフォーマンスのベスト プラクティスを特定するには、[PageSpeed Insights](/speed/pagespeed/insights) を使用し、それらのベスト プラクティスを適用するプロセスを自動化するには、[PageSpeed 最適化ツール](/speed/pagespeed/optimization)を使用します。
-* [Google Chrome の高パフォーマンス ネットワーク](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/)では、Chrome ネットワークの内部と、それを利用してサイトを高速にする方法について説明されています。
-* [GZIP による圧縮の仕組み](/speed/articles/gzip)では、GZIP 圧縮の概要と GZIP が適している理由について説明されています。
-* [ウェブ パフォーマンスのベスト プラクティス](/speed/docs/best-practices/rules_intro)では、ウェブページまたはウェブ アプリケーションのネットワーク パフォーマンスを最適化する場合のヒントが示されています。
+* Use [PageSpeed Insights](/speed/pagespeed/insights) to identify performance best practices that can be applied to your site, and [PageSpeed optimization tools](/speed/pagespeed/optimization) to automate the process of applying those best practices.
+* [High Performance Networking in Google Chrome](https://www.igvita.com/posa/high-performance-networking-in-google-chrome/) discusses Chrome network internals and how you can take advantage of them to make your site faster.
+* [How gzip compression works](/speed/articles/gzip) provides a high-level overview gzip compression and why it's a good idea.
+* [Web Performance Best Practices](/speed/docs/best-practices/rules_intro) provides additional tips for optimizing the network performance of your web page or application.
 
-
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

@@ -1,83 +1,62 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: В устройствах с возможностями телефонной связи пользователи могут без труда связаться с вами, коснувшись телефонного номера. Эту функцию часто называют звонок щелчком
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2000-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-06-17 #} {# wf_blink_components: Blink>Input #}
 
-# Звонок щелчком {: .page-title }
+# Click to Call {: .page-title }
 
 {% include "web/_shared/contributors/petelepage.html" %}
 
-
-
-В устройствах с возможностями телефонной связи пользователи могут без труда связаться с вами, коснувшись телефонного номера. Эту функцию часто называют звонок щелчком
-
+On devices with phone capabilities, make it easy for users to directly connect with you by simply tapping a phone number, more commonly known as click to call.
 
 ### TL;DR {: .hide-from-toc }
-- Окружите все телефонные номера гиперссылками по схеме <code>tel:</code>.
-- Обязательно используйте международный формат номера.
 
+* Wrap all phone numbers in hyperlinks with the `tel:` schema.
+* Always use the international dialing format.
 
-## Для работы функции "звонок щелчком" необходимы ссылки на телефонные номера
+## Link telephone numbers for click to call
 
-Хотя многие современные браузеры для мобильных устройств автоматически определяют телефонные номера 
-и преобразуют их в ссылки, полезно сделать это непосредственно в своем коде.
-Вручную расставив теги для каждого телефонного номера, вы обеспечите постоянную возможность их вызова
- с помощью функции "звонок щелчком" и их оформление, соответствующее стилю вашего сайта.
+While many modern mobile browsers automatically detect phone numbers and convert them to links, it’s a good idea to do this directly in your code. By manually tagging each phone number, you can ensure that phone numbers are always enabled for click to call and that they will be styled to match your site.
 
-Чтобы разметить телефонный номер как ссылку, используйте схему`tel:`.  Ее синтаксис 
-очень прост:
+To mark a phone number as a link, use the `tel:` scheme. The syntax is simple:
 
-
-    NIST Telephone Time-of-Day Service <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+    NIST Telephone Time-of-Day Service 
+    <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
     
 
-Результат для строки:
+Your browser displays this syntax as follows:
 
-Телефон службы времени в формате NIST <a href="tel:+1-303-499-7111">+1 (303) 499-7111</a>
+NIST Telephone Time-of-Day Service [+1 (303) 499-7111](tel:+1-303-499-7111)
 
-<img src="images/click-to-call_framed.jpg" class="center" alt="Пример функции "звонок щелчком".">
+<div class="attempt-right">
+  <figure>
+    <img src="images/click-to-call_framed.jpg" >
+    <figcaption>Click to call example</figcaption>
+  </figure>
+</div>
 
-В большинстве устройств с возможностями телефонной связи у пользователя будет запрашиваться
-подтверждение перед набором номера, чтобы пользователей не
-принуждали обманным путем к дорогим международным звонкам или звонкам на платные телефонные номера. 
-Если устройство не поддерживает телефонную связь, пользователю может быть предложено
-меню, позволяющее выбрать способ обработки телефонного номера браузером.
+On most devices with telephone capabilities, the user receives a confirmation before the number is dialed, to ensure that the user isn't being tricked into calling an expensive long distance or premium phone number. When the device doesn’t support phone calls, users may be presented with a menu allowing them to choose how the browser should handle the number.
 
-Браузеры настольных устройств, которые не поддерживают голосовые вызовы, будут открывать на компьютере используемое по умолчанию
-приложение для телефонной связи, например Google Voice или Microsoft
-Communicator.
+Desktop browsers that don’t support voice calls open the default telephony app on the computer; for example Google Voice or Microsoft Communicator.
 
-## Используйте международный формат номера
+## Use the international dialing format
 
-Обязательно указывайте телефонный номер в международном формате: 
-знак плюс (+), код страны, код зоны и номер.  Хотя это и не обязательно,
-полезно разделять части номера
-дефисом (-), чтобы номер легче воспринимался и лучше распознавался автоматическими средствами.
+Always supply the phone number using the international dialing format: the plus sign (`+`), country code, area code, and number. While not absolutely necessary, it’s a good idea to separate each segment of the number with a hyphen (`-`) for easier reading and better auto-detection.
 
-Использование международного формата с дефисами гарантирует, что независимо от
-местонахождения вызывающего абонента, в ста метрах или
-в тысячах километров от вас, соединение будет установлено правильно.
+Using a hyphenated international dialing format ensures that no matter where the user is calling from, whether a few hundred meters away or thousands of kilometers, their call will be connected.
 
-## При необходимости отключите автоматическое обнаружение
+## Disable auto-detection when necessary
 
-Современные браузеры для мобильных устройств автоматически выявляют телефонные номера и включают
-функцию "звонок щелчком".  Браузер Safari для мобильных устройств автоматически преобразует телефонные номера в ссылки
-с соответствующими стилями гиперссылок.  Браузер Chrome для Android автоматически
-выявляет телефонные номера и позволяет пользователям выполнять "звонок щелчком", но не
-окружает номера гиперссылками и не применяет специальные стили.
+Modern mobile browsers automatically detect phone numbers and enable click to call. Mobile Safari automatically converts phone numbers to links with the associated hyperlink styles. Chrome for Android automatically detects phone numbers and allows users to click to call, but does not wrap the phone numbers in hyperlinks or apply any special styles.
 
-Чтобы в браузере Safari для мобильных устройств отключить возможность автоматического выявления телефонных номеров, добавьте
-следующий метатег в верхней части страницы:
-
+To prevent Mobile Safari from automatically detecting phone numbers, add the following meta tag to the top of the page:
 
     <meta name="format-detection" content="telephone=no">
     
 
-## Другие возможности функции "звонок щелчком"
+## Other click to call features
 
-Помимо схемы `tel:`, некоторые современные браузеры также поддерживают схемы `sms:`
-и `mms:`, хотя их поддержка не очень надежна, поэтому некоторые
-функции, такие как настройка текста сообщения, работают не всегда.  
+In addition to the `tel:` schema, some modern browsers also support the `sms:` and `mms:` schemas, though support is not as consistent, and some features like setting the message body don't always work.
 
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

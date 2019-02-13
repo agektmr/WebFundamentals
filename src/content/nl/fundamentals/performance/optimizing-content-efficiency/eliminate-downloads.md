@@ -1,39 +1,32 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: De snelste en best geoptimaliseerde hulpbron is een hulpbron die niet verstuurd wordt. Heeft u uw hulpbronnen onlangs gecontroleerd? Dit dient u regelmatig te doen om te garanderen dat elke hulpbron bijdraagt aan het gebruiksgemak.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: You should audit your resources periodically to ensure that each resource is helping deliver a better user experience.
 
-{# wf_updated_on: 2014-04-28 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Overbodige downloads uitsluiten {: .page-title }
+# Eliminating Unnecessary Downloads {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-
-
-De snelste en best geoptimaliseerde hulpbron is een hulpbron die niet verstuurd wordt. Heeft u uw hulpbronnen onlangs gecontroleerd? Dit dient u regelmatig te doen om te garanderen dat elke hulpbron bijdraagt aan het gebruiksgemak.
-
-
 ### TL;DR {: .hide-from-toc }
-- Inventariseer alle items van uzelf en van derde partijen op uw pagina's
-- Meet hoe goed elk item het doet: de meerwaarde en de technische resultaten
-- Bepaal of elke hulpbron voldoende meerwaarde heeft
 
+* Inventory your own assets and third-party assets on your pages.
+* Measure the performance of each asset: its value and its technical performance.
+* Determine if the resources are providing sufficient value.
 
-De snelste en best geoptimaliseerde hulpbron is een hulpbron die niet verstuurd wordt. Dit lijkt vanzelfsprekend, maar wordt in de praktijk vaak over het hoofd gezien. Als website-technici is het onze taak om altijd kritisch te kijken naar hulpbronnen en deze van uw applicatie te verwijderen indien deze overbodig zijn. Een goede werkwijze is om impliciete en expliciete aannames regelmatig met uw team te bespreken en opnieuw te beoordelen. Een aantal voorbeelden:
+The fastest and best-optimized resource is a resource not sent. You should eliminate unnecessary resources from your application. It’s a good practice to question, and periodically revisit, the implicit and explicit assumptions with your team. Here are a few examples:
 
-* We hebben hulpbron X altijd op onze pagina's weergegeven, maar wegen de kosten voor downloads en weergaven op tegen de meerwaarde van de hulpbron voor gebruikers? Kunnen we de meerwaarde meten en vaststellen?
-* Levert de hulpbron &mdash;, met name als het om een externe hulpbron &mdash; gaat, voldoende resultaten op? Is dit een noodzakelijke of overbodige hulpbron? Als de hulpbron noodzakelijk is, kan het dan problemen opleveren voor onze site? D.w.z. heeft het gevolgen voor de prestaties en gebruiksvriendelijkheid van onze pagina`s als de hulpbron niet beschikbaar is?
-* Gaat deze hulpbron gepaard met een eindgebruikersovereenkomst, en is dit nodig? Is deze hulpbron in overeenstemming met goede werkwijzen: compressie, caching, enzovoort?
+* You've always included resource X on your pages, but does the cost of downloading and displaying it offset the value it delivers to the user? Can you measure and prove its value?
+* Does the resource (especially if it's a third-party resource) deliver consistent performance? Is this resource in the critical path, or need to be? If the resource is in the critical path, could it be a single point of failure for the site? That is, if the resource is unavailable, does it affect performance and the user experience of your pages?
+* Does this resource need or have an SLA? Does this resource follow performance best practices: compression, caching, and so on?
 
-Het komt vaak voor dat onze pagina's hulpbronnen bevatten die overbodig of zelfs hinderlijk zijn voor pagina's, zonder enige meerwaarde te bieden voor gebruikers van de site waarop de hulpbronnen worden gehost. Dit geldt in gelijke mate voor eigen en externe hulpbronnen en widgets:
+Too often, pages contain resources that are unnecessary, or worse, that hinder page performance without delivering much value to the visitor or to the site they're hosted on. This applies equally to first-party and third-party resources and widgets:
 
-* Op site A wordt op de startpagina een diavoorstelling met foto's weergegeven, waardoor bezoekers met een klik &mdash; voorbeelden van foto's kunnen bekijken. Alle foto's worden geladen wanneer de pagina wordt geladen en de gebruiker kan door de foto's bladeren.
-    * **Vraag:** heeft u gemeten hoeveel gebruikers meerdere foto's bekijken? U kunt hoge onkosten hebben door het downloaden van overbodige hulpbronnen die door de meeste bezoekers nooit worden bekeken.
-* Op site B is een widget van een derde partij geïnstalleerd waarmee gerelateerde inhoud wordt weergegeven, sociale betrokkenheid wordt vergroot, of andere services worden geboden.
-    * **Vraag:** houdt u bij hoeveel bezoekers de widget gebruiken of doorklikken naar de inhoud die door de widget wordt geboden? Weegt de betrokkenheid die deze widget genereert op tegen de kosten van de widget?
+* Site A has decided to display a photo carousel on its homepage to allow the visitor to preview multiple photos with a quick click. All of the photos are loaded when the page is loaded, and the user advances through the photos. 
+    * **Question:** Have you measured how many users view multiple photos in the carousel? You might be incurring high overhead by downloading resources that most visitors never view.
+* Site B has decided to install a third-party widget to display related content, improve social engagement, or provide some other service. 
+    * **Question:** Have you tracked how many visitors use the widget or click-through on the content that the widget provides? Is the engagement that this widget generates enough to justify its overhead?
 
-Zoals u ziet, lijkt verwijderen van overbodige downloads vanzelfsprekend, maar is dit in de praktijk vaak niet het geval. Er moet zorgvuldig worden nagedacht en gemeten voordat een beslissing kan worden genomen. Voor de beste resultaten dient u alle items op uw pagina`s regelmatig te inventariseren en daarbij deze vragen voor elk item opnieuw te beantwoorden.
+Determining whether to eliminate unnecessary downloads often requires a lot of careful thinking and measurement. For best results, periodically inventory and revisit these questions for every asset on your pages.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}

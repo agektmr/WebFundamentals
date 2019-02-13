@@ -1,173 +1,141 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:大多数浏览器和设备都可访问用户的地理位置。了解如何在您的网站和应用中使用用户的位置。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Most browsers and devices have access to the user's geographic location. Learn how to work with the user's location in your site and apps.
 
-{# wf_updated_on:2016-08-22 #}
-{# wf_published_on:2014-01-01 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-01-01 #} {# wf_blink_components: Blink>Location #}
 
-# 用户位置 {: .page-title }
+# User Location {: .page-title }
 
 {% include "web/_shared/contributors/paulkinlan.html" %}
 
-Geolocation API 使您能够在征得用户同意的情况下发现用户的位置。可在某些情况下使用此功能，比如指引用户到达目的地以及给用户创建的内容加上地理标记（例如标记照片的拍摄地点）。
+The Geolocation API lets you discover, with the user's consent, the user's location. You can use this functionality for things like guiding a user to their destination and geo-tagging user-created content; for example, marking where a photo was taken.
 
-Geolocation API 还能让您了解用户位置并密切注意他们的动向，这一切都要征得用户同意（并且只有在页面打开时有效）。
-这会令人想到许多值得关注的用例，例如与后端系统集成，当用户在附近时为订单做好收款准备。
+The Geolocation API also lets you see where the user is and keep tabs on them as they move around, always with the user's consent (and only while the page is open). This creates a lot of interesting use cases, such as integrating with backend systems to prepare an order for collection if the user is close by.
 
+You need to be aware of many things when using the Geolocation API. This guide walks you through the common use cases and solutions.
 
-使用 Geolocation API 时有许多需要注意的事项，本指南将指引您了解常见的用例和解决方案。
-
-Note: 从 Chrome 50 开始，[Geolocation API 只能在安全环境 (HTTPS) 上工作](/web/updates/2016/04/geolocation-on-secure-contexts-only)。如果网站托管在一个不安全的来源（如 `HTTP`）上，获取用户位置的请求将**无法再**正常工作。
+Note: As of Chrome 50, the [Geolocation API only works on secure contexts (HTTPS)](/web/updates/2016/04/geolocation-on-secure-contexts-only). If your site is hosted on a non-secure origin (such as `HTTP`), any requests for the user's location **no longer** function.
 
 ### TL;DR {: .hide-from-toc }
 
-* 对用户有利时使用地理定位。
-* 通过请求权限来明确响应用户手势。
-* 使用功能检测以防用户的浏览器不支持地理定位。
-* 不要只是学习如何实现地理定位；还要学习地理定位的最佳使用方式。
-* 测试网站的地理定位功能。
+* Use geolocation when it benefits the user.
+* Ask for permission as a clear response to a user gesture. 
+* Use feature detection in case a user's browser doesn't support geolocation.
+* Don't just learn how to implement geolocation; learn the best way to use geolocation.
+* Test geolocation with your site.
 
-## 使用地理定位的时机
+## When to use geolocation
 
-*  查找用户最接近哪个具体的物理位置，以定制用户体验。
+* Find where the user is closest to a specific physical location to tailor the user experience.
+* Tailor information (such as news) to the user's location.
+* Show the position of a user on a map.
+* Tag data created inside your application with the user's location (that is, geo-tag a picture).
 
-*  根据用户的位置定制信息（例如新闻）。
-*  在地图上显示用户的位置。
-*  给应用内创建的数据标记用户的位置（即给照片标记地理位置）。
+## Ask permission responsibly
 
+Recent user studies [have shown](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf) that users are distrustful of sites that simply prompt the user to give away their position on page load. So what are the best practices?
 
-## 以负责任的方式请求权限
+### Assume users will not give you their location
 
-最近的用户调查[表明](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf)，用户不信任那些在页面加载时就提示用户提供其位置的网站。那么最佳做法是什么？
+Many of your users won't want to give you their location, so you need to adopt a defensive development style.
 
-### 假定用户不将其位置提供给您
+1. Handle all errors out of the geolocation API so that you can adapt your site to this condition.
+2. Be clear and explicit about your need for the location.
+3. Use a fallback solution if needed.
 
-许多用户不想将其位置提供给您，因此需要采用防御性的开发方式。
+### Use a fallback if geolocation is required
 
+We recommend that your site or application not require access to the user's current location. However, if your site or application requires the user's current location, there are third-party solutions that allow you to obtain a best guess of where the person currently is.
 
-1.  处理 Geolocation API 产生的所有错误，以便让您的网站适应这种情况。
-2.  清晰明白地表达出您为什么需要位置信息。
-3.  必要时使用备用解决方法。
+These solutions often work by looking at the user's IP address and mapping that to the physical addresses registered with the RIPE database. These locations are often not very accurate, normally giving you the position of the telecommunications hub or cell phone tower that is nearest to the user. In many cases, they might not even be that accurate, especially if the user is on VPN or some other proxy service.
 
+### Always request access to location on a user gesture
 
-### 在需要地理定位时使用备用方法
-
-我们建议网站或应用不要求获取用户的当前位置。
-但如果网站或应用的确需要用户的当前位置信息，可通过第三方解决方案来获得用户当前位置的最佳猜测结果。
-
-
-
-这些解决方法通常是查看用户的 IP 地址并将其对应到在 RIPE 数据库注册的物理地址。
-这些位置通常不太准确，一般提供的是离用户最近的电信枢纽中心或移动电话基站的位置。不过在很多情况下，返回的地理位置甚至都达不到这样的精确，特别是在用户使用 VPN 或某些其他代理服务时。
-
-
-
-### 始终在手势操作时请求用户的位置
-
-确保用户了解您为何需要其位置，以及这对他们有什么好处。
-在网站加载首页时立即请求提供位置会导致不好的用户体验。
-
+Make sure that users understand why you’re asking for their location, and what the benefit to them will be. Asking for it immediately on the homepage as the site loads results in a poor user experience.
 
 <div class="attempt-left">
   <figure>
     <img src="images/sw-navigation-good.png">
     <figcaption class="success">
-      <b>宜</b>：始终在手势操作时请求获取用户的位置。</figcaption>
-
+      <b>DO</b>: Always request access to location on a user gesture.
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/sw-navigation-bad.png">
     <figcaption class="warning">
-      <b>忌</b>：在网站加载首页时请求提供位置会导致用户体验不佳。
+      <b>DON'T</b>: Ask for it on the homepage, as the site loads; this results in a poor user experience.
     </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-应改为向用户提出明确的操作请求，或指出某项操作需要获取其位置。
-这样更便于用户将获取位置的系统提示与刚刚发起的操作联系起来。
+Instead, give the user a clear call to action or an indication that an operation will require access to their location. The user can then more easily associate the system prompt for access with the action just initiated.
 
+### Give a clear indication that an action will request their location
 
-### 明确指出某项操作将请求其位置信息
+[In a study by the Google Ads team](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf), when a user was asked to book a hotel room in Boston for an upcoming conference on one particular hotels site, they were prompted to share their GPS location immediately after tapping the "Find and Book" call to action on the homepage.
 
-[在 Google 广告团队进行的一项调查中](http://static.googleusercontent.com/media/www.google.com/en/us/intl/ALL_ALL/think/multiscreen/pdf/multi-screen-moblie-whitepaper_research-studies.pdf)，一位用户受命在某个酒店预订网站上预订波士顿的一间酒店客房，以便参加即将在那里举行的一次会议，在其点击首页的“Find and Book”操作按钮之后，系统立即提示共享其 GPS 位置。
+In some cases, the user became frustrated because they didn't understand why they were being shown hotels in San Francisco when they wanted to book a room in Boston.
 
-
-
-
-在某些情况下，用户会觉得失望，因为他们不明白为何在他们想预订波士顿的客房时，显示的却是一些旧金山的酒店。
-
-
-
-确保用户了解要求其提供位置的原因可提升用户体验。
-加入一个常见于各种设备上的熟知记号，例如测距仪图标，或者提供意思明确的操作按钮，例如“Find Near Me”。
-
-
+A better experience is to make sure users understand why you’re asking them for their location. Add a well-known signifier that is common across devices, such as a range finder, or an explicit call to action such as “Find Near Me.”
 
 <div class="attempt-left">
   <figure>
     <img src="images/indication.png">
     <figcaption>
-      使用测距仪图标</figcaption>
-
+      Use a range finder
+     </figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure id="fig1">
     <img src="images/nearme.png">
     <figcaption>
-      在我附近查找的明确操作请求</figcaption>
-
+      A specific call to action to find near me  
+    </figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-### 温和地请求用户授权访问其位置
+### Gently nudge users to grant permission to their location
 
-您无权获取用户所执行操作的任何信息。您可以确切知道用户何时不允许获取其位置，但您不知道他们何时授予您获取权限；您只有在出现结果时才知道获得了信息获取权限。
+You don't have access to anything users are doing. You know exactly when users disallow access to their locations but you don't know when they grant you access; you only know you obtained access when results appear.
 
+It's good practice to "nudge" users into action if you need them to complete the action.
 
+We recommend:
 
-
-如果您需要用户完成操作，最好“取悦”他们，让其心甘情愿地完成操作。
-
-
-我们建议：
-
-1.  设置一个在短时间后触发的计时器 - 5 秒是个不错的值。
-2.  如果收到错误消息，则向用户显示消息。
-3.  如果收到积极回应，则停用计时器并处理结果。
-4.  如果在超时之后还没有收到积极回应，则向用户显示通知。
-5.  如果稍后有回应并且通知仍在显示，则从屏幕上移除通知。
-
-
-
+1. Set up a timer that triggers after a short period; 5 seconds is a good value.
+2. If you get an error message, show a message to the user.
+3. If you get a positive response, disable the timer and process the results.
+4. If, after the timeout, you haven't gotten a positive response, show a notification to the user.
+5. If the response comes in later and the notification is still present, remove it from the screen.
 
 <div style="clear:both;"></div>
 
     button.onclick = function() {
       var startPos;
-      var element = document.getElementById("nudge");
-
+      var nudge = document.getElementById("nudge");
+    
       var showNudgeBanner = function() {
         nudge.style.display = "block";
       };
-
+    
       var hideNudgeBanner = function() {
         nudge.style.display = "none";
       };
-
+    
       var nudgeTimeoutId = setTimeout(showNudgeBanner, 5000);
-
+    
       var geoSuccess = function(position) {
         hideNudgeBanner();
         // We have the location, don't display banner
-        clearTimeout(nudgeTimeoutId);
-
+        clearTimeout(nudgeTimeoutId); 
+    
         // Do magic with location
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -179,18 +147,18 @@ Note: 从 Chrome 50 开始，[Geolocation API 只能在安全环境 (HTTPS) 上�
             // The user didn't accept the callout
             showNudgeBanner();
             break;
+        }
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
     };
+    
 
-## 浏览器支持
+## Browser support
 
-现在，大部分浏览器均支持 Geolocation API，但最好在执行任何操作之前始终检查是否支持。
+The majority of browsers now support the Geolocation API but it's a good practice to always check for support before you do anything.
 
-
-可以通过测试是否存在 geolocation 对象，轻松检查兼容性：
-
+You can easily check for compatibility by testing for the presence of the geolocation object:
 
     // check for Geolocation support
     if (navigator.geolocation) {
@@ -199,13 +167,11 @@ Note: 从 Chrome 50 开始，[Geolocation API 只能在安全环境 (HTTPS) 上�
     else {
       console.log('Geolocation is not supported for this Browser/OS.');
     }
+    
 
+## Determining the user's current location
 
-## 确定用户的当前位置
-
-Geolocation API 提供一种简单的“一次性”方法来获取用户的位置：`getCurrentPosition()`。
-调用此方法将以异步方式报告用户的当前位置。
-
+The Geolocation API offers a simple, "one-shot" method to obtain the user's location: `getCurrentPosition()`. A call to this method asynchronously reports on the user's current location.
 
     window.onload = function() {
       var startPos;
@@ -216,61 +182,40 @@ Geolocation API 提供一种简单的“一次性”方法来获取用户的位�
       };
       navigator.geolocation.getCurrentPosition(geoSuccess);
     };
+    
 
+If this is the first time that an application on this domain has requested permissions, the browser typically checks for user consent. Depending on the browser, there may also be preferences to always allow&mdash;or disallow&mdash;permission lookups, in which case the confirmation process is bypassed.
 
-如果这是该网域的应用首次请求权限，浏览器一般会检查用户是否同意。
-根据浏览器的不同，可能还有始终允许（或不允许）权限查询的首选项，在这种情况下，将会绕过确认过程。
+Depending on the location device your browser is using, the position object might actually contain a lot more than just latitude and longitude; for example, it might include an altitude or a direction. You can't tell what extra information that location system uses until it actually returns the data.
 
+## Watching the user's location
 
-根据浏览器所使用定位设备的不同，位置对象实际包含的信息可能远不止纬度和经度，举例来说，可能还包括海拔高度或方向。在位置系统实际返回数据之前，您无从知晓它使用了哪些额外信息。
+The Geolocation API allows you to obtain the user's location (with user consent) with a single call to `getCurrentPosition()`.
 
+If you want to continually monitor the user's location, use the Geolocation API method, `watchPosition()`. It operates in a similar way to `getCurrentPosition()`, but it fires multiple times as the positioning software:
 
+1. Gets a more accurate lock on the user.
+2. Determines that the user's position is changing.
+    
+    var watchId = navigator.geolocation.watchPosition(function(position) { document.getElementById('currentLat').innerHTML = position.coords.latitude; document.getElementById('currentLon').innerHTML = position.coords.longitude; });
 
-## 监测用户的位置
+### When to use geolocation to watch the user's location
 
-Geolocation API 使您通过单次调用 `getCurrentPosition()` 即可获取用户的位置（经用户同意）。
+* You want to obtain a more precise lock on the user location.
+* Your application needs to update the user interface based on new location information.
+* Your application needs to update business logic when the user enters a certain defined zone.
 
+## Best practices when using geolocation
 
-如果希望持续监测用户的位置，可以使用 Geolocation API 的 `watchPosition()` 方法。
-其运行方式与 `getCurrentPosition()` 类似，但它会在定位软件出现以下情况时多次触发：
+### Always clear up and conserve battery
 
+Watching for changes to a geolocation is not a free operation. While operating systems might be introducing platform features to let applications hook in to the geo subsystem, you, as a web developer, have no idea what support the user's device has for monitoring the user's location, and, while you're watching a position, you are engaging the device in a lot of extra processing.
 
+After you no longer need to track the user's position, call `clearWatch` to turn off the geolocation systems.
 
-1.  更准确地锁定用户。
-2.  确定用户的位置发生了变化。
+### Handle errors gracefully
 
-
-    var watchId = navigator.geolocation.watchPosition(function(position) {
-      document.getElementById('currentLat').innerHTML = position.coords.latitude;
-      document.getElementById('currentLon').innerHTML = position.coords.longitude;
-    });
-
-### 使用地理定位监测用户位置的时机
-
-*  您希望更准确地锁定用户位置。
-*  您的应用需要根据新的位置信息来更新用户界面。
-*  应用需要更新用户进入某个定义区域时的业务逻辑。
-
-
-
-## 使用地理定位时的最佳做法
-
-### 务必清理和节省电量
-
-监测地理定位变化不能是随意操作。尽管操作系统可能正在引入各种平台功能来让应用连接地理子系统，但您作为网络开发者并不了解用户的设备对用户位置监测的支持情况，并且当您监测位置时，会使设备参与大量额外的处理。
-
-
-
-
-
-如果不再需要追踪用户位置，可以调用 `clearWatch` 来关闭地理定位系统。
-
-
-###  妥善处理错误
-
-遗憾的是，并非所有位置查找均能成功。可能是 GPS 无法定位，或用户突然停用了位置查找。
-在出现错误时，系统将调用 `getCurrentPosition()` 的第二个可选参数，以便您可以在回调内通知用户：
-
+Unfortunately, not all location lookups are successful. Perhaps a GPS could not be located or the user has suddenly disabled location lookups. In the event of an error, a second, optional argument to `getCurrentPosition()` is called so that you can notify the user inside the callback:
 
     window.onload = function() {
       var startPos;
@@ -289,24 +234,20 @@ Geolocation API 使您通过单次调用 `getCurrentPosition()` 即可获取用�
       };
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
     };
+    
 
+### Reduce the need to start geolocation hardware
 
-### 减少启动地理定位硬件的必要性
+For many use cases, you don't need the user's most up-to-date location; you just need a rough estimate.
 
-对于许多用例，并不需要用户最新的位置信息，粗略估算的位置信息即可满足需要。
-
-
-使用 `maximumAge` 可选属性来告诉浏览器使用最近获取的地理定位结果。
-如果用户之前请求过数据，这不仅能更快返回数据，还能防止浏览器启动其地理定位硬件接口，例如 WiFi 三角测量或 GPS。
-
-
+Use the `maximumAge` optional property to tell the browser to use a recently obtained geolocation result. This not only returns more quickly if the user has requested the data before, but it also prevents the browser from starting its geolocation hardware interfaces such as Wifi triangulation or the GPS.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
         maximumAge: 5 * 60 * 1000,
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -320,22 +261,21 @@ Geolocation API 使您通过单次调用 `getCurrentPosition()` 即可获取用�
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
+### Don't keep the user waiting, set a timeout
 
-### 请勿让用户持续等待，设置一个超时值
-
-除非设置了超时，否则您获取当前位置的请求可能永远不会返回信息。
-
+Unless you set a timeout, your request for the current position might never return.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
          timeout: 10 * 1000
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -349,27 +289,23 @@ Geolocation API 使您通过单次调用 `getCurrentPosition()` 即可获取用�
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
+### Prefer a coarse location over a fine-grained location
 
-### 优先采用粗略位置，而不是精确位置
+If you want to find the nearest store to a user, it's unlikely that you need 1-meter precision. The API is designed to give a coarse location that returns as quickly as possible.
 
-如果您要查找离用户最近的商店，不太可能需要达到 1 米的精度。
-此 API 旨在提供一个尽快返回的粗略位置。
-
-
-如果真的需要高度精确，可以用 `enableHighAccuracy` 选项替换默认设置。
-谨慎使用该选项：解析速度会下降，并且电池耗电会增加。
-
+If you do need a high level of precision, it's possible to override the default setting with the `enableHighAccuracy` option. Use this sparingly: it's slower to resolve and uses more battery.
 
     window.onload = function() {
       var startPos;
       var geoOptions = {
         enableHighAccuracy: true
       }
-
+    
       var geoSuccess = function(position) {
         startPos = position;
         document.getElementById('startLat').innerHTML = startPos.coords.latitude;
@@ -383,12 +319,12 @@ Geolocation API 使您通过单次调用 `getCurrentPosition()` 即可获取用�
         //   2: position unavailable (error response from location provider)
         //   3: timed out
       };
-
+    
       navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     };
+    
 
-
-## 通过 Chrome DevTools 模拟地理定位 {: #devtools }
+## Emulate geolocation with Chrome DevTools {: #devtools }
 
 <div class="attempt-right">
   <figure id="fig1">
@@ -396,22 +332,19 @@ Geolocation API 使您通过单次调用 `getCurrentPosition()` 即可获取用�
   </figure>
 </div>
 
-地理定位设置完毕后，您需要：
+Once you've got geolocation set up, you'll want to:
 
-* 测试应用在不同地理定位下的工作情况。
-* 验证应用在无法使用地理定位时是否可妥善降级。
+* Test out how your app works in different geolocations.
+* Verify that your app degrades gracefully when geolocation is not available.
 
-这两项工作均可通过 Chrome DevTools 完成。
+You can do both from Chrome DevTools.
 
-[打开 Chrome DevTools](/web/tools/chrome-devtools/#open)，然后[打开 Console Drawer](/web/tools/chrome-devtools/console/#open_as_drawer)。
+[Open Chrome DevTools](/web/tools/chrome-devtools/#open) and then [open the Console Drawer](/web/tools/chrome-devtools/console/#open_as_drawer).
 
+[Open the Console Drawer menu](/web/tools/chrome-devtools/settings#drawer-tabs) and click the **Sensors** option to show the Sensors Drawer.
 
-[打开 Console Drawer 菜单](/web/tools/chrome-devtools/settings#drawer-tabs)，然后点击 **Sensors** 选项以显示 Sensors Drawer。
+From here you can override the location to a preset major city, enter a custom location, or disable geolocation by setting the override to **Location unavailable**.
 
+## Feedback {: #feedback }
 
-可以在此处替换某个预设大城市的位置，输入自定义位置，或通过将替换设置为 **Location unavailable** 停用地理定位。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

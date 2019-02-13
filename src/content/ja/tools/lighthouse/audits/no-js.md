@@ -1,58 +1,31 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「ページでスクリプトが利用できない場合に表示するコンテンツを用意する」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Contains Some Content When JavaScript Is Not Available" Lighthouse audit.
 
-{# wf_updated_on:2016-09-20 #}
-{# wf_published_on:2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-#  ページでスクリプトが利用できない場合に表示するコンテンツを用意する {: .page-title }
+# Contains Some Content When JavaScript Is Not Available {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-[プログレッシブ エンハンスメント](https://en.wikipedia.org/wiki/Progressive_enhancement)は、より多くの人々が利用できるサイトを構築するためのウェブ開発戦略です。
-プログレッシブ エンハンスメントの最も一般的な定義は以下のとおりです。
+[Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) is a web development strategy that ensures that your site is accessible to the largest possible audience. The most common definition of progressive enhancement is as follows:
 
+Basic content and page functionality should rely on only the most fundamental web technologies, to ensure that the page is usable across all browsing conditions. Enhanced experiences, such as sophisticated styling using CSS, or interactivity using JavaScript, can be layered on top for the browsers that support those technologies. But basic content and page functionality should not rely on CSS or JavaScript.
 
-ウェブの基盤技術のみを使用して基本的なコンテンツとページ機能を作成することにより、あらゆるブラウジング環境でページを利用可能にします。よりリッチなデザインや機能（CSS
-による高度なスタイル設定、JavaScript によるインタラクティブな機能など）については、これらの技術をサポートするブラウザに対して追加で提供します。
-ただし、基本的なコンテンツとページ機能は CSS や JavaScript をベースに作成すべきではありません。
+## Recommendations {: #recommendations }
 
+Progressive enhancement is a large and contentious topic. One camp says that, in order to adhere to the strategy of progressive enhancement, pages should be layered so that basic content and page functionality only require HTML. See [Progressive Enhancement: What It Is, And How To Use It](https://www.smashingmagazine.com/2009/04/progressive-enhancement-what-it-is-and-how-to-use-it/) for an example of this approach.
 
-##  監査に合格する方法 {: #how }
+Another camp believes that this strict approach is unfeasible or unnecessary for many modern, large-scale web applications and suggests using inline critical path CSS in the document `<head>` for absolutely critical page styles. See [Critical Rendering Path](/web/fundamentals/performance/critical-rendering-path/) for more on this approach.
 
-プログレッシブ エンハンスメントは、議論の絶えない大きなテーマです。プログレッシブ エンハンスメントの方針に忠実に従うためには、ページをレイヤ化して、HTML
-のみを使用して基本的なコンテンツとページ機能を実装すべきであるという考え方があります。
-このアプローチの例については、[Progressive Enhancement: What It Is, And How To Use It](https://www.smashingmagazine.com/2009/04/progressive-enhancement-what-it-is-and-how-to-use-it/)
-をご覧ください。
+Given these considerations, this Lighthouse audit performs a simple check to ensure that your page isn't blank when JavaScript is disabled. How strictly your app adheres to progressive enhancement is a topic of debate, but there's widespread agreement that all pages should display at least *some* information when JavaScript is disabled, even if the content is just an alert to the user that JavaScript is required to use the page.
 
+For pages that absolutely must rely on JavaScript, one approach is to use a [`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript) element to alert the user that JavaScript is required for the page. This is better than a blank page, because the blank page leaves users uncertain about whether there's a problem with the page, their browsers, or their computers.
 
-一方、上記のような厳密なアプローチは、最新の大規模ウェブ アプリケーションでは実現不可能または不要であるとして、極めて重要なページのスタイル設定には、ドキュメントの `<head>`
-でインライン化したクリティカル パス CSS を使用すべきだという意見もあります。
-このアプローチに関する詳細は、[クリティカル レンダリング パス](/web/fundamentals/performance/critical-rendering-path/)をご覧ください。
+To see how your site looks and performs when JavaScript is disabled, use Chrome DevTools' [Disable JavaScript](/web/tools/chrome-devtools/settings#disable-js) feature.
 
-こうした状況をふまえ、Lighthouse の監査では、JavaScript が無効な場合に空白のページが表示されないことのみをチェックします。
-アプリでプログレッシブ エンハンスメントの原則をどれだけ遵守すべきかという点については議論が絶えません。ただ、JavaScript
-が無効の場合は、すべてのページで*何かしらの*情報（ページの使用には
-JavaScript
-が必要である旨をユーザーに警告するだけのコンテンツでも可）を表示する必要があるということは広く同意されています。
+## More information {: #more-info }
 
+Lighthouse disables JavaScript on the page and then inspects the page's HTML. If the HTML is empty then the audit fails. If the HTML is not empty then the audit passes.
 
-そのアプローチの 1 つとして、JavaScript が必須のページでは、[`<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript)
-要素を使用して、JavaScirpt が必要であることをユーザーに警告する方法があります。
-これは、空白のページを表示するよりも好ましい対応だといえます。空白のページが表示された場合、該当のページ、ユーザーのブラウザ、ユーザーのコンピュータのどれに問題があるのかユーザーにはわからないためです。
+## Feedback {: #feedback }
 
-
-
-
-JavaScript が無効になった状態でのサイトの見え方や動作を確認するには、Chrome DevTools の [Disable JavaScript](/web/tools/chrome-devtools/settings#disable-js)
-機能をご利用ください。
-
-
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse では、ページの JavaScript を無効にしてページの HTML を調査します。HTML が空の場合は、この監査で不合格となります。
-HTML が空でない場合は合格です。
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

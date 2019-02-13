@@ -1,89 +1,46 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 접근성 트리 소개
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Introduction to the Accessibility Tree
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2016-10-04 #}
+# The Accessibility Tree {: .page-title }
 
-# 접근성 트리 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+Imagine that you're building a user interface *for screen reader users only*. Here, you don't need to create any visual UI at all, but just provide enough information for the screen reader to use.
 
+What you'd be creating is a kind of API describing the page structure, similar to the DOM API, but you can get away with less information and fewer nodes, because a lot of that information is only useful for visual presentation. It might look something like this.
 
+![screen reader DOM API mockup](imgs/treestructure.jpg)
 
-*스크린 리더 사용자 전용* 사용자 인터페이스를 만든다고 생각해 봅시다.
-시각적 UI를 만들 필요는 전혀 없겠지만, 스크린 리더가 사용할 정보는 충분히
-제공해야 할 것입니다.
+This is basically what the browser actually presents to the screen reader. The browser takes the DOM tree and modifies it into a form that is useful to assistive technology. We refer to this modified tree as the *Accessibility Tree*.
 
-개발자가 만드는 것은 DOM API와 유사한 페이지 구조를 설명하는 일종의 API이지만,
-더 적은 정보와 노드만으로도 만들 수 있습니다.
-시각적 표시에만 유용한 정보가 많고 이런 정보는 제외할 것이기 때문입니다. 아마
-다음과 같은 모습이 될지 모르겠습니다.
+You might visualize the accessibility tree as looking a bit like an old web page from the '90s: a few images, lots of links, perhaps a field and a button.
 
-![모의 스크린 리더 DOM API](imgs/treestructure.jpg)
+![a 1990s style web page](imgs/google1998.png)
 
-이것이 기본적으로 브라우저가 스크린 리더에 실제로 제공하는 내용입니다. 브라우저는
-DOM 트리를 가져와 보조 기술에
-유용한 양식으로 수정합니다. 이렇게 수정된 트리를 *접근성
-트리*라고 합니다.
+Visually scanning down a page like this case gives you an experience similar to what a screen reader user would get. The interface is there, but it is simple and direct, much like an accessibility tree interface.
 
-접근성 트리를 마치 90년대에나 볼 수 있었던 웹페이지 스타일로 시각화할 수도 있습니다.
-즉, 이미지 수가 적고 링크는 많으며 입력란과 버튼이 있는 올드한 형태 말입니다.
+The accessibility tree is what most assistive technologies interact with. The flow goes something like this.
 
-![1990년대 스타일의 웹페이지](imgs/google1998.png)
+1. An application (the browser or other app) exposes a semantic version of its UI to assistive technology via an API.
+2. The assistive technology may use the information it reads via the API to create an alternative user interface presentation for the user. For example, a screen reader creates an interface in which the user hears a spoken representation of the app.
+3. The assistive technology may also allow the user to interact with the app in a different way. For example, most screen readers provide hooks to allow a user to easily simulate a mouse click or finger tap.
+4. The assistive technology relays the user intent (such as "click") back to the app via the accessibility API. The app then has the responsibility to interpret the action appropriately in the context of the original UI.
 
-이와 같은 페이지를 잘 살펴보면
-스크린 리더 사용자가 직면하는 것과 비슷한 경험을 하게 됩니다. 즉, 인터페이스는 있지만 접근성 트리 인터페이스처럼
-간단하고 직접적입니다.
+For web browsers, there's an extra step in each direction, because the browser is in fact a platform for web apps that run inside it. So the browser needs to translate the web app into an accessibility tree, and must make sure that the appropriate events get fired in JavaScript based on the user actions that come in from the assistive technology.
 
-대부분의 보조 기술은 바로 이 접근성 트리와 상호 작용합니다. 다음과
-같은 흐름으로 진행됩니다.
+But that is all the browser's responsibility. Our job as web developers is just to be aware that this is going on, and to develop web pages that take advantage of this process to create an accessible experience for our users.
 
- 1. 애플리케이션(브라우저나 기타 앱)이 API를 통해 의미 체계 기반의 UI 버전을
-    보조 기술에 노출합니다.
- 1. 보조 기술은 API를 통해 읽는 정보를 사용하여
-    사용자를 위한 대체 사용자 인터페이스 제공 방식을 만들 수 있습니다. 예를 들어,
-    스크린 리더는 사용자가 앱에서 말해주는 내용을 듣는 인터페이스를
-    생성합니다.
- 1. 사용자는 보조 기술을 이용해 앱과 다른 방식으로 상호 작용할 수도
-    있습니다. 예를 들어, 대부분의 스크린 리더는 사용자가 마우스 클릭이나 손가락으로 탭하는 동작을
-    쉽게 시뮬레이션할 수 있는 후크를 제공합니다.
- 1. 보조 기술은 접근성 API를 통해 사용자 인텐트(예: '클릭')를
-    앱으로 다시 전달합니다. 그러면 앱이 원래 UI의 컨텍스트에 맞춰 적절히
-    작업의 내용을 해석합니다.
+We do this by ensuring that we express the semantics of our pages correctly: making sure that the important elements in the page have the correct accessible roles, states, and properties, and that we specify accessible names and descriptions. The browser can then let the assistive technology access that information to create a customized experience.
 
-웹브라우저의 경우 브라우저가 사실은 내부에서 작동하는 웹 앱의 플랫폼이기 때문에
-각 방향으로 추가 단계가 있습니다. 이에 따라 브라우저는
-웹 앱을 접근성 트리로 변환할 필요가 있고, 보조 기술에서 사용자가
-수행하는 작업을 바탕으로 자바스크립트에서 적당한 이벤트가 실행되도록
-해야 합니다.
+## Semantics in native HTML
 
-하지만 그것은 모두 브라우저가 할 일입니다. 웹 개발자로서 할 일은
-단지 이런 작업이 이루어진다는 점을 이해하고 이 프로세스를 이용해
-사용자가 액세스할 수 있는 환경을 만들어주는 웹페이지를 개발하는 것입니다.
+A browser can transform the DOM tree into an accessibility tree because much of the DOM has *implicit* semantic meaning. That is, the DOM uses native HTML elements that are recognized by browsers and work predictably on a variety of platforms. Accessibility for native HTML elements such as links or buttons is thus handled automatically. We can take advantage of that built-in accessibility by writing HTML that expresses the semantics of our page elements.
 
-개발자는 페이지의 의미 체계를 올바르게 표현하는 데 주의를 기울여야 합니다.
-즉, 페이지의 중요한 요소가 액세스 가능한 올바른 역할, 상태,
-속성을 가지도록 하고 액세스 가능한 이름과 설명을 지정해야
-합니다. 그러면 브라우저에서 보조 기술이 관련 정보에 액세스하여
-맞춤설정된 환경을 만들도록 할 수 있습니다.
-
-## 네이티브 HTML로 구현되는 의미 체계
-
-DOM에는 대부분 *암시적* 의미 체계에 따른 의미가 있으므로
-브라우저가 DOM 트리를 접근성 트리로 변환할 수 있습니다. 즉, DOM은 브라우저가 인식하고 다양한 플랫폼에서 예측 가능한 방식으로
-작동하는 네이티브 HTML 요소를
-사용합니다. 따라서 링크나 버튼 같은 네이티브 HTML 요소에 대한 접근성은
-자동으로 처리됩니다. 페이지 요소의 의미 체계를 표현하는 HTML을 작성하여
-기본 제공 접근성을 이용할 수 있습니다.
-
-하지만 때로는 네이티브 요소와 비슷한 모습이긴 하지만 똑같지는 않은 요소를 사용합니다.
-예를 들어, 이 '버튼'은 실은 버튼이 아닙니다.
+However, sometimes we use elements that look like native elements but aren't. For example, this "button" isn't a button at all.
 
 {% framebox height="60px" %}
+
 <style>
     .fancy-btn {
         display: inline-block;
@@ -95,99 +52,75 @@ DOM에는 대부분 *암시적* 의미 체계에 따른 의미가 있으므로
         cursor: pointer;
     }
 </style>
+
 <div class="fancy-btn">Give me tacos</div>
+
 {% endframebox %}
 
-여러 가지 방법으로 HTML을 통해 이런 요소를 생성할 수 있지만 아래에 한 가지 방법을 소개합니다.
-
+It might be constructed in HTML in any number of ways; one way is shown below.
 
     <div class="button-ish">Give me tacos</div>
     
 
-실제 버튼 요소를 사용하지 않으면 스크린 리더가 그 위치에 무엇이 있는지 알 길이
-없습니다. 또한, 지금 코딩하는 바와 같이 마우스로만 이 요소를 사용할 수 있기 때문에 키보드만 사용하는 사용자가 이 요소를 사용할 수 있도록
-하기 위해 [tabindex 추가](/web/fundamentals/accessibility/focus/using-tabindex) 작업을
-별도로 수행해야
-할 것입니다.
+When we don't use an actual button element, the screen reader has no way to know what it has landed on. Also, we would have to do the extra work [of adding tabindex](/web/fundamentals/accessibility/focus/using-tabindex) to make it usable to keyboard-only users because, as it is coded now, it can only be used with a mouse.
 
-`div` 대신 일반적인 `button` 요소를 사용하여 이 문제를 쉽게 해결할 수 있습니다.
-네이티브 요소를 사용하면 키보드 상호 작용을
-자동으로 처리할 수 있는 이점도 있습니다. 네이티브 요소를 사용한다는 이유만으로 멋있는 시각
-효과를 포기할 필요는 없습니다.
-네이티브 요소가 원하는 방식으로 나타나면서도 암시적 의미 체계와 동작을 그대로 유지하도록 네이티브 요소의 스타일을
-지정할 수 있습니다.
+We can easily fix this by using a regular `button` element instead of a `div`. Using a native element also has the benefit of taking care of keyboard interactions for us. And remember that you don't have to lose your spiffy visual effects just because you use a native element; you can style native elements to make them look the way you want and still retain the implicit semantics and behavior.
 
-앞서 설명한 대로, 스크린 리더는 요소의 역할, 이름, 상태 및 값을
-공개적으로 알려줍니다. 적합한 의미 체계를 사용하면 요소, 역할, 상태 및 값을 포괄할 수 있지만,
-요소의 이름을 검색 가능하도록 해야 하기도
-합니다.
+Earlier we noted that screen readers will announce an element's role, name, state, and value. By using the right semantic element, role, state, and value are covered, but we must also ensure that we make an element's name discoverable.
 
-넓은 의미에서 다음과 같은 두 가지 유형의 이름이 있습니다.
+Broadly, there are two types of names:
 
- - *표시 가능한 레이블*: 의미를 요소와 연관시키기 위해 모든 사용자가
-   사용하는 이름
- - *대체 텍스트*: 시각적 레이블이 필요하지 않을 때만 사용하는
-   이름
+- *Visible labels*, which are used by all users to associate meaning with an element, and
+- *Text alternatives*, which are only used when there is no need for a visual label.
 
-텍스트 수준 요소의 경우 당연히 텍스트 콘텐츠가
-있을 것이므로 따로 수행해야 할 작업은 없습니다. 하지만 입력 또는 제어 요소와 이미지 같은 시각적 콘텐츠의 경우
-이름을 지정해야 합니다. 사실,
-텍스트가 아닌 콘텐츠에 대해 대체 텍스트를 제공하는 것이
-[WebAIM 검사 목록의 맨 앞에 있는 항목](http://webaim.org/standards/wcag/checklist#g1.1)입니다.
+For text-level elements, we don't need to do anything, because by definition it will have some text content. However, for input or control elements, and visual content like images, we need to make sure that we specify a name. In fact, providing text alternatives for any non-text content is [the very first item on the WebAIM checklist](http://webaim.org/standards/wcag/checklist#g1.1).
 
-이런 텍스트를 제공하는 한 가지 방법은 '양식 입력에는 연관된 텍스트 레이블이 있다'는
-권장 사항을 따르는 방법입니다. 레이블을 체크박스와 같은 양식 요소와 연결하는 방법은
-두 가지가 있습니다. 두 가지 방법 중 어느 하나를 사용하면 레이블 텍스트 역시 체크박스에 대한 클릭 대상이 되는데,
-이는 마우스 또는 터치스크린 사용자에게도
-유용합니다. 레이블을 요소와 연결하려면 다음 중 하나를 수행하세요.
+One way to do that is to follow their recommendation that "Form inputs have associated text labels." There are two ways to associate a label with a form element, such as a checkbox. Either of the methods causes the label text to also become a click target for the checkbox, which is also helpful for mouse or touchscreen users. To associate a label with an element, either
 
- - 레이블 요소 내부에 입력 요소 배치
+- Place the input element inside a label element
 
 <div class="clearfix"></div>
 
     <label>
       <input type="checkbox">Receive promotional offers?</input>
     </label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <label style="font-size: 16px; color: #212121;">
         <input type="checkbox">Receive promotional offers?</input>
     </label>
 </div>
+
 {% endframebox %}
 
+or
 
-또는
-
- - 레이블의 `for` 속성을 사용하고 요소의 `id` 참조
+- Use the label's `for` attribute and refer to the element's `id`
 
 <div class="clearfix"></div>
 
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
-
+    
 
 {% framebox height="60px" %}
+
 <div style="margin: 10px;">
     <input id="promo" type="checkbox"></input>
     <label for="promo">Receive promotional offers?</label>
 </div>
+
 {% endframebox %}
-    
 
-체크박스에 레이블이 올바로 지정되면 스크린 리더에서
-해당 요소는 체크박스 역할이고 확인 표시를 한 상태이며 'Receive
-promotional offers?'로 명명되어 있다고 알려줄 수 있습니다.
+When the checkbox has been labeled correctly, the screen reader can report that the element has a role of checkbox, is in a checked state, and is named "Receive promotional offers?".
 
-![체크박스에 대해 음성으로 알려주는 레이블을 보여 주는 VoiceOver의 화상 텍스트 출력](imgs/promo-offers.png)
+![on-screen text output from VoiceOver showing the spoken label for a checkbox](imgs/promo-offers.png)
 
-Success: 이제는 실제로 스크린 리더를 사용하여 페이지를 탭으로 이동하고 음성으로 안내되는 역할, 상태, 이름을 확인하면서 잘못 연결된 레이블을
-찾을 수
-있습니다.
+Success: You can actually use the screen reader to find improperly-associated labels by tabbing through the page and verifying the spoken roles, states, and names.
 
+## Feedback {: #feedback }
 
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

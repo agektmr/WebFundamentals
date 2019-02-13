@@ -1,88 +1,50 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Fragmentos são scripts pequenos que você pode criar e executar dentro do painel Sources do Chrome DevTools. É possível acessar e executá-losem qualquer página. Ao executar um snippet, ele é executado no contexto da página atualmente aberta.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Snippets are small scripts that you can author and execute within the Sources panel of Chrome DevTools. You can access and run them from any page. When you run a snippet, it executes from the context of the currently open page.
 
-{# wf_updated_on: 2016-06-26 #}
-{# wf_published_on: 2015-10-12 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-10-12 #} {# wf_blink_components: Platform>DevTools #}
 
-# Executar snippets de código em qualquer página {: .page-title }
+# Run Snippets Of Code From Any Page {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-Fragmentos são scripts pequenos que você pode criar e executar 
-dentro do painel Sources do Chrome DevTools. É possível acessar e executá-los
-em qualquer página. Ao executar um snippet, ele é executado no contexto da 
-página atualmente aberta.
+Snippets are small scripts that you can author and execute within the Sources panel of Chrome DevTools. You can access and run them from any page. When you run a snippet, it executes from the context of the currently open page.
 
-Se você usa pequenos utilitários ou scripts de depuração 
-repetidamente em diversas páginas, considere salvar os scripts como snippets.
-Você também pode usar snippets como uma alternativa para 
-[bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
-
+If you have small utilities or debugging scripts which you find yourself using repeatedly on multiple pages, consider saving the scripts as snippets. You can also use snippets as an alternative to [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
 
 ### TL;DR {: .hide-from-toc }
-- Snippets são scripts pequenos que você pode executar em qualquer página (parecidos com os bookmarklets).
-- Execute partes de snippets no Console com o recurso "Evaluate in Console".
-- Lembre-se de que recursos populares do painel Sources, como pontos de interrupção, também funcionam com snippets.
 
+* Snippets are small scripts that you can run from any page (similar to bookmarklets).
+* Run portions of snippets in the Console with the "Evaluate in Console" feature.
+* Remember that popular features from the Sources panel, like breakpoints, also work with snippets.
 
-## Criar snippet
+## Create snippet
 
-Para criar um snippet, abra o painel **Sources**, clique na guia **Snippets**,
-clique com o botão direito no Navigator e selecione **New**.
+To create a snippet, open the **Sources** panel, click on the **Snippets** tab, right-click within the Navigator, and then select **New**.
 
-![criar snippet](images/create-snippet.png)
+![create snippet](images/create-snippet.png)
 
-Insira seu código no editor. Quando tiver mudanças não salvas, o nome do seu
-script terá um asterisco próximo a ele, como na imagem abaixo.
-Pressione <kbd>Command</kbd>+<kbd>S</kbd> (Mac) ou <kbd>Ctrl</kbd>+<kbd>S</kbd>
-(Windows, Linux) para salvar as alterações. 
+Enter your code in the editor. When you have unsaved changes, your script name has an asterisk next to it, like in the screenshot below. Press <kbd>Command</kbd>+<kbd>S</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>S</kbd> (Windows, Linux) to save your changes.
 
-![snippet não salvo](images/unsaved-snippet.png)
+![unsaved snippet](images/unsaved-snippet.png)
 
-## Executar snippet
+## Run snippet
 
-Existem três maneiras de executar um snippet: 
+There are three ways to run your snippet:
 
-* Clique com o botão direito no nome do arquivo do fragmento (no painel à esquerda que lista
-  todos os fragmentos) e selecione **Run**.
-* Clique no botão **Run** (![botão run snippet 
-](images/run.png){:.inline}).
-* Pressione <kbd>Command</kbd>+<kbd>Enter</kbd> (Mac) ou 
- <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows, Linux).
+* Right-click on the snippet filename (in the pane on the left that lists all your snippets) and select **Run**.
+* Click the **Run** button (![run snippet 
+button](images/run.png){:.inline}).
+* Press <kbd>Command</kbd>+<kbd>Enter</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows, Linux).
 
-Para avaliar uma parte do snippet no Console, destaque essa 
-parte, clique com o botão direito em qualquer lugar no editor e selecione **Evaluate in 
-Console** ou use o atalho de teclado 
-<kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> (Mac) ou
+To evaluate a portion of your snippet in the Console, highlight the portion, right-click anywhere in the editor, and select **Evaluate in Console**, or use the keyboard shortcut 
+<kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> (Mac) or
 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> (Windows, Linux).
 
-![avaliar no console](images/evaluate-in-console.png)
+![evaluate in console](images/evaluate-in-console.png)
 
-## Visualizar modificações locais
+## Set breakpoints
 
-<!-- TODO apply revision content doesn't really work... -->
+Just like other scripts, you can set breakpoints on snippets. See [Pause Your Code With Breakpoints](/web/tools/chrome-devtools/debug/breakpoints/breakpoints) to learn how to add breakpoints from within the **Sources** panel.
 
-Para visualizar uma comparação das modificações que fez em um snippet, clique com o botão direito 
-no editor (com o snippet em exibição) e selecione **Local modifications**
+## Feedback {: #feedback }
 
-![modificações locais](images/local-modifications.png)
-
-Uma nova guia chamada **History** é exibida na gaveta do Console.
-
-![histórico do snippet](images/snippet-history.png)
-
-Cada timestamp representa uma modificação. Expanda o quilate próximo a
-uma marcação de data e hora para visualizar uma comparação das modificações nesse momento.
-O link **revert** remove o histórico de revisão. A partir de 27 de junho de 2016, os
-links **apply revision content** e **apply original content** parecem
-não funcionar como devem.
-
-## Definir pontos de interrupção
-
-Assim como com outros scripts, você pode definir pontos de interrupção em snippets. Consulte
-[Adicionar pontos de interrupção](/web/tools/chrome-devtools/debug/breakpoints/add-breakpoints)
-para saber como adicionar pontos de interrupção pelo painel **Sources**.
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

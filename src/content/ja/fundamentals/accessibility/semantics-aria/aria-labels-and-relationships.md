@@ -1,109 +1,73 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: ARIA ラベルを使用してアクセス可能な要素の説明を作成する
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Using ARIA labels to create accessible element descriptions
 
+{# wf_blink_components: Blink>Accessibility #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-10-04 #}
 
-{# wf_updated_on: 2016-10-04 #}
-{# wf_published_on: 2016-10-04 #}
+# ARIA Labels and Relationships {: .page-title }
 
-# ARIA ラベルと関係性 {: .page-title }
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/dgash.html" %} {% include "web/_shared/contributors/aliceboxhall.html" %}
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/dgash.html" %}
-{% include "web/_shared/contributors/aliceboxhall.html" %}
+## Labels
 
-##  ラベル
+ARIA provides several mechanisms for adding labels and descriptions to elements. In fact, ARIA is the only way to add accessible help or description text. Let's look at the properties ARIA uses to create accessible labels.
 
-ARIA は要素にラベルと説明を加える複数の仕組みを提供します。実際に、ARIA はユーザー補助のサポートや説明テキストを追加できる唯一の方法です。読み取り可能なラベルを作成する際に ARIA が使用するプロパティを見てみましょう。
+### aria-label
 
+`aria-label` allows us to specify a string to be used as the accessible label. This overrides any other native labeling mechanism, such as a `label` element &mdash; for example, if a `button` has both text content and an `aria-label`, only the `aria-label` value will be used.
 
-###  aria-label
+You might use an `aria-label` attribute when you have some kind of visual indication of an element's purpose, such as a button that uses a graphic instead of text, but still need to clarify that purpose for anyone who cannot access the visual indication, such as a button that uses only an image to indicate its purpose.
 
-`aria-label` によって、アクセス可能なラベルに使用する文字列を指定できます。これは `label` 要素など、その他のネイティブのラベル付けの仕組みよりも優先されます。たとえば、`button` にテキスト コンテンツと `aria-label` の両方が存在する場合、`aria-label` の値のみが使用されます。
+![using aria-label to identify an image only button](imgs/aria-label.jpg)
 
+### aria-labelledby
 
+`aria-labelledby` allows us to specify the ID of another element in the DOM as an element's label.
 
+![using aria-labelledby to identify a radio group](imgs/aria-labelledby.jpg)
 
-テキストの代わりに画像だけで目的を示しているボタンがあるとします。この視覚的なマークを見ることができないユーザー向けに目的を明確に示したい場合、`aria-label` 属性を使用することがあります。
+This is much like using a `label` element, with some key differences.
 
+1. `aria-labelledby` may be used on any element, not just labelable elements.
+2. While a `label` element refers to the thing it labels, the relationship is reversed in the the case of `aria-labelledby` &mdash; the thing being labeled refers to the thing that labels it.
+3. Only one label element may be associated with a labelable element, but `aria-labelledby` can take a list of IDREFs to compose a label from multiple elements. The label will be concatenated in the order that the IDREFs are given.
+4. You can use `aria-labelledby` to refer to elements that are hidden and would otherwise not be in the accessibility tree. For example, you could add a hidden `span` next to an element you want to label, and refer to that with `aria-labelledby`.
+5. However, since ARIA only affects the accessibility tree, `aria-labelledby` does not give you the familiar label-clicking behavior you get from using a `label` element.
 
+Importantly, `aria-labelledby` overrides **all** other name sources for an element. So, for example, if an element has both an `aria-labelledby` and an `aria-label`, or an `aria-labelledby` and a native HTML `label`, the `aria-labelledby` label always takes precedence.
 
+## Relationships
 
+`aria-labelledby` is an example of a *relationship attribute*. A relationship attribute creates a semantic relationship between elements on the page regardless of their DOM relationship. In the case of `aria-labelledby`, that relationship is "this element is labelled by that element".
 
-![aria-label を使用して画像のみのボタンを識別](imgs/aria-label.jpg)
+The ARIA specification lists [eight relationship attributes](https://www.w3.org/TR/wai-aria/states_and_properties#attrs_relationships){: .external }. Six of these, `aria-activedescendant`, `aria-controls`, `aria-describedby`, `aria-labelledby`, and `aria-owns`, take a reference to one or more elements to create a new link between elements on the page. The difference in each case is what that link means and how it is presented to users.
 
-###  aria-labelledby
+### aria-owns
 
-`aria-labelledby` によって、DOM 内の別の要素の ID を要素のラベルとして指定できます。
+`aria-owns` is one of the most widely used ARIA relationships. This attribute allows us to tell assistive technology that an element that is separate in the DOM should be treated as a child of the current element, or to rearrange existing child elements into a different order. For example, if a pop-up sub-menu is visually positioned near its parent menu, but cannot be a DOM child of its parent because it would affect the visual presentation, you can use `aria-owns` to present the sub-menu as a child of the parent menu to a screen reader.
 
+![using aria-owns to establish a relationship between a menu and a submenu](imgs/aria-owns.jpg)
 
-![aria-labelledby を使用してラジオグループを識別](imgs/aria-labelledby.jpg)
+### aria-activedescendant
 
-`label` 要素を使用した場合と似ていますが、いくつか重要な違いがあります。
+`aria-activedescendant` plays a related role. Just as the active element of a page is the one that has focus, setting the active descendant of an element allows us to tell assistive technology that an element should be presented to the user as the focused element when its parent actually has the focus. For example, in a listbox, you might want to leave page focus on the listbox container, but keep its `aria-activedescendant` attribute updated to the currently selected list item. This makes the currently selected item appear to assistive technology as if it is the focused item.
 
- 1. `aria-labelledby` はどの要素でも使用でき、ラベル付けが可能な要素に限定されません。
- 1. `label` 要素はラベルを付ける対象を参照しますが、`aria-labelledby` の場合はその関係が反対になります。つまり、ラベルを付けられる側からラベルを付ける側を参照します。
- 1. label 要素は 1 つのラベル付け可能な要素とのみ関連付けることができますが、`aria-labelledby` では IDREF のリストを受け取り、複数の要素からラベルを作成できます。
-ラベルは IDREF で指定された順序で連結されます。
- 1. `aria-labelledby` を使用すると、非表示またはアクセシビリティ ツリーに存在しない要素も参照できます。たとえば、ラベルを付けたい要素の横に非表示の `span` を追加し、`aria-labelledby` でその要素を参照できます。
- 1. ただし、ARIA はアクセシビリティ ツリーのみに影響するため、`aria-labelledby` には、`label` 要素を使用したときのおなじみのラベルクリック動作はありません。
+![using aria-activedescendant to establish a relationship in a listbox](imgs/aria-activedescendant.jpg)
 
+### aria-describedby
 
+`aria-describedby` provides an accessible description in the same way that `aria-labelledby` provides a label. Like `aria-labelledby`, `aria-describedby` may reference elements that are otherwise not visible, whether hidden from the DOM, or hidden from assistive technology users. This is a useful technique when there is some extra explanatory text that a user might need, whether it applies only to users of assistive technology or all users.
 
-重要な点として、要素のその他**すべての**名前ソースよりも `aria-labelledby` が優先されます。たとえば、`aria-labelledby` と `aria-label`、または `aria-labelledby` とネイティブ HTML `label` の両方が要素に指定されていると、`aria-labelledby` ラベルが常に優先されます。
+A common example is a password input field that is accompanied by some descriptive text explaining the minimum password requirements. Unlike a label, this description may or may not ever be presented to the user; they may have a choice of whether to access it, or it may come after all the other information, or it may be pre-empted by something else. For example, if the user is entering information, their input will be echoed back and may interrupt the element's description. Thus, a description is a great way to communicate supplementary, but not essential, information; it won't get in the way of more critical information such as the element's role.
 
+![using aria-describedby to establish a relationship with a password field](imgs/aria-describedby.jpg)
 
+### aria-posinset & aria-setsize
 
-##  関係性
+The remaining relationship attributes are a little different, and work together. `aria-posinset` ("position in set") and `aria-setsize` ("size of set") are about defining a relationship between sibling elements in a set, such as a list.
 
-`aria-labelledby` は、*関係性属性*の一例です。関係性属性は、DOM の関係にかかわらず、ページ上の要素間でセマンティックな関係を構築します。`aria-labelledby` の場合、「この要素は、あの要素によってラベルが付けられる」という関係になります。
+When the size of a set cannot be determined by the elements present in the DOM &mdash; such as when lazy rendering is used to avoid having all of a large list in the DOM at once &mdash; `aria-setsize` can specify the actual set size, and `aria-posinset` can specify the element's position in the set. For example, in a set that might contain 1000 elements, you could say that a particular element has an `aria-posinset` of 857 even though it appears first in the DOM, and then use dynamic HTML techniques to ensure that the user can explore the full list on demand.
 
+![using aria-posinset and aria-setsize to establish a relationship in a list](imgs/aria-posinset.jpg)
 
-ARIA の仕様では、[8 つの関係性属性](https://www.w3.org/TR/wai-aria/states_and_properties#attrs_relationships){: .external } があげられています。そのうちの 6 つ、`aria-activedescendant`、`aria-controls`、`aria-describedby`、`aria-labelledby`、`aria-owns` は、1 つ以上の要素への参照を受け取り、ページ上の要素間に新たな関連付けを作成します。各ケースの違いは、リンクの意味とユーザーに対する表示方法です。
+## Feedback {: #feedback }
 
-
-###  aria-owns
-
-`aria-owns` は、最も幅広く使用されている ARIA 関係性の 1 つです。この属性を使用すると、DOM 内の独立した要素を現在の要素の子として扱うように、または既存の子要素を別の順序で並べ替えるように、支援技術に対して指定できます。たとえば、ポップアップ サブメニューが親メニューの近くに配置されており、外観に影響するためその親の DOM の子にはできない場合、`aria-owns` を使用すれば、スクリーン リーダーに対してサブメニューを親メニューの子として指定できます。
-
-
-
-
-
-![aria-owns を使用してメニューとサブメニュー間の関係を確立](imgs/aria-owns.jpg)
-
-###  aria-activedescendant
-
-`aria-activedescendant` は関連付けられた役割を果たします。ページのアクティブ要素はフォーカスを持つ要素であるのと同様に、要素のアクティブな子孫を設定すると、実際には親にフォーカスが存在するときに、その子孫要素をフォーカスのある要素としてユーザーに提供するように支援技術に指定できます。例としてリストボックスで説明します。リストボックスのコンテナにページ フォーカスを残しつつ、その `aria-activedescendant` 属性は、現在選択されているリスト項目に更新する場合があります。これにより、選択された項目はフォーカスのある項目として支援技術に認識されます。
-
-
-![aria-activedescendant を使用してリストボックス内の関係を構築](imgs/aria-activedescendant.jpg)
-
-###  aria-describedby
-
-`aria-describedby` は、`aria-labelledby` によるラベルの提供と同様に、アクセス可能な説明を提供します。`aria-labelledby` と同様に `aria-describedby` は、DOM で非表示であれ、支援技術のユーザーに対して非表示であれ、そのような非表示の要素を参照できます。追加の説明テキストが必要な場合、そのテキストの対象が支援技術のユーザーのみか全ユーザーかにかかわらず、これは便利な技術です。
-
-
-
-この典型的な例は、パスワードの最小要件に関する説明テキストを伴うパスワード入力フィールドです。ラベルとは異なり、この説明は必ず表示されるとは限りません。アクセスするかどうかを選択可能にする、その他すべての情報の後に表示する、他の情報より先に表示する、などのケースが考えられます。たとえば、ユーザーが情報を入力すると、その入力内容がエコーバックされ、要素の説明の妨げになる場合があります。説明は補足情報を伝える優れた手段ですが、基本的に不可欠な情報ではないため、より重要な情報（要素の役割などの）を妨げてはいけません。
-
-
-
-![aria-describedby を使用してパスワード フィールドとの関係を確立](imgs/aria-describedby.jpg)
-
-###  aria-posinset と aria-setsize
-
-残りの関係性属性はやや異なり、2 つ合わせて機能します。`aria-posinset`（「セット内の配置」）と `aria-setsize`（セットのサイズ）は、リストなど、セットに含まれる子要素間の関係を定義する際に使用します。
-
-
-
-DOM 内に存在する要素でセットのサイズを判断できない場合、たとえば DOM 内のサイズの大きいリストをすべて一度に読み込まないよう遅延レンダリングが使用されている場合などは、`aria-setsize` で実際のセットのサイズを指定し、`aria-posinset` でセット内の要素の配置を指定できます。たとえば要素数が 1,000 個のセットがあるとします。特定の要素が DOM 内で最初に表示されたとしても、`aria-posinset` で位置を 857 と指定できます。さらに動的 HTML の技術を使用すれば、ユーザーはオンデマンドで完全なリストを見ることができます。
-
-
-
-
-
-![aria-posinset と aria-setsize を使用してリスト内の関係を確立](imgs/aria-posinset.jpg)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

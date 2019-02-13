@@ -1,45 +1,27 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:每个桌面浏览器都自带一套开发者工具，能够直接使用，您可以将浏览器的扩展程序或插件扩展和添加至这些工具。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-{# wf_updated_on:2015-04-13 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2015-04-13 #}
 
-# 设置浏览器扩展程序 {: .page-title }
+# Set Up Browser Extensions {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-每个桌面浏览器都自带一套开发者工具，能够直接使用，您可以将浏览器的扩展程序或插件扩展和添加至这些工具。
+Out of the box, every desktop browser comes with a set of developer tools, you can extend and add to these with extensions or plugins for your browser.
 
-下面是两个 Chrome 扩展程序，它们具有一些有用的功能，可以帮助您调试设计。
-
-
+Here are two Chrome Extensions that have some useful functionality to help with debugging your designs.
 
 ## Emmet Re:View
 
-Emmet Re:View 可以让您轻松查看网站在您每次进行媒体查询时的外观，以及同步所有页面的滚动。
-您可以[在它们的网站上](http://re-view.emmet.io/)观看演示。
+Emmet Re:View is a tool which makes it easy to see what your site looks like at each of your media queries and syncs the scrolling of all the pages. You can see a demo of it [on their site](http://re-view.emmet.io/).
 
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
 
-
-[在 Chrome 网上应用店下载](https://chrome.google.com/webstore/detail/emmet-review/epejoicbhllgiimigokgjdoijnpaphdp)
-
-
-<img src="imgs/emmet-review-extension.png" alt="Emmet Review 扩展程序的屏幕截图" />
+![Screenshot of Emmet Review Extension](imgs/emmet-review-extension.png)
 
 ## What Font?
 
-我们经常使用的最后一个扩展程序是 *What Font?*。此 Chrome 扩展程序会向您说明页面当前使用的字体名称。
-这真的会给调试任何网络字体问题带来极大的便利。
+The last extension we use on a regular basis is *What Font?*. This Chrome Extension will tell you the name of the font currently being used on the page. This is really handy for debugging any web font issues.
 
+[Download on the Chrome Web Store](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
 
-[在 Chrome 网上应用店下载](https://chrome.google.com/webstore/detail/whatfont/jabopobgcpjmedljpbcaablpmlmfcogm)
-
-
-<img src="imgs/what-font-extension.png" alt="What Font Chrome 扩展程序的屏幕截图" />
-
-
-
-
-{# wf_devsite_translation #}
+![Screenshot of the What Font Chrome Extension](imgs/what-font-extension.png)

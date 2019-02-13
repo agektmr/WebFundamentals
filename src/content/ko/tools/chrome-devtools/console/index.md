@@ -1,212 +1,177 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools 자바스크립트 콘솔을 탐색하는 방법에 대해 자세히 알아봅니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Learn how to navigate the Chrome DevTools JavaScript Console.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2015-05-10 #}
-{# wf_blink_components: Platform>DevTools #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-05-10 #} {# wf_blink_components: Platform>DevTools #}
 
-# 콘솔 사용 {: .page-title }
+# Using the Console {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/andismith.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/pbakaus.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/andismith.html" %} {% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/pbakaus.html" %}
 
-방법: DevTools Console을 열고 중복 
-메시지를 스택하거나 자체 줄에 표시하고, 출력을 지우거나 유지하거나 
-파일에 저장하고, 출력을 필터링하고 추가
-Console 설정에 액세스합니다.
+Learn how to: open the DevTools Console, stack redundant messages or display them on their own lines, clear or persist output or save it to a file, filter output, and access additional Console settings.
 
-### 짧은 요약 {: .hide-from-toc }
-- Console을 전용 패널로 열거나 다른 패널 옆에 서랍으로 엽니다.
-- 중복 메시지를 스택하거나 자체 줄에 표시합니다.
-- 페이지 사이의 출력을 지우거나 유지하거나 파일에 저장합니다.
-- 출력을 심각도 레벨, 네트워크 메시지 숨기기 또는 정규 표현식 패턴으로 필터링합니다.
+### TL;DR {: .hide-from-toc }
 
-## 콘솔 열기
+* Open the Console as a dedicated panel or as a drawer next to any other panel.
+* Stack redundant messages, or display them on their own lines.
+* Clear or persist output between pages, or save it to a file.
+* Filter output by severity level, by hiding network messages, or by regular expression patterns.
 
-Console을 전체 화면에 표시되는 전용 패널로 액세스합니다.
+## Opening the Console
 
-![Console 패널](images/console-panel.png)
+Access the Console as a full-screen, dedicated panel:
 
-또는 다른 패널 옆에 열리는 창으로 액세스합니다.
+![The Console panel](images/console-panel.png)
 
-![Console 창](images/console-drawer.png)
+Or as a drawer that opens next to any other panel:
 
-### 패널로 열기
+![The Console drawer](images/console-drawer.png)
 
-전용 **Console** 패널로 열려면 다음 두 방법 중 하나를 사용합니다.
+### Open as panel
 
-* <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) 또는
- <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac)를 누릅니다.
-DevTools가 이미 열린 경우 **Console** 버튼을 누릅니다.
-* Console 패널을 열면 Console 서랍이 자동으로 접힙니다.
+To open the dedicated **Console** panel, either:
 
-### 서랍으로 열기
+* Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Opt</kbd>+<kbd class="kbd">J</kbd> (Mac).
+* If DevTools is already open, press the **Console** button.
 
-Console을 다른 패널 옆의 서랍으로 열려면 다음 두 방법 중 하나를 사용합니다.
+When you open the Console panel, the Console drawer collapses automatically.
 
-* DevTools에 포커스를 맞춘 상태에서 <kbd>Esc</kbd> 키를 누릅니다.
-* **Customize and control DevTools** 버튼을 누른 다음 
-  **Show console**을 누릅니다.
+### Open as drawer
 
-![콘솔 표시](images/show-console.png)
+To open the Console as a drawer next to any other panel, either:
 
-## 메시지 스태킹
+* Press <kbd>Esc</kbd> while DevTools is in focus.
+* Press the **Customize and control DevTools** button and then press **Show console**.
 
-메시지가 연속으로 반복되는 경우 메시지의 각
-인스턴스를 새로운 줄에 출력하지 않고 Console이 메시지를 '스택'하고
-왼쪽 여백에 숫자를 대신 표시합니다. 해당 숫자는 메시지가 반복된
-횟수를 나타냅니다.
+![Show console](images/show-console.png)
 
-![메시지 스태킹](images/message-stacking.png)
+## Message stacking
 
-각 로그에 대해 고유한 줄 입력을 선호하는 경우 DevTools 설정에서 **Show timestamps**를
-활성화합니다.
+If a message is consecutively repeated, rather than printing out each instance of the message on a new line, the Console "stacks" the messages and shows a number in the left margin instead. The number indicates how many times the message has repeated.
 
-![타임스탬프 표시](images/show-timestamps.png)
+![Message stacking](images/message-stacking.png)
 
-각 메시지의 타임스태프는 서로 다르므로 각 메시지는 자신의 줄에
-표시됩니다.
+If you prefer a unique line entry for every log, enable **Show timestamps** from the DevTools settings.
 
-![타임스탬프된 콘솔](images/timestamped-console.png)
+![Show timestamps](images/show-timestamps.png)
 
-## 콘솔 기록 관련 작업
+Since the timestamp of each message is different, each message is displayed on its own line.
 
-### 기록 지우기 {: #clearing}
+![Timestamped console](images/timestamped-console.png)
 
-다음 방법을 통해 콘솔 기록을 지울 수 있습니다.
+## Working with the Console history
 
-* Console을 마우스 오른쪽 버튼으로 클릭하고 **Clear console**을 누릅니다.
-* Console에 `clear()`를 입력합니다.
-* 자바스크립트 코드 내에서 `console.clear()`를 호출합니다.
-* <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd>
-  (Mac, Windows, Linux)을 입력합니다.
+### Clearing the history {: #clearing}
 
-### 기록 유지 {: #preserve-log}
+You can clear the console history by doing any of the following:
 
-콘솔 맨 위에 있는 **Preserve log** 확인란을 활성화하여 페이지 새로고침 또는 변경 사이에
-콘솔 기록을 유지합니다. Console을 지우거나
-해당 탭을 닫을 때까지 메시지가 저장됩니다.
+* Right-click in the Console and press **Clear console**.
+* Type `clear()` in the Console.
+* Call `console.clear()` from within your JavaScript code.
+* Type <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">L</kbd> (Mac, Windows, Linux).
 
-### 기록 저장
+### Persisting the history {: #preserve-log}
 
-Console을 마우스 오른쪽 버튼으로 클릭하고 **Save as** 선택하여 콘솔의
-출력을 로그 파일에 저장합니다.
+Enable the **Preserve log** checkbox at the top of the console to persist the console history between page refreshes or changes. Messages will be stored until you clear the Console or close the tab.
 
-![콘솔을 로그 파일에 저장](images/console-save-as.png)
+### Saving the history
 
-## 실행 컨텍스트 선택 {: #execution-context }
+Right-click in the Console and select **Save as** to save the output of the console to a log file.
 
-아래 스크린샷에 파란색으로 강조된 드롭다운 메뉴는
-**Execution Context Selector**입니다.
+![Save Console to log file](images/console-save-as.png)
+
+## Selecting execution context {: #execution-context }
+
+The dropdown menu highlighted in blue in the screenshot below is called the **Execution Context Selector**.
 
 ![Execution Context Selector](images/execution-context-selector.png)
 
-일반적으로는 컨텍스트가 `top`(페이지 프레임 위쪽)에 설정됩니다.
+You'll usually see the context set to `top` (the top frame of the page).
 
-다른 프레임과 확장 프로그램은 자체 컨텍스트로 작동합니다. 이런 다른
-컨텍스트와 함께 작동하려면 드롭다운 메뉴에서 선택해야 합니다. 예를 들어
-`<iframe>` 요소의 로그 기록 출력을 확인하고
-컨텍스트 안에 있는 변수를 수정하고 싶다면
-Execution Context Selector 드롭다운 메뉴에서 선택해야 합니다.
+Other frames and extensions operate in their own context. To work with these other contexts you need to select them from the dropdown menu. For example, if you wanted to see the logging output of an `<iframe>` element and modify a variable that exists within that context, you'd need to select it from the Execution Context Selector dropdown menu.
 
-다른 컨텍스트 안의 요소를 검사하는 방식으로 DevTools에 액세스하지 않으면 Console의 기본값은
-`top` 컨텍스트로 설정됩니다. 예를 들어
-`<iframe>`에 있는 `<p>` 요소를 검사한다면 DevTools가 Execution Context
-Selector를 `<iframe>`의 컨텍스트로 설정합니다.
+The Console defaults to the `top` context, unless you access DevTools by inspecting an element within another context. For example, if you inspect a `<p>` element within an `<iframe>`, then DevTools sets the Execution Context Selector to the context of that `<iframe>`.
 
-`top` 이외의 컨텍스트로 작업할 경우 DevTools가 아래의 스크린샷과 같이
-Execution Context Selector를 빨간색으로 강조표시합니다. 개발자가
-`top` 이외의 컨텍스트로 작업하는 경우가 드물기 때문입니다. 값이 나오기를 기대하면서
-변수를 입력했는데
-(다른 컨텍스트에 정의되어 있어서) `undefined`가 나오면 상당히 혼란스러울 수 있습니다.
+When you're working in a context other than `top`, DevTools highlights the Execution Context Selector red, as in the screenshot below. This is because developers rarely need to work in any context other than `top`. It can be pretty confusing to type in a variable, expecting a value, only to see that it's `undefined` (because it's defined in a different context).
 
-![빨간색으로 강조표시된 Execution Context Selector](images/non-top-context.png)
+![Execution Context Selector highlighted red](images/non-top-context.png)
 
-## Console 출력 필터링
+## Filtering the Console output
 
-**Filters** 
-버튼(![필터 버튼](images/filter-button.png){:.inline})을
-클릭하여 콘솔 출력을 필터링합니다. 심각도 레벨, 정규 
-표현식 또는 네트워크 메시지 숨기기로 필터링할 수 있습니다.
+Click the **Filter** button (![filter button](images/filter-button.png){:.inline}) to filter console output. You can filter by severity level, by a regular expression, or by hiding network messages.
 
-![필터링된 콘솔 출력](images/filtered-console.png)
+![Filtered Console output](images/filtered-console.png)
 
-심각도 레벨 필터링은 다음과 같습니다.
+Filtering by severity level is equivalent to the following:
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">옵션 &amp; 표시</th>
+      <th colspan="2">Option &amp; Shows</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
-    <td>전체</td>
-    <td>모든 콘솔 출력 표시</td>
+    <td>All</td>
+    <td>Shows all console output</td>
   </tr>
   <tr>
-    <td>오류</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>의 출력만 표시</td>
+    <td>Errors</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleerrorobject--object-">console.error()</a>.</td>
   </tr>
   <tr>
-    <td>경고</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>의 출력만 표시</td>
+    <td>Warnings</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolewarnobject--object-">console.warn()</a>.</td>
   </tr>
   <tr>
-    <td>정보</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>의 출력만 표시</td>
+    <td>Info</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoleinfoobject--object-">console.info()</a>.</td>
   </tr>
   <tr>
-    <td>로그</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>의 출력만 표시</td>
+    <td>Logs</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consolelogobject--object-">console.log()</a>.</td>
   </tr>
   <tr>
-    <td>디버그</td>
-    <td><a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a>와 <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>의 출력만 표시</td>
+    <td>Debug</td>
+    <td>Only show output from <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoletimeendlabel">console.timeEnd()</a> and <a href="/web/tools/chrome-devtools/debug/console/console-reference#consoledebugobject--object-">console.debug()</a>.</td>
   </tr>
   </tbody>
 </table>
 
-## 추가 설정
+## Additional settings
 
-추가 Console 설정을 하려면 DevTools settings를 열고 **General** 탭으로 이동하여
-아래쪽 **Console** 섹션으로 스크롤합니다.
+Open the DevTools settings, go to the **General** tab, and scroll down to the **Console** section for further Console settings.
 
-![Console 설정](images/console-settings.png)
+![Console settings](images/console-settings.png)
 
 <table class="responsive">
   <thead>
      <tr>
-      <th colspan="2">설정 &amp; 설명</th>
+      <th colspan="2">Setting &amp; Description</th>
     </tr>   
   </thead>
   <tbody>
   <tr>
     <td>Hide network messages</td>
-    <td>기본적으로 콘솔은 네트워크 문제를 보고합니다. 이 옵션을 켜면 해당 오류에 대한 로그를 표시하지 않도록 콘솔에 지시합니다. 예를 들어, 404 및 500 시리즈 오류는 기록되지 않습니다.</td>
+    <td>By default, the console reports network issues. Turning this on instructs the console to not show logs for these errors. For example, 404 and 500 series errors will not be logged.</td>
   </tr>
   <tr>
     <td>Log XMLHttpRequests</td>
-    <td>콘솔이 각 XMLHttpRequest를 기록할지 여부를 지정합니다.</td>
+    <td>Determines if the console logs each XMLHttpRequest.</td>
   </tr>
   <tr>
     <td>Preserve log upon navigation</td>
-    <td>페이지 새로고침 또는 탐색 동안 콘솔 기록을 유지합니다.</td>
+    <td>Persists the console history during page refreshes or navigation.</td>
   </tr>
   <tr>
     <td>Show timestamps</td>
-    <td>각 콘솔 메시지 앞에 타임스탬프를 추가하여 호출 시간을 표시합니다. 특정 이벤트가 발생한 경우 디버그하는 데 유용합니다. 이 옵션은 메시지 스태킹을 비활성화합니다.</td>
+    <td>Prepends a timestamp to each console message showing when the call was made. Useful for debugging when a certain event occurred. This will disable message stacking.</td>
   </tr>
   <tr>
     <td>Enable custom formatters</td>
-    <td>자바스크립트 객체의 <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">서식 지정</a>을 제어합니다.</td>
+    <td>Control the <a href="https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview">formatting</a> of JavaScript objects.</td>
   </tr>
   </tbody>
 </table>
 
-## 의견 {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

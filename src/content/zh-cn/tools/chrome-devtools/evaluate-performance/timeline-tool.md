@@ -1,203 +1,189 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Chrome DevTools 的 Timeline 面板可以记录和分析您的应用在运行时的所有活动。这里是开始调查应用中可觉察性能问题的最佳位置。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Chrome DevTools Timeline panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
-{# wf_updated_on:2016-03-07 #}
-{# wf_published_on:2015-06-08 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-06-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# 如何使用 Timeline 工具 {: .page-title }
+# How to Use the Timeline Tool {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-使用 Chrome DevTools 的 <em>Timeline</em> 面板可以记录和分析您的应用在运行时的所有活动。
-这里是开始调查应用中可觉察性能问题的最佳位置。
+Warning: This page is deprecated. See [Performance Analysis Reference](reference) for up-to-date information.
 
+Use the Chrome DevTools *Timeline* panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
-
-![Timeline 工具](imgs/timeline-panel.png)
-
+![Timeline tool](imgs/timeline-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- 执行 Timeline 记录，分析页面加载或用户交互后发生的每个事件。
-- 在 Overview 窗格中查看 FPS、CPU 和网络请求。
-- 点击火焰图中的事件以查看与其相关的详细信息。
-- 放大显示一部分记录以简化分析。
 
+* Make a Timeline recording to analyze every event that occurred after a page load or a user interaction.
+* View FPS, CPU, and network requests in the Overview pane.
+* Click on an event within the Flame Chart to view details about it.
+* Zoom in on a section of a recording to make analysis easier.
 
-## Timeline 面板概览 {:#timeline-overview}
+## Timeline panel overview {:#timeline-overview}
 
-Timeline 面板包含以下四个窗格：
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#record">Record performance</a></li>
+    <li><a href="reference#fps-chart">The FPS chart</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+  </ul>
+</aside>
 
-1. **Controls**。开始记录，停止记录和配置记录期间捕获的信息。
-2. **Overview**。
-页面性能的高级汇总。更多内容请参见下文。
-3. **火焰图**。
-CPU 堆叠追踪的可视化。 
+The Timeline panel consists of four panes:
 
-   您可以在**火焰图**上看到一到三条垂直的虚线。蓝线代表 `DOMContentLoaded` 事件。
-绿线代表首次绘制的时间。
-红线代表 `load` 事件。
+1. **Controls**. Start a recording, stop a recording, and configure what information is captured during the recording.
+2. **Overview**. A high-level summary of page performance. More on this below.
+3. **Flame Chart**. A visualization of the CPU stack trace.
+    
+    You may see one to three dotted, vertical lines on your **Flame Chart**. The blue line represents the `DOMContentLoaded` event. The green line represents time to first paint. The red line represents the `load` event.
 
-4. **Details**。选择事件后，此窗格会显示与该事件有关的更多信息。
-未选择事件时，此窗格会显示选定时间范围的相关信息。
- 
+4. **Details**. When an event is selected, this pane shows more information about that event. When no event is selected, this pane shows information about the selected time frame.
 
-![带标注的 Timeline 面板](imgs/timeline-annotated.png)
+![annotated timeline panel](imgs/timeline-annotated.png)
 
-### Overview 窗格
+### Overview pane
 
-**Overview** 窗格包含以下三个图表：
+The **Overview** pane consists of three graphs:
 
-1. **FPS**。每秒帧数。绿色竖线越高，FPS 越高。
-FPS 图表上的红色块表示长时间帧，很可能会出现[卡顿][jank]。
-2. **CPU**。
-CPU 资源。此[面积图][ac]指示消耗 CPU 资源的事件类型。
+1. **FPS**. Frames Per Second. The higher the green bar, the higher the FPS. The red blocks above the FPS graph indicate long frames, which are likely candidates for [jank](/web/fundamentals/performance/rendering/).
+2. **CPU**. CPU resources. This [area chart](https://en.wikipedia.org/wiki/Area_chart) indicates what type of events consumed CPU resources. 
+3. **NET**. Each colored bar represents a resource. The longer the bar, the longer it took to retrieve the resource. The lighter portion of each bar represents waiting time (the time between when the resource was requested up until the time that the first byte was downloaded). The darker portion represents transfer time (the time between when the first and last bytes were downloaded).
+    
+    Bars are color coded as follows: <!-- source: https://goo.gl/eANVFf -->
 
-3. **NET**。每条彩色横杠表示一种资源。横杠越长，检索资源所需的时间越长。
-每个横杠的浅色部分表示等待时间（从请求资源到第一个字节下载完成的时间）。
+* HTML files are **<span style="color:hsl(214, 67%, 66%)">blue</span>**.
+* Scripts are **<span style="color:hsl(43, 83%, 64%)">yellow</span>**.
+* Stylesheets are **<span style="color:hsl(256, 67%, 70%)">purple</span>**.
+* Media files are **<span style="color:hsl(109, 33%, 55%)">green</span>**.
+* Miscellaneous resources are **<span style="color:hsl(0, 0%, 70%)">grey</span>**.
 
-深色部分表示传输时间（下载第一个和最后一个字节之间的时间）。
+![overview pane, annotated](imgs/overview-annotated.jpg)
 
+## Make a recording
 
+Warning: This page is deprecated. See [Record performance](reference#record) for up-to-date information.
 
-   横杠按照以下方式进行彩色编码：
-   <!-- source: https://goo.gl/eANVFf -->
-   
-   * HTML 文件为**<span style="color:hsl(214, 67%, 66%)">蓝色</span>**。
-   * 脚本为**<span style="color:hsl(43, 83%, 64%)">黄色</span>**。
-   * 样式表为**<span style="color:hsl(256, 67%, 70%)">紫色</span>**。
-   * 媒体文件为**<span style="color:hsl(109, 33%, 55%)">绿色</span>**。
-   * 其他资源为**<span style="color:hsl(0, 0%, 70%)">灰色</span>**。
+To make a recording of a *page load*, open the **Timeline** panel, open the page that you want to record, and then reload the page. The **Timeline** panel automatically records the page reload.
 
+To make a recording of a *page interaction*, open the **Timeline** panel, then start the recording by pressing the **Record** button (![record button](imgs/record-off.png){:.inline}) or by typing the keyboard shortcut <kbd>Cmd</kbd>+<kbd>E</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>E</kbd> (Windows / Linux). The **Record** button turns red during a recording. Perform your page interactions, and then press the **Record** button or type the keyboard shortcut again to stop the recording.
 
-![Overview 窗格，带标注](imgs/overview-annotated.jpg)
+When the recording is finished, DevTools guesses what portion of the recording is most relevant to you, and automatically zooms to that portion.
 
-[ac]: https://en.wikipedia.org/wiki/Area_chart 
-[jank]: /web/fundamentals/performance/rendering/
+### Recording tips
 
-## 做记录
+* **Keep recordings as short as possible**. Shorter recordings generally make analysis easier.
+* **Avoid unnecessary actions**. Avoid actions (mouse clicks, network loads, etc.) that are extraneous to the activity you want to record and analyze. For example, if you want to record events that occur after you click a Login button, don’t also scroll the page, load an image, and so on.
+* **Disable the browser cache**. When recording network operations, it’s a good idea to disable the browser’s cache from the DevTools Settings panel or the [**Network conditions**](/web/tools/chrome-devtools/network-performance/reference#network-conditions) drawer.
+* **Disable extensions**. Chrome extensions can add unrelated noise to Timeline recordings of your application. Open a Chrome window in [incognito mode](https://support.google.com/chrome/answer/95464), or create a new [Chrome user profile](https://support.google.com/chrome/answer/142059) to ensure that your environment has no extensions.
 
-要记录*页面加载*，请打开 **Timeline** 面板，打开想要记录的页面，然后重新加载页面。
-**Timeline** 面板会自动记录页面重新加载。
+## View recording details
 
+Warning: This page is deprecated. See [View main thread ](reference#main) for up-to-date information.
 
-要记录*页面交互*，请打开 **Timeline** 面板，然后按 **Record** 按钮 (![Record 按钮](imgs/record-off.png){:.inline}) 或者键入键盘快捷键 <kbd>Cmd</kbd>+<kbd>E</kbd> (Mac) 或 <kbd>Ctrl</kbd>+<kbd>E</kbd> (Windows / Linux)，开始记录。记录时，**Record** 按钮会变成红色。执行页面交互，然后按 **Record** 按钮或再次键入键盘快捷键停止记录。
+When you select an event in the **Flame Chart**, the **Details** pane displays additional information about the event.
 
+![details pane](imgs/details-pane.png)
 
+Some tabs, like **Summary**, are present for all event types. Other tabs are only available to certain event types. See the [Timeline event reference](/web/tools/chrome-devtools/profile/evaluate-performance/performance-reference) for details on each record type.
 
-完成记录后，DevTools 会猜测哪一部分记录与您最相关，并自动缩放到那一个部分。
+## Capture screenshots during recording {:#filmstrip}
 
+Warning: This page is deprecated. See [Capture screenshots while recording](reference#screenshots) for up-to-date information.
 
-### 记录提示
+The **Timeline** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
-* **尽可能保持记录简短**。简短的记录通常会让分析更容易。
-* **避免不必要的操作**。避免与您想要记录和分析的活动无关联的操作（鼠标点击、网络加载，等等）。例如，如果您想要记录点击 Login 按钮后发生的事件，请不要滚动页面、加载图像，等等。
-* **停用浏览器缓存**。记录网络操作时，最好从 DevTools 的 Settings 面板或 [**Network conditions**][nc] 抽屉式导航栏停用浏览器的缓存。
-* **停用扩展程序**。Chrome 扩展程序会给应用的 Timeline 记录增加不相关的噪声。
-以[隐身模式][incognito]打开 Chrome 窗口或者创建新的 [Chrome 用户个人资料][new chrome profile]，确保您的环境中没有扩展程序。
+Enable the **Screenshots** checkbox in the **Controls** pane before you make a recording to capture screenshots of the recording. The screenshots are displayed below the **Overview** pane.
 
+![timeline recording with filmstrip](imgs/timeline-filmstrip.png)
 
-
-
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-[incognito]: https://support.google.com/chrome/answer/95464
-[new chrome profile]: https://support.google.com/chrome/answer/142059
-
-## 查看记录详细信息
-
-在**火焰图**中选择事件时，**Details** 窗格会显示与事件相关的其他信息。
-
-
-![Details 窗格](imgs/details-pane.png)
-
-一些标签（如 **Summary**）适用于所有事件类型。其他标签则仅对特定事件类型可用。
-请参阅 [Timeline 事件参考][event reference]，了解与每个记录类型相关的详细信息。
-
-
-[event reference]: /web/tools/chrome-devtools/profile/evaluate-performance/performance-reference
-
-## 在记录期间捕捉屏幕截图{:#filmstrip}
-
-**Timeline** 面板可以在页面加载时捕捉屏幕截图。此功能称为**幻灯片**。
-
-
-在您开始记录之前，请在 **Controls** 窗格中启用 **Screenshots** 复选框，以便捕捉记录的屏幕截图。
-屏幕截图显示在 **Overview** 窗格下方。
-
-
-![带幻灯片的 Timeline 记录](imgs/timeline-filmstrip.png)
-
-将您的鼠标悬停在 **Screenshots** 或 **Overview** 窗格上可以查看记录中该点的缩放屏幕截图。
-左右移动鼠标可以模拟记录的动画。
-
+Hover your mouse over the **Screenshots** or **Overview** pane to view a zoomed screenshot of that point in the recording. Move your mouse left and right to simulate an animation of the recording.
 
 <video src="animations/hover.mp4" autoplay muted loop controls></video>
 
-## 分析 JavaScript {:#profile-js}
+## Profile JavaScript {:#profile-js}
 
-开始记录前，请启用 **JS Profile** 复选框，以便在您的时间线记录中捕捉 JavaScript 堆栈。
-启用 JS 分析器后，您的火焰图会显示调用的每个 JavaScript 函数。
- 
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#disable-js-samples">Disable JavaScript
+      samples</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+    <li><a href="reference#activities">View activities</a></li>
+  </ul>
+</aside>
 
-![启用 JS 分析的火焰图](imgs/js-profile.png)
+Enable the **JS Profile** checkbox before you take a recording to capture JavaScript stacks in your timeline recording. When the JS profiler is enabled, your flame chart shows every JavaScript function that was called.
 
-## 分析绘制 {:#profile-painting}
+![flame chart with JS profile enabled](imgs/js-profile.png)
 
-开始记录前，请启用 **Paint** 复选框，以便获取有关 **Paint** 事件的更多数据分析。
-启用绘制分析并点击 **Paint** 事件后，新 **Paint Profiler** 标签会出现在 **Details** 窗格中，后者显示了许多与事件相关的更精细信息。
+## Profile painting {:#profile-painting}
 
+Warning: This page is deprecated. See [View paint profiler](reference#paint-profiler) for up-to-date information.
 
+Enable the **Paint** checkbox before you take a recording to gain more insight into **Paint** events. When paint profiling is enabled and you click on a **Paint** event, a new **Paint Profiler** tab is displayed in the **Details** pane that shows much more granular information about the event.
 
 ![paint profiler](imgs/paint-profiler.png)
 
-### 渲染设置 {:#rendering-settings}
+### Rendering settings {:#rendering-settings}
 
-打开主 DevTools 菜单，然后选择**More tools** > **Rendering settings** 访问渲染设置，这些设置在调试绘制问题时非常有用。渲染设置会作为一个标签显示在 **Console** 抽屉式导航栏（如果隐藏，请按 <kbd>esc</kbd> 显示抽屉式导航栏）旁边。
+Warning: This page is deprecated. See [Analyze rendering performance with the Rendering tab](reference#rendering) for up-to-date information.
 
+Open the main DevTools menu and select **More tools** > **Rendering settings** to access rendering settings that may be helpful when debugging paint issues. The rendering settings opens up as a tab next to the **Console** drawer (press
+<kbd>esc</kbd> to show the drawer, if it's hiding).
 
+![rendering settings](imgs/rendering-settings.png)
 
+## Search records
 
-![渲染设置](imgs/rendering-settings.png)
+Warning: This page is deprecated. See [Search activities](reference#search) for up-to-date information.
 
-## 搜索记录
+While looking at events you may want to focus on one type of events. For example, perhaps you need to view the details of every `Parse HTML` event.
 
-查看事件时，您可能希望侧重于一种类型的事件。例如，您可能需要查看每个 `Parse HTML` 事件的详细信息。
- 
+Press <kbd>Cmd</kbd>+<kbd>F</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>F</kbd> (Windows / Linux) while the **Timeline** is in focus to open a Find toolbar. Type in the name of the event type that you wish to inspect, such as `Event`.
 
-在 **Timeline** 处于焦点时，按 <kbd>Cmd</kbd>+<kbd>F</kbd> (Mac) 或 <kbd>Ctrl</kbd>+<kbd>F</kbd> (Windows / Linux) 以打开一个查找工具栏。键入您想要检查的事件类型的名称，如 `Event`。
+The toolbar only applies to the currently selected timeframe. Any events outside of the selected timeframe are not included in the results.
 
-工具栏仅适用于当前选定的时间范围。选定时间范围以外的任何事件都不会包含在结果中。
- 
+The up and down arrows move you chronologically through the results. So, the first result represents the earliest event in the selected timeframe, and the last result represents the last event. Every time that you press the up or down arrow, a new event is selected, so you can view its details in the **Details** pane. Pressing the up and down arrows is equivalent to clicking on an event in the **Flame Chart**.
 
-利用上下箭头，您可以按照时间顺序在结果中移动。所以，第一个结果表示选定时间范围内最早的事件，最后一个结果表示最后的事件。每次按向上或向下箭头会选择一个新事件，因此，您可以在 **Details** 窗格中查看其详细信息。按向上和向下箭头等同于在**火焰图**中点击事件。
+![find toolbar](imgs/find-toolbar.png)
 
+## Zoom in on a Timeline section {:#zoom}
 
-![查找工具栏](imgs/find-toolbar.png)
+Warning: This page is deprecated. See [Select a portion of a recording](reference#select) for up-to-date information.
 
-## 在 Timeline 部分上放大 {:#zoom}
+You can zoom in on a section of a recording to make analysis easier. You use the **Overview** pane to zoom in on a section of the recording. After zooming, the **Flame Chart** is automatically zoomed to match the same section.
 
-您可以放大显示一部分记录，以便简化分析。使用 **Overview** 窗格可以放大显示一部分记录。
-放大后，**火焰图**会自动缩放以匹配同一部分。
+![zoom in on a section of a timeline recording](imgs/zoom.png)
 
+To zoom in on a Timeline section:
 
-![放大 Timeline 记录的一部分](imgs/zoom.png)
+* In the **Overview** pane, drag out a Timeline selection with your mouse.
+* Adjust the gray sliders in the ruler area.
 
-要在 Timeline 部分上放大，请执行以下操作：
+Once you have a section selected, you can use the <kbd>W</kbd>,<kbd>A</kbd>,
+<kbd>S</kbd>, and <kbd>D</kbd> keys to adjust your selection. <kbd>W</kbd> and <kbd>S</kbd> zoom in and zoom out, respectively. <kbd>A</kbd> and 
+<kbd>D</kbd> move left and right, respectively.
 
-* 在 **Overview** 窗格中，使用鼠标拖出 Timeline 选择。
-* 在标尺区域调整灰色滑块。
+## Save and load recordings
 
-选择部分后，可以使用 <kbd>W</kbd>、<kbd>A</kbd>、<kbd>S</kbd> 和 <kbd>D</kbd> 键调整您的选择。
-<kbd>W</kbd> 和 <kbd>S</kbd> 分别代表放大和缩小。
-<kbd>A</kbd> 和 <kbd>D</kbd> 分别代表左移和右移。
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#save">Save a recording</a></li>
+    <li><a href="reference#load">Load a recording pane</a></li>
+  </ul>
+</aside>
 
+You can save and open recordings by right-clicking inside the **Overview** or **Flame Chart** panes and selecting the relevant option.
 
-## 保存和打开记录
+![save and open recordings](imgs/save-open.png)
 
-您可以在 **Overview** 或**火焰图**窗格中点击右键并选择相关选项，保存和打开记录。
+You can also share saved recordings using [timeline-viewer](https://chromedevtools.github.io/timeline-viewer/).
 
+## Feedback {: #feedback }
 
-![保存和打开记录](imgs/save-open.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

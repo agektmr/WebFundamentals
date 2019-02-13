@@ -1,70 +1,31 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: При переходе к протоколу HTTPS на лице любого оператора сайта написаны одни и те же вопросы: Что тут вообще происходит? Что означают все эти слова о шифровании? В этом разделе мы коротко об этом расскажем
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Two of the hurdles developers face when migrating to HTTPS are concepts and terminology. This guide provides a brief overview of both.
 
-{# wf_updated_on: 2015-03-26 #}
-{# wf_published_on: 2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature #}
 
-# Введение в терминологию обеспечения безопасности {: .page-title }
+# Important Security Terminology {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-
-
-
-При переходе к протоколу HTTPS на лице любого оператора сайта написаны одни и те же вопросы: Что тут вообще происходит? Что означают все эти слова о шифровании? В этом разделе мы коротко об этом расскажем
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
 ### TL;DR {: .hide-from-toc }
-- Открытые/закрытые ключи используются для шифрования и расшифровки сообщений между браузером и сервером
-- Сертифицирующий орган – это организация, которая подтверждает соответствие открытых ключей общедоступным доменным именам в системе DNS (например, www.foobar.com)
-- Запрос на получение сертификата (CSR) – это формат данных, который связывает открытый ключ с метаданными о владельце ключа
 
+* Public/private keys are used to sign and decrypt messages between the browser and the server.
+* A certificate authority (CA) is an organization that vouches for the mapping between the public keys and public DNS names (such as "www.foobar.com").
+* A certificate signing request (CSR) is a data format that bundles a public key together with some metadata about the entity that owns the key
 
+## What are the public and private key pairs?
 
-## Что такое пары открытых и закрытых ключей?
+A **public/private key pair** is a pair of very large numbers that are used as encryption and decryption keys, and that share a special mathematical relationship. A common system for key pairs is the **[RSA cryptosystem](https://en.wikipedia.org/wiki/RSA_(cryptosystem)){: .external}**. The **public key** is used to encrypt messages, and the messages can only be feasibly decrypted with the corresponding **private key**. Your web server advertises its public key to the world, and clients (such as web browsers) use that to bootstrap a secure channel to your server.
 
-**Пара открытых/закрытых ключей** – это пара очень длинных чисел, которые можно использовать в качестве 
-ключей шифрования и ключей расшифровки и между которыми существует конкретная математическая 
-взаимосвязь. Распространенной системой для пар ключей является **[криптосистема
-RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem))**. **Открытый
-ключ** используется для шифрования сообщений, которые затем могут быть 
-расшифрованы с помощью соответствующего **закрытого ключа**. Ваш веб-сервер сообщит
-свой открытый ключ всему миру, а клиенты (например, веб-браузеры), будут использовать его
-для выделения безопасного канала вашему серверу.
+## What is a certificate authority?
 
-## Что такое сертифицирующий орган?
+A **certification authority (CA)** is an organization that vouches for the mapping between public keys and public DNS names (such as "www.foobar.com"). For example, how is a client to know if a particular public key is the *true* public key for www.foobar.com? A priori, there is no way to know. A CA vouches for a particular key as being the true one for a particular site by using its own private key to **[cryptographically sign](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Signing_messages){: .external}** the website's public key. This signature is computationally infeasible to forge. Browsers (and other clients) maintain **trust anchor stores** containing the public keys owned by the well-known CAs, and they use those public keys to **cryptographically verify** the CA's signatures.
 
-**Сертифицирующий орган** – это организация, которая лицензирует 
-присвоение публичных ключей публичным доменным именам (например, www.foobar.com).
-Скажем, как клиент узнает, является ли конкретный открытый ключ _истинным_
-открытым ключом для www.foobar.com? На самом деле никак. Сертифицирующий орган подтверждает, 
-что конкретный ключ является истинным для конкретного сайта, с помощью
-собственного закрытого ключа, чтобы **[криптографически подписать
-](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Подписи_сообщений)** открытый ключ
-веб-сайта. Такую подпись невозможно подделать с помощью вычислительных мощностей.
-У браузеров (и других клиентов) имеются **хранилища якорей доверия**, которые содержат
-открытые ключи, принадлежащие известным сертифицирующим органам, а затем они используют открытые ключи 
-**для криптографической проверки** подписей сертифицирующего органа.
+An **X.509 certificate** is a data format that bundles a public key together with some metadata about the entity that owns the key. In the case of the web, the owner of the key is the site operator, and the important metadata is the DNS name of the web server. When a client connects to an HTTPS web server, the web server presents its certificate for the client to verify. The client verifies that the certificate has not expired, that the DNS name matches the name of the server the client is trying to connect to, and that a known trust anchor CA has signed the certificate. In most cases, CAs do not directly sign web server certificates; usually, there is a **chain of certificates** linking a trust anchor to an intermediate signer or signers, and finally to the web server's own certificate (the **end entity**).
 
-**Сертификат X.509** – это формат данных, который связывает открытый ключ
-с метаданными о лице, которому принадлежит этот ключ. В Интернете
-владельцем ключа является оператор сайта, а важными метаданными является 
-имя веб-сервера в системе DNS. Когда клиент соединяется с веб-сервисом по протоколу HTTPS, веб-сервер 
-предъявляет клиенту свой сертификат для проверки. Клиент проверяет
-, не истек ли срок годности сертификата, совпадает ли имя DNS с именем
-сервера, к которому хочет подключиться клиент, а также якорь доверия сертифицирующего органа,
-который подписал сертификат. В большинстве случаев сертифицирующие органы не подписывают напрямую
-сертификаты веб-серверов; как правило, имеется **цепочка сертификатов**, которая ведет к
-якорю доверия, к посредникам, обеспечивающим подпись, а затем к владельцу
-сертификата самого веб-сервера (**конечное лицо**).
+## What is a certificate signing request?
 
-## Что такое запрос на получение сертификата?
+A **certificate signing request (CSR)** is a data format which, like a certificate, bundles a public key together with some metadata about the entity that owns the key. However, clients do not interpret CSRs; CAs do. When you seek to have a CA vouch for your web server's public key, you send the CA a CSR. The CA validates the information in the CSR and uses it to generate a certificate. The CA then sends you the final certificate, and you install that certificate (or, more likely, a certificate chain) and your private key on your web server.
 
-**Запрос на получение сертификата (CSR)** – это формат данных, который, подобно 
-сертификату, связывает открытый ключ с метаданными о лице,
-, которое владеет этим ключом. Тем не менее, клиенты не взаимодействуют с CSR; этим занимаются сертифицирующие органы. Если вам нужна
-сертификация открытого ключа вашего веб-сервера, вы посылаете сертифицирующему органу запрос на получение сертификата. Сертифицирующий орган
-проверяет информацию в запросе на получение сертификата, а затем выпускает сертификат.
-После этого он посылает вам окончательный сертификат
-(скорее всего, цепочку сертификатов) и закрытый ключ, которые вы затем устанавливаете на своем веб-сервере.
+## Feedback {: #feedback }
 
+{% include "web/_shared/helpful.html" %}

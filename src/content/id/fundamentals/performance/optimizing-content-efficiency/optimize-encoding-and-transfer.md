@@ -1,198 +1,119 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Selain menghapus hasil download resource yang tidak diperlukan, hal terbaik yang bisa dilakukan untuk meningkatkan kecepatan pemuatan halaman adalah meminimalkan ukuran download keseluruhan dengan mengoptimalkan dan mengompresi resource yang tersisa.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Next to eliminating unnecessary resource downloads, the best thing we can do to improve page-load speed is to minimize the overall download size by optimizing and compressing the remaining resources.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-03-31 #}
-{# wf_blink_components: Blink>Network #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# Mengoptimalkan Encoding dan Ukuran Transfer Aset Berbasis Teks {: .page-title }
+# Optimizing Encoding and Transfer Size of Text-Based Assets {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-Selain menghapus hasil download resource yang tidak diperlukan, hal terbaik yang bisa dilakukan untuk
-meningkatkan kecepatan pemuatan halaman adalah meminimalkan ukuran download keseluruhan dengan mengoptimalkan dan
-mengompresi resource yang tersisa.
+Next to eliminating unnecessary resource downloads, the best thing you can do to improve page-load speed is to minimize the overall download size by optimizing and compressing the remaining resources.
 
+## Data compression 101
 
-## Kompresi data 101
+After you’ve eliminated any unnecessary resources, the next step is to compress the remaining resources that the browser has to download. Depending on the resource type&mdash;text, images, fonts, and so on&mdash;there are many different techniques to choose from: generic tools that can be enabled on the server, pre-processing optimizations for specific content types, and resource-specific optimizations that require input from the developer.
 
-Setelah Anda menghapus resource yang tidak diperlukan, langkah selanjutnya adalah mengompresi
-resource yang tersisa yang harus didownload oleh browser. Bergantung pada jenis
-resource&mdash;teks, gambar, font, dan sebagainya&mdash;ada banyak teknik berbeda
-yang bisa dipilih: fitur generik yang dapat diaktifkan di server, pra-pemrosesan
-optimasi untuk tipe konten tertentu, dan resource optimasi khusus yang
-memerlukan input dari developer.
-
-Memberikan kinerja terbaik memerlukan kombinasi dari semua teknik ini.
+Delivering the best performance requires a combination of all of these techniques.
 
 ### TL;DR {: .hide-from-toc }
 
-* Kompresi adalah proses encoding informasi menggunakan lebih sedikit bit.
-* Menghapus data yang tidak diperlukan akan menghasilkan hasil terbaik.
-* Ada banyak teknik dan algoritme kompresi yang berbeda.
-* Anda membutuhkan berbagai teknik untuk mencapai kompresi terbaik.
+* Compression is the process of encoding information using fewer bits.
+* Eliminating unnecessary data always yields the best results.
+* There are many different compression techniques and algorithms.
+* You will need a variety of techniques to achieve the best compression.
 
+The process of reducing the size of data is *data compression*. Many people have contributed algorithms, techniques, and optimizations to improve compression ratios, speed, and memory requirements of various compressors. A full discussion of data compression is beyond the scope of this topic. However, it's important to understand, at a high level, how compression works and the techniques you can use to reduce the size of various assets that your pages require.
 
-Proses mengurangi ukuran data adalah *kompresi data*. Banyak orang yang telah
-melibatkan algoritme, teknik, dan optimalisasi untuk meningkatkan rasio kompresi,
-kecepatan, dan kebutuhan memori beragam kompresor. Diskusi lengkap tentang kompresi
-data berada di luar cakupan topik ini. Akan tetapi, penting untuk dipahami,
-pada tingkat atas, cara kerja kompresi dan teknik yang bisa Anda gunakan untuk mengurangi
-ukuran beragam aset yang dibutuhkan oleh halaman Anda.
-
-Untuk mengilustrasikan prinsip inti dari teknik-teknik ini, pertimbangkan proses
-optimalisasi sebuah format pesan teks sederhana yang telah ditemukan khusus untuk contoh ini:
+To illustrate the core principles of these techniques, consider the process of optimizing a simple text message format that was invented just for this example:
 
     # Below is a secret message, which consists of a set of headers in
     # key-value format followed by a newline and the encrypted message.
     format: secret-cipher
     date: 08/25/16
     AAAZZBBBBEEEMMM EEETTTAAA
+    
 
-1. Pesan mungkin berisi anotasi arbitrer, yang ditunjukkan dengan prefiks "#".
- Anotasi tidak memengaruhi makna atau perilaku pesan lainnya.
-2. Pesan mungkin berisi *header*, yang merupakan sepasang nilai kunci (dipisahkan dengan ":")
- yang muncul di awal pesan.
-3. Pesan membawa payload teks.
+1. Messages may contain arbitrary annotations, which are indicated by the "#" prefix. Annotations do not affect the meaning or any other behavior of the message.
+2. Messages may contain *headers*, which are key-value pairs (separated by ":") that appear at the beginning at the message.
+3. Messages carry text payloads.
 
-Apa yang bisa Anda lakukan untuk mengurangi ukuran pesan di atas, yang saat ini adalah
-200 karakter?
+What can you do to reduce the size of the above message, which is currently 200 characters?
 
-1. Komentarnya menarik, namun sebenarnya hal ini tidak memengaruhi arti pesannya.
- Hapus saat mengirim pesan.
-2. Ada beberapa teknik bagus untuk mengenkode header dengan cara yang efisien. Misalnya,
- jika tahu bahwa semua pesan memiliki "format" dan "tanggal", Anda bisa mengonversinya
- menjadi ID integer pendek dan mengirimnya saja. Akan tetapi, itu mungkin tidak benar, jadi
- biarkan saja untuk saat ini.
-3. Payload hanya teks, dan meski kita tidak tahu isi sebenarnya
- (kelihatannya menggunakan "pesan-rahasia"), hanya dengan melihat teksnya akan tampak
- ada banyak redundansi di dalamnya. Daripada mengirim huruf berulang,
- Anda cukup menghitung jumlah huruf berulang dan mengenkodenya secara lebih efisien.
- Misalnya, "AAA" menjadi "3A", yang menyatakan urutan tiga A.
+1. The comment is interesting, but it doesn’t actually affect the meaning of the message. Eliminate it when transmitting the message.
+2. There are good techniques to encode headers in an efficient manner. For example, if you know that all messages have "format" and "date," you could convert those to short integer IDs and just send those. However, that might not be true, so just leave it alone for now.
+3. The payload is text only, and while we don’t know what the contents of it really are (apparently, it’s using a "secret-message"), just looking at the text shows that there's a lot of redundancy in it. Perhaps instead of sending repeated letters, you can just count the number of repeated letters and encode them more efficiently. For example, "AAA" becomes "3A", which represents a sequence of three A’s.
 
-
-Menggabungkan teknik ini akan memberikan hasil berikut:
+Combining these techniques produces the following result:
 
     format: secret-cipher
     date: 08/25/16
     3A2Z4B3E3M 3E3T3A
+    
 
-Pesan baru panjangnya 56 karakter, yang berarti secara mengesankan Anda berhasil mengompresi pesan
-asal sebesar 72%.
+The new message is 56 characters long, which means that you've compressed the original message by an impressive 72%.
 
-Bagus, namun bagaimana hal ini bisa membantu kita mengoptimalkan halaman web? Kita tidak akan
-mencoba menemukan algoritme kompresi, namun seperti yang akan Anda lihat, kita bisa menggunakan
-teknik dan proses pemikiran yang persis sama saat mengoptimalkan beragam resource di
-halaman: pra-pemrosesan, optimalisasi konteks tertentu, dan berbagai algoritme
-untuk konten yang berbeda.
+This is all great, but how does this help us optimize our web pages? We’re not going to try to invent our compression algorithms, but, as you will see, we can use the exact same techniques and thought processes when optimizing various resources on our pages: preprocessing, context-specific optimizations, and different algorithms for different content.
 
-
-## Minifikasi: pra-pemrosesan & optimalisasi konteks tertentu
+## Minification: preprocessing & context-specific optimizations
 
 ### TL;DR {: .hide-from-toc }
 
-- Optimalisasi konten tertentu secara signifikan bisa mengurangi ukuran resource yang dikirimkan.
-- Optimalisasi konten tertentu paling baik diterapkan sebagai bagian dari siklus build/rilis.
+* Content-specific optimizations can significantly reduce the size of delivered resources.
+* Content-specific optimizations are best applied as part of your build/release cycle.
 
-
-Cara terbaik untuk mengompresi data yang redundan atau tidak diperlukan adalah menghilangkannya sama sekali.
-Kita tidak bisa begitu saja menghapus data arbitrer, namun dalam beberapa konteks, kita mungkin memiliki pengetahuan
-mengenai konten tertentu dengan format data dan propertinya, sering kali bisa saja
-mengurangi ukuran payload secara signifikan tanpa memengaruhi arti sebenarnya.
+The best way to compress redundant or unnecessary data is to eliminate it altogether. We can’t just delete arbitrary data, but in some contexts where we have content-specific knowledge of the data format and its properties, it's often possible to significantly reduce the size of the payload without affecting its actual meaning.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/optimizing-content-efficiency/_code/minify.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minify.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minify.html){: target="_blank" .external }
 
-Pertimbangkan halaman HTML sederhana di atas dan tiga tipe konten yang berbeda yang
-berisi: Markup HTML, gaya CSS, dan JavaScript. Masing-masing tipe konten ini memiliki
-aturan berbeda yang membentuk konten valid, aturan berbeda untuk menandai
-komentar, dan seterusnya. Bagaimana cara mengurangi ukuran halaman ini?
+Consider the simple HTML page above and the three different content types that it contains: HTML markup, CSS styles, and JavaScript. Each of these content types has different rules for what constitutes valid content, different rules for indicating comments, and so on. How can we reduce the size of this page?
 
-* Komentar kode adalah sahabat terbaik developer, namun browser tidak perlu melihatnya!
- Hanya dengan membuang komentar CSS (`/* … */`), HTML (`<!-- … -->`), dan JavaScript (`// …`)
- bisa mengurangi total ukuran halaman secara signifikan.
-* Kompresor CSS yang "cerdas" bisa mengetahui bahwa kita menggunakan cara yang tidak efisien untuk
- mendefinisikan aturan bagi ".awesome-container" dan menciutkan dua deklarasi menjadi satu
- tanpa memengaruhi gaya lainnya, sehingga lebih menghemat byte.
-* Ruang putih (spasi dan tab) adalah hal mudah bagi developer dalam HTML, CSS, dan JavaScript.
- Kompresor tambahan bisa menghilangkan semua tab dan spasi.
+* Code comments are a developer’s best friend, but the browser doesn't need to see them! Simply stripping the CSS (`/* … */`), HTML (`<!-- … -->`), and JavaScript (`// …`) comments can significantly reduce the total size of the page.
+* A "smart" CSS compressor could notice that we’re using an inefficient way of defining rules for ".awesome-container" and collapse the two declarations into one without affecting any other styles, saving more bytes.
+* Whitespace (spaces and tabs) is a developer convenience in HTML, CSS, and JavaScript. An additional compressor could strip out all the tabs and spaces.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/optimizing-content-efficiency/_code/minified.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[Cobalah](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minified.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minified.html){: target="_blank" .external }
 
-Setelah menerapkan langkah-langkah di atas, halaman berkurang dari 406 menjadi 150 karakter,
-jadi penghematan kompresi sebesar 63%. Memang sangat tidak mudah dibaca, namun halaman memang tidak
-harus begitu: Anda bisa mempertahankan halaman asal sebagai "versi development" kemudian
-menerapkan langkah-langkah di atas kapan saja Anda siap merilis halaman di situs.
+After applying the above steps, the page goes from 406 to 150 characters, a 63% compression savings. Granted, it’s not very readable, but it also doesn’t have to be: you can keep the original page as your "development version" and then apply the steps above whenever you're ready to release the page on your website.
 
-Mundur satu langkah ke belakang, contoh di atas mengilustrasikan poin penting: kompresor
-serbaguna&mdash;katakanlah, yang didesain untuk mengompresi teks arbitrer&mdash;mungkin bisa
-melakukan tugas kompresi dengan cukup baik untuk halaman di atas, namun tidak tahu cara
-membuang komentar, menciutkan aturan CSS, atau lusinan optimalisasi
-konten tertentu lainnya. Inilah sebabnya pra-pemrosesan/minifikasi/optimalisasi sesuai konteks
-bisa menjadi fitur yang andal.
+Taking a step back, the above example illustrates an important point: a general-purpose compressor&mdash;say, one designed to compress arbitrary text&mdash;could probably do a pretty good job of compressing the page above, but it would never know to strip the comments, collapse the CSS rules, or dozens of other content-specific optimizations. This is why preprocessing/minification/context-aware optimization can be such a powerful tool.
 
-Note: Untuk kasus ini, versi development yang tidak dikompresi dari library JQuery
-sekarang mendekati ~300 KB. Library yang sama, namun dikecilkan (komentarnya dibuang, dll.)
-kira-kira 3x lebih kecil: ~100 KB.
+Note: Case in point, the uncompressed development version of the jQuery library is now approaching ~300KB. The same library, but minified (removed comments, etc.) is about 3x smaller: ~100KB.
 
-Demikian pula, teknik yang dijelaskan di atas bisa diperpanjang melampaui aset berbasis teks saja.
-Gambar, video, dan tipe konten lainnya semuanya mengandung bentuk metadata
-dan ragam payload masing-masing. Misalnya, kapan saja Anda mengambil gambar dengan kamera,
-foto itu juga biasanya menyematkan banyak informasi tambahan: setelan kamera,
-lokasi, dan seterusnya. Bergantung pada aplikasi Anda, data ini mungkin sangat penting
-(misalnya, situs berbagi foto), atau sama sekali tidak berguna, dan Anda harus mempertimbangkan
-apakah perlu membuangnya. Dalam praktiknya, metadata ini bisa menambah hingga puluhan
-kilobyte untuk setiap gambar.
+Similarly, the techniques described above can be extended beyond just text-based assets. Images, video, and other content types all contain their own forms of metadata and various payloads. For example, whenever you take a picture with a camera, the photo also typically embeds a lot of extra information: camera settings, location, and so on. Depending on your application, this data might be critical (for example, a photo-sharing site) or completely useless, and you should consider whether it is worth removing. In practice, this metadata can add up to tens of kilobytes for every image.
 
-Singkatnya, sebagai langkah pertama dalam mengoptimalkan efisiensi aset Anda, build
-inventori berbagai macam tipe konten dan pertimbangkan jenis optimalisasi
-konten tertentu yang bisa Anda terapkan untuk mengurangi ukurannya. Kemudian, setelah Anda
-menemukannya, otomatiskan optimalisasi ini dengan menambahkannya ke proses build dan
-proses rilis untuk memastikan optimalisasi diterapkan.
+In short, as a first step in optimizing the efficiency of your assets, build an inventory of the different content types and consider what kinds of content-specific optimizations you can apply to reduce their size. Then, after you’ve figured out what they are, automate these optimizations by adding them to your build and release processes to ensure that the optimizations are applied.
 
-## Kompresi teks dengan GZIP
+## Text compression with GZIP
 
 ### TL;DR {: .hide-from-toc }
 
-- Kinerja GZIP paling baik pada aset berbasis teks berikut: CSS, JavaScript, HTML.
-- Semua browser modern mendukung kompresi GZIP dan akan memintanya secara otomatis.
-- Server Anda harus dikonfigurasi untuk mengaktifkan kompresi GZIP.
-- Sebagian CDN memerlukan penanganan khusus untuk memastikan GZIP diaktifkan.
+* GZIP performs best on text-based assets: CSS, JavaScript, HTML.
+* All modern browsers support GZIP compression and will automatically request it.
+* Your server must be configured to enable GZIP compression.
+* Some CDNs require special care to ensure that GZIP is enabled.
 
+[GZIP](https://en.wikipedia.org/wiki/Gzip) is a generic compressor that can be applied to any stream of bytes. Under the hood, it remembers some of the previously seen content and attempts to find and replace duplicate data fragments in an efficient way. (If you're curious, here's a [great low-level explanation of GZIP](https://www.youtube.com/watch?v=whGwm0Lky2s&feature=youtu.be&t=14m11s).) However, in practice, GZIP performs best on text-based content, often achieving compression rates of as high as 70-90% for larger files, whereas running GZIP on assets that are already compressed via alternative algorithms (for example, most image formats) yields little to no improvement.
 
-[GZIP](https://en.wikipedia.org/wiki/Gzip) adalah kompresor generik yang bisa diterapkan
-ke deretan byte. Di balik layar, GZIP akan mengingat beberapa konten yang telah dilihat sebelumnya
-dan berupaya menemukan serta mengganti fragmen data duplikat secara efisien.
-(Jika Anda penasaran, inilah
-[penjelasan tingkat-rendah yang bagus mengenai GZIP](https://www.youtube.com/watch?v=whGwm0Lky2s&feature=youtu.be&t=14m11s).)
-Akan tetapi, pada praktiknya, kinerja GZIP terbaik adalah pada konten berbasis teks, yang sering kali mencapai
-tingkat kompresi hingga 70-90% untuk file lebih besar, sedangkan menjalankan GZIP
-pada aset yang sudah dikompresikan lewat algoritme alternatif (misalnya,
-sebagian besar format gambar) menghasilkan sedikit atau sama sekali tidak ada peningkatan.
-
-Semua browser modern mendukung dan secara otomatis menegosiasikan kompresi GZIP untuk semua
-permintaan HTTP. Anda harus memastikan server dikonfigurasi dengan benar guna menyajikan
-resource yang dikompresi bila klien memintanya.
-
+All modern browsers support and automatically negotiate GZIP compression for all HTTP requests. You must ensure that the server is properly configured to serve the compressed resource when the client requests it.
 
 <table>
+  
 <thead>
   <tr>
     <th>Library</th>
-    <th>Ukuran</th>
-    <th>Ukuran dikompresi</th>
-    <th>Rasio kompresi</th>
+    <th>Size</th>
+    <th>Compressed size</th>
+    <th>Compression ratio</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="library">jquery-1.11.0.js</td>
   <td data-th="size">276 KB</td>
@@ -241,49 +162,30 @@ resource yang dikompresi bila klien memintanya.
   <td data-th="compressed">18 KB</td>
   <td data-th="savings">88%</td>
 </tr>
-</tbody>
 </table>
 
-Tabel di atas menampilkan penghematan yang dihasilkan oleh kompresi GZIP untuk beberapa
-library JavaScript terpopuler dan framework CSS. Penghematan berkisar antara 60 sampai 88%,
-dan kombinasi file yang dikecilkan (diidentifikasi sebagai “.min” dalam nama filenya),
-plus GZIP, menawarkan penghematan lebih besar.
+The above table shows the savings that GZIP compression produces for a few of the most popular JavaScript libraries and CSS frameworks. The savings range from 60 to 88%, and the combination of minified files (identified by “.min” in their filenames), plus GZIP, offers even more savings.
 
-1. **Terapkan terlebih dahulu optimalisasi konten tertentu: Minifier CSS, JS, dan HTML.**
-2. **Terapkan GZIP untuk mengompresi output yang diperkecil.**
+1. **Apply content-specific optimizations first: CSS, JS, and HTML minifiers.**
+2. **Apply GZIP to compress the minified output.**
 
-Mengaktifkan GZIP adalah salah satu optimalisasi paling sederhana dengan payoff tertinggi untuk diimplementasikan,
-sayangnya, banyak orang yang tidak mengimplementasikannya. Kebanyakan server web akan mengompresi konten untuk Anda,
-dan Anda hanya perlu memverifikasi apakah server telah dikonfigurasi dengan benar untuk mengompresi
-semua tipe konten yang memanfaatkan kompresi GZIP.
+Enabling GZIP is one of the simplest and highest-payoff optimizations to implement, and yet, many people don't implement it. Most web servers compress content on your behalf, and you just need to verify that the server is correctly configured to compress all the content types that benefit from GZIP compression.
 
-Project Boilerplate HTML5 berisi
-[file konfigurasi contoh](https://github.com/h5bp/server-configs)
-untuk semua server paling populer bersama komentar detail bagi setiap flag konfigurasi
-dan setelan. Untuk menentukan konfigurasi terbaik bagi server Anda, lakukan hal-hal berikut:
+The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. To determine the best configuration for your server, do the following:
 
-* Cari server favorit Anda dalam daftar.
-* Cari bagian GZIP.
-* Konfirmasikan bahwa server Anda telah dikonfigurasi dengan setelan yang disarankan.
+* Find your favorite server in the list.
+* Look for the GZIP section.
+* Confirm that your server is configured with the recommended settings.
 
 <img src="images/transfer-vs-actual-size.png"
-  alt="Demo DevTools dari ukuran sebenarnya vs ukuran transfer">
+  alt="DevTools demo of actual vs transfer size" />
 
-Cara cepat dan mudah untuk melihat tindakan GZIP adalah membuka Chrome DevTools dan
-memeriksa kolom “Ukuran/Konten” dalam panel Jaringan: “Ukuran” mengindikasikan
-ukuran transfer aset, dan "Konten" adalah ukuran aset yang tidak dikompresi.
-Untuk aset HTML dalam contoh terdahulu, GZIP menghemat 98,8 KB selama transfer.
+A quick and simple way to see GZIP in action is to open Chrome DevTools and inspect the “Size / Content” column in the Network panel: “Size” indicates the transfer size of the asset, and “Content” the uncompressed size of the asset. For the HTML asset in the preceding example, GZIP saved 98.8 KB during the transfer.
 
-Note: Kadang-kadang, GZIP menambah ukuran aset. Biasanya ini terjadi bila
-aset sangat kecil dan overhead kamus GZIP lebih tinggi daripada
-penghematan kompresinya, atau bila resource sudah dikompresi dengan baik. Untuk menghindari
-masalah ini, sebagian server memungkinkan Anda menetapkan ambang batas ukuran file minimum.
+Note: Sometimes, GZIP increases the size of the asset. Typically, this happens when the asset is very small and the overhead of the GZIP dictionary is higher than the compression savings, or when the resource is already well compressed. To avoid this problem, some servers allow you to specify a minimum filesize threshold.
 
-Terakhir, walaupun sebagian besar server secara otomatis mengompresi aset saat menyajikannya
-kepada pengguna, beberapa CDN memerlukan penanganan ekstra dan upaya manual untuk memastikan bahwa
-aset GZIP disajikan. Lakukan audit situs Anda, dan pastikan bahwa aset memang,
-[sedang dikompresi](http://www.whatsmyip.org/http-compression-test/).
+Finally, while most servers automatically compress the assets for you when serving them to the user, some CDNs require extra care and manual effort to ensure that the GZIP asset is served. Audit your site and ensure that your assets are, in fact, [being compressed](http://www.whatsmyip.org/http-compression-test/).
 
-## Masukan {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

@@ -1,77 +1,55 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Когда браузер находит в документе ссылку на CSS-файл, он приостанавливает процесс визуализации и начинает формировать модель CSSOM. Чтобы ускорить процесс, упрощайте CSS и используйте медиазапросы. Также убедитесь, что браузер может быстро скачать CSS-файлы.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: By default CSS is treated as a render blocking resource. Learn how to prevent it from blocking rendering.
 
-{# wf_updated_on: 2014-09-17 #}
-{# wf_published_on: 2014-03-31 #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>CSS #}
 
-# Оптимизация CSS {: .page-title }
+# Render Blocking CSS {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
+By default, CSS is treated as a render blocking resource, which means that the browser won't render any processed content until the CSSOM is constructed. Make sure to keep your CSS lean, deliver it as quickly as possible, and use media types and queries to unblock rendering.
 
-Когда браузер находит в документе ссылку на CSS-файл, он приостанавливает процесс визуализации и начинает формировать модель CSSOM. Чтобы ускорить процесс, упрощайте CSS и используйте медиазапросы. Также убедитесь, что браузер может быстро скачать CSS-файлы.
-
-
-
-Из прошлой статьи мы узнали, что для создания модели визуализации необходимы модели DOM и CSSOM. Поэтому мы можем сделать следующий вывод: **и HTML, и CSS замедляют вывод страницы**. HTML-документ нужно обработать для создания модели DOM, без которой на странице не будет контента. А что дает обработка CSS, можно увидеть на иллюстрации ниже.
+In the [render tree construction](render-tree-construction) we saw that the critical rendering path requires both the DOM and the CSSOM to construct the render tree. This creates an important performance implication: **both HTML and CSS are render blocking resources.** The HTML is obvious, since without the DOM we would not have anything to render, but the CSS requirement may be less obvious. What would happen if we try to render a typical page without blocking rendering on CSS?
 
 ### TL;DR {: .hide-from-toc }
-- По умолчанию при обработке CSS визуализация страницы блокируется.
-- С помощью медиазапросов обработку некоторых CSS-файлов можно отложить.
-- Браузер скачивает все CSS-файлы (как с медиазапросами, так и без них).
 
+* By default, CSS is treated as a render blocking resource.
+* Media types and media queries allow us to mark some CSS resources as non-render blocking.
+* The browser downloads all CSS resources, regardless of blocking or non-blocking behavior.
 
 <div class="attempt-left">
   <figure>
-    <img src="images/nytimes-css-device.png" alt="Нью-Йорк таймс с CSS">
-    <figcaption>"Нью-Йорк таймс" с CSS</figcaption>
+    <img src="images/nytimes-css-device.png" alt="NYTimes with CSS">
+    <figcaption>The New York Times with CSS</figcaption>
   </figure>
 </div>
+
 <div class="attempt-right">
   <figure>
-    <img src="images/nytimes-nocss-device.png" alt="Нью-Йорк таймс без CS">
-    <figcaption>"Нью-Йорк таймс" без CSS</figcaption>
+    <img src="images/nytimes-nocss-device.png" alt="NYTimes without CSS">
+    <figcaption>The New York Times without CSS (FOUC)</figcaption>
   </figure>
 </div>
 
 <div style="clear:both;"></div>
 
-{% comment %}
-<table>
-<tr>
-<td>"Нью-Йорк таймс" с CSS</td>
-<td>"Нью-Йорк таймс" без CSS</td>
-</tr>
-<tr>
-<td><img src="images/nytimes-css-device.png" alt="Нью-Йорк таймс с CSS" class="center"></td>
-<td><img src="images/nytimes-nocss-device.png" alt="Нью-Йорк таймс без CSS" class="center"></td>
-</tr>
-</table>
-{% endcomment %}
+The above example, showing the NYTimes website with and without CSS, demonstrates why rendering is blocked until CSS is available\---without CSS the page is relatively unusable. The experience on the right is often referred to as a "Flash of Unstyled Content" (FOUC). The browser blocks rendering until it has both the DOM and the CSSOM.
 
-На иллюстрации изображен сайт газеты `Нью-Йорк таймс` с CSS и без (эффект на скриншоте справа часто называют `появлением нестилизованного контента`). Как видно, пользоваться страницей без CSS почти невозможно. Чтобы избежать такой ситуации, браузер обрабатывает CSS-файл сразу же, как только находит его в HTML-документе. В результате страница выводится на экран только после того, как браузер создаст обе модели: и DOM, и CSSOM. 
+> ***CSS is a render blocking resource. Get it to the client as soon and as quickly as possible to optimize the time to first render.***
 
-> **_Обработка CSS задерживает вывод страницы на экран! Ускорьте процесс визуализации, предоставив браузеру быстрый доступ к CSS-файлу._**
+However, what if we have some CSS styles that are only used under certain conditions, for example, when the page is being printed or being projected onto a large monitor? It would be nice if we didn’t have to block rendering on these resources.
 
-А теперь предположим, что в вашем HTML-документе есть ссылки на несколько CSS-файлов, один из которых содержит стиль для печати страницы, а второй - для ее просмотра на большом экране. Поскольку эти стили используются только при определенных условиях, вы можете сообщить об этом браузеру и предотвратить задержку при загрузке страницы.
-
-Для этого добавьте в код медиазапрос:
-
+CSS "media types" and "media queries" allow us to address these use cases:
 
     <link href="style.css" rel="stylesheet">
     <link href="print.css" rel="stylesheet" media="print">
     <link href="other.css" rel="stylesheet" media="(min-width: 40em)">
     
 
-В [медиазапросе](/web/fundamentals/design-and-ux/responsive/#use-media-queries) указывается тип устройства и, если необходимо, условия запроса. Рассмотрим приведенный выше пример кода. Первому CSS-файлу не присвоен тип устройства, поэтому он будет применяться по умолчанию и, соответственно, задерживать вывод страницы. Второй файл применяется при печати - возможно, с его помощью упрощается макет страницы, меняется шрифт и т. д. На это указывает медиазапрос `print`, который сообщит браузеру, что данный CSS-файл обрабатывать сразу не нужно. И, наконец, ссылка на третий файл содержит медиазапрос с условием. Только в том случае, если это условие будет выполнено, браузер скачает CSS-файл и приостановит вывод страницы.
+A [media query](../../design-and-ux/responsive/#use-css-media-queries-for-responsiveness) consists of a media type and zero or more expressions that check for the conditions of particular media features. For example, our first stylesheet declaration doesn't provide a media type or query, so it applies in all cases; that is to say, it is always render blocking. On the other hand, the second stylesheet declaration applies only when the content is being printed\---perhaps you want to rearrange the layout, change the fonts, and so on, and hence this stylesheet declaration doesn't need to block the rendering of the page when it is first loaded. Finally, the last stylesheet declaration provides a "media query," which is executed by the browser: if the conditions match, the browser blocks rendering until the style sheet is downloaded and processed.
 
-Медиазапросы позволяют адаптировать страницу под определенное устройство, например монитор или принтер, и изменять стиль в зависимости от ориентации экрана, его размера и других подобных факторов. **Ссылаясь на CSS-файлы, обязательно учитывайте их предназначение! Используйте медиазапросы, чтобы сократить время вывода страницы на экран.**
+By using media queries, we can tailor our presentation to specific use cases, such as display versus print, and also to dynamic conditions such as changes in screen orientation, resize events, and more. **When declaring your style sheet assets, pay close attention to the media type and queries; they greatly impact critical rendering path performance.**
 
-{# include shared/related_guides.liquid inline=true list=page.related-guides.media-queries #}
-
-Давайте разберем следующий пример:
-
+Let's consider some hands-on examples:
 
     <link href="style.css"    rel="stylesheet">
     <link href="style.css"    rel="stylesheet" media="all">
@@ -79,12 +57,13 @@ description: Когда браузер находит в документе сс
     <link href="print.css"    rel="stylesheet" media="print">
     
 
-* Первый CSS-файл заблокирует вывод страницы, так как его необходимо обработать.
-* Несмотря на медиазапрос, CSS-файл во второй строке также заблокирует вывод страницы. Дело в типе устройства `all` - браузер присваивает это значение по умолчанию всем CSS-файлам без медиазапроса. Поэтому вторая ссылка в примере эквивалентна первой.
-* Третья ссылка содержит медиазапрос с условием, которое будет проверено при загрузке страницы. При портретной ориентации устройства браузер заблокирует вывод страницы и начнет обработку CSS; при альбомной ориентации браузер продолжит создание DOM.
-* Четвертый CSS-файл используется только для печати, поэтому браузер не будет блокировать вывод страницы.
+* The first declaration is render blocking and matches in all conditions.
+* The second declaration is also render blocking: "all" is the default type so if you don’t specify any type, it’s implicitly set to "all". Hence, the first and second declarations are actually equivalent.
+* The third declaration has a dynamic media query, which is evaluated when the page is loaded. Depending on the orientation of the device while the page is loading, portrait.css may or may not be render blocking.
+* The last declaration is only applied when the page is being printed so it is not render blocking when the page is first loaded in the browser.
 
-Учтите, что под блокировкой подразумевается только приостановка вывода страницы. При этом браузер скачивает все CSS-файлы независимо от того, блокируют они вывод или нет. Приоритет скачивания выше у тех файлов, без которых вывод страницы невозможен.
+Finally, note that "render blocking" only refers to whether the browser has to hold the initial rendering of the page on that resource. In either case, the browser still downloads the CSS asset, albeit with a lower priority for non-blocking resources.
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}

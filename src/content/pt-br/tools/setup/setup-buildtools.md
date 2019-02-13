@@ -1,64 +1,44 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Crie do zero seu site para vários dispositivos. Aprenda como agilizar o desenvolvimento e criar um site com carregamento rápido usando um pacote de ferramentas de compilação.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools.
 
-{# wf_updated_on: 2015-04-13 #}
-{# wf_published_on: 2014-09-24 #}
+{# wf_updated_on: 2017-07-24 #} {# wf_published_on: 2014-09-24 #}
 
-# Configurar ferramentas de compilação {: .page-title }
+# Set Up Your Build Tools {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
-Crie do zero seu site para vários dispositivos. Aprenda como agilizar o desenvolvimento e criar um site com carregamento rápido usando um pacote de ferramentas de compilação. Todo site deve ter uma versão de desenvolvimento e uma versão de produção.<br /><br />A versão de desenvolvimento tem todos arquivos de HTML, CSS, JS e imagem em um formato prático para você trabalhar.<br /><br />A versão de produção usa esses mesmos arquivos, mas os reduzem, concatenam e mesclam, além de otimizar imagens.
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %} Build your multi-device site from the ground up. Learn how to speed up development and create a fast loading site with a set of build process tools. Every site should have a development version and a production version.  
+  
+The development version has all the HTML, CSS, JS and image files that make up your site in a clean format that you are happy to work on.  
+  
+A production version will take these files, minify them, concatenate / merge them and optimize files like images.
 
-Os desenvolvedores Web precisam considerar milhões ao mesmo tempo. A etapa de compilação
-é uma das mais fundamentais, mas também é a mais complicada de ser iniciada.  Você
-deve determinar todas as tarefas que precisa automatizar, como: Compressão
-de imagem, redução de CSS, concatenação de JavaScript, teste responsivo,
-teste de unidade, e a lista continua...
+Web developers have to think about a million things at once and the build step is one of the most critical, yet most cumbersome to get started with. You have to work out all the tasks that you need to automate such as: Image compression, CSS minification, JavaScript concatenation, Responsive testing, Unit testing, the list goes on...
 
-Siga este guia para aprender a melhor forma de estruturar seu fluxo de trabalho para que
-seus sites já empreguem as melhores práticas desde
-o primeiro passo.
-
+Follow this guide to learn the best way to structure your workflow so that the sites you create already follow all the best practices from the minute you start.
 
 ### TL;DR {: .hide-from-toc }
-- As suas ferramentas do processo de compilação devem ser otimizadas para oferecer maior desempenho; elas devem reduzir e concatenar automaticamente JavaScript, CSS, HTML e imagens.
-- Use o LiveReload ou outras ferramentas similares para facilitar o processo de desenvolvimento.
 
+* Your build process tools must optimize for performance; they should automatically minify and concatenate JavaScript, CSS, HTML, and images.
+* Use tools like LiveReload to make your development process smoother.
 
-Antes de começar a codificação, considere a abordagem de otimização e crie a
-versão de produção do site. Se definir o fluxo de trabalho desde o início,
-você evitará surpresas desagradáveis no final do projeto e poderá adotar novas ferramentas
-para agilizar o desenvolvimento e cuidar das tarefas
-monótonas.
+Before you start coding, you need to consider how to optimize and build the production version of your site. Setting up this workflow from the start prevents any nasty surprises at the end of the project and you can add tools into your workflow that speed up your development, doing the monotonous tasks for you.
 
-## O que é o processo de compilação?
+## What is a build process?
 
-O processo de compilação é um conjunto de tarefas executadas nos arquivos
-do projeto para realizar a compilação e o teste do código durante o desenvolvimento. Esse conjunto de tarefas é usado para criar a versão de implantação do
-site.  O processo de compilação não deve ser visto como um conjunto de tarefas a serem executadas no final
-do fluxo de desenvolvimento.
+A build process is a set of tasks which run over your projects files, compiling and testing code during development and used to create the deployment version of your site. Your build process shouldn't be a set of tasks you run at the end of your development workflow.
 
-As ferramentas mais populares para implementação do processo de compilação são
-[Gulp](http://gulpjs.com/){: .external } e [Grunt](http://gruntjs.com/), sendo que ambas são
-ferramentas de linha de comando. Se você não tiver experiência com nenhuma das duas, sugerimos o Gulp. Nós a usamos no
-[Web Starter Kit](/web/tools/starter-kit/) e a recomendamos
-.
+The most popular tools for implementing a build process are [Gulp](http://gulpjs.com/){: .external } and [Grunt](http://gruntjs.com/), both of which are command line tools. If you have no experience of either, use Gulp, we use it for [Web Starter Kit](/web/tools/starter-kit/) and recommend you do the same.
 
-Existem ferramentas com GUIs que podem ser mais fáceis para começar a usar, mas
-elas são menos flexíveis.
+There are tools which have GUIs and may be a bit easier to get to grips with but will be less flexible.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">Plataformas compatíveis &amp; nome da ferramenta</th>
+      <th colspan="2">Supported Platforms &amp; Tool Name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td data-th="Supported Platforms">OS X / Windows</td>
-      <td data-th="Gulp"><a href="http://alphapixels.com/prepros/">Prepros</a></td>
+      <td data-th="Gulp"><a href="https://prepros.io/">Prepros</a></td>
     </tr>
     <tr>
       <td data-th="Supported Platforms">OS X</td>
@@ -71,47 +51,31 @@ elas são menos flexíveis.
   </tbody>
 </table>
 
+## What tasks should be in a build process?
 
-## Quais tarefas devem fazer parte do processo de compilação?
+In the following sections, we're going to look at the most common tasks you should have in your build process and recommend tasks for Grunt and Gulp.
 
-Nas seções a seguir, vamos apresentar as tarefas mais comuns que você deve
-adicionar ao processo de compilação e as tarefas recomendadas para uso no Grunt e no Gulp.
+This requires a lot of trial and error to get each piece set-up the way you want and can be daunting if you are new to build processes.
 
-Isso requer muito trabalho de tentativa e erro até obter o resultado desejado
-e pode acabar com o seu sono se você ainda não tiver experiência com processos de compilação.
+For a good example of a build process, check out the [getting started guide for Web Starter Kit](/web/fundamentals/getting-started/web-starter-kit/), which goes through how to use Web Starter Kit and explains what each of the commands in the Gulp file do. This can be used as a quick way to get set-up and then you can make changes if needed.
 
-Para ver um bom exemplo de processo de compilação, consulte o [guia de introdução do Web Starter
-Kit](/web/fundamentals/getting-started/web-starter-kit/),
-que explica como usar o Web Starter Kit e as funções dos
-comandos no arquivo do Gulp. Você pode usar esse material como referência para ter um
-processo funcional em pouco tempo e fazer alterações posteriormente se necessário.
+If you are looking to create your own build process and you're new to Gulp or Grunt, the quick start guides will be the best place to get into on installing and running your first build process:
 
-Se preferir criar seus próprios processos de compilação e ainda estiver começando a aprender a usar o Gulp
-ou Grunt, os guias de início rápido são o melhor ponto de partida para descobrir como instalar
-e executar seu primeiro processo de compilação:
+* [Grunt Getting Started](http://gruntjs.com/getting-started)
+* [Gulp Getting Started](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)
 
-* [Primeiros passos do Grunt](http://gruntjs.com/getting-started)
-* [Primeiros passos do
-  Gulp](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md#getting-started)
+### Use concatenation & minification for a faster site
 
-### Usar concatenação e minificação para ter um site mais rápido
+For those unfamiliar with the terms concatenation and minification, concatenation means simply merging multiple files together, i.e. copying and pasting several files into one. The reason we do this is that it's more efficient for a browser to fetch one file, rather than lots of small files.
 
-Você não sabe bem o que significam os termos concatenação e minificação?
-Concatenação é a mesclagem de vários arquivos, ou seja, é o processo de copiar e
-colar vários arquivos em um só. A concatenação é importante porque o navegador
-trabalha de forma mais eficiente se precisar obter apenas um arquivo, em vez de vários arquivos pequenos.
+Minification is the process of taking a file and making the overall number of characters less, without changing how the code works. A good example of this is removing comments, or taking a long variable name and making it smaller. This makes the file size smaller, leading to faster downloads.
 
-A redução é o processo de redução da contagem geral de
-caracteres sem alterar o funcionamento do código. Remover comentários ou reduzir
-um nome grande de variável são bons exemplos de redução. Isso
-diminui o tamanho do arquivo e permite a conclusão de downloads em menos tempo.
-
-Para redução, use o seguinte:
+For minification, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">Tipo de arquivo</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
@@ -135,12 +99,12 @@ Para redução, use o seguinte:
   </tbody>
 </table>
 
-Para concatenação, use o seguinte:
+For concatenation, use the following:
 
 <table>
   <thead>
     <tr>
-      <th data-th="Type of File">Tipo de arquivo</th>
+      <th data-th="Type of File">Type of File</th>
       <th data-th="Gulp">Gulp</th>
       <th data-th="Grunt">Grunt</th>
     </tr>
@@ -148,28 +112,22 @@ Para concatenação, use o seguinte:
   <tbody>
     <tr>
       <td data-th="Type of File">CSS (Sass)</td>
-      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> ou <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> ou <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
+      <td data-th="Gulp"><a href="https://github.com/dlmanning/gulp-sass">gulp-sass</a> or <a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
+      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-sass">grunt-contrib-sass</a> or <a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a></td>
     </tr>
     <tr>
       <td data-th="Type of File">JS</td>
       <td data-th="Gulp"><a href="https://github.com/jonkemp/gulp-useref">gulp-useref</a></td>
-      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> ou <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
+      <td data-th="Grunt"><a href="https://github.com/yeoman/grunt-usemin">grunt-usemin</a> or <a href="https://github.com/fatso83/grunt-codekit">grunt-codekit</a></td>
     </tr>
   </tbody>
 </table>
 
-**Observação**: Para usar o Sass, é necessário recorrer ao recurso de importação ([veja um exemplo no Web Starter
-Kit](https://github.com/google/web-starter-kit/blob/master/app/styles/main.scss))
+### Optimize your images
 
-### Otimizar imagens
+Image optimization is an important step to help speed up your site; you'd be surprised how much smaller you can make an image without losing quality. Meta data is removed from the image as it's not needed by the browser to display the image, for example, information about the camera used to take the photo.
 
-A otimização de imagens é uma etapa importante para ajudar no aumento de velocidade do site.
-Você ficará surpreso quando perceber que é possível reduzir consideravelmente o tamanho das imagens sem perder qualidade. O navegador
-não precisa dos metadados para exibir imagens, então eles são removidos.
-Um exemplo são as informações da câmera usada para tirar a foto.
-
-Use os módulos a seguir para otimizar imagens.
+For optimizing images, you can use these modules.
 
 <table class="responsive">
   <thead>
@@ -185,11 +143,9 @@ Use os módulos a seguir para otimizar imagens.
   </tbody>
 </table>
 
-### Não se perca com os prefixos de fornecedor:
+### Don't trip up with vendor prefixes
 
-Pode acabar dando trabalho demais incluir todos os prefixos de fornecedor no
-seu CSS. Use um prefixador automático para adicionar os prefixos
-necessários:
+It can often become a bit tedious to include all the vendor prefixes for the CSS you use. Use an auto-prefixer to automatically add the prefixes you need to include:
 
 <table class="responsive">
   <thead>
@@ -205,16 +161,14 @@ necessários:
   </tbody>
 </table>
 
-**Nota**  
-Se preferir, adicione um [pacote Sublime para cuidar da prefixação automática](/web/tools/setup/setup-editor#autoprefixer) para
-você.
+**Note**  
+If you prefer, you can add a [Sublime package to do the auto-prefixing](/web/tools/setup/setup-editor#autoprefixer) for you.
 
-### Jamais use o editor de texto sem atualização em tempo real
+### Never leave your text editor with live reloading
 
-Com a atualização em tempo real, o site é atualizado sempre que você faz alterações.
-Depois de começar a usar, você não conseguirá mais viver sem.
+Live reloading updates your site in your browser each time your make a change. After using it once, you won't be able to live without it.
 
-O Web Starter Kit usa a sincronização com o navegador para oferecer suporte a Live Reload.
+Web Starter Kit uses browser-sync for Live Reload support.
 
 <table class="responsive">
   <thead>
@@ -225,12 +179,9 @@ O Web Starter Kit usa a sincronização com o navegador para oferecer suporte a 
   <tbody>
     <tr>
       <td data-th="Gulp"><a href="http://www.browsersync.io/docs/gulp/">browser-sync</a></td>
-      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> e <a href="https://github.com/gruntjs/grunt-contrib-watch">grunt-contrib-watch</a></td>
+      <td data-th="Grunt"><a href="https://github.com/gruntjs/grunt-contrib-connect">grunt-contrib-connect</a> & <a href="https://github.com/gruntjs/grunt-contrib-watch">grunt-contrib-watch</a></td>
     </tr>
   </tbody>
 </table>
 
-Observação: Se você gostou do conceito de atualização em tempo real, mas não quer se preocupar com o processo de compilação, [Addy Osmani escreveu um artigo no HTML5Rocks](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/) com várias soluções alternativas (tanto gratuitas quanto pagas).
-
-
-{# wf_devsite_translation #}
+Note: If you like the idea of Live Reloading, but don't want to have a build process, [Addy Osmani's write up on HTML5Rocks](http://www.html5rocks.com/en/tutorials/tooling/synchronized-cross-device-testing/) covers a range of alternatives (some free and some commercial).

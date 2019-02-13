@@ -1,91 +1,96 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:WebVR
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: WebVR
 
-{# wf_updated_on:2016-12-12 #}
-{# wf_published_on:2016-12-12 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2016-12-12 #} {# wf_blink_components: Blink>WebVR #}
 
 # WebVR {: .page-title }
 
-Warning: WebVR 仍处于实验阶段，并且随时可能更改。
+{% include "web/_shared/webxr-status.html" %}
 
-WebVR 是一个 JavaScript API，其利用用户拥有的任意 VR 耳机和 VR 设备（如 [Daydream 耳机](https://vr.google.com/daydream/)和 Pixel 手机）在浏览器中营造身临其境的 3D 体验。
+<div class="video-wrapper">
+  <iframe class="devsite-embedded-youtube-video" data-video-id="jT2mR9WzJ7Y"
+          data-autohide="1" data-showinfo="0" frameborder="0" allowfullscreen>
+  </iframe>
+</div>
 
-<img src="img/getting-started-with-webvr.jpg" alt="WebVR 使用入门" />
+WebVR is a JavaScript API that makes use of any VR headset and a VR-capable device your users have — such as a [Daydream headset](https://vr.google.com/daydream/) and Pixel phone — to create fully immersive 3D experiences in your browser.
 
-## 支持与可用性
+<div class="clearfix"></div>
 
-目前，WebVR API 可用于以下浏览器：
+## Support and Availability
 
-* Chrome Beta (M56+)，通过一个[来源试用版](https://github.com/jpchase/OriginTrials/blob/gh-pages/developer-guide.md)实现。
-* Firefox Nightly。
-* Samsung Internet Browser for Gear VR。（请Note: 此浏览器目前支持一个较早版本的 WebVR 规范）。
+Today the WebXR Device API is [under development](https://www.chromestatus.com/features/5680169905815552), but you can try it out with:
 
-对于不支持 WebVR 或可能具有较旧版本的 API 的浏览器，您可以回退到 [WebVR Polyfill](https://github.com/googlevr/webvr-polyfill)。不过，请谨记，VR *对性能极其敏感*，并且 polyfill 的性能成本通常相对较高，因此，对于无法为 WebVR 提供原生支持的用户，您需要斟酌是否使用 polyfill。
+* The `#webxr` flag in Chrome 66 and later.
+* As an [Origin Trial](https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md) in Chrome 67 and later.
 
-如果您不确定，则避免提供糟糕的性能体验，从而造成用户出现晕动症。
+It's also available through the [WebXR Polyfill](https://github.com/immersive-web/webxr-polyfill). Bear in mind, that VR is *extremely performance-sensitive* and polyfills typically have a relatively large performance cost, so it may be worth considering whether or not you wish to use the polyfill for a user who doesn’t have native support for the WebXR Device API.
 
-[获取有关 WebVR 的最新状态。](./status/)
+When in doubt, avoid giving people motion sickness through poorly-performing experiences!
 
-## 创建 WebVR 内容
+[Get the latest status on WebVR.](./status/)
 
-要创建 WebVR 内容，您需要利用一些全新的 API，以及 [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial) 和[网络音频](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)等现有技术，同时考虑不同的输入类型和耳机。
+## Creating WebVR Content
+
+To make WebVR content, you will need to make use of some brand new APIs, as well as existing technologies like [WebGL](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial) and [Web Audio](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), as well as accounting for different input types and headsets.
 
 <div class="attempt-left">
-  <h3>WebVR 使用入门</h3>
+  <h3>Get Started with WebVR</h3>
   <a href="./getting-started-with-webvr/">
-    <img src="img/getting-started-with-webvr.jpg" alt="WebVR 使用入门" />
+    <img src="img/getting-started-with-webvr.jpg" alt="Get started with WebVR" />
   </a>
   <p>
-    选取一个 WebGL 场景并添加 VR API 就可以顺利使用 WebVR。<br>
-    <a href="./getting-started-with-webvr/">了解详情</a>
+    Make a flying start with WebVR by taking a WebGL scene and adding VR APIs.<br>
+    <a href="./getting-started-with-webvr/">Learn More</a>
   </p>
 </div>
+
 <div class="attempt-right">
-  <h3>向 WebVR 场景添加输入</h3>
+  <h3>Add Input to a WebVR Scene</h3>
   <a href="./adding-input-to-a-webvr-scene/">
-    <img src="img/adding-input-to-a-webvr-scene.jpg" alt="向 WebVR 场景添加输入" />
+    <img src="img/adding-input-to-a-webvr-scene.jpg" alt="Add input to a WebVR scene" />
   </a>
   <p>
-    交互是提供具有吸引力的沉浸式体验的关键环节。<br>
-    <a href="./adding-input-to-a-webvr-scene/">使用入门 </a>
+    Interaction is a crucial part of providing an engaging and immersive experience.<br>
+    <a href="./adding-input-to-a-webvr-scene/">Get Started</a>
   </p>
 </div>
 
 <div class="clearfix"></div>
 
-### 更多资源
+### More resources
 
-以下是目前针对网页提供的一些非常好的 WebVR 资源。
+There are some excellent WebVR resources beginning to appear around the web.
 
-* [了解 WebVR API](https://developer.mozilla.org/en-US/docs/Web/API/WebVR_API)
-* [查看 WebVR 示例](https://webvr.info/samples/)
-* [专为 Google Cardboard 设计](https://www.google.com/design/spec-vr/designing-for-google-cardboard/a-new-dimension.html)
+* [Learn about the WebVR APIs](https://developer.mozilla.org/en-US/docs/Web/API/WebVR_API)
+* [See the WebVR Samples](https://webvr.info/samples/)
+* [Designing for Google Cardboard](https://www.google.com/design/spec-vr/designing-for-google-cardboard/a-new-dimension.html)
 
-## 记录您的性能
+## Keep track of your performance
 
-<img src="img/oce.png" class="attempt-right" alt="WebVR 性能" />
+<img src="img/oce.png" class="attempt-right" alt="WebVR Performance" />
 
-为了最大程度降低使用 WebVR 体验的用户的不适，用户必须保持稳定的（和非常高的）帧速率。不然，会造成用户出现晕动症！
+In order to minimize discomfort for the people using WebVR experiences, they must maintain a consistent (and high) frame rate. Failing to do so can give users motion sickness!
 
-在移动设备上，更新频率通常为 60Hz，这意味着目标频率为 60fps（或每帧 16 毫秒，*包括*每帧浏览器的开销）。在桌面设备上，目标频率通常为 90Hz（11 毫秒，包括开销）。
+On mobile devices the refresh rate is typically 60Hz, which means the target is 60fps (or 16ms per frame *including* the per-frame browser’s overhead). On desktop the target is typically 90Hz (11ms including overhead).
 
-为满足上述目标，您需要[定期在您的目标设备上进行测试](/web/tools/chrome-devtools/remote-debugging/)，并且应[使用 Chrome DevTools 的 Timeline 测量每一帧的开销](/web/tools/chrome-devtools/evaluate-performance/timeline-tool)。
+To meet those goals you will need to test [regularly on your target devices](/web/tools/chrome-devtools/remote-debugging/), and should [use Chrome DevTools’ Timeline to measure your per-frame costs](/web/tools/chrome-devtools/evaluate-performance/timeline-tool).
 
-## 包含渐进式增强
+## Embrace Progressive Enhancement
 
-<img src="img/touch-input.png" class="attempt-right" alt="使用渐进式增强以实现覆盖范围最大化" />
+<img src="img/touch-input.png" class="attempt-right"
+  alt="Use Progressive Enhancement to maximize reach" />
 
-如果您的用户没有头盔式显示器 (‘HMD’) 或 VR 设备，您该怎么办？最佳答案是使用渐进式增强功能。
+What are you to do if your users don’t have a Head Mounted Display (‘HMD’) or VR-capable device? The best answer is to use Progressive Enhancement.
 
-1. 假设用户当前在使用传统输入设备，如键盘、鼠标或触摸屏，没有安装 VR 耳机。
-2. 适应输入设备的变化，并在运行时使用耳机。
+1. Assume the user is using traditional input, such as a keyboard, mouse, or touchscreen with no access to a VR headset.
+2. Adapt to changes in input and headset availability at runtime.
 
-幸运的是，[WebVR API](https://developer.mozilla.org/en-US/docs/Web/API/WebVR_API) 让我们可以检测 VR 环境中的变化，以发现和适应输入的变化，并查看用户设备中的选项。
+Thankfully the [WebVR APIs](https://developer.mozilla.org/en-US/docs/Web/API/WebVR_API) make it possible to detect changes in the VR environment for us to discover and adapt to changes in the inputs and viewing options in the user’s device.
 
-通过首先假定一个非 VR 环境，可将您体验的覆盖范围最大化，并确保无论用户的设置如何，都可以提供最佳体验。
+By assuming a non-VR environment first you can maximize the reach of your experiences, and ensure that you’re providing the best possible experience no matter what setup your users have.
 
-如需更多详细信息，请查看[向 WebVR 场景添加输入](./adding-input-to-a-webvr-scene/)指南。
+For more, read our guide on [adding input to a WebVR scene](./adding-input-to-a-webvr-scene/).
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

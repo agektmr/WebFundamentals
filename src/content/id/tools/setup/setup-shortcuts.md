@@ -1,79 +1,64 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Menyiapkan pintasan untuk tugas baris perintah yang sering Anda pakai. Jika Anda sering mengetik hal yang sama di baris perintah berulang kali, ini akan membantu meringankannya.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Set up shortcuts for the command line tasks you use over and over again. If you find yourself typing the same thing in your command line repeatedly, this will alleviate that.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-09-24 #}
+{# wf_updated_on: 2015-04-13 #} {# wf_published_on: 2014-09-24 #}
 
-# Menyiapkan Pintasan Baris Perintah {: .page-title }
+# Set Up Command Line Shortcuts {: .page-title }
 
-{% include "web/_shared/contributors/megginkearney.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/megginkearney.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
-Menyiapkan pintasan untuk tugas baris perintah yang sering Anda pakai. Jika Anda sering mengetik hal yang sama di baris perintah berulang kali, ini akan membantu meringankannya.
-
+Set up shortcuts for the command line tasks you use over and over again. If you find yourself typing the same thing in your command line repeatedly, this will alleviate that.
 
 ### TL;DR {: .hide-from-toc }
-- Jadikan baris perintah agar bekerja untuk Anda; buat alias yang mudah diingat dan mudah diketik.
-- Coba dotfile Github untuk menyimpan, membagikan, dan menyinkronkan pintasan baris perintah Anda.
 
+- Make the command line work for you; create aliases that are easy to remember and fast to type.
+- Give Github dotfiles a try to save, share and sync up your command line shortcuts.
 
-## Cara menyiapkan
+## How to set them up
 
-Cara termudah untuk membuat pintasan baris perintah adalah dengan menambahkan alias untuk perintah
-yang umum di file bashrc Anda. Pada Mac atau Linux:
+The easiest way to create command-line shortcuts is to add aliases for common commands to your bashrc file. On Mac or Linux:
 
-1. Dari baris perintah mana pun, ketikkan:
-
+1. From the command line anywhere, type:
+    
         open -a 'Sublime Text' ~/.bashrc
+        
 
-2. Tambahkan alias baru, misalnya:
-
+2. Add a new alias, for example:
+    
         alias master='git checkout master'
+        
 
-3. Kapan saja Anda sedang berada di direktori yang berisi repo git, Anda bisa menjalankan perintah
-   `master` yang akan menjalankan checkout cabang master untuk Anda.
+3. Anytime you are in a directory with a git repo, you can run the command `master` and it will checkout the master branch for you.
 
-Note: Lihat petunjuk untuk [menyiapkan alias
-Windows](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682057(v=vs.85).aspx).
+Note: See these instructions for [setting up Windows aliases](https://msdn.microsoft.com/en-us/library/windows/desktop/ms682057(v=vs.85).aspx).
 
-## Pintasan yang kami sarankan
+## Shortcuts we recommend
 
-Ada beberapa perintah yang mungkin bermanfaat bagi Anda.
+These are a few commands that you may find useful.
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2" data-th="Command">Perintah &amp; Alias</th>
+      <th colspan="2" data-th="Command">Command &amp; Alias</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td data-th="Command">Membuka editor</td>
+      <td data-th="Command">Open your editor</td>
       <td data-th="Alias"><code>alias st='open -a "Sublime Text"'</code></td>
     </tr>
     <tr>
-      <td data-th="Command">Menjalankan server</td>
+      <td data-th="Command">Launch a server</td>
       <td data-th="Alias"><code>alias server="python -m SimpleHTTPServer"</code></td>
     </tr>
     <tr>
-      <td data-th="Command">Membuka direktori yang sering Anda pakai untuk bekerja</td>
+      <td data-th="Command">Go to a directory you commonly work in</td>
       <td data-th="Alias"><code>alias p="cd ~/projects"</code></td>
     </tr>
   </tbody>
 </table>
 
+## Save, share and sync your shortcuts
 
-## Menyimpan, membagikan, dan menyinkronkan pintasan Anda
+Store your shortcuts and dot files on Github. The major gain with this is your shortcuts can be shared across devices and they are always backed up.
 
-Simpan pintasan dan file dot Anda di GitHub. Keuntungan utamanya adalah
-pintasan Anda dapat dibagikan di seluruh perangkat dan selalu dicadangkan.
-
-GitHub bahkan membuat [laman khusus untuk dotfile](https://dotfiles.github.io/){: .external }
-dan cukup banyak Tim Chrome yang membuat cabang
-[dotfile Mathias Bynens](https://github.com/mathiasbynens/dotfiles).
-
-
-
-
-{# wf_devsite_translation #}
+Github even created a [dedicated page for dotfiles](https://dotfiles.github.io/){: .external } and quite a few of the Chrome Team have forked [Mathias Bynens' dotfiles](https://github.com/mathiasbynens/dotfiles).

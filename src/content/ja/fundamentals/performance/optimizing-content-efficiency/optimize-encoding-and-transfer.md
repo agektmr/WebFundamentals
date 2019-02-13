@@ -1,181 +1,119 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:不要なリソースのダウンロードの回避に続く、ページの読み込み速度を向上するために可能な最良の対策は、残りのリソースの最適化と圧縮によって合計ダウンロード サイズを最小限に抑えることです。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Next to eliminating unnecessary resource downloads, the best thing we can do to improve page-load speed is to minimize the overall download size by optimizing and compressing the remaining resources.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2014-03-31 #}
-{# wf_blink_components: Blink>Network #}
+{# wf_updated_on: 2018-08-17 #} {# wf_published_on: 2014-03-31 #} {# wf_blink_components: Blink>Network #}
 
-# テキストベースのアセットのエンコードと転送サイズの最適化 {: .page-title }
+# Optimizing Encoding and Transfer Size of Text-Based Assets {: .page-title }
 
 {% include "web/_shared/contributors/ilyagrigorik.html" %}
 
-不要なリソースのダウンロードの回避に続く、ページの読み込み速度を向上するために可能な最良の対策は、残りのリソースの最適化と圧縮によって合計ダウンロード サイズを最小限に抑えることです。
+Next to eliminating unnecessary resource downloads, the best thing you can do to improve page-load speed is to minimize the overall download size by optimizing and compressing the remaining resources.
 
+## Data compression 101
 
+After you’ve eliminated any unnecessary resources, the next step is to compress the remaining resources that the browser has to download. Depending on the resource type&mdash;text, images, fonts, and so on&mdash;there are many different techniques to choose from: generic tools that can be enabled on the server, pre-processing optimizations for specific content types, and resource-specific optimizations that require input from the developer.
 
-
-## データ圧縮の概要
-
-不要なリソースをすべて取り除いたら、次の手順はブラウザがダウンロードする必要がある残りのリソースの合計サイズを最小限に抑える、つまり圧縮することです。
- リソースの種類（テキスト、画像、フォントなど）に応じて、サーバーで有効にできる汎用ツール、コンテンツの特定の種類向けの前処理最適化、デベロッパーの入力を必要とするリソース別の最適化など、自由に利用できるさまざまな技法があります。
-
-
-
-
-
-パフォーマンスを最適化するには、このすべての技法を組み合わせる必要があります。
+Delivering the best performance requires a combination of all of these techniques.
 
 ### TL;DR {: .hide-from-toc }
 
-* 圧縮とは、ビット数を削減して情報をエンコードする処理です。
-* 不要なデータの除去は必ず最良の結果に結び付きます。
-* さまざまな圧縮技法と圧縮アルゴリズムがあります。
-* 最適な圧縮を実現するにはさまざまな技法が必要になります。
+* Compression is the process of encoding information using fewer bits.
+* Eliminating unnecessary data always yields the best results.
+* There are many different compression techniques and algorithms.
+* You will need a variety of techniques to achieve the best compression.
 
+The process of reducing the size of data is *data compression*. Many people have contributed algorithms, techniques, and optimizations to improve compression ratios, speed, and memory requirements of various compressors. A full discussion of data compression is beyond the scope of this topic. However, it's important to understand, at a high level, how compression works and the techniques you can use to reduce the size of various assets that your pages require.
 
-データサイズを縮小する処理のことを*データ圧縮*と呼びます。 多くの人がアルゴリズム、技法、最適化に取り組み、圧縮率、圧縮速度、各種圧縮ツールに必要なメモリ容量を向上させてきました。
- もちろん、データ圧縮についてすべてを説明することがここでの目的ではありませんが、
- 重要なのは、圧縮の仕組みと、ページに必要な各種アセットのサイズを縮小するために利用できる技法の概要を理解することです。
-
-
-
-こうした技法の基本原理を説明するために、例として特別に作成した単純なテキスト メッセージ形式を最適化するにはどうすればよいかを検討してみましょう。
-
+To illustrate the core principles of these techniques, consider the process of optimizing a simple text message format that was invented just for this example:
 
     # Below is a secret message, which consists of a set of headers in
     # key-value format followed by a newline and the encrypted message.
     format: secret-cipher
-    date:08/25/16
+    date: 08/25/16
     AAAZZBBBBEEEMMM EEETTTAAA
+    
 
-1. メッセージには任意の注釈が含まれていることがあり、注釈であることは接頭辞「#」で分かります。
- 注釈はメッセージの意味やその他の振る舞いに一切影響しません。
-2. メッセージには、*ヘッダー*が含まれていることがあります。これは「:」で区切られたキーと値のペアであり、メッセージの先頭にある必要があります。
-3. メッセージはテキストのペイロードを伝送します。
+1. Messages may contain arbitrary annotations, which are indicated by the "#" prefix. Annotations do not affect the meaning or any other behavior of the message.
+2. Messages may contain *headers*, which are key-value pairs (separated by ":") that appear at the beginning at the message.
+3. Messages carry text payloads.
 
-現時点で長さが 200 文字ある上記のメッセージのサイズを小さくするにはどうすればよいでしょうか。
+What can you do to reduce the size of the above message, which is currently 200 characters?
 
+1. The comment is interesting, but it doesn’t actually affect the meaning of the message. Eliminate it when transmitting the message.
+2. There are good techniques to encode headers in an efficient manner. For example, if you know that all messages have "format" and "date," you could convert those to short integer IDs and just send those. However, that might not be true, so just leave it alone for now.
+3. The payload is text only, and while we don’t know what the contents of it really are (apparently, it’s using a "secret-message"), just looking at the text shows that there's a lot of redundancy in it. Perhaps instead of sending repeated letters, you can just count the number of repeated letters and encode them more efficiently. For example, "AAA" becomes "3A", which represents a sequence of three A’s.
 
-1. コメントは興味深いですが、メッセージの意味に影響しないので、
- メッセージを送信する際に取り除きます。
-2. ヘッダーを効率的にエンコードするために使用できる高度な技法があります。 たとえば、すべてのメッセージに必ず「format」と「date」があると分かっている場合、短い整数 ID に変換しその ID を送信することができます。
- ただ、必ずあるかどうか分からないので、とりあえずヘッダーはそのまま残しておきます。
-3. ペイロードはテキストのみです。テキストのコンテンツが実際に何かはわかりませんが（「秘密のメッセージ」を使用していることは明らかですが）、テキストを見ると、かなり冗長性があるようです。
- 文字の繰り返しを送信するのではなく、繰り返されている文字の数を数えれば、もっと効率的にエンコードできるのではないでしょうか。
- たとえば、「AAA」は「3A」になります。A が 3 つ連続しているという意味です。
-
-
-こうした技法を組み合わせると、次のような結果になります。
+Combining these techniques produces the following result:
 
     format: secret-cipher
-    date:08/25/16
+    date: 08/25/16
     3A2Z4B3E3M 3E3T3A
+    
 
-新しいメッセージの長さは 56 文字です。つまり、元のメッセージを 72% も圧縮できたことになります。
+The new message is 56 characters long, which means that you've compressed the original message by an impressive 72%.
 
+This is all great, but how does this help us optimize our web pages? We’re not going to try to invent our compression algorithms, but, as you will see, we can use the exact same techniques and thought processes when optimizing various resources on our pages: preprocessing, context-specific optimizations, and different algorithms for different content.
 
-良い結果が得られましたが、このことがウェブページの最適化にどう役立つのでしょうか。圧縮アルゴリズムを発明しようとしているわけではありませんが、おわかりのように、最適化するページ上のリソースは変わっても、前処理、コンテキスト別の最適化、コンテンツ別のアルゴリズムなど、使用する技法と考え方はまったく同じです。
-
-
-
-
-
-
-## 縮小化: 前処理とコンテキスト固有の最適化
+## Minification: preprocessing & context-specific optimizations
 
 ### TL;DR {: .hide-from-toc }
 
-- コンテンツ固有の最適化により、配信されるリソースのサイズを大幅に削減できます。
-- コンテンツ固有の最適化はビルド / リリース サイクルの一部として適用することが推奨されます。
+* Content-specific optimizations can significantly reduce the size of delivered resources.
+* Content-specific optimizations are best applied as part of your build/release cycle.
 
-
-冗長なデータや不要なデータを圧縮する最も良い方法は、まるごと削除することです。
-データをむやみに削除することはできませんが、データ形式とそのプロパティについてコンテンツ固有の知識があれば、実際の意味に影響を与えることなくペイロードのサイズを大幅に削減できることが多くあります。
-
-
+The best way to compress redundant or unnecessary data is to eliminate it altogether. We can’t just delete arbitrary data, but in some contexts where we have content-specific knowledge of the data format and its properties, it's often possible to significantly reduce the size of the payload without affecting its actual meaning.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/optimizing-content-efficiency/_code/minify.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minify.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minify.html){: target="_blank" .external }
 
-上記のシンプルな HTML ページと、このページに含まれている 3 つの異なるコンテンツの種類
-（HTML マークアップ、CSS スタイル、JavaScript）を考えてみましょう。 コンテンツの種類ごとに、有効なコンテンツを構成するルールや、コメントであることを示すためのルールなどが異なります。
- では、このページのサイズを縮小するにはどうすればよいでしょうか。
+Consider the simple HTML page above and the three different content types that it contains: HTML markup, CSS styles, and JavaScript. Each of these content types has different rules for what constitutes valid content, different rules for indicating comments, and so on. How can we reduce the size of this page?
 
-* コードのコメントはデベロッパーにとっては重要ですが、ブラウザに渡す必要はありません。
- CSS（`/* … */`）、HTML（`<!-- … -->`）、JavaScript（`// …`）のコメントを除去するだけで、ページの合計サイズを大幅に削減できます。
-* 「高性能」な CSS 圧縮ツールであれば、「.awesome-container」のルールが効率的に定義されていないことを認識して、他のスタイルに影響を与えずに 2 つの宣言を 1 つにできるため、バイト数はさらに削減されます。
-* 空白（スペースとタブ）は、デベロッパーの便宜のために HTML、CSS、JavaScript に含まれています。
- 圧縮ツールにより、タブとスペースをすべて削除することができます。
+* Code comments are a developer’s best friend, but the browser doesn't need to see them! Simply stripping the CSS (`/* … */`), HTML (`<!-- … -->`), and JavaScript (`// …`) comments can significantly reduce the total size of the page.
+* A "smart" CSS compressor could notice that we’re using an inefficient way of defining rules for ".awesome-container" and collapse the two declarations into one without affecting any other styles, saving more bytes.
+* Whitespace (spaces and tabs) is a developer convenience in HTML, CSS, and JavaScript. An additional compressor could strip out all the tabs and spaces.
 
 <pre class="prettyprint">
 {% includecode content_path="web/fundamentals/performance/optimizing-content-efficiency/_code/minified.html" region_tag="full" adjust_indentation="auto" %}
 </pre>
 
-[サンプルを見る](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minified.html){: target="_blank" .external }
+[Try it](https://googlesamples.github.io/web-fundamentals/fundamentals/performance/optimizing-content-efficiency/minified.html){: target="_blank" .external }
 
-上記の手順を適用すると、このページは 406 文字から 150 文字になります。63% の削減になります。
- 確かにあまり読みやすくはありませんが、読みやすいことは必要ありません。元のページは「開発バージョン」として保存しておき、ページをウェブサイトに公開する準備ができたら必ず上述の手順を適用するのです。
+After applying the above steps, the page goes from 406 to 150 characters, a 63% compression savings. Granted, it’s not very readable, but it also doesn’t have to be: you can keep the original page as your "development version" and then apply the steps above whenever you're ready to release the page on your website.
 
+Taking a step back, the above example illustrates an important point: a general-purpose compressor&mdash;say, one designed to compress arbitrary text&mdash;could probably do a pretty good job of compressing the page above, but it would never know to strip the comments, collapse the CSS rules, or dozens of other content-specific optimizations. This is why preprocessing/minification/context-aware optimization can be such a powerful tool.
 
+Note: Case in point, the uncompressed development version of the jQuery library is now approaching ~300KB. The same library, but minified (removed comments, etc.) is about 3x smaller: ~100KB.
 
-一歩離れてみると、上記の例から重要な点がわかります。汎用の圧縮ツール、たとえば任意のテキストを圧縮するように作られたツールでも、上記のページをかなり効率よく圧縮できるかもしれませんが、コメントの削除や CSS ルールの縮小化など、コンテンツ固有の数十種類にのぼる最適化は行いません。
- このため、前処理、縮小化、コンテキストに対応した最適化が強力なツールになる可能性があります。
+Similarly, the techniques described above can be extended beyond just text-based assets. Images, video, and other content types all contain their own forms of metadata and various payloads. For example, whenever you take a picture with a camera, the photo also typically embeds a lot of extra information: camera settings, location, and so on. Depending on your application, this data might be critical (for example, a photo-sharing site) or completely useless, and you should consider whether it is worth removing. In practice, this metadata can add up to tens of kilobytes for every image.
 
+In short, as a first step in optimizing the efficiency of your assets, build an inventory of the different content types and consider what kinds of content-specific optimizations you can apply to reduce their size. Then, after you’ve figured out what they are, automate these optimizations by adding them to your build and release processes to ensure that the optimizations are applied.
 
-注: JQuery ライブラリが良い例で、圧縮前の開発バージョンは 300 KB に達しようとしています。
- 同じライブラリでも縮小化（コメントの削除などを実施）したものは約 1/3 の大きさで、100 KB 程度です。
-
-
-同様に、上記の技法は単なるテキストベースのアセット以外にも応用できます。
-画像、動画、その他の種類のコンテンツには、いずれも独自の形式のメタデータやさまざまなペイロードが含まれています。
- たとえば、カメラで写真を撮るたびに、通常、写真にはカメラの設定、位置情報など多くの追加情報が埋め込まれます。
- アプリケーションによっては、このデータが重要になることもあれば（写真共有サイトなど）、まったく無意味なこともあるため、削除することが妥当かどうかを検討する必要があります。
- 実際、このメタデータは、1 画像あたり合計数十キロバイトに及ぶことがあります。
-
-
-まとめると、アセットの効率性を最適化する最初の手順は、さまざまなコンテンツの種類の一覧表を作成し、どのようなコンテンツ固有の最適化を適用すればサイズを縮小できるかを検討することです。
- それを見極めることができたら、次に、その最適化をビルドとリリースのプロセスに追加して自動化します。こうして最適化が必ず適用されるようにします。
-
-
-
-## GZIP によるテキストの圧縮
+## Text compression with GZIP
 
 ### TL;DR {: .hide-from-toc }
 
-- GZIP はテキストベースのアセット（CSS、JavaScript、HTML）で最大限の効果を発揮します。
-- 最新のブラウザはすべて GZIP 圧縮に対応しており、自動的にこの圧縮をリクエストします。
-- サーバーを GZIP 圧縮に対応するように設定する必要があります。
-- 一部の CDN は GZIP が有効化されていることを確認するために特に注意が必要です。
+* GZIP performs best on text-based assets: CSS, JavaScript, HTML.
+* All modern browsers support GZIP compression and will automatically request it.
+* Your server must be configured to enable GZIP compression.
+* Some CDNs require special care to ensure that GZIP is enabled.
 
+[GZIP](https://en.wikipedia.org/wiki/Gzip) is a generic compressor that can be applied to any stream of bytes. Under the hood, it remembers some of the previously seen content and attempts to find and replace duplicate data fragments in an efficient way. (If you're curious, here's a [great low-level explanation of GZIP](https://www.youtube.com/watch?v=whGwm0Lky2s&feature=youtu.be&t=14m11s).) However, in practice, GZIP performs best on text-based content, often achieving compression rates of as high as 70-90% for larger files, whereas running GZIP on assets that are already compressed via alternative algorithms (for example, most image formats) yields little to no improvement.
 
-[GZIP](https://en.wikipedia.org/wiki/Gzip) はどのようなバイトストリームにも適用できる汎用の圧縮ツールです。
- GZIP の内部では以前に処理したコンテンツの一部を記憶し、重複するデータ フラグメントを効率よく検索して置換することを試みます
-（関心があれば、[詳しい GZIP の説明をご確認ください](https://www.youtube.com/watch?v=whGwm0Lky2s&feature=youtu.be&t=14m11s)）。実際、GZIP で最適なパフォーマンスが得られるのはテキストベースのコンテンツであり、大きいファイルの場合、圧縮率は 70～90% にもなります。一方、別のアルゴリズムで既に圧縮されているアセット（大部分の画像形式など）に GZIP を実行しても、ほとんどまたはまったく効果がありません。
-
-
-
-
-
-
-最新のブラウザはすべて GZIP 圧縮に対応しており、すべての HTTP リクエストで GZIP 圧縮のネゴシエーションが自動的に実施されます。
- ここで必要なことは、クライアントからリクエストされたときに圧縮後のリソースを提供するようにサーバーが正しく設定されているようにすることです。
-
-
+All modern browsers support and automatically negotiate GZIP compression for all HTTP requests. You must ensure that the server is properly configured to serve the compressed resource when the client requests it.
 
 <table>
+  
 <thead>
   <tr>
-    <th>ライブラリ</th>
-    <th>サイズ</th>
-    <th>圧縮後のサイズ</th>
-    <th>圧縮率</th>
+    <th>Library</th>
+    <th>Size</th>
+    <th>Compressed size</th>
+    <th>Compression ratio</th>
   </tr>
 </thead>
-<tbody>
+
 <tr>
   <td data-th="library">jquery-1.11.0.js</td>
   <td data-th="size">276 KB</td>
@@ -224,44 +162,30 @@ description:不要なリソースのダウンロードの回避に続く、ペ�
   <td data-th="compressed">18 KB</td>
   <td data-th="savings">88%</td>
 </tr>
-</tbody>
 </table>
 
-上記の表は、一般的な JavaScript ライブラリと CSS フレームワークに GZIP 圧縮を適用した場合の削減率を示したものです。
- 削減率は 60～88% です。縮小化されたファイル（ファイル名に「.min」があるファイル）に GZIP を適用すると効果が高いことがわかります。
+The above table shows the savings that GZIP compression produces for a few of the most popular JavaScript libraries and CSS frameworks. The savings range from 60 to 88%, and the combination of minified files (identified by “.min” in their filenames), plus GZIP, offers even more savings.
 
+1. **Apply content-specific optimizations first: CSS, JS, and HTML minifiers.**
+2. **Apply GZIP to compress the minified output.**
 
+Enabling GZIP is one of the simplest and highest-payoff optimizations to implement, and yet, many people don't implement it. Most web servers compress content on your behalf, and you just need to verify that the server is correctly configured to compress all the content types that benefit from GZIP compression.
 
-1. **最初にコンテンツ別の最適化（CSS、JS、HTML の縮小化ツール）を適用します。**
-2. **GZIP を適用して縮小後の出力を圧縮します。**
+The HTML5 Boilerplate project contains [sample configuration files](https://github.com/h5bp/server-configs) for all the most popular servers with detailed comments for each configuration flag and setting. To determine the best configuration for your server, do the following:
 
-GZIP の有効化は、最も実装が簡単で効果がある最適化手法の 1 つです。しかし、残念ながら多くの人が GZIP を実行していません。
- 大半のウェブサーバーはコンテンツを圧縮してくれるため、あとは GZIP 圧縮の効果があるすべての種類のコンテンツを圧縮するようにサーバーが正しく設定されていることを確認するだけです。
-
-
-
-HTML5 Boilerplate プロジェクトには、人気の高いすべてのサーバー向けの[サンプル構成ファイル](https://github.com/h5bp/server-configs)が用意されており、構成フラグと設定ごとに詳細なコメントが記載されています。
- サーバーにとって最適な設定を判断するには、次の手順を実行します。
-
-* リストでお気に入りのサーバーを見つけます。
-* GZIP のセクションを探します。
-* サーバーが推奨されている設定になっていることを確認します。
+* Find your favorite server in the list.
+* Look for the GZIP section.
+* Confirm that your server is configured with the recommended settings.
 
 <img src="images/transfer-vs-actual-size.png"
-  alt="実際のサイズと転送サイズの DevTools デモ">
+  alt="DevTools demo of actual vs transfer size" />
 
-GZIP の動作は、Chrome DevTools を起動して [Network] パネルの [Size / Content] 列を調べれば簡単に確認できます。
-「Size」はアセットの転送サイズを示し、「Content」はアセットの未圧縮サイズを示しています。
-上記の例の HTML アセットでは、GZIP により転送時に 98.8 KB 削減されます。
+A quick and simple way to see GZIP in action is to open Chrome DevTools and inspect the “Size / Content” column in the Network panel: “Size” indicates the transfer size of the asset, and “Content” the uncompressed size of the asset. For the HTML asset in the preceding example, GZIP saved 98.8 KB during the transfer.
 
-注: GZIP を使用するとアセットのサイズが大きくなる可能性もあります。 通常、これが発生するのは、アセットが非常に小さく、GZIP ディクショナリのオーバーヘッドが圧縮による削減よりも大きくなる場合や、リソースが既に十分に圧縮されている場合です。
- この問題を回避するため、一部のサーバーでは「ファイルサイズの下限しきい値」を指定できます。
+Note: Sometimes, GZIP increases the size of the asset. Typically, this happens when the asset is very small and the overhead of the GZIP dictionary is higher than the compression savings, or when the resource is already well compressed. To avoid this problem, some servers allow you to specify a minimum filesize threshold.
 
+Finally, while most servers automatically compress the assets for you when serving them to the user, some CDNs require extra care and manual effort to ensure that the GZIP asset is served. Audit your site and ensure that your assets are, in fact, [being compressed](http://www.whatsmyip.org/http-compression-test/).
 
-最後に、ほとんどのサーバーはユーザーにアセットを提供する際にそのアセットを自動的に圧縮しますが、一部の CDN では、確実に GZIP アセットを提供するために、細心の注意と手動設定が必要になります。
- サイトを監査し、アセットが実際に[圧縮されている](http://www.whatsmyip.org/http-compression-test/)ことを確認してください。
-
-
-## フィードバック {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

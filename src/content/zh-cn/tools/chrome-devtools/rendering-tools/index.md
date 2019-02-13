@@ -1,255 +1,300 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:用户希望页面可以交互并且非常流畅。像素管道的每个阶段均可能出现卡顿现象。了解用于确定和解决会降低运行时性能的常见问题的工具和策略。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Users expect pages to be interactive and smooth. Each stage in the pixel pipeline represents an opportunity to introduce jank. Learn about tools and strategies to identify and fix common problems that slow down runtime performance.
 
-{# wf_updated_on:2016-03-15 #}
-{# wf_published_on:2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 分析运行时性能 {: .page-title }
+# Analyze Runtime Performance {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-用户希望页面可以交互并且非常流畅。像素管道的每个阶段均可能出现卡顿现象。
-了解用于确定和解决会降低运行时性能的常见问题的工具和策略。
-
-
-
+Users expect pages to be interactive and smooth. Each stage in the pixel pipeline represents an opportunity to introduce jank. Learn about tools and strategies to identify and fix common problems that slow down runtime performance.
 
 ### TL;DR {: .hide-from-toc }
-- 不要编写会强制浏览器重新计算布局的 JavaScript。将读取和写入功能分开，并首先执行读取。
-- 不要使您的 CSS 过于复杂。减少使用 CSS 并保持 CSS 选择器简洁。
-- 尽可能地避免布局。选择根本不会触发布局的 CSS。
-- 绘制比任何其他渲染活动花费的时间都要多。请留意绘制瓶颈。
 
+* Don't write JavaScript that forces the browser to recalculate layout. Separate read and write functions, and perform reads first.
+* Don't over-complicate your CSS. Use less CSS and keep your CSS selectors simple.
+* Avoid layout as much as possible. Choose CSS that doesn't trigger layout at all.
+* Painting can take up more time than any other rendering activity. Watch out for paint bottlenecks.
 
-## JavaScript 
+## JavaScript
 
-JavaScript 计算，特别是会触发大量视觉变化的计算会降低应用性能。
-不要让时机不当或长时间运行的 JavaScript 影响用户交互。
+JavaScript calculations, especially ones that trigger extensive visual changes, can stall application performance. Don't let badly-timed or long-running JavaScript interfere with user interactions.
 
+### Tools
 
-### 工具
+Make a **Timeline** [recording](../evaluate-performance/timeline-tool#make-a-recording) and look for suspiciously long **Evaluate Script** events. If you find any, you can enable the [JS Profiler](../evaluate-performance/timeline-tool#profile-js) and re-do your recording to get more detailed information about exactly which JS functions were called and how long each took.
 
-进行 **Timeline** [记录][recording]，并找出疑似较长的 **Evaluate Script** 事件。
-如果您发现存在任何这样的事件，可以启用 [JS 分析器][profiler]并重新做记录，以便获取究竟调用了哪些 JS 函数以及调用每个函数需要多长时间的更详细信息。
+If you're noticing quite a bit of jank in your JavaScript, you may need to take your analysis to the next level and collect a JavaScript CPU profile. CPU profiles show where execution time is spent within your page's functions. Learn how to create CPU profiles in [Speed Up JavaScript Execution](js-execution).
 
+### Problems
 
-
-
-如果您注意到 JavaScript 中出现较多的卡顿现象，您可能需要进一步分析并收集 JavaScript CPU 配置文件。CPU 配置文件会显示执行时间花费在页面的哪些函数上。在[加快 JavaScript 执行速度][cpu]中了解如何创建 CPU 配置文件。
-
-
-
-
-[profiler]: ../evaluate-performance/timeline-tool#profile-js
-[cpu]: js-execution
-
-### 问题
-
-下表对一些常见 JavaScript 问题和潜在解决方案进行了说明：
+The following table describes some common JavaScript problems and potential solutions:
 
 <table>
-  <thead>
-      <th>问题</th>
-      <th>示例</th>
-      <th>解决方案</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">大开销输入处理程序影响响应或动画。</td>
-      <td data-th="Example">触摸、视差滚动。</td>
-      <td data-th="Solution">让浏览器尽可能晚地处理触摸和滚动，或者绑定侦听器（请参阅 <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Paul Lewis 运行时性能检查单中的大开销输入处理程序</a>）。</td>
-    </tr>
-    <tr>
-      <td data-th="Problem">时机不当的 JavaScript 影响响应、动画、加载。</td>
-      <td data-th="Example">页面加载后用户向右滚动、setTimeout/setInterval。</td>
-      <td data-th="Solution"><a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">优化 JavaScript 执行</a>：使用 <code>requestAnimationFrame</code>、使 DOM 操作遍布各个帧、使用网络工作线程。
-    </tr>
-    <tr>
-      <td data-th="Problem">长时间运行的 JavaScript 影响响应。</td>
-      <td data-th="Example"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">DOMContentLoaded 事件</a>由于 JS 工作过多而停止。</td>
-      <td data-th="Solution">将纯粹的计算工作转移到<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">网络工作线程</a>。如果您需要 DOM 访问权限，请使用  <code>requestAnimationFrame</code>（另请参阅<a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">优化 JavaScript 执行</a>）。</td>
-    </tr>
-    <tr>
-      <td data-th="Problem">会产生垃圾的脚本影响响应或动画。</td>
-      <td data-th="Example">任何地方都可能发生垃圾回收。</td>
-      <td data-th="Solution">减少编写会产生垃圾的脚本（请参阅 <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Paul Lewis 运行时性能检查单中的动画垃圾回收</a>）。</td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Expensive input handlers affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Touch, parallax scrolling.
+    </td>
+    
+    <td data-th="Solution">
+      Let the browser handle touch and scrolls, or bind the listener as late as possible (see <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Expensive Input Handlers in Paul Lewis' runtime performance checklist</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Badly-timed JavaScript affecting response, animation, load.
+    </td>
+    
+    <td data-th="Example">
+      User scrolls right after page load, setTimeout / setInterval.
+    </td>
+    
+    <td data-th="Solution">
+      <a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">Optimize JavaScript execution</a>: use <code>requestAnimationFrame</code>, spread DOM manipulation over frames, use Web Workers.
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Long-running JavaScript affecting response.
+    </td>
+    
+    <td data-th="Example">
+      The <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">DOMContentLoaded event</a> stalls as it's swamped with JS work.
+    </td>
+    
+    <td data-th="Solution">
+      Move pure computational work to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Web Workers</a>. If you need DOM access, use <code>requestAnimationFrame</code> (see also <a href="/web/fundamentals/performance/rendering/optimize-javascript-execution">Optimize JavaScript Execution</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Garbage-y scripts affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Garbage collection can happen anywhere.
+    </td>
+    
+    <td data-th="Solution">
+      Write less garbage-y scripts (see <a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">Garbage Collection in Animation in Paul Lewis' runtime performance checklist</a>).
+    </td>
+  </tr>
 </table>
 
-## 样式 
+## Style
 
-样式更改开销较大，在这些更改会影响 DOM 中的多个元素时更是如此。
-只要您将样式应用到元素，浏览器就必须确定对所有相关元素的影响、重新计算布局并重新绘制。
+Style changes are costly, especially if those changes affect more than one element in the DOM. Any time you apply styles to an element, the browser has to figure out the impact on all related elements, recalculate the layout, and repaint.
 
+Related Guides:
 
+* [Reduce the Scope and Complexity of Styles Calculations](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
 
-相关指南：
+### Tools
 
-* [缩小样式计算的范围并降低其复杂性](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
+Make a **Timeline** [recording](../evaluate-performance/timeline-tool#make-a-recording). Check the recording for large **Recalculate Style** events (displayed in purple).
 
+Click on a **Recalculate Style** event to view more information about it in the **Details** pane. If the style changes are taking a long time, that's a performance hit. If the style calculations are affecting a large number of elements, that's another area with room for improvement.
 
-### 工具
+![Long recalculate style](imgs/recalculate-style.png)
 
-进行 **Timeline** [记录][recording]。检查大型 **Recalculate Style** 事件的记录（以紫色显示）。
+To reduce the impact of **Recalculate Style** events:
 
+* Use the [CSS Triggers](https://csstriggers.com) to learn which CSS properties trigger layout, paint, and composite. These properties have the worst impact on rendering performance.
+* Switch to properties that have less impact. See [Stick to compositor-only properties and manage layer count](/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count) for more guidance.
 
-点击 **Recalculate Style** 事件可以在 **Details** 窗格中查看更多相关信息。
-如果样式更改需要较长时间，对性能的影响会非常大。
-如果样式计算会影响大量元素，则需要改进另一个方面。
+### Problems
 
-
-![长时间运行的重新计算样式](imgs/recalculate-style.png)
-
-要降低 **Recalculate Style** 事件的影响，请执行以下操作：
-
-* 使用 [CSS 触发器](https://csstriggers.com)了解哪些 CSS 属性会触发布局、绘制与合成。
-这些属性对渲染性能的影响最大。
-
-* 请转换到影响较小的属性。请参阅[坚持仅合成器属性和管理层计数][compositor]，寻求更多指导。
-
-
-[compositor]: /web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count
-
-### 问题
-
-下表对一些常见样式问题和潜在解决方案进行了说明：
-
+The following table describes some common style problems and potential solutions:
 
 <table>
-  <thead>
-      <th>问题</th>
-      <th>示例</th>
-      <th>解决方案</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">大开销样式计算影响响应或动画。</td>
-      <td data-th="Example">任何会更改元素几何形状的 CSS 属性，如宽度、高度或位置；浏览器必须检查所有其他元素并重做布局。</td>
-      <td data-th="Solution"><a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">避免会触发布局的 CSS。</a></td>
-    </tr>
-    <tr>
-      <td data-th="Problem">复杂的选择器影响响应或动画。</td>
-      <td data-th="Example">嵌套选择器强制浏览器了解与所有其他元素有关的全部内容，包括父级和子级。</td>
-      <td data-th="Solution"><a href="/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations">在 CSS 中引用只有一个类的元素。</a></td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Expensive style calculations affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Any CSS property that changes an element's geometry, like its width, height, or position; the browser has to check all other elements and redo the layout.
+    </td>
+    
+    <td data-th="Solution">
+      <a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">Avoid CSS that triggers layouts.</a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Complex selectors affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Nested selectors force the browser to know everything about all the other elements, including parents and children.
+    </td>
+    
+    <td data-th="Solution">
+      <a href="/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations">Reference an element in your CSS with just a class.</a>
+    </td>
+  </tr>
 </table>
 
-相关指南：
+Related Guides:
 
-* [缩小样式计算的范围并降低其复杂性](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
+* [Reduce the Scope and Complexity of Styles Calculations](/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations)
 
+## Layout
 
-## 布局 
+Layout (or reflow in Firefox) is the process by which the browser calculates the positions and sizes of all the elements on a page. The web’s layout model means that one element can affect others; for example, the width of the `<body>` element typically affects its children’s widths, and so on, all the way up and down the tree. The process can be quite involved for the browser.
 
-布局（或 Firefox 中的自动重排）是浏览器用来计算页面上所有元素的位置和大小的过程。
-网页的布局模式意味着一个元素可能影响其他元素；例如 `<body>` 元素的宽度一般会影响其子元素的宽度以及树中各处的节点，等等。这个过程对于浏览器来说可能很复杂。
-一般的经验法则是，如果在帧完成前从 DOM 请求返回几何值，您将发现会出现“强制同步布局”，在频繁地重复或针对较大的 DOM 树执行操作时这会成为性能的大瓶颈。
+As a general rule of thumb, if you ask for a geometric value back from the DOM before a frame is complete, you are going to find yourself with "forced synchronous layouts", which can be a big performance bottleneck if repeated frequently or performed for a large DOM tree.
 
+Related Guides:
 
- 
+* [Avoid Layout Thrashing](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
+* [Diagnose Forced Synchronous Layouts](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
 
-相关指南：
+### Tools
 
-* [避免布局抖动](/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
-* [诊断强制同步布局](/web/tools/chrome-devtools/rendering-tools/forced-synchronous-layouts)
+The Chrome DevTools **Timeline** identifies when a page causes forced synchronous layouts. These **Layout** events are marked with red bars.
 
+![forced synchronous layout](imgs/forced-synchronous-layout.png)
 
+"Layout thrashing" is a repetition of forced synchronous layout conditions. This occurs when JavaScript writes and reads from the DOM repeatedly, which forces the browser to recalculate the layout over and over. To identify layout thrashing, look for a pattern of multiple forced synchronous layout warnings (as in the screenshot above).
 
-### 工具
+### Problems
 
-Chrome DevTools 的 **Timeline** 可以确定页面何时会导致强制同步布局。
-这些 **Layout** 事件使用红色竖线标记。 
-
-![强制同步布局](imgs/forced-synchronous-layout.png)
-
-“布局抖动”是指反复出现强制同步布局情况。
-这种情况会在 JavaScript 从 DOM 反复地写入和读取时出现，将会强制浏览器反复重新计算布局。
-要确定布局抖动，请找到多个强制同步布局警告（如上方屏幕截图所示）的模式。
-
-
-
-### 问题
-
-下表对一些常见布局问题和潜在解决方案进行了说明：
-
+The following table describes some common layout problems and potential solutions:
 
 <table>
-  <thead>
-      <th>问题</th>
-      <th>示例</th>
-      <th>解决方案</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">强制同步布局影响响应或动画。</td>
-      <td data-th="Example">强制浏览器在像素管道中过早执行布局，导致在渲染流程中重复步骤。</td>
-      <td data-th="Solution">先批处理您的样式读取，然后处理任何写入（另请参阅<a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">避免大型、复杂的布局和布局抖动</a>）。</td>
-    </tr>
-  </tbody>
-    <tr>
-      <td data-th="Problem">布局抖动影响响应或动画。</td>
-      <td data-th="Example">形成一个使浏览器进入读取-写入-读取写入周期的循环，强制浏览器反复地重新计算布局。</td>
-      <td data-th="Solution">使用 <a href="https://github.com/wilsonpage/fastdom">FastDom 内容库</a>自动批处理读取-写入操作。</td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Forced synchronous layout affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Forcing the browser to perform layout earlier in the pixel pipeline, resulting in repeating steps in the rendering process.
+    </td>
+    
+    <td data-th="Solution">
+      Batch your style reads first, then do any writes (see also <a href="/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">Avoid large, complex layouts and layout thrashing</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Layout thrashing affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      A loop that puts the browser into a read-write-read-write cycle, forcing the browser to recalculate layout over and over again.
+    </td>
+    
+    <td data-th="Solution">
+      Automatically batch read-write operations using <a href="https://github.com/wilsonpage/fastdom">FastDom library</a>.
+    </td>
+  </tr></tbody>
 </table>
 
-## 绘制与合成 
+## Paint and composite
 
-绘制是填充像素的过程。这经常是渲染流程开销最大的部分。
-如果您在任何情况下注意到页面出现卡顿现象，很有可能存在绘制问题。
+Paint is the process of filling in pixels. It is often the most costly part of the rendering process. If you've noticed that your page is janky in any way, it's likely that you have paint problems.
 
+Compositing is where the painted parts of the page are put together for displaying on screen. For the most part, if you stick to compositor-only properties and avoid paint altogether, you should see a major improvement in performance, but you need to watch out for excessive layer counts (see also [Stick to compositor-only properties and manage layer count](/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count)).
 
-合成是将页面的已绘制部分放在一起以在屏幕上显示的过程。
-大多数情况下，如果坚持仅合成器属性并避免一起绘制，您会看到性能会有极大的改进，但是您需要留意过多的层计数（另请参阅[坚持仅合成器属性和管理层计数](/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count)）。
+### Tools
 
+Want to know how long painting takes or how often painting occurs? Enable the [Paint profiler](../evaluate-performance/timeline-tool#profile-painting) on the **Timeline** panel and then [make a recording](../evaluate-performance/timeline-tool#make-a-recording). If most of your rendering time is spent painting, you have paint problems.
 
+![Long paint times in timeline recording](imgs/long-paint.png)
 
+Check out the [**rendering settings**](../evaluate-performance/timeline-tool#rendering-settings) menu for further configurations that can help diagnose paint problems.
 
-### 工具
+### Problems
 
-想要了解绘制花费多久或多久绘制一次？请在 **Timeline** 面板上启用 [Paint profiler][paint]，然后[进行记录][recording]。
-
-如果您的大部分渲染时间花费在绘制上，即表示存在绘制问题。
- 
-
-![Timeline 记录中的长时间绘制](imgs/long-paint.png)
-
-请查看 [**rendering settings**][rendering settings] 菜单，进一步了解可以帮助诊断绘制问题的配置。
- 
-
-### 问题
-
-下表对一些常见绘制与合成问题及潜在解决方案进行了说明：
+The following table describes some common paint and composite problems and potential solutions:
 
 <table>
-  <thead>
-      <th>问题</th>
-      <th>示例</th>
-      <th>解决方案</th>
-  </thead>
-  <tbody>
-    <tr>
-      <td data-th="Problem">绘制风暴影响响应或动画。</td>
-      <td data-th="Example">较大的绘制区域或大开销绘制影响响应或动画。</td>
-      <td data-th="Solution">避免绘制、提升将要移动到自有层的元素，使用变形和不透明度（请参阅<a href="/web/fundamentals/performance/rendering/simplify-paint-complexity-and-reduce-paint-areas">降低绘制的复杂性并减少绘制区域</a>）。</td>
-    </tr>
-        <tr>
-      <td data-th="Problem">层数激增影响动画。</td>
-      <td data-th="Example">使用 translateZ(0) 过度提升过多的元素会严重影响动画性能。</td>
-      <td data-th="Solution">请谨慎提升到层，并且仅在您了解这样会有切实改进时提升到层（请参阅<a href="/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count">坚持仅合成器属性和管理层计数</a>）。</td>
-    </tr>
-  </tbody>
+  <th>
+    Problem
+  </th>
+  
+  <th>
+    Example
+  </th>
+  
+  <th>
+    Solution
+  </th>
+  
+  <tr>
+    <td data-th="Problem">
+      Paint storms affecting response or animation.
+    </td>
+    
+    <td data-th="Example">
+      Big paint areas or expensive paints affecting response or animation.
+    </td>
+    
+    <td data-th="Solution">
+      Avoid paint, promote elements that are moving to their own layer, use transforms and opacity (see <a href="/web/fundamentals/performance/rendering/simplify-paint-complexity-and-reduce-paint-areas">Simplify paint complexity and reduce paint areas</a>).
+    </td>
+  </tr>
+  
+  <tr>
+    <td data-th="Problem">
+      Layer explosions affecting animations.
+    </td>
+    
+    <td data-th="Example">
+      Overpromotion of too many elements with translateZ(0) greatly affects animation performance.
+    </td>
+    
+    <td data-th="Solution">
+      Promote to layers sparingly, and only when you know it offers tangible improvements (see <a href="/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count">Stick to composite-only properties and manage layer count</a>).
+    </td>
+  </tr>
 </table>
 
+## Feedback {: #feedback }
 
-[recording]: ../evaluate-performance/timeline-tool#make-a-recording
-[paint]: ../evaluate-performance/timeline-tool#profile-painting
-[rendering settings]: ../evaluate-performance/timeline-tool#rendering-settings
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

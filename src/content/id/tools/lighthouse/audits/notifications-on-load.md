@@ -1,41 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Laman Tidak Secara Otomatis Meminta Izin Notifikasi Saat Pemuatan Laman".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Requesting The Notification Permission On Page Load" Lighthouse audit.
 
-{# wf_updated_on: 2016-12-05 #}
-{# wf_published_on: 2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-# Laman Tidak Secara Otomatis Meminta Izin Notifikasi Saat Pemuatan Laman  {: .page-title }
+# Avoids Requesting The Notification Permission On Page Load {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Seperti yang dijelaskan dalam [Apa yang Membuat Notifikasi Bagus][good], notifikasi yang baik adalah
-tepat waktu, relevan, dan tepat. Jika laman Anda meminta izin untuk mengirim
-notifikasi saat pemuatan laman, notifikasi tersebut mungkin tidak relevan untuk pengguna
-atau sesuai dengan kebutuhan mereka. Pengalaman pengguna yang lebih baik adalah dengan menawarkan kepada pengguna untuk mengirimi
-notifikasi tipe tertentu, dan menampilkan permintaan izin
-setelah mereka ikut serta.
+As explained in [What Makes a Good Notification](/web/fundamentals/push-notifications/), good notifications are timely, relevant, and precise. If your page asks for permission to send notifications on page load, those notifications may not be relevant to your users or precise to their needs. A better user experience is to offer to send users a specific type of notification, and to present the permissions request after they opt-in.
 
-[good]: /web/fundamentals/push-notifications/
+## Recommendations {: #recommendations }
 
-## Cara untuk lulus audit {: #how }
+Under **URLs**, Lighthouse reports the line and column numbers where your code is requesting permission to send notifications. Remove these calls, and tie the requests to user gestures instead.
 
-Pada **URL**, Lighthouse melaporkan nomor baris dan kolom dari
-kode Anda yang meminta izin untuk mengirim notifikasi. Buang panggilan ini,
-dan ikat permintaan tersebut ke isyarat pengguna sebagai gantinya.
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+If notification permissions was already granted or denied to a page before Lighthouse's audit, Lighthouse cannot determine if the page requests notification permissions on page load. Reset the permissions and run Lighthouse again. See [Change website permissions](https://support.google.com/chrome/answer/6148059) for more help.
 
-Jika izin notifikasi sudah diberikan atau ditolak ke laman sebelum
-audit Lighthouse, Lighthouse tidak bisa menentukan apakah laman meminta
-izin notifikasi saat pemuatan laman. Setel ulang izin dan jalankan
-lagi Lighthouse. Lihat [Mengubah izin situs web][help] untuk bantuan selengkapnya.
+Lighthouse collects the JavaScript that was executed on page load. If this code contains calls to `notification.requestPermission()`, and notification permission was not already granted, then notification permission was requested.
 
-Lighthouse mengumpulkan JavaScript yang telah dieksekusi saat pemuatan laman. Jika kode
-ini berisi panggilan ke `notification.requestPermission()`, dan izin
-notifikasi belum diberikan, maka izin notifikasi akan diminta.
+## Feedback {: #feedback }
 
-[help]: https://support.google.com/chrome/answer/6148059
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

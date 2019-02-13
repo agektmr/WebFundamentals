@@ -1,42 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/updates/_book.yaml
-description: Houdini’s CSS Paint API allows you to programmatically draw CSS images.
-{% include "web/_shared/machine-translation-start.html" %}
+project_path: /web/_project.yaml book_path: /web/updates/_book.yaml description: Houdini’s CSS Paint API allows you to programmatically draw CSS images.
 
-{# wf_updated_on: 2018-05-21 #}
-{# wf_published_on: 2018-01-18 #}
-{# wf_tags: css,style,houdini,javascript,chrome65 #}
-{# wf_featured_image: /web/updates/images/2018/01/paintapi/houdinidiamond.png #}
-{# wf_featured_snippet: Houdini’s CSS Paint API allows you to programmatically draw CSS images. #}
-{# wf_blink_components: Blink>CSS #}
-
+{# wf_updated_on: 2018-05-21 #} {# wf_published_on: 2018-01-18 #} {# wf_tags: css,style,houdini,javascript,chrome65 #} {# wf_featured_image: /web/updates/images/2018/01/paintapi/houdinidiamond.png #} {# wf_featured_snippet: Houdini’s CSS Paint API allows you to programmatically draw CSS images. #} {# wf_blink_components: Blink>CSS #}
 
 # CSS Paint API {: .page-title }
 
 {% include "web/_shared/contributors/surma.html" %}
 
-## Новые возможности в Chrome 65 API CSS Paint (также известный как «CSS Custom Paint» или «Hoodini&#39;s paint worklet») по умолчанию будет включен в Chrome Stable. Что это? Что ты можешь сделать с этим? И как это работает? Ну, читайте дальше, я ...
+## New possibilities in Chrome 65
 
+CSS Paint API (also known as “CSS Custom Paint” or “Houdini’s paint worklet”) is about to be enabled by default in Chrome Stable. What is it? What can you do with it? And how does it work? Well, read on, will ya’…
 
-CSS Paint API позволяет вам программно генерировать изображение всякий раз, когда свойство CSS ожидает изображение. Свойства, такие как `background-image` или `border-image` , обычно используются с `url()` для загрузки файла изображения или с помощью встроенных функций CSS, таких как `linear-gradient()` . Вместо использования этих методов теперь вы можете использовать `paint(myPainter)` для ссылки на _paint worklet_.
+CSS Paint API allows you to programmatically generate an image whenever a CSS property expects an image. Properties like `background-image` or `border-image` are usually used with `url()` to load an image file or with CSS built-in functions like `linear-gradient()`. Instead of using those, you can now use `paint(myPainter)` to reference a *paint worklet*.
 
-### Написание красок
+### Writing a paint worklet
 
-Чтобы определить рабочую графу под названием `myPainter` , нам нужно загрузить файл с краской CSS, используя `CSS.paintWorklet.addModule('my-paint-worklet.js')` . В этом файле мы можем использовать функцию `registerPaint` для регистрации класса рабочей краски:
+To define a paint worklet called `myPainter`, we need to load a CSS paint worklet file using `CSS.paintWorklet.addModule('my-paint-worklet.js')`. In that file we can use the `registerPaint` function to register a paint worklet class:
 
     class MyPainter {
       paint(ctx, geometry, properties) {
         // ...
       }
     }
-
+    
     registerPaint('myPainter', MyPainter);
+    
 
-В `paint()` мы можем использовать `ctx` же, как и мы, `CanvasRenderingContext2D` как мы знаем из `<canvas>` . Если вы знаете, как рисовать в `<canvas>` , вы можете рисовать краску! `geometry` указывается ширина и высота холста, которые находятся в нашем распоряжении. `properties` Я объясню позже в этой статье.
+Inside the `paint()` callback, we can use `ctx` the same way we would a `CanvasRenderingContext2D` as we know it from `<canvas>`. If you know how to draw in a `<canvas>`, you can draw in a paint worklet! `geometry` tells us the width and the height of the canvas that is at our disposal. `properties` I will explain later in this article.
 
-Note: Контекст краски не на 100% совпадает с контекстом `<canvas>` . На данный момент методы текстового рендеринга отсутствуют, и по соображениям безопасности вы не можете считывать пиксели с холста.
+Note: A paint worklet’s context is not 100% the same as a `<canvas>` context. As of now, text rendering methods are missing and for security reasons you cannot read back pixels from the canvas.
 
-В качестве вводного примера, давайте напишем шаблонную маску для шахматной доски и используем ее в качестве фонового изображения `<textarea>` . (Я использую textarea, потому что он по умолчанию изменен.):
+As an introductory example, let’s write a checkerboard paint worklet and use it as a background image of a `<textarea>`. (I am using a textarea because it’s resizable by default.):
 
     <!-- index.html -->
     <!doctype html>
@@ -49,6 +42,7 @@ Note: Контекст краски не на 100% совпадает с кон�
     <script>
       CSS.paintWorklet.addModule('checkerboard.js');
     </script>
+    
 
 <div class="clearfix"></div>
 
@@ -69,24 +63,25 @@ Note: Контекст краски не на 100% совпадает с кон�
         }
       }
     }
-
+    
     // Register our class under a specific name
     registerPaint('checkerboard', CheckerboardPainter);
+    
 
-Если вы использовали ранее `<canvas>` , этот код должен выглядеть знакомым. Посмотрите живое [demo](https://googlechromelabs.github.io/houdini-samples/paint-worklet/checkerboard/) здесь.
+If you’ve used `<canvas>` in the past, this code should look familiar. See the live [demo](https://googlechromelabs.github.io/houdini-samples/paint-worklet/checkerboard/) here.
 
-Note: Как и почти все новые API, API CSS Paint доступен только через HTTPS (или `localhost` ).
+Note: As with almost all new APIs, CSS Paint API is only available over HTTPS (or `localhost`).
 
-<img src="/web/updates/images/2018/01/paintapi/checkerboard1.png" alt="
-  Textarea with a checkerboard pattern as a background image.">
+![
+  Textarea with a checkerboard pattern as a background image.](/web/updates/images/2018/01/paintapi/checkerboard1.png)
 
-Отличие от использования общего фонового изображения здесь в том, что шаблон будет повторно нарисован по требованию, когда пользователь изменяет размер текстового поля. Это означает, что фоновое изображение всегда точно такое же большое, как и должно быть, включая компенсацию для дисплеев с высокой плотностью.
+The difference from using a common background image here is that the pattern will be re-drawn on demand, whenever the user resizes the textarea. This means the background image is always exactly as big as it needs to be, including the compensation for high-density displays.
 
-Это довольно круто, но это тоже довольно статично. Хотим ли мы писать новую работу каждый раз, когда нам нужен один и тот же шаблон, но с квадратами разного размера? Ответ - нет!
+That’s pretty cool, but it’s also quite static. Would we want to write a new worklet every time we wanted the same pattern but with differently sized squares? The answer is no!
 
-### Параметрирование вашей работы
+### Parameterizing your worklet
 
-К счастью, рабочая марка может получить доступ к другим свойствам CSS, в которые входит дополнительный параметр `properties` . Предоставляя классу статический атрибут `inputProperties` , вы можете подписаться на изменения в любом свойстве CSS, включая настраиваемые свойства. Значения будут предоставлены вам через параметр `properties` .
+Luckily, the paint worklet can access other CSS properties, which is where the additional parameter `properties` comes into play. By giving the class a static `inputProperties` attribute, you can subscribe to changes to any CSS property, including custom properties. The values will be given to you through the `properties` parameter.
 
     <!-- index.html -->
     <!doctype html>
@@ -102,6 +97,7 @@ Note: Как и почти все новые API, API CSS Paint доступен
     <script>
       CSS.paintWorklet.addModule('checkerboard.js');
     </script>
+    
 
 <div class="clearfix"></div>
 
@@ -109,7 +105,7 @@ Note: Как и почти все новые API, API CSS Paint доступен
     class CheckerboardPainter {
       // inputProperties returns a list of CSS properties that this paint function gets access to
       static get inputProperties() { return ['--checkerboard-spacing', '--checkerboard-size']; }
-
+    
       paint(ctx, geom, properties) {
         // Paint worklet uses CSS Typed OM to model the input values.
         // As of now, they are mostly wrappers around strings,
@@ -127,10 +123,11 @@ Note: Как и почти все новые API, API CSS Paint доступен
         }
       }
     }
-
+    
     registerPaint('checkerboard', CheckerboardPainter);
+    
 
-Теперь мы можем использовать один и тот же код для всех типов шахматных досок. Но еще лучше, теперь мы можем перейти в DevTools и [fiddle with the values](https://googlechromelabs.github.io/houdini-samples/paint-worklet/parameter-checkerboard/) пока не найдем правильный взгляд.
+Now we can use the same code for all different kind of checkerboards. But even better, we can now go into DevTools and [fiddle with the values](https://googlechromelabs.github.io/houdini-samples/paint-worklet/parameter-checkerboard/) until we find the right look.
 
 <div style="display: flex; justify-content: center">
   <video loop muted controls>
@@ -143,54 +140,61 @@ Note: Как и почти все новые API, API CSS Paint доступен
   </video>
 </div>
 
-Note: Было бы здорово также параметризовать цвета, не так ли? Спецификация позволяет функции `paint()` принимать список аргументов. Эта функция еще не реализована в Chrome, так как она в значительной степени зависит от API свойств и значений Houdini, который по-прежнему нуждается в некоторой работе, прежде чем он сможет отправить.
+Note: It would be great to parameterize the colors, too, wouldn’t it? The spec allows for the `paint()` function to take a list of arguments. This feature is not implemented in Chrome yet, as it heavily relies on Houdini’s Properties and Values API, which still needs some work before it can ship.
 
-## Браузеры, которые не поддерживают рисование на момент написания, только Chrome имеет краску. Хотя есть положительные сигналы от всех других поставщиков браузеров, прогресс в нем невелик. Чтобы быть в курсе [Is Houdini Ready Yet?](https://ishoudinireadyyet.com) регулярно проверяйте [Is Houdini Ready Yet?](https://ishoudinireadyyet.com) . В то же время обязательно используйте прогрессивное усовершенствование, чтобы поддерживать работу вашего кода, даже если нет поддержки для работы с краской. Чтобы убедиться, что все работает должным образом, вы должны настроить свой код в двух местах: CSS и JS.
+## Browsers that don’t support paint worklet
 
-Обнаружение поддержки рисования в JS можно выполнить, проверив объект `CSS` :
+At the time of writing, only Chrome has paint worklet implemented. While there are positive signals from all other browser vendors, there isn’t much progress. To keep up to date, check [Is Houdini Ready Yet?](https://ishoudinireadyyet.com) regularly. In the meantime, be sure to use progressive enhancement to keep your code running even if there’s no support for paint worklet. To make sure things work as expected, you have to adjust your code in two places: The CSS and the JS.
+
+Detecting support for paint worklet in JS can be done by checking the `CSS` object:
 
     if ('paintWorklet' in CSS) {
       CSS.paintWorklet.addModule('mystuff.js');
     }
+    
 
-Для стороны CSS у вас есть два варианта. Вы можете использовать `@supports` :
+For the CSS side, you have two options. You can use `@supports`:
 
     @supports (background: paint(id)) {
       /* ... */
     }
+    
 
-Более компактный трюк заключается в том, что CSS недействителен и впоследствии игнорирует объявление целого свойства, если в нем есть неизвестная функция. Если вы указываете свойство дважды - сначала без рисования, а затем с помощью рабочей краски - вы получаете прогрессивное улучшение:
+A more compact trick is to use the fact that CSS invalidates and subsequently ignores an entire property declaration if there is an unknown function in it. If you specify a property twice — first without paint worklet, and then with the paint worklet — you get progressive enhancement:
 
     textarea {
       background-image: linear-gradient(0, red, blue);
       background-image: paint(myGradient, red, blue);
     }
+    
 
-В браузерах _with_ поддержка красок, второе объявление `background-image` перезапишет первое. В браузерах _without_ поддержки красок, вторая декларация недействительна и будет отброшена, оставив первое объявление в действии.
+In browsers *with* support for paint worklet, the second declaration of `background-image` will overwrite the first one. In browsers *without* support for paint worklet, the second declaration is invalid and will be discarded, leaving the first declaration in effect.
 
-### CSS WORSS0
+### CSS Paint Polyfill
 
-Для многих применений также можно использовать [CSS Paint Polyfill](https://github.com/GoogleChromeLabs/css-paint-polyfill) , который добавляет поддержку CSS Custom Paint и Paint Worklets для современных браузеров.
+For many uses, it's also possible to use the [CSS Paint Polyfill](https://github.com/GoogleChromeLabs/css-paint-polyfill), which adds CSS Custom Paint and Paint Worklets support to modern browsers.
 
-## использования Существует много случаев использования красок, некоторые из них более очевидны, чем другие. Один из наиболее очевидных - использование красок для уменьшения размера вашей DOM. Зачастую элементы добавляются исключительно для создания украшений с использованием CSS. Например, в [Material Design Lite](https://getmdl.io) кнопка с эффектом пульсации содержит 2 дополнительных элемента `<span>` для реализации самой пульсации. Если у вас много кнопок, это может привести к множеству элементов DOM и может привести к снижению производительности на мобильных устройствах. Если вместо этого вы используете [implement the ripple effect using paint worklet](https://googlechromelabs.github.io/houdini-samples/paint-worklet/ripple/) , вы получите 0 дополнительных элементов и только одну краску. Кроме того, у вас есть что-то, что намного проще настроить и параметризовать.
+## Use cases
 
-Еще одним преимуществом использования красок является то, что - в большинстве сценариев - решение с использованием малярной мазки является небольшим по количеству байтов. Конечно, есть компромисс: ваш код краски будет работать всякий раз, когда размер холста или любой из параметров изменится. Поэтому, если ваш код сложный и занимает много времени, он может ввести jank. Chrome работает с движущимися красками с основной резьбы, так что даже длительные рабочие краски не влияют на отзывчивость основной нити.
+There are many use cases for paint worklets, some of them more obvious than others. One of the more obvious ones is using paint worklet to reduce the size of your DOM. Oftentimes, elements are added purely to create embellishments using CSS. For example, in [Material Design Lite](https://getmdl.io) the button with the ripple effect contains 2 additional `<span>` elements to implement the ripple itself. If you have a lot of buttons, this can add up to quite a number of DOM elements and can lead to degraded performance on mobile. If you [implement the ripple effect using paint worklet](https://googlechromelabs.github.io/houdini-samples/paint-worklet/ripple/) instead, you end up with 0 additional elements and just one paint worklet. Additionally, you have with something that is much easier to customize and parameterize.
 
-Для меня самая захватывающая перспектива заключается в том, что красящая метка позволяет эффективно полировать функции CSS, которых браузер пока не имеет. Одним из примеров может быть полифония [conic gradients](https://lab.iamvdo.me/houdini/conic-gradient) пока они не приземлятся в Chrome изначально. Другой пример: на собрании CSS было решено, что теперь вы можете иметь несколько цветов границ. Пока эта встреча продолжалась, мой коллега Ян Килпатрик [wrote a polyfill](https://twitter.com/malyw/status/934737334494429184) за это новое поведение CSS, используя краску.
+Another upside of using paint worklet is that — in most scenarios — a solution using paint worklet is small in terms of bytes. Of course, there is a trade-off: your paint code will run whenever the canvas’s size or any of the parameters change. So if your code is complex and takes long it might introduce jank. Chrome is working on moving paint worklets off the main thread so that even long-running paint worklets don’t affect the responsiveness of the main thread.
 
-## Мышление вне рамки. Большинство людей начинают думать о фоновых изображениях и изображениях границ, когда они узнают о краской. Один менее интуитивно понятный случай использования для краски - `mask-image` чтобы элементы DOM имели произвольные формы. Например, [diamond](https://googlechromelabs.github.io/houdini-samples/paint-worklet/diamond-shape/) :
+To me, the most exciting prospect is that paint worklet allows to efficient polyfilling of CSS features that a browser doesn’t have yet. One example would be polyfill [conic gradients](https://lab.iamvdo.me/houdini/conic-gradient) until they land in Chrome natively. Another example: in a CSS meeting it was decided that you can now have multiple border colors. While this meeting was still going on, my colleague Ian Kilpatrick [wrote a polyfill](https://twitter.com/malyw/status/934737334494429184) for this new CSS behavior using paint worklet.
 
-<img src="/web/updates/images/2018/01/paintapi/houdinidiamond.png" alt="
-  A DOM element in the shape of a diamond.">
+## Thinking outside the “box”
 
-`mask-image` принимает изображение, которое является размером элемента. Области, где изображение маски прозрачно, элемент прозрачен. Области, где изображение маски непрозрачно, элемент непрозрачен.
+Most people start to think about background images and border images when they learn about paint worklet. One less intuitive use case for paint worklet is `mask-image` to make DOM elements have arbitrary shapes. For example a [diamond](https://googlechromelabs.github.io/houdini-samples/paint-worklet/diamond-shape/):
 
-## Теперь в Chrome
+![
+  A DOM element in the shape of a diamond.](/web/updates/images/2018/01/paintapi/houdinidiamond.png)
 
-Некоторое время в Chrome Canary работала краска. С Chrome 65 он включен по умолчанию. Идите вперед и попробуйте новые возможности, которые раскрывают работу, и покажите нам, что вы построили! Для большего вдохновения взгляните на [Vincent De Oliveira’s collection](https://lab.iamvdo.me/houdini/) .
+`mask-image` takes an image that is the size of the element. Areas where the mask image is transparent, the element is transparent. Areas where the mask image is opaque, the element opaque.
 
-Note: В настоящее время точки останова не поддерживаются в CSS Paint API, но будут включены в более поздней версии Chrome.
+## Now in Chrome
+
+Paint worklet has been in Chrome Canary for a while. With Chrome 65, it is enabled by default. Go ahead and try out the new possibilities that paint worklet opens up and show us what you built! For more inspiration, take a look at [Vincent De Oliveira’s collection](https://lab.iamvdo.me/houdini/).
+
+Note: Breakpoints are currently not supported in CSS Paint API, but will be enabled in a later release of Chrome.
 
 {% include "web/_shared/rss-widget-updates.html" %}
-
-{% include "web/_shared/translation-end.html" %}

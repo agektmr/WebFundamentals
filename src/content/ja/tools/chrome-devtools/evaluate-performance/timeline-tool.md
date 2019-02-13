@@ -1,203 +1,189 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: アプリケーション実行中のすべてのアクティビティを記録して分析するには、Chrome DevTools の [Timeline] パネルを使います。アプリケーションで感じたパフォーマンスの問題の調査を開始する場合は、このパネルが適しています。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Chrome DevTools Timeline panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
-{# wf_updated_on:2016-03-07 #}
-{# wf_published_on:2015-06-08 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-06-08 #} {# wf_blink_components: Platform>DevTools #}
 
-# Timeline ツールの使い方 {: .page-title }
+# How to Use the Timeline Tool {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-アプリケーション実行中のすべてのアクティビティを記録して分析するには、Chrome DevTools の Timeline<em></em> パネルを使います。
-アプリケーションで感じたパフォーマンスの問題の調査を開始する場合は、このパネルが適しています。
+Warning: This page is deprecated. See [Performance Analysis Reference](reference) for up-to-date information.
 
+Use the Chrome DevTools *Timeline* panel to record and analyze all the activity in your application as it runs. It's the best place to start investigating perceived performance issues in your application.
 
-
-![Timeline ツール](imgs/timeline-panel.png)
-
+![Timeline tool](imgs/timeline-panel.png)
 
 ### TL;DR {: .hide-from-toc }
-- ページの読み込み後またはユーザーの操作後に発生したすべてのイベントを分析するには、Timeline 記録を行います。
-- 概要ペインで FPS、CPU、ネットワーク リクエスト数を表示します。
-- フレーム チャート内のイベントをクリックして、イベントの詳細を表示します。
-- 記録のセクションを拡大して、分析を容易にします。
 
+* Make a Timeline recording to analyze every event that occurred after a page load or a user interaction.
+* View FPS, CPU, and network requests in the Overview pane.
+* Click on an event within the Flame Chart to view details about it.
+* Zoom in on a section of a recording to make analysis easier.
 
-##  [Timeline] パネルの概要{:#timeline-overview}
+## Timeline panel overview {:#timeline-overview}
 
-[Timeline] パネルは 4 つのペインで構成されます。
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#record">Record performance</a></li>
+    <li><a href="reference#fps-chart">The FPS chart</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+  </ul>
+</aside>
 
-1. **コントロール**。記録の開始や停止、記録中に取得する情報の設定を行います。
-2. **概要**。
-ページのパフォーマンスの概要を示します。詳しくは後ほど説明します。
-3. **フレームチャート**。
-CPU スタックトレースを表示します。 
+The Timeline panel consists of four panes:
 
-**フレーム チャート**には 1～3 本の点線が縦に表示されることがあります。青い線は `DOMContentLoaded` イベントを表します。
-緑の線は最初のペイントまでの時間を表します。
-赤い線は `load` イベントを表します。
+1. **Controls**. Start a recording, stop a recording, and configure what information is captured during the recording.
+2. **Overview**. A high-level summary of page performance. More on this below.
+3. **Flame Chart**. A visualization of the CPU stack trace.
+    
+    You may see one to three dotted, vertical lines on your **Flame Chart**. The blue line represents the `DOMContentLoaded` event. The green line represents time to first paint. The red line represents the `load` event.
 
-4. **詳細**。イベントを選択すると、そのイベントに関する詳細情報がこのペインに表示されます。
-イベントを選択していないときは、選択した期間についての情報がこのペインに表示されます。
- 
+4. **Details**. When an event is selected, this pane shows more information about that event. When no event is selected, this pane shows information about the selected time frame.
 
-![注釈付き [Timeline] パネル](imgs/timeline-annotated.png)
+![annotated timeline panel](imgs/timeline-annotated.png)
 
-###  概要ペイン
+### Overview pane
 
-**概要**ペインは 3 つのグラフから構成されます。
+The **Overview** pane consists of three graphs:
 
-1. **FPS**。1 秒あたりのフレーム数。緑色の棒グラフが高いほど、FPS も高くなります。
-FPS グラフ上部の赤いブロックは時間がかかっているフレームを示し、[問題を含んでいる][jank]可能性があります。
-2. **CPU**。
-CPU リソース。この[面グラフ][ac]は、CPU リソースを使用しているイベントの種類を示します。
-3. **NET**。色分けされた各棒グラフがリソースを表します。棒グラフが長いほど、リソースの取得に時間がかかっています。
-棒グラフの色が薄い部分は、待ち時間（リソースがリクエストされてから最初のバイトのダウンロードが終わるまでの時間）を表します。
-色の濃い部分は、転送時間（最初のバイトのダウンロードから最後のバイトのダウンロードが終わるまでの時間）を表します。
+1. **FPS**. Frames Per Second. The higher the green bar, the higher the FPS. The red blocks above the FPS graph indicate long frames, which are likely candidates for [jank](/web/fundamentals/performance/rendering/).
+2. **CPU**. CPU resources. This [area chart](https://en.wikipedia.org/wiki/Area_chart) indicates what type of events consumed CPU resources. 
+3. **NET**. Each colored bar represents a resource. The longer the bar, the longer it took to retrieve the resource. The lighter portion of each bar represents waiting time (the time between when the resource was requested up until the time that the first byte was downloaded). The darker portion represents transfer time (the time between when the first and last bytes were downloaded).
+    
+    Bars are color coded as follows: <!-- source: https://goo.gl/eANVFf -->
 
+* HTML files are **<span style="color:hsl(214, 67%, 66%)">blue</span>**.
+* Scripts are **<span style="color:hsl(43, 83%, 64%)">yellow</span>**.
+* Stylesheets are **<span style="color:hsl(256, 67%, 70%)">purple</span>**.
+* Media files are **<span style="color:hsl(109, 33%, 55%)">green</span>**.
+* Miscellaneous resources are **<span style="color:hsl(0, 0%, 70%)">grey</span>**.
 
+![overview pane, annotated](imgs/overview-annotated.jpg)
 
-   棒グラフは次のように色分けされます。
-   <!-- source: https://goo.gl/eANVFf -->
-   
-   * HTML ファイルは**<span style="color:hsl(214, 67%, 66%)">青</span>**です。
-   * スクリプトは**<span style="color:hsl(43, 83%, 64%)">黄色</span>**です。
-   * スタイルシートは**<span style="color:hsl(256, 67%, 70%)">紫色</span>**です。
-   * メディアファイルは**<span style="color:hsl(109, 33%, 55%)">緑</span>**です。
-   * その他のリソースは**<span style="color:hsl(0, 0%, 70%)">灰色</span>**です。
+## Make a recording
 
+Warning: This page is deprecated. See [Record performance](reference#record) for up-to-date information.
 
-![概要ペイン、注釈付き](imgs/overview-annotated.jpg)
+To make a recording of a *page load*, open the **Timeline** panel, open the page that you want to record, and then reload the page. The **Timeline** panel automatically records the page reload.
 
-[ac]: https://en.wikipedia.org/wiki/Area_chart 
-[jank]: /web/fundamentals/performance/rendering/
+To make a recording of a *page interaction*, open the **Timeline** panel, then start the recording by pressing the **Record** button (![record button](imgs/record-off.png){:.inline}) or by typing the keyboard shortcut <kbd>Cmd</kbd>+<kbd>E</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>E</kbd> (Windows / Linux). The **Record** button turns red during a recording. Perform your page interactions, and then press the **Record** button or type the keyboard shortcut again to stop the recording.
 
-##  記録
+When the recording is finished, DevTools guesses what portion of the recording is most relevant to you, and automatically zooms to that portion.
 
-ページの読み込みを記録するには、[**Timeline**] パネルを開き、記録するページを開いて、そのページを再読み込みします。
-[**Timeline**] パネルはページの再読み込みを自動的に記録します。
+### Recording tips
 
+* **Keep recordings as short as possible**. Shorter recordings generally make analysis easier.
+* **Avoid unnecessary actions**. Avoid actions (mouse clicks, network loads, etc.) that are extraneous to the activity you want to record and analyze. For example, if you want to record events that occur after you click a Login button, don’t also scroll the page, load an image, and so on.
+* **Disable the browser cache**. When recording network operations, it’s a good idea to disable the browser’s cache from the DevTools Settings panel or the [**Network conditions**](/web/tools/chrome-devtools/network-performance/reference#network-conditions) drawer.
+* **Disable extensions**. Chrome extensions can add unrelated noise to Timeline recordings of your application. Open a Chrome window in [incognito mode](https://support.google.com/chrome/answer/95464), or create a new [Chrome user profile](https://support.google.com/chrome/answer/142059) to ensure that your environment has no extensions.
 
-ページの操作を記録するには、[**Timeline**] パネルを開き、**記録**ボタン（![記録ボタン](imgs/record-off.png){:.inline}）をクリックするか、キーボード ショートカット <kbd>Cmd</kbd>+<kbd>E</kbd>（Mac）、<kbd>Ctrl</kbd>+<kbd>E</kbd>（Windows / Linux）を押します。
-記録中、**記録**ボタンは赤く表示されます。ページの操作を実行後、**記録**ボタンをクリックするか、キーボード ショートカットをもう一度入力すると、記録が停止します。
+## View recording details
 
+Warning: This page is deprecated. See [View main thread ](reference#main) for up-to-date information.
 
+When you select an event in the **Flame Chart**, the **Details** pane displays additional information about the event.
 
-記録が完了すると、DevTools によって関連性の高い部分が推測され、その部分が自動的に拡大されます。
+![details pane](imgs/details-pane.png)
 
+Some tabs, like **Summary**, are present for all event types. Other tabs are only available to certain event types. See the [Timeline event reference](/web/tools/chrome-devtools/profile/evaluate-performance/performance-reference) for details on each record type.
 
-###  記録の使い方
+## Capture screenshots during recording {:#filmstrip}
 
-* **記録はできるだけ短時間にします**。通常、記録時間が短いほど分析は簡単です。
-* **不要なアクションは避けます**。記録や分析の対象とするアクション以外（マウスのクリック、ネットワークの読み込みなど）は避けるようにします。たとえば、ログイン ボタンをクリック後に発生するイベントを記録する場合は、ページのスクロールやイメージの読み込みなどの操作はしないようにします。
-* **ブラウザのキャッシュを無効にします**。ネットワーク操作を記録するときは、DevTools の [Settings] パネルまたは[**Network cinditions**][nc]ドロワーからブラウザのキャッシュを無効にすることをお勧めします。
-* **拡張機能を無効にします**。Chrome 拡張機能によって、アプリケーションの Timeline 記録に無関係の操作が加わる可能性があります。
-Chrome ウィンドウを[シークレット モード][incognito]で開くか、新しい [Chrome ユーザー プロフィール][new chrome profile]を作成して、現在の環境に拡張機能が含まれないようにします。
+Warning: This page is deprecated. See [Capture screenshots while recording](reference#screenshots) for up-to-date information.
 
+The **Timeline** panel can capture screenshots during a page load. This feature is known as the **Filmstrip**.
 
+Enable the **Screenshots** checkbox in the **Controls** pane before you make a recording to capture screenshots of the recording. The screenshots are displayed below the **Overview** pane.
 
+![timeline recording with filmstrip](imgs/timeline-filmstrip.png)
 
-[nc]: /web/tools/chrome-devtools/profile/network-performance/network-conditions#network-conditions
-[incognito]: https://support.google.com/chrome/answer/95464
-[new chrome profile]: https://support.google.com/chrome/answer/142059
-
-##  記録の詳細表示
-
-**フレーム チャート**でイベントを選択すると、**詳細**ペインにそのイベントに関する追加情報が表示されます。
-
-
-![詳細ペイン](imgs/details-pane.png)
-
-[**Summary**] のように、一部のタブはすべての種類のイベントに表示されます。また、特定の種類のイベントにしか表示されないタブもあります。
-各種記録について詳しくは、[Timeline イベント リファレンス][event reference]をご覧ください。
-
-
-[event reference]: /web/tools/chrome-devtools/profile/evaluate-performance/performance-reference
-
-##  記録中のスクリーンショットの取得{:#filmstrip}
-
-[**Timeline**] パネルでは、ページの読み込み中にスクリーンショットを取得できます。この機能を「**Filmstrip**」と呼びます。
-
-
-記録のスクリーンショットを取得するには、記録を作成する前に、**コントロール**ペインの [**Screenshots**] チェックボックスをオンにします。
-スクリーンショットは**概要**ペインの下に表示されます。
-
-
-![Filmstrip による Timeline の記録](imgs/timeline-filmstrip.png)
-
-**スクリーンショット** ペインまたは**概要**ペインにマウスカーソルを合わせると、その時点の記録のスクリーンショットが拡大表示されます。
-マウスを左右に動かして記録のアニメーションのシミュレーションを行います。
-
+Hover your mouse over the **Screenshots** or **Overview** pane to view a zoomed screenshot of that point in the recording. Move your mouse left and right to simulate an animation of the recording.
 
 <video src="animations/hover.mp4" autoplay muted loop controls></video>
 
-##  JavaScript のプロファイル{:#profile-js}
+## Profile JavaScript {:#profile-js}
 
-Timeline 記録で JavaScript のスタックを取得するには、[**JS Profile**] チェックボックスをオンにします。
-JS プロファイラを有効にすると、呼び出された JavaScript 関数がフレーム チャートに表示されます。
- 
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#disable-js-samples">Disable JavaScript
+      samples</a></li>
+    <li><a href="reference#main">View main thread activity</a></li>
+    <li><a href="reference#activities">View activities</a></li>
+  </ul>
+</aside>
 
-![JS Profile を有効にしたフレームチャート](imgs/js-profile.png)
+Enable the **JS Profile** checkbox before you take a recording to capture JavaScript stacks in your timeline recording. When the JS profiler is enabled, your flame chart shows every JavaScript function that was called.
 
-##  ペイントのプロファイル{:#profile-painting}
+![flame chart with JS profile enabled](imgs/js-profile.png)
 
-記録を取って **Paint** イベントに対するインサイトを得るには、[**Paint**] チェックボックスをオンにします。
-ペイントのプロファイリングを有効にして、[**Paint**] イベントをクリックすると、新しい [**Paint Profiler**] タブが**詳細**ペインに表示され、イベントについての詳しい情報が表示されます。
+## Profile painting {:#profile-painting}
 
+Warning: This page is deprecated. See [View paint profiler](reference#paint-profiler) for up-to-date information.
 
+Enable the **Paint** checkbox before you take a recording to gain more insight into **Paint** events. When paint profiling is enabled and you click on a **Paint** event, a new **Paint Profiler** tab is displayed in the **Details** pane that shows much more granular information about the event.
 
-![Paint Profiler](imgs/paint-profiler.png)
+![paint profiler](imgs/paint-profiler.png)
 
-###  レンダリングの設定{:#rendering-settings}
+### Rendering settings {:#rendering-settings}
 
-DevTools のメインメニューを開き、[**More tools**]、[**Rendering settings**] の順に選択してレンダリングの設定にアクセスします。この設定は、ペイントの問題のデバッグに役立ちます。レンダリングの設定は、[**Console**] ドロワーの隣のタブに表示されます（ドロワーが表示されていない場合は、<kbd>esc</kbd> キーを押して表示します）。
+Warning: This page is deprecated. See [Analyze rendering performance with the Rendering tab](reference#rendering) for up-to-date information.
 
+Open the main DevTools menu and select **More tools** > **Rendering settings** to access rendering settings that may be helpful when debugging paint issues. The rendering settings opens up as a tab next to the **Console** drawer (press
+<kbd>esc</kbd> to show the drawer, if it's hiding).
 
+![rendering settings](imgs/rendering-settings.png)
 
+## Search records
 
-![レンダリングの設定](imgs/rendering-settings.png)
+Warning: This page is deprecated. See [Search activities](reference#search) for up-to-date information.
 
-##  記録の検索
+While looking at events you may want to focus on one type of events. For example, perhaps you need to view the details of every `Parse HTML` event.
 
-イベントを表示中に、ある種類のイベントに注目したい場合があります。たとえば、各 `Parse HTML` イベントの詳細を表示する必要があるとします。
- 
+Press <kbd>Cmd</kbd>+<kbd>F</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>F</kbd> (Windows / Linux) while the **Timeline** is in focus to open a Find toolbar. Type in the name of the event type that you wish to inspect, such as `Event`.
 
-**Timeline** にカーソルを合わせた状態で <kbd>Cmd</kbd>+<kbd>F</kbd>（Mac）、または <kbd>Ctrl</kbd>+<kbd>F</kbd>（Windows / Linux）を押して、検索ツールバーを開きます。`Event` など、検査するイベントの種類名を入力します。
+The toolbar only applies to the currently selected timeframe. Any events outside of the selected timeframe are not included in the results.
 
-ツールバーは現在選択している期間にのみ適用されます。選択した期間外のイベントは結果に含まれません。
- 
+The up and down arrows move you chronologically through the results. So, the first result represents the earliest event in the selected timeframe, and the last result represents the last event. Every time that you press the up or down arrow, a new event is selected, so you can view its details in the **Details** pane. Pressing the up and down arrows is equivalent to clicking on an event in the **Flame Chart**.
 
-上矢印と下矢印を使って、時系列に結果を移動します。先頭の結果は選択した期間に発生した最初のイベントを表し、末尾の結果は最後に発生したイベントを表します。
-上矢印または下矢印を押すたびに新しいイベントが選択され、**詳細**ペインにそのイベントの詳細が表示されます。上矢印や下矢印を押しても、**フレーム チャート**のイベントをクリックしても同じ結果が得られます。
+![find toolbar](imgs/find-toolbar.png)
 
+## Zoom in on a Timeline section {:#zoom}
 
-![検索ツールバー](imgs/find-toolbar.png)
+Warning: This page is deprecated. See [Select a portion of a recording](reference#select) for up-to-date information.
 
-##  Timeline セクションの拡大表示{:#zoom}
+You can zoom in on a section of a recording to make analysis easier. You use the **Overview** pane to zoom in on a section of the recording. After zooming, the **Flame Chart** is automatically zoomed to match the same section.
 
-記録のセクションの 1 つを拡大表示して簡単に分析できるようにします。**概要**ペインを使って、記録のセクションの 1 つを拡大します。
-拡大後には、同じセクションに合わせて**フレーム チャート**が自動的に拡大されます。
+![zoom in on a section of a timeline recording](imgs/zoom.png)
 
+To zoom in on a Timeline section:
 
-![Timeline 記録のセクションを拡大](imgs/zoom.png)
+* In the **Overview** pane, drag out a Timeline selection with your mouse.
+* Adjust the gray sliders in the ruler area.
 
-Timeline のセクションを拡大するには、以下のいずれかの方法を使用します。
+Once you have a section selected, you can use the <kbd>W</kbd>,<kbd>A</kbd>,
+<kbd>S</kbd>, and <kbd>D</kbd> keys to adjust your selection. <kbd>W</kbd> and <kbd>S</kbd> zoom in and zoom out, respectively. <kbd>A</kbd> and 
+<kbd>D</kbd> move left and right, respectively.
 
-* **概要**ペインで、マウスをドラッグして Timeline の選択範囲を広げます。
-* ルーラー領域で灰色のスライダーを調整します。
+## Save and load recordings
 
-セクションの選択後、<kbd>W</kbd> キー、<kbd>A</kbd> キー、<kbd>S</kbd> キー、<kbd>D</kbd> キーを使用して選択範囲を調整します。
-<kbd>W</kbd> キーは拡大、<kbd>S</kbd> キーは縮小を行います。
-<kbd>A</kbd> キーと <kbd>D</kbd> キーはそれぞれ左と右に移動します。
+<aside class="warning">
+  <b>Warning:</b> This page is deprecated. See the following sections for
+  up-to-date information:
+  <ul>
+    <li><a href="reference#save">Save a recording</a></li>
+    <li><a href="reference#load">Load a recording pane</a></li>
+  </ul>
+</aside>
 
+You can save and open recordings by right-clicking inside the **Overview** or **Flame Chart** panes and selecting the relevant option.
 
-##  記録の保存と読み込み
+![save and open recordings](imgs/save-open.png)
 
-記録を保存または開くには、**概要**ペイン内または**フレーム チャート**ペイン内を右クリックして関連オプションを選択します。
+You can also share saved recordings using [timeline-viewer](https://chromedevtools.github.io/timeline-viewer/).
 
+## Feedback {: #feedback }
 
-![記録の保存と開く](imgs/save-open.png)
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

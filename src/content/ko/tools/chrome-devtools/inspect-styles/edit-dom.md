@@ -1,182 +1,156 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools의 Elements 패널에 있는 DOM 트리 뷰에 현재 웹 페이지의 DOM 구조가 표시됩니다. DOM 업데이트를 통해 페이지의 콘텐츠와 구조를 실시간으로 편집할 수 있습니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
-{# wf_updated_on: 2015-04-29 #}
-{# wf_published_on: 2015-04-29 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-29 #} {# wf_blink_components: Platform>DevTools #}
 
-# DOM 편집 {: .page-title }
+# Edit the DOM {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome DevTools의 Elements 패널에 있는 DOM 트리 뷰에 현재 웹 페이지의 DOM 구조가 표시됩니다. DOM 업데이트를 통해 페이지의 콘텐츠와 구조를 실시간으로 편집할 수 있습니다.
-
+The DOM tree view in the Chrome DevTools Elements panel displays the DOM structure of the current web page. Live-edit the content and structure of your page through DOM updates.
 
 ### TL;DR {: .hide-from-toc }
-- DOM은 페이지 구조를 정의합니다. 각 DOM 노드는 페이지 요소입니다(헤더 노드, 단락 노드 등).
-- 렌더링된 DOM을 통해 페이지의 콘텐츠와 구조를 실시간 편집할 수 있습니다.
-- 다만 Elements 패널에서 DOM을 변경하여 원본 파일을 수정할 수 없다는 점을 기억하세요. 페이지를 새로 고치면 DOM 트리 수정 사항이 모두 지워집니다.
-- DOM 중단점을 사용하여 DOM 변경 사항을 관찰하세요.
 
+* The DOM defines your page structure. Each DOM node is a page element, for example, a header node, paragraph node.
+* Live-edit the content and structure of your pages through the rendered DOM.
+* But remember, you can't modify source files through DOM changes in the Elements panel. Reloading the page erases any DOM tree modifications.
+* Watch for changes to the DOM using DOM breakpoints.
 
-## 요소 검사 {:#inspect-an-element}
+## Inspect an element {:#inspect-an-element}
 
-**Elements 패널**을 사용하면 페이지의 모든 요소를 단일
-DOM 트리에서 검사할 수 있습니다. 아무 요소나 선택하여 적용된 스타일을 검사합니다.
+Use the **Elements panel** to inspect all elements in your page in one DOM tree. Select any element and inspect the styles applied to it.<video autoplay muted src="animations/inspect-element.mp4"> </video> 
 
-<video autoplay muted src="animations/inspect-element.mp4">
-</video>
+There are several ways to inspect an element:
 
-요소를 검사하는 방법은 여러 가지가 있습니다.
+Right-click any element on the page and select **Inspect**.
 
-페이지에서 아무 요소나 마우스 오른쪽 버튼으로 클릭한 다음 **Inspect**를 선택합니다.
+![Inspect an element via right-click](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
 
-![마우스 오른쪽 버튼 클릭을 통해 요소 검사](/web/tools/chrome-devtools/inspect-styles/imgs/right-click-inspect.png)
+Press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
 
-<kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd>
-+ <kbd class="kbd">C</kbd>(Windows) 또는 <kbd class="kbd">Cmd</kbd>
-+ <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd>(Mac)를 눌러 
-DevTools를 Inspect Element 모드로 연 다음, 요소 위로 마우스를 가져갑니다. DevTools가
-**Elements** 패널에서 마우스를 가져간 요소를 자동으로
-강조표시합니다. 해당 요소를 클릭하면 검사 모드를 종료해도 
-**Elements** 패널에서 요소가 강조표시된 상태로 유지됩니다. 
+* <kbd class="kbd">C</kbd> (Windows) or <kbd class="kbd">Cmd</kbd>
+* <kbd class="kbd">Shift</kbd> + <kbd class="kbd">C</kbd> (Mac) to open DevTools in Inspect Element mode, then hover over an element. DevTools automatically highlights the element that you are hovering over in the **Elements** panel. Click on the element to exit inspect mode while keeping the element highlighted within the **Elements** panel. 
 
-**Inspect Element** 버튼
-![검사 아이콘](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline}
-을 클릭하여 요소 검사 모드로 들어간 다음, 요소를 클릭합니다.
+Click the **Inspect Element** button ![Inspect icon](/web/tools/chrome-devtools/inspect-styles/imgs/inspect-icon.png){:.inline} to go into Inspect Element Mode, then click on an element.
 
-콘솔에서 [`inspect`][검사] 메서드를 사용합니다(예: 
-`inspect(document.body)`).
+Use the [`inspect`](/web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect) method in the console, such as `inspect(document.body)`.
 
-## DOM 탐색
+### View the rendered and natural sizes of an image {: #image-sizes }
 
-마우스 또는 키보드를 사용하여 DOM 구조 전체를 탐색합니다.
+Hover over an `img` tag in the **DOM Tree** to view the rendered and natural sizes of that image.
 
-축소된 노드 옆에 오른쪽을 가리키는 화살표가 있습니다.
-![축소된 노드](imgs/collapsed-node.png){:.inline}
+![Rendered and natural image sizes](imgs/image-sizes.png)
 
-확장된 노드 옆에 아래쪽을 가리키는 화살표가 있습니다.
-![확장된 노드](imgs/expanded-node.png){:.inline}
+### View which image in a source set (srcset) is being used {: #srcset }
 
-마우스 사용:
+To view which version of an image in a `srcset` was loaded, select the `img` element, then evaluate `$0.currentSrc` in the **Console**.
 
-* 한 번 클릭하면 노드가 강조표시됩니다.
-* 노드를 확장하려면 노드 위의 아무 곳이나 두 번 클릭하거나 그 옆에 있는 화살표를 
-클릭합니다.
-* 노드를 축소하려면 옆에 있는 화살표를 클릭합니다.
+Note: See [Enhance `img`s with `srcset` for high DPI devices](/web/fundamentals/design-and-ux/responsive/images#enhance_imgs_with_srcset_for_high_dpi_devices) to learn more about image optimization using `srcset`.
 
-키보드 사용:
+![currentSrc in the Console](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-console.png)
 
-* **위쪽 화살표** 키를 눌러 현재 노드 위에 있는 노드를 선택합니다.
-* **아래쪽 화살표** 키를 눌러 현재 노드 아래 있는 노드를 선택합니다.
-* **오른쪽 화살표** 키를 누르면 축소된 노드가 확장됩니다. 다시 
-누르면 (이제 확장된) 노드의 첫 번째 자식 노드로 이동합니다. 이 기법을
-사용하여 깊이 중첩된 노드를 신속하게 탐색할 수 있습니다.
+Note: `$0` is a shortcut in the DevTools **Console**. It provides a reference to the currently-selected element in the **DOM Tree**.
 
-### 탐색경로 트레일 탐색
+You can also view `currentSrc` via the **Properties** tab. The **Properties** tab only displays properties for the currently-selected element, so make sure that you've selected the correct element before viewing.
 
-Elements 패널 하단에 탐색경로 트레일이 있습니다. 
+![currentSrc in the Properties tab](/web/tools/chrome-devtools/inspect-styles/imgs/currentSrc-properties.png)
 
-![탐색경로 트레일](imgs/breadcrumb-body.png)
+## Navigate the DOM
 
-현재 선택된 노드가 파란색으로 강조표시되어 있습니다. 왼쪽에 있는 노드는 
-현재 노드의 부모 노드입니다. 그 왼쪽에 있는 것이 부모 노드의 부모 노드입니다.
-이런 식으로 트리 맨 위까지 진행됩니다.
+Navigate through the DOM structure using your mouse or keyboard.
 
-![탐색경로 트레일 연장](imgs/breadcrumb-footer.png)
+A collapsed node has an arrow next to it pointing right: ![collapsed node](imgs/collapsed-node.png){:.inline}
 
-구조를 거슬러 탐색하면 강조표시가 옮겨집니다.
+An expanded node has an arrow next to it pointing down: ![expanded node](imgs/expanded-node.png){:.inline}
 
-![탐색경로 트레일 위쪽으로 탐색](imgs/breadcrumb-trail.png)
+Using your mouse:
 
-DevTools는 트레일 내에서 가능한 한 많은 수의 항목을 표시합니다. 
-전체 트레일이 상태 표시줄에 비해 너무 커서 다 표시되지 않는 경우, 줄임표(...)가 표시되어 
-트레일이 잘린 부분을 나타냅니다. 줄임표를 클릭하면 
-숨겨진 요소를 표시할 수 있습니다.
+* Click once to highlight a node.
+* To expand a node, double-click anywhere on it or click on the arrow next  
+    to it.
+* To collapse a node, click on the arrow next to it.
 
-![탐색경로 줄임표](imgs/breadcrumb-ellipsis.png)
+Using your keyboard:
 
-## DOM 노드 및 속성 편집
+* Press the **Up Arrow** key to select the node above the current one.
+* Press the **Down Arrow** to select the node below the current one.
+* Press the **Right Arrow** key to expand a collapsed node. Press it again to move to the first child of the (now-expanded) node. You can use this technique to quickly navigate deeply-nested nodes.
 
-DOM 이름 또는 속성을 편집하려면:
+### Navigate the breadcrumb trail
 
-* 노드 이름 또는 속성을 직접 두 번 클릭합니다.
-* 노드를 강조표시하고 <kbd>Enter</kbd> 키를 누른 다음 원하는 이름 또는 속성이 표시될 때까지
-  <kbd>Tab</kbd> 키를 누릅니다.
-* [추가 작업 메뉴](#more-actions)를 연 다음 **Add Attribute** 
-또는 **Edit Attribute**를 선택합니다. **Edit Attribute**는 상황별 메뉴로, 클릭하는 부분에 따라
-편집되는 항목이 달라집니다.
+At the bottom of the Elements panel is a breadcrumb trail.
 
-작업을 마치면 닫는 태그가 자동으로 업데이트됩니다.
+![Breadcrumb trail](imgs/breadcrumb-body.png)
 
-<video autoplay muted src="animations/edit-element-name.mp4">
-</video>
+The currently selected node is highlighted in blue. The node to the left is the current node's parent. And to the left of that is the parent's parent. And so on, all the way up the tree.
 
-### DOM 노드와 자식 노드를 HTML로 편집
+![Extend breadcrumb trail](imgs/breadcrumb-footer.png)
 
-DOM 노드와 자식 노드를 HTML로 편집하려면:
+Navigating back up the structure moves the highlight:
 
-* [추가 작업 메뉴](#more-actions)를 열고 **Edit as HTML**을 선택합니다. 
-* <kbd>F2</kbd>(Windows/Linux) 또는 <kbd>Fn</kbd>+<kbd>F2</kbd>(Mac)를 누릅니다.
-* <kbd>Ctrl</kbd>+<kbd>Enter</kbd>(Windows/Linux) 또는 
-<kbd>Cmd</kbd>+<kbd>Enter</kbd>(Mac)를 눌러 변경 내용을 저장합니다. 
-* <kbd>Esc</kbd> 키를 누르면 작업한 내용을 저장하지 않고 편집기를 종료합니다.
+![Navigate up breadcrumb trail](imgs/breadcrumb-trail.png)
 
-![HTML로 편집](imgs/edit-as-html.png)
+DevTools displays as many items as possible in the trail. If the entire trail doesn't fit in the status bar, an ellipsis (...) shows where the trail has been truncated. Click the ellipsis to show the hidden elements:
 
-## DOM 노드 이동
+![Breadcrumb ellipsis](imgs/breadcrumb-ellipsis.png)
 
-노드를 클릭한 상태로 드래그하여 이동합니다.
+## Edit DOM nodes and attributes
 
-<video autoplay muted src="animations/move-node.mp4">
-</video>
+To edit a DOM node name or attribute:
 
-## DOM 노드 삭제
+* Double-click directly on the node name or attribute.
+* Highlight the node, press <kbd>Enter</kbd>, and then press <kbd>Tab</kbd> until the name or attribute is selected.
+* Open the [more actions menu](#more-actions) and select **Add Attribute** or **Edit Attribute**. **Edit Attribute** is context-sensitive; the portion you click on determines what gets edited.
 
-DOM 노드를 삭제하려면:
+The closing tag is automatically updated when you're finished.<video autoplay muted src="animations/edit-element-name.mp4"> </video> 
 
-* [추가 작업 메뉴](#more-actions)를 열고 **Delete Node**를 선택합니다.
-* 노드를 선택하고 <kbd>Delete</kbd> 키를 누릅니다.
+### Edit DOM node and its children as HTML
 
-참고: 실수로 노드를 삭제하는 경우, <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd>(또는 Mac의 경우 <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd>)를 사용하여 마지막 작업을 취소하면 됩니다.
+To edit a DOM node and its children as HTML:
 
-## 추가 작업 메뉴 표시 {:#more-actions}
+* Open the [more actions menu](#more-actions) and select **Edit as HTML**. 
+* Press <kbd>F2</kbd> (Windows / Linux) or <kbd>Fn</kbd>+<kbd>F2</kbd> (Mac).
+* Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> (Windows / Linux) or <kbd>Cmd</kbd>+<kbd>Enter</kbd> (Mac) to save your changes. 
+* Press <kbd>Esc</kbd> to exit the editor without saving.
 
-**추가 작업** 메뉴를 사용하면 DOM 노드와 여러 가지 방식으로 상호작용할 수
-있습니다. 메뉴를 보려면 노드를 마우스 오른쪽 버튼으로 클릭하거나 노드를 선택하고 
-**추가 작업** 버튼(![추가 작업 
-버튼](imgs/more-actions-button.png){:.inline})을 누릅니다. 버튼은
-현재 선택한 요소에서만 표시됩니다.
+![edit as HTML](imgs/edit-as-html.png)
 
-![추가 작업 메뉴](imgs/more-actions-menu.png)
+## Move DOM node
 
-## 스크롤하여 보기
+Click, hold, and drag a node to move it.<video autoplay muted src="animations/move-node.mp4"> </video> 
 
-DOM 노드 위로 마우스를 가져가거나 노드를 선택하면 렌더링된 노드가
-뷰포트에서 강조표시됩니다. 노드를 스크롤하여 화면 밖으로 벗어나면
-노드가 현재 뷰포트보다 위에 있는 경우
-뷰포트 맨 위에, 노드가 현재 뷰포트 아래에 있는 경우 뷰포트 맨 아래에 도움말이
-표시됩니다. 예를 들어 DevTools 아래의 스크린샷을 보면 현재
-**Elements** 패널에서 선택한 요소가 뷰포트 아래에 있습니다.
+## Delete DOM node
 
-![뷰포트 아래의 요소](imgs/below-viewport.png)
+To delete a DOM node:
 
-이 페이지를 아래로 스크롤하여 노드가 뷰포트에 표시되도록 하려면
-해당 노드를 **마우스 오른쪽 버튼으로 클릭**한 다음 **Scroll into View**를 선택합니다.
+* Open the [more actions menu](#more-actions) and select **Delete Node**.
+* Select the node and press the <kbd>Delete</kbd> key.
 
-## DOM 중단점 설정
+Note: If you delete a node by accident, <kbd class='kbd'>Ctrl</kbd> + <kbd class='kbd'>Z</kbd> (or <kbd class='kbd'>Cmd</kbd> + <kbd class='kbd'>Z</kbd> on Mac) to undo your last action.
 
-DOM 중단점을 설정하면 복잡한 자바스크립트 애플리케이션을 디버그할 수 있습니다.
-예를 들어, 자바스크립트가 DOM 요소의 스타일링 방식을 변경하는 경우,
-요소의 속성이 수정될 때 작동하도록 DOM 중단점을 설정할 수 있습니다. 하위 트리 변경, 속성 변경 및 노드 제거와 같은 DOM 변경 중 하나에서 중단점을 트리거합니다.
+## Show more actions menu {:#more-actions}
+
+The **more actions** menu lets you interact with a DOM node in a variety of ways. To view the menu, right-click on a node, or select a node and then press the **more actions** button (![more action 
+button](imgs/more-actions-button.png){:.inline})). The button is only displayed on the currently selected element.
+
+![more actions menu](imgs/more-actions-menu.png)
+
+## Scroll into view
+
+When you hover over or select a DOM node, the rendered node is highlighted in the viewport. If the node is scrolled offscreen, you'll see a tooltip at the top of the viewport if the node is above the current viewport, and a tooltip at the bottom if the node is below the current viewport. For example, in the screenshot below DevTools is indicating that the currently selected element in the **Elements** panel is below the viewport.
+
+![element below viewport](imgs/below-viewport.png)
+
+To scroll the page so the node appears in the viewport, **Right-click** the node and select **Scroll into View**.
+
+## Set DOM breakpoints
+
+Set DOM breakpoints to debug complex JavaScript applications. For example, if your JavaScript is changing the styling of a DOM element, set a DOM breakpoint to fire when the element's attributes are modified. Trigger a breakpoint on one of the following DOM changes: subtree change, attribute change, node removal.
 
 {# include shared/related_guides.liquid inline=true list=page.related-guides.breakpoints #}
 
-### 하위 트리 수정
+### Subtree Modifications
 
-하위 트리 수정 중단점은 하위 요소를 추가, 삭제 또는 이동하면 트리거됩니다. 예를 들어 `main-content` 요소에서 하위 트리 수정 중단점을 설정한 경우, 다음 코드가 중단점을 트리거합니다.
-
+A subtree modification breakpoint is triggered when a child element is added, removed, or moved. For example, if you set a subtree modification breakpoint on the `main-content` element, the following code triggers the breakpoint:
 
     var element = document.getElementById('main-content');
     //modify the element's subtree.
@@ -184,86 +158,73 @@ DOM 중단점을 설정하면 복잡한 자바스크립트 애플리케이션을
     element.appendChild( mySpan );
     
 
-### 속성 수정
+### Attribute Modifications
 
-속성 수정은 요소의 속성(`class, id, name`)이 동적으로 변경될 때 발생합니다.
-
+An attribute modification occurs when the attribute of an element (`class, id, name`) is changed dynamically:
 
     var element = document.getElementById('main-content');
     // class attribute of element has been modified.
     element.className = 'active';
     
 
-### 노드 삭제
+### Node Removal
 
-노드 삭제 수정은 문제의 노드가
-DOM에서 삭제되면 트리거됩니다.
-
+A node removal modification is triggered when the node in question is removed from the DOM:
 
     document.getElementById('main-content').remove();
     
 
-## DOM 중단점과 상호작용
+## Interact with DOM breakpoints
 
-Elements 및 Sources 패널에는 모두 DOM
-중단점을 관리할 수 있는 창이 포함되어 있습니다.
+The Elements and Sources panels both include a pane for managing your DOM breakpoints.
 
-각 중단점은 요소 식별자 및 중단점 유형과 함께 나열됩니다.
+Each breakpoint is listed with an element identifier and the breakpoint type.
 
-![DOM 중단점 창](imgs/dom-breakpoints-pane.png)
+![DOM breakpoints pane](imgs/dom-breakpoints-pane.png)
 
-다음 방법 중 하나를 사용하여 나열된 각 중단점과 상호작용합니다.
+Interact with each listed breakpoint in any of the following ways:
 
-* 요소 식별자 위로 **마우스를 가져가서** 페이지에서 요소의 해당 
-위치를 표시합니다(Elements 패널에서 노드 위로 마우스를 가져가는 것과 유사).
-* Elements 패널에서 요소를 **클릭**하여 선택합니다.
-* 확인란을 **전환**하여 중단점을 활성화 또는 비활성화합니다.
+* **Hover** over the element identifier to show the element's corresponding position on the page (similar to hovering over nodes in the Elements panel).
+* **Click** an element to select it in the Elements panel.
+* **Toggle** the checkbox to enable or disable the breakpoint.
 
-DOM 중단점을 트리거하면 해당 중단점이 DOM
-Breakpoints 창에 강조표시됩니다. **Call Stack** 창에 디버거 일시 중지의 **이유**가 표시됩니다.
+When you trigger a DOM breakpoint, the breakpoint is highlighted in the DOM Breakpoints pane. The **Call Stack** pane displays the **reason** for a debugger pause:
 
+![Breakpoint reason](imgs/breakpoint-reason.png)
 
-![중단점 이유](imgs/breakpoint-reason.png)
+## View element event listeners
 
-## 요소 이벤트 리스너 보기
+View JavaScript event listeners associated with a DOM node in the **Event Listeners** pane.
 
-DOM 노드와 연관된 자바스크립트 이벤트 리스너를 
-**Event Listeners** 창에서 볼 수 있습니다. 
+![event listeners pane](imgs/event-listeners-pane.png)
 
-![이벤트 리스너 창](imgs/event-listeners-pane.png)
+The top-level items in the Event Listeners pane show the event types that have registered listeners.
 
-Event Listeners 창에서 맨 윗 단계의 항목은 등록된 리스너가 있는
-이벤트 유형을 보여줍니다.
+Click the arrow next to the event type (for example `click`) to see a list of registered event handlers. Each handler is identified by a CSS selector-like element identifier, such as `document` or `button#call-to-action`. If more than one handler is registered for the same element, the element is listed repeatedly.
 
-이벤트 유형 옆에 있는 화살표를 클릭하면(예: `click`)
-등록된 이벤트 핸들러 목록을 볼 수 있습니다. 각 핸들러는 요소 식별자와 같은 CSS 
-선택기로 식별할 수 있습니다(`document` 또는 
-`button#call-to-action` 등). 같은 요소에 하나 이상의 핸들러가 등록된 경우,
-해당 요소가 목록에 반복적으로 나열됩니다.
-
-요소 식별자 옆의 확장 화살표를 클릭하면 이벤트 핸들러의 속성을 볼 수 있습니다. Event Listeners 창에는 각 리스너의 다음 속성이 나열됩니다.
+Click the expander arrow next to an element identifier to see the properties of the event handler. The Event Listeners pane lists the following properties for each listener:
 
 <table class="responsive">
   <thead>
     <tr>
-      <th colspan="2">이벤트 리스너 속성 및 설명</th>
+      <th colspan="2">Event Listener Properties &amp; Description</th>
     </tr>
   </thead>
   <tbody>
-  	<tr>
+    <tr>
       <td data-th="Value"><code>handler</code></td>
-      <td data-th="Description">콜백 함수를 포함합니다. 함수를 마우스 오른쪽 버튼으로 클릭하고 <strong>Show Function Definition</strong>을 선택하면 함수가 정의된 위치를 볼 수 있습니다(소스 코드가 제공되는 경우).</td>
+      <td data-th="Description">Contains a callback function. Right-click on the function and select <strong>Show Function Definition</strong> to view where the function is defined (if source code is available).</td>
     </tr>
     <tr>
       <td data-th="Value"><code>useCapture</code></td>
-      <td data-th="Description"><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> 플래그가  <code>addEventListener</code>에서 설정되어 있는지 여부를 나타내는 부울 값입니다.</td>
+      <td data-th="Description">A boolean value stating whether the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget.addEventListener">useCapture</a> flag on <code>addEventListener</code> was set.</td>
     </tr>
   </tbody>
 </table>
 
-참고: 대다수의 Chrome 확장 프로그램은 자체 이벤트 리스너를 DOM에 추가합니다. 본인의 코드로 설정되지 않은 이벤트 리스너가 많이 보이는 경우, [시크릿 창](https://support.google.com/chrome/answer/95464)에서 페이지를 다시 열 수 있습니다. 시크릿 창은 확장 프로그램이 기본적으로 실행되지 않도록 차단합니다.
+Note: Many Chrome extensions add their own event listeners onto the DOM. If you see a number of event listeners that aren't set by your code, you may want to reopen your page in an [Incognito window](https://support.google.com/chrome/answer/95464). Incognito windows prevent extensions from running by default.
 
-### 스크린샷의 상위 항목 이벤트 리스너
+### View ancestor event listeners
 
 {% comment %}
 
@@ -271,67 +232,67 @@ code for screenshot
 
 <!doctype html>
 <html>
-<body onload="console.log('onload');">
-  <div onfocus="console.log('focus');">
+<body onload="console.log('onload');"></p>
+
+<div onfocus="console.log('focus');">
     <button id="button" onclick="console.log('onclick');">click me</button>
   </div>
-</body>
+
+<p></body>
 </html>
 
 {% endcomment %}
 
-**Ancestors** 확인란이 활성화된 경우, 현재 선택된 노드의 상위 요소에 대한
-이벤트 리스너가 현재 선택된 노드의
-이벤트 리스너와 함께 추가적으로 표시됩니다.
+When the **Ancestors** checkbox is enabled, the event listeners for the ancestors of the currently selected node are displayed, in addition to the currently selected node's event listeners.
 
-![상위 요소 활성화됨](imgs/ancestors-enabled.png)
+![ancestors enabled](imgs/ancestors-enabled.png)
 
-확인란이 비활성화된 경우, 현재 선택된 노드의
-이벤트 리스너만 표시됩니다.
+When the checkbox is disabled, only the event listeners for the currently selected node are displayed.
 
-![상위 요소 비활성화됨](imgs/ancestors-disabled.png)
+![ancestors disabled](imgs/ancestors-disabled.png)
 
-### 프레임워크 리스너 보기
+### View framework listeners
 
 {% comment %}
 
 code for screenshot
 
-<!doctype html>
-<html>
+<!doctype html> 
 <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
-<body>
-  <button id="button">click me, please</button>
-  <script>
+<button id="button">click me, please</button></p> 
+
+<script>
     $('#button').click(function() {
       $('#button').text('hehe, that tickled, thanks');
     });
   </script>
-</body>
-</html>
+
+ 
+
+</body> </html>
 
 {% endcomment %}
 
-일부 자바스크립트 프레임워크와 라이브러리는 네이티브 DOM 이벤트를 자체 
-사용자설정 이벤트 API에 래핑합니다. 이전에는 이 때문에 DevTools로 이벤트 리스너를 검사하기가 어려웠습니다.
-왜냐하면 함수 정의가 단지 프레임워크 또는 라이브러리 코드를 다시 참조했기
-때문입니다. **Framework listeners** 기능이 이 문제를
-해결해줍니다.
+Some JavaScript frameworks and libraries wrap native DOM events into their custom event APIs. In the past this made it hard to inspect the event listeners with DevTools, because the function definition would just reference back to the framework or library code. The **Framework listeners** feature solves this problem.
 
-**Framework listeners** 확인란이 활성화된 경우, DevTools가 자동으로
-이벤트 코드의 프레임워크 또는 라이브러리 래핑 부분을 분석한 다음,
-개발자에게 자체 코드로 이벤트를 실제로 바인딩할 지점을 알려줍니다.
+When the **Framework listeners** checkbox is enabled, DevTools automatically resolves the framework or library wrapping portion of the event code, and then tells you where you actually bound the event in your own code.
 
-![프레임워크 리스너 활성화됨](imgs/framework-listeners-enabled.png)
+![framework listeners enabled](imgs/framework-listeners-enabled.png)
 
-**Framework listeners** 확인란이 비활성화된 경우, 이벤트 리스너 코드는 아마도
-프레임워크 또는 라이브러리 코드 중 어딘가에서 분석될 것입니다. 
+When the **Framework listeners** checkbox is disabled, the event listener code will probably resolve somewhere in the framework or library code.
 
-![프레임워크 리스너 비활성화됨](imgs/framework-listeners-disabled.png)
+![framework listeners disabled](imgs/framework-listeners-disabled.png)
 
+## Show HTML comments {: #show-html-comments }
 
+To show or hide HTML comments in the Elements panel:
 
-[inspect]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#inspect
+1. Open [Settings](/web/tools/chrome-devtools/ui#settings).
+2. Click the **Preferences** tab.
+3. Under the **Elements** section, check the **Show HTML comments** checkbox.
 
+To show or hide HTML comments in the **Elements** panel, [open **Settings**](#settings), go to the **Preferences** panel, find the **Elements** section, and then toggle the **Show HTML comments** checkbox.
 
-{# wf_devsite_translation #}
+## Feedback {: #feedback }
+
+{% include "web/_shared/helpful.html" %}

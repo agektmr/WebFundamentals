@@ -1,179 +1,129 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:使用 Application 面板檢查、修改和調試網絡應用清單、服務工作線程和服務工作線程緩存。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Use the Application panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
-{# wf_updated_on: 2017-10-06 #}
-{# wf_published_on:2016-07-25 #}
+{# wf_updated_on: 2018-11-20 #} {# wf_published_on: 2016-07-25 #} {# wf_blink_components: Platform>DevTools #}
 
-# 調試 Progressive Web App {: .page-title }
+# Debug Progressive Web Apps {: .page-title }
 
 {% include "web/_shared/contributors/kaycebasques.html" %}
 
-使用 <strong>Application</strong> 面板檢查、修改和調試網絡應用清單、服務工作線程和服務工作線程緩存。
+Use the **Application** panel to inspect, modify, and debug web app manifests, service workers, and service worker caches.
 
+Related Guides:
 
-相關指南： 
+* [Progressive Web Apps](/web/progressive-web-apps)
 
-* [Progressive Web App](/web/progressive-web-apps)
-
-本指南僅討論 **Application** 面板的 Progressive Web App 功能。
-如果您希望獲得其他窗格的幫助，請參閱本指南的最後一部分，即[其他 Application 面板指南](#other)。
-
-
-
+This guide only discusses the Progressive Web App features of the **Application** panel. If you're looking for help on the other panes, check out the last section of this guide, [Other Application panel guides](#other).
 
 ### TL;DR {: .hide-from-toc }
-- 使用 <strong>App Manifest</strong> 窗格檢查您的網絡應用清單和觸發 Add to Homescreen 事件。
-- 使用 <strong>Service Worker</strong> 窗格執行與服務工作線程相關的全部任務，例如註銷或更新服務、模擬推送事件、切換爲離線狀態，或者停止服務工作線程。
-- 從 <strong>Cache Storage</strong> 窗格查看您的服務工作線程緩存。
-- 從 <strong>Clear Storage</strong> 窗格中點擊一次按鈕，註銷服務工作線程並清除所有存儲與緩存。
 
+* Use the **Manifest** pane to inspect your web app manifest and trigger Add to Homescreen events.
+* Use the **Service Workers** pane for a whole range of service-worker-related tasks, like unregistering or updating a service, emulating push events, going offline, or stopping a service worker.
+* View your service worker cache from the **Cache Storage** pane.
+* Unregister a service worker and clear all storage and caches with a single button click from the **Clear storage** pane.
 
-## 網絡應用清單 {: #manifest }
+## Web app manifest {:#manifest}
 
-如果您希望用戶能夠將您的應用添加到他們移動設備的主屏幕上，那麼您需要一個網絡應用清單。
-清單定義應用在主屏幕上的外觀、從主屏幕啓動時將用戶定向到何處，以及應用在啓動時的外觀。
+If you want your users to be able to add your app to their mobile homescreens, you need a web app manifest. The manifest defines how the app appears on the homescreen, where to direct the user when launching from homescreen, and what the app looks like on launch.
 
+Related Guides:
 
+* [Improve user experiences with a Web App Manifest](/web/fundamentals/web-app-manifest)
+* [Using App Install Banners](/web/fundamentals/app-install-banners)
 
-相關指南：
+Once you've got your manifest set up, you can use the **Manifest** pane of the **Application** panel to inspect it.
 
-* [通過網絡應用清單改進用戶體驗](/web/fundamentals/web-app-manifest)
-* [使用應用安裝橫幅](/web/fundamentals/app-install-banners)
+![manifest pane](images/manifest.png)
 
+* To look at the manifest source, click the link below **App Manifest** label (`https://airhorner.com/manifest.json` in the screenshot above).
+* Press the **Add to homescreen** button to simulate an Add to Homescreen event. Check out the next section for more information.
+* The **Identity** and **Presentation** sections just display fields from the manifest source in a more user-friendly display.
+* The **Icons** section displays every icon that you've specified.
 
-設置好清單後，您可以使用 **Application** 面板的 **Manifest** 窗格對其進行檢查。
+### Simulate Add to Homescreen events {:#add-to-homescreen}
 
+A web app can only be added to a homescreen when the site is visited at least twice, with at least five minutes between visits. While developing or debugging your Add to Homescreen workflow, this criteria can be inconvenient. The **Add to homescreen** button on the **App Manifest** pane lets you simulate Add to Homescreen events whenever you want.
 
-![Manifest 窗格][manifest]
+You can test out this feature with the [Google I/O 2016 progressive web app](https://events.google.com/io2016/){: .external }, which has proper support for Add to Homescreen. Clicking on **Add to Homescreen** while the app is open prompts Chrome to display the "add this site to your shelf" banner, which is the desktop equivalent of the "add to homescreen" banner for mobile devices.
 
-* 要查看清單來源，請點擊 **App Manifest** 標籤下方的鏈接（上方屏幕截圖中的 `https://airhorner.com/manifest.json`）。
-* 按 **Add to homescreen** 按鈕模擬 Add to Homescreen 事件。
-如需瞭解詳細信息，請參閱下一部分。
-* **Identity** 和 **Presentation** 部分以一種對用戶更加友好的方式顯示了清單來源中的字段。
-* **Icons** 部分顯示了您已指定的每一個圖標。
+![add to desktop shelf](images/io.png)
 
-[manifest]: images/manifest.png
+**Tip**: Keep the **Console** drawer open while simulating Add to Homescreen events. The Console tells you if your manifest has any issues and logs other information about the Add to Homescreen lifecycle.
 
-### 模擬 Add to Homescreen 事件 {: #add-to-homescreen }
+The **Add to Homescreen** feature cannot yet simulate the workflow for mobile devices. Notice how the "add to shelf" prompt was triggered in the screenshot above, even though DevTools is in Device Mode. However, if you can successfully add your app to your desktop shelf, then it'll work for mobile, too.
 
-只有至少已經訪問網站兩次、訪問至少間隔五分鐘時纔可以將網絡應用添加到主屏幕上。
-開發或調試您的 Add to Homescreen 工作流時，此條件非常不便。利用 **App Manifest** 窗格上的 **Add to homescreen** 按鈕，您可以隨時模擬 Add to Homescreen 事件。
+If you want to test out the genuine mobile experience, you can connect a real mobile device to DevTools via [remote debugging](/web/tools/chrome-devtools/debug/remote-debugging/remote-debugging), and then click the **Add to Homescreen** button (on DevTools) to trigger the "add to homescreen" prompt on the connected mobile device.
 
+## Service workers {:#service-workers}
 
+Service workers are a fundamental technology in the future web platform. They are scripts that the browser runs in the background, separate from a web page. These scripts enable you to access features that don't need a web page or user interaction, like push notifications, background sync, and offline experiences.
 
+Related Guides:
 
-您可以使用 [Google I/O 2016 Progressive Web App](https://events.google.com/io2016/){: .external } 測試此功能，該應用可以爲 Add to Homescreen 提供相應支持。在應用打開時點擊 **Add to Homescreen** 會提示 Chrome 顯示“add this site to your shelf”橫幅（桌面設備），而在移動設備上則會顯示“add to homescreen”橫幅。
+* [Intro to Service Workers](/web/fundamentals/primers/service-worker)
+* [Push Notifications: Timely, Relevant, and Precise](/web/fundamentals/push-notifications)
 
+The **Service Workers** pane in the **Application** panel is the main place in DevTools to inspect and debug service workers.
 
+![service worker pane](images/sw.png)
 
-![添加到桌面設備文件架][shelf]
+* If a service worker is installed to the currently open page, then you'll see it listed on this pane. For example, in the screenshot above there's a service worker installed for the scope of `https://events.google.com/io2016/`.
+* The **Offline** checkbox puts DevTools into offline mode. This is equivalent to the offline mode available from the **Network** panel, or the `Go offline` option in the [Command Menu](/web/tools/chrome-devtools/ui#command-menu).
+* The **Update on reload** checkbox forces the service worker to update on every page load.
+* The **Bypass for network** checkbox bypasses the service worker and forces the browser to go to the network for requested resources.
+* The **Update** button performs a one-time update of the specified service worker.
+* The **Push** button emulates a push notification without a payload (also known as a [tickle](/web/fundamentals/push-notifications/how-push-works)).
+* The **Sync** button emulates a background sync event.
+* The **Unregister** button unregisters the specified service worker. Check out [Clear storage](#clear-storage) for a way to unregister a service worker and wipe storage and caches with a single button click.
+* The **Source** line tells you when the currently running service worker was installed. The link is the name of the service worker's source file. Clicking on the link sends you to the service worker's source.
+* The **Status** line tells you the status of the service worker. The number on this line (`#1` in the screenshot above) indicates how many times the service worker has been updated. If you enable the **update on reload** checkbox you'll notice that the number increments on every page load. Next to the status you'll see a **start** button (if the service worker is stopped) or a **stop** button (if the service worker is running). Service workers are designed to be stopped and started by the browser at any time. Explicitly stopping your service worker using the **stop** button can simulate that. Stopping your service worker is a great way to test how your code behaves when the service worker starts back up again. It frequently reveals bugs due to faulty assumptions about persistent global state.
+* The **Clients** line tells you the origin that the service worker is scoped to. The **focus** button is mostly useful when you've enabled the **show all** checkbox. When that checkbox is enabled, all registered service workers are listed. If you click on the **focus** button next to a service worker that is running in a different tab, Chrome focuses on that tab.
 
-**提示**：在模擬 Add to Homescreen 事件時請保持 **Console** 抽屜式導航欄處於打開狀態。
-Console 會告訴您清單是否存在任何問題，並記錄與 Add to Homescreen 生命週期有關的其他信息。
+If the service worker causes any errors, a new label called **Errors** shows up.
 
+![service worker with errors](images/sw-error.png)
 
-**Add to Homescreen** 功能還不能模擬移動設備的工作流。
-注意“add to shelf”提示在上方屏幕截圖中的觸發方式（即使 DevTools 處於 Device Mode）。
-不過，如果您可以將應用成功添加到桌面設備文件架，那麼在移動設備上也可以獲得成功。
+## Service worker caches {:#caches}
 
+The **Cache Storage** pane provides a read-only list of resources that have been cached using the (service worker) [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
 
+![service worker cache pane](images/sw-cache.png)
 
-如果您希望測試真實的移動體驗，則可以通過[遠程調試][remote debugging]將一臺真實的移動設備連接到 DevTools，然後點擊 DevTools 上的 **Add to Homescreen** 按鈕，在連接的移動設備上觸發“add to homescreen”提示。
+Note that the first time you open a cache and add a resource to it, DevTools might not detect the change. Reload the page and you should see the cache.
 
+If you've got two or more caches open, you'll see them listed below the **Cache Storage** dropdown.
 
+![multiple service worker caches](images/multiple-caches.png)
 
-[shelf]: images/io.png
-[remote debugging]: /web/tools/chrome-devtools/debug/remote-debugging/remote-debugging
+## Quota usage {:#opaque-responses}
 
-## 服務工作線程 {: #service-workers }
+Some responses within the Cache Storage pane may be flagged as being "[opaque](/web/fundamentals/glossary#opaque-response)". This refers to a response retrieved from a different origin, like from a [CDN](/web/fundamentals/glossary#CDN) or remote API, when [CORS](https://fetch.spec.whatwg.org/#http-cors-protocol) is not enabled.
 
-服務工作線程是未來網絡平臺中的一種基礎技術。它們是瀏覽器獨立於網頁在後臺運行的腳本。這些腳本使您可以訪問不需要網頁或用戶交互的功能，例如推送通知、後臺同步和離線體驗。
+In order to avoid leakage of cross-domain information, there's significant padding added to the size of an opaque response used for calculating storage quota limits (i.e. whether a `QuotaExceeded` exception is thrown) and reported by the [`navigator.storage` API](/web/updates/2017/08/estimating-available-storage-space).
 
+The details of this padding vary from browser to browser, but for Google Chrome, this means that the *minimum* size that any single cached opaque response contributes to the overall storage usage is [approximately 7 megabytes](https://bugs.chromium.org/p/chromium/issues/detail?id=796060#c17). You should keep this in mind when determining how many opaque responses you want to cache, since you could easily exceeded storage quota limitations much sooner than you'd otherwise expect based on the actual size of the opaque resources.
 
+Related Guides:
 
+* [Stack Overflow: What limitations apply to opaque responses?](https://stackoverflow.com/q/39109789/385997)
+* [Workbox: Understanding Storage Quota](/web/tools/workbox/guides/storage-quota#beware_of_opaque_responses)
 
-相關指南：
+## Clear storage {:#clear-storage}
 
-* [服務工作線程簡介](/web/fundamentals/primers/service-worker)
-* [推送通知：及時、相關且精確](/web/fundamentals/push-notifications)
+The **Clear Storage** pane is a very useful feature when developing progressive web apps. This pane lets you unregister service workers and clear all caches and storage with a single button click. Check out the section below to learn more.
 
+Related Guides:
 
-**Application** 面板中的 **Service Workers** 窗格是在 DevTools 中檢查和調試服務工作線程的主要地方。
+* [Clear Storage](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
 
+## Other Application panel guides {:#other}
 
-![Service Worker 窗格][sw]
+Check out the guides below for more help on the other panes of the **Application** panel.
 
-* 如果服務工作線程已安裝到當前打開的頁面上，您會看到它將列示在此窗格中。
-例如，在上方的屏幕截圖中，`https://events.google.com/io2016/` 的作用域內安裝了一個服務工作線程。
-* **Offline** 複選框可以將 DevTools 切換至離線模式。它等同於 **Network** 窗格中的離線模式，或者 [Command Menu][cm] 中的 `Go offline` 選項。
-* **Update on reload** 複選框可以強制服務工作線程在每次頁面加載時更新。
-* **Bypass for network** 複選框可以繞過服務工作線程並強制瀏覽器轉至網絡尋找請求的資源。
-* **Update** 按鈕可以對指定的服務工作線程執行一次性更新。
-* **Push** 按鈕可以在沒有負載的情況下模擬推送通知（也稱爲[操作消息][tickle]）。
-* **Sync** 按鈕可以模擬後臺同步事件。
-* **Unregister** 按鈕可以註銷指定的服務工作線程。參閱[清除存儲](#clear-storage)，瞭解點擊一次按鈕即可註銷服務工作線程並擦除存儲和緩存的方式。
-* **Source** 行可以告訴您當前正在運行的服務工作線程的安裝時間。
-鏈接是服務工作線程源文件的名稱。點擊鏈接會將您定向至服務工作線程來源。
-* **Status** 行可以告訴您服務工作線程的狀態。此行上的數字（上方屏幕截圖中的 `#1`）指示服務工作線程已被更新的次數。如果啓用 **update on reload** 複選框，您會注意到每次頁面加載時此數字都會增大。在狀態旁邊，您將看到 **start** 按鈕（如果服務工作線程已停止）或 **stop** 按鈕（如果服務工作線程正在運行）。服務工作線程設計爲可由瀏覽器隨時停止和啓動。
-使用 **stop** 按鈕明確停止服務工作線程可以模擬這一點。停止服務工作線程是測試服務工作線程再次重新啓動時的代碼行爲方式的絕佳方法。它通常可以揭示由於對持續全局狀態的不完善假設而引發的錯誤。
-* **Clients** 行可以告訴您服務工作線程作用域的原點。
-如果您已啓用 **show all** 複選框，**focus** 按鈕將非常實用。
-在此複選框啓用時，系統會列出所有註冊的服務工作線程。
-如果您點擊正在不同標籤中運行的服務工作線程旁的 **focus** 按鈕，Chrome 會聚焦到該標籤。
+Related Guides:
 
+* [Inspect page resources](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
+* [Inspect and manage local storage and caches](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
 
-如果服務工作線程導致任何錯誤，將顯示一個名爲 **Errors** 的新標籤。
+## Feedback {: #feedback }
 
-
-![包含錯誤的服務工作線程][errors]
-
-[sw]: images/sw.png
-[cm]: /web/tools/chrome-devtools/settings#command-menu
-[tickle]: /web/fundamentals/push-notifications/how-push-works
-[errors]: images/sw-error.png
-
-## 服務工作線程緩存 { :#caches }
-
-**Cache Storage** 窗格提供了一個已使用（服務工作線程）[Cache API][sw-cache] 緩存的只讀資源列表。
-
-
-![Service Worker Cache 窗格][sw-cache-pane]
-
-請注意，第一次打開緩存並向其添加資源時，DevTools 可能檢測不到更改。
-重新加載頁面後，您應當可以看到緩存。
-
-如果您打開了兩個或多個緩存，您將看到它們列在 **Cache Storage** 下拉菜單下方。
-
-
-![多個服務工作線程緩存][multiple-caches]
-
-[sw-cache]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-[sw-cache-pane]: images/sw-cache.png
-[multiple-caches]: images/multiple-caches.png
-
-## 清除存儲 {: #clear-storage }
-
-開發 Progressive Web App 時，**Clear Storage** 窗格是一個非常實用的功能。
-利用此窗格，只需點擊一次按鈕即可註銷服務工作線程並清除所有緩存與存儲。
-參閱下面的部分了解詳情。
-
-
-相關指南：
-
-* [清除存儲](/web/tools/chrome-devtools/iterate/manage-data/local-storage#clear-storage)
-
-
-## 其他 Application 面板指南 {: #other }
-
-參閱下面的部分，獲取有關 **Application** 面板其他窗格的更多幫助。
-
-
-相關指南：
-
-* [檢查頁面資源](/web/tools/chrome-devtools/iterate/manage-data/page-resources)
-* [檢查和管理本地存儲與緩存](/web/tools/chrome-devtools/iterate/manage-data/local-storage)
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,40 +1,23 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Lighthouse の監査項目「ページの読み込み時に自動的に通知パーミッションをリクエストしない」のリファレンス ドキュメント。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Avoids Requesting The Notification Permission On Page Load" Lighthouse audit.
 
-{# wf_updated_on:2016-12-05 #}
-{# wf_published_on:2016-12-05 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-12-05 #} {# wf_blink_components: N/A #}
 
-#  ページの読み込み時に自動的に通知パーミッションをリクエストしない {: .page-title }
+# Avoids Requesting The Notification Permission On Page Load {: .page-title }
 
-##  監査が重要である理由 {: #why }
+## Overview {: #overview }
 
-[適切に通知する方法][good]で説明しているとおり、適切な通知とはタイムリーで、関連性があり、正確な通知です。
-ページの読み込み時にプッシュ通知のパーミッションを要求している場合、その通知はユーザーにとって関連性がなく、ユーザのニーズに合うものはない可能性があることに注意してください。
-ユーザー エクスペリエンスを改善するには、まずはユーザーに対して特定のタイプの通知を表示することを提案し、ユーザーがオプトインした後でパーミッションをリクエストするようにします。
+As explained in [What Makes a Good Notification](/web/fundamentals/push-notifications/), good notifications are timely, relevant, and precise. If your page asks for permission to send notifications on page load, those notifications may not be relevant to your users or precise to their needs. A better user experience is to offer to send users a specific type of notification, and to present the permissions request after they opt-in.
 
+## Recommendations {: #recommendations }
 
+Under **URLs**, Lighthouse reports the line and column numbers where your code is requesting permission to send notifications. Remove these calls, and tie the requests to user gestures instead.
 
-[good]: /web/fundamentals/push-notifications/
+## More information {: #more-info }
 
-##  監査に合格する方法 {: #how }
+If notification permissions was already granted or denied to a page before Lighthouse's audit, Lighthouse cannot determine if the page requests notification permissions on page load. Reset the permissions and run Lighthouse again. See [Change website permissions](https://support.google.com/chrome/answer/6148059) for more help.
 
-Lighthouse のレポートでは、通知送信のパーミッションをリクエストしているコードの行と列の番号が **URLs** の下に表示されます。
-これらの呼び出しを削除して、ユーザー操作への応答としてリクエストを行うようにします。
+Lighthouse collects the JavaScript that was executed on page load. If this code contains calls to `notification.requestPermission()`, and notification permission was not already granted, then notification permission was requested.
 
+## Feedback {: #feedback }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
-
-Lighthouse
-で監査をする前に、すでに通知パーミッションが付与または拒否されている場合は、ページの読み込み時にプッシュ通知のパーミッションがリクエストされているかどうかを判別できません。
-よって、パーミッションをリセットして、Lighthouse を再実行する必要があります。
-詳細については、[ウェブサイトの権限を変更する][help]をご覧ください。
-
-Lighthouse では、ページの読み込み時に実行された JavaScript の情報が収集されます。そのコードの中に `notification.requestPermission()`
-への呼び出しが含まれており、通知パーミッションがまだ付与されていなかった場合は、通知パーミッションがリクエストされています。
-
-
-[help]: https://support.google.com/chrome/answer/6148059
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,133 +1,101 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Los sitios web no solo reciben visitas de humanos, sino también de rastreadores web de motores de búsqueda. Obtén información sobre cómo mejorar la precisión de las búsquedas y la clasificación de tu sitio web.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
-{# wf_updated_on: 2017-07-12 #}
-{# wf_published_on: 2014-08-30 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-30 #}
 
-# Optimización de las búsquedas {: .page-title }
+# Search Optimization {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-Los sitios web no solo reciben visitas de humanos, sino también de rastreadores web de motores de búsqueda. Obtén información sobre cómo mejorar la precisión de las búsquedas y la clasificación de tu sitio web.
+Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
 ### TL;DR {: .hide-from-toc }
-- Determina la estructura de la URL de tu página web.
-- Se recomienda especialmente usar un diseño adaptable.
-- Usa <code>rel='canonical'</code> + <code>rel='alternate'</code> para separar sitios de escritorio y móviles.
-- Usa el encabezado <code>Vary HTTP</code> para que una misma URL muestre dinámicamente HTML para escritorio o móviles en forma separada.
-- Usa <code>noindex</code> para páginas en las que quieres limitar el acceso a las personas que conozcan la URL.
-- Usa un mecanismo de autenticación aplicable para páginas que quieres mantener en privado.
 
-## Proporciona la estructura de tu sitio a los motores de búsqueda
+* Determine the URL structure of your web page.
+* Responsive design is most recommended.
+* Use `rel='canonical'` + `rel='alternate'` for separate desktop/mobile sites.
+* Use `Vary HTTP` header for a single URL dynamically serving separate desktop/mobile HTMLs.
+* Use `noindex` for pages you want to limit access to those who know the URL.
+* Use relevant authentication mechanism for pages you want to keep private.
 
-Cómo aparece tu sitio web en los resultados de búsqueda es importante para un diseño de sitio para múltiples dispositivos. Esta guía te ayudará a optimizar tu sitio web para motores de búsqueda en base a su estructura URL.
+## Give search engines your site structure
 
-¿Planeas crear una página web receptiva? ¿Hay una versión específica para móviles
-con una URL separada? ¿Estás enviando la versión para escritorio y la
-versión para móviles desde la misma URL? Independientemente de eso, siempre puedes mejorar la
-optimización de tu sitio web para los motores de búsqueda.
+How your website appears in search results is important to multi-device site design. This guide helps you optimize your website for search engines based on its URL structure.
 
-### Dale a tu sitio una estructura URL
+Are you planning to build a responsive web page? Is there a mobile-specific version with a separate URL? Are you serving both the desktop version and the mobile version from the same URL? Regardless, you can always do a better job of optimizing your website for search engines.
 
-Existen varias maneras de enviar contenido a diferentes dispositivos. A continuación mencionamos los tres
-métodos más comunes:
+### Give your site a URL structure
 
-**Diseño web adaptable:** envía el mismo HTML de una URL y utiliza consultas de medios
-CSS para determinar cómo se entrega el contenido del lado del cliente.
-Por ejemplo, Escritorio y Móviles: http://www.example.com/
+There are several ways to serve content to different devices. The three most common methods are:
 
-**Sitio móvil separado:** redirige a los usuarios a diferentes URL, según el
-usuario-agente. Por ejemplo, Escritorio: http://www.example.com/
-Móviles: http://m.example.com/
+**Responsive web design:** serves the same HTML from one URL and uses CSS media queries to determine how the content is rendered on the client side. For example, Desktop and Mobile: http://www.example.com/
 
-**Envío dinámico:** envía diferentes HTML desde una URL, según el usuario-
-agente. Por ejemplo, Escritorio y Móviles: http://www.example.com/
+**Separate mobile site:** redirects users to a different URL depending on the user-agent. For example, Desktop: http://www.example.com/ Mobile: http://m.example.com/
 
-El mejor enfoque es utilizar un **diseño web adaptable**, aunque muchos sitios web usan otros métodos.
- 
-Determina qué estructura URL se adapta mejor a tu página web. Luego, intenta las respectivas mejores
-prácticas para optimizarla para los motores de búsqueda.
+**Dynamic serving:** serves different HTML from one URL depending on the user- agent. For example, Desktop and Mobile: http://www.example.com/
 
-### Recomendamos un diseño web adaptable
+The best approach is to use **responsive web design**, though many websites use other methods.
 
-Beneficios de un sitio web adaptable:
+Determine which URL structure suits your web page. Then try the respective best practices to optimize it for search engines.
 
-<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" >
+### We recommend responsive web design
 
-* Más simple para que los usuarios lo compartan.
-* Carga de página más rápida sin redireccionamientos.
-* URL única para los resultados de búsqueda.
+The benefits of making your website responsive are:
+
+<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" />
+
+* Friendlier for user sharing.
+* Quicker page load without redirects.
+* Single URL for search results.
 
 <div style="clear:both;"></div>
-  
-Aprende a compilar sitios web con diseño web adaptable en [Aspectos básicos del diseño web adaptable](/web/fundamentals/design-and-ux/responsive/).
 
-### Usa `link[rel=canonical]` y `link[rel=alternate]` al enviar URL separadas
+Learn to build websites with responsive web design at [Responsive Web Design Basics](/web/fundamentals/design-and-ux/responsive/).
 
-Enviar contenidos similares en una versión de escritorio y una versión móvil en diferentes
-URL puede crear confusión para los usuarios y también para los motores de búsqueda, ya que no es
-obvio para los visitantes que intentan ser idénticos. Debes indicar lo siguiente:
+### Use `link[rel=canonical]` and `link[rel=alternate]` when serving separate URLs
 
-* Que el contenido de las dos URL es idéntico.
-* Cuál es la versión móvil.
-* Cuál es la versión de escritorio (canónica).
+Serving similar contents on a desktop version and a mobile version at different URLs may cause confusion for both users and search engines because it's not obvious to viewers that they are intended to be identical. You should indicate:
 
-Esta información ayuda a los motores de búsqueda a indexar mejor el contenido y asegura que
-los usuarios encuentren lo que están buscando en un formato correcto para su dispositivo.
+* That the content of the two URLs are identical.
+* Which is the mobile version.
+* Which is the desktop (canonical) version.
 
-#### Usa una versión alternativa para escritorio
+This information helps search engines better index content and ensures that users find what they're looking for in a format that works for their device.
 
-Al mostrar la versión de escritorio, indica que hay una versión móvil en
-otra URL; para ello, agrega una etiqueta `link` con un atributo `rel="alternate" que apunte
-a la versión móvil en el atributo `href`.
+#### Use alternate for desktop
 
-[http://www.example.com/](http://www.example.com/){: .external } HTML
+When serving the desktop version, indicate that there's a mobile version on another URL by adding a `link` tag with a `rel="alternate" attribute that points
+to the mobile version in the`href` attribute.
 
+<http://www.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="alternate" media="only screen and (max-width: 640px)" href="http://m.example.com/">
     
 
-#### Usa la versión canónica para móviles
+#### Use canonical for mobile
 
-Al mostrar la versión móvil, indica que hay una versión para escritorio (canónica)
-en otra URL; para ello, agrega una etiqueta `link` con un atributo `rel="canonical"`
-que apunte a la versión de escritorio en el atributo `href`. Ayuda a los motores de búsqueda a
-comprender que la versión móvil es específicamente para pantallas pequeñas; para ello, agrega un atributo `media` con un valor de `"only screen and (max-width: 640px)"`.
+When serving the mobile version, indicate that there's a desktop (canonical) version on another URL by adding a `link` tag with a `rel="canonical"` attribute that points to the desktop version in the `href` attribute. Help search engines understand that the mobile version is explicitly for small screens by adding a `media` attribute with a value of `"only screen and (max-width: 640px)"`.
 
-[http://m.example.com/](http://m.example.com/){: .external } HTML
-
+<http://m.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="canonical" href="http://www.example.com/">
     
-  
-<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" >
 
-### Usa el encabezado para variar el HTTP
+<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" />
 
-Enviar diferentes HTML según el tipo de dispositivo reduce los redireccionamientos innecesarios,
-muestra HTML optimizado y ofrece una única URL para los motores de búsqueda. También tiene
-varias desventajas:
+### Use the Vary HTTP header
 
-* Puede haber proxies intermedios entre los navegadores de un usuario y el servidor.
-A menos que el proxy sepa que el contenido varía según el usuario-agente, es posible que muestre
-resultados inesperados.
-* Puede que los contenidos cambiantes según los riesgos de usuario-agente 
-se consideren [ocultamiento](https://support.google.com/webmasters/answer/66355), que es una
-violación de las Pautas para webmasters de Google.
+Serving different HTML based on device type reduces unnecessary redirects, serves optimized HTML, and provides single URL for search engines. It also has several disadvantages:
 
-Al permitir que los motores de búsqueda sepan que el contenido varía según el usuario-agente,
-pueden optimizar los resultados de la búsqueda para el usuario-agente que está enviando las consultas.
+* There may be intermediate proxies between a user's browsers and the server. Unless the proxy knows that the content varies depending on user agent, it may serve unexpected results.
+* Changing contents depending on user agent risks being considered "[cloaking](https://support.google.com/webmasters/answer/66355)", which is a violation of Google’s Webmaster Guidelines.
 
-Para indicar que le URL envíe diferente HTML según el usuario-agente, suministra un b
-`Vary: User-Agent` en el encabezado HTTP. Esto permite indexar las búsquedas para tratar las versiones
-de escritorio y móvil en forma separada, y que los proxies intermedios almacenen en caché esos
-contenidos correctamente.
+By letting search engines know that the content varies depending on user agent, they can optimize search results for the user agent that is sending queries.
 
-[http://www.example.com/](http://www.example.com/){: .external } Encabezado HTTP
+To indicate that the URL serves different HTML depending on user agent, provide a b `Vary: User-Agent` in the HTTP header. This allows search indexing to treat desktop and mobile versions separately, and intermediate proxies to cache those contents gracefully.
 
+<http://www.example.com/>{: .external } HTTP Header
 
     HTTP/1.1 200 OK
     Content-Type: text/html
@@ -135,54 +103,37 @@ contenidos correctamente.
     Content-Length: 5710
     
 
-<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" >
+<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" />
 
-Para obtener más información sobre cómo crear una estructura URL en escritorios y móviles, consulta [creación de sitios optimizados para smartphones](/webmasters/smartphone-sites/).
+To learn more about building URL structure across desktop and mobile, read [about building smartphone-optimized websites](/webmasters/smartphone-sites/).
 
+## Control crawling and indexing from search engines
 
-## Controla el rastreo y la indexación desde los motores de búsqueda
+Being listed properly on search engines is critical to delivering your website to the world, but poor configuration can cause unexpected content to be included in the results. This section helps you avoid such problems by explaining how crawlers work and how they index websites.
 
-Figurar en las listas de los motores de búsqueda correctamente es crítico para enviar tu sitio web
-al mundo, pero una mala configuración puede causar que se incluya contenido inesperado
-en los resultados. Esta sección te ayudará a evitar este tipo de problemas, ya que explica cómo
-funcionan los rastreadores y cómo indexan sitios web.
+Sharing information has no better place than the web. When you publish a document, it's immediately available to the entire world. The page will be visible to anyone who knows the URL. That's where search engines come in. They need to be able to find your website.
 
-Compartir información no tiene mejor lugar que la web. Cuando publicas un
-documento, este está inmediatamente disponible para el mundo entero. La página será
-visible para cualquiera que conozca la URL. Allí es donde participan los motores de búsqueda. Necesitan poder encontrar tu sitio web.
+However, there are some cases where you don't want people to find those documents even though you want to put them on the web. For example, a blog's admin page is something only certain people should have access to. There's no benefit to letting people find those pages through search engines.
 
-Sin embargo, hay algunos casos en los que no querrás que la gente encuentre
-esos documentos, aunque los hayas puesto en la Web. Por ejemplo, la página de administración de un blog
-es algo a lo que solo ciertas personas tienen acceso. No hay
-ningún beneficio en dejar que la gente encuentre esas páginas a través de los motores de búsqueda.
+This section also explains how to restrict certain pages from appearing in search results.
 
-Esta sección también explica cómo restringir ciertas páginas para que no aparezcan en los resultados de búsqueda.
+### The difference between "crawl" and "index"
 
+Before you learn how to control search results, you need to understand how search engines interact with your web page. From your site's point of view, there are roughly two things search engines do to your site: crawling and indexing.
 
-### La diferencia entre "rastrear" e "indexar"
+**Crawling** is when a search engine bot fetches your web page to analyze its content. The content is stored in the search engine's database and can be used to populate search result details, rank pages, and discover new pages by following links.
 
-Antes de aprender a controlas los resultados de búsqueda, debes comprender cómo interactúan los motores de búsqueda con tu página web. Desde el punto de vista de tu sitio, en general hay dos cosas que los motores de búsqueda hacen con tu sitio: rastrear e indexar.  
+**Indexing** is when a search engine stores a website's URL and any associated information in its database so it is ready to serve as a search result.
 
-**Rastrear** es el proceso por el cual un motor de búsqueda obtiene tu página web para analizar su contenido. El contenido se almacena en la base de datos del motor de búsqueda y se puede usar para completar los detalles de los resultados de las búsquedas, clasificar páginas y descubrir nuevas páginas mediante el seguimiento de enlaces.  
+Note: Many people confuse crawling with indexing. Prohibiting crawling doesn't mean that the page won't show up in the search results. For example, if a third-party website has a link to one of your web pages, it can still be indexed even though it's blocked from crawling. In this case, the search result lacks a detailed description.
 
-**Indexar** es el proceso por el cual un motor de búsqueda almacena la URL de un sitio web y cualquier información asociada en su base de datos, para que esté lista para enviarse como resultado de búsqueda. 
+### Control crawling with robots.txt
 
-Note: Muchas personas confunden rastrear con indexar. Prohibir el rastreo no significa que la página no se mostrará en los resultados de búsqueda. Por ejemplo, si un sitio web externo contiene un enlace a una de tus páginas web, esta todavía puede indexarse, aunque el rastreo esté bloqueado. En este caso, al resultado de la búsqueda le falta una descripción detallada.
+You can use a text file called `robots.txt` to control how well-behaved crawlers access your web page. `Robots.txt` is a simple text file describing how you want search bots to crawl your site. (Not all crawlers necessarily respect `robots.txt`. Imagine that anyone can create their own stray crawlers.)
 
-### Controla el rastreo con robots.txt
+Place `robots.txt` at the root directory of your website's host. For example, if your site's host is `http://pages.example.com/`, then the `robots.txt` file should be located at `http://pages.example.com/robots.txt`. If the domain has different schema, subdomains, or other ports, they are considered different hosts and should have `robots.txt` for each of their root directories.
 
-Puedes usar un archivo de texto denominado `robots.txt` para controlar la manera en que los rastreadores eficientes acceden a tu página web. `Robots.txt` es un archivo de texto simple que describe cómo quieres que
-los bots de búsqueda rastreen tu sitio. (No todos los rastreadores necesariamente respetan
-`robots.txt`. Imagina que cualquiera puede crear sus propios rastreadores sueltos).
-
-Coloca `robots.txt` en el directorio raíz del host de tu sitio web. Por ejemplo,
-si el host de tu sitio es `http://pages.example.com/`, el archivo `robots.txt`
- se debe colocar en `http://pages.example.com/robots.txt`. Si el dominio tiene
-un esquema, subdominios o puertos diferentes, se consideran
-diferentes hosts y deben tener `robots.txt` para cada uno de sus directorios
-raíz.
-
-A continuación, verás un ejemplo rápido:  
+Here's a quick example:
 
 **http://pages.example.com/robots.txt**
 
@@ -190,10 +141,9 @@ A continuación, verás un ejemplo rápido:
     Disallow: /
     
 
-Lo anterior indica que quieres impedir que ningún bot rastree tu sitio web
-entero.
+This indicates that you want to disallow all bots from crawling your entire website.
 
-A continuación verás otro ejemplo:
+Here's another example:
 
 **http://pages.example.com/robots.txt**
 
@@ -201,54 +151,43 @@ A continuación verás otro ejemplo:
     Disallow: /nogooglebot/
     
 
-Puedes indicar un nombre de usuario-agente para especificar el comportamiento por bot
-(usuario-agente). En el caso anterior, estás inhabilitando el usuario-agente denominado `Googlebot`
- para que no rastree `/nogooglebot/` y todos los contenidos debajo de este directorio.  
+You can specify the behavior per bot (user agent) by indicating a user-agent name. In the above case, you are disallowing the user agent called `Googlebot` from crawling `/nogooglebot/` and all contents below this directory.
 
-Obtén más información sobre los bots de cada motor de búsqueda en sus páginas de ayuda:
+Learn more about each search engine's bots on their help pages:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_txt)
 * [Bing](http://www.bing.com/webmaster/help/how-to-create-a-robots-txt-file-cb7c31ec)
 * [Yandex](https://help.yandex.com/webmaster/controlling-robot/robots-txt.xml)
 
+Note: `robots.txt` is only required **if** you want to control the way your site is crawled. Do not return response code 500 for the url: `/robots.txt`. This terminates all subsequent crawls for the entire host resulting in empty search result details.
 
-Note: solo se requiere `robots.txt` **si** quieres controlar el modo en que se rastrea tu sitio. No devolver el código de respuesta de retorno 500 para la url: `/robots.txt` Lo anterior termina todos los rastreos subsiguientes del host entero, lo que provoca que los detalles de los resultados de búsqueda estén vacíos.
+#### Test robots.txt
 
-#### Comprobar robots.txt
+Depending on which crawlers your robots.txt is targeting, search engine providers may provide a tool to test `robots.txt`. For example, for Google there's a validator in [Webmaster Tools](https://www.google.com/webmasters/tools/robots-testing-tool) that you can use to test your robots.txt.
 
-Según los rastreadores a los que apunta tu robots.txt, los proveedores de
-motores de búsqueda pueden suministrar una herramienta para comprobar `robots.txt`. Por ejemplo, para Google 
-hay un validador en
-[Herramientas para webmasters](https://www.google.com/webmasters/tools/robots-testing-tool)
-que puedes usar para comprobar tu robots.txt.
+<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x" />
 
-<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x">
+Yandex provides [a similar tool](https://webmaster.yandex.com/tools/robotstxt/).
 
-Yandex ofrece [una herramienta similar](https://webmaster.yandex.com/tools/robotstxt/).  
+### Control search indexing with meta tags
 
-### Controla la indexación de búsquedas con metaetiquetas
+If you don't want your web page to show up in search results, robots.txt isn't the solution. You need to allow those pages to be crawled, and explicitly indicate that you don't want them to be indexed. There are two solutions:
 
-Si no quieres que tu página web aparezca en los resultados de búsqueda, robots.txt no es
-la solución. Debes permitir que estas páginas se rastreen, y específicamente debes
-indicar que no quieres que se indexen. Existen dos soluciones:
-
-Para indicar que no quieres que se indexe una página HTML, usa un tipo específico de `<meta>` etiqueta, una con los atributos establecidos como `name="robots"` y `content="noindex"`.  
-
+To indicate you don't want an HTML page to be indexed, use a specific kind of `<meta>` tag, one with its attributes set as `name="robots"` and `content="noindex"`.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="robots" content="noindex" />
     
 
-Al cambiar un valor del atributo `name` a un nombre de usuario-agente específico, puedes reducir el alcance. Por ejemplo, `name="googlebot"` (no distingue mayúsculas) indica que no quieres que el robot de Google indexe la página.  
-
+By changing the value of the `name` attribute to a specific user agent name, you can narrow the scope. For example, `name="googlebot"` (case insensitive) indicates that you don't want Googlebot to index the page.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="googlebot" content="noindex" />
     
 
-Otras opciones para la metaetiqueta de robots:  
+Other options for the robots meta tag include:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/which-robots-metatags-does-bing-support-5198d240)
@@ -256,106 +195,104 @@ Otras opciones para la metaetiqueta de robots:
 
 #### X-Robots-Tag
 
-Para indicar que no quieres que se indexen recursos como imágenes, hojas de estilo o archivos de
-secuencia de comandos, agrega `X-Robots-Tag: noindex` en un encabezado HTTP.
-
+To indicate that you don't want resources such as images, stylesheets, or script files to be indexed, add `X-Robots-Tag: noindex` in an HTTP header.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: noindex
     Content-Type: text/html; charset=UTF-8
     
 
-Si deseas reducir el alcance a un usuario-agente específico, inserta el nombre del usuario-agente antes de `noindex`.  
-
+If you want to narrow the scope to a specific user agent, insert the user agent name before `noindex`.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: googlebot: noindex
     Content-Type: text/html; charset=UTF-8
     
 
-Para obtener más información sobre X-Robots-Tag:  
+To learn more about X-Robots-Tag:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/how-can-i-remove-a-url-or-page-from-the-bing-index-37c07477)
 
-Note: Si inhabilitas los rastreadores a través de `robots.txt`, los bots de búsqueda igualmente pueden indexar esas páginas sin saber que no quieres que se indexen. Esto puede ocurrir porque:<ul><li>los bots de búsqueda pueden encontrar tus páginas web siguiendo enlaces de otros sitios web.</li><li>Los motores de búsqueda que no pueden rastrear no pueden detectar <code>noindex</code>.</li></ul>
+Note: If you disallow crawls using `robots.txt`,  search bots still may index those pages without knowing that you don't want those pages to be indexed. This can happen because:
 
-No esperes que `robots.txt` controle las indexaciones de búsqueda.
+* Search bots may find your web pages by following links from other websites.
+* Search engines that can't crawl can't detect `noindex`.
 
-### Ejemplos por tipo de contenido
+Don't expect `robots.txt` to control search indexes.
 
-¿Cuáles son las mejores soluciones para controlar el rastreo y la indexación? A continuación verás algunos ejemplos de soluciones para diferentes tipos de páginas.
+### Examples by content type
 
-#### Cualquier persona puede acceder y buscar la página completamente
+What are the best solutions to control crawling and indexing? Here are some example solutions for different types of pages.
 
-La mayoría de las páginas de la Web son de este tipo.  
+#### Fully accessible and searchable by anyone
 
-* No se requiere `robots.txt`.
-* No se requieren metaetiquetas de robots.
+Most of the pages on the web are of this type.
 
-#### Acceso limitado por las personas que conocen la URL
+* No `robots.txt` required.
+* No robots meta tags required.
 
-Entre los ejemplos se incluye:  
+#### Limited access by people who know the URL
 
-* Página de acceso para una consola de administración de un blog.
-* Contenido privado compartido mediante el traspaso de una URL para usuarios nuevos de Internet.
+Examples include:
 
-En este caso, no quieres que los motores de búsqueda indexen esas páginas.  
+* Login page for a blog admin console.
+* Private content shared by passing a URL for novice internet users.
 
-* No se requiere `robots.txt`.
-* Usa `noindex` metaetiquetas para páginas HTML.
-* Usa `X-Robots-Tag: noindex` para recursos no HTML (imágenes, pdf, etc).
+In this case, you don't want search engines to index those pages.
 
-Note: ¿Te preguntas si debes prohibir el rastreo de archivos JavaScript y de Hojas de estilo? <a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google hace su mejor esfuerzo por entenderlas</a> de manera de poder encontrar contenidos disponibles a través de tecnologías modernas como AJAX. Definitivamente debes permitir que los rastreadores rastren JavaScript.
+* No `robots.txt` required.
+* Use `noindex` meta tags for HTML pages.
+* Use `X-Robots-Tag: noindex` for non HTML resources (images, pdf, etc).
 
-#### Acceso restringido de personas autorizadas
+Note: Wondering if you should prohibit crawling JavaScript and Stylesheet files? <a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google tries its best to understand them</a> so that it can find contents available through modern technologies such as AJAX. You should definitely allow crawlers to crawl JavaScript.
 
-En este casi, aun si alguien encuentra la URL, el servidor se niega a presentar el resultado sin una credencial adecuada. Por ejemplo:  
+#### Restricted access from authorized people
 
-* Contenido compartido en forma privada en una red social.
-* Sistema de gastos empresariales.
+In this case, even if someone finds the URL, the server refuses to present the result without a proper credential. For example:
 
-Los motores de búsqueda nunca deben rastrear ni indexar este tipo de página.  
+* Privately shared content on a social network.
+* Enterprise expense system.
 
-* Código de respuesta de retorno 401 "No autorizado" para un acceso sin las credenciales
-adecuadas (o se redirige al usuario a una página de acceso).
-* No use `robots.txt` para inhabilitar el rastreo de estas páginas. De lo contrario, no se puede detectar la respuesta 401.
+In these types of pages, search engines should neither crawl nor index them.
 
-Aquí, el mecanismo de restricción puede ser una dirección IP, una cookie, autenticación básica,
-OAuth, etc. Cómo implementar esta autenticación/autorización depende de tu
-infraestructura y excede el alcance de este artículo.
+* Return response code 401 "Unauthorized" for an access without a proper credential (or redirect the user to a login page).
+* Don't use `robots.txt` to disallow crawling these pages. Otherwise, 401 can't be detected.
 
-### Solicita la eliminación de una página de un motor de búsqueda
+The restriction mechanism here can be an IP address, a cookie, basic auth, OAuth, etc. How to implement such authentication/authorization depends on your infrastructure and is beyond this article's scope.
 
-En los siguiente casos, es posible que quieras quitar un resultado de búsqueda:  
+### Request a page removal from a search engine
 
-* La página ya no existe.
-* Se indexó accidentalmente una página que incluye información confidencial.
+You might want to remove a search result when:
 
+* The page no longer exists.
+* A page was accidentally indexed that includes confidential information.
 
-Los motores de búsqueda más importantes ofrecen una forma de enviar una solicitud para quitar estas páginas. Para hacerlo, generalmente es necesario lo siguiente:  
+Major search engines provide a way to send a request to remove such pages. The process usually takes the following:
 
-1. Asegúrate de que la página que quieres quitar:
-    * Ya está borrada de tu servidor y devuelve 404
-    * Está configurada para no ser indexada (por ejemplo: noindex)
+1. Make sure the page you want removed:
+    
+    * Is already deleted from your server and returns 404
+    * Is configured not to be indexed (ex: noindex)
 
-1. Dirígete a la página de solicitud en cada motor de búsqueda. (Google y Bing requieren que te registres y valides la titularidad de tu sitio web).
-1. Envía una solicitud.
+2. Go to the request page on each search engine. (Google and Bing require you to register and validate ownership of your website.)
 
-<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x">
+3. Send a request.
 
-Consulta los pasos concretos en las respectivas páginas de ayuda del motor de búsqueda:  
+<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x" />
+
+Check out concrete steps at the respective search engine's help pages:
 
 * [Google](https://support.google.com/webmasters/answer/1663419)
 * [Bing](http://www.bing.com/webmaster/help/bing-content-removal-tool-cb6c294d)
 * [Yandex](https://help.yandex.com/webmaster/yandex-indexing/removing-from-index.xml)
 
-### Apéndice: Lista de usuarios-agentes de rastreador
+### Appendix: List of crawler user agents
 
 * [Google](https://support.google.com/webmasters/answer/1061943)
 * [Bing](http://www.bing.com/webmaster/help/which-crawlers-does-bing-use-8c184ec0)
 * [Yandex](https://help.yandex.com/search/robots/logs.xml)
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

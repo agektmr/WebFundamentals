@@ -1,38 +1,25 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Ukuran dan Tanda Pengaturan Waktu Pengguna".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "User Timing Marks and Measures" Lighthouse audit.
 
-{# wf_updated_on: 2016-10-06 #}
-{# wf_published_on: 2016-10-06 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-10-06 #} {# wf_blink_components: N/A #}
 
-# Ukuran dan Tanda Pengaturan Waktu Pengguna  {: .page-title }
+# User Timing Marks and Measures {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-User Timing API memungkinkan Anda mengukur kinerja JavaScript aplikasi.
-Ide dasarnya adalah Anda memutuskan bagian skrip yang ingin Anda
-optimalkan, kemudian melengkapi bagian-bagian skrip tersebut dengan User
-Timing API. Dari sana, Anda bisa mengakses hasil dari JavaScript menggunakan
-API, atau menampilkannya pada [Rekaman
-Timeline Chrome DevTools](/web/tools/chrome-devtools/evaluate-performance/timeline-tool).
+The User Timing API enables you to measure your app's JavaScript performance. The basic idea is that you decide which parts of your scripts you want to optimize, and then you instrument those parts of your scripts with the User Timing API. From there, you can access the results from JavaScript using the API, or view them on your [Chrome DevTools Timeline Recordings](/web/tools/chrome-devtools/evaluate-performance/timeline-tool).
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-Audit ini tidak terstruktur sebagai pengujian "lulus" atau "gagal". Ini adalah
-kesempatan untuk menemukan API yang berguna yang bisa membantu Anda mengukur kinerja
-aplikasi. Nilai yang dilaporkan Lighthouse untuk audit ini sesuai dengan
-jumlah Ukuran dan Tanda Pengaturan Waktu Pengguna yang ditemukan di aplikasi Anda.
+This audit is not structured as a "pass" or "fail" test. It's just an opportunity to discover a useful API that can aid you in measuring your app's performance. The score that Lighthouse reports for this audit corresponds to the number of User Timing Marks and Measures that it finds in your app.
 
-Ketika aplikasi Anda menyertakan Ukuran dan Tanda Pengaturan Waktu Pengguna, Anda akan melihat
-Tanda dan Ukuran ini dalam laporan Lighthouse Anda.
+When your app does include User Timing Marks and Measures, you'll see these Marks and Measures in your Lighthouse report.
 
-Lihat [User Timing API](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/)
-untuk pengantar tentang cara menggunakan User Timing API untuk mengukur kinerja JavaScript
-aplikasi.
+Check out [User Timing API](https://www.html5rocks.com/en/tutorials/webperformance/usertiming/) for an introduction on using the User Timing API to measure your app's JavaScript performance.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## More information {: #more-info }
 
-Lighthouse mengekstrak data Pengaturan Waktu Pengguna dari Alat (Bantu) Pemrofilan Kejadian Trace Chrome.
+Lighthouse extracts User Timing data from Chrome's Trace Event Profiling Tool.
 
+## Feedback {: #feedback }
 
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

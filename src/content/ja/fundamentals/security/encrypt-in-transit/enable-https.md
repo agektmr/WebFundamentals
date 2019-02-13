@@ -1,61 +1,53 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: サーバーでの HTTPS の有効化は、ウェブページのセキュリティを保護するために不可欠です。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Enabling HTTPS on your servers is critical to securing your webpages.
 
-{# wf_updated_on: 2018-02-12 #}
-{# wf_published_on: 2015-03-27 #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2015-03-27 #} {# wf_blink_components: Blink>SecurityFeature,Internals>Network>SSL #}
 
-# サーバーでの HTTPS の有効化 {: .page-title }
+# Enabling HTTPS on Your Servers {: .page-title }
 
-{% include "web/_shared/contributors/chrispalmer.html" %}
-{% include "web/_shared/contributors/mattgaunt.html" %}
+{% include "web/_shared/contributors/chrispalmer.html" %} {% include "web/_shared/contributors/mattgaunt.html" %}
 
 ### TL;DR {: .hide-from-toc }
 
-* 2,048 ビット RSA 公開鍵 / 秘密鍵のペアを作成する。
-* 公開鍵を埋め込む証明書署名要求（CSR）を生成する。
-* CSR を認証局（CA）と共有して、最終的な証明書または証明書チェーンを受け取る。
-* `/etc/ssl`（Linux および Unix）などのウェブアクセスが不可能な場所や、IIS が必要とする場所（Windows）に、最終的な証明書をインストールする。
+* Create a 2048-bit RSA public/private key pair.
+* Generate a certificate signing request (CSR) that embeds your public key.
+* Share your CSR with your Certificate Authority (CA) to receive a final certificate or a certificate chain.
+* Install your final certificate in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS requires it (Windows).
 
-##  鍵と証明書署名要求の生成
+## Generating keys and certificate signing requests
 
-このセクションでは、ほとんどの Linux、BSD、および Mac OS X システムに含まれる openssl コマンドライン プログラムを使用して、秘密鍵 / 公開鍵と CSR を生成する方法を説明します。
+This section uses the openssl command-line program, which comes with most Linux, BSD, and Mac OS X systems, to generate private/public keys and a CSR.
 
+### Generate a public/private key pair
 
+Let's start by generating a 2,048-bit RSA key pair. A smaller key, such as 1,024 bits, is insufficiently resistant to brute-force guessing attacks. A larger key, such as 4,096 bits, is overkill. Over time, key sizes increase as computer processing gets cheaper. 2,048 is currently the sweet spot.
 
-###  公開鍵 / 秘密鍵のペアの生成
-
-まずは、2,048 ビット RSA 鍵のペアを生成します（1,024 ビットなどの小さい鍵は、ブルートフォース推測攻撃に対して耐性が不十分です。
-4,096 ビットなどの大きい鍵は過剰です。
-時間が経つにつれ、コンピュータ処理のコストが低下するのに伴い、鍵のサイズは大きくなっていきます。
-現在最適なのは 2,048 ビットです）。
-
-RSA 鍵のペアを生成するコマンドは次のとおりです。
+The command to generate the RSA key pair is:
 
     openssl genrsa -out www.example.com.key 2048
+    
 
-このコマンドによる出力は次のとおりです。
+This gives the following output:
 
     Generating RSA private key, 2048 bit long modulus
     .+++
     .......................................................................................+++
     e is 65537 (0x10001)
+    
 
-###  証明書署名要求の生成
+### Generate a certificate signing request
 
-このステップでは、公開鍵と、組織およびウェブサイトに関する情報を証明書署名要求（CSR）に埋め込みます。
-*openssl*
- コマンドを実行すると、必要なメタデータの入力をインタラクティブに求められます。
+In this step, you embed your public key and information about your organization and your website into a certificate signing request or CSR. The *openssl* command interactively asks you for the required metadata.
 
-次のコマンドを実行します。
+Running the following command:
 
     openssl req -new -sha256 -key www.example.com.key -out www.example.com.csr
+    
 
-このコマンドによる出力は次のとおりです。
+Outputs the following:
 
     You are about to be asked to enter information that will be incorporated
     into your certificate request
-
+    
     What you are about to enter is what is called a Distinguished Name or a DN.
     There are quite a few fields but you can leave some blank
     For some fields there will be a default value,
@@ -69,17 +61,19 @@ RSA 鍵のペアを生成するコマンドは次のとおりです。
     Team
     Common Name (e.g. server FQDN or YOUR name) []:www.example.com
     Email Address []:webmaster@example.com
-
+    
     Please enter the following 'extra' attributes
     to be sent with your certificate request
     A challenge password []:
     An optional company name []:
+    
 
-CSR の有効性を確認するため、次のコマンドを実行します。
+To ensure the validity of the CSR, run this command:
 
     openssl req -text -in www.example.com.csr -noout
+    
 
-応答は次のようになります。
+And the response should look like this:
 
     Certificate Request:
         Data:
@@ -101,245 +95,183 @@ CSR の有効性を確認するため、次のコマンドを実行します。
              5f:05:f3:71:d5:f7:b7:b6:dc:17:cc:88:03:b8:87:29:f6:87:
              2f:7f:00:49:08:0a:20:41:0b:70:03:04:7d:94:af:69:3d:f4:
              ...
+    
 
-###  認証局への CSR の送信
+### Submit your CSR to a certificate authority
 
-CSR を送信する方法は、認証局（CA）によって異なります。
-ウェブサイトのフォームを使用する方法、メールで CSR を送信する方法などがあります。
-CA（またはその販売者）が、プロセスの一部またはすべてを自動化できる場合もあります（たとえば、鍵ペアおよび CSR の生成など）。
+Different certificate authorities (CAs) require different methods for sending them your CSRs. Methods may include using a form on their website, sending the CSR by email, or something else. Some CAs (or their resellers) may even automate some or all of the process (including, in some cases, key pair and CSR generation).
 
+Send the CA to your CSR, and follow their instructions to receive your final certificate or certificate chain.
 
+Different CAs charge different amounts of money for the service of vouching for your public key.
 
-CSR を CA に送信し、その指示に従って、最終的な証明書または証明書チェーンを受け取ってください。
+There are also options for mapping your key to more than one DNS name, including several distinct names (e.g. all of example.com, www.example.com, example.net, and www.example.net) or "wildcard" names such as \*.example.com.
 
+For example, one CA currently offers these prices:
 
-公開鍵の証票のサービスにかかる費用は、CA によって異なります。
+* Standard: $16/year, valid for example.com and www.example.com.
+* Wildcard: $150/year, valid for example.com and \*.example.com.
 
+At these prices, wildcard certificates are economical when you have more than 9 subdomains; otherwise, you can just buy one or more single-name certificates. (If you have more than, say, five subdomains, you might find a wildcard certificate more convenient when you come to enable HTTPS on your servers.)
 
-複数の DNS 名に鍵をマッピングするためのオプションもあります。複数の別名（example.com、www.example.com、example.net、www.example.net など）、または \*.example.com などの「ワイルドカード」の名前が利用可能です。
+Note: Keep in mind that in wildcard certificates the wildcard applies to only one DNS label. A certificate good for \*.example.com will work for foo.example.com and bar.example.com, but _not_ for foo.bar.example.com.
 
+Copy the certificates to all your front-end servers in a non-web-accessible place such as `/etc/ssl` (Linux and Unix) or wherever IIS (Windows) requires them.
 
+## Enable HTTPS on your servers
 
-たとえば、ある CA では現在次のような価格で提供しています。
+Enabling HTTPS on your servers is a critical step in providing security for your web pages.
 
-* 標準: $16 / 年、example.com および www.example.com で有効。
-* ワイルドカード: $150 / 年、example.com および \*.example.com で有効。
+* Use Mozilla's Server Configuration tool to set up your server for HTTPS support.
+* Regularly test your site with the Qualys' handy SSL Server Test and ensure you get at least an A or A+.
 
-10 個以上のサブドメインがある場合、これらの価格設定では、ワイルドカード証明書がお得です。そうでない場合は、1 つ以上の単一名の証明書を購入できます
-（たとえば 5 つより多くのサブドメインがある場合に、サーバー上で HTTPS を有効にするときには、ワイルドカード証明書の方が便利なこともあります）。
+At this point, you must make a crucial operations decision. Choose one of the following:
 
+* Dedicate a distinct IP address to each hostname your web server serves content from.
+* Use name-based virtual hosting.
 
+If you have been using distinct IP addresses for each hostname, you can easily support both HTTP and HTTPS for all clients.
 
-注: ワイルドカード証明書では、ワイルドカードは 1 つの DNS ラベルだけに適用されることに注意してください。\*.example.com に有効な証明書は、foo.example.com および bar.example.com では有効ですが、foo.bar.example.com では有効ではありません。
+However, most site operators use name-based virtual hosting to conserve IP addresses and because it's more convenient in general. The problem with IE on Windows XP and Android earlier than 2.3 is that they do not understand [Server Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external} (SNI), which is crucial for HTTPS name-based virtual hosting.
 
-`/etc/ssl`（Linux および Unix）などのウェブアクセスが不可能な場所や、IIS が必要とする場所（Windows）で、すべてのフロントエンド サーバーに証明書をコピーします。
+Someday—hopefully soon—clients that don't support SNI will be replaced with modern software. Monitor the user agent string in your request logs to know when enough of your user population has migrated to modern software. (You can decide what your threshold is; perhaps &lt; 5%, or &lt; 1%.)
 
+If you don't already have HTTPS service available on your servers, enable it now (without redirecting HTTP to HTTPS; see below). Configure your web server to use the certificates you bought and installed. You might find [Mozilla's handy configuration generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external} useful.
 
-##  サーバーでの HTTPS の有効化
+If you have many hostnames/subdomains, they each need to use the right certificate.
 
-サーバーでの HTTPS の有効化は、ウェブページのセキュリティを確保するための重要なステップです。
+Warning: If you've already completed these steps, but are using HTTPS for the sole purpose of redirecting clients back to HTTP, stop doing that now. See the next section to make sure HTTPS and HTTP work smoothly.
 
-* Mozilla のサーバー設定ツールを使用し、サーバーで HTTPS サポートを設定します。
-* Qualys の便利な SSL Server Test で定期的にサイトをテストし、少なくとも A または A+ を得られるようにします。
+Note: Ultimately you should redirect HTTP requests to HTTPS and use HTTP Strict Transport Security (HSTS). However, this is not the right stage in the migration process to do that; see “Redirect HTTP To HTTPS” and “Turn On Strict Transport Security And Secure Cookies.”
 
-この時点で、運用について重要な意思決定を行う必要があります。次のいずれかを選択します。
+Now, and throughout your site's lifetime, check your HTTPS configuration with [Qualys' handy SSL Server Test](https://www.ssllabs.com/ssltest/){: .external }. Your site should score an A or A+; treat anything that causes a lower grade as a bug. (Today's A is tomorrow's B, because attacks against algorithms and protocols are always improving!)
 
-* ご使用のウェブサーバーのコンテンツ提供元である各ホスト名に、個別の IP アドレスを付与します。
+## Make intrasite URLs relative
 
-* 名前ベースの仮想ホストを使用します。
+Now that you are serving your site on both HTTP and HTTPS, things need to work as smoothly as possible, regardless of protocol. An important factor is using relative URLs for intrasite links.
 
-ホスト名ごとに個別の IP アドレスを使用している場合は、すべてのクライアントに対して容易に HTTP と HTTPS の両方をサポートできます。
+Make sure intrasite URLs and external URLs are agnostic to protocol; that is, make sure you use relative paths or leave out the protocol like `//example.com/something.js`.
 
+A problem arises when you serve a page via HTTPS that includes HTTP resources, known as [mixed content](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content). Browsers warn users that the full strength of HTTPS has been lost. In fact, in the case of active mixed content (script, plug-ins, CSS, iframes), browsers often simply won't load or execute the content at all, resulting in a broken page. And remember, it's perfectly OK to include HTTPS resources in an HTTP page.
 
-しかし、ほとんどのサイト運営者は、名前ベースの仮想ホストを使って IP アドレスを節約します。また一般に、その方が便利だからでもあります。
-Windows XP および Android 2.3 以前の IE の問題は、[Server Name Indication](https://en.wikipedia.org/wiki/Server_Name_Indication){: .external}（SNI）を理解できないことです。これは HTTPS の名前ベースの仮想ホストでは重大事項です。
+Key Point: See [Fixing Mixed Content](/web/fundamentals/security/prevent-mixed-content/fixing-mixed-content) for more details about ways to fix and prevent mixed content.
 
+Additionally, when you link to other pages in your site, users could get downgraded from HTTPS to HTTP.
 
+These problems happen when your pages include fully-qualified, intrasite URLs that use the *http://* scheme.
 
+<span class="compare-worse">Not recommended</span> — We recommend you avoid using fully qualified intrasite URLs.
 
-いつか（希望としてはすぐにですが）、SNI をサポートしないすべてのクライアントが、最新のソフトウェアに置き換えられるでしょう。
-リクエストログのユーザー エージェント文字列を監視すれば、十分な数のユーザーが最新のソフトウェアに移行した場合に、それを知ることができます
-（しきい値を &lt; 5%、&lt; 1%、などで設定できます）。
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>http://</b>example.com/jquery.js">&lt;/script>
+&lt;link rel="stylesheet" href="<b>http://</b>assets.example.com/style.css"/>
+&lt;img src="<b>http://</b>img.example.com/logo.png"/>;
+&lt;p>A &lt;a href="<b>http://</b>example.com/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
+In other words, make intrasite URLs as relative as possible: either protocol-relative (lacking a protocol, starting with `//example.com`) or host-relative (starting with just the path, like `/jquery.js`).
 
-ご使用のサーバーで HTTPS サービスが利用可能になっていない場合は、すぐに利用可能にしてください（HTTP から HTTPS にリダイレクトせずに。以下を参照）。
-購入してインストールした証明書を使用するように、ウェブサーバーを設定します。
-設定には、[Mozilla の便利な設定ジェネレーター](https://mozilla.github.io/server-side-tls/ssl-config-generator/){: .external}が役立ちます。
+<span class="compare-better">Recommended</span> — We recommend that you use relative intrasite URLs.
 
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>/jquery.js</b>">&lt;/script>
+&lt;link href="<b>/styles/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>/images/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
+<span class="compare-better">Recommended</span> — Or, you can use protocol-relative intrasite URLs.
 
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="<b>//example.com/jquery.js</b>">&lt;/script>
+&lt;link href="<b>//assets.example.com/style.css</b>" rel="stylesheet"/>
+&lt;img src="<b>//img.example.com/logo.png</b>"/>;
+&lt;p>A &lt;a href="<b>//example.com/2014/12/24/</b>">new post on cats!&lt;/a>&lt;/p>
+</pre>
 
-ホスト名やサブドメインが多数ある場合は、それぞれが正しい証明書を使用する必要があります。
+<span class="compare-better">Recommended</span> — We recommend that you use HTTP**S** URLs for intersite URLs (where possible).
 
+<pre class="prettyprint">&lt;h1>Welcome To Example.com&lt;/h1>
+&lt;script src="/jquery.js">&lt;/script>
+&lt;link href="/styles/style.css" rel="stylesheet"/>
+&lt;img src="/images/logo.png"/>;
+&lt;p>A &lt;a href="/2014/12/24/">new post on cats!&lt;/a>&lt;/p>
+&lt;p>Check out this &lt;a href="<b>https://foo.com/</b>">other cool site.&lt;/a>&lt;/p>
+</pre>
 
-警告:すでにここまでのステップを完了しているものの、クライアントを HTTP にリダイレクトするためだけに HTTPS を使用している場合、そのような運用はすぐに停止してください。HTTPS と HTTP をスムーズに活用するために、次のセクションを参照してください。
+Do this with a script, not by hand. If your site’s content is in a database, test your script on a development copy of your database. If your site’s content consists of simple files, test your script on a development copy of the files. Push the changes to production only after the changes pass QA, as normal. You can use [Bram van Damme’s script](https://github.com/bramus/mixed-content-scan) or something similar to detect mixed content in your site.
 
-注: 最終的には、HTTP リクエストを HTTPS にリダイレクトし、HTTP ストリクト トランスポート セキュリティ（HSTS）を使用してください。ただし今は、これを行うための移行プロセスの適切な段階ではありません。「HTTP から HTTPS へのリダイレクト」および「ストリクト トランスポート セキュリティとセキュア Cookie の有効化」を参照してください。
+When linking to other sites (as opposed to including resources from them), don’t change the protocol since you don’t have control over how those sites operate.
 
-今すぐに、また、サイトのライフタイムにわたって、[Qualy の便利な SSL Server Test](https://www.ssllabs.com/ssltest/){: .external } を使用して HTTPS の設定を確認してください。
-サイトは A または A+ のスコアを取る必要があります。それより低いスコアの場合、原因となるものをバグとして処理してください（アルゴリズムとプロトコルに対する攻撃は常に進化しているため、今日 A を取れても、明日には B になります）。
+Success: To make migration smoother for large sites, we recommend protocol-relative URLs. If you are not sure whether you can fully deploy HTTPS yet, forcing your site to use HTTPS for all sub-resources may backfire. There is likely to be a period of time in which HTTPS is new and weird for you, and the HTTP site must still work as well as ever. Over time, you’ll complete the migration and lock in HTTPS (see the next two sections).
 
+If your site depends on scripts, images, or other resources served from a third party, such as a CDN or jquery.com, you have two options:
 
+* Use protocol-relative URLs for these resources. If the third party does not serve HTTPS, ask them to. Most already do, including jquery.com.
+* Serve the resources from a server that you control, and which offers both HTTP and HTTPS. This is often a good idea anyway, because then you have better control over your site's appearance, performance, and security. In addition, you don't have to trust a third party, which is always nice.
 
+Note: Keep in mind that you also need to change intrasite URLs in your stylesheets, JavaScript, redirect rules, `<link>` tags, and CSP declarations, not just in the HTML pages.
 
-##  イントラサイトに相対 URL を使用する
+## Redirect HTTP to HTTPS
 
-これで、HTTP と HTTPS の両方でサイトにコンテンツを提供できるようになりましたが、プロトコルにかかわらず、できるだけスムーズに動作させる必要があります。
-このために重要なのは、イントラサイト リンクに相対 URL を使用することです。
+You need to put a [canonical link](https://support.google.com/webmasters/answer/139066) at the head of your page to tell search engines that HTTPS is the best way to get to your site.
 
+Set `<link rel="canonical" href="https://…"/>` tags in your pages. This helps search engines determine the best way to get to your site.
 
-イントラサイト URL と外部 URL がプロトコルに依存しないようにします。つまり、相対パスを使用するか、`//example.com/something.js` のようなプロトコルを除外します。
+## Turn on Strict Transport Security and secure cookies
 
-HTTPS 経由で HTTP リソースを含むページを配信すると、[混合コンテンツ](/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content)の問題が生じます。
-ブラウザは、HTTPS の機能が完全ではなくなったことをユーザーに警告します。実際、アクティブな混合コンテンツの場合（スクリプト、プラグイン、CSS、iframe）、ブラウザの多くはコンテンツをまったく読み込まないか、実行せず、壊れたページを表示します。
+At this point, you are ready to "lock in" the use of HTTPS.
 
-注: HTTP ページに HTTPS リソースを含めることはまったく問題ありません。
+* Use HTTP Strict Transport Security (HSTS) to avoid the cost of the 301 redirect.
+* Always set the Secure flag on cookies.
 
-さらに、サイト内の他のページにリンクすると、ユーザーは HTTPS から HTTP にダウングレードされることがあります。
+First, use [Strict Transport Security](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) to tell clients that they should always connect to your server via HTTPS, even when following an `http://` reference. This defeats attacks such as [SSL Stripping](http://www.thoughtcrime.org/software/sslstrip/){: .external }, and also avoids the round-trip cost of the `301 redirect` that we enabled in [Redirect HTTP to HTTPS](#redirect-http-to-https).
 
+Note: Clients that have noted your site as a known HSTS Host are likely to <a href="https://tools.ietf.org/html/rfc6797#section-12.1"><i>hard-fail</i> if your site ever has an error in its TLS configuration</a> (such as an expired certificate). HSTS is explicitly designed this way to ensure that network attackers cannot trick clients into accessing the site without HTTPS. Do not enable HSTS until you are certain that your site operation is robust enough to avoid ever deploying HTTPS with certificate validation errors.
 
-*http://* スキームを使用する完全修飾のイントラサイト URL がページに含まれている場合、これらの問題が発生します。
+Turn on HTTP Strict Transport Security (HSTS) by setting the `Strict-Transport-Security` header. [OWASP's HSTS page has links to instructions](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security) for various server software.
 
+Most web servers offer a similar ability to add custom headers.
 
-<p><span class="compare-worse">非推奨</span>: 完全修飾のイントラサイト URL の使用はお勧めしません。</p>
+Note: `max-age` is measured in seconds. You can start with low values and gradually increase the `max-age` as you become more comfortable operating an HTTPS-only site.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="http://example.com/jquery.js"></script>
-    <link rel="stylesheet" href="http://assets.example.com/style.css"/>
-    <img src="http://img.example.com/logo.png"/>;
-    <p>Read this nice <a href="http://example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+It is also important to make sure that clients never send cookies (such as for authentication or site preferences) over HTTP. For example, if a user's authentication cookie were to be exposed in plain text, the security guarantee of their entire session would be destroyed—even if you have done everything else right!
 
-つまり、イントラサイト URL をできるだけ相対的にします。プロトコル相対（`//example.com` で始まるプロトコルのないもの）、またはホスト相対（`/jquery.js` のようなパスのみで始まるもの）のいずれかを使用します。
+Therefore, change your web application to always set the Secure flag on cookies that it sets. [This OWASP page explains how to set the Secure flag](https://www.owasp.org/index.php/SecureFlag) in several application frameworks. Every application framework has a way to set the flag.
 
-<p><span class="compare-better">推奨</span>: プロトコル相対のイントラサイト URL の使用をお勧めします。</p>
+Most web servers offer a simple redirect feature. Use `301 (Moved Permanently)` to indicate to search engines and browsers that the HTTPS version is canonical, and redirect your users to the HTTPS version of your site from HTTP.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="//example.com/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="//example.com/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+## Migration concerns
 
-<p><span class="compare-better">推奨</span>: 相対的なイントラサイト URL の使用をお勧めします。</p>
+Many developers have legitimate concerns about migrating from HTTP to HTTPS. The Google Webmasters Team has some [excellent guidance](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J) available.
 
-    <h1>Welcome To Example.com</h1>
-    <script src="/jquery.js"></script>
-    <link rel="stylesheet" href="//assets.example.com/style.css"/>
-    <img src="//img.example.com/logo.png"/>;
-    <p>Read this nice <a href="/2014/12/24/">new
-    post on cats!</a></p>
-    <p>Check out this <a href="http://foo.com/">other cool
-    site.</a></p>
+### Search ranking
 
-手動ではなく、スクリプトを使用してこれを行ってください。サイトのコンテンツがデータベースにある場合、データベースの開発コピーでスクリプトをテストします。
-サイトのコンテンツが単純なファイルで構成されている場合は、ファイルの開発コピーでスクリプトをテストしてください。
-通常どおり、変更は QA に合格した場合にのみ、実稼働環境にプッシュしてください。[Bram van Damme のスクリプト](https://github.com/bramus/mixed-content-scan)または類似のものを使用して、サイト内の混合コンテンツを検出できます。
+Google uses [HTTPS as a positive search quality indicator](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html). Google also publishes a guide for [how to transfer, move, or migrate your site](https://support.google.com/webmasters/topic/6029673) while maintaining its search rank. Bing also publishes [guidelines for webmasters](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a).
 
-（他のサイトからのリソースを含めるのではなく）他のサイトにリンクする場合、プロトコルを変更しないでください。他のサイトの動作方法は制御できません。
+### Performance
 
+When the content and application layers are well-tuned (see [Steve Souders' books](https://stevesouders.com/){: .external } for great advice), the remaining TLS performance concerns are generally small, relative to the overall cost of the application. Additionally, you can reduce and amortize those costs. (For great advice on TLS optimization and generally, see [High Performance Browser Networking](https://hpbn.co/) by Ilya Grigorik.) See also Ivan Ristic's [OpenSSL Cookbook](https://www.feistyduck.com/books/openssl-cookbook/) and [Bulletproof SSL And TLS](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/).
 
+In some cases, TLS can *improve* performance, mostly as a result of making HTTP/2 possible. Chris Palmer gave a talk on [HTTPS and HTTP/2 performance at Chrome Dev Summit 2014](/web/shows/cds/2014/tls-all-the-things).
 
-ポイント: 大規模なサイトをスムーズに移行するには、プロトコル相対 URL を推奨します。HTTPS を完全に展開できるかどうかわからない場合、サイトですべてのサブリソースに HTTPS を使用させると、裏目に出る可能性があります。通常、HTTPS に慣れず、違和感を覚える期間があります。また、HTTP サイトもこれまでと同様に動作しているはずです。やがて移行を完了したら、HTTPS のみを使用できるようになります（次の 2 つのセクションを参照）。
+### Referer headers
 
-サイトが CDN、jquery.com など、サードパーティから提供されたスクリプト、画像、その他のリソースに依存している場合、次の 2 つのオプションがあります。
+When users follow links from your HTTPS site to other HTTP sites, user agents don't send the Referer header. If this is a problem, there are several ways to solve it:
 
+* The other sites should migrate to HTTPS. If referee sites can complete the [Enable HTTPS on your servers](#enable-https-on-your-servers) section of this guide, you can change links in your site to theirs from `http://` to `https://`, or you can use protocol-relative links.
+* To work around a variety of problems with Referer headers, use the new [Referrer Policy standard](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta).
 
-* これらのリソースにはプロトコル相対 URL を使用します。サードパーティが HTTPS サービスを提供していない場合は、各社にお尋ねください。
-jquery.com など、ほとんどの会社はこのサービスを提供しています。
-* 自分で制御しており、HTTP と HTTPS の両方を提供するサーバーからリソースを提供します。
-これにより、サイトの外観、パフォーマンス、セキュリティをより適切に制御できるので、多くの場合は得策となります。
-また、サードパーティに頼る必要はありません。これは常によいことです。
+Because search engines are migrating to HTTPS, in the future you are likely see *more* Referer headers when you migrate to HTTPS.
 
+Caution: According to the [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3), clients **SHOULD NOT** include a Referer header field in a (non-secure) HTTP request if the referring page is transferred with a secure protocol.
 
-注: HTML ページだけでなく、スタイルシート、JavaScript、リダイレクト ルーツ、`<link>` タグ、CSP 宣言のイントラサイト URL も変更する必要がある点に注意してください。
+### Ad revenue
 
-##  HTTP から HTTPS へのリダイレクト
+Site operators that monetize their site by showing ads want to make sure that migrating to HTTPS does not reduce ad impressions. But due to mixed content security concerns, an HTTP `<iframe>` doesn't work in an HTTPS page. There is a tricky collective action problem here: until advertisers publish over HTTPS, site operators cannot migrate to HTTPS without losing ad revenue; but until site operators migrate to HTTPS, advertisers have little motivation to publish HTTPS.
 
-自分のサイトにアクセスするための最良の方法が HTTPS であることを検索エンジンに伝えるには、ページの先頭に [canonical リンク](https://support.google.com/webmasters/answer/139066)を置く必要があります。
+Advertisers should at least offer ad service via HTTPS (such as by completing the "Enable HTTPS on your servers" section on this page. Many already do. You should ask advertisers that do not serve HTTPS at all to at least start. You may wish to defer completing [Make IntraSite URLs relative](#make-intrasite-urls-relative) until enough advertisers interoperate properly.
 
-ページに `<link rel="canonical" href="https://…"/>` タグを設定します。これにより、検索エンジンがサイトを取得するための最良の方法を判断できます。
+## Feedback {: #feedback }
 
-
-##  ストリクト トランスポート セキュリティとセキュア Cookie の有効化
-
-この時点で、HTTPS の使用を「ロックイン」する準備が整いました。
-
-* HTTP ストリクト トランスポート セキュリティ（HSTS）を使用して、301 リダイレクトのコストを回避する必要があります。
-* Cookie には常に secure フラグを設定します。
-
-最初に [StrictTransportSecurity](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) を使用して、`http://` の手順に従う場合にも、常に HTTPS 経由でサーバーに接続する必要があることをクライアントに伝達します。
-これにより、[SSL ストリッピング](http://www.thoughtcrime.org/software/sslstrip/){: .external } などの攻撃から守られ、[HTTPS に HTTP をリダイレクトする](#redirect-http-to-https)で有効化された
-`301 redirect`
-のラウンドトリップ コストを回避します。
-
-
-注: サイトを既知の HSTS ホストとして認識しているクライアントは、多くの場合、<a href="https://tools.ietf.org/html/rfc6797#section-12.1">サイトに期限切れの証明書などの TLS 設定のエラーが一度でもあるとハードフェイルします</a>。<i></i>HSTS の明示的な設計上、ネットワーク攻撃者が、HTTPS なしでサイトにアクセスするようクライアントを仕向けることができないようにします。証明書の検証エラーのまま HTTPS を展開することがないよう、サイトの運営が十分に堅牢であることを確認するまで、HSTS を有効にしないでください。
-
-`Strict-Transport-Security` ヘッダーを設定して、HTTP ストリクト トランスポート セキュリティ（HSTS）を有効にします。[OWASP の HSTS ページ](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security)に、さまざまなサーバー ソフトウェアでの有効化手順へのリンクが示されています。
-
-ほとんどのウェブサーバーは、カスタム ヘッダーを追加するための同様の機能を提供しています。
-
-注: `max-age` は秒数で測定されます。低い値から始めて、HTTPS のみのサイトの操作がより快適になるにつれて徐々に`max-age` を増加させます。
-
-クライアントが HTTP 経由で（認証用やサイト設定用などの）Cookie を送信しないようにすることも重要です。
-たとえば、ユーザーの認証 Cookie がプレーン テキストで公開されると、他のすべてのことを正しく行っていても、セッション全体のセキュリティが保証されなくなります。
-
-そのため、ウェブ アプリケーションで設定される Cookie には常に secure フラグを設定するようにアプリケーションを変更してください。[この OWASP ページ](https://www.owasp.org/index.php/SecureFlag)で、複数のアプリケーション フレームワークにおける secure フラグの設定方法を説明しています。
-すべてのアプリケーション フレームワークに、フラグを設定するための方法が用意されています。
-
-ほとんどのウェブサーバーは、単純なリダイレクト機能を提供しています。`301 (Moved Permanently)` を使用して、HTTPS バージョンが標準であり、ユーザーを HTTP からサイトの HTTPS バージョンにリダイレクトすることを、検索エンジンやブラウザに示します。
-
-
-##  移行に関する懸念事項
-
-多くのデベロッパーが HTTP から HTTPS への移行に懸念を抱くのはもっともです。そこで、Google Webmasters チームは[すばらしいガイダンス](https://plus.google.com/+GoogleWebmasters/posts/eYmUYvNNT5J)を用意しています。
-
-
-###  検索ランキング
-
-[Google では、HTTPS を優れた検索品質のインジケーターとして使用しています](https://googlewebmastercentral.blogspot.com/2014/08/https-as-ranking-signal.html)。また、Google は、検索ランクを維持したまま[サイトを転送、移動、または移行する方法](https://support.google.com/webmasters/topic/6029673)に関するガイドも発行しています。
-Bing も[ウェブマスター向けガイドライン](http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a)を発行しています。
-
-
-### パフォーマンス
-
-コンテンツとアプリケーション層がよく調整されている場合（[Steve Souders の著作](https://stevesouders.com/){: .external }の素晴らしいアドバイスを参照）、残りの TLS のパフォーマンス問題は、一般的に、全体的なアプリケーションのコストを基準に考えると小さなものです。
-さらに、これらのコストを削減し、償却することができます
-（TLS の最適化に関する素晴らしいアドバイスと一般事項については、Ilya Grigorik による [High Performance BrowserNetworking](https://hpbn.co/) を参照してください）。
-Ivan Ristic の[『OpenSSL Cookbook』](https://www.feistyduck.com/books/openssl-cookbook/)および[『Bulletproof SSL And TLS』](https://www.feistyduck.com/books/bulletproof-ssl-and-tls/)も参照してください。
-
-場合によっては、主に HTTP/2 を可能にした結果として、TLS のパフォーマンスを向上できることがあります。
-Chris Palmer は、[Chrome Dev Summit 2014 で HTTPS と HTTP/2 のパフォーマンスに関するプレゼンテーション](/web/shows/cds/2014/tls-all-the-things)を行いました。
-
-###  リファラー ヘッダー
-
-ユーザーが自分の HTTPS サイトから他の HTTP サイトへのリンクをたどる場合、ユーザー エージェントは、リファラー ヘッダーを送信しません。これが問題となる場合は、解決方法がいくつかあります。
-
-
-* 他のサイトを HTTPS に移行する必要があります。参照先のサイトでこのガイドの[サーバーでの HTTPS の有効化](#enable-https-on-your-servers)セクションの手順を完了したら、自分のサイトで、それらのサイトへのリンクを `http://` から `https://` に変更するか、プロトコル相対リンクを使用できるようになります。
-* 新しい[リファラー ポリシー標準](http://www.w3.org/TR/referrer-policy/#referrer-policy-delivery-meta)を使用して、リファラー ヘッダーに関するさまざまな問題を回避することができます。
-
-検索エンジンは HTTPS に移行しているため、HTTPS に移行すると、今より多くのリファラー ヘッダーを目にすることになるでしょう。
-
-Warning: [HTTP RFC](https://tools.ietf.org/html/rfc2616#section-15.1.3) によると、参照ページがセキュアなプロトコルで転送される場合、クライアントは、（非セキュアな）HTTP リクエストにリファラー ヘッダー項目を含めることは**できません**。
-
-###  広告収入
-
-広告を表示することによって自分のサイトの収益化を図る運営者は、HTTPS に移行することで広告の表示回数が減少しないことを確認したいと考えます。
-しかし、混合コンテンツのセキュリティの問題により、HTTP `<iframe>` は HTTPS ページでは動作しません。
-厄介な集団行動の問題がここにあります。広告主が HTTPS で公開するまで、サイト運営者は広告収入を損失することなく HTTPS に移行することはできません。しかし、サイト運営者が HTTPS に移行するまで、広告主は HTTPS を公開する動機があまりありません。
-
-
-
-
-広告主は（このページの「サーバーでの HTTPS の有効化」セクションの説明に従うなどして）、少なくとも HTTPS を介して広告サービスを提供する必要があります。
-ほとんどの場合これは既に実施されています。HTTPS のサービス提供を行っていない広告主には、少なくとも提供を開始するように依頼する必要があります。
-十分な数の広告主と適切に相互運用できるようになるまで、このガイドの[イントラサイト URL を相対 URL にする](#make-intrasite-urls-relative)の実施は遅らせることをおすすめします。
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,120 +1,45 @@
-project_path: /web/fundamentals/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: Asegúrate de obtener el mejor rendimiento posible de la implementación de service worker.
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Ensure you're getting the best performance out of your service worker implementation.
 
-{# wf_updated_on: 2019-02-06 #}
-{# wf_published_on: 2017-09-21 #}
-{# wf_blink_components: Blink>ServiceWorker #}
+{# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2017-09-21 #} {# wf_blink_components: Blink>ServiceWorker #}
 
-# Carga de service worker de alto rendimiento {: .page-title }
+# High-performance service worker loading {: .page-title }
 
 {% include "web/_shared/contributors/jeffposnick.html" %}
 
-Si agregas un [service
-worker](/web/fundamentals/getting-started/primers/service-workers) a tu app
-web, puedes ofrecer ventajas importantes de rendimiento que van más allá de lo que es posible,
-incluso si sigues todas las [prácticas recomendadas tradicionales de almacenamiento en caché
-de navegadores](/web/fundamentals/performance/optimizing-content-efficiency/http-caching).
-Pero hay algunas prácticas recomendadas que puedes seguir para optimizar los tiempos
-de carga. Las siguientes sugerencias te permitirán obtener el mejor rendimiento posible de
-la implementación de un service worker.
+Adding a [service worker](/web/fundamentals/getting-started/primers/service-workers) to your web app can offer significant performance benefits, going beyond what's possible even when following all the [traditional browser caching best practices](/web/fundamentals/performance/optimizing-content-efficiency/http-caching). But there are a few best practices to follow in order to optimize your load times. The following tips will ensure you're getting the best performance out of your service worker implementation.
 
-## Primero, ¿qué son las solicitudes de navegación?
+## First, what are navigation requests?
 
-Las solicitudes de navegación se definen (de manera concisa) en la [especificación
-Fetch](https://fetch.spec.whatwg.org/#navigation-request) de la siguiente manera: <em>Una
-[solicitud](https://fetch.spec.whatwg.org/#concept-request) de navegación es una
-solicitud cuyo
-[destino](https://fetch.spec.whatwg.org/#concept-request-destination) es
-"<code>document</code>".</em> Si bien técnicamente correcta, esa definición no es
-detallada y no destaca la importancia de las navegaciones en el rendimiento de una
-app web. En términos informales, una solicitud de navegación ocurre cuando se ingresa una
-URL en la barra de ubicación del navegador, se interactúa con
-<code>[window.location](https://developer.mozilla.org/en-US/docs/Web/API/Window/location)</code>
-o se visita un enlace desde una página web a otra. Si se agrega un `<iframe>`
-en una página, también se genera una solicitud de navegación para `src` de `<iframe>`.
+Navigation requests are (tersely) defined in the [Fetch specification](https://fetch.spec.whatwg.org/#navigation-request) as: *A navigation [request](https://fetch.spec.whatwg.org/#concept-request) is a request whose [destination](https://fetch.spec.whatwg.org/#concept-request-destination) is "`document`".* While technically correct, that definition lacks nuance, and it undersells the importance of navigations on your web app's performance. Colloquially, a navigation request takes place whenever you enter a URL in your browser's location bar, interact with
+<code><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/location">window.location</a></code>, or visit a link from one web page to another. Putting an `<iframe>` on a page will also lead to a navigation request for the `<iframe>`'s `src`.
 
-Note: Las [aplicaciones de una página](https://en.wikipedia.org/wiki/Single-page_application),
-que utilizan la [API de historial](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-y las modificaciones de DOM en el lugar, tienden a evitar las solicitudes de navegación al pasar
-de una vista a otra. Pero la solicitud inicial en una sesión de navegador para una
-app de una sola página sigue siendo una navegación.
+Note: [Single page applications](https://en.wikipedia.org/wiki/Single-page_application), relying on the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) and in-place DOM modifications, tend to avoid navigation requests when switching from view to view. But the initial request in a browser's session for a single page app is still a navigation.
 
-Si bien la app web puede hacer numerosas [solicitudes de
-subrecursos](https://fetch.spec.whatwg.org/#subresource-request) adicionales a fin de
-mostrar todo el contenido (para elementos como secuencias de comandos, imágenes o estilos), es el
-HTML de la respuesta de navegación el que es responsable de iniciar todas las demás
-solicitudes. Cualquier demora que haya en la respuesta a la solicitud de navegación inicial será
-muy evidente para los usuarios, ya que deberán esperar frente a una pantalla en blanco
-durante un tiempo indeterminado.
+While your web app might make many other [subresource requests](https://fetch.spec.whatwg.org/#subresource-request) in order to display all its contents—for elements like scripts, images, or styles—it's the HTML in the navigation response that's responsible for kicking off all the other requests. Any delays in the response for the initial navigation request will be painfully obvious to your users, as they're left staring at a blank screen for an indeterminate period of time.
 
-Note: El [servidor push HTTP/2](/web/fundamentals/performance/http2/#server_push)
-agrega una complicación aquí, ya que permite que las respuestas de los subrecursos se devuelvan sin
-latencia adicional, junto con la respuesta de navegación. Pero las demoras para
-establecer la conexión con el servidor remoto también generarán demoras en los
-datos que se están enviando mediante un proceso push al cliente.
+Note: [HTTP/2 server push](/web/fundamentals/performance/http2/#server_push) adds a wrinkle here, as it allows subresource responses to be returned without additional latency, alongside the navigation response. But any delays in establishing the connection to the remote server will also lead to delays the data being pushed down to the client.
 
-Las [prácticas recomendadas de
-almacenamiento en caché](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#top_of_page) tradicionales,
-que utilizan encabezados de `Cache-Control` de HTTP y no un service worker,
-requieren [ir a la red en cada
-navegación](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#invalidating_and_updating_cached_responses),
-para garantizar que las URL de todos los subrecursos estén actualizadas. Lo ideal para el rendimiento
-de red sería obtener todas las ventajas del almacenamiento intenso en caché de los subrecursos
-*sin* requerir que se genere una solicitud de navegación que dependa de la red. Con un service worker
-configurado correctamente en función de la arquitectura
-específica del sitio, ahora esto es posible.
+Traditional [caching best practices](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#top_of_page), the kind that rely on HTTP `Cache-Control` headers and not a service worker, require [going to the network each navigation](/web/fundamentals/performance/optimizing-content-efficiency/http-caching#invalidating_and_updating_cached_responses), to ensure that all of the subresource URLs are fresh. The holy grail for web performance is to get all the benefits of aggressively cached subresources, *without* requiring a navigation request that's dependent on the network. With a properly configured service worker tailored to your site's specific architecture, that's now possible.
 
-## Para un rendimiento óptimo, omite la red para las navegaciones
+## For best performance, bypass the network for navigations
 
-El mayor impacto de agregar un service worker a la aplicación web se debe a que
-se responde a las solicitudes de navegación sin esperar a la red. En el
-mejor de los casos, para conectarse a un servidor web, es probable que se necesiten varios órdenes de
-magnitud más de tiempo que para leer datos almacenados localmente en la caché. En situaciones
-en las que la conexión del cliente no es la ideal (en general, cualquier red
-móvil), el tiempo que lleva recibir el primer byte de datos desde la
-red puede fácilmente superar el tiempo total que llevaría mostrar todo el
-HTML.
+The biggest impact of adding a service worker to your web application comes from responding to navigation requests without waiting on the network. The best-case-scenario for connecting to a web server is likely to take orders of magnitude longer than it would take to read locally cached data. In scenarios where a client's connection is less than ideal—basically, anything on a mobile network—the amount of time it takes to get back the first byte of data from the network can easily outweigh the total time it would take to render the full HTML.
 
-La elección de la implementación adecuada de service worker que priorice el almacenamiento en caché depende principalmente de
-la arquitectura del sitio.
+Choosing the right cache-first service worker implementation largely depends on your site's architecture.
 
-### Transmisión de respuestas compuestas
+### Streaming composite responses
 
-Si el HTML que usas se puede dividir naturalmente en partes de menor tamaño, con un encabezado y un pie de página estáticos
-junto con una porción media que varíe en función de la URL de la solicitud,
-lo ideal es procesar las navegaciones mediante una respuesta de transmisión. Puedes componer
-la respuesta con partes individuales que se almacenen en caché por separado. El uso de
-transmisiones garantiza que la porción inicial de la respuesta se exponga al
-cliente lo más rápido posible, lo que da más tiempo para analizar el HTML y
-hacer solicitudes adicionales de subrecursos.
+If your HTML can naturally be split into smaller pieces, with a static header and footer along with a middle portion that varies depending on the request URL, then handling navigations using a streamed response is ideal. You can compose the response out of individual pieces that are each cached separately. Using streams ensures that the initial portion of the response is exposed to the client as soon as possible, giving it a head start on parsing the HTML and making any additional subresource requests.
 
-En el artículo "[Stream Your Way to Immediate Responses](/web/updates/2016/06/sw-readablestreams)" (Obtenga respuestas inmediatas mediante transmisiones)
-se proporciona la descripción general de este enfoque, pero si deseas consultar ejemplos de aplicación real
-y demostraciones, la guía más completa es "[2016 - the year of web streams](https://jakearchibald.com/2016/streams-ftw/)" (2016: el año de las transmisiones web),
-de Jake Archibald.
+The "[Stream Your Way to Immediate Responses](/web/updates/2016/06/sw-readablestreams)" article provides a basic overview of this approach, but for real-world examples and demos, Jake Archibald's "[2016 - the year of web streams](https://jakearchibald.com/2016/streams-ftw/)" is the definitive guide.
 
-Note: Para algunas apps web, no se puede evitar el uso de la red al responder a
-una solicitud de navegación. El HTML de cada URL del sitio puede depender de datos
-provenientes de un sistema de administración de contenido o tal vez el sitio use diseños distintos y
-no se pueda adaptar a una estructura de shell de aplicación genérica. De todas maneras, el modelo service worker
-abre la puerta a mejoras con respecto al *statu quo* para la carga de HTML.
-Al usar transmisiones, puedes responder a las solicitudes de navegación de inmediato con un
-fragmento de HTML común almacenado en caché (tal vez incluso todo el contenido de `<head>` del sitio y algunos elementos
-iniciales de `<body>`) mientras se carga desde la red el resto del HTML, es decir, las opciones específicas correspondientes a
-una URL dada.
+Note: For some web apps, there's no avoiding the network when responding to a navigation request. Maybe the HTML for each URL on your site depends on data from a content management system, or maybe your site uses varying layouts and doesn't fit into a generic, application shell structure. Service workers still open the door for improvements over the *status quo* for loading your HTML. Using streams, you can respond to navigation requests immediately with a common, cached chunk of HTML—perhaps your site's full `<head>` and some initial `<body>` elements—while still loading the rest of the HTML, specific to a given URL, from the network.
 
-### Almacenamiento en caché de HTML estático
+### Caching static HTML
 
-Si tienes una app web simple que utiliza exclusivamente un conjunto de documentos de HTML
-estático, tienes suerte: la ruta para evitar la red
-es directa. Necesitas una configuración de service worker que responda a las navegaciones con
-HTML almacenado previamente en caché y que además incluya lógica no bloqueante para mantener ese
-HTML actualizado a medida que el sitio evolucione.
+If you've got a simple web app that relies entirely on a set of static HTML documents, then you're in luck: your path to avoiding the network is straightforward. You need a service worker that responds to navigations with previously cached HTML, and that also includes non-blocking logic for keeping that HTML up-to-date as your site evolves.
 
-Nuestro enfoque es usar un controlador `fetch` de service worker que implemente una
-[política stale-while-revalidate](/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
-para las solicitudes de navegación, de la siguiente manera:
+One approach is to use a service worker `fetch` handler that implements a [stale-while-revalidate policy](/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate) for navigation requests, like so:
 
 ```js
 self.addEventListener('fetch', event => {
@@ -150,24 +75,13 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-Otro enfoque sería usar una herramienta como [Workbox](https://workboxjs.org/), que
-se enlaza con el proceso de compilación de la app web para generar un service worker que
-procese el almacenamiento en caché de todos los recursos estáticos (no solamente los documentos HTML), los entregue
-primero desde la caché y los mantenga actualizados.
+Another approach is to use a tool like [Workbox](https://workboxjs.org/), which hooks into your web app's build process to generate a service worker that handles caching all of your static resources (not just HTML documents), serving them cache-first, and keeping them up to date.
 
-### Uso de un shell de aplicación
+### Using an Application Shell
 
-Si tienes una aplicación ya existente de una sola página, la implementación de la
-[arquitectura de shell de aplicación](/web/fundamentals/architecture/app-shell)
-es muy simple. Hay una estrategia clara para procesar
-las solicitudes de navegación sin utilizar la red: cada solicitud de navegación,
-independientemente de la URL específica, se responde con una copia almacenada en caché de un
-"shell" genérico de un documento HTML. El shell incluye todo lo necesario para el arranque de
-la aplicación de una sola página y, luego, la lógica de enrutamiento del cliente puede presentar el
-contenido específico de la URL de la solicitud.
+If you have an existing single page application, then the [application shell architecture](/web/fundamentals/architecture/app-shell) is straightforward to implement. There's a clear-cut strategy for handling navigation requests without relying on the network: each navigation request, regardless of the specific URL, is fulfilled with a cached copy of a generic "shell" of an HTML document. The shell includes everything needed to bootstrap the single page application, and client-side routing logic can then render the content specific to the request's URL.
 
-Escrito, el controlador `fetch` de service worker correspondiente sería
-similar al siguiente:
+Written by hand, the corresponding service worker `fetch` handler would look something like:
 
 ```js
 // Not shown: install and activate handlers to keep app-shell.html
@@ -181,26 +95,15 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-[Workbox](https://workboxjs.org/) también puede ser útil, ya que puede garantizar que el
-`app-shell.html` se almacene en caché y se mantenga actualizado y también puede proporcionar
-[asistentes](https://workboxjs.org/reference-docs/latest/module-workbox-sw.Router.html#registerNavigationRoute)
-para responder a las solicitudes de navegación con el shell almacenado en caché.
+[Workbox](https://workboxjs.org/) can also help here, both by ensuring your `app-shell.html` is cached and kept up to date, as well as providing [helpers](https://workboxjs.org/reference-docs/latest/module-workbox-sw.Router.html#registerNavigationRoute) for responding to navigation requests with the cached shell.
 
-## ⚠️ Problemas potenciales de rendimiento
+## ⚠️ Performance gotchas
 
-Si no puedes responder a las navegaciones con datos almacenados en caché, pero necesitas un service
-worker para otra funcionalidad (como proporcionar
-[contenido de reserva sin conexión](/web/fundamentals/instant-and-offline/offline-cookbook/#generic-fallback)
-o [procesar notificaciones push](/web/fundamentals/getting-started/codelabs/push-notifications/)),
-estás en una situación difícil. Si no tomas precauciones específicas,
-podrías terminar con un problema de rendimiento cuando agregues el service worker.
-Pero si estás atento y evitas estas situaciones, no tendrás ningún problema.
+If you can't respond to navigations using cached data, but you need a service worker for other functionality—like providing [offline fallback content](/web/fundamentals/instant-and-offline/offline-cookbook/#generic-fallback), or [handling push notifications](/web/fundamentals/getting-started/codelabs/push-notifications/) —then you're in an awkward situation. If you don't take specific precautions, you could end up taking a performance hit when you add in your service worker. But by steering clear of these gotchas, you'll be on solid ground.
 
-### Nunca uses un controlador fetch "passthrough"
+### Never use a "passthrough" fetch handler
 
-Si usas un service worker solo para notificaciones push, podrías
-cometer el error de pensar que lo siguiente es obligatorio o que se considerará
-una instrucción de no operación:
+If you're using a service worker just for push notifications, you might mistakenly think that the following is either required, or will just be treated as a no-op:
 
 ```js
 // Don't do this!
@@ -209,36 +112,16 @@ self.addEventListener('fetch', event => {
 });
 ```
 
-Este tipo de controlador fetch "passthrough" es peligroso, ya que
-la aplicación web seguirá funcionando, pero introducirás una pequeña
-latencia cada vez que se haga una solicitud de red. El
-inicio de un service worker genera una sobrecarga si no se estaba ejecutando, y también hay
-sobrecarga cuando se pasa la respuesta del service worker al cliente que
-hizo la solicitud.
+This type of "passthrough" fetch handler is insidious, since everything will continue to work in your web application, but you'll end up introducing a small latency hit whenever a network request is made. There's overhead involved in starting up a service worker if it's not already running, and there's also overhead in passing the response from the service worker to the client that made the request.
 
-Si el service worker no incluye un controlador `fetch`, algunos navegadores
-toman nota de ello y [no inician el service
-worker](https://github.com/w3c/ServiceWorker/issues/718) cuando hay una
-solicitud de red.
+If your service worker doesn't contain a `fetch` handler at all, some browsers will make note of that and [not bother starting up the service worker](https://github.com/w3c/ServiceWorker/issues/718) whenever there's a network request.
 
-### Usa la precarga de navegación cuando sea apropiado
+### Use navigation preload when appropriate
 
-Hay situaciones en las que *necesitas* un controlador `fetch` para usar una estrategia de
-almacenamiento en caché para ciertos subrecursos, pero la arquitectura hace que sea imposible
-responder a las solicitudes de navegación. Como alternativa, podrías
-usar datos almacenados en caché en la respuesta de navegación, pero deberías asegurarte de hacer una
-solicitud de red de datos actualizados para reemplazar los datos antiguos una vez que la página se haya cargado.
+There are scenarios in which you *need* a `fetch` handler to use a caching strategy for certain subresources, but your architecture makes it impossible to respond to navigation requests. Alternatively, you might be okay with using cached data in your navigation response, but you still want to make a network request for fresh data to swap in after the page has loaded.
 
-Una función conocida como
-[precarga de navegación](https://developer.mozilla.org/en-US/docs/Web/API/NavigationPreloadManager)
-es relevante para situaciones como estas dos. Puede mitigar las demoras que podría introducir un
-service worker que no respondiera a las navegaciones. También
-se puede usar para solicitudes "fuera de banda" de datos actualizados que después pueden
-usarse en el código del cliente una vez que la página se haya cargado. El artículo
-"[Speed up Service Worker with Navigation Preloads](/web/updates/2017/02/navigation-preload)"
-tiene todos los detalles que necesitas para configurar el service worker
-según corresponda.
+A feature known as [Navigation Preload](https://developer.mozilla.org/en-US/docs/Web/API/NavigationPreloadManager) is relevant for both of those use cases. It can mitigate the delays that a service worker that didn't respond to navigations might otherwise introduce. It can also be used for "out of band" requests for fresh data that could then be used by client-side code after the page has loaded. The "[Speed up Service Worker with Navigation Preloads](/web/updates/2017/02/navigation-preload)" article has all the details you'd need to configure your service worker accordingly.
 
-## Comentarios {: #feedback }
+## Feedback {: #feedback }
 
 {% include "web/_shared/helpful.html" %}

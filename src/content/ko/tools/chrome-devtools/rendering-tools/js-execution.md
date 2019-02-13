@@ -1,148 +1,102 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Chrome DevTools CPU Profiler를 사용하여 고비용 함수를 식별합니다.
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-{# wf_updated_on: 2016-03-30 #}
-{# wf_published_on: 2015-04-13 #}
+{# wf_updated_on: 2018-07-27 #} {# wf_published_on: 2015-04-13 #} {# wf_blink_components: Platform>DevTools #}
 
-# 자바스크립트 실행 속도 개선 {: .page-title }
+# Speed Up JavaScript Execution {: .page-title }
 
-{% include "web/_shared/contributors/kaycebasques.html" %}
-{% include "web/_shared/contributors/megginkearney.html" %}
+{% include "web/_shared/contributors/kaycebasques.html" %} {% include "web/_shared/contributors/megginkearney.html" %}
 
-Chrome DevTools CPU
-Profiler를 사용하여 고비용 함수를 식별합니다.
+Identify expensive functions using the Chrome DevTools CPU Profiler.
 
-![CPU 프로필](imgs/cpu-profile.png)
-
+![CPU profile](imgs/cpu-profile.png)
 
 ### TL;DR {: .hide-from-toc }
-- CPU Profiler를 사용하여 정확히 어느 함수를 호출하였는지, 각각 얼마나 시간이 걸렸는지 기록할 수 있습니다.
-- 프로필을 Flame Chart로 시각화합니다.
 
+* Record exactly which functions were called and how long each took with the CPU Profiler.
+* Visualize your profiles as a flame chart.
 
-## CPU 프로필 기록 {:#record-profile}
+## Record a CPU profile {:#record-profile}
 
-자바스크립트에 버벅거림이 있는 것을 발견하면, 자바스크립트 CPU 프로필을 수집합니다.
-CPU 프로필에는 페이지 함수의 어디에서 실행 시간이 소모되었는지 표시됩니다.
+If you’re noticing jank in your JavaScript, collect a JavaScript CPU profile. CPU profiles show where execution time is spent in your page’s functions.
 
-1. DevTools의 **Profiles** 패널로 이동합니다.
-2. **Collect JavaScript CPU Profile** 라디오 버튼을 선택합니다.
-3. **Start**를 누릅니다.
-4. 무엇을 분석하려 하는지에 따라 페이지를 새로 고치거나 
-페이지와 상호작용하거나, 그저 페이지를 실행시키기만 할 수도 있습니다. 
-5. 작업을 마쳤으면 **Stop** 버튼을 누릅니다. 
+1. Go to the **Profiles** panel of DevTools.
+2. Select the **Collect JavaScript CPU Profile** radio button.
+3. Press **Start**. 
+4. Depending on what you are trying to analyze, you can either reload the page, interact with the page, or just let the page run.
+5. Press the **Stop** button when you are finished. 
 
-또한 [Command Line API][profile]를 사용하여 명령줄에서 프로필을 기록하고
-그룹화할 수도 있습니다.
+You can also use the [Command Line API](/web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname) to record and group profiles from the command line.
 
-[profile]: /web/tools/chrome-devtools/debug/command-line/command-line-reference#profilename-and-profileendname
+## View CPU profile {:#view-profile}
 
-## CPU 프로필 보기 {:#view-profile}
+When you finish recording, DevTools automatically populates the Profile panel with the data from your recording.
 
-기록을 마쳤으면 DevTools가 해당 기록에서 가져온 데이터를 사용하여 자동으로 Profile 패널을
-채웁니다. 
+The default view is **Heavy (Bottom Up)**. This view enables you to see which functions had the most impact on performance and examine the calling paths to those functions.
 
-기본 뷰는 **Heavy (Bottom Up)**입니다. 이 뷰를 사용하면 
-성능에 가장 크게 영향을 미치는 함수가 무엇인지 확인하고 그러한 함수로 이어지는 
-호출 경로를 검사할 수 있습니다. 
+### Change sort order {:#sort}
 
-### 정렬 순서 변경 {:#sort}
+To change the sorting order, click on the dropdown menu next to the **focus selected function** icon (![focus selected function icon](imgs/focus.png){:.inline}) and then choose one of the following options:
 
-정렬 순서를 변경하려면, 
-**선택한 함수에 포커스** 아이콘
-(![선택한 함수에 포커스 아이콘](imgs/focus.png){:.inline}) 옆에 있는 드롭다운 메뉴를 클릭한 다음 
-다음 옵션 중에서 하나를 선택합니다.
-
-**Chart**. 기록의 시간순 Flame Chart를 표시합니다.
+**Chart**. Displays a chronological flame chart of the recording.
 
 ![flame chart](imgs/flamechart.png)
 
-**Heavy (Bottom Up)**. 함수를 성능에 미치는 영향을 기준으로 나열하며 개발자가 
-함수의 호출 경로를 검사할 수 있습니다. 이는 기본 뷰입니다. 
+**Heavy (Bottom Up)**. Lists functions by impact on performance and enables you to examine the calling paths to the functions. This is the default view.
 
 ![heavy chart](imgs/heavy.png)
 
-**Tree (Top Down)**. 호출 구조의 전반적인 모양을 표시하되
-콜 스택 맨 위부터 시작합니다. 
+**Tree (Top Down)**. Shows an overall picture of the calling structure, starting at the top of the call stack.
 
 ![tree chart](imgs/tree.png)
 
-### 함수 제외 {:#exclude}
+### Exclude functions {:#exclude}
 
-CPU 프로필에서 함수를 제외하려면 해당 항목을 클릭하여 선택한 다음 
-**exclude selected function** 아이콘(![함수 제외 아이콘](imgs/exclude.png){:.inline})을
-누릅니다. 제외된 함수를
-호출한 호출자에게 제외된 함수의 총 시간이 부과됩니다.
+To exclude a function from your CPU profile, click on it to select it and then press the **exclude selected function** icon (![exclude function icon](imgs/exclude.png){:.inline}). The caller of the excluded function is charged with the excluded function's total time.
 
-**모든 함수 복원** 아이콘
-(![모든 함수 복원 아이콘](imgs/restore.png){:.inline})
-을 클릭하면 제외된 함수를 모두 기록으로 다시 복원합니다.
+Click the **restore all functions** icon (![restore all functions icon](imgs/restore.png){:.inline}) to restore all excluded functions back into the recording.
 
-## CPU 프로필을 Flame Chart로 보기 {:#flame-chart}
+## View CPU profile as Flame Chart {:#flame-chart}
 
-Flame Chart 뷰는 CPU 프로필이 시간이 지나면서 어떻게 변하는지 시각적으로
-나타냅니다. 
+The Flame Chart view provides a visual representation of the CPU profile over time.
 
-[CPU 프로필을 기록](#record-profile)하고 나서 기록을
-Flame Chart 형태로 보려면 [정렬 순서](#sort)를 **Chart**로 변경합니다.
+After [recording a CPU profile](#record-profile), view the recording as a flame chart by [changing the sort order](#sort) to **Chart**.
 
-![Flame Chart 뷰](imgs/flamechart.png)
+![Flamechart view](imgs/flamechart.png)
 
-Flame Chart는 두 부분으로 분할되어 있습니다.
+The flame chart is split into two parts:
 
-1. **Overview**. 전체 기록의 조감도입니다.
-   막대 높이가 콜 스택의 깊이와 
-같습니다. 따라서 막대가 높을수록 콜 스택도 깊다는 뜻입니다. 
+1. **Overview**. A birds-eye view of the entire recording. The height of the bars correspond to the depth of the call stack. So, the higher the bar, the deeper the call stack.
 
-2. **Call Stacks**. 기록 중에 호출된 
-함수에 대한 심층 뷰입니다. 가로축은 시간이고 세로축은 
-콜 스택입니다. 스택은 하향식으로 구성되어 있습니다. 따라서 맨 위의 함수가 그 아래 있는 함수를 호출하고, 
-같은 방식으로 이어집니다. 
+2. **Call Stacks**. This is an in-depth view of the functions that were called during the recording. The horizontal axis is time and vertical axis is the call stack. The stacks are organized top-down. So, the function on top called the one below it, and so on.
+    
+    Functions are colored randomly. There is no correlation to the colors used in the other panels. However, functions are always colored the same across invocations so that you can see patterns of executions.
 
-   함수는 무작위로 색이 지정됩니다. 다른 패널에서 사용된 색과 아무런 
-연관 관계가 없습니다. 하지만 함수는 전체 호출에 걸쳐 항상 모두 동일한 색이 지정되므로
-실행 패턴을 확인할 수 있습니다. 
+![annotated flame chart](imgs/annotated-cpu-flame.png)
 
-![주석처리된 Flame Chart](imgs/annotated-cpu-flame.png)
+A tall call stack is not necessarily significant, it just means that a lot of functions were called. But a wide bar means that a call took a long time to complete. These are candidates for optimization.
 
-콜 스택의 높이가 높다고 반드시 중요한 것은 아닙니다. 그저 호출된 함수가 많다는 뜻일
-뿐입니다. 하지만 막대의 너비가 넓으면 호출이 완료되는 데 시간이 오래 걸렸다는 
-뜻입니다. 이러한 항목은 최적화 후보입니다. 
+### Zoom in on specific parts of recording {:#zoom}
 
-### 기록의 특정 부분 확대 {:#zoom}
+Click, hold, and drag your mouse left and right across the overview to zoom in on particular parts of the call stack. After you zoom, the call stack automatically displays the portion of the recording that you've selected.
 
-개요의 좌우를 오가며 마우스로 클릭한 상태로 끌어오면 콜 스택의 특정 부분만 
-확대할 수 있습니다. 확대하고 나면 해당 콜 스택이
-개발자가 선택한 기록 부분을 자동으로 표시합니다.
+![flame chart zoomed](imgs/benchmark-zoom.png)
 
-![확대한 Flame Chart](imgs/benchmark-zoom.png)
+### View function details {:#flame-chart-function-details}
 
-### 함수 세부정보 보기 {:#flame-chart-function-details}
+Click on a function to view its definition in the **Sources** panel.
 
-함수를 클릭하면 **Sources** 패널에서 해당 정의를 볼 수 있습니다.
+Hover over a function to display its name and timing data. The following information is provided:
 
-함수 위로 마우스를 가져가면 해당 이름과 타이밍 데이터가 표시됩니다. 제공되는 정보는 
-다음과 같습니다. 
+* **Name**. The name of the function.
+* **Self time**. How long it took to complete the current invocation of the function, including only the statements in the function itself, not including any functions that it called.
+* **Total time**. The time it took to complete the current invocation of this function and any functions that it called.
+* **URL**. The location of the function definition in the form of `file.js:100` where `file.js` is the name of the file where the function is defined and `100` is the line number of the definition.
+* **Aggregated self time**. Aggregate time for all invocations of the function across the recording, not including functions called by this function.
+* **Aggregated total time**. Aggregate total time for all invocations of the function, including functions called by this function.
+* **Not optimized**. If the profiler has detected a potential optimization for the function it lists it here.
 
-*  **Name**. 함수의 이름입니다.
-*  **Self time**. 함수의 현재 호출을 완료하는 데 얼마나 걸렸는지 
-나타냅니다. 여기에는 함수 자체에 포함된 문만 완료하는 데 걸린 시간이 포함되며, 
-호출된 모든 함수를 포함하지는 않습니다.
-*  **Total Time**. 이 함수와 해당 함수가 호출한 모든 함수의 현재 호출을 완료하는 데 
-걸린 시간입니다.
-*  **URL**. 함수 정의의 위치를 
-`file.js:100` 형식으로 나타낸 것입니다. 여기서 `file.js`는 함수가 정의된 위치의 파일 이름이고 
-`100`은 해당 정의의 줄 번호입니다.
-*  **Aggregated self time**. 기록 전체를 가로질러 함수의 모든 호출에 대한 
-집계 시간이며, 여기에는 이 함수로 인해 호출된 함수는 
-포함하지 않습니다.
-*  **Aggregated total time**. 해당 함수의 모든 호출에 걸린 총 시간을 집계한 것으로, 
-이 함수가 호출한 다른 모든 함수도 포함합니다.
-*  **Not optimized**. 프로파일러가 해당 함수에 대해 가능한 최적화를
-감지하면 여기에 나열합니다.
+![viewing functions details in flame chart](imgs/details.png)
 
-![함수 세부정보를 Flame Chart로 보기](imgs/details.png)
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,244 +1,193 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description:网站的访问者不只有人类，还有搜索引擎网络抓取工具。了解如何改善您的网站的搜索精度和排名。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
-{# wf_updated_on:2015-10-05 #}
-{# wf_published_on:2014-08-30 #}
+{# wf_blink_components: N/A #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-30 #}
 
-# 搜索优化 {: .page-title }
+# Search Optimization {: .page-title }
 
 {% include "web/_shared/contributors/agektmr.html" %}
 
-网站的访问者不只有人类，还有搜索引擎网络抓取工具。了解如何改善您的网站的搜索精度和排名。
+Websites are visited not only by humans, but also by search engine web crawlers. Learn how to improve search accuracy and ranking for your website.
 
 ### TL;DR {: .hide-from-toc }
-- 确定网页的网址结构。
-- 自适应设计是最受推崇的设计方法。
-- 为独立的桌面版本/移动版本网站使用  <code>rel='canonical'</code> + <code>rel='alternate'</code>。
-- 为动态提供独立桌面版本/移动版本 HTML 的单个网址使用 <code>Vary HTTP</code> 标头。
-- 为您想仅限知晓网址的人访问的页面使用 <code>noindex</code>。
-- 为您想保持私有状态的页面使用相关身份验证机制。
 
-## 向搜索引擎提供您的网站结构
+* Determine the URL structure of your web page.
+* Responsive design is most recommended.
+* Use `rel='canonical'` + `rel='alternate'` for separate desktop/mobile sites.
+* Use `Vary HTTP` header for a single URL dynamically serving separate desktop/mobile HTMLs.
+* Use `noindex` for pages you want to limit access to those who know the URL.
+* Use relevant authentication mechanism for pages you want to keep private.
 
-您的网站如何出现在搜索结果中对多设备网站设计具有重要意义。本指南会帮助您根据网站的网址结构对其进行搜索引擎优化。
+## Give search engines your site structure
 
-您是否计划构建自适应网页？是否提供采用独立网址的移动设备专用版本？
-您是否从同一网址同时提供桌面版本和移动版本？
-无论是哪一种情况，您始终都能对网站做进一步的搜索引擎优化。
+How your website appears in search results is important to multi-device site design. This guide helps you optimize your website for search engines based on its URL structure.
 
+Are you planning to build a responsive web page? Is there a mobile-specific version with a separate URL? Are you serving both the desktop version and the mobile version from the same URL? Regardless, you can always do a better job of optimizing your website for search engines.
 
-### 指定网站的网址结构
+### Give your site a URL structure
 
-可以通过几种方式向不同设备提供内容。以下是三种最常见的方法：
+There are several ways to serve content to different devices. The three most common methods are:
 
+**Responsive web design:** serves the same HTML from one URL and uses CSS media queries to determine how the content is rendered on the client side. For example, Desktop and Mobile: http://www.example.com/
 
-**自适应网页设计**：从一个网址提供相同的 HTML，并使用 CSS 媒体查询来确定内容在客户端的渲染方式。例如，桌面和移动版本网址：http://www.example.com/
+**Separate mobile site:** redirects users to a different URL depending on the user-agent. For example, Desktop: http://www.example.com/ Mobile: http://m.example.com/
 
+**Dynamic serving:** serves different HTML from one URL depending on the user- agent. For example, Desktop and Mobile: http://www.example.com/
 
+The best approach is to use **responsive web design**, though many websites use other methods.
 
-**独立移动版本网站**：根据 User Agent 将用户重定向至不同的网址。
-例如，桌面版本网址：http://www.example.com/ 移动版本网址：http://m.example.com/
+Determine which URL structure suits your web page. Then try the respective best practices to optimize it for search engines.
 
+### We recommend responsive web design
 
-**动态提供**：根据 User Agent 从一个网址提供不同的 HTML。
-例如，桌面和移动版本网址：http://www.example.com/
+The benefits of making your website responsive are:
 
-尽管许多网站采用了其他方法，但最佳方法是使用**自适应网页设计**。
+<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" />
 
-确定哪一种网址结构适合您的网页。然后，试着按照相应的最佳做法对其进行搜索引擎优化。
-
-
-### 我们建议采用自适应网页设计
-
-让您的网站采用自适应设计的优点如下：
-
-<img class="attempt-right" src="imgs/responsive-2x.png" srcset="imgs/responsive.png 1x, imgs/responsive-2x.png 2x" >
-
-* 更便于用户分享。
-* 网页加载更迅速，无需重定向。
-* 单一搜索结果网址。
+* Friendlier for user sharing.
+* Quicker page load without redirects.
+* Single URL for search results.
 
 <div style="clear:both;"></div>
 
-可通过[自适应网页设计基础知识](/web/fundamentals/design-and-ux/responsive/)了解如何构建采用自适应网页设计的网站。
+Learn to build websites with responsive web design at [Responsive Web Design Basics](/web/fundamentals/design-and-ux/responsive/).
 
-### 提供独立网址时使用 `link[rel=canonical]` 和 `link[rel=alternate]`
+### Use `link[rel=canonical]` and `link[rel=alternate]` when serving separate URLs
 
-如果使用不同网址在桌面版本和移动版本上提供类似内容，可能同时给用户和搜索引擎带来困惑，因为查看者并不能轻易发现它们旨在具有完全相同的内容。您应该指示：
+Serving similar contents on a desktop version and a mobile version at different URLs may cause confusion for both users and search engines because it's not obvious to viewers that they are intended to be identical. You should indicate:
 
-* 这两个网址的内容完全相同。
-* 哪一个是移动版本。
-* 哪一个是桌面（规范）版本。
+* That the content of the two URLs are identical.
+* Which is the mobile version.
+* Which is the desktop (canonical) version.
 
-这些信息有助于搜索引擎优化索引内容，以及确保用户找到的目标内容采用的格式适合其所用设备。
+This information helps search engines better index content and ensures that users find what they're looking for in a format that works for their device.
 
+#### Use alternate for desktop
 
-#### 为桌面版本使用 alternate
+When serving the desktop version, indicate that there's a mobile version on another URL by adding a `link` tag with a `rel="alternate" attribute that points
+to the mobile version in the`href` attribute.
 
-提供桌面版本时，可通过添加带 `rel="alternate" 属性的 `link` 标记指示还有采用其他网址的移动版本，该标记指向 `href` 属性中的移动版本。
-
-
-
-[http://www.example.com/](http://www.example.com/){: .external } HTML
-
+<http://www.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="alternate" media="only screen and (max-width: 640px)" href="http://m.example.com/">
+    
 
+#### Use canonical for mobile
 
-#### 为移动版本使用 canonical
+When serving the mobile version, indicate that there's a desktop (canonical) version on another URL by adding a `link` tag with a `rel="canonical"` attribute that points to the desktop version in the `href` attribute. Help search engines understand that the mobile version is explicitly for small screens by adding a `media` attribute with a value of `"only screen and (max-width: 640px)"`.
 
-提供移动版本时，可通过添加带 `rel="canonical"` 属性的 `link` 标记指示还有采用其他网址的桌面（规范）版本，该标记指向 `href` 属性中的桌面版本。通过添加值为 `"only screen and (max-width: 640px)"` 的 `media` 属性帮助搜索引擎了解，移动版本明确适用于较小屏幕。
-
-
-[http://m.example.com/](http://m.example.com/){: .external } HTML
-
+<http://m.example.com/>{: .external } HTML
 
     <title>...</title>
     <link rel="canonical" href="http://www.example.com/">
+    
 
+<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" />
 
-<img src="imgs/different_url-2x.png" srcset="imgs/different_url.png 1x, imgs/different_url-2x.png 2x" >
+### Use the Vary HTTP header
 
-### 使用 Vary HTTP 标头
+Serving different HTML based on device type reduces unnecessary redirects, serves optimized HTML, and provides single URL for search engines. It also has several disadvantages:
 
-根据设备类型提供不同的 HTML 可减少不必要的重定向、提供经过优化的 HTML 以及为搜索引擎提供单一网址。
-但它也有几个缺点：
+* There may be intermediate proxies between a user's browsers and the server. Unless the proxy knows that the content varies depending on user agent, it may serve unexpected results.
+* Changing contents depending on user agent risks being considered "[cloaking](https://support.google.com/webmasters/answer/66355)", which is a violation of Google’s Webmaster Guidelines.
 
+By letting search engines know that the content varies depending on user agent, they can optimize search results for the user agent that is sending queries.
 
-* 用户浏览器与服务器之间可能存在中间代理。除非代理知晓内容随 User Agent 而变化，否则其提供的结果可能出乎意料。
-* 根据 User Agent 更改内容存在被视为“[掩蔽](https://support.google.com/webmasters/answer/66355)”的风险，这是违反 Google 网站站长指南的行为。
+To indicate that the URL serves different HTML depending on user agent, provide a b `Vary: User-Agent` in the HTTP header. This allows search indexing to treat desktop and mobile versions separately, and intermediate proxies to cache those contents gracefully.
 
-
-
-通过让搜索引擎知晓内容随 User Agent 而变化，它们就能针对发送查询的 User Agent 对搜索结果进行优化。
-
-
-要指示网址根据 User Agent 提供不同的 HTML，请在 HTTP 标头中提供一个 `Vary: User-Agent`。
-这样一来，搜索索引便可对桌面和移动版本进行区别对待，中间代理也可以妥善缓存这些内容。
-
-
-
-[http://www.example.com/](http://www.example.com/){: .external } HTTP Header
-
+<http://www.example.com/>{: .external } HTTP Header
 
     HTTP/1.1 200 OK
     Content-Type: text/html
     Vary: User-Agent
     Content-Length: 5710
+    
 
+<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" />
 
-<img src="imgs/same_url-2x.png" srcset="imgs/same_url.png 1x, imgs/same_url-2x.png 2x" >
+To learn more about building URL structure across desktop and mobile, read [about building smartphone-optimized websites](/webmasters/smartphone-sites/).
 
-如需了解有关构建跨桌面和移动版本的网址结构的更多信息，请阅读[有关构建智能手机优化网站的内容](/webmasters/smartphone-sites/)。
+## Control crawling and indexing from search engines
 
+Being listed properly on search engines is critical to delivering your website to the world, but poor configuration can cause unexpected content to be included in the results. This section helps you avoid such problems by explaining how crawlers work and how they index websites.
 
-## 控制来自搜索引擎的抓取和索引操作
+Sharing information has no better place than the web. When you publish a document, it's immediately available to the entire world. The page will be visible to anyone who knows the URL. That's where search engines come in. They need to be able to find your website.
 
-将网站妥善列入搜索引擎对将其推广至全球至关重要，但不良配置可能导致结果中包含意料之外的内容。此部分通过说明抓取工具的工作和网站索引编制原理来帮助您避免此类问题。
+However, there are some cases where you don't want people to find those documents even though you want to put them on the web. For example, a blog's admin page is something only certain people should have access to. There's no benefit to letting people find those pages through search engines.
 
+This section also explains how to restrict certain pages from appearing in search results.
 
-没有比网络更好的信息共享场所。当您发布一份文档时，全世界可立即获得。
-任何知晓网址的人都能看到网页。
-搜索引擎的作用就在于此。它们必须能够找到您的网站。
+### The difference between "crawl" and "index"
 
-不过，在某些情况下，尽管您希望人们访问您的网站，却不想让他们找到这些文档。
-例如，博客的管理员页面只有特定人员才有权访问。
-让人们通过搜索引擎找到这些页面没什么好处。
+Before you learn how to control search results, you need to understand how search engines interact with your web page. From your site's point of view, there are roughly two things search engines do to your site: crawling and indexing.
 
+**Crawling** is when a search engine bot fetches your web page to analyze its content. The content is stored in the search engine's database and can be used to populate search result details, rank pages, and discover new pages by following links.
 
-此部分还说明如何禁止某些页面出现在搜索结果中。
+**Indexing** is when a search engine stores a website's URL and any associated information in its database so it is ready to serve as a search result.
 
+Note: Many people confuse crawling with indexing. Prohibiting crawling doesn't mean that the page won't show up in the search results. For example, if a third-party website has a link to one of your web pages, it can still be indexed even though it's blocked from crawling. In this case, the search result lacks a detailed description.
 
-### “抓取”与“索引”之间的区别
+### Control crawling with robots.txt
 
-在了解如何控制搜索结果之前，您需要先了解搜索引擎如何与您的网页进行交互。从网站的视角来看，搜索引擎对网站执行的操作主要有两项：抓取和索引。
+You can use a text file called `robots.txt` to control how well-behaved crawlers access your web page. `Robots.txt` is a simple text file describing how you want search bots to crawl your site. (Not all crawlers necessarily respect `robots.txt`. Imagine that anyone can create their own stray crawlers.)
 
-**抓取**是指搜索引擎自动程序获取网页以分析其内容。内容存储在搜索引擎的数据库中，可用于填充搜索结果详情、为网页排名以及通过逐层深入链接发现新的网页。
+Place `robots.txt` at the root directory of your website's host. For example, if your site's host is `http://pages.example.com/`, then the `robots.txt` file should be located at `http://pages.example.com/robots.txt`. If the domain has different schema, subdomains, or other ports, they are considered different hosts and should have `robots.txt` for each of their root directories.
 
-**索引**是指搜索引擎将网站的网址以及任何关联信息存储在其数据库内，以便随时充当搜索结果。
-
-Note: 许多人混淆了抓取和索引。禁止抓取并不意味着网页不会出现在搜索结果中。例如，如果某个第三方网站具有您的某个网页的链接，即使禁止了抓取，也仍可对其进行索引。在此情况下，搜索结果将缺少详细说明。
-
-### 使用 robots.txt 控制抓取
-
-您可以利用名为 `robots.txt` 的文本文件控制良性抓取工具获取网页的方式。`Robots.txt` 是一个简单的文本文件，用于说明您希望搜索自动程序如何抓取您的网站。
-（并非所有抓取工具都一定会遵守 `robots.txt`。
-料想一定有人会自行创建不正当的抓取工具。）
-
-将 `robots.txt` 置于网站主机的根目录。例如，如果网站的主机是 `http://pages.example.com/`，则 `robots.txt` 文件应位于 `http://pages.example.com/robots.txt`。如果该域名有不同的架构、子域名或其他端口，则将其视为不同的主机，应在每个主机的根目录中放置 `robots.txt`。
-
-
-
-
-以下是一个简短的示例：
+Here's a quick example:
 
 **http://pages.example.com/robots.txt**
 
     User-agent: *
     Disallow: /
+    
 
+This indicates that you want to disallow all bots from crawling your entire website.
 
-这表示您想禁止所有自动程序抓取您的整个网站。
-
-
-下面是另一个示例：
+Here's another example:
 
 **http://pages.example.com/robots.txt**
 
-    User-agent:Googlebot
+    User-agent: Googlebot
     Disallow: /nogooglebot/
+    
 
+You can specify the behavior per bot (user agent) by indicating a user-agent name. In the above case, you are disallowing the user agent called `Googlebot` from crawling `/nogooglebot/` and all contents below this directory.
 
-您可以通过指示 User Agent 名称来指定每个自动程序 (User Agent) 的行为。
-在上例中，您禁止名为 `Googlebot` 的 User Agent 抓取 `/nogooglebot/` 以及该目录下的所有内容。
-
-
-可通过各搜索引擎自动程序的帮助页面了解更多相关信息：
+Learn more about each search engine's bots on their help pages:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_txt)
 * [Bing](http://www.bing.com/webmaster/help/how-to-create-a-robots-txt-file-cb7c31ec)
 * [Yandex](https://help.yandex.com/webmaster/controlling-robot/robots-txt.xml)
 
+Note: `robots.txt` is only required **if** you want to control the way your site is crawled. Do not return response code 500 for the url: `/robots.txt`. This terminates all subsequent crawls for the entire host resulting in empty search result details.
 
-Note: **仅当**您想控制网站的抓取方式时，才需要使用 `robots.txt`。请勿为网址 `/robots.txt` 返回响应代码 500。这会终止对整个主机的所有后续抓取，导致搜索结果详情不包含任何内容。
+#### Test robots.txt
 
-#### 测试 robots.txt
+Depending on which crawlers your robots.txt is targeting, search engine providers may provide a tool to test `robots.txt`. For example, for Google there's a validator in [Webmaster Tools](https://www.google.com/webmasters/tools/robots-testing-tool) that you can use to test your robots.txt.
 
-根据 robots.txt 所针对的抓取工具，搜索引擎提供商可能会提供相应工具来测试 `robots.txt`。
-例如，对于 Google，其[网站站长工具](https://www.google.com/webmasters/tools/robots-testing-tool)中有一个验证器可用来测试 robots.txt。
+<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x" />
 
+Yandex provides [a similar tool](https://webmaster.yandex.com/tools/robotstxt/).
 
+### Control search indexing with meta tags
 
+If you don't want your web page to show up in search results, robots.txt isn't the solution. You need to allow those pages to be crawled, and explicitly indicate that you don't want them to be indexed. There are two solutions:
 
-<img src="imgs/robots-txt-validator.png" srcset="imgs/robots-txt-validator-2x.png 2x, imgs/robots-txt-validator.png 1x">
-
-Yandex 也提供了[类似的工具](https://webmaster.yandex.com/tools/robotstxt/)。
-
-### 使用元标记控制搜索索引
-
-如果您不希望网页出现在搜索结果中，则 robots.txt 并非解决方案。
-您需要允许抓取这些网页，并明确指示您不希望对它们进行索引。
-有以下两个解决方案：
-
-要表示您不希望索引某个 HTML 网页，请使用特定类型的 `<meta>` 标记，并将其属性设置为 `name="robots"` 和 `content="noindex"`。
-
+To indicate you don't want an HTML page to be indexed, use a specific kind of `<meta>` tag, one with its attributes set as `name="robots"` and `content="noindex"`.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="robots" content="noindex" />
+    
 
-
-您可以通过将 `name` 属性的值更改为特定 User Agent 名称来缩小范围。例如，`name="googlebot"`（不区分大小写）表示您不希望 Googlebot 索引该网页。
-
+By changing the value of the `name` attribute to a specific user agent name, you can narrow the scope. For example, `name="googlebot"` (case insensitive) indicates that you don't want Googlebot to index the page.
 
     <!DOCTYPE html>
     <html><head>
     <meta name="googlebot" content="noindex" />
+    
 
-
-robots 元标记的其他选项包括：
+Other options for the robots meta tag include:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/which-robots-metatags-does-bing-support-5198d240)
@@ -246,105 +195,104 @@ robots 元标记的其他选项包括：
 
 #### X-Robots-Tag
 
-要表示您不希望索引图像、样式表或脚本文件等资源，请在 HTTP 标头中添加 `X-Robots-Tag: noindex`。
-
-
+To indicate that you don't want resources such as images, stylesheets, or script files to be indexed, add `X-Robots-Tag: noindex` in an HTTP header.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: noindex
     Content-Type: text/html; charset=UTF-8
+    
 
-
-如果您想把范围缩小到特定 User Agent，请在 `noindex` 前插入 User Agent 名称。
-
+If you want to narrow the scope to a specific user agent, insert the user agent name before `noindex`.
 
     HTTP/1.1 200 OK
     X-Robots-Tag: googlebot: noindex
     Content-Type: text/html; charset=UTF-8
+    
 
-
-如需了解有关 X-Robots-Tag 的更多信息：
+To learn more about X-Robots-Tag:
 
 * [Google](/webmasters/control-crawl-index/docs/robots_meta_tag)
 * [Bing](http://www.bing.com/webmaster/help/how-can-i-remove-a-url-or-page-from-the-bing-index-37c07477)
 
-Note: 如果您利用 `robots.txt` 禁止抓取，由于并不知晓您不希望索引这些网页，搜索自动程序可能仍会对它们进行索引。之所以可能发生这种情况，是因为：<ul><li>搜索自动程序可能是循着其他网站上的链接找到您的网页。</li><li>无法抓取的搜索引擎检测不到  <code>noindex</code>。</li></ul>
+Note: If you disallow crawls using `robots.txt`,  search bots still may index those pages without knowing that you don't want those pages to be indexed. This can happen because:
 
-别指望 `robots.txt` 能够控制搜索索引。
+* Search bots may find your web pages by following links from other websites.
+* Search engines that can't crawl can't detect `noindex`.
 
-### 不同内容类型的示例
+Don't expect `robots.txt` to control search indexes.
 
-什么是控制抓取和索引的最佳解决方案？以下是一些针对不同网页类型的示例解决方案。
+### Examples by content type
 
-#### 可供任何人全面访问和搜索的网页
+What are the best solutions to control crawling and indexing? Here are some example solutions for different types of pages.
 
-网络上的大多数网页均属这一类型。
+#### Fully accessible and searchable by anyone
 
-* 无需使用 `robots.txt`。
-* 无需使用 robots 元标记。
+Most of the pages on the web are of this type.
 
-#### 仅限知晓网址的人员访问
+* No `robots.txt` required.
+* No robots meta tags required.
 
-示例包括：
+#### Limited access by people who know the URL
 
-* 博客管理员控制台的登录页面。
-* 通过传递面向初级互联网用户的网址分享的私有内容。
+Examples include:
 
-在此情况下，您不希望搜索引擎索引这些网页。
+* Login page for a blog admin console.
+* Private content shared by passing a URL for novice internet users.
 
-* 无需使用 `robots.txt`。
-* 为 HTML 网页使用 `noindex` 元标记。
-* 为非 HTML 资源（图像、PDF 等）使用 `X-Robots-Tag: noindex`。
+In this case, you don't want search engines to index those pages.
 
-Note: 想知道您是否应禁止抓取 JavaScript 和样式表文件？<a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google 会尽最大努力理解它们</a>，以便能找到通过 AJAX 等现代化技术提供的内容。您当然应该允许抓取工具抓取 JavaScript。
+* No `robots.txt` required.
+* Use `noindex` meta tags for HTML pages.
+* Use `X-Robots-Tag: noindex` for non HTML resources (images, pdf, etc).
 
-#### 仅限获得授权的人员访问
+Note: Wondering if you should prohibit crawling JavaScript and Stylesheet files? <a href='http://googlewebmastercentral.blogspot.com/2014/05/understanding-web-pages-better.html' target='_blank'>Google tries its best to understand them</a> so that it can find contents available through modern technologies such as AJAX. You should definitely allow crawlers to crawl JavaScript.
 
-在此情况下，即使有人找到了网址，如果没有有效凭据，服务器也会拒绝提供结果。例如：
+#### Restricted access from authorized people
 
-* 社交网络上私人分享的内容。
-* 企业支出系统。
+In this case, even if someone finds the URL, the server refuses to present the result without a proper credential. For example:
 
-对于这些类型的网页，搜索引擎应该既不抓取也不索引它们。
+* Privately shared content on a social network.
+* Enterprise expense system.
 
-* 为凭据无效的访问返回响应代码 401“未经授权”（或将用户重定向至登录页面）。
-* 请勿使用 `robots.txt` 禁止抓取这些网页。否则将检测不到 401。
+In these types of pages, search engines should neither crawl nor index them.
 
-此处的限制机制可能是 IP 地址、Cookie、初级身份验证、OAuth 等。
-如何实现此类身份验证/授权取决于您的基础架构，这些内容超出了本文的范围。
+* Return response code 401 "Unauthorized" for an access without a proper credential (or redirect the user to a login page).
+* Don't use `robots.txt` to disallow crawling these pages. Otherwise, 401 can't be detected.
 
+The restriction mechanism here can be an IP address, a cookie, basic auth, OAuth, etc. How to implement such authentication/authorization depends on your infrastructure and is beyond this article's scope.
 
-### 请求从搜索引擎中移除网页
+### Request a page removal from a search engine
 
-在下列情况下，您可能希望移除某个搜索结果：
+You might want to remove a search result when:
 
-* 页面不再存在。
-* 某个被意外索引的网页包含机密信息。
+* The page no longer exists.
+* A page was accidentally indexed that includes confidential information.
 
+Major search engines provide a way to send a request to remove such pages. The process usually takes the following:
 
-主流搜索引擎均提供了通过发送请求来移除此类网页的途径。移除过程通常包含下列步骤：
+1. Make sure the page you want removed:
+    
+    * Is already deleted from your server and returns 404
+    * Is configured not to be indexed (ex: noindex)
 
-1. 确保您想移除的网页：
-    * 已从服务器删除，并返回 404
-    * 配置为不进行索引（例如：noindex）
+2. Go to the request page on each search engine. (Google and Bing require you to register and validate ownership of your website.)
 
-1. 转到各搜索引擎上的请求页面。（Google 和 Bing 要求您注册并验证对网站的所有权。）
-1. 发送一个请求。
+3. Send a request.
 
-<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x">
+<img src="imgs/remove-urls.png" srcset="imgs/remove-urls-2x.png 2x, imgs/remove-urls.png 1x" />
 
-可在各搜索引擎的帮助页面查看具体步骤：
+Check out concrete steps at the respective search engine's help pages:
 
 * [Google](https://support.google.com/webmasters/answer/1663419)
 * [Bing](http://www.bing.com/webmaster/help/bing-content-removal-tool-cb6c294d)
 * [Yandex](https://help.yandex.com/webmaster/yandex-indexing/removing-from-index.xml)
 
-### 附录：抓取工具 User Agent 列表
+### Appendix: List of crawler user agents
 
 * [Google](https://support.google.com/webmasters/answer/1061943)
 * [Bing](http://www.bing.com/webmaster/help/which-crawlers-does-bing-use-8c184ec0)
 * [Yandex](https://help.yandex.com/search/robots/logs.xml)
 
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

@@ -1,35 +1,28 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description: Dokumentasi referensi untuk audit Lighthouse "Situs mengalihkan lalu lintas HTTP ke HTTPS".
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Redirects HTTP Traffic To HTTPS" Lighthouse audit.
 
-{# wf_updated_on: 2016-09-20 #}
-{# wf_published_on: 2016-09-20 #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-09-20 #} {# wf_blink_components: N/A #}
 
-# Situs Mengalihkan Lalu Lintas HTTP ke HTTPS  {: .page-title }
+# Redirects HTTP Traffic To HTTPS {: .page-title }
 
-## Mengapa audit itu penting {: #why }
+## Overview {: #overview }
 
-Semua situs harus dilindungi dengan HTTPS. Lihat dokumen Lighthouse berikut untuk
-mengetahui mengapa: [Situs berada di HTTPS](https).
+All sites should be protected with HTTPS. See the following Lighthouse doc to learn why: [Site is on HTTPS](https).
 
-Setelah menyiapkan HTTPS, Anda perlu memastikan bahwa semua lalu lintas HTTP
-yang tidak aman ke situs Anda telah dialihkan ke HTTPS.
+Once you've got HTTPS set up, you need to make sure that all unsecure HTTP traffic to your site is redirected to HTTPS.
 
-## Cara untuk lulus audit {: #how }
+## Recommendations {: #recommendations }
 
-1. Gunakan tautan kanonis dalam `head` HTML Anda untuk membantu mesin telusur mengetahui
-   cara terbaik untuk mencapai laman tersebut.
+1. Use canonical links in the `head` of your HTML to help search engines figure out the best way to get to the page.
+    
+    <link rel="canonical" href="https://example.com" />
+    
 
-       <link rel="canonical" href="https://example.com"/>
+2. Configure your server to redirect HTTP traffic to HTTPS. See your server's documentation to figure out the best way to do this.
 
-2. Konfigurasikan server Anda untuk mengalihkan lalu lintas HTTP ke HTTPS. Lihat dokumentasi
-   server Anda untuk mengetahui cara terbaik melakukannya.
+## More information {: #more-info }
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+Lighthouse changes the page's URL to `http`, loads the page, and then waits for the event from the Chrome Debugger that indicates that the page is secure. If Lighthouse does not receive the event within 10 seconds then the audit fails.
 
-Lighthouse mengubah URL laman menjadi `http`, memuat laman, kemudian menunggu
-kejadian dari Chrome Debugger yang menunjukkan bahwa laman telah aman. Jika
-Lighthouse tidak menerima kejadian dalam 10 detik kemudian maka audit akan gagal.
+## Feedback {: #feedback }
 
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}

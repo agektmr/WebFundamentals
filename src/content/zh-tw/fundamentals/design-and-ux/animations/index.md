@@ -1,38 +1,35 @@
-project_path: /web/_project.yaml
-book_path: /web/fundamentals/_book.yaml
-description: 進一步瞭解最新應用程式和網站中的動畫和其用途。
+project_path: /web/fundamentals/_project.yaml book_path: /web/fundamentals/_book.yaml description: Get a better understanding of animations and their use in modern apps and sites.
 
-{# wf_updated_on: 2014-10-20 #}
-{# wf_published_on: 2014-08-08 #}
+{# wf_blink_components: Blink>Animation #} {# wf_updated_on: 2018-09-20 #} {# wf_published_on: 2014-08-08 #}
 
-# 動畫 {: .page-title }
+# Animations {: .page-title }
 
 {% include "web/_shared/contributors/paullewis.html" %}
 
-
-動畫是做出引人注目的網頁應用程式和網站的重要一部分。 使用者已變得會期望擁有高度回應性與互動式的使用者介面。 然而，您的介面的動畫處理過程，倒是不一定直接了當。 該動畫處理的目標物、時機，以及動畫應該採用哪一種操作感？
+Animations are a huge part of making compelling web applications and sites. Users have come to expect highly responsive and interactive user interfaces. Animating your interface, however, is not necessarily straightforward. What should be animated, when, and what kind of feel should the animation have?
 
 ### TL;DR {: .hide-from-toc }
-- 使用動畫，做為為您專案加入活力的方法。
-- 動畫應支援使用者互動。
-- 注意要動畫處理哪些屬性；某些工作的成本比其他更昂貴！
 
+* Use animations as a way to add life to your projects.
+* Animations should be in support of user interaction.
+* Be careful which properties you animate; some are more expensive than others.
 
-## 選擇要動畫處理的合適項目
+## Choose the right things to animate
 
-很棒的動畫可為您的使用者，多加一層享受和參與感。 您可以動畫處理幾乎任何您喜歡的項目，無論是寬度、高度、位置、顏色、背景，但您需要注意潛在的效能瓶頸，以及動畫會如何影響您應用程式的個性。 斷斷續續或選擇差勁的動畫可能會負面影響使用者體驗，所以動畫必須同時具高效能且適當。
+Great animations add a layer of enjoyment and engagement to your projects for your users. You can animate pretty much anything you like, whether that’s widths, heights, positions, colors, or backgrounds, but you need to be aware of potential performance bottlenecks and how animations affect the personality of your application. Stuttering or poorly chosen animations can negatively affect user experience, so animations need to be both performant and appropriate.
 
-## 使用動畫來支援互動
+## Use animations to support interactions
 
-不要只是為了展現能力而動畫處理某個項目；這會惱怒使用者並讓人感到礙事。 反之，使用戰略放置的動畫，以 _強化_ 使用者互動。 如果使用者點選功能表圖示，請從頁面側邊射出功能表，或如果他們點擊一個按鈕，也許要使用微光或彈跳來確認互動。 注意要避免動畫非必要中斷或阻礙使用者活動。
+Don’t just animate something because you can; it just annoys users and feels obstructive. Instead, use strategically placed animations to *reinforce* the user interactions. If they tap the menu icon, swipe to reveal a navigation drawer, or tap a button, use perhaps a subtle glow or bounce to acknowledge the interaction. Avoid animations that interrupt or obstruct the user's activity unnecessarily.
 
-## 避免動畫處理高成本的屬性
+## Avoid animating expensive properties
 
-唯一比置放位置差勁的動畫更糟糕的是會造成頁面斷斷續續的動畫。 這會讓使用者感到失望和不滿，可能會希望您一開始就不必費心動畫處理任何東西！
+The only thing worse than animations that are poorly placed are those that cause the page to stutter. This type of animation leaves users feeling frustrated and unhappy, and likely wishing you didn't animate things at all.
 
-某些屬性的變更較為高成本，因此更容易造成斷斷續續。 因此，變更元素的 `box-shadow`，將需要比變更文字顏色更高成本的繪製作業。 變更元素的 `width` 可能會比變更其 `transform` 更高成本。
+Some properties are more expensive to change than others, and are therefore more likely to make things stutter. So, for example, changing the `box-shadow` of an element requires a much more expensive paint operation than changing, say, its text color. Similarly, changing the `width` of an element is likely to be more expensive than changing its `transform`.
 
-您可以在 [動畫和效能](animations-and-performance.html) 指南中閱讀更多關於動畫效能的考量；但如果您想要 TL;DR，請堅守變形和透明度變更，並善用 `will-change`。 如果您想要知道究竟哪些工作會因動畫處理特定屬性而觸發，請查看 [CSS 觸發器](http://csstriggers.com)。
+You can read more about the performance considerations of animations in the [Animations and Performance](animations-and-performance) guide, but if you want the TL;DR, stick to transforms and opacity changes, and use `will-change`. If you want to know exactly which work is triggered by animating a given property, see [CSS Triggers](http://csstriggers.com).
 
+## Feedback {: #feedback }
 
-
+{% include "web/_shared/helpful.html" %}

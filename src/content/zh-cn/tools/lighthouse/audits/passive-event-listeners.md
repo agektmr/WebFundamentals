@@ -1,64 +1,41 @@
-project_path: /web/tools/_project.yaml
-book_path: /web/tools/_book.yaml
-description:“网站使用被动事件侦听器以提升滚动性能”Lighthouse 审查的参考文档。
+project_path: /web/tools/_project.yaml book_path: /web/tools/_book.yaml description: Reference documentation for the "Uses Passive Event Listeners to Improve Scrolling Performance" Lighthouse audit.
 
-{# wf_updated_on:2017-12-19 #}
-{# wf_published_on:2016-11-30 #}
-{# wf_blink_components: N/A #}
+{# wf_updated_on: 2018-07-23 #} {# wf_published_on: 2016-11-30 #} {# wf_blink_components: N/A #}
 
-# 网站使用被动事件侦听器以提升滚动性能 {: .page-title }
+# Uses Passive Event Listeners to Improve Scrolling Performance {: .page-title }
 
-## 为什么说此审查非常重要{: #why }
+## Overview {: #overview }
 
-在您的触摸和滚轮事件侦听器上设置 `passive` 选项可提升滚动性能。
+Setting the `passive` option on your touch and wheel event listeners can improve scrolling performance.
 
+See [Improving Scrolling Performance with Passive Event Listeners](/web/updates/2016/06/passive-event-listeners) for an overview.
 
-有关概述，请参阅[通过被动事件侦听器提升滚动性能][blog]。
+See the [Explainer](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md) in the passive event listener specification for a technical deep-dive.
 
+## Recommendations {: #recommendations }
 
-有关技术详细信息，请参阅被动事件侦听器规范中的[说明][explainer]。
+Add the `passive` flag to all of the event listeners that Lighthouse has identified. In general, add the `passive` flag to every `wheel`, `mousewheel`, `touchstart`, and `touchmove` event listener that does not call `preventDefault()`.
 
-
-[blog]: /web/updates/2016/06/passive-event-listeners
-[explainer]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
-
-## 如何通过此审查{: #how }
-
-将 `passive` 标志添加到 Lighthouse 已识别的所有事件侦听器。
-一般情况下，将 `passive` 标志添加到每个没有调用 `preventDefault()` 的 `wheel`、`mousewheel`、`touchstart` 和 `touchmove` 事件侦听器。
-
-
-
-在支持被动事件侦听器的浏览器中，将侦听器标记为 `passive` 与设置标志一样简单：
-
+In browsers that support passive event listeners, marking a listener as `passive` is as easy as setting a flag:
 
     document.addEventListener('touchstart', onTouchStart, {passive: true});
+    
 
-不过，在不支持被动事件侦听器的浏览器中，第三个参数是一个布尔值，以表明此事件是应触发还是采集。因此，使用上面的语法可能会导致意外后果。
+However, in browsers that do not support passive event listeners, the third parameter is a boolean to indicate whether the event should bubble or capture. So, using the syntax above may cause unintended consequences.
 
+See the polyfill in [Feature Detection](https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection) to learn how to safely implement passive event listeners.
 
+## More information {: #more-info }
 
-如需了解如何安全地实现被动事件侦听器，请参阅[功能检测][polyfill]中的 polyfill。
+Lighthouse uses the following algorithm to flag potential passive event listener candidates:
 
+1. Collect all event listeners on the page.
+2. Filter out non-touch and non-wheel listeners.
+3. Filter out listeners that call `preventDefault()`.
+4. Filter out listeners that are from a different host than the page.
 
-[polyfill]: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection
+Lighthouse filters out listeners from different hosts because you probably don't have control over these scripts. Because of this, note that Lighthouse's audit does not represent the full scroll performance of your page. There may be third-party scripts that are harming your page's scroll performance, but these aren't listed in your Lighthouse report.
 
-{% include "web/tools/lighthouse/audits/implementation-heading.html" %}
+## Feedback {: #feedback }
 
-Lighthouse 使用以下算法标记潜在的被动事件侦听器候选项：
-
-
-1. 收集页面上的所有事件侦听器。
-1. 过滤非触摸和非滚轮侦听器。
-1. 过滤调用 `preventDefault()` 的侦听器。
-1. 过滤与页面不在同一个主机上的侦听器。
-
-
-Lighthouse 过滤来自不同主机的侦听器，因为您可能无法控制这些脚本。
-因此，请注意，Lighthouse 的审查并不代表您的页面的完整滚动性能。
-可能存在损害页面的滚动性能的第三方脚本，但这些不会在您的 Lighthouse 报告中列出。
-
-
-
-
-{# wf_devsite_translation #}
+{% include "web/_shared/helpful.html" %}
