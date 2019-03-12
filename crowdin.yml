@@ -1,6 +1,7 @@
 files:
   - source: /src/content/en/**/*.*
     translation: /src/content/%locale%/**/%original_file_name%
+    content_segmentation: 0
     languages_mapping:
       locale:
         ar: ar
